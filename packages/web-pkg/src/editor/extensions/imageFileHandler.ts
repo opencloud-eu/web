@@ -2,7 +2,7 @@ import FileHandler from '@tiptap/extension-file-handler'
 import type { Editor, Extension } from '@tiptap/core'
 
 // Explicit list instead of `image/*`, because the file handler matches mime types exactly
-const supportedImageMimeTypes = [
+export const supportedImageMimeTypes = [
   'image/apng',
   'image/avif',
   'image/bmp',

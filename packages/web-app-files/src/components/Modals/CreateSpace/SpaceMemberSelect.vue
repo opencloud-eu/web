@@ -13,7 +13,7 @@
       :position-fixed="true"
       :dropdown-should-open="
         ({ open, search }: DropDownShouldOpenOptions) =>
-          open && search.length >= minSearchLength && !searchInProgress
+          open && search.trim().length >= minSearchLength && !searchInProgress
       "
       @search:input="onSearch"
       @update:model-value="onCollaboratorsChanged"
@@ -51,7 +51,7 @@ import RoleDropdown from '../../SideBar/Shares/Collaborators/RoleDropdown.vue'
 import AutocompleteItem from '../../SideBar/Shares/Collaborators/InviteCollaborator/AutocompleteItem.vue'
 import RecipientContainer from '../../SideBar/Shares/Collaborators/InviteCollaborator/RecipientContainer.vue'
 
-type DropDownShouldOpenOptions = { open: boolean; search: string[] }
+type DropDownShouldOpenOptions = { open: boolean; search: string }
 
 const members = defineModel<SpaceMemberInvite[]>({ default: () => [] })
 // Kept outside the component so a step change doesn't reset the pick.
@@ -60,7 +60,7 @@ const roleId = defineModel<string>('roleId', { default: '' })
 const { $gettext } = useGettext()
 const sharesStore = useSharesStore()
 const userStore = useUserStore()
-const { searchCollaborators } = useCollaboratorSearch()
+const { searchCollaborators, getGuestCandidates } = useCollaboratorSearch()
 
 // Unmounted on every step change, while the model keeps the members.
 const selectedCollaborators = ref<CollaboratorAutoCompleteItem[]>(
@@ -79,8 +79,9 @@ const {
   searchQuery
 } = useCollaboratorAutocomplete(async (query, signal) => {
   const collaborators = await searchCollaborators(query, { signal })
+  const guests = getGuestCandidates(query, collaborators)
 
-  return collaborators.filter(({ id }) => {
+  return [...collaborators, ...guests].filter(({ id }) => {
     // the creator becomes the manager of the space anyway
     if (id === userStore.user.id) {
       return false

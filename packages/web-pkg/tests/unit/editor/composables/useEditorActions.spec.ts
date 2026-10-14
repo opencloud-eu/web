@@ -829,6 +829,18 @@ describe('useEditorActions', () => {
     })
   })
 
+  describe('imageCloud', () => {
+    it('allows picking all image types the editor supports', () => {
+      actions.imageCloud().toolbarAction!(createMockEditor(), 'image-cloud')
+      const { dispatchModal } = useModals()
+      const { customComponentAttrs } = vi.mocked(dispatchModal).mock.calls[0][0]
+
+      expect(customComponentAttrs().allowedFileTypes).toEqual(
+        expect.arrayContaining(['image/svg+xml', 'image/webp'])
+      )
+    })
+  })
+
   describe('imageUrl', () => {
     it('toolbarAction dispatches a modal with input', () => {
       const editor = createMockEditor()

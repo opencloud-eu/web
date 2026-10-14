@@ -36,6 +36,7 @@ import SideBarPanels from './SideBarPanels.vue'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { useSideBar } from '../../composables'
 import { storeToRefs } from 'pinia'
+import { useGettext } from 'vue3-gettext'
 
 const { loading, availablePanels, panelContext } = defineProps<{
   loading: boolean
@@ -57,6 +58,7 @@ defineSlots<{
 defineOptions({ inheritAttrs: false })
 const attrs = useAttrs()
 
+const { $gettext } = useGettext()
 const { isMobile } = useIsMobile()
 const sidebarStore = useSideBar()
 const { focusSidebar } = sidebarStore
@@ -71,6 +73,7 @@ const sidebarProps = computed(() => {
       hasFullHeight: true,
       maxHeight: 'max-h-[80vh]',
       class: 'z-100',
+      ariaLabel: $gettext('Sidebar'),
       onClicked: onBottomDrawerClicked
     }
   }

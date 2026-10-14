@@ -73,6 +73,7 @@
 import { ComponentPublicInstance, computed, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
 import Fuse, { FuseOptionKey } from 'fuse.js'
 import omit from 'lodash-es/omit'
+import isEqual from 'lodash-es/isEqual'
 import { useRoute, useRouteQuery, useRouter } from '../composables'
 import { defaultFuseOptions } from '../helpers'
 import { queryItemAsString } from '../composables/appDefaults'
@@ -141,7 +142,7 @@ const getId = (item: Item) => {
 const setRouteQuery = () => {
   return router.push({
     query: {
-      ...omit(unref(currentRoute).query, [queryParam]),
+      ...omit(unref(currentRoute).query, [queryParam, 'page']),
       ...(!!unref(selectedItems).length && {
         [queryParam]: unref(selectedItems)
           .reduce<string>((acc, item) => {
@@ -222,15 +223,24 @@ const showDrop = async () => {
 }
 
 const setSelectedItemsBasedOnQuery = () => {
-  const queryStr = queryItemAsString(unref(currentRouteQuery))
-  if (queryStr) {
-    const ids = queryStr.split('+')
-    selectedItems.value = items.filter((s) => ids.includes(getId(s)))
-  }
+  const ids = queryItemAsString(unref(currentRouteQuery))?.split('+') || []
+  selectedItems.value = items.filter((s) => ids.includes(getId(s)))
 }
 
-defineExpose({ setSelectedItemsBasedOnQuery })
+defineExpose({
+  /** @deprecated the filter follows its route query by itself, calling this is no longer needed */
+  setSelectedItemsBasedOnQuery
+})
 
 // items can arrive after mount (e.g. loaded tags), the selection from the query needs them
 watch(() => items, setSelectedItemsBasedOnQuery, { immediate: true })
+
+// the query can change without the filter being involved, e.g. via browser back
+watch(currentRouteQuery, () => {
+  const previousIds = unref(selectedItems).map(getId).sort()
+  setSelectedItemsBasedOnQuery()
+  if (!isEqual(previousIds, unref(selectedItems).map(getId).sort())) {
+    emit('selectionChange', unref(selectedItems))
+  }
+})
 </script>

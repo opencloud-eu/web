@@ -3,16 +3,19 @@ import {
   isIdpContextRequired,
   isPublicLinkContextRequired,
   isUserContextRequired
-} from './index'
+} from './helpers'
 import { Router, RouteLocation } from 'vue-router'
 import {
   contextRouteNameKey,
+  locationGuestLink,
   queryItemAsString,
   useAuthStore,
   useEmbedMode
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth/authService'
 import { unref } from 'vue'
+
+const routesWithGuestPermissionId = [locationGuestLink.name]
 
 export const setupAuthGuard = (router: Router) => {
   router.beforeEach(async (to, from) => {
@@ -68,6 +71,21 @@ export const setupAuthGuard = (router: Router) => {
     }
 
     return true
+  })
+  router.beforeEach((to) => {
+    const authStore = useAuthStore()
+    if (
+      !authStore.guestContextReady ||
+      to.query.permissionId ||
+      !routesWithGuestPermissionId.includes(to.name)
+    ) {
+      return true
+    }
+    return {
+      path: to.path,
+      hash: to.hash,
+      query: { ...to.query, permissionId: authStore.guestPermissionId }
+    }
   })
   router.afterEach((to) => {
     if (to.name !== 'accessDenied') {

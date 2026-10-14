@@ -69,11 +69,18 @@ export const parseMultiStatus = async (xmlBody: string) => {
   }) as unknown as WebDavResponseResource[]
 }
 
-export const parseError = (xmlBody: string): { message: string; errorCode: DavErrorCode } => {
+export const parseError = (
+  xmlBody: string
+): { message: string; errorCode: DavErrorCode; errorType: string | undefined } => {
   const parser = new XMLParser()
-  const errorObj: { message: string; errorCode: DavErrorCode | undefined } = {
+  const errorObj: {
+    message: string
+    errorCode: DavErrorCode | undefined
+    errorType: string | undefined
+  } = {
     message: 'Unknown error',
-    errorCode: undefined
+    errorCode: undefined,
+    errorType: undefined
   }
 
   try {
@@ -92,6 +99,10 @@ export const parseError = (xmlBody: string): { message: string; errorCode: DavEr
       if (typeof errorCode === 'string') {
         errorObj.errorCode = errorCode as DavErrorCode
       }
+    }
+    const errorType = parsed['d:error']['opencloud:details']?.['opencloud:error_type']
+    if (typeof errorType === 'string') {
+      errorObj.errorType = errorType
     }
   } catch {
     return errorObj

@@ -1,5 +1,5 @@
 import { FolderLoader, FolderLoaderTask, TaskContext } from '../folderService'
-import { Router } from 'vue-router'
+import { LocationQuery, Router } from 'vue-router'
 import { useTask } from 'vue-concurrency'
 import {
   buildIncomingShareResource,
@@ -14,9 +14,14 @@ import { unref } from 'vue'
 import { FolderLoaderOptions } from './types'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
-import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../../helpers'
+import {
+  createFileRouteOptions,
+  getSharedDriveItem,
+  setCurrentUserShareSpacePermissions
+} from '../../../helpers'
 import { useFileRouteReplace } from '../../../composables'
 import { DavProperties, DavProperty } from '@opencloud-eu/web-client/webdav'
+import { dirname } from 'path'
 
 export class FolderLoaderSpace implements FolderLoader {
   public isEnabled(): boolean {
@@ -68,6 +73,24 @@ export class FolderLoaderSpace implements FolderLoader {
         let { resource: currentFolder, children: resources } = yield* call(
           webdav.listFiles(space, { path, fileId }, { signal: signal1, davProperties })
         )
+
+        // a file can't be shown as folder -> show its parent folder and select the file instead
+        if (currentFolder.id && !currentFolder.isFolder && currentFolder.path !== '/') {
+          const routeOptions = createFileRouteOptions(space, {
+            path: dirname(currentFolder.path),
+            fileId: currentFolder.parentFolderId
+          })
+          const query: LocationQuery = {
+            ...unref(router.currentRoute).query,
+            ...routeOptions.query,
+            scrollTo: currentFolder.id
+          }
+          if (!currentFolder.parentFolderId) {
+            delete query.fileId
+          }
+          router.replace({ ...routeOptions, query })
+          return
+        }
 
         // if current folder has no id (= singe file public link) we must not correct the route
         if (currentFolder.id) {
@@ -135,7 +158,7 @@ export class FolderLoaderSpace implements FolderLoader {
         console.error(error)
 
         if (error.statusCode === 401) {
-          return authService.handleAuthError(unref(router.currentRoute))
+          return authService.handleAuthError(unref(router.currentRoute), error)
         }
       }
     }).restartable()

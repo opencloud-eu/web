@@ -1,4 +1,5 @@
 import { markRaw } from 'vue'
+import { escapeRegExp } from 'lodash-es'
 import { Language } from 'vue3-gettext'
 import { Resource } from '@opencloud-eu/web-client'
 import { extractExtensionFromFile } from '@opencloud-eu/web-client'
@@ -16,6 +17,16 @@ import {
 interface ConflictedResource {
   name: string
   type: string
+}
+
+// renames the first of the relative segments the endpoint ends with, leaving the current folder path untouched
+function renameUploadFolderInEndpoint(endpoint: string, segments: string[], newFolderName: string) {
+  const encodedTail = `/${segments.map(encodeURIComponent).join('/')}`
+  if (!segments.length || !endpoint.endsWith(encodedTail)) {
+    return endpoint
+  }
+  const newTail = [newFolderName, ...segments.slice(1)].map(encodeURIComponent).join('/')
+  return `${endpoint.slice(0, -encodedTail.length)}/${newTail}`
 }
 
 export class UploadResourceConflict extends ConflictDialog {
@@ -155,7 +166,7 @@ export class UploadResourceConflict extends ConflictDialog {
       .filter((e) => e.strategy === ResolveStrategy.SKIP)
       .map((e) => e.name)
 
-    files = files.filter((e) => !filesToSkip.includes(e.name))
+    files = files.filter((e) => e.meta.relativeFolder || !filesToSkip.includes(e.name))
     files = files.filter(
       (file) =>
         !foldersToSkip.some((folderName) => file.meta.relativeFolder.split('/')[1] === folderName)
@@ -190,8 +201,8 @@ export class UploadResourceConflict extends ConflictDialog {
         file.xhrUpload.endpoint = file.xhrUpload.endpoint
           .toString()
           .replace(
-            new RegExp(`/${encodeURIComponent(fileName)}`),
-            `/${encodeURIComponent(file.name)}`
+            new RegExp(`/${escapeRegExp(encodeURIComponent(fileName))}$`),
+            () => `/${encodeURIComponent(file.name)}`
           )
       }
     }
@@ -200,30 +211,35 @@ export class UploadResourceConflict extends ConflictDialog {
       const newFolderName = resolveFileNameDuplicate(folder, '', occupiedResources)
       occupiedResources.push({ name: newFolderName })
       for (const file of filesInFolder) {
+        const folderSegments = file.meta.relativeFolder.split('/').filter(Boolean)
+        // a directory entry's relative folder includes its own name, its tus endpoint doesn't
+        const tusSegments = file.type === 'directory' ? folderSegments.slice(0, -1) : folderSegments
+        const xhrSegments = [...tusSegments, file.name]
         file.meta.relativeFolder = file.meta.relativeFolder.replace(
-          new RegExp(`/${folder}`),
-          `/${newFolderName}`
+          new RegExp(`/${escapeRegExp(folder)}`),
+          () => `/${newFolderName}`
         )
         file.meta.relativePath = file.meta.relativePath.replace(
-          new RegExp(`/${folder}/`),
-          `/${newFolderName}/`
+          new RegExp(`/${escapeRegExp(folder)}/`),
+          () => `/${newFolderName}/`
         )
-        file.meta.tusEndpoint = file.meta.tusEndpoint.replace(
-          new RegExp(`/${encodeURIComponent(folder)}(/|$)`),
-          `/${encodeURIComponent(newFolderName)}$1`
+        file.meta.tusEndpoint = renameUploadFolderInEndpoint(
+          file.meta.tusEndpoint,
+          file.xhrUpload?.endpoint ? xhrSegments : tusSegments,
+          newFolderName
         )
         if (file.xhrUpload?.endpoint) {
-          file.xhrUpload.endpoint = file.xhrUpload.endpoint
-            .toString()
-            .replace(
-              new RegExp(`/${encodeURIComponent(folder)}(/|$)`),
-              `/${encodeURIComponent(newFolderName)}$1`
-            )
+          file.xhrUpload.endpoint = renameUploadFolderInEndpoint(
+            file.xhrUpload.endpoint.toString(),
+            xhrSegments,
+            newFolderName
+          )
         }
         if (file.tus?.endpoint) {
-          file.tus.endpoint = file.tus.endpoint.replace(
-            new RegExp(`/${encodeURIComponent(folder)}(/|$)`),
-            `/${encodeURIComponent(newFolderName)}$1`
+          file.tus.endpoint = renameUploadFolderInEndpoint(
+            file.tus.endpoint,
+            tusSegments,
+            newFolderName
           )
         }
       }

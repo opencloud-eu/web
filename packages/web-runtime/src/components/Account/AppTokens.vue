@@ -166,10 +166,9 @@ const openCreateAppTokenModal = () => {
     confirmText: $gettext('Create'),
     customComponent: markRaw(AppTokenModal),
     hideConfirmButton: true,
-    onConfirm: () => {
-      // reload tokens after creating a new one
-      loadTokensTask.perform()
-    }
+    customComponentAttrs: () => ({
+      onCreated: () => loadTokensTask.perform()
+    })
   })
 }
 

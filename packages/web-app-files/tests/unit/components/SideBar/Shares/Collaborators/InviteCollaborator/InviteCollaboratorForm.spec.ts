@@ -7,7 +7,7 @@ import {
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useMessages, useSharesStore } from '@opencloud-eu/web-pkg'
+import { useCapabilityStore, useMessages, useSharesStore } from '@opencloud-eu/web-pkg'
 import {
   CollaboratorAutoCompleteItem,
   CollaboratorShare,
@@ -17,7 +17,7 @@ import {
 } from '@opencloud-eu/web-client'
 import { Contact } from '@opencloud-eu/web-client/ox'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
-import { OcButton } from '@opencloud-eu/design-system/components'
+import { OcButton, OcSelect } from '@opencloud-eu/design-system/components'
 import RoleDropdown from '../../../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
 import { ShareRoleType } from '../../../../../../../src/components/SideBar/Shares/Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
 import { flushPromises } from '@vue/test-utils'
@@ -139,6 +139,24 @@ describe('InviteCollaboratorForm', () => {
         (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.contact.value
       )
       expect(contact?.mail).toBe('jane@example.com')
+    })
+    it('queries Open-Xchange with the term without surrounding spaces', async () => {
+      const { wrapper, mocks } = getWrapper({ openXchange: true })
+      await search(wrapper, ' jane ')
+
+      expect(mocks.$clientService.ox.autocompleteContacts).toHaveBeenCalledWith(
+        expect.objectContaining({ query: 'jane' })
+      )
+    })
+    it('does not open the dropdown when the term is only long enough with spaces', () => {
+      const { wrapper } = getWrapper()
+      useCapabilityStore().capabilities.files_sharing.search_min_length = 2
+      const dropdownShouldOpen = wrapper.findComponent(OcSelect).vm.$attrs[
+        'dropdown-should-open'
+      ] as (options: { open: boolean; search: string }) => boolean
+
+      expect(dropdownShouldOpen({ open: true, search: ' m ' })).toBe(false)
+      expect(dropdownShouldOpen({ open: true, search: ' ma ' })).toBe(true)
     })
     it('does not query Open-Xchange when the resource is a space', async () => {
       const { wrapper, mocks } = getWrapper({

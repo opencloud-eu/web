@@ -160,6 +160,7 @@ export const useResourcesStore = defineStore('resources', () => {
   const areWebDavDetailsShown = ref(false)
   const areDisabledSpacesShown = ref(true)
   const areEmptyTrashesShown = ref(true)
+  const areFoldersSortedFirst = ref(true)
 
   const setAreHiddenFilesShown = (value: boolean) => {
     areHiddenFilesShown.value = value
@@ -180,6 +181,10 @@ export const useResourcesStore = defineStore('resources', () => {
   const setAreEmptyTrashesShown = (value: boolean) => {
     areEmptyTrashesShown.value = value
     window.localStorage.setItem('oc_emptyTrashesShown', value.toString())
+  }
+  const setAreFoldersSortedFirst = (value: boolean) => {
+    areFoldersSortedFirst.value = value
+    window.localStorage.setItem('oc_foldersSortedFirst', value.toString())
   }
 
   const setAncestorMetaData = (value: AncestorMetaData) => {
@@ -324,11 +329,13 @@ export const useResourcesStore = defineStore('resources', () => {
     areWebDavDetailsShown,
     areDisabledSpacesShown,
     areEmptyTrashesShown,
+    areFoldersSortedFirst,
     setAreHiddenFilesShown,
     setAreFileExtensionsShown,
     setAreWebDavDetailsShown,
     setAreDisabledSpacesShown,
     setAreEmptyTrashesShown,
+    setAreFoldersSortedFirst,
 
     ancestorMetaData,
     setAncestorMetaData,

@@ -27,6 +27,9 @@ export function useKeyboardTableNavigation(
     const lastSelectedRow = unref(paginatedResources).find(
       (resource) => resource.id === unref(lastSelectedRowId)
     )
+    if (!lastSelectedRow) {
+      return
+    }
     const isSelected = unref(selectedRows).some((row) => row.id === unref(lastSelectedRowId))
 
     if (!isSelected) {
@@ -67,7 +70,7 @@ export function useKeyboardTableNavigation(
       : unref(keyActions.selectionCursor) < 0
     if (isShrinkingSelection) {
       toggleLastSelectedRow()
-    } else {
+    } else if (!unref(selectedRows).some((row) => row.id === nextResource.id)) {
       selectedRows.value.push(nextResource)
     }
 

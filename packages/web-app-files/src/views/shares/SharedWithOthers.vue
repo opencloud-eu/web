@@ -214,20 +214,25 @@ const keyActions = useKeyboardActions()
 useKeyboardFileNavigation(keyActions, filteredItems, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 
-resourcesStore.$onAction((action) => {
+resourcesStore.$onAction(async (action) => {
   if (action.name !== 'updateResourceField') {
     return
   }
 
-  if (selectedResourcesIds.value.length !== 1) return
-  const id = selectedResourcesIds.value[0]
+  // only share type changes (e.g. adding or removing a link) affect this list. reacting to
+  // other fields like thumbnails, which get set after the reload, would cause a reload loop.
+  if (action.args[0]?.field !== 'shareTypes') return
+  if (loadResourcesTask.isRunning) return
+
+  if (unref(selectedResourcesIds).length !== 1) return
+  const id = unref(selectedResourcesIds)[0]
 
   const match = unref(paginatedResources).find((r) => {
     return r.id === id
   })
   if (!match) return
 
-  loadResourcesTask.perform()
+  await loadResourcesTask.perform()
 
   const matchedNewResource = unref(paginatedResources).find((r) => r.fileId === match.fileId)
   if (!matchedNewResource) return

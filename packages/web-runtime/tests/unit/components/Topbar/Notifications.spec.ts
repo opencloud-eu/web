@@ -7,6 +7,7 @@ import { RouterLink, RouteLocationNamedRaw, RouteLocationNormalizedLoaded } from
 import { AxiosResponse } from 'axios'
 import { UserAvatar } from '@opencloud-eu/web-pkg'
 import { flushPromises } from '@vue/test-utils'
+import { defineComponent } from 'vue'
 
 const selectors = {
   notificationBellStub: 'notification-bell-stub',
@@ -60,6 +61,40 @@ describe('Notification component', () => {
     await wrapper.vm.$nextTick()
     expect(wrapper.find(selectors.notificationItem).exists()).toBeFalsy()
     expect(mocks.$clientService.httpAuthenticated.delete).toHaveBeenCalledTimes(1)
+  })
+  describe('drop', () => {
+    it('hides when a linked notification is clicked', async () => {
+      const notification = mock<Notification>({
+        messageRich: undefined,
+        object_type: 'share',
+        messageRichParameters: { share: { id: '1' } },
+        computedMessage: undefined,
+        computedLink: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await flushPromises()
+      await wrapper.find(`${selectors.notificationItem} router-link-stub`).trigger('click')
+      expect(hideDropMock).toHaveBeenCalledTimes(1)
+    })
+    it('stays open when a notification without link is clicked', async () => {
+      const notification = mock<Notification>({
+        messageRich: undefined,
+        messageRichParameters: undefined,
+        computedMessage: undefined,
+        computedLink: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await flushPromises()
+      await wrapper.find(`${selectors.notificationItem} > div`).trigger('click')
+      expect(hideDropMock).not.toHaveBeenCalled()
+    })
+    it('stays open when marking all notifications as read', async () => {
+      const notifications = [mock<Notification>({ messageRich: undefined })]
+      const { wrapper } = getWrapper({ notifications })
+      await flushPromises()
+      await wrapper.find(selectors.markAll).trigger('click')
+      expect(hideDropMock).not.toHaveBeenCalled()
+    })
   })
   describe('avatar', () => {
     it('loads based on the username', async () => {
@@ -142,6 +177,23 @@ describe('Notification component', () => {
       await flushPromises()
       expect(wrapper.find(selectors.notificationLink).exists()).toBeTruthy()
     })
+    it('does not trigger the item navigation when clicked', async () => {
+      const notification = mock<Notification>({
+        messageRich: undefined,
+        computedMessage: undefined,
+        object_type: 'share',
+        messageRichParameters: { share: { id: '1' } },
+        link: 'http://some-link.com'
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await flushPromises()
+      const navigate = vi.fn()
+      wrapper
+        .find(`${selectors.notificationItem} router-link-stub`)
+        .element.addEventListener('click', navigate)
+      await wrapper.find(`${selectors.notificationLink} a`).trigger('click')
+      expect(navigate).not.toHaveBeenCalled()
+    })
     describe('if given via messageRichParameters', () => {
       it('renders notification as link for shares', async () => {
         const notification = mock<Notification>({
@@ -149,7 +201,7 @@ describe('Notification component', () => {
           object_type: 'share',
           messageRichParameters: {
             user: { displayname: 'Albert Einstein' },
-            resource: { name: 'someFile.txt' },
+            resource: { id: 'storage$space!item', name: 'someFile.txt' },
             share: { id: '1' }
           },
           computedMessage: undefined,
@@ -165,7 +217,7 @@ describe('Notification component', () => {
           'files-shares-with-me'
         )
         expect((routerLink.props('to') as RouteLocationNamedRaw).query).toEqual({
-          scrollTo: notification.messageRichParameters.share.id
+          scrollTo: notification.messageRichParameters.resource.id
         })
       })
       it('renders notification as link for spaces', async () => {
@@ -197,6 +249,15 @@ describe('Notification component', () => {
   })
 })
 
+const hideDropMock = vi.fn()
+const OcDropStub = defineComponent({
+  name: 'OcDrop',
+  setup(_, { expose }) {
+    expose({ hide: hideDropMock })
+  },
+  template: '<div><slot /></div>'
+})
+
 function getWrapper({
   mocks = {},
   notifications = [],
@@ -206,6 +267,7 @@ function getWrapper({
   notifications?: Notification[]
   spaces?: SpaceResource[]
 } = {}) {
+  hideDropMock.mockReset()
   const localMocks = { ...defaultComponentMocks(), ...mocks }
   localMocks.$clientService.httpAuthenticated.get.mockResolvedValue(
     mock<AxiosResponse>({ data: { ocs: { data: notifications } }, headers: {} })
@@ -219,7 +281,7 @@ function getWrapper({
         plugins: [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })],
         mocks: localMocks,
         provide: localMocks,
-        stubs: { 'user-avatar': true, OcButton: false }
+        stubs: { 'user-avatar': true, OcButton: false, OcDrop: OcDropStub }
       }
     })
   }

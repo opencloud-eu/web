@@ -26,10 +26,14 @@ interface PaginationResult<T> {
 export function usePagination<T>(options: PaginationOptions<T>): PaginationResult<T> {
   const router = useRouter()
   const route = useRoute()
-  const page = createPageRef<T>(options)
+  const requestedPage = createPageRef<T>(options)
   const perPage = createPerPageRef<T>(options)
   const total = computed(() => {
     return Math.ceil(unref(options.items).length / unref(perPage)) || 1
+  })
+  const page = computed(() => {
+    const clampedPage = Math.min(unref(requestedPage), unref(total))
+    return clampedPage >= 1 ? clampedPage : 1
   })
   const items = computed(() => {
     if (!unref(perPage)) {

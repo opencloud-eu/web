@@ -106,7 +106,6 @@ describe('useCreateSpace', () => {
           // the space exists, so the steps that don't depend on the vault run
           const { drives, permissions } = $clientService.graphAuthenticated
           expect(drives.updateDrive).toHaveBeenCalledWith('1', {
-            name: 'space',
             quota: { total: 1000 }
           })
           expect(permissions.createInvite).toHaveBeenCalled()
@@ -170,7 +169,6 @@ describe('useCreateSpace', () => {
 
           const { drives, permissions } = $clientService.graphAuthenticated
           expect(drives.updateDrive).toHaveBeenCalledWith('1', {
-            name: 'space',
             quota: { total: 1000 }
           })
           expect($clientService.webdav.putFileContents).toHaveBeenCalledWith(
@@ -211,6 +209,33 @@ describe('useCreateSpace', () => {
 
           // both would sit as plain text next to the encrypted files
           expect($clientService.webdav.putFileContents).not.toHaveBeenCalled()
+        }
+      })
+    })
+
+    it('invites guest members by email address alone', () => {
+      return getWrapper({
+        setup: async ({ addNewSpace }, { $clientService }) => {
+          await addNewSpace('Team', {
+            members: [
+              {
+                id: 'guest@example.com',
+                displayName: 'guest@example.com',
+                shareType: ShareTypes.guest.value,
+                roleId: 'role-1'
+              }
+            ]
+          })
+
+          expect($clientService.graphAuthenticated.permissions.createInvite).toHaveBeenCalledWith(
+            '1',
+            '1',
+            expect.objectContaining({
+              roles: ['role-1'],
+              recipients: [{ email: 'guest@example.com' }]
+            }),
+            expect.anything()
+          )
         }
       })
     })

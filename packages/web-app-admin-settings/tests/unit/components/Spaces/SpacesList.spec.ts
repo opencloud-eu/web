@@ -14,7 +14,7 @@ import {
   useSideBar,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
-import { flushPromises } from '@vue/test-utils'
+import { enableAutoUnmount, flushPromises } from '@vue/test-utils'
 import { useSpaceSettingsStore } from '../../../../src/composables'
 import { mock } from 'vitest-mock-extended'
 import { GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
@@ -93,6 +93,9 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useLoadPreview: vi.fn()
 }))
 
+// unmount after each test, otherwise stale lists react to the global click events and key presses
+enableAutoUnmount(afterEach)
+
 describe('SpacesList', () => {
   describe('space images', () => {
     it('loads the images of the visible spaces and stores them on the spaces', async () => {
@@ -127,23 +130,16 @@ describe('SpacesList', () => {
 
   describe('pagination', () => {
     it('shows the new last page if the current page gets empty, e.g. after deleting spaces', async () => {
-      const { mocks } = getWrapper({
-        mountType: shallowMount,
-        stubActions: false,
-        page: '2',
-        perPage: '1'
-      })
+      const { wrapper } = getWrapper({ stubActions: false, page: '2', perPage: '1' })
       const spacesStore = useSpacesStore()
       spacesStore.setAllProjectSpaces(spaceMocks.map((space) => ({ ...space })) as SpaceResource[])
       await flushPromises()
-      expect(mocks.$router.push).not.toHaveBeenCalled()
+      expect(getColumn(wrapper, 'name')).toEqual(['2 Another space'])
 
       spacesStore.removeSpace(spaceMocks[1])
       await flushPromises()
 
-      expect(mocks.$router.push).toHaveBeenCalledWith(
-        expect.objectContaining({ query: expect.objectContaining({ page: '1' }) })
-      )
+      expect(getColumn(wrapper, 'name')).toEqual(['1 Some space'])
     })
   })
 
@@ -274,18 +270,70 @@ describe('SpacesList', () => {
     })
     it('selects a space via its checkbox', () => {
       const { wrapper } = getWrapper({ spaces: [spaces[0]] })
-      getSpaceCheckbox(wrapper, spaces[0]).vm.$emit('update:modelValue', true)
+      getSpaceCheckbox(wrapper, spaces[0]).vm.$emit('click', checkboxClickEvent())
       const { addSelectedSpace } = useSpaceSettingsStore()
       expect(addSelectedSpace).toHaveBeenCalledWith(spaces[0])
     })
     it('de-selects a selected space via its checkbox', () => {
       const { wrapper } = getWrapper({ spaces: [spaces[0]], selectedSpaces: [spaces[0]] })
-      getSpaceCheckbox(wrapper, spaces[0]).vm.$emit('update:modelValue', false)
+      getSpaceCheckbox(wrapper, spaces[0]).vm.$emit('click', checkboxClickEvent())
       const { setSelectedSpaces } = useSpaceSettingsStore()
       expect(setSelectedSpaces).toHaveBeenCalledWith([])
     })
   })
+
+  describe('row checkbox click', () => {
+    const spaces = ['a', 'b', 'c'].map((name, i) =>
+      mock<SpaceResource>({ id: String(i + 1), name })
+    )
+
+    it('toggles the space on a plain click', async () => {
+      const { wrapper } = getWrapper({
+        spaces,
+        selectedSpaces: [spaces[1]],
+        stubActions: false,
+        realCheckboxes: true
+      })
+      await getCheckboxInput(wrapper, spaces[0]).trigger('click')
+      await getCheckboxInput(wrapper, spaces[1]).trigger('click')
+      expect(getSelectedIds()).toEqual(['1'])
+      expect(getCheckboxInput(wrapper, spaces[0]).element.checked).toBe(true)
+      expect(getCheckboxInput(wrapper, spaces[1]).element.checked).toBe(false)
+    })
+    it('selects a range on shift click and keeps it contiguous on shift + arrow', async () => {
+      const { wrapper } = getWrapper({
+        spaces,
+        selectedSpaces: [spaces[0]],
+        stubActions: false,
+        realCheckboxes: true
+      })
+      await getCheckboxInput(wrapper, spaces[2]).trigger('click', { shiftKey: true })
+      expect(getSelectedIds()).toEqual(['1', '2', '3'])
+      expect(getCheckboxInput(wrapper, spaces[2]).element.checked).toBe(true)
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', shiftKey: true }))
+      expect(getSelectedIds()).toEqual(['1', '2'])
+    })
+  })
 })
+
+function getSelectedIds() {
+  return useSpaceSettingsStore()
+    .selectedSpaces.map(({ id }) => id)
+    .sort()
+}
+
+function getCheckboxInput(wrapper: Wrapper, space: SpaceResource) {
+  return wrapper.find<HTMLInputElement>(`[data-item-id="${space.id}"] input[type="checkbox"]`)
+}
+
+function checkboxClickEvent() {
+  const checkbox = document.createElement('input')
+  checkbox.type = 'checkbox'
+  const event = new MouseEvent('click')
+  checkbox.dispatchEvent(event)
+  return event
+}
 
 type Wrapper = ReturnType<typeof getWrapper>['wrapper']
 
@@ -311,7 +359,8 @@ function getWrapper({
   selectedSpaces = [],
   stubActions = true,
   page,
-  perPage
+  perPage,
+  realCheckboxes = false
 }: {
   mountType?: typeof mount
   spaces?: SpaceResource[]
@@ -319,6 +368,7 @@ function getWrapper({
   stubActions?: boolean
   page?: string
   perPage?: string
+  realCheckboxes?: boolean
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
@@ -338,6 +388,7 @@ function getWrapper({
     mocks,
     loadPreview,
     wrapper: mountType(SpacesList, {
+      ...(realCheckboxes && { attachTo: document.body }),
       global: {
         plugins: [
           ...defaultPlugins({
@@ -351,7 +402,7 @@ function getWrapper({
         mocks,
         provide: mocks,
         stubs: {
-          OcCheckbox: true,
+          OcCheckbox: !realCheckboxes,
           OcStatusIndicators: true
         }
       }
