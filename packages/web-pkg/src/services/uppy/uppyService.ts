@@ -270,7 +270,13 @@ export class UppyService {
       this.publish('upload-progress', { file, progress })
     })
     this.uppy.on('cancel-all', () => {
-      this.publish('uploadCancelled')
+      // Uppy clears the files after this event, so capture the result before they are removed.
+      const files = this.uppy.getFiles()
+      const result: UploadResult = {
+        successful: files.filter((file) => file.progress.uploadComplete),
+        failed: files.filter((file) => file.error)
+      }
+      this.publish('uploadCancelled', result)
       this.clearInputs()
     })
     this.uppy.on('complete', (result) => {

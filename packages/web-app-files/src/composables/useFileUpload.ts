@@ -55,23 +55,13 @@ export const useFileUpload = (space: Ref<SpaceResource>) => {
     return unref(currentFolder)?.canUpload({ user: userStore.user })
   })
 
-  const onUploadComplete = (result: UploadResult) => {
+  async function onUploadComplete(result: UploadResult) {
     const file = result.successful?.[0]
     if (!file) {
       return
     }
 
     const { spaceId, driveType } = file.meta
-    return refreshAfterUpload(spaceId, driveType)
-  }
-
-  // files that finished before a cancel stay uploaded, so the list and quota need a refresh too
-  const onUploadCancelled = () => {
-    const { id, driveType } = unref(space)
-    return refreshAfterUpload(id, driveType)
-  }
-
-  async function refreshAfterUpload(spaceId: string, driveType: string) {
     if (!isPublicSpaceResource(unref(space))) {
       const isOwnSpace = spacesStore.spaces
         .find(({ id }) => id === spaceId)
@@ -108,7 +98,7 @@ export const useFileUpload = (space: Ref<SpaceResource>) => {
 
   onMounted(() => {
     uploadCompletedSub = uppyService.subscribe('uploadCompleted', onUploadComplete)
-    uploadCancelledSub = uppyService.subscribe('uploadCancelled', onUploadCancelled)
+    uploadCancelledSub = uppyService.subscribe('uploadCancelled', onUploadComplete)
   })
 
   onBeforeUnmount(() => {
