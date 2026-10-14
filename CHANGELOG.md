@@ -8,6 +8,15 @@
 
 ### 🐛 Bug Fixes
 
+- fix: no unhandled error when the server rejects a link password [[#3712](https://github.com/opencloud-eu/web/pull/3712)]
+- fix: reject whitespace-only public link names [[#3731](https://github.com/opencloud-eu/web/pull/3731)]
+- fix: show a space's size in the details only inside the space [[#3715](https://github.com/opencloud-eu/web/pull/3715)]
+- fix: sort unrestricted spaces as largest total quota [[#3729](https://github.com/opencloud-eu/web/pull/3729)]
+- fix: show the last page instead of an empty list when the page is out of range [[#3711](https://github.com/opencloud-eu/web/pull/3711)]
+- fix: close the notifications drop when a notification is clicked [[#3734](https://github.com/opencloud-eu/web/pull/3734)]
+- fix: reject whitespace-only app token notes [[#3732](https://github.com/opencloud-eu/web/pull/3732)]
+- fix: stop sending the cached space name on space and quota updates [[#3705](https://github.com/opencloud-eu/web/pull/3705)]
+- fix: keep open context menus when a file in the list changes [[#3785](https://github.com/opencloud-eu/web/pull/3785)]
 - fix: keep filter chips in sync with the URL on back and forward [[#3699](https://github.com/opencloud-eu/web/pull/3699)]
 - fix: don't limit the length of vault passwords [[#3727](https://github.com/opencloud-eu/web/pull/3727)]
 - fix: sum up all files in the upload quota check [[#3698](https://github.com/opencloud-eu/web/pull/3698)]
