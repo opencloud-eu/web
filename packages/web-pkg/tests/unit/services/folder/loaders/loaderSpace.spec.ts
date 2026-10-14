@@ -1,4 +1,5 @@
 import { mock } from 'vitest-mock-extended'
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { FolderLoaderSpace, type TaskContext } from '../../../../../src/services/folder'
@@ -44,12 +45,66 @@ describe('FolderLoaderSpace', () => {
     const { currentFolder } = vi.mocked(resourcesStore.initResourceList).mock.calls[0][0]
     expect(currentFolder.remoteItemId).toBeUndefined()
   })
+
+  describe('path pointing to a file', () => {
+    const space = {
+      id: 'personal-space-id',
+      driveType: 'personal',
+      getDriveAliasAndItem: ({ path }: Resource) => `personal/admin${path}`
+    } as unknown as SpaceResource
+    const file = {
+      id: 'f1',
+      path: '/k2/doc.txt',
+      isFolder: false,
+      parentFolderId: 'k2'
+    } as Resource
+
+    it('redirects to the parent folder and scrolls to the file', async () => {
+      const { resourcesStore, router } = await loadFolder({
+        space,
+        path: '/k2/doc.txt',
+        resource: file
+      })
+
+      expect(router.replace).toHaveBeenCalledWith({
+        params: { driveAliasAndItem: 'personal/admin/k2' },
+        query: { fileId: 'k2', scrollTo: 'f1' }
+      })
+      expect(resourcesStore.initResourceList).not.toHaveBeenCalled()
+    })
+
+    it('drops a stale file id from the query if the parent id is unknown', async () => {
+      const { router } = await loadFolder({
+        space,
+        path: '/k2/doc.txt',
+        resource: { ...file, parentFolderId: undefined },
+        query: { fileId: 'f1' }
+      })
+
+      expect(router.replace).toHaveBeenCalledWith({
+        params: { driveAliasAndItem: 'personal/admin/k2' },
+        query: { scrollTo: 'f1' }
+      })
+    })
+  })
 })
 
-async function loadFolder({ space, path }: { space: SpaceResource; path: string }) {
-  const mocks = defaultComponentMocks()
+async function loadFolder({
+  space,
+  path,
+  resource = { id: 'k2', path: '/k2', isFolder: true } as Resource,
+  query = {}
+}: {
+  space: SpaceResource
+  path: string
+  resource?: Resource
+  query?: Record<string, string>
+}) {
+  const mocks = defaultComponentMocks({
+    currentRoute: mock<RouteLocationNormalizedLoaded>({ query })
+  })
   mocks.$clientService.webdav.listFiles.mockResolvedValue({
-    resource: { id: 'k2', path: '/k2' } as Resource,
+    resource,
     children: [{ id: 'j1', path: '/k2/j1' } as Resource]
   })
 
@@ -79,5 +134,5 @@ async function loadFolder({ space, path }: { space: SpaceResource; path: string 
   // the folder service passes its own abort signal as first argument
   await task.perform(new AbortController().signal, space, path)
 
-  return { resourcesStore }
+  return { resourcesStore, router: mocks.$router }
 }
