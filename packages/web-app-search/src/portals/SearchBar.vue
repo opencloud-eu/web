@@ -37,7 +37,8 @@
           id="files-global-search-filter"
           :current-folder-available="currentFolderAvailable"
           :current-folder-is-in-vault="currentFolderIsInVault"
-          @update:model-value="onLocationFilterChange"
+          @update:model-value="locationFilterId = $event.value.id"
+          @select="onLocationFilterChange"
         />
       </template>
     </oc-search-bar>
@@ -176,12 +177,7 @@ const { userContextReady, publicLinkContextReady } = storeToRefs(authStore)
 const resourcesStore = useResourcesStore()
 const { currentFolder } = storeToRefs(resourcesStore)
 
-const useScopeQueryValue = useRouteQuery('useScope')
-const locationFilterId = ref(
-  queryItemAsString(unref(useScopeQueryValue)) === 'true'
-    ? SearchLocationFilterConstants.currentFolder
-    : SearchLocationFilterConstants.allFiles
-)
+const locationFilterId = ref(SearchLocationFilterConstants.allFiles)
 const optionsDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('optionsDropRef')
 const searchBarRef = useTemplateRef<HTMLElement>('searchBar')
 const activePreviewIndex = ref<number | null>(null)
@@ -194,6 +190,7 @@ const searchResults = ref<
   }[]
 >([])
 const loading = ref(false)
+let searchRequestId = 0
 const currentFolderAvailable = ref(false)
 
 const listProviderAvailable = computed(() => unref(availableProviders).some((p) => !!p.listSearch))
@@ -259,6 +256,10 @@ const optionsDrop = computed(() => {
 })
 
 const scope = computed(() => {
+  if (isLocationCommonActive(router, 'files-common-search')) {
+    return queryItemAsString(unref(scopeQueryValue))
+  }
+
   if (unref(currentFolderAvailable) && unref(currentFolder)?.fileId) {
     return unref(currentFolder).fileId
   }
@@ -269,13 +270,16 @@ const scope = computed(() => {
 const useScope = computed(() => {
   return (
     unref(currentFolderAvailable) &&
+    !unref(currentFolderIsInVault) &&
     unref(locationFilterId) === SearchLocationFilterConstants.currentFolder
   )
 })
 
 async function search() {
+  const requestId = ++searchRequestId
   searchResults.value = []
   if (!unref(term)) {
+    loading.value = false
     return
   }
 
@@ -287,15 +291,27 @@ async function search() {
 
   loading.value = true
 
-  for (const availableProvider of unref(availableProviders)) {
-    if (availableProvider.previewSearch?.available) {
-      searchResults.value.push({
-        providerId: availableProvider.id,
-        result: await availableProvider.previewSearch.search(query)
-      })
+  try {
+    for (const availableProvider of unref(availableProviders)) {
+      if (!availableProvider.previewSearch?.available) {
+        continue
+      }
+      const result = await availableProvider.previewSearch.search(query)
+      if (requestId !== searchRequestId) {
+        return
+      }
+      searchResults.value.push({ providerId: availableProvider.id, result })
+    }
+  } catch (error) {
+    if (requestId !== searchRequestId || error === 'cancel') {
+      return
+    }
+    throw error
+  } finally {
+    if (requestId === searchRequestId) {
+      loading.value = false
     }
   }
-  loading.value = false
 }
 
 function onKeyUpEnter() {
@@ -356,7 +372,6 @@ async function onLocationFilterChange(event: { value: { id: string } }) {
 
   await nextTick()
   updateLocationFilterInputPadding()
-  search()
 }
 
 async function showPreview() {
@@ -378,7 +393,7 @@ function updateTerm(input: string) {
 
 const debouncedSearch = debounce(search, 500)
 
-watch(term, () => {
+watch([term, scope, useScope], () => {
   if (unref(restoreSearchFromRoute)) {
     restoreSearchFromRoute.value = false
     return

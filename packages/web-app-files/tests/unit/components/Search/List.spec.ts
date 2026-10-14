@@ -109,6 +109,35 @@ describe('List component', () => {
     expect(replacementCounter).toBe(queries.length)
     expect(wrapper.emitted('search').length).toBe(4)
   })
+  it('searches again when only the folder scope changes', async () => {
+    const $router = createRouter({
+      routes: [{ name: 'files-common-search', path: '/files-common-search', redirect: null }],
+      history: createMemoryHistory()
+    })
+    const { wrapper } = getWrapper({
+      mocks: { $router },
+      filesTags: false,
+      fullTextSearchEnabled: false
+    })
+    await flushPromises()
+    vi.mocked(queryItemAsString)
+      .mockReset()
+      .mockImplementation((value) => (typeof value === 'string' ? value : undefined))
+
+    await $router.replace({
+      name: 'files-common-search',
+      query: { term: 'albert', useScope: 'true', scope: 'first-folder' }
+    })
+    await flushPromises()
+    expect(wrapper.emitted('search').at(-1)[0]).toBe('name:"*albert*" AND scope:first-folder')
+
+    await $router.replace({
+      name: 'files-common-search',
+      query: { term: 'albert', useScope: 'true', scope: 'second-folder' }
+    })
+    await flushPromises()
+    expect(wrapper.emitted('search').at(-1)[0]).toBe('name:"*albert*" AND scope:second-folder')
+  })
   describe('breadcrumbs', () => {
     it('show "Search" when no search term given', () => {
       const { wrapper } = getWrapper()

@@ -67,6 +67,7 @@ const { currentFolderAvailable = false, currentFolderIsInVault = false } = defin
 
 const emit = defineEmits<{
   (e: 'update:modelValue', payload: { value: LocationOption }): void
+  (e: 'select', payload: { value: LocationOption }): void
 }>()
 
 const { $gettext } = useGettext()
@@ -76,7 +77,7 @@ const currentFolderUsable = computed(() => currentFolderAvailable && !currentFol
 
 const currentSelection = ref<LocationOption>()
 const userSelection = ref<LocationOption>()
-const currentSelectionTitle = computed(() => $gettext(currentSelection.value?.title))
+const currentSelectionTitle = computed(() => $gettext(unref(currentSelection)?.title))
 const locationOptions = computed<LocationOption[]>(() => [
   {
     id: SearchLocationFilterConstants.currentFolder,
@@ -91,7 +92,18 @@ const locationOptions = computed<LocationOption[]>(() => [
 ])
 
 watch(
-  currentFolderUsable,
+  currentSelection,
+  (selection) => {
+    if (!selection) {
+      return
+    }
+    emit('update:modelValue', { value: selection })
+  },
+  { flush: 'sync' }
+)
+
+watch(
+  [() => currentFolderAvailable, () => currentFolderIsInVault, useScopeQueryValue],
   () => {
     if (unref(useScopeQueryValue)) {
       const useScope = unref(useScopeQueryValue).toString() === 'true'
@@ -132,9 +144,9 @@ watch(
   { immediate: true }
 )
 
-const onOptionSelected = (option: LocationOption) => {
+function onOptionSelected(option: LocationOption) {
   userSelection.value = option
   currentSelection.value = option
-  emit('update:modelValue', { value: option })
+  emit('select', { value: option })
 }
 </script>
