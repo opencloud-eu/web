@@ -45,6 +45,12 @@ describe('useSearch', () => {
         'name:"*test*"'
       )
     })
+    it('ignores spaces around the term', () => {
+      const wrapper = createWrapper({ searchProperties: { content: true, tag: true } })
+      expect(wrapper.vm.buildSearchTerm({ term: ' test ' })).toBe(
+        wrapper.vm.buildSearchTerm({ term: 'test' })
+      )
+    })
   })
 })
 

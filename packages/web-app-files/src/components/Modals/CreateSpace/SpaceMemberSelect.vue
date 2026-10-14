@@ -13,7 +13,7 @@
       :position-fixed="true"
       :dropdown-should-open="
         ({ open, search }: DropDownShouldOpenOptions) =>
-          open && search.length >= minSearchLength && !searchInProgress
+          open && search.trim().length >= minSearchLength && !searchInProgress
       "
       @search:input="onSearch"
       @update:model-value="onCollaboratorsChanged"
@@ -51,7 +51,7 @@ import RoleDropdown from '../../SideBar/Shares/Collaborators/RoleDropdown.vue'
 import AutocompleteItem from '../../SideBar/Shares/Collaborators/InviteCollaborator/AutocompleteItem.vue'
 import RecipientContainer from '../../SideBar/Shares/Collaborators/InviteCollaborator/RecipientContainer.vue'
 
-type DropDownShouldOpenOptions = { open: boolean; search: string[] }
+type DropDownShouldOpenOptions = { open: boolean; search: string }
 
 const members = defineModel<SpaceMemberInvite[]>({ default: () => [] })
 // Kept outside the component so a step change doesn't reset the pick.
