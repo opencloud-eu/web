@@ -1,6 +1,6 @@
-import { Router } from 'vue-router'
+import { RouteLocationRaw, Router } from 'vue-router'
 
-export const buildUrl = (router: Router, pathname: string) => {
+export const buildUrl = (router: Router, to: RouteLocationRaw) => {
   const base = document.querySelector('base')
   const isHistoryMode = !!base
   const baseUrl = new URL(window.location.href.split('#')[0])
@@ -18,16 +18,19 @@ export const buildUrl = (router: Router, pathname: string) => {
 
   /**
    * build full url by either
-   * - concatenating baseUrl and pathname (for unknown/non-router urls, e.g. `oidc-callback.html`) or
-   * - resolving via router (for known routes)
+   * - concatenating baseUrl and path (for unknown/non-router urls, e.g. `oidc-callback.html`) or
+   * - resolving via router (for known routes, given as path or route location)
    */
-  if (/\.(html?)$/i.test(pathname)) {
-    baseUrl.pathname = [...baseUrl.pathname.split('/'), ...pathname.split('/')]
-      .filter(Boolean)
-      .join('/')
-  } else {
-    baseUrl[isHistoryMode ? 'pathname' : 'hash'] = router.resolve(pathname).href
+  if (typeof to === 'string' && /\.(html?)$/i.test(to)) {
+    baseUrl.pathname = [...baseUrl.pathname.split('/'), ...to.split('/')].filter(Boolean).join('/')
+    return baseUrl.href
   }
 
+  const { href } = router.resolve(to)
+  if (isHistoryMode) {
+    return new URL(href, baseUrl).href
+  }
+
+  baseUrl.hash = href
   return baseUrl.href
 }
