@@ -50,6 +50,11 @@ describe('AppDetails', () => {
     expect(wrapper.find(selectors.notFound).exists()).toBeTruthy()
     expect(wrapper.find(selectors.details).exists()).toBeFalsy()
   })
+  it.each(['%', '50%-off'])('shows a message for the unknown app id "%s"', (appId) => {
+    const { wrapper, getById } = getWrapper(undefined, { appId })
+    expect(getById).toHaveBeenCalledWith(appId)
+    expect(wrapper.find(selectors.notFound).exists()).toBeTruthy()
+  })
   it('renders the details of the app from the route', () => {
     const { wrapper, getById } = getWrapper(app)
     expect(getById).toHaveBeenCalledWith('com.example.app')
@@ -90,7 +95,11 @@ describe('AppDetails', () => {
 
 function getWrapper(
   resolvedApp: App | undefined,
-  { back = null, resolvedRouteName = '' }: { back?: string; resolvedRouteName?: string } = {}
+  {
+    back = null,
+    resolvedRouteName = '',
+    appId = 'com.example.app'
+  }: { back?: string; resolvedRouteName?: string; appId?: string } = {}
 ) {
   const mocks = defaultComponentMocks()
   writable(mocks.$router).options = mock<Router['options']>({
@@ -100,7 +109,7 @@ function getWrapper(
     mock<ReturnType<typeof mocks.$router.resolve>>({ name: resolvedRouteName })
   )
   vi.mocked(useRouter).mockReturnValue(mocks.$router)
-  vi.mocked(useRouteParam).mockReturnValue(ref(encodeURIComponent('com.example.app')))
+  vi.mocked(useRouteParam).mockReturnValue(ref(appId))
 
   const plugins = defaultPlugins()
   const { getById } = useAppsStore()
