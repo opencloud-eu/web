@@ -17,6 +17,7 @@ import {
 interface ConflictedResource {
   name: string
   type: string
+  typeMismatch?: boolean
 }
 
 // renames the first of the relative segments the endpoint ends with, leaving the current folder path untouched
@@ -43,7 +44,8 @@ export class UploadResourceConflict extends ConflictDialog {
     resource: Resource,
     conflictCount: number,
     suggestMerge = false,
-    separateSkipHandling = false // separate skip-handling between files and folders
+    separateSkipHandling = false, // separate skip-handling between files and folders
+    typeMismatch = false
   ): Promise<ResolveConflict> {
     const { dispatchModal } = useModals()
 
@@ -62,6 +64,7 @@ export class UploadResourceConflict extends ConflictDialog {
           conflictCount,
           suggestMerge,
           separateSkipHandling,
+          hideSecondaryAction: typeMismatch,
           callbackFn: (conflict: ResolveConflict) => {
             resolve(conflict)
           }
@@ -82,7 +85,7 @@ export class UploadResourceConflict extends ConflictDialog {
           if (conflicts.some((conflict) => conflict.name === rootFolder)) {
             continue
           }
-          conflicts.push({ name: rootFolder, type: 'folder' })
+          conflicts.push({ name: rootFolder, type: 'folder', typeMismatch: !exists.isFolder })
           continue
         }
       }
@@ -91,7 +94,7 @@ export class UploadResourceConflict extends ConflictDialog {
         (f) => f.name === file.name && !file.meta.relativeFolder
       )
       if (exists) {
-        conflicts.push({ name: file.name, type: 'file' })
+        conflicts.push({ name: file.name, type: 'file', typeMismatch: !!exists.isFolder })
       }
     }
     return conflicts
@@ -101,53 +104,52 @@ export class UploadResourceConflict extends ConflictDialog {
     files: OcUppyFile[],
     conflicts: ConflictedResource[]
   ): Promise<{ files: OcUppyFile[]; mergedFolders: string[] }> {
-    let fileCount = 0
-    let folderCount = 0
     const resolvedFileConflicts: { name: string; strategy: ResolveStrategy }[] = []
     const resolvedFolderConflicts: { name: string; strategy: ResolveStrategy }[] = []
-    let doForAllConflicts = false
-    let allConflictsStrategy
-    let doForAllConflictsFolders = false
-    let allConflictsStrategyFolders
+    const allStrategies: Record<
+      'file' | 'folder',
+      { regular?: ResolveStrategy; typeMismatch?: ResolveStrategy }
+    > = { file: {}, folder: {} }
 
-    for (const conflict of conflicts) {
+    for (const [index, conflict] of conflicts.entries()) {
       const isFolder = conflict.type === 'folder'
       const conflictArray = isFolder ? resolvedFolderConflicts : resolvedFileConflicts
+      const strategies = allStrategies[isFolder ? 'folder' : 'file']
+      const allStrategy = conflict.typeMismatch
+        ? (strategies.typeMismatch ?? strategies.regular)
+        : strategies.regular
+      const canApplyAllStrategy =
+        allStrategy !== undefined &&
+        (!conflict.typeMismatch ||
+          [ResolveStrategy.SKIP, ResolveStrategy.KEEP_BOTH].includes(allStrategy))
 
-      if (doForAllConflicts && !isFolder) {
+      if (canApplyAllStrategy) {
         conflictArray.push({
           name: conflict.name,
-          strategy: allConflictsStrategy
+          strategy: allStrategy
         })
         continue
       }
-      if (doForAllConflictsFolders && isFolder) {
-        conflictArray.push({
-          name: conflict.name,
-          strategy: allConflictsStrategyFolders
-        })
-        continue
-      }
 
-      const conflictsLeft =
-        conflicts.filter((c) => c.type === conflict.type).length -
-        (isFolder ? folderCount : fileCount)
+      const conflictsLeft = conflicts.slice(index).filter((remaining) => {
+        if (remaining.type !== conflict.type) {
+          return false
+        }
+        if (conflict.typeMismatch) {
+          return remaining.typeMismatch
+        }
+        return !remaining.typeMismatch || strategies.typeMismatch === undefined
+      }).length
 
       const resolvedConflict: ResolveConflict = await this.resolveFileExists(
         { name: conflict.name, isFolder } as Resource,
         conflictsLeft,
         isFolder,
-        true
+        true,
+        conflict.typeMismatch
       )
-      isFolder ? folderCount++ : fileCount++
       if (resolvedConflict.doForAllConflicts) {
-        if (isFolder) {
-          doForAllConflictsFolders = true
-          allConflictsStrategyFolders = resolvedConflict.strategy
-        } else {
-          doForAllConflicts = true
-          allConflictsStrategy = resolvedConflict.strategy
-        }
+        strategies[conflict.typeMismatch ? 'typeMismatch' : 'regular'] = resolvedConflict.strategy
       }
 
       conflictArray.push({

@@ -18,6 +18,14 @@ describe('ResourceConflictModal', () => {
   })
   describe('buttons', () => {
     describe('confirmSecondary', () => {
+      it('renders by default', () => {
+        const { wrapper } = getWrapper()
+        expect(wrapper.find('.oc-modal-body-actions-secondary').exists()).toBeTruthy()
+      })
+      it('does not render if "hideSecondaryAction" is set', () => {
+        const { wrapper } = getWrapper({ props: { hideSecondaryAction: true } })
+        expect(wrapper.find('.oc-modal-body-actions-secondary').exists()).toBeFalsy()
+      })
       describe('text', () => {
         it('should equal "Replace" when no "confirmSecondaryTextOverwrite" property is given', () => {
           const { wrapper } = getWrapper()
@@ -92,7 +100,8 @@ function getWrapper({ props = {} } = {}) {
       global: {
         plugins: [...defaultPlugins()],
         mocks,
-        provide: mocks
+        provide: mocks,
+        stubs: { teleport: true }
       }
     })
   }
