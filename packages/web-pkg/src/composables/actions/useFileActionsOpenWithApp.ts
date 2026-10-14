@@ -11,6 +11,7 @@ import { useGetMatchingSpace } from '../spaces'
 import { useFileActions } from './useFileActions'
 import { useRouter } from '../router'
 import { LocationQuery } from 'vue-router'
+import { buildUrl } from '../../helpers'
 
 export const useFileActionsOpenWithApp = ({ appId }: { appId: string }) => {
   const { $gettext } = useGettext()
@@ -75,10 +76,7 @@ export const useFileActionsOpenWithApp = ({ appId }: { appId: string }) => {
     )
     routeOpts.query = { ...routeOpts.query, ...locationQuery }
 
-    const editorRoute = router.resolve(routeOpts)
-    const editorRouteUrl = new URL(editorRoute.href, window.location.origin)
-
-    window.open(editorRouteUrl.href, '_blank')
+    window.open(buildUrl(router, routeOpts), '_blank')
   }
 
   return {

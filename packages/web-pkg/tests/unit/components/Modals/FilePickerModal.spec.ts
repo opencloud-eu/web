@@ -7,6 +7,15 @@ import { RouteLocation } from 'vue-router'
 
 describe('FilePickerModal', () => {
   describe('iframe', () => {
+    beforeAll(() => {
+      const base = document.createElement('base')
+      base.href = '/'
+      document.head.appendChild(base)
+    })
+    afterAll(() => {
+      document.querySelectorAll('base').forEach((e) => e.remove())
+    })
+
     it('sets the iframe src correctly', () => {
       const { wrapper } = getWrapper()
       expect((wrapper.vm as any).iframeUrl.href).toEqual(

@@ -6,6 +6,15 @@ import { Modal, useModals, WebThemeType } from '../../../../src/composables/pini
 
 describe('LocationPickerModal', () => {
   describe('iframe', () => {
+    beforeAll(() => {
+      const base = document.createElement('base')
+      base.href = '/'
+      document.head.appendChild(base)
+    })
+    afterAll(() => {
+      document.querySelectorAll('base').forEach((e) => e.remove())
+    })
+
     it('sets the iframe src correctly', () => {
       const { wrapper } = getWrapper()
       expect((wrapper.vm as any).iframeSrc).toEqual(

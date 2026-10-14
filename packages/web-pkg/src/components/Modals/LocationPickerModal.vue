@@ -24,6 +24,7 @@ import {
 } from '../../composables'
 import { RouteLocationRaw } from 'vue-router'
 import AppLoadingSpinner from '../AppLoadingSpinner.vue'
+import { buildUrl } from '../../helpers'
 
 const {
   modal,
@@ -49,10 +50,9 @@ const isLoading = ref(true)
 const router = useRouter()
 const { removeModal } = useModals()
 const themeStore = useThemeStore()
-const parentFolderRoute = router.resolve(parentFolderLink)
 
 const iframeTitle = themeStore.currentTheme.name
-const iframeUrl = new URL(parentFolderRoute.href, window.location.origin)
+const iframeUrl = new URL(buildUrl(router, parentFolderLink))
 iframeUrl.searchParams.append('hide-logo', 'true')
 iframeUrl.searchParams.append('embed', 'true')
 iframeUrl.searchParams.append('embed-target', 'location')
