@@ -1,6 +1,6 @@
 # Changelog
 
-## [8.2.0](https://github.com/opencloud-eu/web/releases/tag/v8.2.0) - 2026-10-14
+## [8.2.0](https://github.com/opencloud-eu/web/releases/tag/v8.2.0) - 2026-10-15
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: open the parent folder when a folder url points to a file [[#3779](https://github.com/opencloud-eu/web/pull/3779)]
 - fix: show app not found for app store links with a percent sign [[#3787](https://github.com/opencloud-eu/web/pull/3787)]
 - fix: show an error when the app store apps can't be loaded [[#3789](https://github.com/opencloud-eu/web/pull/3789)]
 - fix: show and hide hidden search results without searching again [[#3716](https://github.com/opencloud-eu/web/pull/3716)]
