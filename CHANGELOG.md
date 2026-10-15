@@ -8,6 +8,9 @@
 
 ### 🐛 Bug Fixes
 
+- Fix small WCAG accessibility failures [[#3820](https://github.com/opencloud-eu/web/pull/3820)]
+- Fix modal Escape handling after focus loss [[#3805](https://github.com/opencloud-eu/web/pull/3805)]
+- fix: name the existing item's type in the conflict dialog [[#3776](https://github.com/opencloud-eu/web/pull/3776)]
 - fix: share the clicked folder from the breadcrumb menu, not the selection [[#3813](https://github.com/opencloud-eu/web/pull/3813)]
 - fix: link space notifications once the space is loaded [[#3777](https://github.com/opencloud-eu/web/pull/3777)]
 - fix: open the parent folder when a folder url points to a file [[#3779](https://github.com/opencloud-eu/web/pull/3779)]
