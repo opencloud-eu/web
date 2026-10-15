@@ -288,6 +288,77 @@ Feature: server sent events
     And "Alice" logs out
 
   @webkit-skip
+  Scenario: share recipients get sse events on file operations
+    Given "Admin" creates following user using API
+      | id    |
+      | David |
+    And "Admin" creates following group using API
+      | id    |
+      | sales |
+    And "Admin" adds user to the group using API
+      | user  | group |
+      | Carol | sales |
+    And "Alice" creates the following folders in personal space using API
+      | name             |
+      | sharedFolder     |
+      | sharedFolder/sub |
+      | privateFolder    |
+    And "Alice" shares the following resources using API
+      | resource     | recipient | type  | role     |
+      | sharedFolder | Brian     | user  | Can edit |
+      | sharedFolder | sales     | group | Can view |
+    And "Alice" logs in
+    And "Brian" logs in
+    And "Brian" navigates to the shared with me page
+    And "Brian" opens folder "sharedFolder"
+    And "Carol" logs in
+    And "David" logs in
+
+    When "Alice" uploads the following local file into personal space using API
+      | localFile  | to                          |
+      | simple.pdf | sharedFolder/sub/simple.pdf |
+    Then "Brian" should get "postprocessing-finished" SSE event
+    And "Carol" should get "postprocessing-finished" SSE event
+    And "David" should not get "postprocessing-finished" SSE event
+
+    # folder-created
+    When "Alice" opens folder "sharedFolder"
+    And "Alice" creates the following resources
+      | resource  | type   |
+      | newFolder | folder |
+    Then "Brian" should get "folder-created" SSE event
+
+    # item-renamed
+    When "Alice" renames the following resource
+      | resource  | as            |
+      | newFolder | renamedFolder |
+    Then "Brian" should get "item-renamed" SSE event
+
+    # item-moved out of the share: recipients of the old location get the event
+    When "Alice" moves the following resource using dropdown-menu
+      | resource      | to                     |
+      | renamedFolder | Personal/privateFolder |
+    Then "Brian" should get "item-moved" SSE event
+
+    # item-trashed
+    When "Alice" deletes the following resource using the context menu
+      | resource |
+      | sub      |
+    Then "Brian" should get "item-trashed" SSE event
+    And "Carol" should get "item-trashed" SSE event
+
+    # item-restored
+    When "Alice" navigates to the trashbin
+    And "Alice" restores the following resource from trashbin
+      | resource         |
+      | sharedFolder/sub |
+    Then "Brian" should get "item-restored" SSE event
+    And "David" logs out
+    And "Carol" logs out
+    And "Brian" logs out
+    And "Alice" logs out
+
+
   Scenario: favorite sse events update the favorites view across tabs
     Given "Alice" creates the following file into personal space using API
       | pathToFile  | content     |
