@@ -21,6 +21,28 @@ describe('useAuthStore', () => {
     })
   })
 
+  describe('computed "isGuestContext"', () => {
+    it('is true with a guest context', () => {
+      getWrapper({
+        setup: (instance) => {
+          instance.setGuestContext('permission-id', 'share-id')
+
+          expect(instance.isGuestContext).toBeTruthy()
+        }
+      })
+    })
+    it('is false while a user is signed in', () => {
+      getWrapper({
+        setup: (instance) => {
+          instance.setGuestContext('permission-id', 'share-id')
+          instance.setUserContextReady(true)
+
+          expect(instance.isGuestContext).toBeFalsy()
+        }
+      })
+    })
+  })
+
   describe('method "clearGuestContext"', () => {
     it('wipes the guest context', () => {
       getWrapper({

@@ -154,13 +154,31 @@ describe('User Menu component', () => {
       expect((button.props('to') as RouteLocation).query).toEqual({})
     })
   })
+  describe('guest context', () => {
+    it('shows a guest label instead of the login button', () => {
+      const wrapper = getMountedWrapper({}, noEmail, true, false, true)
+
+      expect(wrapper.find('#oc-topbar-account-guest').exists()).toBeTruthy()
+      expect(wrapper.find('#oc-topbar-account-login').exists()).toBeFalsy()
+    })
+    it('links to account-preferences in the guest context', () => {
+      const wrapper = getMountedWrapper({}, noEmail, true, false, true)
+      const button = wrapper.findComponent<typeof OcButton>('#oc-topbar-account-manage')
+
+      expect((button.props('to') as RouteLocation).name).toEqual('account-preferences')
+      expect((button.props('to') as RouteLocation).query.contextRouteName).toEqual(
+        'files-guest-link'
+      )
+    })
+  })
 })
 
 const getMountedWrapper = (
   quota: Quota,
   userEmail: string,
   noUser = false,
-  areThemeUrlsSet = false
+  areThemeUrlsSet = false,
+  isGuest = false
 ) => {
   const mocks = {
     ...defaultComponentMocks({
@@ -205,8 +223,9 @@ const getMountedWrapper = (
             },
             authState: {
               userContextReady: !noUser,
-              publicLinkContextReady: noUser,
-              publicLinkToken: noUser ? 'token' : null
+              publicLinkContextReady: noUser && !isGuest,
+              publicLinkToken: noUser && !isGuest ? 'token' : null,
+              guestContextReady: isGuest
             }
           }
         })

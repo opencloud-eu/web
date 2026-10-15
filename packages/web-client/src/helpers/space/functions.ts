@@ -320,7 +320,7 @@ export function buildSpace(
       return urlJoin(webDavTrashUrl, path)
     },
     isOwner(user: User): boolean {
-      return user?.id === this.owner?.id
+      return !!user?.id && user.id === this.owner?.id
     }
   } satisfies SpaceResource
   Object.defineProperty(s, 'nodeId', {

@@ -49,8 +49,8 @@ const resolveGuestLinkTask = useTask(function* () {
   const { permissionId, space } = yield* call(authService.redeemGuestLink(unref(token)))
   yield router.replace(
     createLocationGuest('files-guest-link', {
-      params: { shareName: space.name },
-      query: { permissionId }
+      params: { driveAliasAndItem: space.driveAlias },
+      query: { shareId: space.id, permissionId }
     })
   )
 })

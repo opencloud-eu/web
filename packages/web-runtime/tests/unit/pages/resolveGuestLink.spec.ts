@@ -35,15 +35,15 @@ describe('resolveGuestLink', () => {
     expect(authService.redeemGuestLink).toHaveBeenCalledWith('magic-token')
   })
 
-  it('replaces the route with the guest link page carrying the permission id', async () => {
+  it('replaces the route with the shared resource carrying the share and permission ids', async () => {
     const { mocks } = getWrapper()
     await flushPromises()
 
     expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'files-guest-link',
-        params: { shareName: 'Invited folder' },
-        query: { permissionId: 'permission-id' }
+        params: { driveAliasAndItem: 'share/Invited folder' },
+        query: { shareId: 'share-id', permissionId: 'permission-id' }
       })
     )
     expect(mocks.$router.push).not.toHaveBeenCalled()

@@ -121,6 +121,7 @@ import {
   useResourcesStore,
   useRouter,
   useUserStore,
+  useAuthStore,
   AppBar,
   AppLoadingSpinner,
   ContextActions,
@@ -128,6 +129,7 @@ import {
   NoContentMessage,
   Pagination,
   createFileRouteOptions,
+  createLocationGuest,
   createLocationPublic,
   createLocationSpaces,
   useBreadcrumbsFromPath,
@@ -172,6 +174,7 @@ const props = defineProps<{
 
 const router = useRouter()
 const userStore = useUserStore()
+const authStore = useAuthStore()
 const { $gettext, $ngettext } = useGettext()
 const { isTablet } = useIsMobile()
 const { showMessage } = useMessages()
@@ -234,7 +237,7 @@ const breadcrumbs = computed(() => {
       to: createLocationSpaces('files-spaces-projects'),
       isStaticNav: true
     })
-  } else if (isShareSpaceResource(unref(space))) {
+  } else if (isShareSpaceResource(unref(space)) && !authStore.isGuestContext) {
     rootBreadcrumbItems.push(
       {
         id: uuidV4(),
@@ -272,10 +275,9 @@ const breadcrumbs = computed(() => {
       id: uuidV4(),
       allowContextActions: true,
       text: unref(space).name,
-      to: createLocationSpaces('files-spaces-generic', {
-        params,
-        query: omit(query, 'fileId')
-      })
+      to: authStore.isGuestContext
+        ? createLocationGuest('files-guest-link', { params, query: omit(query, 'fileId') })
+        : createLocationSpaces('files-spaces-generic', { params, query: omit(query, 'fileId') })
     }
   } else if (isPublicSpaceResource(unref(space))) {
     spaceBreadcrumbItem = {
@@ -452,12 +454,11 @@ const fileDropped = async (fileTarget: string | RouteLocationRaw) => {
       return
     }
   } else if (fileTarget instanceof Object) {
+    const spaceRootLocation = { params: { driveAliasAndItem: unref(space).driveAlias } }
     const spaceRootRoutePath = router.resolve(
-      createLocationSpaces('files-spaces-generic', {
-        params: {
-          driveAliasAndItem: unref(space).driveAlias
-        }
-      })
+      authStore.isGuestContext
+        ? createLocationGuest('files-guest-link', spaceRootLocation)
+        : createLocationSpaces('files-spaces-generic', spaceRootLocation)
     ).path
 
     const splitIndex = fileTarget.path.indexOf(spaceRootRoutePath) + spaceRootRoutePath.length

@@ -15,6 +15,15 @@ import {
 } from '../../../../../src/composables'
 
 describe('FolderLoaderSpace', () => {
+  describe('isActive', () => {
+    it('is active on the guest route', () => {
+      const { $router } = defaultComponentMocks({
+        currentRoute: mock<RouteLocationNormalizedLoaded>({ name: 'files-guest-link' })
+      })
+      expect(new FolderLoaderSpace().isActive($router)).toBeTruthy()
+    })
+  })
+
   describe('share space', () => {
     it('sets the share space as remote item on the current folder and its children', async () => {
       const space = {

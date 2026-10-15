@@ -48,7 +48,13 @@ import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { call } from '@opencloud-eu/web-client'
 import { GuestLinkErrorErrorTypeEnum } from '@opencloud-eu/web-client/graph/generated'
-import { createLocationGuest, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
+import {
+  createLocationGuest,
+  queryItemAsString,
+  useRouteParam,
+  useRouteQuery,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import {
   getGuestLinkErrorType,
@@ -59,10 +65,14 @@ import {
   isRetryableGuestLinkErrorType
 } from '../services/auth/guestSessionManager'
 import PlainCard from '../components/PlainCard.vue'
+import { isGuestContextRequired, parsePathQuery } from '../router/helpers'
 
 const router = useRouter()
 const { $gettext } = useGettext()
 const permissionId = useRouteParam('permissionId')
+const redirectUrl = useRouteQuery('redirectUrl')
+// set by the auth guard, the session might still be valid, e.g. after a network error
+const resume = useRouteQuery('resume')
 
 const isRenewed = ref(false)
 // e.g. after a PIN login, only the link from the most recent email can renew the access
@@ -74,10 +84,18 @@ const pin = ref('')
 const pinErrorType = ref<GuestLinkErrorType>()
 
 function openSession({ permissionId: sessionPermissionId, space }: GuestSession) {
+  const url = queryItemAsString(unref(redirectUrl))
+  if (url) {
+    const location = parsePathQuery(url)
+    // other routes would end the guest session
+    if (isGuestContextRequired(router, router.resolve(location))) {
+      return router.replace(location)
+    }
+  }
   return router.replace(
     createLocationGuest('files-guest-link', {
-      params: { shareName: space.name },
-      query: { permissionId: sessionPermissionId }
+      params: { driveAliasAndItem: space.driveAlias },
+      query: { shareId: space.id, permissionId: sessionPermissionId }
     })
   )
 }
@@ -227,6 +245,10 @@ async function resumeSession() {
   try {
     await resumeSessionTask.perform()
   } catch (error) {
+    // opening the session unmounts this page, which cancels the task
+    if (resumeSessionTask.last?.isCanceled) {
+      return
+    }
     if (isGuestSessionInvalidError(error)) {
       return startRenewal()
     }
@@ -266,7 +288,10 @@ function onStorage() {
 
 onMounted(() => {
   window.addEventListener('storage', onStorage)
-  if (authService.hasGuestSession(unref(permissionId))) {
+  if (
+    authService.hasGuestSession(unref(permissionId)) ||
+    queryItemAsString(unref(resume)) === 'true'
+  ) {
     resumeSession()
     return
   }

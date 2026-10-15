@@ -13,7 +13,11 @@ import {
 import { unref } from 'vue'
 import { FolderLoaderOptions } from './types'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
-import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
+import {
+  isLocationGuestActive,
+  isLocationSpacesActive,
+  isLocationPublicActive
+} from '../../../router'
 import {
   createFileRouteOptions,
   getSharedDriveItem,
@@ -35,7 +39,8 @@ export class FolderLoaderSpace implements FolderLoader {
     }
     return (
       isLocationSpacesActive(router, 'files-spaces-generic') ||
-      isLocationPublicActive(router, 'files-public-link')
+      isLocationPublicActive(router, 'files-public-link') ||
+      isLocationGuestActive(router, 'files-guest-link')
     )
   }
 

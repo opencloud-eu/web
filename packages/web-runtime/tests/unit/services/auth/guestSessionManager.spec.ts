@@ -624,7 +624,8 @@ describe('GuestSessionManager', () => {
       await manager.restoreContext()
 
       expect(localStorage.getItem(storageKey)).toEqual('permission-id')
-      expect(useAuthStore().guestContextUnavailable).toBeTruthy()
+      expect(manager.consumeUnavailablePermissionId()).toEqual('permission-id')
+      expect(manager.consumeUnavailablePermissionId()).toBeUndefined()
     })
 
     it('keeps the persisted session when the share of another permission id is unknown', async () => {
@@ -669,18 +670,19 @@ describe('GuestSessionManager', () => {
       expect(localStorage.getItem(storageKey)).toBeNull()
     })
 
-    it('resets the unavailable flag once the guest context is restored', async () => {
+    it('resets the unavailable permission id once the guest context is restored', async () => {
       localStorage.setItem(storageKey, 'permission-id')
-      useAuthStore().setGuestContextUnavailable(true)
-      const { manager } = getManager()
+      const { manager, listSharedWithMe } = getManager()
+      listSharedWithMe.mockRejectedValueOnce(new Error('network error'))
 
       await manager.restoreContext()
+      await manager.restoreContext()
 
-      expect(useAuthStore().guestContextUnavailable).toBeFalsy()
+      expect(manager.consumeUnavailablePermissionId()).toBeUndefined()
       expect(useAuthStore().guestSpaceId).toEqual('share-id')
     })
 
-    it('drops a leftover guest record when a user is signed in', async () => {
+    it('keeps the guest record without restoring it when a user context is loaded', async () => {
       localStorage.setItem(storageKey, 'permission-id')
       useAuthStore().setUserContextReady(true)
       const { manager, listSharedWithMe } = getManager()
@@ -688,7 +690,8 @@ describe('GuestSessionManager', () => {
       await manager.restoreContext()
 
       expect(listSharedWithMe).not.toHaveBeenCalled()
-      expect(localStorage.getItem(storageKey)).toBeNull()
+      expect(useAuthStore().guestContextReady).toBe(false)
+      expect(localStorage.getItem(storageKey)).toEqual('permission-id')
     })
   })
 })

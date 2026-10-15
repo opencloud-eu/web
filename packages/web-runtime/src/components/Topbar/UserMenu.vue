@@ -37,6 +37,14 @@
     >
       <oc-list class="user-menu-list">
         <template v-if="!user?.onPremisesSamAccountName">
+          <li
+            v-if="authStore.isGuestContext"
+            id="oc-topbar-account-guest"
+            class="flex items-center pl-2 min-h-10.5 gap-2"
+          >
+            <oc-icon name="user" fill-type="line" class="p-1" />
+            <span v-text="$gettext('Guest')" />
+          </li>
           <li class="flex items-center">
             <oc-button
               id="oc-topbar-account-manage"
@@ -49,7 +57,7 @@
               <span v-text="$gettext('Preferences')" />
             </oc-button>
           </li>
-          <li class="flex items-center">
+          <li v-if="!authStore.isGuestContext" class="flex items-center">
             <oc-button
               id="oc-topbar-account-login"
               appearance="raw"
@@ -173,6 +181,10 @@ const { user } = storeToRefs(userStore)
 const accountPageRoute = computed<RouteLocationRaw>(() => {
   if (authStore.userContextReady) {
     return { name: 'account-information', query: {} }
+  }
+
+  if (authStore.isGuestContext) {
+    return { name: 'account-preferences', query: { [contextRouteNameKey]: 'files-guest-link' } }
   }
 
   if (!authStore.publicLinkContextReady) {

@@ -61,6 +61,7 @@ export class GuestLinkTokenMissingError extends Error {
 // `guestLinkPathPrefixes` in opencloud services/proxy/pkg/middleware/guest_link_auth.go
 const guestPathSegments = [
   '/graph/v1beta1/me/drive/sharedWithMe',
+  '/graph/v1beta1/roleManagement/permissions/roleDefinitions',
   '/dav/',
   '/remote.php/dav/',
   '/webdav/',
@@ -159,6 +160,7 @@ export class GuestSessionManager {
   // only the most recently requested restore may change the guest context
   private latestRestorePermissionId: string | undefined
   private expiredPermissionId: string | undefined
+  private unavailablePermissionId: string | undefined
 
   constructor(options: GuestSessionManagerOptions) {
     this.clientService = options.clientService
@@ -268,6 +270,16 @@ export class GuestSessionManager {
     return permissionId
   }
 
+  /**
+   * Returns and resets the permission id of a session that couldn't be restored, e.g. due to a
+   * network error. The session might still be valid.
+   */
+  public consumeUnavailablePermissionId(): string | undefined {
+    const permissionId = this.unavailablePermissionId
+    this.unavailablePermissionId = undefined
+    return permissionId
+  }
+
   // a redeemed link is reported as expired once its lifetime is over, the session might still be valid
   private async reuseRedeemedSession(redeemError: unknown): Promise<GuestSession> {
     const permissionId = getRenewablePermissionId(redeemError)
@@ -290,8 +302,8 @@ export class GuestSessionManager {
     if (!permissionId) {
       return Promise.resolve()
     }
+    // keep the session, the guard reloads the page to restore it without the user context
     if (this.authStore.userContextReady) {
-      this.clear()
       return Promise.resolve()
     }
     if (this.authStore.guestContextReady && this.authStore.guestPermissionId === permissionId) {
@@ -336,7 +348,7 @@ export class GuestSessionManager {
       this.deactivate()
       return
     }
-    this.authStore.setGuestContextUnavailable(true)
+    this.unavailablePermissionId = permissionId
   }
 
   public clear(): void {
@@ -370,6 +382,7 @@ export class GuestSessionManager {
 
   private activate({ permissionId, space }: GuestSession): void {
     this.expiredPermissionId = undefined
+    this.unavailablePermissionId = undefined
     localStorage.setItem(storageKey, permissionId)
     this.authStore.setGuestContext(permissionId, space.id)
   }

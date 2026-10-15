@@ -20,7 +20,8 @@ import {
   useCapabilityStore,
   useCanListShares,
   useCanListVersions,
-  useResourcesStore
+  useResourcesStore,
+  useAuthStore
 } from '@opencloud-eu/web-pkg'
 import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { Resource } from '@opencloud-eu/web-client'
@@ -39,6 +40,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
   const { canListShares } = useCanListShares()
   const { canListVersions } = useCanListVersions()
   const resourcesStore = useResourcesStore()
+  const authStore = useAuthStore()
 
   return [
     {
@@ -318,7 +320,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
           if (isLocationTrashActive(router, 'files-trash-generic')) {
             return false
           }
-          return true
+          return !authStore.isGuestContext
         }
       }
     }

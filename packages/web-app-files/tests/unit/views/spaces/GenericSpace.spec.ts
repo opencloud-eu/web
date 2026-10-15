@@ -106,6 +106,22 @@ describe('GenericSpace view', () => {
         expectedItems
       )
     })
+    it('only include the guest share root in a guest context', () => {
+      const space = mock<SpaceResource>({
+        id: '1',
+        getDriveAliasAndItem: vi.fn(),
+        driveType: 'share',
+        driveAlias: 'share/folder'
+      })
+      const { wrapper } = getMountedWrapper({
+        files: [mockDeep<Resource>()],
+        props: { space },
+        isGuest: true
+      })
+      const { breadcrumbs } = wrapper.findComponent<typeof AppBar>('app-bar-stub').props()
+      expect(breadcrumbs.length).toBe(1)
+      expect(breadcrumbs[0].to).toMatchObject({ name: 'files-guest-link' })
+    })
     it('include the root item and the current folder', () => {
       const folderName = 'someFolder'
       const { wrapper } = getMountedWrapper({
@@ -274,7 +290,8 @@ function getMountedWrapper({
   }),
   breadcrumbsFromPath = [],
   vaultRoots = [],
-  stubs = {}
+  stubs = {},
+  isGuest = false
 }: {
   mocks?: Record<string, unknown>
   props?: PartialComponentProps<typeof GenericSpace>
@@ -286,6 +303,7 @@ function getMountedWrapper({
   breadcrumbsFromPath?: BreadcrumbItem[]
   vaultRoots?: string[]
   stubs?: any
+  isGuest?: boolean
 } = {}) {
   extensionRegistryMock.extensions.value = vaultRoots.length
     ? [
@@ -314,7 +332,8 @@ function getMountedWrapper({
 
   const plugins = defaultPlugins({
     piniaOptions: {
-      resourcesStore: { currentFolder, resources: files }
+      resourcesStore: { currentFolder, resources: files },
+      authState: { guestContextReady: isGuest }
     }
   })
 

@@ -9,9 +9,10 @@ describe('useLayout', () => {
     ['logout', 'plain'],
     ['resolvePublicLink', 'plain'],
     ['resolveGuestLink', 'plain'],
-    ['files-guest-link', 'plain'],
+    ['renewGuestLink', 'plain'],
     ['accessDenied', 'plain'],
-    ['files-spaces-generic', 'application']
+    ['files-spaces-generic', 'application'],
+    ['files-guest-link', 'application']
   ])('renders the %s route in the %s layout', (name, expected) => {
     const router = { currentRoute: ref({ name }) } as unknown as Router
     const { layoutType } = useLayout({ router })
