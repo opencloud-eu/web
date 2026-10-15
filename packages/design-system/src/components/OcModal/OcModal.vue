@@ -118,7 +118,7 @@ import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
 import { ContextualHelperData, isComposingEvent } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 import { useEventListener } from '@vueuse/core'
-import { getOutermostDropAnchor } from '../OcDrop/dropRegistry'
+import { getOutermostDropAnchor, isInOpenDrop } from '../OcDrop/dropRegistry'
 
 export interface Props {
   /**
@@ -336,40 +336,29 @@ watch(
   { immediate: true }
 )
 
-// focus-trap returns focus to the element that opened the modal. For a menu item that element is
-// gone once its drop closed, so focus would fall to the body - use the menu's anchor instead
+// focus-trap returns the focus to the element that opened the modal. A menu item loses it once its
+// drop closed, so return the focus to the element that opened the menu instead
 const opener = document.activeElement
-const dropAnchor = getOutermostDropAnchor(opener)
-const focusableSelector =
-  'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+const dropAnchor = opener && getOutermostDropAnchor(opener)
 
-// the anchor of a context menu opened with a right click is the clicked element, e.g. a table cell
-function getFocusableNear(el: HTMLElement): HTMLElement | null {
-  const focusable = el.closest<HTMLElement>(focusableSelector)
-  if (focusable) {
-    return focusable
+function isFocusLost() {
+  const active = document.activeElement
+  if (!active || active === document.body) {
+    return true
   }
-  for (let parent: HTMLElement | null = el; parent; parent = parent.parentElement) {
-    const descendant = parent.querySelector<HTMLElement>(focusableSelector)
-    if (descendant) {
-      return descendant
-    }
-  }
-  return null
+  return active === opener && !isInOpenDrop(opener)
 }
 
 onUnmounted(() => {
   if (!dropAnchor) {
     return
   }
-  // runs after focus-trap's own (delayed) attempt to return focus
+  // runs after focus-trap's own (delayed) attempt to return the focus
   setTimeout(() => {
-    // the menu item might still be animating out, then it still holds the focus
-    const focusLost = [document.body, opener].includes(document.activeElement)
-    if (!focusLost || !dropAnchor.isConnected) {
+    if (!dropAnchor.isConnected || !isFocusLost()) {
       return
     }
-    getFocusableNear(dropAnchor)?.focus()
+    dropAnchor.focus()
   })
 })
 

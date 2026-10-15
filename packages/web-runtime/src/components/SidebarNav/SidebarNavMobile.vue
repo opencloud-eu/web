@@ -13,20 +13,20 @@
       <oc-icon name="menu" size-class="size-8" />
     </oc-button>
     <teleport to="body">
-      <transition name="mobile-nav" @after-leave="focusMenuButton">
+      <transition name="mobile-nav">
         <dialog
           v-if="isMenuOpen"
-          ref="dialogRef"
+          class="mobile-nav-overlay fixed inset-0 bg-black/40 size-full z-[var(--z-index-modal)]"
+          open
           aria-modal="true"
           aria-labelledby="sidebar-nav-mobile-title"
-          class="mobile-nav-overlay fixed inset-0 m-0 bg-black/40 size-full max-w-none max-h-none z-[var(--z-index-modal)] backdrop:bg-transparent"
           @click="handleOverlayClick"
-          @keydown.esc.prevent="isMenuOpen = false"
-          @cancel.prevent="isMenuOpen = false"
-          @close="isMenuOpen = false"
+          @keydown.esc="isMenuOpen = false"
+          @keydown.tab="trapFocus"
         >
           <div
             id="sidebar-nav-mobile-panel"
+            ref="panelRef"
             tabindex="-1"
             class="fixed inset-y-0 left-0 sm:max-w-[85%] w-[85%] xs:w-[320px] bg-role-surface-container overflow-x-hidden"
           >
@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
 import {
   CustomComponentExtension,
   useActiveApp,
@@ -72,16 +72,34 @@ const { navItems } = useNavItems()
 const activeApp = useActiveApp()
 
 const isMenuOpen = ref(false)
-const dialogRef = useTemplateRef<HTMLDialogElement>('dialogRef')
+const panelRef = useTemplateRef<HTMLElement>('panelRef')
 
-// a modal dialog keeps focus inside, closes on Escape (cancel) and moves focus to its first control
-watch(dialogRef, (dialog) => {
-  dialog?.showModal()
+watch(isMenuOpen, async (open) => {
+  await nextTick()
+  if (open) {
+    unref(panelRef)?.focus()
+    return
+  }
+  document.getElementById('mobile-nav-button')?.focus()
 })
 
-// the button can only take focus once the modal dialog is gone, so wait for the leave transition
-function focusMenuButton() {
-  document.getElementById('mobile-nav-button')?.focus()
+// keeps the focus inside the panel while the menu is open
+function trapFocus(event: KeyboardEvent) {
+  const focusable = unref(panelRef).querySelectorAll<HTMLElement>(
+    'a[href], button:not([disabled]), input:not([disabled]), [tabindex="0"]'
+  )
+  const first = focusable[0]
+  const last = focusable[focusable.length - 1]
+  const active = document.activeElement
+  if (event.shiftKey && (active === first || active === unref(panelRef))) {
+    event.preventDefault()
+    last.focus()
+    return
+  }
+  if (!event.shiftKey && active === last) {
+    event.preventDefault()
+    first.focus()
+  }
 }
 
 function handleNavClick(event: MouseEvent) {

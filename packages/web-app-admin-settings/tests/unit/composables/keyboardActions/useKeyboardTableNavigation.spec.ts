@@ -22,21 +22,17 @@ describe('useKeyboardTableNavigation', () => {
     })
     it('toggles the last selected row', () => {
       const { selectedRows, triggerKey } = getWrapper({ lastSelectedRowId: '2' })
-      triggerKey(Key.Space)
-      expect(selectedRows.value.map(({ id }) => id)).toEqual(['2'])
-    })
-    it('prevents the default action when the focus is not on a checkbox', () => {
-      const { triggerKey } = getWrapper({ lastSelectedRowId: '2' })
       const event = triggerKey(Key.Space)
-      expect(event.preventDefault).toHaveBeenCalled()
+      expect(selectedRows.value.map(({ id }) => id)).toEqual(['2'])
+      expect(event.defaultPrevented).toBe(true)
     })
     it('leaves a focused checkbox to toggle its own row', () => {
       const { selectedRows, triggerKey } = getWrapper({ lastSelectedRowId: '2' })
       const checkbox = document.createElement('input')
       checkbox.type = 'checkbox'
       const event = triggerKey(Key.Space, undefined, checkbox)
-      expect(event.preventDefault).not.toHaveBeenCalled()
       expect(selectedRows.value).toEqual([])
+      expect(event.defaultPrevented).toBe(false)
     })
   })
   describe('shift + arrow', () => {
@@ -87,7 +83,8 @@ function getWrapper({
     wrapper,
     selectedRows: selectedRowsRef,
     triggerKey: (primary: Key, modifier?: Modifier, target: EventTarget = document.body) => {
-      const event = mock<KeyboardEvent>({ target })
+      const event = new KeyboardEvent('keydown', { key: primary, cancelable: true })
+      Object.defineProperty(event, 'target', { value: target })
       callbacks[`${modifier || ''}${primary}`](event)
       return event
     }

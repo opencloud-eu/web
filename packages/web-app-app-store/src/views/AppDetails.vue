@@ -46,8 +46,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, unref } from 'vue'
-import { RouteLocationRaw } from 'vue-router'
+import { computed, unref } from 'vue'
+import { onBeforeRouteLeave, RouteLocationRaw } from 'vue-router'
 import { NoContentMessage, TextEditorViewer, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
 import { App } from '../types'
 import { APPID } from '../appid'
@@ -64,8 +64,9 @@ const router = useRouter()
 
 const app = computed<App>(() => appsStore.getById(unref(appId)))
 
-onMounted(() => {
-  appsStore.lastOpenedAppId = unref(appId)
+// lets the list focus this app again when going back to it
+onBeforeRouteLeave((to) => {
+  appsStore.lastOpenedAppId = to.name === `${APPID}-list` ? unref(appId) : undefined
 })
 
 // return to the list including its filters if we came from there
