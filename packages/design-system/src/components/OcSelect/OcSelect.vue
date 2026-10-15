@@ -404,7 +404,7 @@ onMounted(() => {
 }
 
 .oc-select:focus-within:not(.vs--open) .vs__dropdown-toggle {
-  @apply outline-1 outline-role-outline;
+  @apply outline-1 outline-role-outline -outline-offset-2;
 }
 
 .oc-select .vs__selected-options {

@@ -20,7 +20,7 @@
       <div v-if="!encrypted" class="create-space-description">
         <span class="inline-block mb-0.5" v-text="$gettext('Description')" />
         <div
-          class="border border-role-outline rounded-lg overflow-hidden bg-role-surface focus-within:outline-1 focus-within:outline-role-outline"
+          class="border border-role-outline rounded-lg overflow-hidden bg-role-surface focus-within:outline-1 focus-within:outline-role-outline focus-within:-outline-offset-2"
         >
           <text-editor-provider :editor="descriptionEditor" :teleport="editorTeleportTarget">
             <text-editor-toolbar />
