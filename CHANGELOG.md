@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: address small optional accessibility audit findings [[#3822](https://github.com/opencloud-eu/web/pull/3822)]
 - fix: address small accessibility audit findings [[#3821](https://github.com/opencloud-eu/web/pull/3821)]
 - fix: only show the link copied message after a successful clipboard write [[#3763](https://github.com/opencloud-eu/web/pull/3763)]
 - fix: use a separate upload endpoint per file in public file drops [[#3762](https://github.com/opencloud-eu/web/pull/3762)]
