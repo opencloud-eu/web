@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, useId, useTemplateRef, watch } from 'vue'
+import { computed, onUnmounted, ref, unref, useId, useTemplateRef, watch } from 'vue'
 import { FocusTrap } from 'focus-trap-vue'
 import OcButton, { Props as ButtonProps } from '../OcButton/OcButton.vue'
 import OcTextInput from '../OcTextInput/OcTextInput.vue'
@@ -118,6 +118,7 @@ import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
 import { ContextualHelperData, isComposingEvent } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 import { useEventListener } from '@vueuse/core'
+import { getOutermostDropAnchor } from '../OcDrop/dropRegistry'
 
 export interface Props {
   /**
@@ -334,6 +335,43 @@ watch(
   },
   { immediate: true }
 )
+
+// focus-trap returns focus to the element that opened the modal. For a menu item that element is
+// gone once its drop closed, so focus would fall to the body - use the menu's anchor instead
+const opener = document.activeElement
+const dropAnchor = getOutermostDropAnchor(opener)
+const focusableSelector =
+  'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+
+// the anchor of a context menu opened with a right click is the clicked element, e.g. a table cell
+function getFocusableNear(el: HTMLElement): HTMLElement | null {
+  const focusable = el.closest<HTMLElement>(focusableSelector)
+  if (focusable) {
+    return focusable
+  }
+  for (let parent: HTMLElement | null = el; parent; parent = parent.parentElement) {
+    const descendant = parent.querySelector<HTMLElement>(focusableSelector)
+    if (descendant) {
+      return descendant
+    }
+  }
+  return null
+}
+
+onUnmounted(() => {
+  if (!dropAnchor) {
+    return
+  }
+  // runs after focus-trap's own (delayed) attempt to return focus
+  setTimeout(() => {
+    // the menu item might still be animating out, then it still holds the focus
+    const focusLost = [document.body, opener].includes(document.activeElement)
+    if (!focusLost || !dropAnchor.isConnected) {
+      return
+    }
+    getFocusableNear(dropAnchor)?.focus()
+  })
+})
 
 const initialFocusRef = computed<FocusTargetOrFalse>(() => {
   if (focusTrapInitial || focusTrapInitial === false) {

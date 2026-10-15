@@ -93,6 +93,30 @@ const areCustomKeyBindingsDisabled = (event: KeyboardEvent) => {
   return isTextSelected
 }
 
+const controlSelector = [
+  'input',
+  'button',
+  'a[href]',
+  'select',
+  'textarea',
+  'summary',
+  '[role="button"]',
+  '[role="checkbox"]',
+  '[role="link"]',
+  '[role="menuitem"]',
+  '[role="option"]',
+  '[role="switch"]',
+  '[role="tab"]'
+].join(', ')
+
+/**
+ * Checks if a key event comes from a focused control (checkbox, button, link, …),
+ * whose native behavior (e.g. Space toggles a checkbox) should win over list key bindings.
+ */
+export const isControlKeyEvent = (event: KeyboardEvent): boolean => {
+  return event.target instanceof Element && !!event.target.closest(controlSelector)
+}
+
 export const useKeyboardActions = (options?: KeyboardActionsOptions): KeyboardActions => {
   const actions = ref<Array<KeyboardAction>>([])
   const selectionCursor = ref(0)

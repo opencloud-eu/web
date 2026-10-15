@@ -6,7 +6,6 @@
       color-role="chrome"
       no-hover
       aria-haspopup="dialog"
-      aria-current="page"
       :aria-label="$gettext('Show navigation menu')"
       :aria-expanded="isMenuOpen"
       @click="isMenuOpen = true"
@@ -14,12 +13,17 @@
       <oc-icon name="menu" size-class="size-8" />
     </oc-button>
     <teleport to="body">
-      <transition name="mobile-nav">
+      <transition name="mobile-nav" @after-leave="focusMenuButton">
         <dialog
           v-if="isMenuOpen"
-          class="mobile-nav-overlay fixed inset-0 bg-black/40 size-full z-[var(--z-index-modal)]"
-          open
+          ref="dialogRef"
+          aria-modal="true"
+          aria-labelledby="sidebar-nav-mobile-title"
+          class="mobile-nav-overlay fixed inset-0 m-0 bg-black/40 size-full max-w-none max-h-none z-[var(--z-index-modal)] backdrop:bg-transparent"
           @click="handleOverlayClick"
+          @keydown.esc.prevent="isMenuOpen = false"
+          @cancel.prevent="isMenuOpen = false"
+          @close="isMenuOpen = false"
         >
           <div
             id="sidebar-nav-mobile-panel"
@@ -28,7 +32,7 @@
           >
             <div class="flex flex-col h-full">
               <div class="flex items-center justify-between p-4">
-                <h2 class="text-base m-0" v-text="$gettext('Menu')" />
+                <h2 id="sidebar-nav-mobile-title" class="text-base m-0" v-text="$gettext('Menu')" />
                 <oc-button
                   appearance="raw"
                   :aria-label="$gettext('Close navigation menu')"
@@ -52,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { computed, ref, unref, useTemplateRef, watch } from 'vue'
 import {
   CustomComponentExtension,
   useActiveApp,
@@ -68,6 +72,17 @@ const { navItems } = useNavItems()
 const activeApp = useActiveApp()
 
 const isMenuOpen = ref(false)
+const dialogRef = useTemplateRef<HTMLDialogElement>('dialogRef')
+
+// a modal dialog keeps focus inside, closes on Escape (cancel) and moves focus to its first control
+watch(dialogRef, (dialog) => {
+  dialog?.showModal()
+})
+
+// the button can only take focus once the modal dialog is gone, so wait for the leave transition
+function focusMenuButton() {
+  document.getElementById('mobile-nav-button')?.focus()
+}
 
 function handleNavClick(event: MouseEvent) {
   const target = event.target as HTMLElement

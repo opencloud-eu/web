@@ -1,6 +1,12 @@
 import { useScrollTo } from '@opencloud-eu/web-pkg'
 import { Ref, unref } from 'vue'
-import { Key, KeyboardActions, Modifier, focusCheckbox } from '@opencloud-eu/web-pkg'
+import {
+  Key,
+  KeyboardActions,
+  Modifier,
+  focusCheckbox,
+  isControlKeyEvent
+} from '@opencloud-eu/web-pkg'
 import { Item } from '@opencloud-eu/web-client'
 
 export function useKeyboardTableNavigation(
@@ -84,8 +90,8 @@ export function useKeyboardTableNavigation(
   }
 
   function handleSpaceAction(event: KeyboardEvent) {
-    // a focused checkbox toggles its own row natively
-    if (event.target instanceof HTMLInputElement && event.target.type === 'checkbox') {
+    // a focused row checkbox or button handles Space itself, e.g. by toggling its own row
+    if (isControlKeyEvent(event)) {
       return
     }
     event.preventDefault()
