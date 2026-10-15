@@ -73,12 +73,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
-import { NoContentMessage } from '@opencloud-eu/web-pkg'
+import { NoContentMessage, useRouter } from '@opencloud-eu/web-pkg'
 import { useAppsStore } from '../piniaStores'
 import { useAppFilter, useAppViewMode } from '../composables'
+import { getAppDetailsRoute } from '../helpers'
 import AppTile from '../components/AppTile.vue'
 import AppListItem from '../components/AppListItem.vue'
 import AppContextualHelper from '../components/AppContextualHelper.vue'
@@ -86,7 +87,8 @@ import AppTagFilter from '../components/AppTagFilter.vue'
 import AppViewModeSwitch from '../components/AppViewModeSwitch.vue'
 
 const appsStore = useAppsStore()
-const { apps } = storeToRefs(appsStore)
+const { apps, lastOpenedAppId } = storeToRefs(appsStore)
+const router = useRouter()
 
 const { filterTerm, activeTag, searchedApps, filteredApps, setFilterTerm, setActiveTag } =
   useAppFilter(apps)
@@ -109,5 +111,17 @@ const resultCountText = computed(() => {
 const filterTermInput = ref(unref(filterTerm))
 watch(filterTerm, (term) => {
   filterTermInput.value = term
+})
+
+// coming back from a detail page, focus the app that was opened instead of leaving focus on the body
+onMounted(async () => {
+  const appId = unref(lastOpenedAppId)
+  if (!appId) {
+    return
+  }
+  lastOpenedAppId.value = undefined
+  await nextTick()
+  const { href } = router.resolve(getAppDetailsRoute({ id: appId }))
+  document.querySelector<HTMLElement>(`a[href="${href}"]`)?.focus()
 })
 </script>

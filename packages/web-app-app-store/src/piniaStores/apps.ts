@@ -9,6 +9,8 @@ export const useAppsStore = defineStore(`${APPID}-apps`, () => {
 
   const apps = ref<App[]>([])
   const loadingFailed = ref(false)
+  // lets the list restore focus to the app whose details were opened last
+  const lastOpenedAppId = ref<string>()
 
   function getById(id: string) {
     return unref(apps).find((app) => app.id === id)
@@ -40,6 +42,7 @@ export const useAppsStore = defineStore(`${APPID}-apps`, () => {
   return {
     apps,
     loadingFailed,
+    lastOpenedAppId,
     getById,
     loadApps
   }

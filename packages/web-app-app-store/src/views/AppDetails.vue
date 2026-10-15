@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
+import { computed, onMounted, unref } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 import { NoContentMessage, TextEditorViewer, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
 import { App } from '../types'
@@ -61,6 +61,10 @@ const appsStore = useAppsStore()
 const router = useRouter()
 
 const app = computed<App>(() => appsStore.getById(unref(appId)))
+
+onMounted(() => {
+  appsStore.lastOpenedAppId = unref(appId)
+})
 
 // return to the list including its filters if we came from there
 const backRoute = getBackRoute()

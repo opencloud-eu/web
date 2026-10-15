@@ -11,6 +11,8 @@ export const createVirtualCursorElement = (event: MouseEvent) => {
         right: event.clientX,
         bottom: event.clientY
       }
-    }
-  } as HTMLButtonElement
+    },
+    // lets the drop know which element it was opened for, e.g. to return focus there
+    contextElement: event.target instanceof Element ? event.target : undefined
+  } as unknown as HTMLButtonElement
 }
