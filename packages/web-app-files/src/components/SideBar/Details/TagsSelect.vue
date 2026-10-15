@@ -18,7 +18,7 @@
     <template #selected-option-container="{ option, deselect }">
       <oc-tag
         v-oc-tooltip="getTagToolTip(option.label)"
-        class="tags-select-tag ml-1"
+        class="tags-select-tag ml-1 transition-colors duration-200 has-[a]:hover:bg-role-surface-container has-[a]:hover:text-role-on-surface"
         :rounded="true"
         size="small"
       >
