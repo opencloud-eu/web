@@ -1,14 +1,5 @@
 <template>
-  <no-content-message
-    v-if="!app"
-    id="app-store-app-not-found"
-    img-src="images/illustrations/extensions.svg"
-  >
-    <template #message>
-      <h1 class="m-0 text-xl" v-text="$gettext('App not found')" />
-    </template>
-  </no-content-message>
-  <div v-else class="app-details mx-auto mt-2 max-w-256 flex flex-col gap-6">
+  <div class="mx-auto mt-2 max-w-256 flex flex-col gap-6">
     <router-link
       :to="backRoute"
       class="app-details-back self-start inline-flex items-center gap-1 text-sm text-role-secondary"
@@ -16,25 +7,38 @@
       <oc-icon name="arrow-left-s" fill-type="line" size-class="size-4" />
       <span v-text="$gettext('Back to App Store')" />
     </router-link>
-    <app-details-header :app="app" @tag-click="onTagClicked" />
-    <hr class="m-0 border-t border-role-surface-container-highest" />
-    <div class="grid md:grid-cols-[3fr_2fr] gap-8">
-      <div class="flex flex-col gap-6 min-w-0">
-        <app-details-gallery :app="app" />
-        <section class="app-details-description">
-          <h2 class="my-0 mb-2 text-base" v-text="$gettext('Description')" />
-          <text-editor-viewer
-            v-if="app.description"
-            class="max-w-[70ch]"
-            :content="app.description"
-          />
-          <p v-else class="my-0 max-w-[70ch]" v-text="app.subtitle" />
-        </section>
+    <template v-if="!app">
+      <h1 class="my-0 text-2xl font-bold wrap-anywhere" v-text="appId" />
+      <no-content-message
+        id="app-store-app-not-found"
+        img-src="images/illustrations/extensions.svg"
+      >
+        <template #message>
+          <span v-text="$gettext('App not found')" />
+        </template>
+      </no-content-message>
+    </template>
+    <div v-else class="app-details flex flex-col gap-6">
+      <app-details-header :app="app" @tag-click="onTagClicked" />
+      <hr class="m-0 border-t border-role-surface-container-highest" />
+      <div class="grid md:grid-cols-[3fr_2fr] gap-8">
+        <div class="flex flex-col gap-6 min-w-0">
+          <app-details-gallery :app="app" />
+          <section class="app-details-description">
+            <h2 class="my-0 mb-2 text-base" v-text="$gettext('Description')" />
+            <text-editor-viewer
+              v-if="app.description"
+              class="max-w-[70ch]"
+              :content="app.description"
+            />
+            <p v-else class="my-0 max-w-[70ch]" v-text="app.subtitle" />
+          </section>
+        </div>
+        <aside class="flex flex-col gap-6 min-w-0">
+          <app-details-info :app="app" />
+          <app-versions :app="app" />
+        </aside>
       </div>
-      <aside class="flex flex-col gap-6 min-w-0">
-        <app-details-info :app="app" />
-        <app-versions :app="app" />
-      </aside>
     </div>
   </div>
 </template>
