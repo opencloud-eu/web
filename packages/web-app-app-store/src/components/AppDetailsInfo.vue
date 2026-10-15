@@ -1,6 +1,6 @@
 <template>
   <section class="app-details-info">
-    <h3 class="my-0 mb-2 text-base" v-text="$gettext('Information')" />
+    <h2 class="my-0 mb-2 text-base" v-text="$gettext('Information')" />
     <dl class="m-0">
       <app-details-info-row v-if="app.authors.length" :label="$gettext('Author')">
         <app-authors :app="app" />

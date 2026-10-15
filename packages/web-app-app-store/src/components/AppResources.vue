@@ -5,6 +5,8 @@
         :href="resource.url"
         data-testid="resource-link"
         target="_blank"
+        rel="noopener noreferrer"
+        :aria-label="$gettext('%{name} (opens in a new tab)', { name: resource.label })"
         class="flex items-center justify-between gap-2"
       >
         <span class="inline-flex items-center min-w-0">

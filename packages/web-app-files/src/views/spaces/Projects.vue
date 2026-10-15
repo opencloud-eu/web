@@ -25,6 +25,7 @@
             </div>
             <div class="flex justify-end flex-wrap items-end w-full sm:w-auto ml-auto">
               <oc-search-bar
+                is-filter
                 v-model="filterTerm"
                 class="w-full sm:w-3xs"
                 :label="$gettext('Search')"

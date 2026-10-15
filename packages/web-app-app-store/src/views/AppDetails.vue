@@ -5,7 +5,7 @@
     img-src="images/illustrations/extensions.svg"
   >
     <template #message>
-      <span v-text="$gettext('App not found')" />
+      <h1 class="m-0 text-xl" v-text="$gettext('App not found')" />
     </template>
   </no-content-message>
   <div v-else class="app-details mx-auto mt-2 max-w-256 flex flex-col gap-6">
@@ -22,7 +22,7 @@
       <div class="flex flex-col gap-6 min-w-0">
         <app-details-gallery :app="app" />
         <section class="app-details-description">
-          <h3 class="my-0 mb-2 text-base" v-text="$gettext('Description')" />
+          <h2 class="my-0 mb-2 text-base" v-text="$gettext('Description')" />
           <text-editor-viewer
             v-if="app.description"
             class="max-w-[70ch]"
