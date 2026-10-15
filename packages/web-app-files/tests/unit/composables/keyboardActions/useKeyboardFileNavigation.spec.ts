@@ -1,15 +1,24 @@
 import { ref, nextTick } from 'vue'
 import { mock } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
-import { KeyboardActions, useResourcesStore, FolderViewModeConstants } from '@opencloud-eu/web-pkg'
+import {
+  Key,
+  KeyboardActions,
+  useKeyboardActions,
+  useResourcesStore,
+  FolderViewModeConstants
+} from '@opencloud-eu/web-pkg'
 import { useKeyboardFileNavigation } from '../../../../src/composables/keyboardActions/useKeyboardFileNavigation'
-import { createMockStore } from '@opencloud-eu/web-test-helpers'
+import { createMockStore, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { enableAutoUnmount } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useScrollTo: () => ({ scrollToResource: vi.fn() }),
   focusCheckbox: vi.fn()
 }))
+
+enableAutoUnmount(afterEach)
 
 function createResource(id: string): Resource {
   return mock<Resource>({ id, processing: false })
@@ -112,37 +121,55 @@ describe('useKeyboardFileNavigation', () => {
   })
 
   describe('space', () => {
-    it('toggles the latest selected resource and prevents the default action', () => {
+    function setup() {
       const resources = [createResource('1'), createResource('2')]
-      createMockStore({ stubActions: false, resourcesStore: { resources } })
-      const store = useResourcesStore()
-      store.setSelection(['1', '2'])
-      store.setLastSelectedId('2')
+      const { vm } = getComposableWrapper(
+        () => {
+          const store = useResourcesStore()
+          store.setSelection(['1', '2'])
+          store.setLastSelectedId('2')
+          const keyActions = useKeyboardActions()
+          useKeyboardFileNavigation(
+            keyActions,
+            ref(resources),
+            ref(FolderViewModeConstants.name.table)
+          )
+          return { store }
+        },
+        { pluginOptions: { piniaOptions: { stubActions: false, resourcesStore: { resources } } } }
+      )
+      return { store: vm.store }
+    }
 
-      const keyActions = createKeyActions()
-      useKeyboardFileNavigation(keyActions, ref(resources), ref(FolderViewModeConstants.name.table))
+    function pressSpace(target: EventTarget) {
+      const event = new KeyboardEvent('keydown', {
+        key: Key.Space,
+        bubbles: true,
+        cancelable: true
+      })
+      target.dispatchEvent(event)
+      return event
+    }
 
-      const event = triggerAction(keyActions, ' ')
+    it('toggles the latest selected resource and prevents the default action', () => {
+      const { store } = setup()
 
-      expect(event.preventDefault).toHaveBeenCalled()
+      const event = pressSpace(document.body)
+
+      expect(event.defaultPrevented).toBe(true)
       expect(store.selectedIds).toEqual(['1'])
     })
 
     it('leaves a focused checkbox to toggle its own resource', () => {
-      const resources = [createResource('1'), createResource('2')]
-      createMockStore({ stubActions: false, resourcesStore: { resources } })
-      const store = useResourcesStore()
-      store.setSelection(['1', '2'])
-      store.setLastSelectedId('2')
-
-      const keyActions = createKeyActions()
-      useKeyboardFileNavigation(keyActions, ref(resources), ref(FolderViewModeConstants.name.table))
+      const { store } = setup()
 
       const checkbox = document.createElement('input')
       checkbox.type = 'checkbox'
-      const event = triggerAction(keyActions, ' ', null, checkbox)
+      document.body.appendChild(checkbox)
+      const event = pressSpace(checkbox)
+      checkbox.remove()
 
-      expect(event.preventDefault).not.toHaveBeenCalled()
+      expect(event.defaultPrevented).toBe(false)
       expect(store.selectedIds).toEqual(['1', '2'])
     })
   })

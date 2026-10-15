@@ -1,12 +1,6 @@
 import { useScrollTo } from '@opencloud-eu/web-pkg'
 import { Ref, unref } from 'vue'
-import {
-  Key,
-  KeyboardActions,
-  Modifier,
-  focusCheckbox,
-  isControlKeyEvent
-} from '@opencloud-eu/web-pkg'
+import { Key, KeyboardActions, Modifier, focusCheckbox } from '@opencloud-eu/web-pkg'
 import { Item } from '@opencloud-eu/web-client'
 
 export function useKeyboardTableNavigation(
@@ -89,15 +83,6 @@ export function useKeyboardTableNavigation(
     selectedRows.value = [...unref(paginatedResources)]
   }
 
-  function handleSpaceAction(event: KeyboardEvent) {
-    // a focused row checkbox or button handles Space itself, e.g. by toggling its own row
-    if (isControlKeyEvent(event)) {
-      return
-    }
-    event.preventDefault()
-    toggleLastSelectedRow()
-  }
-
   function handleEscAction() {
     keyActions.resetSelectionCursor()
     selectedRows.value = []
@@ -112,6 +97,6 @@ export function useKeyboardTableNavigation(
     handleShiftAction(false)
   )
   keyActions.bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.A }, handleSelectAllAction)
-  keyActions.bindKeyAction({ primary: Key.Space }, handleSpaceAction, { preventDefault: false })
+  keyActions.bindKeyAction({ primary: Key.Space }, toggleLastSelectedRow)
   keyActions.bindKeyAction({ primary: Key.Esc }, handleEscAction)
 }

@@ -56,6 +56,11 @@ const areCustomKeyBindingsDisabled = (event: KeyboardEvent) => {
   // the event target stays reliable even if a handler (e.g. vue-select on Escape) blurred it meanwhile
   const activeElement = event.target instanceof Element ? event.target : document.activeElement
 
+  // focused controls keep their own Space behavior, e.g. toggling a row checkbox
+  if (event.key === Key.Space && activeElement?.closest(controlSelector)) {
+    return true
+  }
+
   if (
     (activeElement instanceof HTMLInputElement && activeElement.type !== 'checkbox') ||
     activeElement instanceof HTMLTextAreaElement ||
@@ -116,14 +121,6 @@ const controlSelector = [
   '[role="textbox"]',
   '[role="treeitem"]'
 ].join(', ')
-
-/**
- * Checks if a key event comes from a focused control (checkbox, button, link, …),
- * whose native behavior (e.g. Space toggles a checkbox) should win over list key bindings.
- */
-export const isControlKeyEvent = (event: KeyboardEvent): boolean => {
-  return event.target instanceof Element && !!event.target.closest(controlSelector)
-}
 
 export const useKeyboardActions = (options?: KeyboardActionsOptions): KeyboardActions => {
   const actions = ref<Array<KeyboardAction>>([])

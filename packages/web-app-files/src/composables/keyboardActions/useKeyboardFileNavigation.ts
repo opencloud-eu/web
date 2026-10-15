@@ -1,13 +1,7 @@
 import { QueryValue, useResourcesStore, FolderViewModeConstants } from '@opencloud-eu/web-pkg'
 import { useScrollTo } from '@opencloud-eu/web-pkg'
 import { Ref, ref, unref, nextTick, watchEffect } from 'vue'
-import {
-  Key,
-  KeyboardActions,
-  Modifier,
-  focusCheckbox,
-  isControlKeyEvent
-} from '@opencloud-eu/web-pkg'
+import { Key, KeyboardActions, Modifier, focusCheckbox } from '@opencloud-eu/web-pkg'
 import { Resource } from '@opencloud-eu/web-client'
 import { findIndex } from 'lodash-es'
 import { storeToRefs } from 'pinia'
@@ -33,21 +27,12 @@ export const useKeyboardFileNavigation = (
     handleSelectAllAction()
   )
 
-  // a focused row checkbox or button handles Space itself, e.g. by toggling its own row
-  keyActions.bindKeyAction(
-    { primary: Key.Space },
-    (event) => {
-      if (isControlKeyEvent(event)) {
-        return
-      }
-      event.preventDefault()
-      if (!unref(latestSelectedId)) {
-        return
-      }
-      resourcesStore.toggleSelection(unref(latestSelectedId))
-    },
-    { preventDefault: false }
-  )
+  keyActions.bindKeyAction({ primary: Key.Space }, () => {
+    if (!unref(latestSelectedId)) {
+      return
+    }
+    resourcesStore.toggleSelection(unref(latestSelectedId))
+  })
 
   keyActions.bindKeyAction({ primary: Key.Esc }, () => {
     keyActions.resetSelectionCursor()
