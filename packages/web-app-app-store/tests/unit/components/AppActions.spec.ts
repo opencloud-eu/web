@@ -9,18 +9,15 @@ const mostRecentVersion: AppVersion = {
 }
 
 const selectors = {
-  downloadButton: 'button'
+  downloadLink: 'a'
 }
 
 describe('AppActions', () => {
-  it('renders a "Download" button', () => {
+  it('renders a "Download" link to the most recent version', () => {
     const { wrapper } = getWrapper()
-    expect(wrapper.find(selectors.downloadButton).text()).toBe('Download')
-  })
-  it('downloads the most recent version', async () => {
-    const { wrapper } = getWrapper()
-    await wrapper.find(selectors.downloadButton).trigger('click')
-    expect(window.location.href).toBe(mostRecentVersion.url)
+    const link = wrapper.find(selectors.downloadLink)
+    expect(link.text()).toBe('Download')
+    expect(link.attributes('href')).toBe(mostRecentVersion.url)
   })
 })
 

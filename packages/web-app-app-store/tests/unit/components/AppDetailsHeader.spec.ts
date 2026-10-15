@@ -37,11 +37,13 @@ describe('AppDetailsHeader', () => {
     })
     expect(wrapper.text()).toContain('Requires OpenCloud 6.0.0 to 7.5.0')
   })
-  it('downloads the most recent version', async () => {
+  it('links to the download of the most recent version', () => {
     const { wrapper } = getWrapper()
-    expect(wrapper.find(selectors.download).text()).toBe('Download v2.0.0')
-    await wrapper.find(selectors.download).trigger('click')
-    expect(window.location.href).toBe(mostRecentVersion.url)
+    const link = wrapper.find(selectors.download)
+    expect(link.text()).toBe('Download v2.0.0')
+    expect(link.element.tagName).toBe('A')
+    expect(link.attributes('href')).toBe(mostRecentVersion.url)
+    expect(link.attributes('download')).toBe('app-2.0.0.zip')
   })
   it('emits the clicked tag', async () => {
     const { wrapper } = getWrapper()

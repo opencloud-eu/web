@@ -15,7 +15,9 @@ export const AppVersionSchema = z.object({
   minOpenCloud: z.string().optional(),
   maxOpenCloud: z.string().optional(),
   url: z.string(),
-  filename: z.string().optional()
+  filename: z.string().optional(),
+  // ISO date (YYYY-MM-DD) the version was released
+  releaseDate: z.string().optional()
 })
 export type AppVersion = z.infer<typeof AppVersionSchema>
 

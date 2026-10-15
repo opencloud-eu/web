@@ -17,11 +17,11 @@ const selectors = {
 describe('AppTagFilter.vue', () => {
   it('renders "All" with the app count first, followed by the tags sorted by count and name', () => {
     const { wrapper } = getWrapper()
-    expect(wrapper.find(selectors.all).text()).toBe('All (3)')
+    expect(wrapper.find(selectors.all).text()).toBe('All 3')
     expect(wrapper.findAll(selectors.button).map((b) => b.text())).toEqual([
-      'foo (2)',
-      'Bar (1)',
-      'wololo (1)'
+      'foo 2',
+      'Bar 1',
+      'wololo 1'
     ])
   })
   it('marks "All" as active if no tag is active', () => {
@@ -34,11 +34,11 @@ describe('AppTagFilter.vue', () => {
     const active = wrapper
       .findAll(selectors.button)
       .filter((b) => b.attributes('aria-pressed') === 'true')
-    expect(active.map((b) => b.text())).toEqual(['foo (2)'])
+    expect(active.map((b) => b.text())).toEqual(['foo 2'])
   })
   it('keeps the active tag even if no app has it', () => {
     const { wrapper } = getWrapper('missing')
-    expect(wrapper.findAll(selectors.button).map((b) => b.text())).toContain('missing (0)')
+    expect(wrapper.findAll(selectors.button).map((b) => b.text())).toContain('missing 0')
   })
   it('emits the tag on click', async () => {
     const { wrapper } = getWrapper()

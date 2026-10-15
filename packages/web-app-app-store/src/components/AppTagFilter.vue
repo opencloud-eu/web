@@ -9,7 +9,8 @@
       :aria-pressed="!activeTag"
       @click="emit('select', '')"
     >
-      {{ $gettext('All') }} ({{ apps.length }})
+      {{ $gettext('All') }}
+      <app-tag-count :count="apps.length" :active="!activeTag" />
     </oc-tag>
     <oc-tag
       v-for="tag in visibleTags"
@@ -22,7 +23,8 @@
       :aria-pressed="isActive(tag.name)"
       @click="toggleTag(tag.name)"
     >
-      {{ tag.name }} ({{ tag.count }})
+      {{ tag.name }}
+      <app-tag-count :count="tag.count" :active="isActive(tag.name)" />
     </oc-tag>
     <template v-if="hiddenTags.length">
       <oc-tag
@@ -33,7 +35,11 @@
         class="whitespace-nowrap cursor-pointer"
         :appearance="hiddenTags.some((tag) => isActive(tag.name)) ? 'filled' : 'outline'"
       >
-        {{ $gettext('Additional tags') }} ({{ hiddenTags.length }})
+        {{ $gettext('Additional tags') }}
+        <app-tag-count
+          :count="hiddenTags.length"
+          :active="hiddenTags.some((tag) => isActive(tag.name))"
+        />
         <oc-icon name="arrow-down-s" size-class="size-4" />
       </oc-tag>
       <oc-drop
@@ -55,7 +61,8 @@
             :aria-pressed="isActive(tag.name)"
             @click="toggleTag(tag.name)"
           >
-            {{ tag.name }} ({{ tag.count }})
+            {{ tag.name }}
+            <app-tag-count :count="tag.count" :active="isActive(tag.name)" />
           </oc-tag>
         </div>
       </oc-drop>
@@ -76,6 +83,7 @@ import {
 } from 'vue'
 import { uniqueId } from 'lodash-es'
 import { App } from '../types'
+import AppTagCount from './AppTagCount.vue'
 
 const MAX_ROWS = 1
 
