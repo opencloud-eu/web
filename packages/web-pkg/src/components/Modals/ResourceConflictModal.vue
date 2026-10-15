@@ -36,7 +36,8 @@ const {
   callbackFn,
   suggestMerge = true,
   separateSkipHandling = false,
-  confirmSecondaryTextOverwrite = undefined
+  confirmSecondaryTextOverwrite = undefined,
+  existingIsFolder = undefined
 } = defineProps<{
   modal: Modal
   resource: Resource
@@ -45,6 +46,7 @@ const {
   suggestMerge?: boolean
   separateSkipHandling?: boolean
   confirmSecondaryTextOverwrite?: string
+  existingIsFolder?: boolean
 }>()
 
 const { removeModal } = useModals()
@@ -66,8 +68,15 @@ const checkboxLabel = computed(() => {
   }
 })
 
+const isExistingFolder = computed(() => {
+  if (existingIsFolder === undefined) {
+    return resource.isFolder
+  }
+  return existingIsFolder
+})
+
 const message = computed(() =>
-  resource.isFolder
+  unref(isExistingFolder)
     ? $gettext('Folder with name »%{name}« already exists.', { name: resource.name })
     : $gettext('File with name »%{name}« already exists.', { name: resource.name })
 )
