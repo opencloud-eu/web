@@ -1,5 +1,6 @@
 <template>
-  <div class="oc-link-resolve h-full flex flex-col justify-center items-center p-4">
+  <main class="oc-link-resolve h-full flex flex-col justify-center items-center p-4">
+    <h1 class="sr-only" v-text="$gettext('Private link')" />
     <app-loading-spinner v-if="loading" data-testid="loading-spinner" />
     <oc-card
       v-else-if="errorMessage"
@@ -10,7 +11,7 @@
     >
       <p data-testid="error-message" class="text-xl">{{ errorMessage }}</p>
     </oc-card>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

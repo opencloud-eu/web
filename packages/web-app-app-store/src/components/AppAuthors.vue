@@ -1,7 +1,14 @@
 <template>
   <ul class="inline-flex flex-wrap justify-end gap-x-1 m-0 p-0">
     <li v-for="(author, index) in authors" :key="author.name" class="app-author-item">
-      <a v-if="author.url" :href="author.url" data-testid="author-link" target="_blank">
+      <a
+        v-if="author.url"
+        :href="author.url"
+        data-testid="author-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        :aria-label="$gettext('%{name} (opens in a new tab)', { name: author.name })"
+      >
         {{ author.name }}
       </a>
       <span v-else data-testid="author-label">{{ author.name }}</span>

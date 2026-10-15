@@ -1,7 +1,7 @@
 import AppAuthors from '../../../src/components/AppAuthors.vue'
 import { mock } from 'vitest-mock-extended'
 import { App, AppAuthor } from '../../../src/types'
-import { mount } from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 
 const author1: AppAuthor = {
   name: 'John Doe',
@@ -53,7 +53,8 @@ const getWrapper = () => {
 
   return {
     wrapper: mount(AppAuthors, {
-      props: { app }
+      props: { app },
+      global: { plugins: defaultPlugins() }
     })
   }
 }

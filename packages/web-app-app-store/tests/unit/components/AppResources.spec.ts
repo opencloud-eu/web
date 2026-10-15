@@ -1,4 +1,4 @@
-import { mount } from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import AppResources from '../../../src/components/AppResources.vue'
 import { App, AppResource } from '../../../src/types'
 import { mock } from 'vitest-mock-extended'
@@ -59,7 +59,8 @@ const getWrapper = () => {
 
   return {
     wrapper: mount(AppResources, {
-      props: { app }
+      props: { app },
+      global: { plugins: defaultPlugins(), stubs: { OcIcon: true } }
     })
   }
 }

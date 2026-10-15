@@ -4,7 +4,7 @@
     :class="{ 'h-4': size === 'default', 'h-1': size === 'small', 'h-0.5': size === 'xsmall' }"
     :aria-valuemax="max"
     :aria-valuenow="value"
-    aria-busy="true"
+    :aria-busy="indeterminate"
     aria-valuemin="0"
     role="progressbar"
     :style="{ backgroundColor }"

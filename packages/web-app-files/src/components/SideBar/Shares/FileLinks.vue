@@ -49,10 +49,10 @@
     </div>
     <div v-if="indirectLinks.length" class="mt-4">
       <hr class="my-4" />
-      <h4 class="font-semibold text-base m-0">
+      <h3 class="font-semibold text-base m-0">
         {{ indirectLinksHeading }}
         <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="indirectLinkHelp" />
-      </h4>
+      </h3>
       <div
         class="grid transition-all duration-250 ease-out"
         :class="{
