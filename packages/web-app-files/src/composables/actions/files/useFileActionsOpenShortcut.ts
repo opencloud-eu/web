@@ -1,34 +1,37 @@
 import { isTrashResource } from '@opencloud-eu/web-client'
-import { FileAction, FileActionOptions, useClientService, useMessages } from '@opencloud-eu/web-pkg'
+import {
+  FileAction,
+  FileActionOptions,
+  getShortcutUrl,
+  useClientService,
+  useMessages
+} from '@opencloud-eu/web-pkg'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
-export const useFileActionsOpenShortcut = () => {
+export function useFileActionsOpenShortcut() {
   const { showErrorMessage } = useMessages()
   const { $gettext } = useGettext()
   const clientService = useClientService()
 
-  const extractUrl = (fileContents: string) => {
-    const regex = /URL=(.+)/
-    const match = fileContents.match(regex)
-
-    if (match && match[1]) {
-      return match[1]
-    } else {
+  function extractUrl(fileContents: string) {
+    const url = fileContents.match(/^URL=([^\r\n]+)/m)?.[1]
+    if (!url) {
       throw new Error('unable to extract url')
     }
+    return url
   }
 
-  const handler = async ({ resources, space }: FileActionOptions) => {
+  async function handler({ resources, space }: FileActionOptions) {
     try {
       const webURL = new URL(window.location.href)
       const fileContents = (await clientService.webdav.getFileContents(space, resources[0])).body
-      let url = extractUrl(fileContents)
+      const url = getShortcutUrl(extractUrl(fileContents))
+      if (!url) {
+        throw new Error('invalid shortcut URL')
+      }
 
-      url = url.match(/^http[s]?:\/\//) ? url : `https://${url}`
-      url = url.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '').replace(/<[^>]+>/g, '')
-
-      if (url.startsWith(webURL.origin)) {
+      if (new URL(url).origin === webURL.origin) {
         window.location.href = url
         return
       }
