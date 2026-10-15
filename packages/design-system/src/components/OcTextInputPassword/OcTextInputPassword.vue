@@ -4,8 +4,8 @@
     :class="{
       'oc-text-input-password-wrapper-danger text-role-error focus:text-role-error border-role-error':
         hasError,
-      'border border-role-outline': hasFocus,
-      'border-role-outline-variant': !hasFocus
+      'border border-role-outline outline-1 outline-role-outline': hasFocus,
+      'border-role-outline': !hasFocus
     }"
   >
     <input
