@@ -32,12 +32,16 @@
         rounded
         class="whitespace-nowrap cursor-pointer"
         :appearance="hiddenTags.some((tag) => isActive(tag.name)) ? 'filled' : 'outline'"
+        :aria-controls="dropId"
       >
         {{ $gettext('Additional tags') }} ({{ hiddenTags.length }})
         <oc-icon name="arrow-down-s" size-class="size-4" />
       </oc-tag>
       <oc-drop
+        :drop-id="dropId"
         :toggle="`#${toggleId}`"
+        role="group"
+        :aria-label="$gettext('Additional tags')"
         :title="$gettext('Additional tags')"
         :is-menu="false"
         close-on-click
@@ -90,6 +94,7 @@ const emit = defineEmits<{
 
 const container = useTemplateRef<HTMLElement>('container')
 const toggleId = uniqueId('app-tag-filter-more-')
+const dropId = uniqueId('app-tag-filter-more-drop-')
 
 const tags = computed(() => {
   const counts = new Map<string, number>()
