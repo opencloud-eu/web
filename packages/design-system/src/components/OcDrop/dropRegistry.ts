@@ -11,8 +11,7 @@ type OpenDrop = {
  * drops apart from a real outside click, and lets a nested drop close its ancestors.
  */
 const openDrops = new Map<HTMLElement, OpenDrop>()
-// anchors at the time a drop opened; they stay resolvable after it closed (drops reset their anchor
-// on hide), e.g. for a modal opened from one of its items
+// the anchors drops were opened from, still known after they closed, e.g. to return the focus there
 const dropAnchors = new WeakMap<HTMLElement, HTMLElement | null>()
 const dropContainerSelector = '.oc-drop, [data-oc-drop-container]'
 
@@ -23,6 +22,11 @@ export function registerOpenDrop(dropEl: HTMLElement, entry: OpenDrop): void {
 
 export function unregisterOpenDrop(dropEl: HTMLElement): void {
   openDrops.delete(dropEl)
+}
+
+/** Checks if `el` sits inside a drop that is currently open. */
+export function isInOpenDrop(el: Element): boolean {
+  return openDrops.has(el.closest<HTMLElement>(dropContainerSelector))
 }
 
 /** Collects the open drops that `dropEl` was opened from, closest ancestor first. */
@@ -64,19 +68,15 @@ export function isInDropChain(dropEl: HTMLElement, target: Node): boolean {
 }
 
 /** Returns the element that opened the outermost drop `el` sits in, e.g. the toggle of a nested menu. */
-export function getOutermostDropAnchor(el: Element | null): HTMLElement | null {
-  let anchor: HTMLElement | null = null
-  let dropEl = el?.closest<HTMLElement>(dropContainerSelector) ?? null
+export function getOutermostDropAnchor(el: Element): HTMLElement | null {
   const visited = new Set<HTMLElement>()
+  let anchor: HTMLElement | null = null
+  let dropEl = el.closest<HTMLElement>(dropContainerSelector)
 
-  while (dropEl && !visited.has(dropEl)) {
+  while (dropEl && dropAnchors.get(dropEl) && !visited.has(dropEl)) {
     visited.add(dropEl)
-    const dropAnchor = dropAnchors.get(dropEl) ?? null
-    if (!dropAnchor) {
-      break
-    }
-    anchor = dropAnchor
-    dropEl = dropAnchor.closest<HTMLElement>(dropContainerSelector)
+    anchor = dropAnchors.get(dropEl)
+    dropEl = anchor.closest<HTMLElement>(dropContainerSelector)
   }
 
   return anchor

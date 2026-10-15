@@ -22,15 +22,17 @@ describe('useKeyboardTableNavigation', () => {
     })
     it('toggles the last selected row', () => {
       const { selectedRows, triggerKey } = getWrapper({ lastSelectedRowId: '2' })
-      triggerKey(Key.Space)
+      const event = triggerKey(Key.Space)
       expect(selectedRows.value.map(({ id }) => id)).toEqual(['2'])
+      expect(event.defaultPrevented).toBe(true)
     })
     it('leaves Space to a focused checkbox', () => {
       const { selectedRows, triggerKey } = getWrapper({ lastSelectedRowId: '2' })
       const checkbox = document.createElement('input')
       checkbox.type = 'checkbox'
-      triggerKey(Key.Space, undefined, checkbox)
+      const event = triggerKey(Key.Space, undefined, checkbox)
       expect(selectedRows.value).toEqual([])
+      expect(event.defaultPrevented).toBe(false)
     })
   })
   describe('shift + arrow', () => {
@@ -76,9 +78,10 @@ function getWrapper({
     wrapper,
     selectedRows: selectedRowsRef,
     triggerKey: (primary: Key, modifier?: Modifier, target: EventTarget = document.body) => {
-      const event = new KeyboardEvent('keydown', { key: primary })
+      const event = new KeyboardEvent('keydown', { key: primary, cancelable: true })
       Object.defineProperty(event, 'target', { value: target })
       callbacks[`${modifier || ''}${primary}`](event)
+      return event
     }
   }
 }
