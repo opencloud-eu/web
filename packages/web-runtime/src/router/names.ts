@@ -6,6 +6,7 @@ export const routeNames = {
   resolvePublicLink: 'resolvePublicLink',
   resolvePublicOcmLink: 'resolvePublicOcmLink',
   resolveGuestLink: 'resolveGuestLink',
+  renewGuestLink: 'renewGuestLink',
   accessDenied: 'accessDenied',
   account: 'account',
   notFound: 'notFound'

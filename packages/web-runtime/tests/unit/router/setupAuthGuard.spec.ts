@@ -2,12 +2,51 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import { useAuthStore } from '@opencloud-eu/web-pkg'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { setupAuthGuard } from '../../../src/router/setupAuthGuard'
+import { authService } from '../../../src/services/auth/authService'
 
 vi.mock('../../../src/services/auth/authService', () => ({
-  authService: { initializeContext: vi.fn(), hasAuthErrorOccurred: false }
+  authService: {
+    initializeContext: vi.fn(),
+    hasAuthErrorOccurred: false,
+    consumeExpiredGuestPermissionId: vi.fn()
+  }
 }))
 
 describe('setupAuthGuard', () => {
+  describe('expired guest session', () => {
+    beforeEach(() => {
+      createTestingPinia({ stubActions: false })
+    })
+
+    it('redirects to the renew page if a guest session expired while restoring it', async () => {
+      const router = getRouter()
+      vi.mocked(authService.consumeExpiredGuestPermissionId).mockReturnValueOnce('permission-id')
+
+      await router.push('/guest/Invited folder')
+
+      expect(router.currentRoute.value.name).toEqual('renewGuestLink')
+      expect(router.currentRoute.value.params.permissionId).toEqual('permission-id')
+    })
+
+    it('consumes the expired guest session when an auth error occurred', async () => {
+      const router = getRouter()
+      authService.hasAuthErrorOccurred = true
+
+      await router.push('/guest/Invited folder')
+
+      expect(router.currentRoute.value.name).toEqual('accessDenied')
+      expect(authService.consumeExpiredGuestPermissionId).toHaveBeenCalled()
+    })
+
+    it('does not redirect without an expired guest session', async () => {
+      const router = getRouter()
+
+      await router.push('/guest/Invited folder')
+
+      expect(router.currentRoute.value.name).toEqual('files-guest-link')
+    })
+  })
+
   describe('guest permission id', () => {
     beforeEach(() => {
       createTestingPinia({ stubActions: false })
@@ -83,10 +122,12 @@ function getRouter() {
     history: createMemoryHistory(),
     routes: [
       { path: '/guest/:shareName?', name: 'files-guest-link', component, meta },
+      { path: '/g/renew/:permissionId', name: 'renewGuestLink', component, meta },
       { path: '/g/:token', name: 'resolveGuestLink', component, meta },
       { path: '/login', name: 'login', component, meta },
       { path: '/s/:token', name: 'resolvePublicLink', component, meta },
-      { path: '/other', name: 'other', component, meta }
+      { path: '/other', name: 'other', component, meta },
+      { path: '/access-denied', name: 'accessDenied', component, meta }
     ]
   })
   setupAuthGuard(router)

@@ -49,9 +49,34 @@ describe('resolveGuestLink', () => {
     expect(mocks.$router.push).not.toHaveBeenCalled()
   })
 
+  it.each(['tokenExpired', 'tokenAlreadyRedeemed'])(
+    'hands a link rejected with %s over to the renew page',
+    async (errorType) => {
+      const { wrapper, mocks } = getWrapper({ redeemError: guestLinkError(errorType) })
+      await flushPromises()
+
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
+        name: 'renewGuestLink',
+        params: { permissionId: 'permission-id' }
+      })
+      expect(wrapper.find(selectors.errorMessage).exists()).toBeFalsy()
+    }
+  )
+
   it.each([
     ['tokenExpired', 'This invitation link has expired.'],
-    ['tokenAlreadyRedeemed', 'This invitation link has already been used.'],
+    ['tokenAlreadyRedeemed', 'This invitation link has already been used.']
+  ])('shows an error for %s without a permission id', async (errorType, message) => {
+    const redeemError = guestLinkError(errorType)
+    redeemError.response.data = { errorType }
+    const { wrapper, mocks } = getWrapper({ redeemError })
+    await flushPromises()
+
+    expect(wrapper.find(selectors.errorMessage).text()).toEqual(message)
+    expect(mocks.$router.replace).not.toHaveBeenCalled()
+  })
+
+  it.each([
     ['shareExpired', 'Your access to the shared item has expired.'],
     ['shareNotFound', 'The shared item is no longer available.']
   ])('shows a specific error for %s', async (errorType, message) => {
