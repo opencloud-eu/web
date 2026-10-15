@@ -30,6 +30,6 @@ const label = computed(() => {
   if (version) {
     return $gettext('Download version %{version}', { version: version.version })
   }
-  return $gettext('Download')
+  return $gettext('Download %{app}', { app: app.name })
 })
 </script>

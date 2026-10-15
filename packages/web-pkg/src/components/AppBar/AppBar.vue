@@ -97,6 +97,7 @@ import last from 'lodash-es/last'
 import { computed, onBeforeUnmount, onMounted, ref, unref, useSlots, useTemplateRef } from 'vue'
 import {
   isProjectSpaceResource,
+  isPublicSpaceResource,
   isShareSpaceResource,
   Resource,
   SpaceResource
@@ -210,6 +211,9 @@ const routeMetaTitle = useRouteMeta('title')
 const pageTitle = computed(() => {
   if (unref(routeMetaTitle)) {
     return $gettext(unref(routeMetaTitle))
+  }
+  if (isPublicSpaceResource(unref(space))) {
+    return unref(space).name || $gettext('Public link')
   }
   return unref(space)?.name || ''
 })
