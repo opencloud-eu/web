@@ -5,7 +5,8 @@ const selectors = {
   appLoadingSpinner: '#app-loading-spinner',
   appSwitcherButton: '#_appSwitcherButton',
   appStoreMenuButton: 'data-test-id=app.app-store.menuItem',
-  downloadButton: '//a[contains(., "%s")]/ancestor::li//button[.//span[text()="Download"]]',
+  downloadButton:
+    '//a[contains(., "%s")]/ancestor::li//button[.//span[starts-with(text(), "Download")]]',
   downloadVersionButton: '//*[@data-item-id="%s"]//button[contains(@class,"app-download-button")]',
   appStoreHeadline: '.app-list-headline',
   appTileTitle: '.app-tile-title',
