@@ -1,11 +1,17 @@
 <template>
-  <div
+  <section
     v-if="showInfo"
     id="upload-info"
+    aria-labelledby="upload-info-title"
     class="rounded-xl shadow-sm/10 bg-role-surface mx-auto sm:m-0 w-full sm:w-md max-w-lg [&_.oc-resource-details]:pl-1 border"
   >
     <div class="upload-info-title flex justify-between items-center px-4 py-2 rounded-t-xl">
-      <p v-oc-tooltip="uploadDetails" class="my-1 font-bold" v-text="uploadInfoTitle" />
+      <p
+        id="upload-info-title"
+        v-oc-tooltip="uploadDetails"
+        class="my-1 font-bold"
+        v-text="uploadInfoTitle"
+      />
       <div class="flex items-center">
         <oc-button
           id="collapse-upload-info-btn"
@@ -170,7 +176,7 @@
         :content="uploadErrorLogContent"
       />
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
