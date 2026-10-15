@@ -31,6 +31,7 @@
           :resource="resource"
           :link="resourceRoute"
           :is-resource-clickable="isResourceClickable"
+          :aria-label="isResourceClickable ? resource.name : undefined"
           tabindex="-1"
           @click="$emit('fileNameClicked', $event)"
         >
