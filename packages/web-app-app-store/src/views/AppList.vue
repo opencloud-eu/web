@@ -30,6 +30,7 @@
       :active-tag="activeTag"
       @select="setActiveTag"
     />
+    <span class="sr-only" role="status" v-text="resultCountText" />
     <div v-if="filteredApps.length" class="flex items-center justify-between gap-4 mb-2">
       <h2 class="app-list-results-title my-0 text-base capitalize" v-text="resultsTitle" />
       <span

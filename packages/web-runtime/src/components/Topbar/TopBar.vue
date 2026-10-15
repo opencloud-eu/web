@@ -117,6 +117,9 @@ const isSideBarToggleDisabled = computed(() => {
 })
 
 const sidebarLogoAlt = computed(() => {
+  if (authStore.publicLinkContextReady && !authStore.userContextReady) {
+    return $gettext('Navigate to public link root')
+  }
   return $gettext('Navigate to personal files page')
 })
 

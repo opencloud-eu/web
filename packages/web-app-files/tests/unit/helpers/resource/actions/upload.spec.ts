@@ -22,8 +22,8 @@ describe('upload helper', () => {
       const fileName = 'someFile.txt'
       const folderName = 'someFolder'
       const currentFiles = [
-        mockDeep<Resource>({ name: fileName }),
-        mockDeep<Resource>({ name: folderName })
+        mockDeep<Resource>({ name: fileName, isFolder: false }),
+        mockDeep<Resource>({ name: folderName, isFolder: true })
       ]
       const filesToUpload = [
         mockDeep<OcUppyFile>({ name: fileName, meta: { relativePath: '', relativeFolder: '' } }),
@@ -36,11 +36,44 @@ describe('upload helper', () => {
       const conflicts = instance.getConflicts(filesToUpload)
 
       expect(conflicts.length).toBe(2)
-      expect(conflicts).toContainEqual({ name: fileName, type: 'file' })
-      expect(conflicts).toContainEqual({ name: folderName, type: 'folder' })
+      expect(conflicts).toContainEqual({ name: fileName, type: 'file', existingIsFolder: false })
+      expect(conflicts).toContainEqual({
+        name: folderName,
+        type: 'folder',
+        existingIsFolder: true
+      })
+    })
+    it('should record the type of the existing resource', () => {
+      const currentFiles = [mockDeep<Resource>({ name: 'dup', isFolder: true })]
+      const filesToUpload = [
+        mockDeep<OcUppyFile>({ name: 'dup', meta: { relativePath: '', relativeFolder: '' } })
+      ]
+      const instance = getResourceConflictInstance({ currentFiles })
+
+      expect(instance.getConflicts(filesToUpload)).toEqual([
+        { name: 'dup', type: 'file', existingIsFolder: true }
+      ])
     })
   })
   describe('method "displayOverwriteDialog"', () => {
+    it('should pass the type of the existing resource to the dialog', async () => {
+      const file = mockDeep<OcUppyFile>({ name: 'dup', meta: { relativeFolder: '' } })
+      const conflict = { name: 'dup', type: 'file', existingIsFolder: true }
+
+      const instance = getResourceConflictInstance()
+      instance.resolveFileExists = vi.fn(() =>
+        Promise.resolve({ strategy: ResolveStrategy.SKIP, doForAllConflicts: false })
+      )
+
+      await instance.displayOverwriteDialog([file], [conflict])
+      expect(instance.resolveFileExists).toHaveBeenCalledWith(
+        { name: 'dup', isFolder: false },
+        1,
+        false,
+        true,
+        true
+      )
+    })
     it.each([ResolveStrategy.REPLACE, ResolveStrategy.KEEP_BOTH])(
       'should return all files if user chooses replace or keep both for all',
       async (strategy) => {

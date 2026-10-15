@@ -17,6 +17,7 @@ import {
 interface ConflictedResource {
   name: string
   type: string
+  existingIsFolder?: boolean
 }
 
 // renames the first of the relative segments the endpoint ends with, leaving the current folder path untouched
@@ -43,13 +44,14 @@ export class UploadResourceConflict extends ConflictDialog {
     resource: Resource,
     conflictCount: number,
     suggestMerge = false,
-    separateSkipHandling = false // separate skip-handling between files and folders
+    separateSkipHandling = false, // separate skip-handling between files and folders
+    existingIsFolder = resource.isFolder
   ): Promise<ResolveConflict> {
     const { dispatchModal } = useModals()
 
     return new Promise<ResolveConflict>((resolve) => {
       dispatchModal({
-        title: resource.isFolder
+        title: existingIsFolder
           ? this.$gettext('Folder already exists')
           : this.$gettext('File already exists'),
         hideConfirmButton: true,
@@ -62,6 +64,7 @@ export class UploadResourceConflict extends ConflictDialog {
           conflictCount,
           suggestMerge,
           separateSkipHandling,
+          existingIsFolder,
           callbackFn: (conflict: ResolveConflict) => {
             resolve(conflict)
           }
@@ -82,7 +85,7 @@ export class UploadResourceConflict extends ConflictDialog {
           if (conflicts.some((conflict) => conflict.name === rootFolder)) {
             continue
           }
-          conflicts.push({ name: rootFolder, type: 'folder' })
+          conflicts.push({ name: rootFolder, type: 'folder', existingIsFolder: exists.isFolder })
           continue
         }
       }
@@ -91,7 +94,7 @@ export class UploadResourceConflict extends ConflictDialog {
         (f) => f.name === file.name && !file.meta.relativeFolder
       )
       if (exists) {
-        conflicts.push({ name: file.name, type: 'file' })
+        conflicts.push({ name: file.name, type: 'file', existingIsFolder: exists.isFolder })
       }
     }
     return conflicts
@@ -137,7 +140,8 @@ export class UploadResourceConflict extends ConflictDialog {
         { name: conflict.name, isFolder } as Resource,
         conflictsLeft,
         isFolder,
-        true
+        true,
+        conflict.existingIsFolder
       )
       isFolder ? folderCount++ : fileCount++
       if (resolvedConflict.doForAllConflicts) {

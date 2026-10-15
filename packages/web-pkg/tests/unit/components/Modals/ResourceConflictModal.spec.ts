@@ -15,6 +15,40 @@ describe('ResourceConflictModal', () => {
       const { wrapper } = getWrapper({ props: { conflictCount: 1 } })
       expect(wrapper.find('oc-checkbox-stub').exists()).toBeFalsy()
     })
+    it('counts by the type of the conflicting resource', () => {
+      const { wrapper } = getWrapper({
+        props: {
+          conflictCount: 2,
+          separateSkipHandling: true,
+          resource: mock<Resource>({ name: 'dup', isFolder: false }),
+          existingIsFolder: true
+        }
+      })
+      expect(wrapper.find('oc-checkbox-stub').attributes('label')).toEqual('Apply to all 2 files')
+    })
+  })
+  describe('message', () => {
+    it.each([
+      { existingIsFolder: true, expected: 'Folder with name »dup« already exists.' },
+      { existingIsFolder: false, expected: 'File with name »dup« already exists.' }
+    ])(
+      'names the type of the existing resource, not of the conflicting one',
+      ({ existingIsFolder, expected }) => {
+        const { wrapper } = getWrapper({
+          props: {
+            resource: mock<Resource>({ name: 'dup', isFolder: !existingIsFolder }),
+            existingIsFolder
+          }
+        })
+        expect(wrapper.find('span').text()).toEqual(expected)
+      }
+    )
+    it('falls back to the type of the conflicting resource', () => {
+      const { wrapper } = getWrapper({
+        props: { resource: mock<Resource>({ name: 'dup', isFolder: true }) }
+      })
+      expect(wrapper.find('span').text()).toEqual('Folder with name »dup« already exists.')
+    })
   })
   describe('buttons', () => {
     describe('confirmSecondary', () => {

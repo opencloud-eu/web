@@ -17,5 +17,6 @@ export function hslToHex(h: number, s: number, l: number): string {
 export function deterministicColor(seed: string): string {
   let hash = 0
   for (let i = 0; i < seed.length; i++) hash = seed.charCodeAt(i) + ((hash << 5) - hash)
-  return hslToHex(Math.abs(hash) % 360, 0.7, 0.5)
+  // Keep white avatar initials above the WCAG AA contrast ratio of 4.5:1 for every hue.
+  return hslToHex(Math.abs(hash) % 360, 0.7, 0.28)
 }
