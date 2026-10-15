@@ -367,11 +367,11 @@ watch(
 
 @layer components {
   .oc-input {
-    @apply inline-block align-middle text-role-on-surface bg-role-surface w-full max-w-full rounded-sm p-1.5 leading-4 border border-role-outline-variant outline-0 overflow-visible appearance-none;
+    @apply inline-block align-middle text-role-on-surface bg-role-surface w-full max-w-full rounded-sm p-1.5 leading-4 border border-role-outline outline-0 overflow-visible appearance-none;
   }
 
   .oc-input:focus {
-    @apply border border-role-outline;
+    @apply border border-role-outline outline-1 outline-role-outline -outline-offset-2;
   }
 
   .oc-input:disabled {
