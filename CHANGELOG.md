@@ -6,40 +6,9 @@
 
 @AlexAndBear, @BloomyInDev, @JammingBen, @dschmidt, @eriktews, @fredrikblau, @jay23606, @kulmann, @tammi-23, @tbsbdr, @v-scharf
 
-### ✅ Tests
-
-- test: exclude Claude worktrees from Vitest discovery [[#3815](https://github.com/opencloud-eu/web/pull/3815)]
-- test(e2e): cover sse events for share recipients [[#3799](https://github.com/opencloud-eu/web/pull/3799)]
-- fix(e2e): retry open-with submenu click to fix flaky context menu [[#3757](https://github.com/opencloud-eu/web/pull/3757)]
-- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
-
-### 📈 Enhancement
-
-- feat: renew expired guest sessions [[#3811](https://github.com/opencloud-eu/web/pull/3811)]
-- feat: Guest auth [[#3338](https://github.com/opencloud-eu/web/pull/3338)]
-- feat: folder first sorting [[#3792](https://github.com/opencloud-eu/web/pull/3792)]
-- feat: custom font size and type [[#3649](https://github.com/opencloud-eu/web/pull/3649)]
-- [full-ci] feat: support Apple Live Photos [[#3548](https://github.com/opencloud-eu/web/pull/3548)]
-- feat: add norwegian nynorsk [[#3623](https://github.com/opencloud-eu/web/pull/3623)]
-- feat(web-runtime): show the status of app tokens [[#3607](https://github.com/opencloud-eu/web/pull/3607)]
-- feat(external): close the app via the collabora back button [[#3612](https://github.com/opencloud-eu/web/pull/3612)]
-- feat: support image icons for apps and extensions [[#3580](https://github.com/opencloud-eu/web/pull/3580)]
-- feat: add whiteboard icon for excalidraw files [[#3584](https://github.com/opencloud-eu/web/pull/3584)]
-- feat: search for tags in the global search and enhance the visually reasoning for matching results [[#3558](https://github.com/opencloud-eu/web/pull/3558)]
-- feat: add app version compatibility checks [[#3568](https://github.com/opencloud-eu/web/pull/3568)]
-- feat(app-store): redesign the app store [[#3534](https://github.com/opencloud-eu/web/pull/3534)]
-- feat: apply the OpenCloud brand colors to the CTA [[#3521](https://github.com/opencloud-eu/web/pull/3521)]
-- feat(preview): preload next and previous image [[#3529](https://github.com/opencloud-eu/web/pull/3529)]
-- feat(preview): add support for mkv video files [[#3564](https://github.com/opencloud-eu/web/pull/3564)]
-- feat: filter favorites by tags and always show the tag filter [[#3554](https://github.com/opencloud-eu/web/pull/3554)]
-- feat: remove condensed list view and switch view modes with toggle buttons [[#3538](https://github.com/opencloud-eu/web/pull/3538)]
-- perf: load group memberships only on the account page [[#3553](https://github.com/opencloud-eu/web/pull/3553)]
-- chore: use line icons for all sidebar panel actions [[#3539](https://github.com/opencloud-eu/web/pull/3539)]
-- feat: add font and app illustrations to the empty states [[#3556](https://github.com/opencloud-eu/web/pull/3556)]
-- feat(rclone-crypt): use the password generator and policy for vault passwords [[#3537](https://github.com/opencloud-eu/web/pull/3537)]
-
 ### 🐛 Bug Fixes
 
+- fix: share the clicked folder from the breadcrumb menu, not the selection [[#3813](https://github.com/opencloud-eu/web/pull/3813)]
 - fix: link space notifications once the space is loaded [[#3777](https://github.com/opencloud-eu/web/pull/3777)]
 - fix: open the parent folder when a folder url points to a file [[#3779](https://github.com/opencloud-eu/web/pull/3779)]
 - fix: show app not found for app store links with a percent sign [[#3787](https://github.com/opencloud-eu/web/pull/3787)]
@@ -123,6 +92,38 @@
 - fix(web-pkg): align the rename button with the name when the path is shown [[#3551](https://github.com/opencloud-eu/web/pull/3551)]
 - fix(web-app-files): highlight the search term in the names of the search results [[#3555](https://github.com/opencloud-eu/web/pull/3555)]
 - fix: improve mobile layouts with css-only adjustments [[#3549](https://github.com/opencloud-eu/web/pull/3549)]
+
+### ✅ Tests
+
+- test: exclude Claude worktrees from Vitest discovery [[#3815](https://github.com/opencloud-eu/web/pull/3815)]
+- test(e2e): cover sse events for share recipients [[#3799](https://github.com/opencloud-eu/web/pull/3799)]
+- fix(e2e): retry open-with submenu click to fix flaky context menu [[#3757](https://github.com/opencloud-eu/web/pull/3757)]
+- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
+
+### 📈 Enhancement
+
+- feat: renew expired guest sessions [[#3811](https://github.com/opencloud-eu/web/pull/3811)]
+- feat: Guest auth [[#3338](https://github.com/opencloud-eu/web/pull/3338)]
+- feat: folder first sorting [[#3792](https://github.com/opencloud-eu/web/pull/3792)]
+- feat: custom font size and type [[#3649](https://github.com/opencloud-eu/web/pull/3649)]
+- [full-ci] feat: support Apple Live Photos [[#3548](https://github.com/opencloud-eu/web/pull/3548)]
+- feat: add norwegian nynorsk [[#3623](https://github.com/opencloud-eu/web/pull/3623)]
+- feat(web-runtime): show the status of app tokens [[#3607](https://github.com/opencloud-eu/web/pull/3607)]
+- feat(external): close the app via the collabora back button [[#3612](https://github.com/opencloud-eu/web/pull/3612)]
+- feat: support image icons for apps and extensions [[#3580](https://github.com/opencloud-eu/web/pull/3580)]
+- feat: add whiteboard icon for excalidraw files [[#3584](https://github.com/opencloud-eu/web/pull/3584)]
+- feat: search for tags in the global search and enhance the visually reasoning for matching results [[#3558](https://github.com/opencloud-eu/web/pull/3558)]
+- feat: add app version compatibility checks [[#3568](https://github.com/opencloud-eu/web/pull/3568)]
+- feat(app-store): redesign the app store [[#3534](https://github.com/opencloud-eu/web/pull/3534)]
+- feat: apply the OpenCloud brand colors to the CTA [[#3521](https://github.com/opencloud-eu/web/pull/3521)]
+- feat(preview): preload next and previous image [[#3529](https://github.com/opencloud-eu/web/pull/3529)]
+- feat(preview): add support for mkv video files [[#3564](https://github.com/opencloud-eu/web/pull/3564)]
+- feat: filter favorites by tags and always show the tag filter [[#3554](https://github.com/opencloud-eu/web/pull/3554)]
+- feat: remove condensed list view and switch view modes with toggle buttons [[#3538](https://github.com/opencloud-eu/web/pull/3538)]
+- perf: load group memberships only on the account page [[#3553](https://github.com/opencloud-eu/web/pull/3553)]
+- chore: use line icons for all sidebar panel actions [[#3539](https://github.com/opencloud-eu/web/pull/3539)]
+- feat: add font and app illustrations to the empty states [[#3556](https://github.com/opencloud-eu/web/pull/3556)]
+- feat(rclone-crypt): use the password generator and policy for vault passwords [[#3537](https://github.com/opencloud-eu/web/pull/3537)]
 
 ### 📦️ Dependencies
 
