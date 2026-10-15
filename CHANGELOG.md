@@ -8,6 +8,11 @@
 
 ### 🐛 Bug Fixes
 
+- fix: address small accessibility audit findings [[#3821](https://github.com/opencloud-eu/web/pull/3821)]
+- fix: only show the link copied message after a successful clipboard write [[#3763](https://github.com/opencloud-eu/web/pull/3763)]
+- fix: use a separate upload endpoint per file in public file drops [[#3762](https://github.com/opencloud-eu/web/pull/3762)]
+- fix: don't add a tag when only spaces are entered [[#3764](https://github.com/opencloud-eu/web/pull/3764)]
+- fix: keep the public link token in the preferences link [[#3778](https://github.com/opencloud-eu/web/pull/3778)]
 - Fix small WCAG accessibility failures [[#3820](https://github.com/opencloud-eu/web/pull/3820)]
 - Fix modal Escape handling after focus loss [[#3805](https://github.com/opencloud-eu/web/pull/3805)]
 - fix: name the existing item's type in the conflict dialog [[#3776](https://github.com/opencloud-eu/web/pull/3776)]
