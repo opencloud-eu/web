@@ -13,7 +13,7 @@
     <p v-else key="no-share-permissions-message" v-text="noSharePermsMessage" />
     <template v-if="hasSharees">
       <div id="files-collaborators-headline" class="flex items-center justify-between">
-        <h4 class="font-semibold my-0" v-text="sharedWithLabel" />
+        <h3 class="font-semibold text-base my-0" v-text="sharedWithLabel" />
       </div>
       <custom-component-target
         :extension-point="fileSideBarSharesPanelSharedWithTopExtensionPoint"
@@ -48,7 +48,7 @@
     </template>
     <template v-if="showSpaceMembers">
       <div class="flex items-center justify-between mt-2">
-        <h4 class="font-semibold my-2" v-text="spaceMemberLabel" />
+        <h3 class="font-semibold text-base my-2" v-text="spaceMemberLabel" />
       </div>
       <ul
         id="space-collaborators-list"

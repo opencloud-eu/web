@@ -53,6 +53,7 @@
               </item-filter>
             </div>
             <oc-search-bar
+              is-filter
               v-model="filterTerm"
               class="search-filter w-full sm:w-3xs"
               :label="$gettext('Search')"

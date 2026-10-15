@@ -16,6 +16,8 @@
     <div
       v-if="currentImage?.caption || hasMultipleImages"
       class="flex items-center justify-between gap-4 text-sm text-role-on-surface-variant"
+      aria-live="polite"
+      aria-atomic="true"
     >
       <span class="app-details-gallery-caption truncate" v-text="currentImage?.caption" />
       <span
@@ -39,7 +41,13 @@
               ? 'outline-2 outline-role-secondary'
               : 'opacity-60 hover:opacity-100'
           "
-          :aria-label="image.caption || $gettext('Image %{index}', { index: `${index + 1}` })"
+          :aria-label="
+            $gettext('Image %{index} of %{count}: %{caption}', {
+              index: `${index + 1}`,
+              count: `${images.length}`,
+              caption: image.caption || app.name
+            })
+          "
           :aria-pressed="index === currentIndex"
           @click="currentIndex = index"
         >
