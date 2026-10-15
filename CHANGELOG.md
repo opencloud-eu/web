@@ -6,6 +6,12 @@
 
 @AlexAndBear, @BloomyInDev, @JammingBen, @dschmidt, @eriktews, @fredrikblau, @jay23606, @kulmann, @tammi-23, @tbsbdr, @v-scharf
 
+### ✅ Tests
+
+- test(e2e): cover sse events for share recipients [[#3799](https://github.com/opencloud-eu/web/pull/3799)]
+- fix(e2e): retry open-with submenu click to fix flaky context menu [[#3757](https://github.com/opencloud-eu/web/pull/3757)]
+- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
+
 ### 🐛 Bug Fixes
 
 - fix: open the parent folder when a folder url points to a file [[#3779](https://github.com/opencloud-eu/web/pull/3779)]
@@ -114,11 +120,6 @@
 - chore: use line icons for all sidebar panel actions [[#3539](https://github.com/opencloud-eu/web/pull/3539)]
 - feat: add font and app illustrations to the empty states [[#3556](https://github.com/opencloud-eu/web/pull/3556)]
 - feat(rclone-crypt): use the password generator and policy for vault passwords [[#3537](https://github.com/opencloud-eu/web/pull/3537)]
-
-### ✅ Tests
-
-- fix(e2e): retry open-with submenu click to fix flaky context menu [[#3757](https://github.com/opencloud-eu/web/pull/3757)]
-- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
 
 ### 📦️ Dependencies
 
