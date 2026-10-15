@@ -1,6 +1,7 @@
 <template>
   <div v-if="isLoading" id="oc-loading-indicator" class="w-full">
     <oc-progress
+      :aria-label="$gettext('Loading')"
       :max="100"
       :indeterminate="currentProgress === null"
       :value="currentProgress"

@@ -9,7 +9,7 @@
         >
           <oc-button
             v-if="field.sortable"
-            :aria-label="getSortLabel(field.name)"
+            :aria-label="getSortLabel(extractFieldTitle(field))"
             appearance="raw"
             justify-content="left"
             class="oc-button-sort w-full hover:underline"

@@ -73,6 +73,7 @@ if (mentionsEnabled) {
 }
 
 const textEditor = useTextEditor({
+  ariaLabel: resource.name,
   contentType: unref(contentType),
   currentResource: toRef(() => resource),
   readonly: () => isReadOnly,
