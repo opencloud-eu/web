@@ -83,23 +83,23 @@ watch(isMenuOpen, async (open) => {
   document.getElementById('mobile-nav-button')?.focus()
 })
 
-// keeps the focus inside the panel while the menu is open
+// handle every Tab step: browser keyboard settings can otherwise skip links and leave the panel
 function trapFocus(event: KeyboardEvent) {
-  const focusable = unref(panelRef).querySelectorAll<HTMLElement>(
-    'a[href], button:not([disabled]), input:not([disabled]), [tabindex="0"]'
+  const panel = unref(panelRef)
+  const focusable = Array.from(
+    panel.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, [tabindex]')
+  ).filter(
+    (el) =>
+      el.tabIndex >= 0 &&
+      !el.matches(':disabled') &&
+      el.checkVisibility({ visibilityProperty: true })
   )
-  const first = focusable[0]
-  const last = focusable[focusable.length - 1]
-  const active = document.activeElement
-  if (event.shiftKey && (active === first || active === unref(panelRef))) {
-    event.preventDefault()
-    last.focus()
-    return
-  }
-  if (!event.shiftKey && active === last) {
-    event.preventDefault()
-    first.focus()
-  }
+  const index = focusable.indexOf(document.activeElement as HTMLElement)
+  const nextIndex = event.shiftKey ? Math.max(0, index) - 1 : (index + 1) % focusable.length
+
+  event.preventDefault()
+  const target = focusable.at(nextIndex) || panel
+  target.focus()
 }
 
 function handleNavClick(event: MouseEvent) {
