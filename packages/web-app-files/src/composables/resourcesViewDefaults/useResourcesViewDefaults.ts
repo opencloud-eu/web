@@ -126,6 +126,7 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   }
 
   resourcesStore.$onAction((action) => {
+    const hadSelection = resourcesStore.selectedIds.length > 0
     action.after(async () => {
       switch (action.name) {
         case 'upsertResource':
@@ -145,7 +146,14 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
           }
           break
         case 'resetSelection':
-          if (unref(scrollToParam)) {
+          // an empty selection (e.g. right after navigating to a route with scrollTo) has nothing
+          // to do with the scrollTo param, it must not be stripped then
+          if (hadSelection && unref(scrollToParam)) {
+            resetScrollToParam()
+          }
+          break
+        case 'removeSelection':
+          if (hadSelection && !resourcesStore.selectedIds.length && unref(scrollToParam)) {
             resetScrollToParam()
           }
           break
