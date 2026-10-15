@@ -99,6 +99,11 @@ export function isGuestSessionInvalidError(error: unknown): boolean {
   return isGuestSessionExpiredError(error) || isGuestPath(getUnauthorizedRequestUrl(error))
 }
 
+// the session cookie can't be used for the share anymore
+function isUnusableSessionError(error: unknown): boolean {
+  return isGuestSessionInvalidError(error) || error instanceof GuestShareNotFoundError
+}
+
 export function getGuestLinkError(error: unknown): GuestLinkError | undefined {
   if (!isAxiosError<GuestLinkError>(error)) {
     return undefined
@@ -218,16 +223,40 @@ export class GuestSessionManager {
     }
   }
 
-  public async verifyPin(permissionId: string, pin: string): Promise<GuestSession> {
+  /**
+   * Exchanges the PIN for a session, `resume` loads its context afterwards.
+   */
+  public async verifyPin(permissionId: string, pin: string): Promise<void> {
     this.deactivate()
     const verifiedPermissionId =
       await this.clientService.graphAuthenticated.guestLinks.verifyGuestLinkPin(
         { pin, permissionId },
         { withCredentials: true }
       )
-    localStorage.removeItem(storageKey)
+    // the PIN is single-use, persist the session to resume it if loading its context fails
+    localStorage.setItem(storageKey, verifiedPermissionId)
     localStorage.removeItem(renewalStorageKey)
-    return this.establish(verifiedPermissionId)
+  }
+
+  /**
+   * Whether a session is persisted for the share, e.g. one whose context couldn't be loaded.
+   */
+  public hasSession(permissionId: string): boolean {
+    return localStorage.getItem(storageKey) === permissionId
+  }
+
+  /**
+   * Loads the context of the persisted session of the share, drops the session if it's unusable.
+   */
+  public async resume(permissionId: string): Promise<GuestSession> {
+    try {
+      return await this.establish(permissionId)
+    } catch (error) {
+      if (isUnusableSessionError(error)) {
+        this.dropSession(permissionId)
+      }
+      throw error
+    }
   }
 
   /**
@@ -249,9 +278,11 @@ export class GuestSessionManager {
       return await this.establish(permissionId)
     } catch (error) {
       // only report the token error if there is no usable session for the share, otherwise keep it retryable
-      throw isGuestSessionInvalidError(error) || error instanceof GuestShareNotFoundError
-        ? redeemError
-        : error
+      if (!isUnusableSessionError(error)) {
+        throw error
+      }
+      this.dropSession(permissionId)
+      throw redeemError
     }
   }
 
@@ -341,6 +372,13 @@ export class GuestSessionManager {
     this.expiredPermissionId = undefined
     localStorage.setItem(storageKey, permissionId)
     this.authStore.setGuestContext(permissionId, space.id)
+  }
+
+  // another tab might have persisted the session of a different share meanwhile
+  private dropSession(permissionId: string): void {
+    if (localStorage.getItem(storageKey) === permissionId) {
+      localStorage.removeItem(storageKey)
+    }
   }
 
   private storeToken(storedToken: StoredGuestLinkToken): void {

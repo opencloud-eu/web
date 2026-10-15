@@ -5,15 +5,15 @@
     :description="cardDescription"
     :icon="cardIcon"
   >
-    <template v-if="renewErrorType">
-      <p data-testid="error-message" class="my-0" v-text="renewErrorMessage" />
+    <template v-if="errorType">
+      <p data-testid="error-message" class="my-0" v-text="errorMessage" />
       <oc-button
-        v-if="isRenewRetryable"
+        v-if="isRetryable"
         appearance="filled"
         size="large"
         class="w-full p-2"
         data-testid="retry-button"
-        @click="renew"
+        @click="retry"
       >
         <span v-text="$gettext('Try again')" />
       </oc-button>
@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { call } from '@opencloud-eu/web-client'
@@ -54,6 +54,8 @@ import {
   getGuestLinkErrorType,
   GuestLinkErrorType,
   GuestLinkTokenMissingError,
+  GuestSession,
+  isGuestSessionInvalidError,
   isRetryableGuestLinkErrorType
 } from '../services/auth/guestSessionManager'
 import PlainCard from '../components/PlainCard.vue'
@@ -66,23 +68,32 @@ const isRenewed = ref(false)
 // e.g. after a PIN login, only the link from the most recent email can renew the access
 const isTokenMissing = ref(false)
 const renewErrorType = ref<GuestLinkErrorType>()
+// the session exists, e.g. after a verified PIN, but its context couldn't be loaded
+const resumeErrorType = ref<GuestLinkErrorType>()
 const pin = ref('')
 const pinErrorType = ref<GuestLinkErrorType>()
 
-const verifyPinTask = useTask(function* () {
-  const { permissionId: verifiedPermissionId, space } = yield* call(
-    // a PIN pasted from the email might contain whitespace
-    authService.verifyGuestLinkPin(unref(permissionId), unref(pin).replace(/\s/g, ''))
-  )
-  yield router.replace(
+function openSession({ permissionId: sessionPermissionId, space }: GuestSession) {
+  return router.replace(
     createLocationGuest('files-guest-link', {
       params: { shareName: space.name },
-      query: { permissionId: verifiedPermissionId }
+      query: { permissionId: sessionPermissionId }
     })
   )
+}
+
+const verifyPinTask = useTask(function* () {
+  // a PIN pasted from the email might contain whitespace
+  yield authService.verifyGuestLinkPin(unref(permissionId), unref(pin).replace(/\s/g, ''))
 })
 
-const isRenewRetryable = computed(() => isRetryableGuestLinkErrorType(unref(renewErrorType)))
+const resumeSessionTask = useTask(function* () {
+  const session = yield* call(authService.resumeGuestSession(unref(permissionId)))
+  yield openSession(session)
+})
+
+const errorType = computed(() => unref(resumeErrorType) || unref(renewErrorType))
+const isRetryable = computed(() => isRetryableGuestLinkErrorType(unref(errorType)))
 
 function getShareErrorMessage(errorType: GuestLinkErrorType): string | undefined {
   switch (errorType) {
@@ -95,13 +106,21 @@ function getShareErrorMessage(errorType: GuestLinkErrorType): string | undefined
   }
 }
 
-const renewErrorMessage = computed(() => {
-  const errorType = unref(renewErrorType)
-  if (unref(isRenewRetryable)) {
+const errorMessage = computed(() => {
+  if (unref(resumeErrorType)) {
+    if (unref(isRetryable)) {
+      return $gettext('The shared item could not be loaded. Please try again later.')
+    }
+    return (
+      getShareErrorMessage(unref(resumeErrorType)) ||
+      $gettext('The shared item could not be loaded.')
+    )
+  }
+  if (unref(isRetryable)) {
     return $gettext('A new invitation could not be requested. Please try again later.')
   }
   return (
-    getShareErrorMessage(errorType) ||
+    getShareErrorMessage(unref(renewErrorType)) ||
     $gettext(
       'A new invitation could not be requested. Open the invitation link from your most recent email instead.'
     )
@@ -128,6 +147,12 @@ const pinErrorMessage = computed(() => {
 })
 
 const cardTitle = computed(() => {
+  if (resumeSessionTask.isRunning) {
+    return $gettext('Opening the shared item…')
+  }
+  if (unref(resumeErrorType)) {
+    return $gettext('An error occurred while opening the shared item')
+  }
   if (unref(renewErrorType)) {
     return $gettext('An error occurred while renewing your access')
   }
@@ -141,8 +166,8 @@ const cardTitle = computed(() => {
 })
 
 const cardDescription = computed(() => {
-  if (unref(renewErrorType)) {
-    return getShareErrorMessage(unref(renewErrorType))
+  if (unref(errorType)) {
+    return getShareErrorMessage(unref(errorType))
       ? $gettext('Ask the person who invited you for a new invitation.')
       : undefined
   }
@@ -158,7 +183,7 @@ const cardDescription = computed(() => {
 })
 
 const cardIcon = computed(() => {
-  if (unref(renewErrorType)) {
+  if (unref(errorType)) {
     return 'error-warning'
   }
   if (unref(isTokenMissing)) {
@@ -187,6 +212,33 @@ async function renew() {
   }
 }
 
+function startRenewal() {
+  isRenewed.value = authService.isGuestLinkRenewalPending(unref(permissionId))
+  if (unref(isRenewed)) {
+    return
+  }
+  return renew()
+}
+
+async function resumeSession() {
+  resumeErrorType.value = undefined
+  // a verified PIN is used up, so don't offer the form while loading
+  isRenewed.value = false
+  try {
+    await resumeSessionTask.perform()
+  } catch (error) {
+    if (isGuestSessionInvalidError(error)) {
+      return startRenewal()
+    }
+    resumeErrorType.value = getGuestLinkErrorType(error)
+    console.error('guest session could not be resumed:', unref(resumeErrorType))
+  }
+}
+
+function retry() {
+  return unref(resumeErrorType) ? resumeSession() : renew()
+}
+
 async function submitPin() {
   pinErrorType.value = undefined
   try {
@@ -194,14 +246,34 @@ async function submitPin() {
   } catch (error) {
     pinErrorType.value = getGuestLinkErrorType(error)
     console.error('guest link pin could not be verified:', unref(pinErrorType))
+    return
   }
+  await resumeSession()
+}
+
+// another tab might finish its renewal after this one checked for it
+function onStorage() {
+  if (unref(isRenewed) || resumeSessionTask.isRunning || unref(resumeErrorType)) {
+    return
+  }
+  if (!authService.isGuestLinkRenewalPending(unref(permissionId))) {
+    return
+  }
+  renewErrorType.value = undefined
+  isTokenMissing.value = false
+  isRenewed.value = true
 }
 
 onMounted(() => {
-  if (authService.isGuestLinkRenewalPending(unref(permissionId))) {
-    isRenewed.value = true
+  window.addEventListener('storage', onStorage)
+  if (authService.hasGuestSession(unref(permissionId))) {
+    resumeSession()
     return
   }
-  renew()
+  startRenewal()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('storage', onStorage)
 })
 </script>

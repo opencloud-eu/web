@@ -137,6 +137,19 @@ describe('GuestSessionManager', () => {
       }
     )
 
+    it('drops the persisted session of the share when its session cookie is invalid', async () => {
+      localStorage.setItem(storageKey, 'permission-id')
+      const redeemError = guestLinkError(401, 'tokenExpired', 'permission-id')
+      const { manager } = getManager({
+        redeemError,
+        listError: graphUnauthorizedError(sharedWithMeUrl)
+      })
+
+      await expect(manager.redeem('magic-token')).rejects.toBe(redeemError)
+
+      expect(localStorage.getItem(storageKey)).toBeNull()
+    })
+
     it('rejects with the redeem error when the session cookie belongs to another guest', async () => {
       const redeemError = guestLinkError(401, 'tokenExpired', 'permission-id')
       const { manager } = getManager({ redeemError, driveItems: [] })
@@ -402,29 +415,71 @@ describe('GuestSessionManager', () => {
   })
 
   describe('verifyPin', () => {
-    it('verifies the pin with credentials and establishes the guest context', async () => {
-      const { manager, verifyGuestLinkPin } = getManager()
+    it('verifies the pin with credentials and persists the session without loading it', async () => {
+      const { manager, verifyGuestLinkPin, listSharedWithMe } = getManager()
 
-      const { permissionId, space } = await manager.verifyPin('permission-id', '123456')
+      await manager.verifyPin('permission-id', '123456')
 
       expect(verifyGuestLinkPin).toHaveBeenCalledWith(
         { pin: '123456', permissionId: 'permission-id' },
         { withCredentials: true }
       )
-      expect(permissionId).toEqual('permission-id')
-      expect(space.id).toEqual('share-id')
-      expect(useAuthStore().guestContextReady).toBeTruthy()
-      expect(localStorage.getItem(storageKey)).toEqual('permission-id')
+      expect(manager.hasSession('permission-id')).toBeTruthy()
+      expect(listSharedWithMe).not.toHaveBeenCalled()
+      expect(useAuthStore().guestContextReady).toBeFalsy()
     })
 
-    it('rejects and grants no session when the pin is invalid', async () => {
+    it('keeps the persisted session when the pin is invalid', async () => {
+      localStorage.setItem(storageKey, 'other-permission-id')
       const pinError = guestLinkError(401, 'pinInvalid', 'permission-id')
-      const { manager, listSharedWithMe } = getManager({ pinError })
+      const { manager } = getManager({ pinError })
 
       await expect(manager.verifyPin('permission-id', '000000')).rejects.toBe(pinError)
 
-      expect(listSharedWithMe).not.toHaveBeenCalled()
-      expect(useAuthStore().guestContextReady).toBeFalsy()
+      expect(localStorage.getItem(storageKey)).toEqual('other-permission-id')
+    })
+  })
+
+  describe('resume', () => {
+    it('establishes the guest context of a verified session', async () => {
+      const { manager } = getManager()
+      await manager.verifyPin('permission-id', '123456')
+
+      const { permissionId, space } = await manager.resume('permission-id')
+
+      expect(permissionId).toEqual('permission-id')
+      expect(space.id).toEqual('share-id')
+      expect(useAuthStore().guestContextReady).toBeTruthy()
+    })
+
+    it('keeps the session when loading its context fails transiently', async () => {
+      localStorage.setItem(storageKey, 'permission-id')
+      const { manager } = getManager({ listError: new Error('503') })
+
+      await expect(manager.resume('permission-id')).rejects.toThrow('503')
+
+      expect(manager.hasSession('permission-id')).toBeTruthy()
+    })
+
+    it.each([
+      ['the session is invalid', { listError: graphUnauthorizedError(sharedWithMeUrl) }],
+      ['the share is missing', { driveItems: [] }]
+    ])('drops the session when %s', async (_, options) => {
+      localStorage.setItem(storageKey, 'permission-id')
+      const { manager } = getManager(options)
+
+      await expect(manager.resume('permission-id')).rejects.toBeDefined()
+
+      expect(manager.hasSession('permission-id')).toBeFalsy()
+    })
+
+    it('keeps the persisted session of another share', async () => {
+      localStorage.setItem(storageKey, 'other-permission-id')
+      const { manager } = getManager({ driveItems: [] })
+
+      await expect(manager.resume('permission-id')).rejects.toBeDefined()
+
+      expect(localStorage.getItem(storageKey)).toEqual('other-permission-id')
     })
   })
 

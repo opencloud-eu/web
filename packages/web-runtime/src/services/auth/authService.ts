@@ -460,12 +460,20 @@ export class AuthService implements AuthServiceInterface {
     return this.guestSessionManager.renew(permissionId)
   }
 
-  public verifyGuestLinkPin(permissionId: string, pin: string): Promise<GuestSession> {
+  public verifyGuestLinkPin(permissionId: string, pin: string): Promise<void> {
     return this.guestSessionManager.verifyPin(permissionId, pin)
   }
 
   public isGuestLinkRenewalPending(permissionId: string): boolean {
     return this.guestSessionManager.isRenewalPending(permissionId)
+  }
+
+  public hasGuestSession(permissionId: string): boolean {
+    return this.guestSessionManager.hasSession(permissionId)
+  }
+
+  public resumeGuestSession(permissionId: string): Promise<GuestSession> {
+    return this.guestSessionManager.resume(permissionId)
   }
 
   public consumeExpiredGuestPermissionId(): string | undefined {
