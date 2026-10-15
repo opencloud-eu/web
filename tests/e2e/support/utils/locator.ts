@@ -58,3 +58,12 @@ export const waitForSSEEvent = (user: string, event: string) => {
     }, 500)
   })
 }
+
+export const expectNoSSEEvent = async (user: string, event: string) => {
+  // give the server time to deliver an unexpected event
+  await new Promise((resolve) => setTimeout(resolve, appConfig.minTimeout * 1000))
+  const events = getSSEEvents(user)
+  if (events.includes(event)) {
+    throw new Error(`SSE event ${event} was unexpectedly obtained in the events list:[${events}]`)
+  }
+}
