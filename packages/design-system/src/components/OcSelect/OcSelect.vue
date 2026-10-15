@@ -366,9 +366,9 @@ if (positionFixed) {
 }
 
 onMounted(() => {
-  unref(selectRef)
-    .$el.querySelector('div:first-child')
-    ?.setAttribute('aria-label', `${label} - ${$gettext('Search for option')}`)
+  const toggle = unref(selectRef).$el.querySelector('.vs__dropdown-toggle')
+  toggle?.setAttribute('aria-label', `${label} - ${$gettext('Search for option')}`)
+  toggle?.setAttribute('aria-controls', toggle.getAttribute('aria-owns'))
 })
 </script>
 

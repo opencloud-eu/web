@@ -104,6 +104,7 @@
       </div>
       <div v-if="runningUploads" class="upload-info-progress mx-4 pb-4 mt-2 oc-text">
         <oc-progress
+          :aria-label="$gettext('Upload progress')"
           :value="totalProgress"
           :max="100"
           size="small"

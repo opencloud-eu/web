@@ -8,6 +8,7 @@
       <oc-progress
         v-if="limitedPersonalStorage"
         :value="quotaUsagePercent"
+        :aria-label="personalStorageDetailsLabel"
         :max="100"
         size="small"
         :color="quotaProgressColor"
