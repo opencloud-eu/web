@@ -6,6 +6,7 @@ import OidcCallbackPage from '../pages/oidcCallback.vue'
 import ResolvePublicLinkPage from '../pages/resolvePublicLink.vue'
 import ResolvePrivateLinkPage from '../pages/resolvePrivateLink.vue'
 import ResolveGuestLinkPage from '../pages/resolveGuestLink.vue'
+import RenewGuestLinkPage from '../pages/renewGuestLink.vue'
 import { setupRouterHooks } from './setupRouter'
 import { setupAuthGuard } from './setupAuthGuard'
 import { patchRouter } from './patchCleanPath'
@@ -96,6 +97,12 @@ const routes: readonly RouteRecordRaw[] = [
     name: routeNames.resolvePublicOcmLink,
     component: ResolvePublicLinkPage,
     meta: { title: $gettext('OCM link'), authContext: 'anonymous' }
+  },
+  {
+    path: '/g/renew/:permissionId',
+    name: routeNames.renewGuestLink,
+    component: RenewGuestLinkPage,
+    meta: { title: $gettext('Guest invitation'), authContext: 'anonymous' }
   },
   {
     path: '/g/:token',

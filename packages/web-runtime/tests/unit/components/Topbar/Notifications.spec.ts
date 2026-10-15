@@ -5,7 +5,7 @@ import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { RouterLink, RouteLocationNamedRaw, RouteLocationNormalizedLoaded } from 'vue-router'
 import { AxiosResponse } from 'axios'
-import { UserAvatar } from '@opencloud-eu/web-pkg'
+import { UserAvatar, useSpacesStore } from '@opencloud-eu/web-pkg'
 import { flushPromises } from '@vue/test-utils'
 import { defineComponent } from 'vue'
 
@@ -38,8 +38,7 @@ describe('Notification component', () => {
     const notifications = [
       mock<Notification>({
         messageRich: undefined,
-        computedMessage: undefined,
-        computedLink: undefined
+        computedMessage: undefined
       })
     ]
     const { wrapper } = getWrapper({ notifications })
@@ -68,8 +67,7 @@ describe('Notification component', () => {
         messageRich: undefined,
         object_type: 'share',
         messageRichParameters: { share: { id: '1' } },
-        computedMessage: undefined,
-        computedLink: undefined
+        computedMessage: undefined
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
       await flushPromises()
@@ -80,8 +78,7 @@ describe('Notification component', () => {
       const notification = mock<Notification>({
         messageRich: undefined,
         messageRichParameters: undefined,
-        computedMessage: undefined,
-        computedLink: undefined
+        computedMessage: undefined
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
       await flushPromises()
@@ -128,8 +125,7 @@ describe('Notification component', () => {
       const notification = mock<Notification>({
         messageRich: undefined,
         message: undefined,
-        computedMessage: undefined,
-        computedLink: undefined
+        computedMessage: undefined
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
       await flushPromises()
@@ -141,8 +137,7 @@ describe('Notification component', () => {
       const notification = mock<Notification>({
         messageRich: undefined,
         message: 'some message',
-        computedMessage: undefined,
-        computedLink: undefined
+        computedMessage: undefined
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
       await flushPromises()
@@ -155,8 +150,7 @@ describe('Notification component', () => {
           user: { displayname: 'Albert Einstein' },
           resource: { name: 'someFile.txt' }
         },
-        computedMessage: undefined,
-        computedLink: undefined
+        computedMessage: undefined
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
       await flushPromises()
@@ -170,7 +164,6 @@ describe('Notification component', () => {
       const notification = mock<Notification>({
         messageRich: undefined,
         computedMessage: undefined,
-        computedLink: undefined,
         link: 'http://some-link.com'
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
@@ -204,8 +197,7 @@ describe('Notification component', () => {
             resource: { id: 'storage$space!item', name: 'someFile.txt' },
             share: { id: '1' }
           },
-          computedMessage: undefined,
-          computedLink: undefined
+          computedMessage: undefined
         })
         const { wrapper } = getWrapper({ notifications: [notification] })
         await flushPromises()
@@ -233,10 +225,38 @@ describe('Notification component', () => {
             user: { displayname: 'Albert Einstein' },
             space: { name: 'someFile.txt', id: `${spaceMock.fileId}!2` }
           },
-          computedMessage: undefined,
-          computedLink: undefined
+          computedMessage: undefined
         })
         const { wrapper } = getWrapper({ notifications: [notification], spaces: [spaceMock] })
+        await flushPromises()
+        const routerLink = wrapper.findComponent<typeof RouterLink>(
+          `${selectors.notificationItem} router-link-stub`
+        )
+        expect((routerLink.props('to') as RouteLocationNormalizedLoaded).params).toEqual({
+          driveAliasAndItem: 'driveAlias'
+        })
+      })
+      it('renders notification as link once the space is added to the store later', async () => {
+        const spaceMock = mock<SpaceResource>({
+          fileId: '1',
+          getDriveAliasAndItem: () => 'driveAlias',
+          disabled: false
+        })
+        const notification = mock<Notification>({
+          messageRich: '{user} added you to space {space}',
+          object_type: 'storagespace',
+          messageRichParameters: {
+            user: { displayname: 'Albert Einstein' },
+            space: { name: 'someFile.txt', id: `${spaceMock.fileId}!2` }
+          },
+          computedMessage: undefined
+        })
+        const { wrapper } = getWrapper({ notifications: [notification] })
+        await flushPromises()
+        expect(wrapper.find(`${selectors.notificationItem} router-link-stub`).exists()).toBeFalsy()
+
+        const spacesStore = useSpacesStore()
+        spacesStore.spaces.push(spaceMock)
         await flushPromises()
         const routerLink = wrapper.findComponent<typeof RouterLink>(
           `${selectors.notificationItem} router-link-stub`
