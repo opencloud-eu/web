@@ -205,8 +205,7 @@ const inputClass = computed(() => {
     'oc-input',
     'placeholder:text-role-outline',
     'disabled:cursor-not-allowed',
-    'focus:bg-none',
-    'focus:outline focus:outline-offset-2 focus:outline-white'
+    'focus:bg-none'
   ]
   if (!buttonHidden) {
     classes.push(...['oc-search-input-button', 'rounded-r-none'])

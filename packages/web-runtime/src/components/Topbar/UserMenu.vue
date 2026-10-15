@@ -147,7 +147,10 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { computed, unref } from 'vue'
+import { RouteLocationRaw } from 'vue-router'
 import {
+  contextRouteNameKey,
+  contextRouteParamsKey,
   useAuthService,
   useAuthStore,
   UserAvatar,
@@ -167,13 +170,23 @@ const authStore = useAuthStore()
 
 const { user } = storeToRefs(userStore)
 
-const accountPageRoute = computed(() => ({
-  name: authStore.userContextReady ? 'account-information' : 'account-preferences',
-  query: {
-    ...(!authStore.userContextReady &&
-      authStore.publicLinkContextReady && { contextRouteName: 'files-public-link' })
+const accountPageRoute = computed<RouteLocationRaw>(() => {
+  if (authStore.userContextReady) {
+    return { name: 'account-information', query: {} }
   }
-}))
+
+  if (!authStore.publicLinkContextReady) {
+    return { name: 'account-preferences', query: {} }
+  }
+
+  // the public link token needs to be part of the url, otherwise the context can't be restored on reload
+  const linkPrefix = authStore.publicLinkType === 'ocm' ? 'ocm' : 'public'
+  const contextQuery: Record<string, any> = {
+    [contextRouteNameKey]: 'files-public-link',
+    [contextRouteParamsKey]: { driveAliasAndItem: `${linkPrefix}/${authStore.publicLinkToken}` }
+  }
+  return { name: 'account-preferences', query: contextQuery }
+})
 
 const loginLink = computed(() => {
   return {
