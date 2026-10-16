@@ -1,6 +1,7 @@
 import {
   extractNameWithoutExtension,
   isPublicSpaceResource,
+  isShareSpaceResource,
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
@@ -178,9 +179,9 @@ export const useFileActionsCreateNewFile = () => {
         handler: (args) => handler(args, appFileExtension.extension, appFileExtension),
         label: () => $gettext(appFileExtension.newFileMenu.menuTitle()),
         isVisible: ({ space }) => {
-          // files created via an upload-only link couldn't be edited afterwards
+          // files created via an upload-only link or share couldn't be edited afterwards
           if (
-            isPublicSpaceResource(space) &&
+            (isPublicSpaceResource(space) || isShareSpaceResource(space)) &&
             !unref(currentFolder)?.permissions?.includes(DavPermission.Updateable)
           ) {
             return false

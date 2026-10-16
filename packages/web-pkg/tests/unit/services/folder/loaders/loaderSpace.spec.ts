@@ -2,6 +2,7 @@ import { mock } from 'vitest-mock-extended'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import type { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { FolderLoaderSpace, type TaskContext } from '../../../../../src/services/folder'
 import {
   useCapabilityStore,
@@ -13,6 +14,12 @@ import {
   type AuthServiceInterface,
   type ExtensionRegistry
 } from '../../../../../src/composables'
+import { getSharedDriveItem } from '../../../../../src/helpers'
+
+vi.mock('../../../../../src/helpers', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  getSharedDriveItem: vi.fn()
+}))
 
 describe('FolderLoaderSpace', () => {
   describe('isActive', () => {
@@ -39,6 +46,39 @@ describe('FolderLoaderSpace', () => {
         currentFolder: expect.objectContaining({ id: 'k2', remoteItemId: 'share-space-id' }),
         resources: [expect.objectContaining({ id: 'j1', remoteItemId: 'share-space-id' })]
       })
+    })
+
+    it('keeps the webdav permissions on the share root', async () => {
+      vi.mocked(getSharedDriveItem).mockResolvedValueOnce({
+        id: 'mount-id',
+        name: 'f1',
+        folder: {},
+        remoteItem: {
+          id: 'share-space-id',
+          permissions: [
+            {
+              id: 'p1',
+              grantedToV2: { user: { id: 'u1' } },
+              invitation: { invitedBy: { user: { id: 'u2' } } }
+            }
+          ]
+        }
+      } as DriveItem)
+      const space = {
+        id: 'share-space-id',
+        driveType: 'share',
+        graphPermissions: [],
+        getDriveAliasAndItem: () => 'share/f1'
+      } as unknown as SpaceResource
+      const root = { id: 'share-space-id', path: '/', isFolder: true, permissions: 'SNVCK' }
+
+      const { resourcesStore } = await loadFolder({ space, path: '/', resource: root as Resource })
+
+      expect(resourcesStore.initResourceList).toHaveBeenCalledWith(
+        expect.objectContaining({
+          currentFolder: expect.objectContaining({ id: 'mount-id', permissions: 'SNVCK' })
+        })
+      )
     })
 
     it('lists the root of a single file share as the only resource', async () => {
