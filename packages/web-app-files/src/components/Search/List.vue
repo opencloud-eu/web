@@ -406,6 +406,7 @@ watch(
         'q_tags',
         'q_lastModified',
         'q_mediaType',
+        'scope',
         'useScope'
       ].every((key) => newVal[key] === oldVal[key])
       if (isSameTerm && isSameFilter) {

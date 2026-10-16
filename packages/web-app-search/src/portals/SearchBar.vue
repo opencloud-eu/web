@@ -37,7 +37,8 @@
           id="files-global-search-filter"
           :current-folder-available="currentFolderAvailable"
           :current-folder-is-in-vault="currentFolderIsInVault"
-          @update:model-value="onLocationFilterChange"
+          @update:model-value="locationFilterId = $event.value.id"
+          @select="onLocationFilterSelect"
         />
       </template>
     </oc-search-bar>
@@ -256,6 +257,10 @@ const optionsDrop = computed(() => {
 })
 
 const scope = computed(() => {
+  if (isLocationCommonActive(router, 'files-common-search')) {
+    return queryItemAsString(unref(scopeQueryValue))
+  }
+
   if (unref(currentFolderAvailable) && unref(currentFolder)?.fileId) {
     return unref(currentFolder).fileId
   }
@@ -266,6 +271,7 @@ const scope = computed(() => {
 const useScope = computed(() => {
   return (
     unref(currentFolderAvailable) &&
+    !unref(currentFolderIsInVault) &&
     unref(locationFilterId) === SearchLocationFilterConstants.currentFolder
   )
 })
@@ -350,20 +356,10 @@ function getSearchResultLocation(providerId: string) {
   })
 }
 
-async function onLocationFilterChange(event: { value: { id: string } }) {
-  locationFilterId.value = event.value.id
+function onLocationFilterSelect() {
   if (isLocationCommonActive(router, 'files-common-search')) {
     onKeyUpEnter()
-    return
   }
-
-  if (!unref(term)) {
-    return
-  }
-
-  await nextTick()
-  updateLocationFilterInputPadding()
-  search()
 }
 
 async function showPreview() {
@@ -385,7 +381,7 @@ function updateTerm(input: string) {
 
 const debouncedSearch = debounce(search, 500)
 
-watch(term, () => {
+watch([term, scope, useScope], () => {
   if (unref(restoreSearchFromRoute)) {
     restoreSearchFromRoute.value = false
     return
@@ -414,6 +410,9 @@ bindKeyAction({ primary: Key.Slash, modifier: Modifier.Shift }, onSearchShortcut
 
 onMounted(() => {
   updateLocationFilterInputPadding()
+})
+watch([locationFilterId, locationFilterAvailable], updateLocationFilterInputPadding, {
+  flush: 'post'
 })
 onBeforeUnmount(() => {
   eventBus.unsubscribe('app.search.term.clear', clearTermEvent)
