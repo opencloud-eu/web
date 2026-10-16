@@ -30,7 +30,13 @@ import {
   useLoadPreview,
   useResourceLink
 } from '../../composables'
-import { isSpaceResource, Resource, SearchResource } from '@opencloud-eu/web-client'
+import {
+  isProjectSpaceResource,
+  isSpaceResource,
+  Resource,
+  SearchResource
+} from '@opencloud-eu/web-client'
+import { ProcessorType } from '../../services'
 import ResourceListItem from '../FilesList/ResourceListItem.vue'
 import SearchHighlights from './SearchHighlights.vue'
 import { SearchResultValue } from './types'
@@ -134,6 +140,7 @@ const debouncedLoadPreview = debounce(async () => {
   const preview = await loadPreview({
     space: unref(space),
     resource: unref(resource),
+    ...(isProjectSpaceResource(unref(resource)) && { processor: ProcessorType.enum.fit }),
     dimensions: ImageDimension.Thumbnail,
     cancelRunning: true,
     updateStore: false
