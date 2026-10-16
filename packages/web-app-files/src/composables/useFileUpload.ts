@@ -49,12 +49,13 @@ export const useFileUpload = (space: Ref<SpaceResource>) => {
   }
 
   let uploadCompletedSub: string
+  let uploadCancelledSub: string
 
   const canUpload = computed(() => {
     return unref(currentFolder)?.canUpload({ user: userStore.user })
   })
 
-  const onUploadComplete = async (result: UploadResult) => {
+  async function onUploadComplete(result: UploadResult) {
     const file = result.successful?.[0]
     if (!file) {
       return
@@ -97,11 +98,13 @@ export const useFileUpload = (space: Ref<SpaceResource>) => {
 
   onMounted(() => {
     uploadCompletedSub = uppyService.subscribe('uploadCompleted', onUploadComplete)
+    uploadCancelledSub = uppyService.subscribe('uploadCancelled', onUploadComplete)
   })
 
   onBeforeUnmount(() => {
     uppyService.removePlugin(uppyService.getPlugin('HandleUpload'))
     uppyService.unsubscribe('uploadCompleted', uploadCompletedSub)
+    uppyService.unsubscribe('uploadCancelled', uploadCancelledSub)
     uppyService.removeDropTarget()
   })
 
