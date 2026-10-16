@@ -301,6 +301,7 @@ function filterRoles(roles: AppRole[]) {
 }
 
 async function searchUsers() {
+  appliedSearchTerm.value = unref(searchTerm)
   await router.push({
     ...unref(route),
     query: {
@@ -308,9 +309,23 @@ async function searchUsers() {
       ...(unref(searchTerm) && { q_displayName: unref(searchTerm) })
     }
   })
-  appliedSearchTerm.value = unref(searchTerm)
   return reloadFilteredUsers()
 }
+
+// the query can change without the search bar being involved, e.g. via browser back
+watch(searchTermQuery, (value) => {
+  const term = queryItemAsString(value) || ''
+  if (term === unref(appliedSearchTerm)) {
+    return
+  }
+  searchTerm.value = term
+  appliedSearchTerm.value = term
+  loadUsersTask.perform()
+  if (unref(selectedUsers).length) {
+    userSettingsStore.setSelectedUsers([])
+  }
+  additionalUserDataLoadedForUserIds.value = []
+})
 
 const batchActions = computed(() =>
   [
