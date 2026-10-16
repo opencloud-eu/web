@@ -1,4 +1,5 @@
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import { flushPromises } from '@vue/test-utils'
 import MonthView from '../../../src/components/MonthView.vue'
 import { createAppointmentOccurrences, getMonthGridDays } from '../../../src/helpers/date'
 import type { Appointment, AppointmentOccurrence } from '../../../src/types'
@@ -22,7 +23,7 @@ describe('MonthView', () => {
     const headers = wrapper.findAll('[role="columnheader"]')
 
     expect(headers).toHaveLength(7)
-    expect(headers.map((header) => header.attributes('aria-label'))).toEqual([
+    expect(headers.map((header) => header.find('.sr-only').text())).toEqual([
       'Monday',
       'Tuesday',
       'Wednesday',
@@ -133,6 +134,50 @@ describe('MonthView', () => {
     expect(wrapper.emitted('next')).toHaveLength(1)
   })
 
+  it('keeps the focus in the grid when the month is paged from the keyboard', async () => {
+    const { wrapper } = getWrapper({ attachTo: document.body })
+    const cell = wrapper.get('[data-testid="calendar-day-cell-2026-06-25"]')
+
+    await cell.trigger('keydown', { key: 'PageDown' })
+    const july = new Date(2026, 6, 1)
+    await wrapper.setProps({ currentMonth: july, days: getMonthGridDays(july) })
+    await flushPromises()
+
+    expect(document.activeElement?.getAttribute('data-testid')).toBe('calendar-day-cell-2026-07-25')
+    wrapper.unmount()
+  })
+
+  it('groups the day cells in rows of a week inside the grid', () => {
+    const { wrapper } = getWrapper()
+    const rows = wrapper.findAll('[role="grid"] > [role="row"]')
+
+    // One header row and five weeks.
+    expect(rows).toHaveLength(6)
+    expect(rows[0].findAll('[role="columnheader"]')).toHaveLength(7)
+    expect(rows.slice(1).every((row) => row.findAll('[role="gridcell"]').length === 7)).toBe(true)
+  })
+
+  it('marks the selected day and today', () => {
+    const { wrapper } = getWrapper({ selectedDate: new Date(2026, 5, 10) })
+
+    expect(
+      wrapper.get('[data-testid="calendar-day-cell-2026-06-10"]').attributes('aria-selected')
+    ).toBe('true')
+    expect(
+      wrapper.get('[data-testid="calendar-day-cell-2026-06-25"]').attributes('aria-current')
+    ).toBe('date')
+  })
+
+  it('names the number of appointments of a day', () => {
+    const { wrapper } = getWrapper({
+      occurrencesByDay: occurrencesByDay([appointment({ id: '1' }), appointment({ id: '2' })])
+    })
+
+    expect(
+      wrapper.get('[data-testid="calendar-day-cell-2026-06-25"]').attributes('aria-label')
+    ).toBe('June 25, 2026, 2 appointments')
+  })
+
   it('does not select the day when an appointment inside it is clicked', async () => {
     const occurrences = occurrencesByDay([appointment({ id: '1' })])
     const { wrapper } = getWrapper({ occurrencesByDay: occurrences })
@@ -193,11 +238,29 @@ describe('MonthView', () => {
     ).not.toContain('No appointments in this month')
   })
 
+  it('ignores appointments on the days of the adjacent months for the hint', () => {
+    const { wrapper } = getWrapper({
+      occurrencesByDay: {
+        '2026-07-02': createAppointmentOccurrences([appointment({ start: '2026-07-02T08:00:00Z' })])
+      }
+    })
+
+    expect(wrapper.text()).toContain('No appointments in this month')
+  })
+
+  it('hints that no calendar is selected', () => {
+    const { wrapper } = getWrapper({ hasSelectedCalendars: false })
+
+    expect(wrapper.text()).toContain('No calendar selected')
+    expect(wrapper.text()).not.toContain('No appointments in this month')
+  })
+
   it('renders the loading state', () => {
     const { wrapper } = getWrapper({ isLoading: true })
 
     expect(wrapper.find('[data-testid="calendar-loading"]').exists()).toBeTruthy()
-    expect(wrapper.find('[role="grid"]').exists()).toBeFalsy()
+    // The grid stays mounted, so the keyboard focus is kept while loading.
+    expect(wrapper.get('[role="grid"]').attributes('aria-busy')).toBe('true')
   })
 
   it('renders a generic error state without leaking the error message', () => {
@@ -211,7 +274,10 @@ describe('MonthView', () => {
   })
 })
 
-const getWrapper = (props: Partial<InstanceType<typeof MonthView>['$props']> = {}) => {
+const getWrapper = ({
+  attachTo,
+  ...props
+}: Partial<InstanceType<typeof MonthView>['$props']> & { attachTo?: HTMLElement } = {}) => {
   const currentMonth = new Date(2026, 5, 1)
 
   return {
@@ -219,11 +285,13 @@ const getWrapper = (props: Partial<InstanceType<typeof MonthView>['$props']> = {
       props: {
         days: getMonthGridDays(currentMonth, new Date(2026, 5, 25)),
         currentMonth,
+        selectedDate: new Date(2026, 5, 25),
         occurrencesByDay: {},
         calendarColorById: {},
         isLoading: false,
         ...props
       },
+      attachTo,
       global: {
         plugins: defaultPlugins(),
         mocks: defaultComponentMocks()
