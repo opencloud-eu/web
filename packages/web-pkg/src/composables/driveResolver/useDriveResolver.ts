@@ -4,7 +4,7 @@ import { useRouteQuery } from '../router'
 import { useSpacesLoading } from './useSpacesLoading'
 import { queryItemAsString } from '../appDefaults'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { useSpacesStore } from '../piniaStores'
+import { useAuthStore, useSpacesStore } from '../piniaStores'
 import { onUnmounted } from 'vue'
 import { getSpaceForDriveAliasAndItem } from '../../helpers/spaces'
 
@@ -20,6 +20,7 @@ interface DriveResolverResult {
 
 export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResolverResult => {
   const spacesStore = useSpacesStore()
+  const authStore = useAuthStore()
   const { areSpacesLoading } = useSpacesLoading()
   const shareId = useRouteQuery('shareId')
   const fileIdQueryItem = useRouteQuery('fileId')
@@ -89,6 +90,10 @@ export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResol
         // keep compatibility with old share jail ids pre sharing NG
         if (shareIdStr?.includes(':')) {
           shareIdStr = [SHARE_JAIL_ID, shareIdStr].join('!')
+        }
+        // guests are scoped to the share they were invited to
+        if (authStore.isGuestContext) {
+          shareIdStr = authStore.guestSpaceId
         }
 
         matchingSpace =

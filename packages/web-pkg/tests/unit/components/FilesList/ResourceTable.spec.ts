@@ -609,6 +609,16 @@ describe('ResourceTable', () => {
           'ROUTER-LINK-STUB'
         )
       })
+      it('do not render tags in a guest context', () => {
+        const resource = mock<Resource>({ id: '1', tags: ['1'] })
+        const { wrapper } = getMountedWrapper({
+          props: { resources: [resource] },
+          userContextReady: false,
+          guestContextReady: true
+        })
+        const resourceRow = wrapper.find(`[data-item-id="${resource.id}"]`)
+        expect(resourceRow.findAll('.resource-table-tag').length).toBe(0)
+      })
       it('do not render router link if user is not authenticated', () => {
         const resource = mock<Resource>({ id: '1', tags: ['1'] })
         const { wrapper } = getMountedWrapper({
@@ -735,6 +745,7 @@ describe('ResourceTable', () => {
 function getMountedWrapper({
   props = {},
   userContextReady = true,
+  guestContextReady = false,
   addProcessingResources = false,
   canBeOpenedWithSecureView = true,
   hasRenameAction = true,
@@ -744,6 +755,7 @@ function getMountedWrapper({
 }: {
   props?: PartialComponentProps<typeof ResourceTable>
   userContextReady?: boolean
+  guestContextReady?: boolean
   addProcessingResources?: boolean
   canBeOpenedWithSecureView?: boolean
   hasRenameAction?: boolean
@@ -802,7 +814,7 @@ function getMountedWrapper({
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
-              authState: { userContextReady },
+              authState: { userContextReady, guestContextReady },
               capabilityState: { capabilities },
               resourcesStore: { deleteQueue, selectedIds }
             }

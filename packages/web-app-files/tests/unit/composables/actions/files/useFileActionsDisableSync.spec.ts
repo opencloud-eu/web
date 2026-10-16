@@ -40,6 +40,17 @@ describe('disableSync', () => {
           }
         })
       })
+      it('should be set as false in a guest context', () => {
+        getWrapper({
+          isGuest: true,
+          setup: () => {
+            const { actions } = useFileActionsDisableSync()
+
+            const resources = [incomingShare(true)]
+            expect(unref(actions)[0].isVisible({ space: null, resources })).toBeFalsy()
+          }
+        })
+      })
       it('should be set as false without resources', () => {
         getWrapper({
           setup: () => {
@@ -54,9 +65,11 @@ describe('disableSync', () => {
 })
 
 function getWrapper({
-  setup
+  setup,
+  isGuest = false
 }: {
   setup: (instance: ReturnType<typeof useFileActionsDisableSync>) => void
+  isGuest?: boolean
 }) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ name: 'files-shares-with-me' })
@@ -64,7 +77,8 @@ function getWrapper({
   return {
     wrapper: getComposableWrapper(setup, {
       mocks,
-      provide: mocks
+      provide: mocks,
+      pluginOptions: { piniaOptions: { authState: { guestContextReady: isGuest } } }
     })
   }
 }

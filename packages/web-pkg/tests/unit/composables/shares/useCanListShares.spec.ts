@@ -61,6 +61,24 @@ describe('useCanListShares', () => {
         }
       })
     })
+    it('returns false in a guest context', () => {
+      getWrapper({
+        setup: ({ canListShares }) => {
+          const space = mock<ShareSpaceResource>({
+            driveType: 'share',
+            graphPermissions: [GraphSharePermission.readPermissions]
+          })
+          const resource = mock<Resource>()
+
+          const capabilityStore = useCapabilityStore()
+          vi.mocked(capabilityStore).sharingApiEnabled = true
+
+          const canList = canListShares({ space, resource })
+          expect(canList).toBeFalsy()
+        },
+        isGuest: true
+      })
+    })
     it('returns false for personal space root resources', () => {
       getWrapper({
         setup: ({ canListShares }) => {
@@ -166,10 +184,12 @@ describe('useCanListShares', () => {
 
 function getWrapper({
   setup,
-  isPersonalSpaceRoot = false
+  isPersonalSpaceRoot = false,
+  isGuest = false
 }: {
   setup: (instance: ReturnType<typeof useCanListShares>) => void
   isPersonalSpaceRoot?: boolean
+  isGuest?: boolean
 }) {
   vi.mocked(useGetMatchingSpace).mockImplementation(() =>
     useGetMatchingSpaceMock({
@@ -178,9 +198,12 @@ function getWrapper({
   )
 
   return {
-    wrapper: getComposableWrapper(() => {
-      const instance = useCanListShares()
-      setup(instance)
-    })
+    wrapper: getComposableWrapper(
+      () => {
+        const instance = useCanListShares()
+        setup(instance)
+      },
+      { pluginOptions: { piniaOptions: { authState: { guestContextReady: isGuest } } } }
+    )
   }
 }

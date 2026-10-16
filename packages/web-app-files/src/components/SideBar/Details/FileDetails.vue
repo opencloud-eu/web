@@ -257,7 +257,8 @@ const contextualHelper = {
 } as ContextualHelper
 
 const hasTags = computed(() => {
-  return tagsEnabled && capabilityStore.filesTags
+  // the tags endpoints are not available to guests
+  return tagsEnabled && capabilityStore.filesTags && !authStore.isGuestContext
 })
 
 const hasDeletionDate = computed(() => {

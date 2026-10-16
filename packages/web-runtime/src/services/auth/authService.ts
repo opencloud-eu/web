@@ -21,7 +21,7 @@ import { RouteLocation, Router } from 'vue-router'
 import {
   extractPublicLinkToken,
   isAnonymousContext,
-  isGuestLinkContextRequired,
+  isGuestContextRequired,
   isIdpContextRequired,
   isPublicLinkContextRequired,
   isUserContextRequired
@@ -158,7 +158,7 @@ export class AuthService implements AuthServiceInterface {
       } else {
         this.guestSessionManager.expire()
       }
-    } else if (isGuestLinkContextRequired(this.router, to)) {
+    } else if (isGuestContextRequired(this.router, to)) {
       await this.guestSessionManager.restoreContext(queryItemAsString(to.query.permissionId))
     } else if (to.name !== 'resolveGuestLink') {
       this.guestSessionManager.deactivate()
@@ -176,7 +176,7 @@ export class AuthService implements AuthServiceInterface {
       }
     }
 
-    if (!isAnonymousContext(this.router, to)) {
+    if (!isAnonymousContext(this.router, to) && !isGuestContextRequired(this.router, to)) {
       const fetchUserData = !isIdpContextRequired(this.router, to)
 
       if (!this.userManager.areEventHandlersRegistered) {
@@ -286,7 +286,7 @@ export class AuthService implements AuthServiceInterface {
     if (isUserContextRequired(this.router, to) || isIdpContextRequired(this.router, to)) {
       return true
     }
-    if (isAnonymousContext(this.router, to)) {
+    if (isAnonymousContext(this.router, to) || isGuestContextRequired(this.router, to)) {
       return false
     }
     return isUserSignedIn
@@ -349,7 +349,7 @@ export class AuthService implements AuthServiceInterface {
     if (
       !this.authStore.userContextReady &&
       !isPublicLinkContextRequired(this.router, route) &&
-      (isGuestLinkContextRequired(this.router, route) || isGuestSessionInvalidError(error))
+      (isGuestContextRequired(this.router, route) || isGuestSessionInvalidError(error))
     ) {
       if (!isGuestSessionInvalidError(error)) {
         return
@@ -360,7 +360,13 @@ export class AuthService implements AuthServiceInterface {
       if (!permissionId) {
         return
       }
-      return this.router.replace({ name: 'renewGuestLink', params: { permissionId } })
+      return this.router.replace({
+        name: 'renewGuestLink',
+        params: { permissionId },
+        ...(isGuestContextRequired(this.router, route) && {
+          query: { redirectUrl: route.fullPath }
+        })
+      })
     }
     if (isPublicLinkContextRequired(this.router, route)) {
       const token = extractPublicLinkToken(route)
@@ -478,6 +484,10 @@ export class AuthService implements AuthServiceInterface {
 
   public consumeExpiredGuestPermissionId(): string | undefined {
     return this.guestSessionManager.consumeExpiredPermissionId()
+  }
+
+  public consumeUnavailableGuestPermissionId(): string | undefined {
+    return this.guestSessionManager.consumeUnavailablePermissionId()
   }
 
   public async logoutUser() {

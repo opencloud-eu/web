@@ -1,5 +1,6 @@
 import {
   extractPublicLinkToken,
+  isGuestContextRequired,
   isIdpContextRequired,
   isPublicLinkContextRequired,
   isUserContextRequired
@@ -7,15 +8,12 @@ import {
 import { Router, RouteLocation } from 'vue-router'
 import {
   contextRouteNameKey,
-  locationGuestLink,
   queryItemAsString,
   useAuthStore,
   useEmbedMode
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth/authService'
 import { unref } from 'vue'
-
-const routesWithGuestPermissionId = [locationGuestLink.name]
 
 export const setupAuthGuard = (router: Router) => {
   router.beforeEach(async (to, from) => {
@@ -30,6 +28,7 @@ export const setupAuthGuard = (router: Router) => {
     await authService.initializeContext(to)
     // consume it in any case, so it can't redirect a later navigation
     const expiredGuestPermissionId = authService.consumeExpiredGuestPermissionId()
+    const unavailableGuestPermissionId = authService.consumeUnavailableGuestPermissionId()
 
     // vue-router currently (4.1.6) does not cancel navigations when a new one is triggered
     // we need to guard this case to be able to show the access denied page
@@ -39,7 +38,11 @@ export const setupAuthGuard = (router: Router) => {
     }
 
     if (expiredGuestPermissionId) {
-      return { name: 'renewGuestLink', params: { permissionId: expiredGuestPermissionId } }
+      return {
+        name: 'renewGuestLink',
+        params: { permissionId: expiredGuestPermissionId },
+        query: { redirectUrl: to.fullPath }
+      }
     }
 
     if (isPublicLinkContextRequired(router, to)) {
@@ -49,6 +52,29 @@ export const setupAuthGuard = (router: Router) => {
           name: 'resolvePublicLink',
           params: { token: publicLinkToken },
           query: { redirectUrl: to.fullPath }
+        }
+      }
+      return true
+    }
+
+    if (isGuestContextRequired(router, to)) {
+      // guest and user context can't share a tab, a full page load initializes the guest context alone
+      if (authStore.userContextReady) {
+        window.location.assign(router.resolve(to).href)
+        return false
+      }
+      if (!authStore.guestContextReady) {
+        // the session might still be valid, e.g. after a network error, so the renew page
+        // resumes it first and only renews the link if it's invalid
+        const permissionId =
+          queryItemAsString(to.query.permissionId) || unavailableGuestPermissionId
+        if (!permissionId) {
+          return { name: 'accessDenied' }
+        }
+        return {
+          name: 'renewGuestLink',
+          params: { permissionId },
+          query: { resume: 'true', redirectUrl: to.fullPath }
         }
       }
       return true
@@ -83,7 +109,7 @@ export const setupAuthGuard = (router: Router) => {
     if (
       !authStore.guestContextReady ||
       to.query.permissionId ||
-      !routesWithGuestPermissionId.includes(to.name)
+      !isGuestContextRequired(router, to)
     ) {
       return true
     }

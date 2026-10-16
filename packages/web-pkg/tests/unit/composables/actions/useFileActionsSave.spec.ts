@@ -2,7 +2,7 @@ import { mock } from 'vitest-mock-extended'
 import { ref, unref } from 'vue'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { useFileActionsSave } from '../../../../src/composables/actions/useFileActionsSave'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { GraphSharePermission, Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 describe('useFileActionsSave', () => {
   describe('saveAsAction isVisible', () => {
@@ -35,12 +35,56 @@ describe('useFileActionsSave', () => {
         }
       })
     })
+
+    it.each([
+      {
+        name: 'creatable folder share',
+        graphPermissions: [GraphSharePermission.createUpload, GraphSharePermission.createChildren],
+        visible: true
+      },
+      {
+        name: 'read-only share',
+        graphPermissions: [GraphSharePermission.readContent],
+        visible: false
+      },
+      {
+        name: 'single file share',
+        graphPermissions: [GraphSharePermission.createUpload],
+        visible: false
+      },
+      { name: 'share with unknown permissions', graphPermissions: undefined, visible: false }
+    ])('visible: $visible for a guest in a $name', ({ graphPermissions, visible }) => {
+      getWrapper({
+        isGuest: true,
+        setup: ({ saveAsAction }) => {
+          expect(
+            unref(saveAsAction).isVisible({
+              space: mock<SpaceResource>({ id: '1', driveType: 'share', graphPermissions }),
+              resources: [mock<Resource>()]
+            })
+          ).toBe(visible)
+        }
+      })
+    })
+
+    it('is not visible for a guest while the space is still loading', () => {
+      getWrapper({
+        isGuest: true,
+        setup: ({ saveAsAction }) => {
+          expect(
+            unref(saveAsAction).isVisible({ space: undefined, resources: [mock<Resource>()] })
+          ).toBe(false)
+        }
+      })
+    })
   })
 })
 
 function getWrapper({
+  isGuest = false,
   setup
 }: {
+  isGuest?: boolean
   setup: (instance: ReturnType<typeof useFileActionsSave>) => void
 }) {
   const mocks = defaultComponentMocks()
@@ -55,6 +99,10 @@ function getWrapper({
       })
       setup(instance)
     },
-    { mocks, provide: mocks }
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: { piniaOptions: { authState: { guestContextReady: isGuest } } }
+    }
   )
 }
