@@ -11,14 +11,22 @@ type OpenDrop = {
  * drops apart from a real outside click, and lets a nested drop close its ancestors.
  */
 const openDrops = new Map<HTMLElement, OpenDrop>()
+// the anchors drops were opened from, still known after they closed, e.g. to return the focus there
+const dropAnchors = new WeakMap<HTMLElement, HTMLElement | null>()
 const dropContainerSelector = '.oc-drop, [data-oc-drop-container]'
 
 export function registerOpenDrop(dropEl: HTMLElement, entry: OpenDrop): void {
   openDrops.set(dropEl, entry)
+  dropAnchors.set(dropEl, entry.getAnchor())
 }
 
 export function unregisterOpenDrop(dropEl: HTMLElement): void {
   openDrops.delete(dropEl)
+}
+
+/** Checks if `el` sits inside a drop that is currently open. */
+export function isInOpenDrop(el: Element): boolean {
+  return openDrops.has(el.closest<HTMLElement>(dropContainerSelector))
 }
 
 /** Collects the open drops that `dropEl` was opened from, closest ancestor first. */
@@ -57,6 +65,21 @@ export function isInDropChain(dropEl: HTMLElement, target: Node): boolean {
   }
 
   return getAncestorDrops(nestedDrop).some((entry) => entry === openDrops.get(dropEl))
+}
+
+/** Returns the element that opened the outermost drop `el` sits in, e.g. the toggle of a nested menu. */
+export function getOutermostDropAnchor(el: Element): HTMLElement | null {
+  const visited = new Set<HTMLElement>()
+  let anchor: HTMLElement | null = null
+  let dropEl = el.closest<HTMLElement>(dropContainerSelector)
+
+  while (dropEl && dropAnchors.get(dropEl) && !visited.has(dropEl)) {
+    visited.add(dropEl)
+    anchor = dropAnchors.get(dropEl)
+    dropEl = anchor.closest<HTMLElement>(dropContainerSelector)
+  }
+
+  return anchor
 }
 
 /** Closes all open drops that `dropEl` was opened from. */

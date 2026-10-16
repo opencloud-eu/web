@@ -1,9 +1,11 @@
 import { ref } from 'vue'
-import { mock } from 'vitest-mock-extended'
-import { Key, KeyboardActions, Modifier } from '@opencloud-eu/web-pkg'
+import { Key, Modifier, useKeyboardActions } from '@opencloud-eu/web-pkg'
 import { Item } from '@opencloud-eu/web-client'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { enableAutoUnmount } from '@vue/test-utils'
 import { useKeyboardTableNavigation } from '../../../../src/composables/keyboardActions'
+
+enableAutoUnmount(afterEach)
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -22,8 +24,19 @@ describe('useKeyboardTableNavigation', () => {
     })
     it('toggles the last selected row', () => {
       const { selectedRows, triggerKey } = getWrapper({ lastSelectedRowId: '2' })
-      triggerKey(Key.Space)
+      const event = triggerKey(Key.Space)
       expect(selectedRows.value.map(({ id }) => id)).toEqual(['2'])
+      expect(event.defaultPrevented).toBe(true)
+    })
+    it('leaves Space to a focused checkbox', () => {
+      const { selectedRows, triggerKey } = getWrapper({ lastSelectedRowId: '2' })
+      const checkbox = document.createElement('input')
+      checkbox.type = 'checkbox'
+      document.body.appendChild(checkbox)
+      const event = triggerKey(Key.Space, undefined, checkbox)
+      checkbox.remove()
+      expect(selectedRows.value).toEqual([])
+      expect(event.defaultPrevented).toBe(false)
     })
   })
   describe('shift + arrow', () => {
@@ -54,20 +67,23 @@ function getWrapper({
   lastSelectedRowId: string | null
 }) {
   const selectedRowsRef = ref<Item[]>(selectedRows)
-  const callbacks: Record<string, (event?: KeyboardEvent) => void> = {}
-  const keyActions = mock<KeyboardActions>({
-    selectionCursor: ref(0),
-    bindKeyAction: (keys, callback) => {
-      callbacks[`${keys.modifier || ''}${keys.primary}`] = callback
-      return ''
-    }
-  })
   const wrapper = getComposableWrapper(() => {
+    const keyActions = useKeyboardActions()
     useKeyboardTableNavigation(keyActions, ref(items), selectedRowsRef, ref(lastSelectedRowId))
   })
   return {
     wrapper,
     selectedRows: selectedRowsRef,
-    triggerKey: (primary: Key, modifier?: Modifier) => callbacks[`${modifier || ''}${primary}`]()
+    triggerKey: (primary: Key, modifier?: Modifier, target: EventTarget = document.body) => {
+      const event = new KeyboardEvent('keydown', {
+        key: primary,
+        shiftKey: modifier === Modifier.Shift,
+        ctrlKey: modifier === Modifier.Ctrl,
+        bubbles: true,
+        cancelable: true
+      })
+      target.dispatchEvent(event)
+      return event
+    }
   }
 }

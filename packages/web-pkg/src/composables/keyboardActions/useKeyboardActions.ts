@@ -56,6 +56,11 @@ const areCustomKeyBindingsDisabled = (event: KeyboardEvent) => {
   // the event target stays reliable even if a handler (e.g. vue-select on Escape) blurred it meanwhile
   const activeElement = event.target instanceof Element ? event.target : document.activeElement
 
+  // focused controls keep their own Space behavior, e.g. toggling a row checkbox
+  if (event.key === Key.Space && activeElement?.closest(controlSelector)) {
+    return true
+  }
+
   if (
     (activeElement instanceof HTMLInputElement && activeElement.type !== 'checkbox') ||
     activeElement instanceof HTMLTextAreaElement ||
@@ -92,6 +97,30 @@ const areCustomKeyBindingsDisabled = (event: KeyboardEvent) => {
   const isTextSelected = window.getSelection().type === 'Range'
   return isTextSelected
 }
+
+const controlSelector = [
+  'input',
+  'button',
+  'a[href]',
+  'select',
+  'textarea',
+  'summary',
+  '[role="button"]',
+  '[role="checkbox"]',
+  '[role="combobox"]',
+  '[role="link"]',
+  '[role="menuitem"]',
+  '[role="menuitemcheckbox"]',
+  '[role="menuitemradio"]',
+  '[role="option"]',
+  '[role="radio"]',
+  '[role="slider"]',
+  '[role="spinbutton"]',
+  '[role="switch"]',
+  '[role="tab"]',
+  '[role="textbox"]',
+  '[role="treeitem"]'
+].join(', ')
 
 export const useKeyboardActions = (options?: KeyboardActionsOptions): KeyboardActions => {
   const actions = ref<Array<KeyboardAction>>([])
