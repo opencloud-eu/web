@@ -58,13 +58,23 @@ export const getMonthGridDateRange = (currentMonth: Date): AppointmentDateRange 
 }
 
 export const createAppointmentOccurrences = (appointments: Appointment[]) => {
-  // Recurrence rules are intentionally not expanded in the browser. Each event or expanded
-  // recurrence instance returned by the Groupware API becomes one display occurrence here.
+  // MVP limitation: the Groupware API neither expands recurrences nor offers to do so, and the
+  // browser does not expand recurrence rules either. A recurring event is therefore shown only
+  // at its first occurrence.
   return appointments.filter(({ excluded }) => !excluded).map(createAppointmentOccurrence)
 }
 
-export const groupAppointmentOccurrencesByDay = (occurrences: AppointmentOccurrence[]) => {
+/**
+ * Groups the occurrences by the days they cover. Only days inside the given range are taken into
+ * account, so a broken or very long appointment can't create an unbounded number of days.
+ */
+export const groupAppointmentOccurrencesByDay = (
+  occurrences: AppointmentOccurrence[],
+  range: AppointmentDateRange
+) => {
   const result: Record<string, AppointmentOccurrence[]> = {}
+  const rangeStart = DateTime.fromISO(range.start).startOf('day')
+  const rangeEnd = DateTime.fromISO(range.end).startOf('day')
 
   for (const occurrence of occurrences) {
     const start = getOccurrenceDateTime(occurrence, 'start')
@@ -73,9 +83,10 @@ export const groupAppointmentOccurrencesByDay = (occurrences: AppointmentOccurre
       continue
     }
 
-    const lastDay = getLastCoveredInstant(start, end).startOf('day')
+    const firstDay = DateTime.max(start.startOf('day'), rangeStart)
+    const lastDay = DateTime.min(getLastCoveredInstant(start, end).startOf('day'), rangeEnd)
 
-    for (let cursor = start.startOf('day'); cursor <= lastDay; cursor = cursor.plus({ days: 1 })) {
+    for (let cursor = firstDay; cursor <= lastDay; cursor = cursor.plus({ days: 1 })) {
       const key = cursor.toFormat(DATE_KEY_FORMAT)
       result[key] = result[key] || []
       result[key].push(occurrence)
@@ -152,13 +163,9 @@ const getMonthGridRange = (currentMonth: Date) => {
 
 const createAppointmentOccurrence = (appointment: Appointment): AppointmentOccurrence => {
   return {
-    id: [
-      appointment.calendarId || '',
-      appointment.id,
-      appointment.recurrenceId || appointment.start
-    ]
-      .filter(Boolean)
-      .join(':'),
+    // The calendar is not part of the id: an appointment can be in several calendars, and which of
+    // them it is shown in changes with the calendar selection.
+    id: [appointment.id, appointment.recurrenceId || appointment.start].join(':'),
     appointmentId: appointment.id,
     calendarId: appointment.calendarId,
     start: appointment.start,
@@ -184,10 +191,23 @@ const getAppointmentDateTime = (value: string, appointment: Appointment) => {
     return DateTime.fromISO(value.slice(0, 10)).startOf('day')
   }
 
-  return DateTime.fromISO(
-    value,
-    appointment.timeZone ? { zone: appointment.timeZone } : { setZone: true }
-  ).toLocal()
+  return parseDateTime(value, appointment.timeZone).toLocal()
+}
+
+/**
+ * Parses a date string in the given time zone. Time zones that are not IANA ones, e.g. the Windows
+ * names used by Exchange, are unknown to Luxon. The date is then read as it is, so that the
+ * appointment is still shown instead of being dropped as invalid.
+ */
+export const parseDateTime = (value: string, timeZone?: string | null) => {
+  if (timeZone) {
+    const dateTime = DateTime.fromISO(value, { zone: timeZone })
+    if (dateTime.isValid) {
+      return dateTime
+    }
+  }
+
+  return DateTime.fromISO(value, { setZone: true })
 }
 
 const compareOccurrences = (left: AppointmentOccurrence, right: AppointmentOccurrence) => {

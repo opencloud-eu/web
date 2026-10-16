@@ -3,8 +3,10 @@
     <MonthView
       :days="monthDays"
       :current-month="currentMonth"
+      :selected-date="selectedDate"
       :occurrences-by-day="occurrencesByDay"
       :calendar-color-by-id="calendarColorById"
+      :has-selected-calendars="selectedCalendarIds.length > 0"
       :is-loading="isCalendarLoading"
       :error="calendarLoadError"
       @previous="goToPreviousMonth"
@@ -53,9 +55,10 @@ const {
   calendarIds,
   calendarsById,
   currentMonth,
-  currentMonthRange,
   monthDays,
   occurrencesByDay,
+  selectedCalendarIds,
+  selectedDate,
   selectedOccurrence
 } = storeToRefs(appointmentsStore)
 const { goToNextMonth, goToPreviousMonth, goToToday, setSelectedDate, setSelectedOccurrence } =
@@ -64,7 +67,6 @@ const { goToNextMonth, goToPreviousMonth, goToToday, setSelectedDate, setSelecte
 const currentAccountIdQuery = useRouteQuery('accountId')
 const isInitializing = ref(true)
 const accountError = ref<Error>()
-const loadedAccountId = ref<string>()
 
 const currentAccountId = computed(() => unref(currentAccount)?.accountId)
 
@@ -80,26 +82,28 @@ const isCalendarLoading = computed(() => {
 const calendarLoadError = computed(() => unref(accountError) || unref(error))
 
 // Load errors are logged and exposed via `error` by the loading tasks already.
-const ignoreHandledError = () => {}
+function ignoreHandledError() {}
 
-const loadVisibleAppointments = async () => {
-  const accountId = unref(currentAccountId)
-
-  if (!accountId || !unref(calendarIds).length) {
+/**
+ * The Groupware API can't filter by date, so all appointments of the account are loaded at once
+ * and changing the month doesn't need another request.
+ */
+async function loadAccountAppointments(accountId: string) {
+  if (!unref(calendarIds).length) {
     clearAppointments()
     return
   }
 
-  await loadAppointments(accountId, unref(currentMonthRange), unref(calendarIds))
+  await loadAppointments(accountId, unref(calendarIds))
 }
 
-const loadAccountCalendars = async () => {
+async function loadAccountCalendars() {
   const accountId = unref(currentAccountId)
-  loadedAccountId.value = undefined
+  // Cancel a still running request of the previous account, it must not write into this one.
+  clearAppointments()
   appointmentsStore.setActiveAccountId(accountId)
 
   if (!accountId) {
-    clearAppointments()
     return
   }
 
@@ -108,17 +112,8 @@ const loadAccountCalendars = async () => {
     return
   }
 
-  loadedAccountId.value = accountId
-  await loadVisibleAppointments()
+  await loadAccountAppointments(accountId)
 }
-
-watch(currentMonthRange, () => {
-  if (unref(loadedAccountId) !== unref(currentAccountId)) {
-    return
-  }
-
-  loadVisibleAppointments().catch(ignoreHandledError)
-})
 
 watch(
   currentAccountId,

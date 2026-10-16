@@ -12,7 +12,7 @@ export function useAppointmentPresentation() {
   function formatParticipant(participant: AppointmentParticipant) {
     const identity = participant.name || participant.email || $gettext('Unknown participant')
     const status = formatParticipantStatus(participant.status)
-    return status ? `${identity} (${status})` : identity
+    return status ? $gettext('%{name} (%{status})', { name: identity, status }) : identity
   }
 
   function formatParticipantStatus(status?: string) {
@@ -25,6 +25,8 @@ export function useAppointmentPresentation() {
         return $gettext('Tentative')
       case 'needs-action':
         return $gettext('Needs action')
+      case 'delegated':
+        return $gettext('Delegated')
       default:
         return status || ''
     }

@@ -9,6 +9,8 @@ import {
 } from '../../../src/helpers/date'
 import type { Appointment } from '../../../src/types'
 
+const juneGridRange = getMonthGridDateRange(new Date(2026, 5, 15))
+
 describe('calendar date helpers', () => {
   it('creates a monday based month grid range', () => {
     const range = getMonthGridDateRange(new Date(2026, 5, 15))
@@ -32,7 +34,10 @@ describe('calendar date helpers', () => {
       appointment({ id: '3', start: '2026-06-26T10:00:00.000Z' })
     ]
 
-    const grouped = groupAppointmentOccurrencesByDay(createAppointmentOccurrences(appointments))
+    const grouped = groupAppointmentOccurrencesByDay(
+      createAppointmentOccurrences(appointments),
+      juneGridRange
+    )
 
     expect(grouped['2026-06-25']).toHaveLength(2)
     expect(grouped['2026-06-26']).toHaveLength(1)
@@ -47,11 +52,60 @@ describe('calendar date helpers', () => {
       })
     ]
 
-    const grouped = groupAppointmentOccurrencesByDay(createAppointmentOccurrences(appointments))
+    const grouped = groupAppointmentOccurrencesByDay(
+      createAppointmentOccurrences(appointments),
+      juneGridRange
+    )
 
     expect(grouped['2026-06-25']).toHaveLength(1)
     expect(grouped['2026-06-26']).toHaveLength(1)
     expect(grouped['2026-06-27']).toBeUndefined()
+  })
+
+  it('only groups the days inside the visible range', () => {
+    const appointments = [
+      appointment({
+        id: 'decades',
+        start: '2000-01-01T00:00:00.000Z',
+        end: '2100-01-01T00:00:00.000Z'
+      })
+    ]
+
+    const grouped = groupAppointmentOccurrencesByDay(
+      createAppointmentOccurrences(appointments),
+      juneGridRange
+    )
+
+    expect(Object.keys(grouped)).toHaveLength(35)
+    expect(Object.keys(grouped)[0]).toBe('2026-06-01')
+    expect(Object.keys(grouped).at(-1)).toBe('2026-07-05')
+  })
+
+  it('keeps appointments with a time zone that is not an IANA one', () => {
+    const occurrences = createAppointmentOccurrences([
+      appointment({
+        start: '2026-06-25T08:00:00',
+        end: '2026-06-25T09:00:00',
+        timeZone: 'W. Europe Standard Time'
+      })
+    ])
+
+    const grouped = groupAppointmentOccurrencesByDay(occurrences, juneGridRange)
+
+    expect(grouped['2026-06-25']).toHaveLength(1)
+    expect(
+      isAppointmentInRange(occurrences[0].appointment, {
+        start: '2026-06-25T00:00:00.000Z',
+        end: '2026-06-25T23:59:59.999Z'
+      })
+    ).toBeTruthy()
+  })
+
+  it('does not change the occurrence id with the calendar it is shown in', () => {
+    const [personal] = createAppointmentOccurrences([appointment({ calendarId: 'personal' })])
+    const [team] = createAppointmentOccurrences([appointment({ calendarId: 'team' })])
+
+    expect(personal.id).toBe(team.id)
   })
 
   it('navigates months from the first of the target month', () => {

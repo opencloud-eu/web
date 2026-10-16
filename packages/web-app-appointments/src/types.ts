@@ -110,7 +110,10 @@ export const CalendarSchema = z.object({
   displayName: optionalString,
   color: optionalString,
   isDefault: optionalBoolean,
-  isReadOnly: optionalBoolean
+  sortOrder: z
+    .number()
+    .nullish()
+    .transform((value) => value ?? undefined)
 })
 
 export const CalendarListResponseSchema = z.object({
@@ -181,7 +184,7 @@ export type Calendar = {
   name: string
   color?: string
   isDefault?: boolean
-  isReadOnly?: boolean
+  sortOrder?: number
 }
 
 export type AppointmentDateRange = {

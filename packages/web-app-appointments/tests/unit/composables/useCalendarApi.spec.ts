@@ -2,11 +2,6 @@ import { createCalendarApi } from '../../../src/composables/useCalendarApi'
 
 const GROUPWARE_URL = 'https://example.test/groupware'
 
-const visibleRange = {
-  start: '2026-05-31T22:00:00.000Z',
-  end: '2026-07-05T21:59:59.999Z'
-}
-
 describe('calendar api composable', () => {
   it('loads and normalizes calendars, forwarding the abort signal', async () => {
     const client = {
@@ -38,7 +33,7 @@ describe('calendar api composable', () => {
   })
 
   // The Groupware API does not accept a date range yet, see useCalendarApi.
-  it('loads calendar events without range query params and filters them client-side', async () => {
+  it('loads all calendar events without range query params', async () => {
     const client = {
       get: vi.fn().mockResolvedValueOnce({
         data: [
@@ -49,9 +44,9 @@ describe('calendar api composable', () => {
     }
     const { api, signal } = getApi(client)
 
-    const result = await api.loadAppointments('e', visibleRange, ['c'], signal)
+    const result = await api.loadAppointments('e', ['c'], signal)
 
-    expect(result.map(({ id }) => id)).toEqual(['event-1'])
+    expect(result.map(({ id }) => id)).toEqual(['event-1', 'event-2'])
     expect(client.get).toHaveBeenCalledWith(`${GROUPWARE_URL}/accounts/e/calendars/c/events`, {
       signal
     })
@@ -65,7 +60,7 @@ describe('calendar api composable', () => {
     }
     const { api, signal } = getApi(client)
 
-    const [result] = await api.loadAppointments('e', visibleRange, ['personal'], signal)
+    const [result] = await api.loadAppointments('e', ['personal'], signal)
 
     expect(result.calendarId).toBe('personal')
     expect(result.calendarIds).toEqual(['personal'])
@@ -92,7 +87,7 @@ describe('calendar api composable', () => {
     }
     const { api, signal } = getApi(client)
 
-    const result = await api.loadAppointments('e', visibleRange, ['c'], signal)
+    const result = await api.loadAppointments('e', ['c'], signal)
 
     expect(result.map(({ id }) => id)).toEqual(['event-1', 'event-2'])
     expect(client.get).toHaveBeenNthCalledWith(
@@ -102,7 +97,7 @@ describe('calendar api composable', () => {
     )
   })
 
-  it('rejects an event collection that remains incomplete', async () => {
+  it('keeps the events of a collection that remains incomplete', async () => {
     const incompleteResponse = {
       data: {
         results: [calendarEvent({ id: 'event-1' })],
@@ -117,10 +112,12 @@ describe('calendar api composable', () => {
         .mockResolvedValueOnce(incompleteResponse)
     }
     const { api, signal } = getApi(client)
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 
-    await expect(api.loadAppointments('e', visibleRange, ['c'], signal)).rejects.toThrow(
-      'Groupware API returned an incomplete event collection for c'
-    )
+    const result = await api.loadAppointments('e', ['c'], signal)
+
+    expect(result.map(({ id }) => id)).toEqual(['event-1'])
+    expect(warnSpy).toHaveBeenCalled()
   })
 
   it('loads events from every requested calendar', async () => {
@@ -132,7 +129,7 @@ describe('calendar api composable', () => {
     }
     const { api, signal } = getApi(client)
 
-    const result = await api.loadAppointments('e', visibleRange, ['personal', 'team'], signal)
+    const result = await api.loadAppointments('e', ['personal', 'team'], signal)
 
     expect(result.map(({ id }) => id)).toEqual(['event-1', 'event-2'])
     expect(client.get).toHaveBeenNthCalledWith(
@@ -156,7 +153,7 @@ describe('calendar api composable', () => {
     }
     const { api, signal } = getApi(client)
 
-    const result = await api.loadAppointments('e', visibleRange, ['personal', 'team'], signal)
+    const result = await api.loadAppointments('e', ['personal', 'team'], signal)
 
     expect(result).toHaveLength(1)
     expect(result[0].calendarIds).toEqual(['personal', 'team'])
@@ -166,7 +163,7 @@ describe('calendar api composable', () => {
     const client = { get: vi.fn() }
     const { api, signal } = getApi(client)
 
-    await expect(api.loadAppointments('e', visibleRange, [], signal)).resolves.toEqual([])
+    await expect(api.loadAppointments('e', [], signal)).resolves.toEqual([])
     expect(client.get).not.toHaveBeenCalled()
   })
 
@@ -174,7 +171,7 @@ describe('calendar api composable', () => {
     const client = { get: vi.fn().mockRejectedValue({ response: { status: 500 } }) }
     const { api, signal } = getApi(client)
 
-    await expect(api.loadAppointments('e', visibleRange, ['personal'], signal)).rejects.toEqual({
+    await expect(api.loadAppointments('e', ['personal'], signal)).rejects.toEqual({
       response: { status: 500 }
     })
   })
