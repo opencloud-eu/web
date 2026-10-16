@@ -68,6 +68,7 @@ async function validateDisplayName() {
     return setDisplayNameError($gettext('Group name cannot exceed 255 characters'))
   }
 
+  formData.value.displayName.valid = false
   const exists = await clientService.graphAuthenticated.groups.getGroup(displayName).then(
     () => true,
     () => false
@@ -102,6 +103,7 @@ async function onConfirm() {
       title: $gettext('Failed to create group'),
       errors: [error]
     })
+    throw error
   }
 }
 
