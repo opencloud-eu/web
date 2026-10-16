@@ -21,7 +21,10 @@ const storageKey = 'oc.guestPermissionId'
 
 const sharedDriveItem = {
   name: 'Invited folder',
-  remoteItem: { id: 'share-id', permissions: [{ id: 'permission-id' }] }
+  remoteItem: {
+    id: 'share-id',
+    permissions: [{ id: 'permission-id', grantedToV2: { user: { id: 'guest@example.org' } } }]
+  }
 }
 
 describe('isGuestSessionExpiredError', () => {
@@ -91,7 +94,29 @@ describe('GuestSessionManager', () => {
       const authStore = useAuthStore()
       expect(authStore.guestContextReady).toBeTruthy()
       expect(authStore.guestPermissionId).toEqual('permission-id')
+      expect(authStore.guestEmail).toEqual('guest@example.org')
       expect(localStorage.getItem(storageKey)).toEqual('permission-id')
+    })
+
+    it('uses the recipient of the matching permission for the guest email', async () => {
+      const { manager } = getManager({
+        driveItems: [
+          {
+            ...sharedDriveItem,
+            remoteItem: {
+              ...sharedDriveItem.remoteItem,
+              permissions: [
+                { id: 'other-permission-id', grantedToV2: { user: { id: 'other@example.org' } } },
+                ...sharedDriveItem.remoteItem.permissions
+              ]
+            }
+          }
+        ]
+      })
+
+      await manager.redeem('magic-token')
+
+      expect(useAuthStore().guestEmail).toEqual('guest@example.org')
     })
 
     it('rejects and grants no session when the redemption fails', async () => {
@@ -533,6 +558,7 @@ describe('GuestSessionManager', () => {
 
       expect(useAuthStore().guestContextReady).toBeTruthy()
       expect(useSpacesStore().getSpace('share-id')).toBeDefined()
+      expect(useAuthStore().guestEmail).toEqual('guest@example.org')
     })
 
     it('restores the guest context of an explicitly given permission id', async () => {

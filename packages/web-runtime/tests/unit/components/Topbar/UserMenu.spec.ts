@@ -161,6 +161,24 @@ describe('User Menu component', () => {
       expect(wrapper.find('#oc-topbar-account-guest').exists()).toBeTruthy()
       expect(wrapper.find('#oc-topbar-account-login').exists()).toBeFalsy()
     })
+    it('shows the guest email below the guest label and derives avatar initials from it', () => {
+      const wrapper = getMountedWrapper({}, 'alex.ackermann@example.org', true, false, true)
+      const guest = wrapper.find('#oc-topbar-account-guest')
+
+      expect(guest.find('span.block').text()).toBe('Guest')
+      expect(guest.find('span.text-sm').text()).toBe('alex.ackermann@example.org')
+      expect(guest.find('.avatar-initials').text()).toBe('AA')
+      expect(wrapper.find('.oc-topbar-guest-avatar .avatar-initials').text()).toBe('AA')
+      expect(wrapper.find('#oc-topbar-account-login').exists()).toBeFalsy()
+      expect(wrapper.find('#oc-topbar-account-logout').exists()).toBeFalsy()
+    })
+    it('falls back to the guest label and user icon without an email', () => {
+      const wrapper = getMountedWrapper({}, noEmail, true, false, true)
+
+      expect(wrapper.find('#oc-topbar-account-guest').text()).toBe('Guest')
+      expect(wrapper.find('#oc-topbar-account-guest .text-sm').exists()).toBeFalsy()
+      expect(wrapper.find('.oc-topbar-guest-avatar').exists()).toBeFalsy()
+    })
     it('links to account-preferences in the guest context', () => {
       const wrapper = getMountedWrapper({}, noEmail, true, false, true)
       const button = wrapper.findComponent<typeof OcButton>('#oc-topbar-account-manage')
@@ -225,7 +243,8 @@ const getMountedWrapper = (
               userContextReady: !noUser,
               publicLinkContextReady: noUser && !isGuest,
               publicLinkToken: noUser && !isGuest ? 'token' : null,
-              guestContextReady: isGuest
+              guestContextReady: isGuest,
+              guestEmail: isGuest ? userEmail : null
             }
           }
         })

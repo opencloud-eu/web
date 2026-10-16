@@ -15,6 +15,14 @@
         background-color="var(--oc-role-on-chrome)"
         color="var(--oc-role-chrome)"
       />
+      <oc-avatar
+        v-else-if="authStore.isGuestContext && authStore.guestEmail"
+        class="oc-topbar-avatar oc-topbar-guest-avatar inline-flex justify-center items-center"
+        :user-name="guestAvatarName"
+        :width="36"
+        background-color="var(--oc-role-on-chrome)"
+        color="var(--oc-role-chrome)"
+      />
       <oc-avatar-item
         v-else
         class="oc-topbar-avatar inline-flex justify-center items-center"
@@ -40,10 +48,20 @@
           <li
             v-if="authStore.isGuestContext"
             id="oc-topbar-account-guest"
-            class="flex items-center pl-2 min-h-10.5 gap-2"
+            class="flex items-center pl-2 min-h-10.5 gap-4"
           >
-            <oc-icon name="user" fill-type="line" class="p-1" />
-            <span v-text="$gettext('Guest')" />
+            <oc-avatar
+              v-if="authStore.guestEmail"
+              :user-name="guestAvatarName"
+              :width="36"
+              color="var(--oc-role-on-chrome)"
+              background-color="var(--oc-role-chrome)"
+            />
+            <oc-icon v-else name="user" fill-type="line" class="p-1" />
+            <span :class="{ 'py-1': !authStore.guestEmail }">
+              <span class="block" v-text="$gettext('Guest')" />
+              <span v-if="authStore.guestEmail" class="text-sm" v-text="authStore.guestEmail" />
+            </span>
           </li>
           <li class="flex items-center">
             <oc-button
@@ -177,6 +195,8 @@ const authService = useAuthService()
 const authStore = useAuthStore()
 
 const { user } = storeToRefs(userStore)
+
+const guestAvatarName = computed(() => authStore.guestEmail?.split('@')[0].replace(/[._]/g, ' '))
 
 const accountPageRoute = computed<RouteLocationRaw>(() => {
   if (authStore.userContextReady) {

@@ -33,6 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
   const guestContextReady = ref(false)
   const guestPermissionId = ref<string>()
   const guestSpaceId = ref<string>()
+  const guestEmail = ref<string>()
   const webfingerDiscoveryData = ref<WebfingerDiscoveryData>()
 
   const isGuestContext = computed(() => unref(guestContextReady) && !unref(userContextReady))
@@ -61,9 +62,10 @@ export const useAuthStore = defineStore('auth', () => {
     publicLinkContextReady.value = context.publicLinkContextReady
   }
 
-  const setGuestContext = (permissionId: string, spaceId: string) => {
+  const setGuestContext = (permissionId: string, spaceId: string, email?: string) => {
     guestPermissionId.value = permissionId
     guestSpaceId.value = spaceId
+    guestEmail.value = email
     guestContextReady.value = true
   }
 
@@ -71,6 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
     guestContextReady.value = false
     guestPermissionId.value = null
     guestSpaceId.value = null
+    guestEmail.value = null
   }
 
   const clearUserContext = () => {
@@ -125,6 +128,7 @@ export const useAuthStore = defineStore('auth', () => {
     guestContextReady,
     guestPermissionId,
     guestSpaceId,
+    guestEmail,
     isGuestContext,
     webfingerDiscoveryData,
 

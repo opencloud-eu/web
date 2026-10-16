@@ -29,6 +29,7 @@ interface StoredGuestLinkRenewal {
 export interface GuestSession {
   permissionId: string
   space: ShareSpaceResource
+  email?: string
 }
 
 const sessionExpiredErrorType = 'session_expired'
@@ -382,11 +383,11 @@ export class GuestSessionManager {
     return session
   }
 
-  private activate({ permissionId, space }: GuestSession): void {
+  private activate({ permissionId, space, email }: GuestSession): void {
     this.expiredPermissionId = undefined
     this.unavailablePermissionId = undefined
     localStorage.setItem(storageKey, permissionId)
-    this.authStore.setGuestContext(permissionId, space.id)
+    this.authStore.setGuestContext(permissionId, space.id, email)
   }
 
   // another tab might have persisted the session of a different share meanwhile
@@ -437,6 +438,7 @@ export class GuestSessionManager {
         shareName: driveItem.name
       })
 
-    return { permissionId, space }
+    const permission = driveItem.remoteItem.permissions.find(({ id }) => id === permissionId)
+    return { permissionId, space, email: permission.grantedToV2?.user?.id }
   }
 }
