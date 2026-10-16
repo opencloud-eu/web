@@ -417,7 +417,8 @@ describe('AuthService', () => {
     const storedToken = JSON.stringify({ permissionId: 'permission-id', token: 'magic-token' })
     const guestLinkRoute = {
       name: 'files-guest-link',
-      meta: { authContext: 'anonymous' },
+      fullPath: '/files/guest/share/folder',
+      meta: { authContext: 'guest' },
       params: {},
       query: {}
     } as unknown as RouteLocation
@@ -455,7 +456,8 @@ describe('AuthService', () => {
       expect(localStorage.getItem('oc.guestLinkToken')).toEqual(storedToken)
       expect(replace).toHaveBeenCalledWith({
         name: 'renewGuestLink',
-        params: { permissionId: 'permission-id' }
+        params: { permissionId: 'permission-id' },
+        query: { redirectUrl: '/files/guest/share/folder' }
       })
     })
 
@@ -478,7 +480,8 @@ describe('AuthService', () => {
 
       expect(replace).toHaveBeenCalledWith({
         name: 'renewGuestLink',
-        params: { permissionId: 'expired-permission-id' }
+        params: { permissionId: 'expired-permission-id' },
+        query: { redirectUrl: '/files/guest/share/folder' }
       })
     })
 
@@ -501,6 +504,35 @@ describe('AuthService', () => {
       expect(removeUser).not.toHaveBeenCalled()
       expect(authStore.guestContextReady).toBeFalsy()
       expect(localStorage.getItem('oc.guestPermissionId')).toBeNull()
+      expect(replace).toHaveBeenCalledWith({
+        name: 'renewGuestLink',
+        params: { permissionId: 'permission-id' },
+        query: { redirectUrl: '/files/guest/share/folder' }
+      })
+    })
+
+    it('does not pass a redirect url outside of guest routes', async () => {
+      const authService = new AuthService()
+      Object.defineProperty(authService, 'userManager', {
+        value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null) })
+      })
+
+      const router = createRouter()
+      const replace = vi.spyOn(router, 'replace').mockResolvedValue(undefined)
+      const { authStore } = initAuthService({ authService, router })
+      authStore.setGuestContext('permission-id', 'share-id')
+
+      await authService.handleAuthError(
+        {
+          name: 'other',
+          fullPath: '/other',
+          meta: { authContext: 'anonymous' },
+          params: {},
+          query: {}
+        } as unknown as RouteLocation,
+        guestEndpointUnauthorizedError()
+      )
+
       expect(replace).toHaveBeenCalledWith({
         name: 'renewGuestLink',
         params: { permissionId: 'permission-id' }
@@ -628,9 +660,11 @@ describe('AuthService', () => {
       )
 
       expect(clear).toHaveBeenCalledWith('token')
-      expect(push).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'resolvePublicLink', params: { token: 'token' } })
-      )
+      expect(push).toHaveBeenCalledWith({
+        name: 'resolvePublicLink',
+        params: { token: 'token' },
+        query: { redirectUrl: '/s/token' }
+      })
       expect(localStorage.getItem('oc.guestPermissionId')).toEqual('permission-id')
     })
   })
@@ -661,7 +695,8 @@ describe('AuthService', () => {
 
     const guestRoute = {
       name: 'files-guest-link',
-      meta: { authContext: 'anonymous' },
+      fullPath: '/files/guest/share/folder',
+      meta: { authContext: 'guest' },
       params: {},
       query: {}
     } as unknown as RouteLocation
@@ -732,9 +767,9 @@ describe('AuthService', () => {
       })
       await authService.initializeContext({
         name: 'files-guest-link',
-        path: '/guest/Invited folder',
-        params: { shareName: 'Invited folder' },
-        meta: { authContext: 'anonymous' },
+        path: '/guest/share/Invited folder',
+        params: { driveAliasAndItem: 'share/Invited folder' },
+        meta: { authContext: 'guest' },
         query: { permissionId: 'permission-id' }
       } as unknown as RouteLocation)
 
@@ -915,9 +950,9 @@ describe('AuthService', () => {
       const router = createRouter()
       router.addRoute({
         name: 'files-guest-link',
-        path: '/guest/:shareName?',
+        path: '/guest/:driveAliasAndItem(.*)?',
         component: {},
-        meta: { authContext: 'anonymous' }
+        meta: { authContext: 'guest' }
       })
       const { authStore } = initAuthService({ authService, clientService, router })
       await authService.initializeContext({

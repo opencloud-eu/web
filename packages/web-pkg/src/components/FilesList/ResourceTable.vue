@@ -459,7 +459,10 @@ const isRowSelected = (item: Resource) => resourcesStore.selectedIdsSet.has(item
 
 const { width } = useWindowSize()
 const hasTags = computed(
-  () => capabilityStore.filesTags && width.value >= TAGS_MINIMUM_SCREEN_WIDTH
+  () =>
+    capabilityStore.filesTags &&
+    !authStore.isGuestContext &&
+    width.value >= TAGS_MINIMUM_SCREEN_WIDTH
 )
 
 const resourceTableActions = computed(() =>

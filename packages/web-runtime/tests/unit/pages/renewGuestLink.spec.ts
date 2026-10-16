@@ -1,9 +1,10 @@
 import { ref } from 'vue'
 import { AxiosError, AxiosResponse } from 'axios'
-import { mockDeep } from 'vitest-mock-extended'
+import { mock, mockDeep } from 'vitest-mock-extended'
 import { enableAutoUnmount, flushPromises } from '@vue/test-utils'
-import { useRouteParam } from '@opencloud-eu/web-pkg'
+import { useRouteParam, useRouteQuery } from '@opencloud-eu/web-pkg'
 import { ShareSpaceResource } from '@opencloud-eu/web-client'
+import { RouteLocationResolved } from 'vue-router'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import RenewGuestLink from '../../../src/pages/renewGuestLink.vue'
 import { authService } from '../../../src/services/auth'
@@ -13,10 +14,23 @@ import {
 } from '../../../src/services/auth/guestSessionManager'
 
 vi.mock('../../../src/services/auth')
+const { getGuestLinkTargetRoute } = vi.hoisted(() => ({
+  getGuestLinkTargetRoute: vi.fn(({ permissionId, space }: GuestSession) =>
+    Promise.resolve({
+      name: 'files-guest-link',
+      params: { driveAliasAndItem: space.driveAlias },
+      query: { shareId: space.id, permissionId }
+    })
+  )
+}))
+vi.mock('../../../src/composables/guestLink', () => ({
+  useGuestLinkTargetRoute: () => ({ getGuestLinkTargetRoute })
+}))
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useRouteParam: vi.fn()
+  useRouteParam: vi.fn(),
+  useRouteQuery: vi.fn()
 }))
 
 const selectors = {
@@ -26,6 +40,8 @@ const selectors = {
   pinInput: 'input[data-testid="pin-input"]',
   pinSubmit: '[data-testid="pin-submit"]'
 }
+
+const guestRedirectUrl = '/files/guest/share/folder/sub?permissionId=permission-id'
 
 enableAutoUnmount(afterEach)
 
@@ -148,8 +164,8 @@ describe('renewGuestLink', () => {
     expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'files-guest-link',
-        params: { shareName: 'Invited folder' },
-        query: { permissionId: 'permission-id' }
+        params: { driveAliasAndItem: 'share/Invited folder' },
+        query: { shareId: 'share-id', permissionId: 'permission-id' }
       })
     )
   })
@@ -270,9 +286,117 @@ describe('renewGuestLink', () => {
     expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'files-guest-link',
-        query: { permissionId: 'permission-id' }
+        query: { shareId: 'share-id', permissionId: 'permission-id' }
       })
     )
+  })
+
+  it('opens the redirect url after resuming the session', async () => {
+    const { mocks } = getWrapper({
+      hasGuestSession: true,
+      query: { redirectUrl: guestRedirectUrl }
+    })
+    mocks.$router.resolve.mockReturnValue(
+      mock<RouteLocationResolved>({ meta: { authContext: 'guest' } })
+    )
+    await flushPromises()
+
+    expect(mocks.$router.replace).toHaveBeenCalledWith({
+      path: '/files/guest/share/folder/sub',
+      query: { permissionId: 'permission-id' }
+    })
+    expect(getGuestLinkTargetRoute).not.toHaveBeenCalled()
+  })
+
+  it('keeps nested context query params of the redirect url', async () => {
+    const { mocks } = getWrapper({
+      hasGuestSession: true,
+      query: {
+        redirectUrl:
+          '/preview/share/file.png?contextRouteName=files-guest-link&contextRouteParams.driveAliasAndItem=share/folder&contextRouteQuery.permissionId=permission-id'
+      }
+    })
+    mocks.$router.resolve.mockReturnValue(
+      mock<RouteLocationResolved>({ meta: { authContext: 'guest' } })
+    )
+    await flushPromises()
+
+    expect(mocks.$router.replace).toHaveBeenCalledWith({
+      path: '/preview/share/file.png',
+      query: {
+        contextRouteName: 'files-guest-link',
+        contextRouteParams: { driveAliasAndItem: 'share/folder' },
+        contextRouteQuery: { permissionId: 'permission-id' }
+      }
+    })
+  })
+
+  it('opens the redirect url after verifying the pin', async () => {
+    const { wrapper, mocks } = getWrapper({ query: { redirectUrl: guestRedirectUrl } })
+    mocks.$router.resolve.mockReturnValue(
+      mock<RouteLocationResolved>({ meta: { authContext: 'guest' } })
+    )
+    await flushPromises()
+
+    await wrapper.find(selectors.pinInput).setValue('123456')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(mocks.$router.replace).toHaveBeenCalledWith({
+      path: '/files/guest/share/folder/sub',
+      query: { permissionId: 'permission-id' }
+    })
+  })
+
+  it('opens the shared item instead of a redirect url outside of guest routes', async () => {
+    const { mocks } = getWrapper({
+      hasGuestSession: true,
+      query: { redirectUrl: '/files/spaces/personal' }
+    })
+    mocks.$router.resolve.mockReturnValue(
+      mock<RouteLocationResolved>({ meta: { authContext: 'user' } })
+    )
+    await flushPromises()
+
+    expect(getGuestLinkTargetRoute).toHaveBeenCalledWith(
+      expect.objectContaining({ permissionId: 'permission-id' })
+    )
+    expect(mocks.$router.replace).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'files-guest-link' })
+    )
+    expect(mocks.$router.replace).not.toHaveBeenCalledWith(
+      expect.objectContaining({ path: '/files/spaces/personal' })
+    )
+  })
+
+  it('resumes a session that could not be restored without renewing', async () => {
+    getWrapper({ query: { resume: 'true' } })
+    await flushPromises()
+
+    expect(authService.resumeGuestSession).toHaveBeenCalledWith('permission-id')
+    expect(authService.renewGuestLink).not.toHaveBeenCalled()
+  })
+
+  it('renews the link when the session to resume is invalid', async () => {
+    const { wrapper } = getWrapper({
+      query: { resume: 'true' },
+      resumeError: sessionExpiredError()
+    })
+    await flushPromises()
+
+    expect(authService.renewGuestLink).toHaveBeenCalledWith('permission-id')
+    expect(wrapper.find(selectors.pinInput).exists()).toBeTruthy()
+  })
+
+  it('offers a retry when a session that could not be restored fails again', async () => {
+    const { wrapper } = getWrapper({
+      query: { resume: 'true' },
+      resumeError: guestLinkError('serviceUnavailable')
+    })
+    await flushPromises()
+
+    expect(authService.renewGuestLink).not.toHaveBeenCalled()
+    expect(wrapper.find(selectors.retryButton).exists()).toBeTruthy()
   })
 
   it('renews the link when the persisted session is invalid', async () => {
@@ -322,7 +446,11 @@ function sessionExpiredError() {
 function guestSession(): GuestSession {
   return {
     permissionId: 'permission-id',
-    space: mockDeep<ShareSpaceResource>({ name: 'Invited folder' })
+    space: mockDeep<ShareSpaceResource>({
+      id: 'share-id',
+      name: 'Invited folder',
+      driveAlias: 'share/Invited folder'
+    })
   }
 }
 
@@ -337,13 +465,15 @@ function getWrapper({
   pinError = null,
   resumeError = null,
   isRenewalPending = false,
-  hasGuestSession = false
+  hasGuestSession = false,
+  query = {}
 }: {
   renewError?: Error
   pinError?: Error
   resumeError?: Error
   isRenewalPending?: boolean
   hasGuestSession?: boolean
+  query?: Record<string, string>
 } = {}) {
   vi.mocked(authService.isGuestLinkRenewalPending).mockReturnValue(isRenewalPending)
   vi.mocked(authService.hasGuestSession).mockReturnValue(hasGuestSession)
@@ -367,6 +497,7 @@ function getWrapper({
   }
 
   vi.mocked(useRouteParam).mockReturnValue(ref('permission-id'))
+  vi.mocked(useRouteQuery).mockImplementation((name: string) => ref(query[name]))
 
   const mocks = defaultComponentMocks()
 

@@ -13,7 +13,11 @@ import {
 import { unref } from 'vue'
 import { FolderLoaderOptions } from './types'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
-import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
+import {
+  isLocationGuestActive,
+  isLocationSpacesActive,
+  isLocationPublicActive
+} from '../../../router'
 import {
   createFileRouteOptions,
   getSharedDriveItem,
@@ -35,7 +39,8 @@ export class FolderLoaderSpace implements FolderLoader {
     }
     return (
       isLocationSpacesActive(router, 'files-spaces-generic') ||
-      isLocationPublicActive(router, 'files-public-link')
+      isLocationPublicActive(router, 'files-public-link') ||
+      isLocationGuestActive(router, 'files-guest-link')
     )
   }
 
@@ -69,7 +74,6 @@ export class FolderLoaderSpace implements FolderLoader {
           davProperties.push(DavProperty.DownloadURL)
         }
 
-        // eslint-disable-next-line prefer-const
         let { resource: currentFolder, children: resources } = yield* call(
           webdav.listFiles(space, { path, fileId }, { signal: signal1, davProperties })
         )
@@ -97,6 +101,11 @@ export class FolderLoaderSpace implements FolderLoader {
           replaceInvalidFileRoute({ space, resource: currentFolder, path, fileId })
         }
 
+        // the root of a single file share is the file itself, so list it as the only resource
+        if (isShareSpaceResource(space) && !currentFolder.isFolder) {
+          resources = [currentFolder]
+        }
+
         let sharedDriveItem: DriveItem
 
         if (path === '/') {
@@ -105,11 +114,15 @@ export class FolderLoaderSpace implements FolderLoader {
               getSharedDriveItem({ graphClient, spacesStore, space, signal: signal1 })
             )
             if (sharedDriveItem) {
-              currentFolder = buildIncomingShareResource({
-                graphRoles: sharesStore.graphRoles,
-                driveItem: sharedDriveItem,
-                serverUrl: configStore.serverUrl
-              })
+              currentFolder = {
+                ...buildIncomingShareResource({
+                  graphRoles: sharesStore.graphRoles,
+                  driveItem: sharedDriveItem,
+                  serverUrl: configStore.serverUrl
+                }),
+                // graph doesn't expose the webdav permissions of the share root
+                permissions: currentFolder.permissions
+              }
             }
           } else if (!isPersonalSpaceResource(space) && !isPublicSpaceResource(space)) {
             // note: in the future we might want to show the space as root for personal spaces as well (to show quota and the like). Currently not needed.

@@ -37,6 +37,15 @@
       >
         <span v-text="$gettext('Reload public link')" />
       </oc-button>
+      <oc-button
+        v-if="showGuestLinkButton"
+        id="files-list-not-found-button-go-guest-share"
+        type="router-link"
+        appearance="raw"
+        :to="guestLinkRoute"
+      >
+        <span v-text="$gettext('Go to the shared item')" />
+      </oc-button>
     </template>
   </no-content-message>
 </template>
@@ -44,8 +53,10 @@
 <script setup lang="ts">
 import {
   NoContentMessage,
+  createLocationGuest,
   createLocationPublic,
   createLocationSpaces,
+  isLocationGuestActive,
   isLocationPublicActive,
   isLocationSpacesActive
 } from '@opencloud-eu/web-pkg'
@@ -61,7 +72,8 @@ const { space = null } = defineProps<{
 const router = useRouter()
 const isProjectSpace = space?.driveType === 'project'
 
-const showPublicLinkButton = isLocationPublicActive(router, 'files-public-link')
+const showPublicLinkButton = isLocationPublicActive(router, 'files-public-link') && !!space
+const showGuestLinkButton = isLocationGuestActive(router, 'files-guest-link') && !!space
 const showHomeButton = isLocationSpacesActive(router, 'files-spaces-generic') && !isProjectSpace
 const showSpacesButton = isLocationSpacesActive(router, 'files-spaces-generic') && isProjectSpace
 const homeRoute = createLocationSpaces('files-spaces-generic', {
@@ -69,6 +81,9 @@ const homeRoute = createLocationSpaces('files-spaces-generic', {
     driveAliasAndItem: 'personal'
   }
 })
-const publicLinkRoute = createLocationPublic('files-public-link', createFileRouteOptions(space, {}))
+const publicLinkRoute =
+  space && createLocationPublic('files-public-link', createFileRouteOptions(space, {}))
+const guestLinkRoute =
+  space && createLocationGuest('files-guest-link', createFileRouteOptions(space, {}))
 const spacesRoute = createLocationSpaces('files-spaces-projects')
 </script>

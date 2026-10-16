@@ -5,6 +5,7 @@ import PQueue from 'p-queue'
 import {
   FileAction,
   FileActionOptions,
+  useAuthStore,
   useClientService,
   useConfigStore,
   useLoadingService,
@@ -19,6 +20,7 @@ export const useFileActionsToggleHideShare = () => {
   const clientService = useClientService()
   const loadingService = useLoadingService()
   const configStore = useConfigStore()
+  const authStore = useAuthStore()
   const { updateResourceField, resetSelection } = useResourcesStore()
 
   const handler = async ({ resources }: FileActionOptions<IncomingShareResource>) => {
@@ -78,7 +80,7 @@ export const useFileActionsToggleHideShare = () => {
       handler: (args) => loadingService.addTask(() => handler(args)),
       label: ({ resources }) => (resources[0].hidden ? $gettext('Unhide') : $gettext('Hide')),
       isVisible: ({ resources }) => {
-        if (resources.length === 0) {
+        if (resources.length === 0 || authStore.isGuestContext) {
           return false
         }
 

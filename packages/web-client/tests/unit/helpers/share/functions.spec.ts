@@ -1,5 +1,6 @@
 import { mock, mockDeep } from 'vitest-mock-extended'
 import {
+  GraphSharePermission,
   IncomingShareResource,
   OutgoingShareResource,
   Resource,
@@ -160,6 +161,23 @@ describe('share helper functions', () => {
 
       expect(result.isFolder).toEqual(isFolder)
       expect(result.type).toEqual(isFolder ? 'folder' : 'file')
+    })
+    it.each([true, false])('only allows uploads into folders', (isFolder) => {
+      const item = { ...driveItem }
+      item.folder = isFolder ? mock<DriveItem['folder']>() : undefined
+      const uploadRoles = {
+        '1': mock<ShareRole>({
+          id: '1',
+          rolePermissions: [{ allowedResourceActions: [GraphSharePermission.createUpload] }]
+        })
+      }
+      const result = buildIncomingShareResource({
+        driveItem: item,
+        graphRoles: uploadRoles,
+        serverUrl: ''
+      })
+
+      expect(result.canUpload({})).toEqual(isFolder)
     })
     it('sets outgoing to false', () => {
       const result = buildIncomingShareResource({ driveItem, graphRoles, serverUrl: '' })

@@ -4,7 +4,7 @@ import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { getSharedDriveItem } from '../../../../src/helpers/share'
 import { ClientService } from '../../../../src/services'
-import { useSpacesStore } from '../../../../src/composables/piniaStores'
+import { useAuthStore, useSpacesStore } from '../../../../src/composables/piniaStores'
 
 describe('getSharedDriveItem', () => {
   beforeEach(() => {
@@ -36,5 +36,23 @@ describe('getSharedDriveItem', () => {
 
     const sharedDriveItem = await getSharedDriveItem({ graphClient, spacesStore, space })
     expect(sharedDriveItem).toBe(null)
+  })
+
+  it('returns the shared drive item via sharedWithMe in a guest context', async () => {
+    const { graphAuthenticated: graphClient } = mockDeep<ClientService>()
+    const spacesStore = useSpacesStore()
+    const authStore = useAuthStore()
+    authStore.guestContextReady = true
+    const space = mock<SpaceResource>({ id: 'share-id' })
+
+    const driveItem = mock<DriveItem>({ remoteItem: { id: 'share-id' } })
+    graphClient.driveItems.listSharedWithMe.mockResolvedValue([
+      mock<DriveItem>({ remoteItem: { id: 'other-share-id' } }),
+      driveItem
+    ])
+
+    const sharedDriveItem = await getSharedDriveItem({ graphClient, spacesStore, space })
+    expect(sharedDriveItem).toBe(driveItem)
+    expect(spacesStore.getMountPointForSpace).not.toHaveBeenCalled()
   })
 })

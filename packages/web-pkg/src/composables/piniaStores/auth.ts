@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { PublicLinkType, urlJoin } from '@opencloud-eu/web-client'
 import { HttpClient } from '../../http'
 import { z } from 'zod'
@@ -33,8 +33,10 @@ export const useAuthStore = defineStore('auth', () => {
   const guestContextReady = ref(false)
   const guestPermissionId = ref<string>()
   const guestSpaceId = ref<string>()
-  const guestContextUnavailable = ref(false)
+  const guestEmail = ref<string>()
   const webfingerDiscoveryData = ref<WebfingerDiscoveryData>()
+
+  const isGuestContext = computed(() => unref(guestContextReady) && !unref(userContextReady))
 
   const setAccessToken = (value: string) => {
     accessToken.value = value
@@ -60,22 +62,18 @@ export const useAuthStore = defineStore('auth', () => {
     publicLinkContextReady.value = context.publicLinkContextReady
   }
 
-  const setGuestContext = (permissionId: string, spaceId: string) => {
+  const setGuestContext = (permissionId: string, spaceId: string, email?: string) => {
     guestPermissionId.value = permissionId
     guestSpaceId.value = spaceId
-    guestContextUnavailable.value = false
+    guestEmail.value = email
     guestContextReady.value = true
-  }
-
-  const setGuestContextUnavailable = (value: boolean) => {
-    guestContextUnavailable.value = value
   }
 
   const clearGuestContext = () => {
     guestContextReady.value = false
-    guestContextUnavailable.value = false
     guestPermissionId.value = null
     guestSpaceId.value = null
+    guestEmail.value = null
   }
 
   const clearUserContext = () => {
@@ -130,7 +128,8 @@ export const useAuthStore = defineStore('auth', () => {
     guestContextReady,
     guestPermissionId,
     guestSpaceId,
-    guestContextUnavailable,
+    guestEmail,
+    isGuestContext,
     webfingerDiscoveryData,
 
     setAccessToken,
@@ -139,7 +138,6 @@ export const useAuthStore = defineStore('auth', () => {
     setUserContextReady,
     setPublicLinkContext,
     setGuestContext,
-    setGuestContextUnavailable,
     clearGuestContext,
     clearUserContext,
     clearPublicLinkContext,

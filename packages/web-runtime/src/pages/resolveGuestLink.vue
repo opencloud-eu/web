@@ -30,7 +30,7 @@ import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { call } from '@opencloud-eu/web-client'
 import { GuestLinkErrorErrorTypeEnum } from '@opencloud-eu/web-client/graph/generated'
-import { createLocationGuest, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
+import { useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import {
   getGuestLinkErrorType,
@@ -39,20 +39,18 @@ import {
   isRetryableGuestLinkErrorType
 } from '../services/auth/guestSessionManager'
 import PlainCard from '../components/PlainCard.vue'
+import { useGuestLinkTargetRoute } from '../composables/guestLink'
 
 const router = useRouter()
 const { $gettext } = useGettext()
+const { getGuestLinkTargetRoute } = useGuestLinkTargetRoute()
 const token = useRouteParam('token')
 const errorType = ref<GuestLinkErrorType>()
 
 const resolveGuestLinkTask = useTask(function* () {
-  const { permissionId, space } = yield* call(authService.redeemGuestLink(unref(token)))
-  yield router.replace(
-    createLocationGuest('files-guest-link', {
-      params: { shareName: space.name },
-      query: { permissionId }
-    })
-  )
+  const session = yield* call(authService.redeemGuestLink(unref(token)))
+  const location = yield* call(getGuestLinkTargetRoute(session))
+  yield router.replace(location)
 })
 
 // an expired or used link can still authorize sending a new link and PIN

@@ -24,8 +24,10 @@ export function useRequest(options: RequestOptions = {}): RequestResult {
     url: string,
     config: AxiosRequestConfig = {}
   ): Promise<AxiosResponse> => {
+    // guests have no token, the authenticated client sends their session cookie cross-origin
+    const isAuthenticated = !!authStore.accessToken || authStore.guestContextReady
     const httpClient =
-      !authStore.accessToken || authStore.publicLinkContextReady
+      !isAuthenticated || authStore.publicLinkContextReady
         ? clientService.httpUnAuthenticated
         : clientService.httpAuthenticated
 

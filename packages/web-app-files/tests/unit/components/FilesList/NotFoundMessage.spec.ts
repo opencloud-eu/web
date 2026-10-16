@@ -8,11 +8,13 @@ import { RouteLocationNamedRaw, RouteLocationNormalizedLoaded } from 'vue-router
 
 const selectors = {
   homeButton: '#files-list-not-found-button-go-home',
-  reloadLinkButton: '#files-list-not-found-button-reload-link'
+  reloadLinkButton: '#files-list-not-found-button-reload-link',
+  guestShareButton: '#files-list-not-found-button-go-guest-share'
 }
 
 const spacesLocation = mock<RouteLocationNormalizedLoaded>({ name: 'files-spaces-generic' })
 const publicLocation = mock<RouteLocationNormalizedLoaded>({ name: 'files-public-link' })
+const guestLocation = mock<RouteLocationNormalizedLoaded>({ name: 'files-guest-link' })
 
 describe('NotFoundMessage', () => {
   describe('when user on personal route', () => {
@@ -85,6 +87,25 @@ describe('NotFoundMessage', () => {
       expect(routeLocation.params.driveAliasAndItem).toBe(
         space.getDriveAliasAndItem({ path: '' } as Resource)
       )
+    })
+  })
+
+  describe('when guest on guest link route', () => {
+    it('should have a button routing to the shared item', () => {
+      const space = mock<SpaceResource>({ driveType: 'share' })
+      space.getDriveAliasAndItem.mockReturnValue('share/Invited folder')
+      const { wrapper } = getWrapper(space, guestLocation)
+      const guestShareButton = wrapper.findComponent<typeof OcButton>(selectors.guestShareButton)
+
+      const routeLocation = guestShareButton.props('to') as RouteLocationNamedRaw
+      expect(guestShareButton.find('span').text()).toBe('Go to the shared item')
+      expect(routeLocation.name).toBe(guestLocation.name)
+      expect(routeLocation.params.driveAliasAndItem).toBe('share/Invited folder')
+    })
+
+    it('should not show the button without a space', () => {
+      const { wrapper } = getWrapper(null, guestLocation)
+      expect(wrapper.find(selectors.guestShareButton).exists()).toBeFalsy()
     })
   })
 })

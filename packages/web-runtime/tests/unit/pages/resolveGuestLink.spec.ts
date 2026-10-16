@@ -7,9 +7,24 @@ import { ShareSpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import ResolveGuestLink from '../../../src/pages/resolveGuestLink.vue'
 import { authService } from '../../../src/services/auth'
-import { GuestShareNotFoundError } from '../../../src/services/auth/guestSessionManager'
+import {
+  GuestSession,
+  GuestShareNotFoundError
+} from '../../../src/services/auth/guestSessionManager'
 
 vi.mock('../../../src/services/auth')
+const { getGuestLinkTargetRoute } = vi.hoisted(() => ({
+  getGuestLinkTargetRoute: vi.fn(({ permissionId, space }: GuestSession) =>
+    Promise.resolve({
+      name: 'files-guest-link',
+      params: { driveAliasAndItem: space.driveAlias },
+      query: { shareId: space.id, permissionId }
+    })
+  )
+}))
+vi.mock('../../../src/composables/guestLink', () => ({
+  useGuestLinkTargetRoute: () => ({ getGuestLinkTargetRoute })
+}))
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -35,15 +50,18 @@ describe('resolveGuestLink', () => {
     expect(authService.redeemGuestLink).toHaveBeenCalledWith('magic-token')
   })
 
-  it('replaces the route with the guest link page carrying the permission id', async () => {
+  it('replaces the route with the shared resource carrying the share and permission ids', async () => {
     const { mocks } = getWrapper()
     await flushPromises()
 
+    expect(getGuestLinkTargetRoute).toHaveBeenCalledWith(
+      expect.objectContaining({ permissionId: 'permission-id' })
+    )
     expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'files-guest-link',
-        params: { shareName: 'Invited folder' },
-        query: { permissionId: 'permission-id' }
+        params: { driveAliasAndItem: 'share/Invited folder' },
+        query: { shareId: 'share-id', permissionId: 'permission-id' }
       })
     )
     expect(mocks.$router.push).not.toHaveBeenCalled()

@@ -21,7 +21,10 @@ const storageKey = 'oc.guestPermissionId'
 
 const sharedDriveItem = {
   name: 'Invited folder',
-  remoteItem: { id: 'share-id', permissions: [{ id: 'permission-id' }] }
+  remoteItem: {
+    id: 'share-id',
+    permissions: [{ id: 'permission-id', grantedToV2: { user: { id: 'guest@example.org' } } }]
+  }
 }
 
 describe('isGuestSessionExpiredError', () => {
@@ -91,7 +94,29 @@ describe('GuestSessionManager', () => {
       const authStore = useAuthStore()
       expect(authStore.guestContextReady).toBeTruthy()
       expect(authStore.guestPermissionId).toEqual('permission-id')
+      expect(authStore.guestEmail).toEqual('guest@example.org')
       expect(localStorage.getItem(storageKey)).toEqual('permission-id')
+    })
+
+    it('uses the recipient of the matching permission for the guest email', async () => {
+      const { manager } = getManager({
+        driveItems: [
+          {
+            ...sharedDriveItem,
+            remoteItem: {
+              ...sharedDriveItem.remoteItem,
+              permissions: [
+                { id: 'other-permission-id', grantedToV2: { user: { id: 'other@example.org' } } },
+                ...sharedDriveItem.remoteItem.permissions
+              ]
+            }
+          }
+        ]
+      })
+
+      await manager.redeem('magic-token')
+
+      expect(useAuthStore().guestEmail).toEqual('guest@example.org')
     })
 
     it('rejects and grants no session when the redemption fails', async () => {
@@ -533,6 +558,7 @@ describe('GuestSessionManager', () => {
 
       expect(useAuthStore().guestContextReady).toBeTruthy()
       expect(useSpacesStore().getSpace('share-id')).toBeDefined()
+      expect(useAuthStore().guestEmail).toEqual('guest@example.org')
     })
 
     it('restores the guest context of an explicitly given permission id', async () => {
@@ -624,7 +650,8 @@ describe('GuestSessionManager', () => {
       await manager.restoreContext()
 
       expect(localStorage.getItem(storageKey)).toEqual('permission-id')
-      expect(useAuthStore().guestContextUnavailable).toBeTruthy()
+      expect(manager.consumeUnavailablePermissionId()).toEqual('permission-id')
+      expect(manager.consumeUnavailablePermissionId()).toBeUndefined()
     })
 
     it('keeps the persisted session when the share of another permission id is unknown', async () => {
@@ -669,18 +696,19 @@ describe('GuestSessionManager', () => {
       expect(localStorage.getItem(storageKey)).toBeNull()
     })
 
-    it('resets the unavailable flag once the guest context is restored', async () => {
+    it('resets the unavailable permission id once the guest context is restored', async () => {
       localStorage.setItem(storageKey, 'permission-id')
-      useAuthStore().setGuestContextUnavailable(true)
-      const { manager } = getManager()
+      const { manager, listSharedWithMe } = getManager()
+      listSharedWithMe.mockRejectedValueOnce(new Error('network error'))
 
       await manager.restoreContext()
+      await manager.restoreContext()
 
-      expect(useAuthStore().guestContextUnavailable).toBeFalsy()
+      expect(manager.consumeUnavailablePermissionId()).toBeUndefined()
       expect(useAuthStore().guestSpaceId).toEqual('share-id')
     })
 
-    it('drops a leftover guest record when a user is signed in', async () => {
+    it('keeps the guest record without restoring it when a user context is loaded', async () => {
       localStorage.setItem(storageKey, 'permission-id')
       useAuthStore().setUserContextReady(true)
       const { manager, listSharedWithMe } = getManager()
@@ -688,7 +716,8 @@ describe('GuestSessionManager', () => {
       await manager.restoreContext()
 
       expect(listSharedWithMe).not.toHaveBeenCalled()
-      expect(localStorage.getItem(storageKey)).toBeNull()
+      expect(useAuthStore().guestContextReady).toBe(false)
+      expect(localStorage.getItem(storageKey)).toEqual('permission-id')
     })
   })
 })

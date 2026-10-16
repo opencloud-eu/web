@@ -50,11 +50,14 @@ export class PreviewService {
     }
 
     const isPublic = isPublicSpaceResource(space)
+    if (!isPublic && !this.configStore.serverUrl) {
+      return undefined
+    }
+    // guests authenticate via session cookie
     if (
       !isPublic &&
-      (!this.configStore.serverUrl ||
-        !this.user?.onPremisesSamAccountName ||
-        !this.authStore.accessToken)
+      !this.authStore.isGuestContext &&
+      (!this.user?.onPremisesSamAccountName || !this.authStore.accessToken)
     ) {
       return undefined
     }

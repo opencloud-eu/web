@@ -65,6 +65,37 @@ describe('useDriveResolver', () => {
       }
     )
   })
+  it('returns the invited share space for a guest regardless of the share id in the url', () => {
+    const guestSpace = mockDeep<ShareSpaceResource>({ id: 'guest-share-id', driveType: 'share' })
+    const otherSpace = mockDeep<ShareSpaceResource>({ id: 'other-share-id', driveType: 'share' })
+
+    const mocks = defaultComponentMocks({
+      currentRoute: mock<RouteLocation>({ query: { shareId: 'other-share-id' } })
+    })
+    getComposableWrapper(
+      () => {
+        const spacesStore = useSpacesStore()
+        vi.mocked(spacesStore.getSpace).mockImplementation(
+          (id) => [guestSpace, otherSpace].find((s) => s.id === id) || null
+        )
+        const { space, item } = useDriveResolver({
+          driveAliasAndItem: ref('share/someSharedFolder/sub')
+        })
+        expect(unref(space)).toEqual(guestSpace)
+        expect(unref(item)).toEqual('/sub')
+      },
+      {
+        mocks,
+        provide: mocks,
+        pluginOptions: {
+          piniaOptions: {
+            authState: { guestContextReady: true, guestSpaceId: 'guest-share-id' },
+            spacesState: { spaces: [guestSpace, otherSpace] }
+          }
+        }
+      }
+    )
+  })
   it('returns a space by fileId if given', () => {
     const fileId = 'someFileId'
     const resourcePath = '/someFolder'
