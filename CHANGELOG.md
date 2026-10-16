@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep create user and group dialogs open while the name check runs and on errors [[#3694](https://github.com/opencloud-eu/web/pull/3694)]
 - fix: address small optional accessibility audit findings [[#3822](https://github.com/opencloud-eu/web/pull/3822)]
 - fix: address small accessibility audit findings [[#3821](https://github.com/opencloud-eu/web/pull/3821)]
 - fix: only show the link copied message after a successful clipboard write [[#3763](https://github.com/opencloud-eu/web/pull/3763)]
