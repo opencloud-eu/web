@@ -40,6 +40,23 @@ describe('FolderLoaderSpace', () => {
         resources: [expect.objectContaining({ id: 'j1', remoteItemId: 'share-space-id' })]
       })
     })
+
+    it('lists the root of a single file share as the only resource', async () => {
+      const space = {
+        id: 'share-space-id',
+        driveType: 'share',
+        graphPermissions: [],
+        getDriveAliasAndItem: () => 'share/doc.txt'
+      } as unknown as SpaceResource
+      const file = { id: 'f1', path: '/', isFolder: false } as Resource
+
+      const { resourcesStore } = await loadFolder({ space, path: '/', resource: file })
+
+      expect(resourcesStore.initResourceList).toHaveBeenCalledWith({
+        currentFolder: expect.objectContaining({ id: 'f1' }),
+        resources: [expect.objectContaining({ id: 'f1' })]
+      })
+    })
   })
 
   it('leaves the remote item unset outside of share spaces', async () => {

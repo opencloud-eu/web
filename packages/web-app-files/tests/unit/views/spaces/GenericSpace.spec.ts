@@ -255,6 +255,32 @@ describe('GenericSpace view', () => {
         expect(mocks.scrollToResourceFromRoute).not.toHaveBeenCalled()
       })
     })
+    describe('on shares', () => {
+      const space = mock<SpaceResource>({
+        id: '1',
+        getDriveAliasAndItem: vi.fn(),
+        name: 'file.txt',
+        driveType: 'share'
+      })
+      const file = { ...mock<Resource>({ name: 'file.txt' }), isFolder: false }
+
+      it('renders the ResourceDetails component for a single file share', () => {
+        const { wrapper } = getMountedWrapper({
+          currentFolder: { ...mock<Resource>({ canUpload: () => false }), isFolder: false },
+          files: [file],
+          space
+        })
+        expect(wrapper.find('resource-details-stub').exists()).toBeTruthy()
+      })
+      it('renders the file list for a single file inside a shared folder', () => {
+        const { wrapper } = getMountedWrapper({
+          currentFolder: { ...mock<Resource>({ canUpload: () => false }), isFolder: true },
+          files: [file],
+          space
+        })
+        expect(wrapper.find('resource-details-stub').exists()).toBeFalsy()
+      })
+    })
   })
   describe('list header', () => {
     it('renders when a readme file is present', () => {

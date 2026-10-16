@@ -165,7 +165,9 @@ export function buildIncomingShareResource({
     hasPreview: () => !!driveItem.thumbnails,
     canRename: () => driveItem['@client.synchronize'],
     canDownload: () => sharePermissions.includes(GraphSharePermission.readContent),
-    canUpload: () => sharePermissions.includes(GraphSharePermission.createUpload),
+    // the root of a single file share is the file itself, nothing can be uploaded into it
+    canUpload: () =>
+      !!driveItem.folder && sharePermissions.includes(GraphSharePermission.createUpload),
     canCreate: () => sharePermissions.includes(GraphSharePermission.createChildren),
     canBeDeleted: () => sharePermissions.includes(GraphSharePermission.deleteStandard),
     canEditTags: () => sharePermissions.includes(GraphSharePermission.createUpload),

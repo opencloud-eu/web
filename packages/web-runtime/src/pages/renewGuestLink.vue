@@ -48,13 +48,7 @@ import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { call } from '@opencloud-eu/web-client'
 import { GuestLinkErrorErrorTypeEnum } from '@opencloud-eu/web-client/graph/generated'
-import {
-  createLocationGuest,
-  queryItemAsString,
-  useRouteParam,
-  useRouteQuery,
-  useRouter
-} from '@opencloud-eu/web-pkg'
+import { queryItemAsString, useRouteParam, useRouteQuery, useRouter } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import {
   getGuestLinkErrorType,
@@ -65,10 +59,12 @@ import {
   isRetryableGuestLinkErrorType
 } from '../services/auth/guestSessionManager'
 import PlainCard from '../components/PlainCard.vue'
+import { useGuestLinkTargetRoute } from '../composables/guestLink'
 import { isGuestContextRequired, parsePathQuery } from '../router/helpers'
 
 const router = useRouter()
 const { $gettext } = useGettext()
+const { getGuestLinkTargetRoute } = useGuestLinkTargetRoute()
 const permissionId = useRouteParam('permissionId')
 const redirectUrl = useRouteQuery('redirectUrl')
 // set by the auth guard, the session might still be valid, e.g. after a network error
@@ -83,7 +79,7 @@ const resumeErrorType = ref<GuestLinkErrorType>()
 const pin = ref('')
 const pinErrorType = ref<GuestLinkErrorType>()
 
-function openSession({ permissionId: sessionPermissionId, space }: GuestSession) {
+async function openSession(session: GuestSession) {
   const url = queryItemAsString(unref(redirectUrl))
   if (url) {
     const location = parsePathQuery(url)
@@ -92,12 +88,7 @@ function openSession({ permissionId: sessionPermissionId, space }: GuestSession)
       return router.replace(location)
     }
   }
-  return router.replace(
-    createLocationGuest('files-guest-link', {
-      params: { driveAliasAndItem: space.driveAlias },
-      query: { shareId: space.id, permissionId: sessionPermissionId }
-    })
-  )
+  return router.replace(await getGuestLinkTargetRoute(session))
 }
 
 const verifyPinTask = useTask(function* () {

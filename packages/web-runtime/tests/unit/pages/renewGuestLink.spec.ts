@@ -14,6 +14,18 @@ import {
 } from '../../../src/services/auth/guestSessionManager'
 
 vi.mock('../../../src/services/auth')
+const { getGuestLinkTargetRoute } = vi.hoisted(() => ({
+  getGuestLinkTargetRoute: vi.fn(({ permissionId, space }: GuestSession) =>
+    Promise.resolve({
+      name: 'files-guest-link',
+      params: { driveAliasAndItem: space.driveAlias },
+      query: { shareId: space.id, permissionId }
+    })
+  )
+}))
+vi.mock('../../../src/composables/guestLink', () => ({
+  useGuestLinkTargetRoute: () => ({ getGuestLinkTargetRoute })
+}))
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -293,6 +305,7 @@ describe('renewGuestLink', () => {
       path: '/files/guest/share/folder/sub',
       query: { permissionId: 'permission-id' }
     })
+    expect(getGuestLinkTargetRoute).not.toHaveBeenCalled()
   })
 
   it('keeps nested context query params of the redirect url', async () => {
@@ -345,6 +358,9 @@ describe('renewGuestLink', () => {
     )
     await flushPromises()
 
+    expect(getGuestLinkTargetRoute).toHaveBeenCalledWith(
+      expect.objectContaining({ permissionId: 'permission-id' })
+    )
     expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'files-guest-link' })
     )

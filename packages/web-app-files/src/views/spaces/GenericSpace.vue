@@ -531,7 +531,8 @@ const displayResourceAsSingleResource = computed(() => {
     return true
   }
 
-  return false
+  // single file share
+  return isShareSpaceResource(unref(space)) && unref(currentFolder)?.isFolder === false
 })
 
 const displayFullAppBar = computed(() => {

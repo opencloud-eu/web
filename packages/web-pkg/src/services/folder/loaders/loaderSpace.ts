@@ -74,7 +74,6 @@ export class FolderLoaderSpace implements FolderLoader {
           davProperties.push(DavProperty.DownloadURL)
         }
 
-        // eslint-disable-next-line prefer-const
         let { resource: currentFolder, children: resources } = yield* call(
           webdav.listFiles(space, { path, fileId }, { signal: signal1, davProperties })
         )
@@ -100,6 +99,11 @@ export class FolderLoaderSpace implements FolderLoader {
         // if current folder has no id (= singe file public link) we must not correct the route
         if (currentFolder.id) {
           replaceInvalidFileRoute({ space, resource: currentFolder, path, fileId })
+        }
+
+        // the root of a single file share is the file itself, so list it as the only resource
+        if (isShareSpaceResource(space) && !currentFolder.isFolder) {
+          resources = [currentFolder]
         }
 
         let sharedDriveItem: DriveItem
