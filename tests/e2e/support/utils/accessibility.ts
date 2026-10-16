@@ -32,7 +32,8 @@ async function checkAccessibility(
   }
 
   function analyze() {
-    const builder = new AxeBuilder({ page }).withTags(a11yRuleTags)
+    // tooltips are transient and appended to <body>, they only show up when a previous step left focus or hover on a trigger
+    const builder = new AxeBuilder({ page }).withTags(a11yRuleTags).exclude('[role="tooltip"]')
     if (includeSelector) {
       builder.include(includeSelector)
     }

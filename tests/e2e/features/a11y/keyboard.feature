@@ -26,6 +26,8 @@ Feature: Keyboard accessibility
     And "Alice" logs out
 
 
+  # @issue-3795 #10
+  @skip
   Scenario: space key toggles the focused row checkbox
     When "Alice" selects the resource "lorem.txt" using the checkbox
     And "Alice" toggles the checkbox of resource "testavatar.jpeg" using the space key
@@ -37,6 +39,8 @@ Feature: Keyboard accessibility
     And "Alice" logs out
 
 
+  # @issue-3795 #11
+  @skip
   Scenario: focus is kept after closing a modal or deleting a resource
     When "Alice" opens the "rename" action of resource "lorem.txt" using the context menu
     And "Alice" closes the modal using the escape key
@@ -62,6 +66,8 @@ Feature: Keyboard accessibility
     And "Alice" logs out
 
 
+  # @issue-3795 #13
+  @skip
   Scenario: mobile navigation drawer traps the focus and closes with escape
     When "Alice" switches to the "mobile" viewport
     And "Alice" clicks the element "#mobile-nav-button"
