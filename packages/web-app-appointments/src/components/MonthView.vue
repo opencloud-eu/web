@@ -4,14 +4,18 @@
     data-testid="calendar-month-view"
   >
     <header
-      class="grid shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-4 bg-role-surface px-4 py-3"
+      class="flex shrink-0 items-center justify-center gap-4 bg-role-surface px-4 py-3 md:grid md:grid-cols-[1fr_auto_1fr]"
     >
-      <div class="min-w-0">
+      <div class="hidden min-w-0 md:block">
         <h1 class="truncate text-xl font-bold" v-text="$gettext('Appointments')" />
       </div>
 
       <div class="flex items-center justify-center gap-3">
-        <h2 :id="monthLabelId" class="min-w-52 text-center text-xl font-bold" v-text="monthLabel" />
+        <h2
+          :id="monthLabelId"
+          class="text-center text-xl font-bold md:min-w-52"
+          v-text="monthLabel"
+        />
         <oc-button
           data-testid="calendar-previous-button"
           appearance="raw"
@@ -40,33 +44,11 @@
         </oc-button>
       </div>
 
-      <div />
+      <div class="hidden md:block" />
     </header>
 
     <div
-      class="grid shrink-0 grid-cols-7 border-b border-role-outline-variant bg-role-surface"
-      role="row"
-    >
-      <div
-        v-for="weekday in weekdays"
-        :key="weekday.key"
-        class="border-l border-role-outline-variant px-3 py-4 text-center text-sm text-role-on-surface"
-        role="columnheader"
-        :aria-label="weekday.fullLabel"
-        v-text="weekday.label"
-      />
-    </div>
-
-    <div
-      v-if="isLoading"
-      class="flex min-h-0 flex-1 items-center justify-center"
-      data-testid="calendar-loading"
-    >
-      <app-loading-spinner />
-    </div>
-
-    <div
-      v-else-if="error"
+      v-if="error"
       class="flex min-h-0 flex-1 items-center justify-center overflow-auto"
       data-testid="calendar-month-error"
     >
@@ -80,53 +62,84 @@
     <div
       v-else
       ref="grid"
-      class="grid min-h-0 flex-1 grid-cols-7 auto-rows-fr"
+      class="flex min-h-0 flex-1 flex-col"
       role="grid"
       :aria-labelledby="monthLabelId"
+      :aria-busy="isLoading"
       @keydown="onGridKeydown"
     >
+      <div class="grid shrink-0 grid-cols-7 border-b border-role-outline-variant" role="row">
+        <div
+          v-for="weekday in weekdays"
+          :key="weekday.key"
+          class="border-l border-role-outline-variant px-1 py-4 text-center text-sm text-role-on-surface"
+          role="columnheader"
+        >
+          <span aria-hidden="true" v-text="weekday.label" />
+          <span class="sr-only" v-text="weekday.fullLabel" />
+        </div>
+      </div>
+
       <div
-        v-for="day in days"
-        :key="day.key"
-        :class="[
-          'group flex min-h-0 cursor-pointer flex-col overflow-hidden border-b border-l border-role-outline-variant px-1 py-2 text-left',
-          day.isCurrentMonth ? 'bg-role-surface' : 'bg-role-surface-container'
-        ]"
-        :tabindex="day.key === activeDayKey ? 0 : -1"
-        :aria-label="formatDayLabel(day.date)"
-        :data-is-today="day.isToday || undefined"
-        :data-testid="`calendar-day-cell-${day.key}`"
-        role="gridcell"
-        @click="selectDay(day)"
+        v-for="(week, weekIndex) in weeks"
+        :key="weekIndex"
+        class="grid min-h-0 flex-1 grid-cols-7"
+        role="row"
       >
-        <div class="mb-4 flex shrink-0 items-center justify-center">
-          <span
-            :class="[
-              'flex size-6 items-center justify-center rounded-full text-sm text-role-on-surface group-hover:bg-role-surface-container-highest',
-              day.isToday ? 'bg-role-primary-container text-role-on-primary-container' : '',
-              !day.isCurrentMonth ? 'text-role-on-surface-variant' : ''
-            ]"
-            aria-hidden="true"
-            v-text="day.dayOfMonth"
+        <div
+          v-for="day in week"
+          :key="day.key"
+          :class="[
+            'group flex min-h-0 cursor-pointer flex-col overflow-hidden border-b border-l border-role-outline-variant px-1 py-2 text-left',
+            day.isCurrentMonth ? 'bg-role-surface' : 'bg-role-surface-container'
+          ]"
+          :tabindex="day.key === activeDayKey ? 0 : -1"
+          :aria-label="getDayLabel(day)"
+          :aria-selected="day.key === selectedDateKey"
+          :aria-current="day.isToday ? 'date' : undefined"
+          :data-is-today="day.isToday || undefined"
+          :data-testid="`calendar-day-cell-${day.key}`"
+          role="gridcell"
+          @click="selectDay(day)"
+        >
+          <div class="mb-4 flex shrink-0 items-center justify-center">
+            <span
+              :class="[
+                'flex size-6 items-center justify-center rounded-full text-sm group-hover:bg-role-surface-container-highest',
+                getDayNumberClass(day)
+              ]"
+              aria-hidden="true"
+              v-text="day.dayOfMonth"
+            />
+          </div>
+
+          <MonthDayAppointments
+            :day-key="day.key"
+            :occurrences="occurrencesByDay[day.key] || []"
+            :calendar-color-by-id="calendarColorById"
+            @select-appointment="$emit('select-appointment', $event)"
           />
         </div>
-
-        <MonthDayAppointments
-          :day-key="day.key"
-          :occurrences="occurrencesByDay[day.key] || []"
-          :calendar-color-by-id="calendarColorById"
-          @select-appointment="$emit('select-appointment', $event)"
-        />
       </div>
     </div>
 
     <div
-      v-if="!isLoading && !error && !hasOccurrences"
+      v-if="isLoading && !error"
+      class="absolute inset-0 flex items-center justify-center bg-role-surface/70"
+      data-testid="calendar-loading"
+    >
+      <app-loading-spinner />
+    </div>
+
+    <div
+      v-else-if="!error && emptyMessage"
       class="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center"
+      data-testid="calendar-empty-message"
     >
       <div
         class="rounded-md border border-role-outline-variant bg-role-surface px-4 py-2 text-sm text-role-on-surface-variant shadow-sm"
-        v-text="$gettext('No appointments in this month')"
+        role="status"
+        v-text="emptyMessage"
       />
     </div>
   </section>
@@ -138,7 +151,7 @@ import { useGettext } from 'vue3-gettext'
 import { AppLoadingSpinner, NoContentMessage, formatDateFromJSDate } from '@opencloud-eu/web-pkg'
 import { DateTime, Info } from 'luxon'
 import MonthDayAppointments from './MonthDayAppointments.vue'
-import type { CalendarDay } from '../helpers/date'
+import { toDateKey, type CalendarDay } from '../helpers/date'
 import type { AppointmentOccurrence } from '../types'
 
 const DAYS_PER_WEEK = 7
@@ -146,15 +159,19 @@ const DAYS_PER_WEEK = 7
 const {
   days,
   currentMonth,
+  selectedDate,
   occurrencesByDay,
   calendarColorById,
+  hasSelectedCalendars = true,
   isLoading,
   error = undefined
 } = defineProps<{
   days: CalendarDay[]
   currentMonth: Date
+  selectedDate: Date
   occurrencesByDay: Record<string, AppointmentOccurrence[]>
   calendarColorById: Record<string, string | undefined>
+  hasSelectedCalendars?: boolean
   isLoading: boolean
   error?: Error
 }>()
@@ -167,7 +184,7 @@ const emit = defineEmits<{
   'select-appointment': [id: string]
 }>()
 
-const { $gettext, current: currentLanguage } = useGettext()
+const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 const monthLabelId = useId()
 
 const weekdays = computed(() => {
@@ -180,7 +197,26 @@ const weekdays = computed(() => {
   }))
 })
 
-const hasOccurrences = computed(() => Object.keys(occurrencesByDay).length > 0)
+const weeks = computed(() => {
+  const result: CalendarDay[][] = []
+  for (let index = 0; index < days.length; index += DAYS_PER_WEEK) {
+    result.push(days.slice(index, index + DAYS_PER_WEEK))
+  }
+  return result
+})
+
+const selectedDateKey = computed(() => toDateKey(selectedDate))
+
+const emptyMessage = computed(() => {
+  if (!hasSelectedCalendars) {
+    return $gettext('No calendar selected')
+  }
+
+  const hasOccurrencesInMonth = days.some(
+    ({ key, isCurrentMonth }) => isCurrentMonth && occurrencesByDay[key]?.length
+  )
+  return hasOccurrencesInMonth ? '' : $gettext('No appointments in this month')
+})
 
 const monthLabel = computed(() => {
   return formatDateFromJSDate(currentMonth, currentLanguage, {
@@ -189,8 +225,27 @@ const monthLabel = computed(() => {
   })
 })
 
-const formatDayLabel = (date: Date) => {
-  return formatDateFromJSDate(date, currentLanguage, DateTime.DATE_FULL)
+function getDayLabel(day: CalendarDay) {
+  const date = formatDateFromJSDate(day.date, currentLanguage, DateTime.DATE_FULL)
+  const count = occurrencesByDay[day.key]?.length || 0
+  if (!count) {
+    return date
+  }
+
+  return $ngettext('%{date}, %{count} appointment', '%{date}, %{count} appointments', count, {
+    date,
+    count: count.toString()
+  })
+}
+
+function getDayNumberClass(day: CalendarDay) {
+  if (day.isToday) {
+    return 'bg-role-primary-container text-role-on-primary-container'
+  }
+  if (day.key === unref(selectedDateKey)) {
+    return 'bg-role-secondary-container text-role-on-secondary-container'
+  }
+  return day.isCurrentMonth ? 'text-role-on-surface' : 'text-role-on-surface-variant'
 }
 
 /**
@@ -199,25 +254,39 @@ const formatDayLabel = (date: Date) => {
  */
 const grid = useTemplateRef<HTMLElement>('grid')
 const activeDayKey = ref<string>()
+// Set when the month is changed from the keyboard, so the focus stays in the grid.
+const dayOfMonthToFocus = ref<number>()
 
 const activeDayIndex = computed(() => days.findIndex(({ key }) => key === unref(activeDayKey)))
 
 watch(
   () => days,
   () => {
+    const dayOfMonth = unref(dayOfMonthToFocus)
+    dayOfMonthToFocus.value = undefined
+
+    if (dayOfMonth) {
+      const monthDays = days.filter(({ isCurrentMonth }) => isCurrentMonth)
+      const day = monthDays[Math.min(dayOfMonth, monthDays.length) - 1]
+      focusDay(days.indexOf(day))
+      return
+    }
+
     activeDayKey.value =
+      days.find(({ key, isCurrentMonth }) => isCurrentMonth && key === unref(selectedDateKey))
+        ?.key ||
       days.find(({ isToday, isCurrentMonth }) => isToday && isCurrentMonth)?.key ||
       days.find(({ isCurrentMonth }) => isCurrentMonth)?.key
   },
   { immediate: true }
 )
 
-const selectDay = (day: CalendarDay) => {
+function selectDay(day: CalendarDay) {
   activeDayKey.value = day.key
   emit('select-date', day.date)
 }
 
-const focusDay = async (index: number) => {
+async function focusDay(index: number) {
   const day = days[Math.min(Math.max(index, 0), days.length - 1)]
   if (!day) {
     return
@@ -228,7 +297,7 @@ const focusDay = async (index: number) => {
   unref(grid)?.querySelector<HTMLElement>(`[data-testid="calendar-day-cell-${day.key}"]`)?.focus()
 }
 
-const onGridKeydown = (event: KeyboardEvent) => {
+function onGridKeydown(event: KeyboardEvent) {
   // Appointments inside a cell are regular tab stops and bring their own keyboard handling.
   if ((event.target as HTMLElement).getAttribute('role') !== 'gridcell') {
     return
@@ -259,9 +328,11 @@ const onGridKeydown = (event: KeyboardEvent) => {
       focusDay(index + DAYS_PER_WEEK - 1 - (index % DAYS_PER_WEEK))
       break
     case 'PageUp':
+      dayOfMonthToFocus.value = days[index].dayOfMonth
       emit('previous')
       break
     case 'PageDown':
+      dayOfMonthToFocus.value = days[index].dayOfMonth
       emit('next')
       break
     case 'Enter':

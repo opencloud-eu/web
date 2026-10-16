@@ -18,12 +18,10 @@
       </div>
 
       <div class="mb-2 grid grid-cols-7 text-center text-xs text-role-on-surface-variant">
-        <span
-          v-for="weekday in weekdays"
-          :key="weekday.key"
-          :aria-label="weekday.fullLabel"
-          v-text="weekday.label"
-        />
+        <span v-for="weekday in weekdays" :key="weekday.key">
+          <span aria-hidden="true" v-text="weekday.label" />
+          <span class="sr-only" v-text="weekday.fullLabel" />
+        </span>
       </div>
       <div class="grid grid-cols-7 gap-y-3 text-center text-sm">
         <button
@@ -32,12 +30,11 @@
           type="button"
           :class="[
             'mx-auto flex size-6 items-center justify-center rounded-full',
-            day.isCurrentMonth ? 'text-role-on-surface' : 'text-role-on-surface-variant',
-            day.isToday || day.key === selectedDateKey
-              ? 'bg-role-secondary-container text-role-on-secondary-container'
-              : ''
+            getDayClass(day)
           ]"
           :aria-label="formatDayLabel(day.date)"
+          :aria-current="day.isToday ? 'date' : undefined"
+          :aria-pressed="day.key === selectedDateKey"
           @click="selectDate(day.date)"
           v-text="day.dayOfMonth"
         />
@@ -94,7 +91,7 @@ import { DateTime, Info } from 'luxon'
 import { formatDateFromJSDate } from '@opencloud-eu/web-pkg'
 import { useAppointmentsStore } from '../composables/piniaStores/appointments'
 import { useLoadAppointments } from '../composables/useLoadAppointments'
-import { getMonthGridDays, toDateKey } from '../helpers/date'
+import { getMonthGridDays, toDateKey, type CalendarDay } from '../helpers/date'
 
 const appointmentsStore = useAppointmentsStore()
 const { calendars, currentMonth, selectedCalendarIds, selectedDate } =
@@ -125,12 +122,22 @@ const monthLabel = computed(() => {
   })
 })
 
-const selectDate = (date: Date) => {
+function getDayClass(day: CalendarDay) {
+  if (day.isToday) {
+    return 'bg-role-primary-container text-role-on-primary-container'
+  }
+  if (day.key === unref(selectedDateKey)) {
+    return 'bg-role-secondary-container text-role-on-secondary-container'
+  }
+  return day.isCurrentMonth ? 'text-role-on-surface' : 'text-role-on-surface-variant'
+}
+
+function selectDate(date: Date) {
   setSelectedDate(date)
   setCurrentMonth(date)
 }
 
-const formatDayLabel = (date: Date) => {
+function formatDayLabel(date: Date) {
   return formatDateFromJSDate(date, currentLanguage, DateTime.DATE_FULL)
 }
 </script>

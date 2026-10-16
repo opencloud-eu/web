@@ -43,7 +43,7 @@ describe('CalendarNavigation', () => {
     const { wrapper } = getWrapper()
     const weekdays = wrapper.findAll('.calendar-mini-month .grid-cols-7 > span')
 
-    expect(weekdays.map((weekday) => weekday.attributes('aria-label'))).toEqual([
+    expect(weekdays.map((weekday) => weekday.find('.sr-only').text())).toEqual([
       'Monday',
       'Tuesday',
       'Wednesday',

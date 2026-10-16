@@ -22,7 +22,7 @@ export function extensions(appInfo: ApplicationInformation) {
     label: () => appInfo.name,
     color: appInfo.color,
     icon: appInfo.icon,
-    priority: 30,
+    priority: 35,
     path: urlJoin(appInfo.id)
   }
 

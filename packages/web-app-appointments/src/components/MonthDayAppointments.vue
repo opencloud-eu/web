@@ -4,7 +4,7 @@
       v-for="occurrence in visibleOccurrences"
       :key="occurrence.id"
       type="button"
-      class="grid w-full shrink-0 grid-cols-[1fr_auto] gap-2 truncate rounded border-l-4 bg-role-surface-container px-2 py-1 text-left text-xs text-role-on-surface hover:bg-role-surface-container-highest"
+      class="grid w-full shrink-0 gap-2 truncate md:grid-cols-[1fr_auto] rounded border-l-4 bg-role-surface-container px-2 py-1 text-left text-xs text-role-on-surface hover:bg-role-surface-container-highest"
       :style="{
         borderColor: resolveAppointmentColor(
           occurrence.appointment,
@@ -20,7 +20,7 @@
         v-text="occurrence.appointment.title || $gettext('Untitled appointment')"
       />
       <span
-        class="truncate text-role-on-surface-variant"
+        class="hidden truncate text-role-on-surface-variant md:block"
         v-text="formatOccurrenceTime(occurrence)"
       />
     </button>
@@ -35,7 +35,9 @@
       v-text="
         isExpanded
           ? $gettext('Show fewer')
-          : $gettext('+%{count} more', { count: hiddenOccurrenceCount })
+          : $ngettext('+%{count} more', '+%{count} more', hiddenOccurrenceCount, {
+              count: hiddenOccurrenceCount.toString()
+            })
       "
     />
   </div>
@@ -60,7 +62,7 @@ defineEmits<{
   'select-appointment': [id: string]
 }>()
 
-const { $gettext, current: currentLanguage } = useGettext()
+const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 const isExpanded = ref(false)
 
 const hiddenOccurrenceCount = computed(() => {
