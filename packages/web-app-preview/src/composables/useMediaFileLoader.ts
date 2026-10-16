@@ -107,6 +107,7 @@ export const useMediaFileLoader = ({
 
   const resolveUrl = (mediaFile: MediaFile, signal: AbortSignal): Promise<string | undefined> => {
     const space = getMatchingSpace(mediaFile.resource)
+    const isSvgImage = mediaFile.mimeType === 'image/svg+xml'
 
     // Vault images can't be thumbnailed server-side (the server only holds
     // the ciphertext blob), so skip the preview service and fetch the full
@@ -116,8 +117,7 @@ export const useMediaFileLoader = ({
     // no-thumbnail behaviour (do NOT key this off hasPreview(), or plain
     // images the server has no thumbnail for would download the full
     // original on every open).
-    const useFullImage =
-      mediaFile.isImage && (mediaFile.resource.isInVault || mediaFile.mimeType === 'image/svg+xml')
+    const useFullImage = mediaFile.isImage && (mediaFile.resource.isInVault || isSvgImage)
 
     if (mediaFile.isImage && !useFullImage) {
       return previewService.loadPreview(
@@ -133,7 +133,12 @@ export const useMediaFileLoader = ({
       )
     }
 
-    return getUrlForResource(space, mediaFile.resource, { signal })
+    // Load SVGs through the authenticated client: vue-inline-svg's own request
+    // does not send guest cookies across origins.
+    return getUrlForResource(space, mediaFile.resource, {
+      signal,
+      ...(isSvgImage && { disposition: 'inline' })
+    })
   }
 
   const performLoad = async (mediaFile: MediaFile, controller: AbortController) => {
