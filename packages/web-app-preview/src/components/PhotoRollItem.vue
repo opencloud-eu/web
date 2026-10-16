@@ -13,7 +13,7 @@
       @click="$emit('select')"
     >
       <motion-photo-overlay
-        class="mx-auto w-fit"
+        class="mx-auto w-fit max-w-full"
         :resource="item.resource"
         badge-class="top-0 right-0 m-1"
         video-class="rounded-md"
@@ -26,7 +26,7 @@
           referrerpolicy="no-referrer"
           decoding="async"
         />
-        <div v-else class="aspect-video h-25 flex items-center justify-center">
+        <div v-else class="aspect-video h-25 max-w-full flex items-center justify-center">
           <resource-icon class="aspect-video" :resource="iconResource" size-class="size-12" />
         </div>
       </motion-photo-overlay>
