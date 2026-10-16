@@ -1,6 +1,11 @@
 import { mock } from 'vitest-mock-extended'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
-import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { defineComponent } from 'vue'
+import {
+  createRouter,
+  defaultComponentMocks,
+  getComposableWrapper
+} from '@opencloud-eu/web-test-helpers'
 import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import type { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { FolderLoaderSpace, type TaskContext } from '../../../../../src/services/folder'
@@ -28,6 +33,24 @@ describe('FolderLoaderSpace', () => {
         currentRoute: mock<RouteLocationNormalizedLoaded>({ name: 'files-guest-link' })
       })
       expect(new FolderLoaderSpace().isActive($router)).toBeTruthy()
+    })
+    it('is not active on the guest shares route', async () => {
+      const component = defineComponent({ template: '<div />' })
+      const router = createRouter({
+        routes: [
+          { name: 'files-spaces-projects', path: '/files/spaces/projects', component },
+          {
+            name: 'files-spaces-generic',
+            path: '/files/spaces/:driveAliasAndItem(.*)?',
+            component
+          },
+          { name: 'files-public-link', path: '/files/public/:driveAliasAndItem(.*)?', component },
+          { name: 'files-guest-shares', path: '/files/guest/shares', component },
+          { name: 'files-guest-link', path: '/files/guest/:driveAliasAndItem(.*)?', component }
+        ]
+      })
+      await router.push('/files/guest/shares')
+      expect(new FolderLoaderSpace().isActive(router)).toBeFalsy()
     })
   })
 

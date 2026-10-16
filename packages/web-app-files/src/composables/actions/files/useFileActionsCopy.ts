@@ -22,7 +22,6 @@ import {
   useGetMatchingSpace,
   useModals,
   usePasteWorker,
-  useAuthStore,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 
@@ -34,7 +33,6 @@ export const useFileActionsCopy = () => {
   const { startWorker } = usePasteWorker()
   const { $gettext, $ngettext } = useGettext()
   const { resetSelection } = useResourcesStore()
-  const authStore = useAuthStore()
 
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
@@ -200,12 +198,8 @@ export const useFileActionsCopy = () => {
           if (!resources[0].canDownload()) {
             return false
           }
-          // guests have no home, they can only copy within their share
-          if (authStore.isGuestContext) {
-            return !!unref(currentFolder)?.canCreate()
-          }
-          // copy can't be restricted in authenticated context, because
-          // a user always has their home dir with write access
+          // not bound to the current folder: users can copy to their home,
+          // guests possibly to another writable share
           return true
         },
         class: 'oc-files-actions-copy-trigger'

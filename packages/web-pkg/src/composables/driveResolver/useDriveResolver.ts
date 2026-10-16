@@ -91,8 +91,8 @@ export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResol
         if (shareIdStr?.includes(':')) {
           shareIdStr = [SHARE_JAIL_ID, shareIdStr].join('!')
         }
-        // guests are scoped to the share they were invited to
-        if (authStore.isGuestContext) {
+        // links without a share id lead guests to the share they were invited to
+        if (!shareIdStr && authStore.isGuestContext) {
           shareIdStr = authStore.guestSpaceId
         }
 

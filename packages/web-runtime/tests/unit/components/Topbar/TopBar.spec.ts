@@ -25,6 +25,10 @@ describe('Top Bar component', () => {
     const { wrapper } = getWrapper({ userContextReady: false, guestContextReady: true })
     expect(wrapper.find('applications-menu-stub').exists()).toBeFalsy()
   })
+  it('links the logo of a guest to their shares', () => {
+    const { wrapper } = getWrapper({ userContextReady: false, guestContextReady: true })
+    expect((wrapper.vm as any).homeLink).toEqual({ name: 'files-guest-shares' })
+  })
   describe('notifications bell', () => {
     it('should display in authenticated context if announced via capabilities', () => {
       const { wrapper } = getWrapper({

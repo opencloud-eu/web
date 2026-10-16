@@ -8,6 +8,7 @@ import { Resource, ShareSpaceResource, SpaceResource } from '@opencloud-eu/web-c
 import { useAppFolderHandling } from '../../../../src/composables/appDefaults/useAppFolderHandling'
 import { FileContext } from '../../../../src/composables/appDefaults/types'
 import { useResourcesStore } from '../../../../src/composables/piniaStores'
+import { folderService, FolderLoaderTask } from '../../../../src/services/folder'
 
 vi.mock('../../../../src/composables/router/useFileRouteReplace', () => ({
   useFileRouteReplace: vi.fn(() => ({ replaceInvalidFileRoute: vi.fn() }))
@@ -57,6 +58,19 @@ describe('useAppFolderHandling', () => {
       expect(folder.remoteItemId).toBeUndefined()
       expect(child.remoteItemId).toBeUndefined()
     })
+
+    it.each(['files-shares-with-me', 'files-guest-shares', 'files-common-favorites'])(
+      'uses the folder loader for the flat file list "%s"',
+      async (routeName) => {
+        const loaderTask = mock<FolderLoaderTask>()
+        vi.spyOn(folderService, 'getTask').mockReturnValue(loaderTask)
+
+        const { mocks } = getWrapper({ fileResource: mock<Resource>() })
+        await mocks.instance.loadFolderForFileContext(mock<FileContext>({ routeName }))
+
+        expect(loaderTask.perform).toHaveBeenCalled()
+      }
+    )
   })
 })
 

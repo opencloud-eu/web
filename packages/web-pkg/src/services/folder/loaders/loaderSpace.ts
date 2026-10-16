@@ -37,6 +37,10 @@ export class FolderLoaderSpace implements FolderLoader {
     if (isLocationSpacesActive(router, 'files-spaces-projects')) {
       return false
     }
+    // the guest link route matches by path prefix and would include the guest shares route
+    if (isLocationGuestActive(router, 'files-guest-shares')) {
+      return false
+    }
     return (
       isLocationSpacesActive(router, 'files-spaces-generic') ||
       isLocationPublicActive(router, 'files-public-link') ||

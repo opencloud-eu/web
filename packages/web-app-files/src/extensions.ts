@@ -3,6 +3,7 @@ import {
   Extension,
   FloatingActionButtonExtension,
   isLocationCommonActive,
+  isLocationGuestActive,
   isLocationPublicActive,
   isLocationSharesActive,
   isLocationSpacesActive,
@@ -82,6 +83,10 @@ export const extensions = (appInfo: ApplicationInformation) => {
 
         if (isLocationSharesActive(router)) {
           return $gettext('To share a file or folder, open the Sharing panel')
+        }
+
+        if (isLocationGuestActive(router, 'files-guest-shares')) {
+          return $gettext('To create or upload files, open a share')
         }
 
         if (isLocationCommonActive(router, 'files-common-favorites')) {

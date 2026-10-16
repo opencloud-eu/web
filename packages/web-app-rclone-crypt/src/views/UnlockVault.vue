@@ -85,11 +85,13 @@
 import { computed, nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
+  createLocationGuest,
   createLocationShares,
   NoContentMessage,
   queryItemAsString,
   ResourceIcon,
   ResourceName,
+  useAuthStore,
   useClientService,
   useVaultStore,
   useResourcesStore,
@@ -112,6 +114,7 @@ const spacesStore = useSpacesStore()
 const { areSpacesLoading, waitForSpaces } = useSpacesLoading()
 const vaultStore = useVaultStore()
 const resourcesStore = useResourcesStore()
+const authStore = useAuthStore()
 
 const passwordInput = useTemplateRef<{ focus: () => void }>('passwordInput')
 const password = ref('')
@@ -260,7 +263,11 @@ async function onCancel() {
   const parent = root.replace(/\/[^/]+$/, '')
   const targetSpace = unref(space)
   if (isShareSpaceResource(targetSpace) && root === '/') {
-    await router.push(createLocationShares('files-shares-with-me'))
+    await router.push(
+      authStore.isGuestContext
+        ? createLocationGuest('files-guest-shares')
+        : createLocationShares('files-shares-with-me')
+    )
     return
   }
   if (unref(isSpaceVault)) {

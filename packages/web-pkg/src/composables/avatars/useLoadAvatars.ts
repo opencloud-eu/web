@@ -1,8 +1,9 @@
 import { useClientService } from '../clientService'
-import { useAvatarsStore } from '../piniaStores'
+import { useAuthStore, useAvatarsStore } from '../piniaStores'
 
 export const useLoadAvatars = () => {
   const clientService = useClientService()
+  const authStore = useAuthStore()
   const { addAvatar, getAvatar, avatarsQueue, pendingAvatarsRequests, abortControllers } =
     useAvatarsStore()
 
@@ -29,6 +30,11 @@ export const useLoadAvatars = () => {
   }
 
   const enqueueAvatar = (userId: string) => {
+    // the photo endpoints are not available to guests
+    if (authStore.isGuestContext) {
+      return
+    }
+
     // Prevent duplicate requests for the same user
     if (getAvatar(userId) !== undefined || pendingAvatarsRequests.has(userId)) {
       return

@@ -106,7 +106,7 @@ describe('GenericSpace view', () => {
         expectedItems
       )
     })
-    it('only include the guest share root in a guest context', () => {
+    it('include the guest shares and the guest share root in a guest context', () => {
       const space = mock<SpaceResource>({
         id: '1',
         getDriveAliasAndItem: vi.fn(),
@@ -119,8 +119,12 @@ describe('GenericSpace view', () => {
         isGuest: true
       })
       const { breadcrumbs } = wrapper.findComponent<typeof AppBar>('app-bar-stub').props()
-      expect(breadcrumbs.length).toBe(1)
-      expect(breadcrumbs[0].to).toMatchObject({ name: 'files-guest-link' })
+      expect(breadcrumbs.length).toBe(2)
+      expect(breadcrumbs[0]).toMatchObject({
+        text: 'Shares',
+        to: { name: 'files-guest-shares' }
+      })
+      expect(breadcrumbs[1].to).toMatchObject({ name: 'files-guest-link' })
     })
     it('include the root item and the current folder', () => {
       const folderName = 'someFolder'

@@ -212,34 +212,39 @@ describe('shares events', () => {
       ).not.toHaveBeenCalled()
     })
 
-    it('calls "upsertResource" when resource has been shared and current route equals "files-shares-with-me"', async () => {
-      const sharedDrive = mockDeep<DriveItem>({
-        id: 'sharedDrive',
-        name: 'trololo',
-        remoteItem: {
-          id: 'sharedResource',
-          permissions: []
-        }
-      })
-      const mocks = getMocks({
-        currentRouteFilesSharesWithMe: true,
-        currentFolder: null
-      })
-      const sseData = mock<EventSchemaType>({
-        itemid: sharedDrive.remoteItem.id
-      })
-      mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
-        sharedDrive
-      ])
-      await onSSEShareCreatedEvent({ sseData, ...mocks })
-      expect(mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe).toHaveBeenCalled()
-      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalled()
-      expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
-      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
-      expect(
-        mocks.clientService.graphAuthenticated.driveItems.listSharedByMe
-      ).not.toHaveBeenCalled()
-    })
+    it.each([{ currentRouteFilesSharesWithMe: true }, { currentRouteFilesGuestShares: true }])(
+      'calls "upsertResource" when resource has been shared and current route is a shared with me route (%o)',
+      async (route) => {
+        const sharedDrive = mockDeep<DriveItem>({
+          id: 'sharedDrive',
+          name: 'trololo',
+          remoteItem: {
+            id: 'sharedResource',
+            permissions: []
+          }
+        })
+        const mocks = getMocks({
+          ...route,
+          currentFolder: null
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: sharedDrive.remoteItem.id
+        })
+        mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
+          sharedDrive
+        ])
+        await onSSEShareCreatedEvent({ sseData, ...mocks })
+        expect(
+          mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe
+        ).toHaveBeenCalled()
+        expect(mocks.resourcesStore.upsertResource).toHaveBeenCalled()
+        expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
+        expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+        expect(
+          mocks.clientService.graphAuthenticated.driveItems.listSharedByMe
+        ).not.toHaveBeenCalled()
+      }
+    )
     it('calls "upsertResource" when resource has been shared and current route equals "files-shares-with-others"', async () => {
       const sharedDrive = mockDeep<DriveItem>({
         id: 'sharedDrive',
@@ -455,28 +460,31 @@ describe('shares events', () => {
       expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
       expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
     })
-    it('calls "removeResources" when share has removed and current route equals "files-shared-with-me"', async () => {
-      const sharedResource = mock<Resource>({
-        id: 'sharedResource',
-        fileId: 'sharedResource',
-        storageId: 'space1'
-      })
-      const mocks = getMocks({
-        currentRouteFilesSharesWithMe: true,
-        currentFolder: null,
-        resources: [sharedResource]
-      })
-      const sseData = mock<EventSchemaType>({
-        itemid: sharedResource.id,
-        spaceid: sharedResource.storageId
-      })
-      await onSSEShareRemovedEvent({ sseData, ...mocks })
-      expect(mocks.resourcesStore.removeResources).toHaveBeenCalled()
-      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
-      expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
-      expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
-      expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
-    })
+    it.each([{ currentRouteFilesSharesWithMe: true }, { currentRouteFilesGuestShares: true }])(
+      'calls "removeResources" when share has removed and current route is a shared with me route (%o)',
+      async (route) => {
+        const sharedResource = mock<Resource>({
+          id: 'sharedResource',
+          fileId: 'sharedResource',
+          storageId: 'space1'
+        })
+        const mocks = getMocks({
+          ...route,
+          currentFolder: null,
+          resources: [sharedResource]
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: sharedResource.id,
+          spaceid: sharedResource.storageId
+        })
+        await onSSEShareRemovedEvent({ sseData, ...mocks })
+        expect(mocks.resourcesStore.removeResources).toHaveBeenCalled()
+        expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+        expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+        expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
+        expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+      }
+    )
     it('does not trigger any action when initiator ids are identical', async () => {
       const mocks = getMocks({
         currentRouteFilesSpacesGeneric: true
@@ -681,7 +689,8 @@ const getMocks = ({
   currentRouteFilesSpacesProjects = false,
   currentRouteFilesSharesViaLink = false,
   currentRouteFilesSharesWithMe = false,
-  currentRouteFilesSharesWithOthers = false
+  currentRouteFilesSharesWithOthers = false,
+  currentRouteFilesGuestShares = false
 }: {
   currentFolder?: Resource
   resources?: Resource[]
@@ -691,6 +700,7 @@ const getMocks = ({
   currentRouteFilesSharesViaLink?: boolean
   currentRouteFilesSharesWithMe?: boolean
   currentRouteFilesSharesWithOthers?: boolean
+  currentRouteFilesGuestShares?: boolean
 } = {}) => {
   createTestingPinia()
   const resourcesStore = useResourcesStore()
@@ -727,6 +737,9 @@ const getMocks = ({
   }
   if (currentRouteFilesSharesWithOthers) {
     routeName = 'files-shares-with-others'
+  }
+  if (currentRouteFilesGuestShares) {
+    routeName = 'files-guest-shares'
   }
 
   const currentRoute = mock<RouteLocation>({ name: routeName })

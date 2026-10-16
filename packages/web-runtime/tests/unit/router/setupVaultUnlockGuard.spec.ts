@@ -3,6 +3,7 @@ import { setupVaultUnlockGuard } from '../../../src/router/setupVaultUnlockGuard
 import {
   getVaultClaim,
   resolveVaultEngine,
+  useAuthStore,
   useSpacesLoading,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
@@ -18,6 +19,7 @@ vi.mock('@opencloud-eu/web-pkg', async () => {
     routeToContextQuery,
     getVaultClaim: vi.fn(),
     resolveVaultEngine: vi.fn(),
+    useAuthStore: vi.fn(() => ({ isGuestContext: false })),
     useExtensionRegistry: vi.fn(() => ({})),
     useSpacesLoading: vi.fn(),
     useSpacesStore: vi.fn()
@@ -39,6 +41,7 @@ const fromSearch = { name: 'files-common-search', fullPath: '/search?term=secret
 
 const loadMountPoints = vi.fn()
 const createShareSpace = vi.fn()
+const getSpace = vi.fn()
 
 function installGuard({
   spaces = [] as any[],
@@ -52,7 +55,8 @@ function installGuard({
     spaces,
     mountPointsInitialized,
     loadMountPoints,
-    createShareSpace
+    createShareSpace,
+    getSpace
   } as any)
   vi.mocked(getVaultClaim).mockReturnValue(claim)
   vi.mocked(resolveVaultEngine).mockResolvedValue(engine)
@@ -492,8 +496,68 @@ describe('setupVaultUnlockGuard', () => {
     expect(getVaultClaim).not.toHaveBeenCalled()
   })
 
+  it('builds the share space from the share id for guests without loading mount points', async () => {
+    vi.mocked(useAuthStore).mockReturnValueOnce({ isGuestContext: true } as any)
+    createShareSpace.mockReturnValue({ id: 'share-123', driveAlias: 'share/myvault.vault' })
+    const guard = installGuard({ mountPointsInitialized: false, claim: null })
+
+    const result = await guard({
+      params: { driveAliasAndItem: 'share/myvault.vault/sub' },
+      query: { shareId: 'share-123' },
+      fullPath: '/x'
+    })
+
+    expect(result).toBe(true)
+    expect(loadMountPoints).not.toHaveBeenCalled()
+    expect(createShareSpace).toHaveBeenCalledWith({
+      driveAliasPrefix: 'share',
+      id: 'share-123',
+      shareName: 'myvault.vault'
+    })
+    expect(getVaultClaim).toHaveBeenCalled()
+  })
+
+  it('prefers the share space of the share id over a share with the same drive alias', async () => {
+    const otherShareSpace = { id: 'other-share', driveAlias: 'share/myvault.vault' }
+    const shareSpace = { id: 'share-123', driveAlias: 'share/myvault.vault' }
+    getSpace.mockReturnValueOnce(shareSpace)
+    const guard = installGuard({ spaces: [otherShareSpace], claim: null })
+
+    await guard({
+      params: { driveAliasAndItem: 'share/myvault.vault' },
+      query: { shareId: 'share-123' },
+      fullPath: '/x'
+    })
+
+    expect(getSpace).toHaveBeenCalledWith('share-123')
+    expect(getVaultClaim).toHaveBeenCalledWith(expect.anything(), shareSpace, '/')
+    expect(createShareSpace).not.toHaveBeenCalled()
+  })
+
+  it('does not fall back to a share with the same drive alias when the share id is unknown', async () => {
+    vi.mocked(useAuthStore).mockReturnValueOnce({ isGuestContext: true } as any)
+    const otherShareSpace = { id: 'other-share', driveAlias: 'share/myvault.vault' }
+    const shareSpace = { id: 'share-123', driveAlias: 'share/myvault.vault' }
+    createShareSpace.mockReturnValue(shareSpace)
+    const guard = installGuard({ spaces: [otherShareSpace], claim: null })
+
+    await guard({
+      params: { driveAliasAndItem: 'share/myvault.vault' },
+      query: { shareId: 'share-123' },
+      fullPath: '/x'
+    })
+
+    expect(createShareSpace).toHaveBeenCalledWith({
+      driveAliasPrefix: 'share',
+      id: 'share-123',
+      shareName: 'myvault.vault'
+    })
+    expect(getVaultClaim).toHaveBeenCalledWith(expect.anything(), shareSpace, '/')
+  })
+
   it('skips the mount-point lazy load when the share space is already in the store', async () => {
-    const shareSpace = { id: 's1', driveAlias: 'share/myvault.vault' }
+    const shareSpace = { id: 'share-123', driveAlias: 'share/myvault.vault' }
+    getSpace.mockReturnValueOnce(shareSpace)
     const guard = installGuard({
       spaces: [shareSpace],
       mountPointsInitialized: false,

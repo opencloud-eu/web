@@ -44,6 +44,7 @@
       </template>
       <template #quickActions="{ resource }">
         <oc-button
+          v-if="hideShareAction.isVisible({ space: null, resources: [resource] })"
           v-oc-tooltip="hideShareAction.label({ space: null, resources: [resource] })"
           :aria-label="hideShareAction.label({ space: null, resources: [resource] })"
           appearance="raw"

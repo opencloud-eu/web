@@ -2,6 +2,7 @@ import {
   Resource,
   SpaceResource,
   isShareResource,
+  isShareRoot,
   isShareSpaceResource,
   isProjectSpaceResource,
   isSpaceResource,
@@ -216,7 +217,7 @@ export const useFileActionsMove = () => {
         if (resources.length === 0) {
           return false
         }
-        if (resources.some((r) => isSpaceResource(r) || isTrashResource(r))) {
+        if (resources.some((r) => isSpaceResource(r) || isTrashResource(r) || isShareRoot(r))) {
           return false
         }
 
