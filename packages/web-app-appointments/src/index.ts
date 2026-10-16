@@ -1,4 +1,4 @@
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-appointments'
 import { useGettext } from 'vue3-gettext'
 import Appointments from './views/Calendar.vue'
 import LayoutContainer from './LayoutContainer.vue'
