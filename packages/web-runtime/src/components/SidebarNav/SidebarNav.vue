@@ -16,8 +16,11 @@
             class="oc-app-floating-action-button w-full"
             @click="floatingActionButton.handler?.()"
           >
-            <oc-icon :icon="floatingActionButton.icon" />
-            <span v-text="floatingActionButton.label()" />
+            <oc-icon
+              :icon="floatingActionButton.icon"
+              class="[&_svg]:stroke-current [&_svg]:stroke-[0.25]"
+            />
+            <span class="font-semibold" v-text="floatingActionButton.label()" />
           </oc-button>
           <template
             v-if="floatingActionButton.dropComponent && floatingActionButton.mode() === 'drop'"
