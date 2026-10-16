@@ -9,8 +9,8 @@ import {
 import { GuestSession } from '../../services/auth/guestSessionManager'
 
 /**
- * Builds the landing route of a guest session. A single file share resolves into its default
- * app if there is one, everything else into the file list of the share.
+ * Builds the landing route of a guest session. A folder share resolves into its file list, a
+ * single file share into its default app or, without one, into the guest shares list.
  */
 export const useGuestLinkTargetRoute = () => {
   const authStore = useAuthStore()

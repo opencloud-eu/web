@@ -10,10 +10,11 @@ import { unref } from 'vue'
 import { useGetMatchingSpace } from '../spaces'
 import path, { dirname } from 'path'
 import { ResourceRouteResolverOptions, useResourceRouteResolver } from '../filesList'
-import { createLocationShares, createLocationSpaces } from '../../router'
-import { useCapabilityStore } from '../piniaStores'
+import { createLocationGuest, createLocationShares, createLocationSpaces } from '../../router'
+import { useAuthStore, useCapabilityStore } from '../piniaStores'
 
 export const useFolderLink = (options: ResourceRouteResolverOptions = {}) => {
+  const authStore = useAuthStore()
   const capabilityStore = useCapabilityStore()
   const { $gettext } = useGettext()
   const { getInternalSpace, getMatchingSpace } = useGetMatchingSpace()
@@ -43,7 +44,9 @@ export const useFolderLink = (options: ResourceRouteResolverOptions = {}) => {
 
   const getParentFolderLink = (resource: Resource) => {
     if (resource.remoteItemId && resource.path === '/') {
-      return createLocationShares('files-shares-with-me')
+      return authStore.isGuestContext
+        ? createLocationGuest('files-guest-shares')
+        : createLocationShares('files-shares-with-me')
     }
     if (isProjectSpaceResource(resource)) {
       return createLocationSpaces('files-spaces-projects')

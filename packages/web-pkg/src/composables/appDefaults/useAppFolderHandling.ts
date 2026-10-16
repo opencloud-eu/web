@@ -72,6 +72,7 @@ export function useAppFolderHandling({
 
       const flatFileLists = [
         'files-shares-with-me',
+        'files-guest-shares',
         'files-shares-with-others',
         'files-shares-via-link',
         'files-common-favorites'

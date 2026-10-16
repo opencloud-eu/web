@@ -1,6 +1,10 @@
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import {
+  defaultComponentMocks,
+  getComposableWrapper,
+  RouteLocation
+} from '@opencloud-eu/web-test-helpers'
 import { useSideBarPanels } from '../../../../src/composables/extensions/useFileSideBars'
 
 describe('useSideBarPanels', () => {
@@ -23,16 +27,46 @@ describe('useSideBarPanels', () => {
       })
     })
   })
+  describe('details multi selection panel', () => {
+    it.each([
+      { routeName: 'files-guest-link', showSpaceCount: false },
+      { routeName: 'files-guest-shares', showSpaceCount: false },
+      { routeName: 'files-common-favorites', showSpaceCount: true }
+    ])(
+      'shows the space count on route "$routeName": $showSpaceCount',
+      ({ routeName, showSpaceCount }) => {
+        getWrapper({
+          isGuest: routeName.startsWith('files-guest'),
+          routeName,
+          setup: (panels) => {
+            const { panel } = panels.find(({ id }) =>
+              id.endsWith('.sidebar-panel.details-multi-selection')
+            )
+            const attrs = panel.componentAttrs({
+              parent: mock<Resource>(),
+              items: [mock<Resource>(), mock<Resource>()],
+              root: mock<SpaceResource>()
+            })
+            expect(attrs.showSpaceCount).toBe(showSpaceCount)
+          }
+        })
+      }
+    )
+  })
 })
 
 function getWrapper({
   setup,
-  isGuest
+  isGuest,
+  routeName = ''
 }: {
   setup: (instance: ReturnType<typeof useSideBarPanels>) => void
   isGuest: boolean
+  routeName?: string
 }) {
-  const mocks = defaultComponentMocks()
+  const mocks = defaultComponentMocks({
+    currentRoute: mock<RouteLocation>({ name: routeName, path: `/${routeName}` })
+  })
   return {
     wrapper: getComposableWrapper(
       () => {

@@ -55,11 +55,13 @@ export const useLinkTargetRoute = () => {
     if (isPublicSpaceResource(space)) {
       return createLocationPublic('files-public-link')
     }
+    if (isShareSpaceResource(space) && path === '/') {
+      return authStore.isGuestContext
+        ? createLocationGuest('files-guest-shares')
+        : createLocationShares('files-shares-with-me')
+    }
     if (authStore.isGuestContext) {
       return createLocationGuest('files-guest-link')
-    }
-    if (isShareSpaceResource(space) && path === '/') {
-      return createLocationShares('files-shares-with-me')
     }
     return createLocationSpaces('files-spaces-generic')
   }

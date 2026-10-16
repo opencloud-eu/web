@@ -2,7 +2,7 @@ import { FolderLoader, FolderLoaderTask, TaskContext } from '../folderService'
 import { Router } from 'vue-router'
 import { useTask } from 'vue-concurrency'
 import { buildIncomingShareResource, call } from '@opencloud-eu/web-client'
-import { isLocationSharesActive } from '../../../router'
+import { isLocationGuestActive, isLocationSharesActive } from '../../../router'
 import { unref } from 'vue'
 
 export class FolderLoaderSharedWithMe implements FolderLoader {
@@ -14,7 +14,10 @@ export class FolderLoaderSharedWithMe implements FolderLoader {
     const currentRoute = unref(router.currentRoute)
     return (
       isLocationSharesActive(router, 'files-shares-with-me') ||
-      currentRoute?.query?.contextRouteName === 'files-shares-with-me'
+      isLocationGuestActive(router, 'files-guest-shares') ||
+      ['files-shares-with-me', 'files-guest-shares'].includes(
+        currentRoute?.query?.contextRouteName as string
+      )
     )
   }
 

@@ -18,6 +18,7 @@ export interface RouteComponents {
     SharedWithMe: Component
     SharedWithOthers: Component
     SharedViaLink: Component
+    GuestSharedWithMe: Component
   }
   Spaces: {
     DriveResolver: Component

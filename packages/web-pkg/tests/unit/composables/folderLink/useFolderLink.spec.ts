@@ -38,6 +38,21 @@ describe('useFolderLink', () => {
     })
   })
 
+  describe('getParentFolderLink for a share root', () => {
+    const resource = { path: '/', remoteItemId: '1', storageId: '1' } as Resource
+
+    it('should return the shared with me route', () => {
+      const wrapper = createWrapper()
+      const parentFolderLink = wrapper.vm.getParentFolderLink(resource)
+      expect(parentFolderLink).toEqual(expect.objectContaining({ name: 'files-shares-with-me' }))
+    })
+    it('should return the guest shares route in guest context', () => {
+      const wrapper = createWrapper({ isGuestContext: true })
+      const parentFolderLink = wrapper.vm.getParentFolderLink(resource)
+      expect(parentFolderLink).toEqual(expect.objectContaining({ name: 'files-guest-shares' }))
+    })
+  })
+
   describe('getParentFolderName should return the correct parent folder name', () => {
     it('should equal "Personal" if share jail is enabled', () => {
       const resource = {
@@ -86,7 +101,7 @@ describe('useFolderLink', () => {
   })
 })
 
-const createWrapper = () => {
+const createWrapper = ({ isGuestContext = false }: { isGuestContext?: boolean } = {}) => {
   const spaces = [
     {
       id: '1',
@@ -127,7 +142,11 @@ const createWrapper = () => {
       mocks,
       provide: mocks,
       pluginOptions: {
-        piniaOptions: { spacesState: { spaces }, capabilityState: { capabilities } }
+        piniaOptions: {
+          spacesState: { spaces },
+          capabilityState: { capabilities },
+          authState: { guestContextReady: isGuestContext }
+        }
       }
     }
   )
