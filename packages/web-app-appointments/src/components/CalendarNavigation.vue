@@ -72,7 +72,7 @@
                 :model-value="selectedCalendarIds.includes(item.id)"
                 :label="item.name"
                 :title="item.name"
-                class="min-w-0 flex-1 [&>label]:min-w-0 [&>label]:truncate"
+                class="min-w-0 flex-1 [&>input]:shrink-0 [&>label]:min-w-0 [&>label]:truncate"
                 @update:model-value="setCalendarSelected(item.id, $event)"
               />
             </div>
