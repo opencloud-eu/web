@@ -39,6 +39,7 @@ Feature: Accessibility checks
       | resource | recipient | type  | role     |
       | parent   | Brian     | user  | Can edit |
       | parent   | sales     | group | Can edit |
+    And the user creates a file "largefile.txt" of "1GB" size in the temp upload directory
 
     ## checks login page
     When "Alice" logs in
@@ -82,6 +83,11 @@ Feature: Accessibility checks
     And "Alice" searches "test" using the global search and the "all files" filter and presses enter
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "Search result"
 
+    # search preview with results
+    And "Alice" searches "lorem" using the global search
+    And "Alice" checks the accessibility of the DOM selector "#files-global-search-options" on the "search preview"
+    And "Alice" reloads the page
+
 
     ## 2. check accesability on top bar
     And "Brian" checks the accessibility of the DOM selector "#oc-topbar" on the "top bar"
@@ -107,8 +113,12 @@ Feature: Accessibility checks
     And "Brian" opens the user menu
     And "Brian" opens "Profile" on the user menu
     And "Brian" checks the accessibility of the DOM selector "#account-information" on the "account menu->profile"
+    And "Brian" checks the accessibility of the whole page on the "account page"
     And "Brian" opens "Preferences" on the user menu
     And "Brian" checks the accessibility of the DOM selector "#account-preferences" on the "account menu->preferences"
+    And "Brian" expands the select "[data-testid=language]"
+    And "Brian" checks the accessibility of the whole page on the "account menu->preferences->language select"
+    And "Brian" collapses the expanded select
     And "Brian" opens "Extensions" on the user menu
     And "Brian" checks the accessibility of the DOM selector "#account-extensions" on the "account menu->extensions"
     And "Brian" opens "Calendar" on the user menu
@@ -124,6 +134,7 @@ Feature: Accessibility checks
 
     # users
     And "Brian" navigates to the users management page
+    And "Brian" checks the accessibility of the whole page on the "admin settings->users page"
     And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->users"
     And "Brian" selects the user "Alice"
     And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->users"
@@ -176,6 +187,35 @@ Feature: Accessibility checks
     And "Anonymous" checks the accessibility of the DOM selector "#opencloud" on the "public link page->before unlock"
     And "Anonymous" unlocks the public link with password "%public%"
     And "Anonymous" checks the accessibility of the DOM selector "#files" on the "public link page"
+    And "Anonymous" checks the accessibility of the whole page on the "public link page"
+
+
+    ## 9. app store
+    And "Brian" navigates to the app store
+    And "Brian" checks the accessibility of the whole page on the "app store"
+
+
+    ## 10. text editor
+    And "Alice" opens the "files" app
+    And "Alice" opens file "lorem.txt" via "text-editor" using the context menu
+    And "Alice" checks the accessibility of the DOM selector ".oc-text-editor .ProseMirror" on the "text editor content"
+    And "Alice" checks the accessibility of the whole page on the "text editor"
+    And "Alice" closes the file viewer
+
+
+    ## 11. upload progress
+    And "Alice" starts uploading the following large resources from the temp upload directory
+      | resource      |
+      | largefile.txt |
+    And "Alice" pauses the file upload
+    And "Alice" checks the accessibility of the DOM selector "#upload-info" on the "upload info with progress"
+    And "Alice" cancels the file upload
+
+
+    ## 12. mobile viewport
+    And "Alice" switches to the "mobile" viewport
+    And "Alice" checks the accessibility of the whole page on the "personal space page (mobile)"
+    And "Alice" switches to the "desktop" viewport
 
     And "Alice" logs out
     And "Brian" logs out
