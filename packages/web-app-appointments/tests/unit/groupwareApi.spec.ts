@@ -2,6 +2,7 @@ import responses from './fixtures/groupwareApiResponses.json'
 import { normalizeAppointments, normalizeCalendars } from '../../src/helpers/appointment'
 import {
   createAppointmentOccurrences,
+  getMonthGridDateRange,
   groupAppointmentOccurrencesByDay
 } from '../../src/helpers/date'
 import { parseCalendarEventsResponse, parseCalendarsResponse } from '../../src/types'
@@ -20,7 +21,7 @@ describe('Groupware API responses', () => {
         name: 'Stalwart Calendar (alan@example.org)',
         color: undefined,
         isDefault: true,
-        isReadOnly: undefined
+        sortOrder: undefined
       }
     ])
   })
@@ -59,7 +60,8 @@ describe('Groupware API responses', () => {
   it('spreads a multi-day all-day event over the days it covers', () => {
     const appointments = normalizeAppointments(parseCalendarEventsResponse(responses.events))
     const occurrencesByDay = groupAppointmentOccurrencesByDay(
-      createAppointmentOccurrences(appointments)
+      createAppointmentOccurrences(appointments),
+      getMonthGridDateRange(new Date(2026, 8, 1))
     )
 
     // The two day "Konferenz" ends exclusively on the 19th, so it does not cover that day.

@@ -2,7 +2,7 @@ import { computed, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useCalendarApi } from './useCalendarApi'
 import { useAppointmentsStore } from './piniaStores/appointments'
-import type { Appointment, AppointmentDateRange, Calendar } from '../types'
+import type { Appointment, Calendar } from '../types'
 
 /**
  * The tasks own the loading and error state. Because they are `restartable`, a superseded run
@@ -41,18 +41,12 @@ export const useLoadAppointments = () => {
   }
 
   if (!loadAppointmentsTask) {
-    loadAppointmentsTask = useTask(function* (
-      signal,
-      accountId: string,
-      range: AppointmentDateRange,
-      calendarIds: string[]
-    ) {
+    loadAppointmentsTask = useTask(function* (signal, accountId: string, calendarIds: string[]) {
       appointmentsError.value = undefined
 
       try {
         const appointments = (yield calendarApi.loadAppointments(
           accountId,
-          range,
           calendarIds,
           signal
         )) as Appointment[]
@@ -70,12 +64,8 @@ export const useLoadAppointments = () => {
     return loadCalendarsTask!.perform(accountId)
   }
 
-  const loadAppointments = (
-    accountId: string,
-    range: AppointmentDateRange,
-    calendarIds: string[]
-  ) => {
-    return loadAppointmentsTask!.perform(accountId, range, calendarIds)
+  const loadAppointments = (accountId: string, calendarIds: string[]) => {
+    return loadAppointmentsTask!.perform(accountId, calendarIds)
   }
 
   const clearAppointments = () => {

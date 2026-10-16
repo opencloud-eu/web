@@ -1,4 +1,5 @@
-import { DateTime, Duration } from 'luxon'
+import { Duration } from 'luxon'
+import { parseDateTime } from './date'
 import type {
   Appointment,
   AppointmentParticipant,
@@ -78,7 +79,7 @@ export const normalizeCalendar = (calendar: RawCalendar): Calendar => {
     name: calendar.name || calendar.title || calendar.displayName || id,
     color: calendar.color,
     isDefault: calendar.isDefault,
-    isReadOnly: calendar.isReadOnly
+    sortOrder: calendar.sortOrder
   }
 }
 
@@ -115,7 +116,7 @@ const addDurationToDateString = (start: string, duration?: string, timeZone?: st
     return start
   }
 
-  const startDate = DateTime.fromISO(start, timeZone ? { zone: timeZone } : { setZone: true })
+  const startDate = parseDateTime(start, timeZone)
   const parsedDuration = Duration.fromISO(duration)
   if (!startDate.isValid || !parsedDuration.isValid) {
     return start

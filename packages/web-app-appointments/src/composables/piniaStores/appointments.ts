@@ -63,7 +63,7 @@ export const useAppointmentsStore = defineStore('appointments', () => {
   )
 
   const occurrencesByDay = computed(() =>
-    groupAppointmentOccurrencesByDay(unref(visibleOccurrences))
+    groupAppointmentOccurrencesByDay(unref(visibleOccurrences), unref(currentMonthRange))
   )
 
   const selectedOccurrence = computed(() => {
@@ -88,9 +88,13 @@ export const useAppointmentsStore = defineStore('appointments', () => {
   }
 
   const setCalendars = (data: Calendar[]) => {
-    calendars.value = data
+    calendars.value = [...data].sort(
+      (left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0)
+    )
 
     if (!unref(hasInitializedCalendarSelection)) {
+      // `isVisible` is not taken into account: Stalwart reports it as false even for the default
+      // calendar, which would leave the calendar empty initially.
       selectedCalendarIds.value = data.map(({ id }) => id)
       hasInitializedCalendarSelection.value = true
       return

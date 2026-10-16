@@ -12,8 +12,6 @@ vi.mock('../../../src/composables/useCalendarApi', () => ({
   useCalendarApi: () => calendarApi
 }))
 
-const range = { start: '2026-06-01T00:00:00.000Z', end: '2026-07-05T23:59:59.999Z' }
-
 describe('useLoadAppointments', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -41,7 +39,7 @@ describe('useLoadAppointments', () => {
   it('does not let a superseded run overwrite the result of the newer one', async () => {
     // The first run is aborted by `restartable` as soon as the second one is performed.
     calendarApi.loadAppointments.mockImplementationOnce(
-      (_accountId: string, _range: unknown, _calendarIds: string[], signal: AbortSignal) =>
+      (_accountId: string, _calendarIds: string[], signal: AbortSignal) =>
         new Promise((_resolve, reject) => {
           signal.addEventListener('abort', () => reject(new Error('canceled')))
         })
@@ -49,8 +47,8 @@ describe('useLoadAppointments', () => {
     calendarApi.loadAppointments.mockResolvedValueOnce([appointment({ id: 'from-second-run' })])
     const { loadAppointments, error } = await getComposable()
 
-    const superseded = loadAppointments('account-1', range, ['personal'])
-    await loadAppointments('account-1', range, ['personal'])
+    const superseded = loadAppointments('account-1', ['personal'])
+    await loadAppointments('account-1', ['personal'])
     await flushPromises()
 
     expect(superseded.isCanceled).toBeTruthy()

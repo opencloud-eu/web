@@ -29,28 +29,28 @@ describe('Calendar view', () => {
   })
 
   it('loads the appointments of all calendars of the account', async () => {
-    const { appointmentsStore } = await getWrapper()
+    await getWrapper()
 
     expect(mocks.loadAppointments).toHaveBeenCalledOnce()
-    expect(mocks.loadAppointments).toHaveBeenCalledWith(
-      'account-1',
-      appointmentsStore.currentMonthRange,
-      ['personal', 'team']
-    )
+    expect(mocks.loadAppointments).toHaveBeenCalledWith('account-1', ['personal', 'team'])
   })
 
-  it('reloads the appointments when the month changes', async () => {
+  // The Groupware API can't filter by date, so the appointments of all months are loaded at once.
+  it('does not reload the appointments when the month changes', async () => {
     const { appointmentsStore } = await getWrapper()
     mocks.loadAppointments.mockClear()
 
     appointmentsStore.goToNextMonth()
     await flushPromises()
 
-    expect(mocks.loadAppointments).toHaveBeenCalledOnce()
-    expect(mocks.loadAppointments).toHaveBeenCalledWith(
-      'account-1',
-      appointmentsStore.currentMonthRange,
-      ['personal', 'team']
+    expect(mocks.loadAppointments).not.toHaveBeenCalled()
+  })
+
+  it('cancels the appointments of the previous account before loading the calendars', async () => {
+    await getWrapper()
+
+    expect(mocks.clearAppointments.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.loadCalendars.mock.invocationCallOrder[0]
     )
   })
 

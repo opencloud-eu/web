@@ -96,6 +96,17 @@ describe('appointments store', () => {
     expect(store.selectedCalendarIds).toEqual(['personal'])
   })
 
+  it('orders the calendars by their sort order', () => {
+    const store = useAppointmentsStore()
+
+    store.setCalendars([
+      calendar({ id: 'team', sortOrder: 2 }),
+      calendar({ id: 'personal', sortOrder: 1 })
+    ])
+
+    expect(store.calendars.map(({ id }) => id)).toEqual(['personal', 'team'])
+  })
+
   it('drops a selected calendar that no longer exists', () => {
     const store = useAppointmentsStore()
 

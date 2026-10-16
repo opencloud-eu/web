@@ -1,12 +1,10 @@
 import { urlJoin } from '@opencloud-eu/web-client'
 import { useClientService, useConfigStore, type HttpClient } from '@opencloud-eu/web-pkg'
 import { normalizeAppointments, normalizeCalendars } from '../helpers/appointment'
-import { isAppointmentInRange } from '../helpers/date'
 import {
   parseCalendarEventsPage,
   parseCalendarsResponse,
   type Appointment,
-  type AppointmentDateRange,
   type Calendar
 } from '../types'
 
@@ -20,7 +18,6 @@ export type CalendarApi = {
   loadCalendars: (accountId: string, signal: AbortSignal) => Promise<Calendar[]>
   loadAppointments: (
     accountId: string,
-    range: AppointmentDateRange,
     calendarIds: string[],
     signal: AbortSignal
   ) => Promise<Appointment[]>
@@ -74,8 +71,11 @@ export const createCalendarApi = ({ client, groupwareUrl }: CalendarApiOptions):
       page = await loadEventPage(accountId, calendarId, signal, page.total)
     }
 
+    // The server may cap the limit. Showing the events we got beats showing none at all.
     if (page.total !== undefined && page.events.length < page.total) {
-      throw new Error(`Groupware API returned an incomplete event collection for ${calendarId}`)
+      console.warn(
+        `Groupware API returned ${page.events.length} of ${page.total} events for calendar ${calendarId}`
+      )
     }
 
     return normalizeAppointments(page.events).map((appointment) => ({
@@ -89,11 +89,10 @@ export const createCalendarApi = ({ client, groupwareUrl }: CalendarApiOptions):
 
   /**
    * MVP limitation: the Groupware API rejects every query parameter but `limit`, so the full
-   * event collection of each calendar is fetched and narrowed down to the visible range here.
+   * event collection of each calendar is fetched. The store narrows it down to the visible range.
    */
   const loadAppointments = async (
     accountId: string,
-    range: AppointmentDateRange,
     calendarIds: string[],
     signal: AbortSignal
   ) => {
@@ -105,9 +104,7 @@ export const createCalendarApi = ({ client, groupwareUrl }: CalendarApiOptions):
       calendarIds.map((calendarId) => loadEvents(accountId, calendarId, signal))
     )
 
-    return deduplicateAppointments(appointmentLists.flat()).filter((appointment) =>
-      isAppointmentInRange(appointment, range)
-    )
+    return deduplicateAppointments(appointmentLists.flat())
   }
 
   return {
