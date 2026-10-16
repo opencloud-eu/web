@@ -7,28 +7,37 @@ const a11yRuleTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice
 export async function checkA11yOrLocalization(
   page: Page,
   context: string,
-  selector: string
+  selector?: string
 ): Promise<void> {
   if (process.env.RUN_LOCALIZATION_TEST_FOR_LANG === 'de') {
-    await checkGermanLanguage(page, selector, context)
+    await checkGermanLanguage(page, selector ?? 'body', context)
   } else {
     await checkAccessibility(page, context, selector)
   }
 }
 
+// without an includeSelector the whole page is scanned, which also enables page-level rules
+// (landmarks, headings, document title) that don't apply to a single subtree
 async function checkAccessibility(
   page: Page,
   context: string = '',
-  includeSelector: string
+  includeSelector?: string
 ): Promise<void> {
-  await expect(page.locator(includeSelector)).toBeVisible()
-  if (includeSelector.includes('oc-drop')) {
+  if (includeSelector) {
+    await expect(page.locator(includeSelector)).toBeVisible()
+  }
+  if (includeSelector?.includes('oc-drop')) {
     // wait for drop animation
     await page.waitForTimeout(300)
   }
 
   function analyze() {
-    return new AxeBuilder({ page }).withTags(a11yRuleTags).include(includeSelector).analyze()
+    // tooltips are transient and appended to <body>, they only show up when a previous step left focus or hover on a trigger
+    const builder = new AxeBuilder({ page }).withTags(a11yRuleTags).exclude('[role="tooltip"]')
+    if (includeSelector) {
+      builder.include(includeSelector)
+    }
+    return builder.analyze()
   }
 
   let results = await analyze()
@@ -48,8 +57,18 @@ async function checkAccessibility(
         console.error(`  Node ${idx + 1}: ${node.html}`)
       })
     }
-    throw new Error(`Accessibility check failed${context ? ` in ${context}` : ''}.`)
   }
+
+  // soft assertion: the scenario continues and all violations are reported at the end
+  expect
+    .soft(
+      results.violations.map(
+        (violation) =>
+          `[${violation.id}] ${violation.help}: ${violation.nodes.map((node) => node.target.join(' ')).join(', ')}`
+      ),
+      `Accessibility check failed${context ? ` in ${context}` : ''}`
+    )
+    .toEqual([])
 }
 
 async function checkGermanLanguage(
