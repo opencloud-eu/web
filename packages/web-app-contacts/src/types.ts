@@ -117,7 +117,8 @@ export const OrganizationSchema = z.object({
 
 export const PhoneSchema = z.object({
   number: z.string(),
-  contexts: ContextsSchema.optional()
+  contexts: ContextsSchema.optional(),
+  features: z.record(z.string(), z.boolean()).optional()
 })
 
 export const PreferredLanguageSchema = z.object({
