@@ -49,6 +49,14 @@ describe('ItemFilterInline', () => {
         })
       )
     })
+    it('resets the pagination when an option gets selected', async () => {
+      const currentRoute = reactive({ query: { page: '2' } as Record<string, string> })
+      const { wrapper, mocks } = getWrapper({ currentRoute, props: { filterOptions } })
+      await wrapper.find(selectors.filterOption).trigger('click')
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({ query: expect.not.objectContaining({ page: '2' }) })
+      )
+    })
     it('sets the active optin initially when given via query param', async () => {
       const initialQuery = filterOptions[1].name
       const { wrapper } = getWrapper({ initialQuery, props: { filterOptions } })

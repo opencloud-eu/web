@@ -58,6 +58,7 @@
         </oc-button>
       </template>
       <template #footer>
+        <pagination :pages="paginationPages" :current-page="paginationPage" />
         <div v-if="showMoreToggle && hasMore" class="w-full text-center mt-4">
           <oc-button
             id="files-shared-with-me-show-all"
@@ -78,7 +79,13 @@
 </template>
 
 <script setup lang="ts">
-import { FolderView, SortField, useFileActions, useLoadPreview } from '@opencloud-eu/web-pkg'
+import {
+  FolderView,
+  Pagination,
+  SortField,
+  useFileActions,
+  useLoadPreview
+} from '@opencloud-eu/web-pkg'
 import { computed, ref, unref } from 'vue'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
@@ -96,6 +103,8 @@ const {
   sortBy = undefined,
   sortDir = undefined,
   sortHandler,
+  paginationPages,
+  paginationPage,
   folderView,
   showMoreToggle = false,
   showMoreToggleCount = 3,
@@ -111,6 +120,8 @@ const {
   sortBy?: string
   sortDir?: SortDir
   sortHandler: ({ sortBy, sortDir }: { sortBy: string; sortDir: SortDir }) => void
+  paginationPages: number
+  paginationPage: number
   folderView: FolderView
   showMoreToggle?: boolean
   showMoreToggleCount?: number
