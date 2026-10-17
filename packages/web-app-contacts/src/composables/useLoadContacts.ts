@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { useTask } from 'vue-concurrency'
-import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
+import { ClientService, useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { useContactsStore } from './piniaStores/contacts'
 import { parseContactsResponse, type Contact } from '../types'
 import { urlJoin } from '@opencloud-eu/web-client'
@@ -28,6 +28,34 @@ const parseContactsPage = (data: unknown): { contacts: Contact[]; total?: number
   }
 }
 
+/**
+ * Loads all pages of a contacts list endpoint, to be used with `yield*` inside a task.
+ */
+export function* requestContactPages(
+  clientService: ClientService,
+  url: string,
+  signal: AbortSignal
+): Generator<Promise<unknown>, Contact[], { data: unknown; headers?: Record<string, string> }> {
+  const contacts: Contact[] = []
+  let next: string | undefined
+
+  do {
+    const { data, headers } = yield clientService.httpAuthenticated.get(url, {
+      params: { limit: CONTACTS_PAGE_SIZE, ...(next && { next }) },
+      signal
+    })
+    const page = parseContactsPage(data)
+    contacts.push(...page.contacts)
+
+    // the API also returns a next token after the last page
+    const isComplete =
+      !page.contacts.length || (page.total !== undefined && contacts.length >= page.total)
+    next = isComplete ? undefined : headers?.next
+  } while (next)
+
+  return contacts
+}
+
 let loadContactsTask: ReturnType<typeof useTask> | null = null
 const isLoading = computed(() => loadContactsTask?.isRunning ?? false)
 const error = ref<Error>()
@@ -41,27 +69,16 @@ export const useLoadContacts = () => {
   if (!loadContactsTask) {
     loadContactsTask = useTask(function* (signal, accountId: string, addressBookId: string) {
       error.value = undefined
-      const contacts: Contact[] = []
-      let next: string | undefined
 
       try {
-        do {
-          const { data, headers } = yield clientService.httpAuthenticated.get(
-            urlJoin(
-              configStore.groupwareUrl,
-              `accounts/${accountId}/addressbooks/${addressBookId}/contacts`
-            ),
-            { params: { limit: CONTACTS_PAGE_SIZE, ...(next && { next }) }, signal }
-          )
-          const page = parseContactsPage(data)
-          contacts.push(...page.contacts)
-
-          // the API also returns a next token after the last page
-          const isComplete =
-            !page.contacts.length || (page.total !== undefined && contacts.length >= page.total)
-          next = isComplete ? undefined : headers?.next
-        } while (next)
-
+        const contacts: Contact[] = yield* requestContactPages(
+          clientService,
+          urlJoin(
+            configStore.groupwareUrl,
+            `accounts/${accountId}/addressbooks/${addressBookId}/contacts`
+          ),
+          signal
+        )
         setContacts(contacts)
         return contacts
       } catch (e) {
