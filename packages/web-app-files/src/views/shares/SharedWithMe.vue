@@ -21,6 +21,9 @@
                 :items="shareTypes"
                 :option-filter-label="$gettext('Filter share types')"
                 :show-option-filter="true"
+                :no-items-message="
+                  $gettext('No shares yet. Available share types will appear here.')
+                "
                 id-attribute="key"
                 class="share-type-filter"
                 display-name-attribute="label"
@@ -37,6 +40,11 @@
                 :items="fileOwners"
                 :option-filter-label="$gettext('Filter shared by')"
                 :show-option-filter="true"
+                :no-items-message="
+                  $gettext(
+                    'No shares yet. People who share files and folders with you will appear here.'
+                  )
+                "
                 id-attribute="id"
                 class="shared-by-filter"
                 display-name-attribute="displayName"
