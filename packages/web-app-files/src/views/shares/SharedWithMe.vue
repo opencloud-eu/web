@@ -70,10 +70,12 @@
           id="files-shared-with-me-view"
           class="h-full"
           :file-list-header-y="fileListHeaderY"
-          :items="items"
+          :items="paginatedResources"
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :sort-handler="handleSort"
+          :pagination-pages="paginationPages"
+          :pagination-page="paginationPage"
           :folder-view="folderView"
           :title="shareSectionTitle"
           :view-mode="viewMode"
@@ -107,11 +109,11 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
-import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
+import { queryItemAsString, useRoute, useRouteQuery, useRouter } from '@opencloud-eu/web-pkg'
 import SharedWithMeSection from '../../components/Shares/SharedWithMeSection.vue'
-import { computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
-import { useGetMatchingSpace, useSort } from '@opencloud-eu/web-pkg'
+import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { useGettext } from 'vue3-gettext'
 import { defaultFuseOptions } from '@opencloud-eu/web-pkg'
@@ -123,10 +125,40 @@ import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const appsStore = useAppsStore()
 const resourcesStore = useResourcesStore()
+const router = useRouter()
+const route = useRoute()
 
-const resourcesViewDefaults = useResourcesViewDefaults<IncomingShareResource, any, any>({
-  folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint
-})
+const areHiddenFilesShown = ref(false)
+const filterTerm = ref('')
+const selectedShareTypesQuery = useRouteQuery('q_shareType')
+const selectedSharedByQuery = useRouteQuery('q_sharedBy')
+
+function filterShares(shares: IncomingShareResource[]) {
+  let result = shares.filter(({ hidden }) => !!hidden === unref(areHiddenFilesShown))
+
+  const selectedShareTypes = queryItemAsString(unref(selectedShareTypesQuery))?.split('+')
+  if (selectedShareTypes?.length) {
+    result = result.filter(({ shareTypes }) => {
+      return ShareTypes.getByKeys(selectedShareTypes)
+        .map(({ value }) => value)
+        .some((t) => shareTypes.includes(t))
+    })
+  }
+
+  const selectedSharedBy = queryItemAsString(unref(selectedSharedByQuery))?.split('+')
+  if (selectedSharedBy?.length) {
+    result = result.filter(({ sharedBy }) =>
+      sharedBy.some(({ id }) => selectedSharedBy.includes(id))
+    )
+  }
+
+  if (unref(filterTerm).trim()) {
+    const usersSearchEngine = new Fuse(result, { ...defaultFuseOptions, keys: ['name'] })
+    result = usersSearchEngine.search(unref(filterTerm)).map((r) => r.item)
+  }
+
+  return result
+}
 
 const {
   viewMode,
@@ -135,17 +167,24 @@ const {
   folderView,
   areResourcesLoading,
   sortFields,
+  sortBy,
+  sortDir,
+  handleSort,
   fileListHeaderY,
   loadResourcesTask,
   selectedResources,
+  storeItems,
+  sortedResources,
   paginatedResources,
+  paginationPages,
+  paginationPage,
   scrollToResourceFromRoute
-} = resourcesViewDefaults
+} = useResourcesViewDefaults<IncomingShareResource, any, any>({
+  folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint,
+  filterResources: filterShares
+})
 
 const { $gettext } = useGettext()
-
-const areHiddenFilesShown = ref(false)
-const filterTerm = ref('')
 
 const breadcrumbs = computed(() => {
   return [
@@ -172,50 +211,12 @@ const setAreHiddenFilesShown = (value: InlineFilterOption) => {
   resourcesStore.resetSelection()
 }
 
-const visibleShares = computed(() => unref(paginatedResources).filter((r) => !r.hidden))
-const hiddenShares = computed(() => unref(paginatedResources).filter((r) => r.hidden))
-const currentItems = computed(() => {
-  return unref(areHiddenFilesShown) ? unref(hiddenShares) : unref(visibleShares)
-})
-
-const selectedShareTypesQuery = useRouteQuery('q_shareType')
-const selectedSharedByQuery = useRouteQuery('q_sharedBy')
-const filteredItems = computed(() => {
-  let result = unref(currentItems)
-
-  const selectedShareTypes = queryItemAsString(unref(selectedShareTypesQuery))?.split('+')
-  if (selectedShareTypes?.length) {
-    result = result.filter(({ shareTypes }) => {
-      return ShareTypes.getByKeys(selectedShareTypes)
-        .map(({ value }) => value)
-        .some((t) => shareTypes.includes(t))
-    })
-  }
-
-  const selectedSharedBy = queryItemAsString(unref(selectedSharedByQuery))?.split('+')
-  if (selectedSharedBy?.length) {
-    result = result.filter(({ sharedBy }) =>
-      sharedBy.some(({ id }) => selectedSharedBy.includes(id))
-    )
-  }
-
-  if (unref(filterTerm).trim()) {
-    const usersSearchEngine = new Fuse(result, { ...defaultFuseOptions, keys: ['name'] })
-    const fuseResult = usersSearchEngine.search(unref(filterTerm)).map((r) => r.item)
-    result = fuseResult.filter((item) => result.includes(item))
-  }
-
-  return result
-})
-
-const { sortBy, sortDir, items, handleSort } = useSort({
-  items: filteredItems,
-  fields: sortFields,
-  foldersFirst: computed(() => resourcesStore.areFoldersSortedFirst)
+watch(filterTerm, async () => {
+  await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
 
 const keyActions = useKeyboardActions()
-useKeyboardFileNavigation(keyActions, items, viewMode)
+useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 
 const { getMatchingSpace } = useGetMatchingSpace()
@@ -230,11 +231,11 @@ const selectedShareSpace = computed(() => {
 
 const performLoaderTask = async () => {
   await loadResourcesTask.perform()
-  scrollToResourceFromRoute(unref(items), 'files-app-bar')
+  scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
 }
 
 const shareTypes = computed(() => {
-  const uniqueShareTypes = uniq(unref(paginatedResources).flatMap((i) => i.shareTypes))
+  const uniqueShareTypes = uniq(unref(storeItems).flatMap((i) => i.shareTypes))
 
   const ocmAvailable = appsStore.appIds.includes('open-cloud-mesh')
   if (ocmAvailable && !uniqueShareTypes.includes(ShareTypes.remote.value)) {
@@ -253,7 +254,7 @@ const shareTypes = computed(() => {
 })
 
 const fileOwners = computed(() => {
-  const flatList = unref(paginatedResources)
+  const flatList = unref(storeItems)
     .filter((i) => i.sharedBy)
     .map((i) => i.sharedBy)
     .flat()
