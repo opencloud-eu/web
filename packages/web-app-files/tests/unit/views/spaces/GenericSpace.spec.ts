@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { HttpError, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { ListFilesResult } from '@opencloud-eu/web-client/webdav'
 import GenericSpace from '../../../../src/views/spaces/GenericSpace.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables/resourcesViewDefaults'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
@@ -13,7 +14,13 @@ import {
   ComponentProps,
   PartialComponentProps
 } from '@opencloud-eu/web-test-helpers'
-import { AppBar, useBreadcrumbsFromPath } from '@opencloud-eu/web-pkg'
+import {
+  AppBar,
+  ResourceTable,
+  useBreadcrumbsFromPath,
+  useMessages,
+  usePasteWorker
+} from '@opencloud-eu/web-pkg'
 import { useBreadcrumbsFromPathMock } from '../../../mocks/useBreadcrumbsFromPathMock'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { flushPromises } from '@vue/test-utils'
@@ -31,7 +38,8 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useBreadcrumbsFromPath: vi.fn(),
   useExtensionRegistry: vi.fn(() => extensionRegistryMock),
   useEmbedMode: vi.fn().mockImplementation(() => mockUseEmbedMode()),
-  useFileActions: vi.fn(() => ({}))
+  useFileActions: vi.fn(() => ({})),
+  usePasteWorker: vi.fn(() => ({ startWorker: vi.fn() }))
 }))
 
 vi.mock('../../../../src/composables/actions/files', async (importOriginal) => ({
@@ -282,6 +290,81 @@ describe('GenericSpace view', () => {
       })
     })
   })
+  describe('drag and drop move', () => {
+    function getFile({ canBeDeleted = true } = {}) {
+      return mock<Resource>({
+        id: 'file',
+        name: 'f.txt',
+        path: '/f.txt',
+        type: 'file',
+        isInVault: false,
+        canBeDeleted: () => canBeDeleted,
+        isReceivedShare: () => false,
+        isMounted: () => false
+      })
+    }
+
+    function getFolder({ canUpload = true } = {}) {
+      return mock<Resource>({
+        id: 'folder',
+        name: 'x',
+        path: '/x',
+        type: 'folder',
+        isInVault: false,
+        canUpload: () => canUpload
+      })
+    }
+
+    async function dropFileOnFolder({ file, folder }: { file: Resource; folder: Resource }) {
+      const { mocks, wrapper } = getMountedWrapper({
+        files: [file, folder],
+        selectedResources: [file]
+      })
+      mocks.$clientService.webdav.listFiles.mockResolvedValue({ children: [] } as ListFilesResult)
+      wrapper
+        .findComponent<typeof ResourceTable>('resource-table-stub')
+        .vm.$emit('fileDropped', 'folder')
+      await flushPromises()
+    }
+
+    it('shows an error message when the move fails', async () => {
+      const startWorker = vi.fn()
+      vi.mocked(usePasteWorker).mockReturnValue({ startWorker })
+      await dropFileOnFolder({ file: getFile(), folder: getFolder() })
+
+      const [, callback] = startWorker.mock.calls[0]
+      callback({
+        successful: [],
+        failed: [{ resourceName: 'f.txt', error: new HttpError('Forbidden', undefined, 403) }]
+      })
+
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to move »f.txt«' })
+      )
+    })
+    it.each([
+      { canUpload: false, canBeDeleted: true },
+      { canUpload: true, canBeDeleted: false }
+    ])(
+      'does not move and shows an error message without permission (canUpload: $canUpload, canBeDeleted: $canBeDeleted)',
+      async ({ canUpload, canBeDeleted }) => {
+        const startWorker = vi.fn()
+        vi.mocked(usePasteWorker).mockReturnValue({ startWorker })
+        await dropFileOnFolder({
+          file: getFile({ canBeDeleted }),
+          folder: getFolder({ canUpload })
+        })
+
+        expect(startWorker).not.toHaveBeenCalled()
+        const { showErrorMessage } = useMessages()
+        expect(showErrorMessage).toHaveBeenCalledWith({
+          title: 'You have no permission to move this item here.'
+        })
+      }
+    )
+  })
+
   describe('list header', () => {
     it('renders when a readme file is present', () => {
       const { wrapper } = getMountedWrapper({ files: [mock<Resource>({ name: 'readme.md' })] })
@@ -305,6 +388,7 @@ function getMountedWrapper({
   mocks = {},
   props = {},
   files = [],
+  selectedResources = [],
   loading = false,
   currentRoute = { name: 'files-spaces-generic', path: '/' },
   currentFolder = mock<Resource>(),
@@ -322,6 +406,7 @@ function getMountedWrapper({
   mocks?: Record<string, unknown>
   props?: PartialComponentProps<typeof GenericSpace>
   files?: Resource[]
+  selectedResources?: Resource[]
   loading?: boolean
   currentRoute?: { name?: string; path?: string; query?: Record<string, string> }
   currentFolder?: Resource
@@ -365,6 +450,7 @@ function getMountedWrapper({
 
   const resourcesViewDetailsMock = useResourcesViewDefaultsMock({
     paginatedResources: ref(files),
+    selectedResources: ref(selectedResources),
     areResourcesLoading: ref(loading),
     storeItems: ref(files)
   })
