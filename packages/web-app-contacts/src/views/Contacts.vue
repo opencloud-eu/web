@@ -22,7 +22,7 @@
       </div>
 
       <ContactCreateEditor
-        v-if="isCreateOpen"
+        v-if="isEditorOpen"
         :key="unref(isDesktop) ? 'modal' : 'drawer'"
         :variant="unref(isDesktop) ? 'modal' : 'drawer'"
       />
@@ -83,8 +83,8 @@ const currentContact = computed<Contact | undefined>(() => {
   return unref(contactsStore.currentContact) as Contact | undefined
 })
 
-const isCreateOpen = computed(() => {
-  return unref(contactEditor.isCreateOpen)
+const isEditorOpen = computed(() => {
+  return unref(contactEditor.isEditorOpen)
 })
 
 const isLoading = ref<boolean>(true)

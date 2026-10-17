@@ -90,8 +90,8 @@ const collapsed = reactive<Record<string, boolean>>({
   organization: true
 })
 
-const displayName = getContactDisplayName(props.contact) || ''
-const primaryEmail = getContactPrimaryEmail(props.contact) || ''
+const displayName = computed(() => getContactDisplayName(props.contact) || '')
+const primaryEmail = computed(() => getContactPrimaryEmail(props.contact) || '')
 
 const sections = computed<DetailSection[]>(() => {
   const birth = Object.values(props.contact.anniversaries || {}).find(

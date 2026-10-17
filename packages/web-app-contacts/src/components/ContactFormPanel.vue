@@ -8,7 +8,7 @@
       class="absolute inset-x-0 bottom-0 flex max-h-[90dvh] flex-col rounded-t-2xl bg-role-surface-container-high shadow-xl"
     >
       <div class="flex items-center justify-between px-4 pt-4">
-        <span class="font-semibold" v-text="$gettext('New contact')" />
+        <span class="font-semibold" v-text="title" />
         <div class="flex items-center gap-3">
           <oc-button
             appearance="raw"
@@ -27,7 +27,7 @@
           @submit.prevent="onSubmit"
         >
           <div class="min-h-0 overflow-auto px-4 py-4 pb-6">
-            <ContactForm :model-value="unref(createFormState)" @update:model-value="onUpdateForm" />
+            <ContactForm :model-value="unref(formState)" @update:model-value="onUpdateForm" />
           </div>
 
           <div class="px-4 pt-3 pb-3">
@@ -50,7 +50,7 @@
   <oc-modal
     v-else
     element-class="contact-create-modal"
-    :title="$gettext('New contact')"
+    :title="title"
     :hide-actions="true"
     hide-cancel-button
     :active="!activeModal"
@@ -65,7 +65,7 @@
     <template #content>
       <form class="flex min-h-0 flex-1 flex-col" autocomplete="off" @submit.prevent="onSubmit">
         <div class="flex-1 min-h-0 overflow-auto pb-6 pr-4">
-          <ContactForm :model-value="unref(createFormState)" @update:model-value="onUpdateForm" />
+          <ContactForm :model-value="unref(formState)" @update:model-value="onUpdateForm" />
         </div>
         <div class="flex items-center justify-end gap-3">
           <oc-button
@@ -91,12 +91,15 @@ import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { useContactsStore } from '../composables/piniaStores/contacts'
 import { useContactEditor } from '../composables/useContactEditor'
 import { useCreateContact } from '../composables/useCreateContact'
+import { useUpdateContact } from '../composables/useUpdateContact'
 import ContactForm from './ContactForm.vue'
 import {
   createContactPayload,
+  createContactUpdatePayload,
   type ContactFormState,
   hasInvalidContactEmail
 } from '../helpers/contactForm'
+import type { Contact } from '../types'
 
 defineProps<{
   variant: 'modal' | 'drawer'
@@ -111,44 +114,70 @@ const accountsStore = useGroupwareAccountsStore()
 const addressBooksStore = useAddressBooksStore()
 const contactsStore = useContactsStore()
 const contactEditor = useContactEditor()
-const { createContact, isSaving } = useCreateContact()
+const { createContact, isSaving: isCreating } = useCreateContact()
+const { updateContact, isSaving: isUpdating } = useUpdateContact()
 
 const currentAccount = computed(() => unref(accountsStore.currentAccount))
 const currentAddressBook = computed(() => unref(addressBooksStore.currentAddressBook))
 
-const createFormState = computed(() => unref(contactEditor.createFormState))
-const hasCreateChanges = computed(() => unref(contactEditor.hasCreateChanges))
+const formState = computed(() => unref(contactEditor.formState))
+const hasChanges = computed(() => unref(contactEditor.hasChanges))
+const editedContact = computed(() => unref(contactEditor.editedContact))
 
-const { closeCreateContact, closeCreateContactIfSafe, setCreateFormState, markCreateDirty } =
-  contactEditor
+const { closeEditor, closeEditorIfSafe, setFormState, markDirty } = contactEditor
+
+const title = computed(() => {
+  return unref(editedContact) ? $gettext('Edit contact') : $gettext('New contact')
+})
 
 const { upsertContact, setCurrentContact } = contactsStore
 
 const isSubmitDisabled = computed(() => {
   return (
-    !unref(hasCreateChanges) ||
+    !unref(hasChanges) ||
     !unref(currentAccount)?.accountId ||
     !unref(currentAddressBook)?.id ||
-    hasInvalidContactEmail(unref(createFormState)) ||
-    unref(isSaving)
+    hasInvalidContactEmail(unref(formState)) ||
+    unref(isCreating) ||
+    unref(isUpdating)
   )
 })
 
 const onUpdateForm = (value: ContactFormState) => {
-  setCreateFormState(value)
-  markCreateDirty()
+  setFormState(value)
+  markDirty()
 }
 
 const requestClose = async () => {
-  await closeCreateContactIfSafe()
+  await closeEditorIfSafe()
 }
 
 const showSaveError = (error: unknown) => {
   showErrorMessage({
-    title: $gettext('Failed to create contact'),
-    desc: $gettext('The contact could not be created. Please try again.'),
+    ...(unref(editedContact)
+      ? {
+          title: $gettext('Failed to save contact'),
+          desc: $gettext('The contact could not be saved. Please try again.')
+        }
+      : {
+          title: $gettext('Failed to create contact'),
+          desc: $gettext('The contact could not be created. Please try again.')
+        }),
     ...(error instanceof Error ? { errors: [error] } : {})
   })
+}
+
+const saveContact = (accountId: string, addressBookId: string): Promise<Contact> => {
+  const contact = unref(editedContact)
+  if (contact) {
+    return updateContact(
+      accountId,
+      contact.id,
+      createContactUpdatePayload(unref(formState), unref(contactEditor.initialFormState), contact)
+    )
+  }
+
+  return createContact(accountId, createContactPayload(unref(formState), addressBookId))
 }
 
 const onSubmit = async () => {
@@ -160,16 +189,13 @@ const onSubmit = async () => {
   const addressBookId = unref(currentAddressBook)?.id
 
   try {
-    const createdContact = await createContact(
-      accountId,
-      createContactPayload(unref(createFormState), addressBookId)
-    )
+    const savedContact = await saveContact(accountId, addressBookId)
 
-    upsertContact(createdContact)
-    setCurrentContact(createdContact)
-    closeCreateContact()
+    upsertContact(savedContact)
+    setCurrentContact(savedContact)
+    closeEditor()
   } catch (error) {
-    console.error('Failed to create contact:', error)
+    console.error('Failed to save contact:', error)
     showSaveError(error)
   }
 }

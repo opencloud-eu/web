@@ -1,4 +1,5 @@
-import type { Contact } from '../types'
+import { isEqual, omit, pick } from 'lodash-es'
+import type { Contact, ContactAddress, ContactName } from '../types'
 import * as EmailValidator from 'email-validator'
 
 export type ContactFormContext = 'private' | 'work' | 'other'
@@ -230,4 +231,268 @@ export const createContactPayload = (
       : {}),
     ...(note ? { notes: { n1: { note } } } : {})
   }
+}
+
+export type UpdateContactPayload = Partial<Omit<Contact, 'id'>>
+
+type ContactContexts = Record<string, boolean>
+
+const getFormContext = (contexts: ContactContexts = {}): ContactFormContext => {
+  if (contexts.work) {
+    return 'work'
+  }
+  return contexts.private ? 'private' : 'other'
+}
+
+// street and house number are separate components in JSContact, the form has one street field
+const streetComponentKinds = ['name', 'number']
+
+const getAddressComponent = (address: ContactAddress, kinds: string[]) => {
+  return (address.components || [])
+    .filter(({ kind }) => kinds.includes(kind))
+    .map(({ value }) => value)
+    .join(' ')
+}
+
+const getFirstEntry = <T>(record: Record<string, T> = {}) => {
+  const [key, value] = Object.entries(record)[0] || []
+  return { key, value }
+}
+
+export const createContactFormState = (contact: Contact): ContactFormState => {
+  const nameComponents = contact.name?.components || []
+  const getNameComponent = (kind: string) => {
+    return nameComponents.find((component) => component.kind === kind)?.value || ''
+  }
+  const firstName = getNameComponent('given')
+  const lastName = getNameComponent('surname')
+  const organization = getFirstEntry(contact.organizations).value
+
+  const emails = Object.entries(contact.emails || {}).map(([key, email]): ContactFormEmail => ({
+    key,
+    value: email.address,
+    context: getFormContext(email.contexts)
+  }))
+  const phones = Object.entries(contact.phones || {}).map(([key, phone]): ContactFormPhone => ({
+    key,
+    value: phone.number,
+    context: phone.features?.mobile ? 'mobile' : getFormContext(phone.contexts)
+  }))
+  const addresses = Object.entries(contact.addresses || {}).map(
+    ([key, address]): ContactFormAddress => ({
+      key,
+      street: getAddressComponent(address, streetComponentKinds),
+      postcode: getAddressComponent(address, ['postcode']),
+      locality: getAddressComponent(address, ['locality']),
+      region: getAddressComponent(address, ['region']),
+      country: getAddressComponent(address, ['country']),
+      context: getFormContext(address.contexts)
+    })
+  )
+
+  return {
+    // contacts without name components only have a full name
+    firstName: firstName || lastName ? firstName : contact.name?.full || '',
+    lastName,
+    nickname: getFirstEntry(contact.nicknames).value?.name || '',
+    emails: emails.length ? emails : [createEmptyEmail()],
+    phones: phones.length ? phones : [createEmptyPhone()],
+    addresses,
+    organization: organization?.name || '',
+    department: organization?.units?.[0]?.name || '',
+    jobTitle: getFirstEntry(contact.titles).value?.name || '',
+    note: getFirstEntry(contact.notes).value?.note || ''
+  }
+}
+
+/**
+ * Replaces the private and work contexts with the selected one, other contexts are kept.
+ */
+const mergeContexts = (contexts: ContactContexts = {}, context: ContactFormPhoneContext) => {
+  const result = { ...omit(contexts, ['private', 'work']), ...getContexts(context).contexts }
+  return Object.keys(result).length ? { contexts: result } : {}
+}
+
+/**
+ * Builds the JSContact map of a list property. Entries the user didn't touch are kept as they
+ * are, changed entries are merged into the existing ones to keep data the form doesn't know.
+ */
+const mergeEntries = <F extends { key: string }, T extends object>(
+  formEntries: F[],
+  initialEntries: F[],
+  existing: Record<string, T> = {},
+  isEntryFilled: (entry: F) => boolean,
+  merge: (entry: F, existingEntry: Partial<T>) => T
+) => {
+  return Object.fromEntries(
+    formEntries.filter(isEntryFilled).map((entry) => {
+      const existingEntry = existing[entry.key]
+      const initialEntry = initialEntries.find(({ key }) => key === entry.key)
+      if (existingEntry && isEqual(entry, initialEntry)) {
+        return [entry.key, existingEntry]
+      }
+      return [entry.key, merge(entry, existingEntry || {})]
+    })
+  )
+}
+
+const mergeName = (state: ContactFormState, name: ContactName = {}): ContactName => {
+  const firstName = state.firstName.trim()
+  const lastName = state.lastName.trim()
+  const components = (name.components || []).filter(
+    ({ kind }) => !['given', 'surname'].includes(kind)
+  )
+
+  return {
+    ...omit(name, 'full'),
+    components: [
+      ...(firstName ? [{ kind: 'given', value: firstName }] : []),
+      ...components,
+      ...(lastName ? [{ kind: 'surname', value: lastName }] : [])
+    ]
+  }
+}
+
+/**
+ * Replaces the value of the first entry of a map, e.g. the first organization.
+ */
+const mergeFirstEntry = <T extends object>(
+  record: Record<string, T> = {},
+  defaultKey: string,
+  value: Partial<T> | undefined
+) => {
+  const { key = defaultKey, value: existing } = getFirstEntry(record)
+  const otherEntries = omit(record, key)
+  if (!value) {
+    return otherEntries
+  }
+  return { [key]: { ...existing, ...value } as T, ...otherEntries }
+}
+
+/**
+ * Creates the update payload for a contact. It only contains the properties changed in the form,
+ * all other properties of the contact stay untouched on the server.
+ */
+export const createContactUpdatePayload = (
+  state: ContactFormState,
+  initialState: ContactFormState,
+  contact: Contact
+): UpdateContactPayload => {
+  const payload: UpdateContactPayload = {}
+  const hasChanged = (...fields: (keyof ContactFormState)[]) => {
+    return fields.some((field) => !isEqual(state[field], initialState[field]))
+  }
+
+  if (hasChanged('firstName', 'lastName')) {
+    payload.name = mergeName(state, contact.name)
+  }
+
+  if (hasChanged('nickname')) {
+    const nickname = state.nickname.trim()
+    payload.nicknames = mergeFirstEntry(
+      contact.nicknames,
+      'k1',
+      nickname ? { name: nickname } : undefined
+    )
+  }
+
+  if (hasChanged('emails')) {
+    payload.emails = mergeEntries(
+      state.emails,
+      initialState.emails,
+      contact.emails,
+      ({ value }) => isFilled(value),
+      ({ value, context }, existing) => {
+        return {
+          ...omit(existing, 'contexts'),
+          address: value.trim(),
+          ...mergeContexts(existing.contexts, context)
+        }
+      }
+    )
+  }
+
+  if (hasChanged('phones')) {
+    payload.phones = mergeEntries(
+      state.phones,
+      initialState.phones,
+      contact.phones,
+      ({ value }) => isFilled(value),
+      ({ value, context }, existing) => {
+        const features = omit(existing.features, 'mobile')
+        // "mobile" is a feature, the private / work context of a mobile number is kept
+        const contexts =
+          context === 'mobile'
+            ? pick(existing, 'contexts')
+            : mergeContexts(existing.contexts, context)
+        const mergedFeatures = context === 'mobile' ? { ...features, mobile: true } : features
+        return {
+          ...omit(existing, ['contexts', 'features']),
+          number: value.trim(),
+          ...contexts,
+          ...(Object.keys(mergedFeatures).length ? { features: mergedFeatures } : {})
+        }
+      }
+    )
+  }
+
+  if (hasChanged('addresses')) {
+    payload.addresses = mergeEntries(
+      state.addresses,
+      initialState.addresses,
+      contact.addresses,
+      isAddressFilled,
+      (address, existing) => {
+        const managedKinds = [...Object.values(addressComponentKinds), ...streetComponentKinds]
+        const otherComponents = (existing.components || []).filter(
+          ({ kind }) => !managedKinds.includes(kind) && kind !== 'separator'
+        )
+        return {
+          ...omit(existing, ['contexts', 'components']),
+          components: [
+            ...addressFields
+              .map((field) => ({
+                kind: addressComponentKinds[field],
+                value: address[field].trim()
+              }))
+              .filter(({ value }) => value),
+            ...otherComponents
+          ],
+          ...mergeContexts(existing.contexts, address.context)
+        }
+      }
+    )
+  }
+
+  if (hasChanged('organization', 'department')) {
+    const organization = state.organization.trim()
+    const department = state.department.trim()
+    const existingUnits = getFirstEntry(contact.organizations).value?.units || []
+    payload.organizations = mergeFirstEntry(
+      contact.organizations,
+      'o1',
+      organization || department
+        ? {
+            name: organization,
+            units: [...(department ? [{ name: department }] : []), ...existingUnits.slice(1)]
+          }
+        : undefined
+    )
+  }
+
+  if (hasChanged('jobTitle')) {
+    const jobTitle = state.jobTitle.trim()
+    payload.titles = mergeFirstEntry(
+      contact.titles,
+      't1',
+      jobTitle ? { name: jobTitle, kind: 'title' } : undefined
+    )
+  }
+
+  if (hasChanged('note')) {
+    const note = state.note.trim()
+    payload.notes = mergeFirstEntry(contact.notes, 'n1', note ? { note } : undefined)
+  }
+
+  return payload
 }
