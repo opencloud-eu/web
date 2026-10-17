@@ -16,6 +16,9 @@ export function useAppActionsDownload() {
     label: () => {
       return $gettext('Download')
     },
+    accessibleLabel: ({ app }) => {
+      return $gettext('Download %{app}', { app: app.name })
+    },
     handler(options?) {
       const version = options.version || options.app.mostRecentVersion
       const filename = version.filename || version.url.split('/').pop()

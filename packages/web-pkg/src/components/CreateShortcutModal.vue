@@ -2,6 +2,9 @@
   <oc-text-input
     id="create-shortcut-modal-url-input"
     v-model="inputUrl"
+    role="combobox"
+    aria-controls="create-shortcut-modal-contextmenu"
+    aria-autocomplete="list"
     :placeholder="'example.org'"
     :label="$gettext('Webpage or file')"
     @keydown.up="onKeyUpDrop"

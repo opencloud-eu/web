@@ -87,6 +87,11 @@ export interface Action<T = ActionOptions> {
    */
   label(options?: T): string
   /**
+   * Optional accessible name of the action, used instead of the label for assistive technology.
+   * It should contain the visible label, e.g. "Download Foo" for a "Download" button.
+   */
+  accessibleLabel?(options?: T): string
+  /**
    * Optional child actions rendered as a nested context menu.
    */
   children?: Action<T>[]
