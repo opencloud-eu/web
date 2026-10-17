@@ -118,6 +118,7 @@ export const NoteSchema = z
 
 export const OnlineServiceSchema = z.object({
   service: z.string().optional(),
+  uri: z.string().optional(),
   user: z.string().optional(),
   contexts: ContextsSchema.optional()
 })
