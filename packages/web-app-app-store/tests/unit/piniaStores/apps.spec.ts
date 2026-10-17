@@ -89,8 +89,33 @@ describe('useAppsStore', () => {
     ['empty name', { ...rawApp, name: '' }],
     ['incorrect name type', { ...rawApp, name: 123 }],
     ['missing versions', { ...rawApp, versions: undefined }],
+    ['empty versions', { ...rawApp, versions: [] }],
     ['missing version number', { ...rawApp, versions: [{ url: rawApp.versions[0].url }] }],
+    [
+      'empty version number',
+      { ...rawApp, versions: [{ version: '', url: rawApp.versions[0].url }] }
+    ],
     ['missing download URL', { ...rawApp, versions: [{ version: '1.0.0' }] }],
+    ['invalid download URL', { ...rawApp, versions: [{ version: '1.0.0', url: 'not a URL' }] }],
+    ...[
+      'mailto:app@example.com',
+      'ftp://example.com/app.zip',
+      'file:///app.zip',
+      'javascript:void(0)'
+    ].map((url): [string, typeof rawApp] => [
+      `download URL with an unsupported protocol (${url})`,
+      { ...rawApp, versions: [{ version: '1.0.0', url }] }
+    ]),
+    [
+      'an invalid newest download URL with an older usable version',
+      {
+        ...rawApp,
+        versions: [
+          { version: '9.9.9', url: 'not a valid url' },
+          { version: '2.2.0', url: rawApp.versions[0].url }
+        ]
+      }
+    ],
     ['null entry', null]
   ])('keeps valid apps when another entry has %s', async (_reason, invalidApp) => {
     const store = getStore({
@@ -125,6 +150,26 @@ describe('useAppsStore', () => {
     expect(store.loadingFailed).toBe(true)
     expect(console.warn).toHaveBeenCalledTimes(2)
   })
+
+  it.each(['http://localhost/app.zip', 'https://my-internal-host/app.zip'])(
+    'accepts HTTP(S) downloads from local servers (%s)',
+    async (url) => {
+      const store = getStore({
+        [repos[0].url]: () =>
+          new Response(
+            JSON.stringify({ apps: [{ ...rawApp, versions: [{ version: '1.0.0', url }] }] })
+          ),
+        [repos[1].url]: () => new Response(JSON.stringify({ apps: [] }))
+      })
+
+      await store.loadApps()
+
+      expect(store.loadingFailed).toBe(false)
+      expect(store.apps).toHaveLength(1)
+      expect(store.apps[0].mostRecentVersion.url).toBe(url)
+      expect(console.warn).not.toHaveBeenCalled()
+    }
+  )
 
   it('accepts a valid empty repository', async () => {
     const store = getStore({

@@ -11,10 +11,10 @@ export const AppStoreConfigSchema = z.object({
 })
 
 export const AppVersionSchema = z.object({
-  version: z.string(),
+  version: z.string().min(1),
   minOpenCloud: z.string().optional(),
   maxOpenCloud: z.string().optional(),
-  url: z.string(),
+  url: z.url({ protocol: /^https?$/ }),
   filename: z.string().optional(),
   // ISO date (YYYY-MM-DD) the version was released
   releaseDate: z.string().optional()
@@ -55,7 +55,7 @@ export const RawAppSchema = z.object({
   badge: AppBadgeSchema.optional(),
   description: z.string().optional(),
   license: z.string().optional(),
-  versions: z.array(AppVersionSchema), // versions are expected to be sorted from newest to oldest
+  versions: z.array(AppVersionSchema).min(1), // versions are expected to be sorted from newest to oldest
   authors: z.array(AppAuthorSchema).default([]),
   official: z.boolean().optional().default(false),
   tags: z.array(z.string()).default([]),
