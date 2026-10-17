@@ -221,6 +221,36 @@ describe('EditPanel', () => {
       expect(wrapper.findComponent(QuotaSelect).props('totalQuota')).toBe(100)
     })
   })
+
+  describe('personal quota', () => {
+    it.each([0, 2e9])('applies the selected quota %i to the edited user', async (total) => {
+      const { wrapper } = getWrapper()
+      wrapper.findComponent(QuotaSelect).vm.$emit('selectedOptionChange', {
+        value: total,
+        displayValue: ''
+      })
+      await nextTick()
+
+      expect(getCompareSaveDialog(wrapper).props('compareObject')).toMatchObject({
+        drive: { quota: { total } }
+      })
+      expect(wrapper.findComponent(QuotaSelect).props('totalQuota')).toBe(total)
+      expect(wrapper.findComponent(QuotaSelect).props('allowDefault')).toBe(false)
+    })
+
+    it('preserves the current quota when a default selection is emitted', async () => {
+      const { wrapper } = getWrapper()
+      const quotaSelect = wrapper.findComponent(QuotaSelect)
+      quotaSelect.vm.$emit('selectedOptionChange', { value: 2e9, displayValue: '2 GB' })
+      await nextTick()
+      quotaSelect.vm.$emit('selectedOptionChange', { value: null, displayValue: 'Default' })
+      await nextTick()
+
+      expect(getCompareSaveDialog(wrapper).props('compareObject')).toMatchObject({
+        drive: { quota: { total: 2e9 } }
+      })
+    })
+  })
 })
 
 type Wrapper = ReturnType<typeof getWrapper>['wrapper']
