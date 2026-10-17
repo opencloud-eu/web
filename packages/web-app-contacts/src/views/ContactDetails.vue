@@ -16,7 +16,15 @@
         <oc-icon name="arrow-left" fill-type="line" />
       </oc-button>
       <oc-button
-        class="contact-details-delete ml-auto h-10 w-10 shrink-0 p-0"
+        class="contact-details-edit ml-auto h-10 w-10 shrink-0 p-0"
+        appearance="raw"
+        :aria-label="$gettext('Edit contact')"
+        @click="onEdit"
+      >
+        <oc-icon name="pencil" fill-type="line" />
+      </oc-button>
+      <oc-button
+        class="contact-details-delete h-10 w-10 shrink-0 p-0"
         appearance="raw"
         :aria-label="$gettext('Delete contact')"
         @click="onDelete"
@@ -37,11 +45,13 @@ import { storeToRefs } from 'pinia'
 import { useContactsStore } from '../composables/piniaStores/contacts'
 import { useContactEditor } from '../composables/useContactEditor'
 import { useContactActionsDelete } from '../composables/actions/useContactActionsDelete'
+import { useContactActionsEdit } from '../composables/actions/useContactActionsEdit'
 import ContactDetailsContent from '../components/ContactDetailsContent.vue'
 
 const contactsStore = useContactsStore()
 const { runWithDiscardConfirmation } = useContactEditor()
 const { getDeleteAction } = useContactActionsDelete()
+const { getEditAction } = useContactActionsEdit()
 const { currentContact } = storeToRefs(contactsStore)
 const { setCurrentContact } = contactsStore
 
@@ -49,6 +59,10 @@ const onNavigateBack = () => {
   runWithDiscardConfirmation(() => {
     setCurrentContact(null)
   })
+}
+
+const onEdit = () => {
+  getEditAction(unref(currentContact)).handler()
 }
 
 const onDelete = () => {
