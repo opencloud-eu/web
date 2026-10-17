@@ -20,12 +20,13 @@ export default class Provider implements SearchProvider {
   constructor(
     capabilityStore: CapabilityStore,
     searchFunction: SearchFunction,
-    configStore: ConfigStore
+    configStore: ConfigStore,
+    listSearchFunction: SearchFunction = searchFunction
   ) {
     this.id = 'files.sdk'
     this.displayName = $gettext('Files')
     this.previewSearch = new Preview(searchFunction, configStore)
-    this.listSearch = new List(searchFunction)
+    this.listSearch = new List(listSearchFunction)
     this.capabilityStore = capabilityStore
   }
 
