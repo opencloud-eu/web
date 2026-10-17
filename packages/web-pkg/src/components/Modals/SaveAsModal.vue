@@ -35,7 +35,7 @@ import {
   SpaceResource,
   urlJoin
 } from '@opencloud-eu/web-client'
-import { resolveFileNameDuplicate } from '../../helpers'
+import { buildUrl, resolveFileNameDuplicate } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 
@@ -57,9 +57,8 @@ const { showMessage, showErrorMessage } = useMessages()
 const { getMatchingSpace } = useGetMatchingSpace()
 const { getEditorRouteOpts } = useFileActions()
 
-const parentFolderRoute = router.resolve(parentFolderLink)
 const iframeTitle = themeStore.currentTheme.name
-const iframeUrl = new URL(parentFolderRoute.href, window.location.origin)
+const iframeUrl = new URL(buildUrl(router, parentFolderLink))
 iframeUrl.searchParams.append('hide-logo', 'true')
 iframeUrl.searchParams.append('embed', 'true')
 iframeUrl.searchParams.append('embed-target', 'location')
@@ -149,9 +148,7 @@ const openFile = ({
   )
   routeOpts.query = { ...routeOpts.query, ...locationQuery }
 
-  const editorRoute = router.resolve(routeOpts)
-  const editorRouteUrl = new URL(editorRoute.href, window.location.origin)
-  window.open(editorRouteUrl.href, '_blank')
+  window.open(buildUrl(router, routeOpts), '_blank')
 }
 
 const onCancel = ({ data }: MessageEvent) => {
