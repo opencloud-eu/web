@@ -315,6 +315,44 @@ describe('Preview app', () => {
     })
   })
 
+  describe('Deep link to a file that is no media file', () => {
+    it('shows an error instead of another file', async () => {
+      vi.mocked(queryItemAsString).mockReturnValue('plain-text-file')
+      const { wrapper, mocks } = createShallowMountWrapper({
+        currentFileContext: { fileName: 'plain.txt' },
+        isFolderLoading: false
+      })
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Failed to load "plain.txt"')
+      expect(wrapper.find('.stage').exists()).toBe(false)
+      expect(requestedNames(mocks)).toEqual([])
+      expect(wrapper.emitted('update:resource')).toBeUndefined()
+    })
+
+    it('passes the requested file on so the top bar can show it with a close button', async () => {
+      vi.mocked(queryItemAsString).mockReturnValue('plain-text-file')
+      const textFile = {
+        id: 'plain-text-file',
+        fileId: 'plain-text-file',
+        name: 'plain.txt',
+        mimeType: 'text/plain',
+        path: 'personal/admin/plain.txt',
+        hidden: false,
+        canDownload: () => true
+      }
+      const { wrapper } = createShallowMountWrapper({
+        currentFileContext: { fileName: 'plain.txt' },
+        files: [...activeFiles, textFile],
+        isFolderLoading: false
+      })
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Failed to load "plain.txt"')
+      expect(wrapper.emitted('update:resource')).toEqual([[textFile]])
+    })
+  })
+
   describe('Generated "mediaFiles"', () => {
     it('flags the still of a live photo as a motion or live photo', () => {
       const file = (name: string, extra: Partial<Resource> = {}) =>
@@ -360,11 +398,13 @@ const requestedNames = (mocks: ReturnType<typeof defaultComponentMocks>) =>
 function createShallowMountWrapper({
   currentFileContext,
   stubs = {},
-  files = activeFiles
+  files = activeFiles,
+  isFolderLoading = true
 }: {
   currentFileContext?: Partial<FileContext>
   stubs?: Record<string, unknown>
   files?: unknown[]
+  isFolderLoading?: boolean
 } = {}) {
   const mocks = defaultComponentMocks()
   // blob urls mirror what the preview service returns for private spaces and keep the
@@ -383,7 +423,7 @@ function createShallowMountWrapper({
         ...currentFileContext
       }),
       activeFiles: files as Resource[],
-      isFolderLoading: true,
+      isFolderLoading,
       revokeUrl,
       getUrlForResource,
       loadFolderForFileContext: vi.fn()
