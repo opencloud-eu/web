@@ -5,7 +5,7 @@
     @click.self="requestClose"
   >
     <div
-      class="absolute inset-x-0 bottom-0 flex flex-col rounded-t-2xl bg-role-surface-container-high shadow-xl"
+      class="absolute inset-x-0 bottom-0 flex max-h-[90dvh] flex-col rounded-t-2xl bg-role-surface-container-high shadow-xl"
     >
       <div class="flex items-center justify-between px-4 pt-4">
         <span class="font-semibold" v-text="$gettext('New contact')" />
@@ -20,13 +20,14 @@
           </oc-button>
         </div>
       </div>
-      <div class="px-4 pb-4 pt-4">
-        <form class="rounded-xl bg-role-surface" autocomplete="off" @submit.prevent="onSubmit">
-          <div class="overflow-auto px-4 py-4 pb-6">
-            <ContactCreateForm
-              :model-value="unref(createFormState)"
-              @update:model-value="onUpdateForm"
-            />
+      <div class="flex min-h-0 flex-1 flex-col px-4 pb-4 pt-4">
+        <form
+          class="flex min-h-0 flex-col rounded-xl bg-role-surface"
+          autocomplete="off"
+          @submit.prevent="onSubmit"
+        >
+          <div class="min-h-0 overflow-auto px-4 py-4 pb-6">
+            <ContactForm :model-value="unref(createFormState)" @update:model-value="onUpdateForm" />
           </div>
 
           <div class="px-4 pt-3 pb-3">
@@ -63,11 +64,8 @@
 
     <template #content>
       <form class="flex min-h-0 flex-1 flex-col" autocomplete="off" @submit.prevent="onSubmit">
-        <div class="flex-1 min-h-0 overflow-auto pb-6">
-          <ContactCreateForm
-            :model-value="unref(createFormState)"
-            @update:model-value="onUpdateForm"
-          />
+        <div class="flex-1 min-h-0 overflow-auto pb-6 pr-4">
+          <ContactForm :model-value="unref(createFormState)" @update:model-value="onUpdateForm" />
         </div>
         <div class="flex items-center justify-end gap-3">
           <oc-button
@@ -93,11 +91,11 @@ import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { useContactsStore } from '../composables/piniaStores/contacts'
 import { useContactEditor } from '../composables/useContactEditor'
 import { useCreateContact } from '../composables/useCreateContact'
-import ContactCreateForm from './ContactCreateForm.vue'
+import ContactForm from './ContactForm.vue'
 import {
   createContactPayload,
   type ContactFormState,
-  isContactEmailInvalid
+  hasInvalidContactEmail
 } from '../helpers/contactForm'
 
 defineProps<{
@@ -131,7 +129,7 @@ const isSubmitDisabled = computed(() => {
     !unref(hasCreateChanges) ||
     !unref(currentAccount)?.accountId ||
     !unref(currentAddressBook)?.id ||
-    isContactEmailInvalid(unref(createFormState).email) ||
+    hasInvalidContactEmail(unref(createFormState)) ||
     unref(isSaving)
   )
 })
