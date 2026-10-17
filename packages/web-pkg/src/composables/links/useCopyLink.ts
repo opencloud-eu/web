@@ -14,7 +14,7 @@ import { isPromiseFulfilled, isPromiseRejected } from '../../helpers'
 export const useCopyLink = () => {
   const { $gettext, $ngettext } = useGettext()
   const { showMessage, showErrorMessage } = useMessages()
-  const { copy } = useClipboard()
+  const { copy } = useClipboard({ legacy: true })
 
   function getTextToCopy({
     result,
@@ -80,10 +80,15 @@ export const useCopyLink = () => {
   }) => {
     // special handling for Safari because it doesn't allow async clipboard writes. works in most other browsers as well.
     // see https://wolfgangrittner.dev/how-to-use-clipboard-api-in-safari/ and https://developer.apple.com/forums/thread/691873
-    if (typeof ClipboardItem && navigator.clipboard.write) {
+    if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
       const resultPromise = createLinkHandler()
+      let textToCopy = ''
       const blobPromise = resultPromise.then((result) => {
-        const textToCopy = getTextToCopy({ result, password })
+        textToCopy = getTextToCopy({ result, password })
+        if (!textToCopy) {
+          // rejecting the clipboard item leaves the current clipboard content untouched
+          throw new Error('No single link to copy')
+        }
         return new Blob([textToCopy], { type: 'text/plain' })
       })
       // a failing link creation is handled by awaiting resultPromise below
@@ -94,7 +99,9 @@ export const useCopyLink = () => {
         await navigator.clipboard.write([new ClipboardItem({ 'text/plain': blobPromise })])
       } catch (e) {
         copied = false
-        console.warn('Unable to copy link to clipboard', e)
+        if (textToCopy) {
+          console.warn('Unable to copy link to clipboard', e)
+        }
       }
 
       const result = await resultPromise
