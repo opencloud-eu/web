@@ -25,7 +25,7 @@
         />
       </div>
     </div>
-    <div v-if="sortedContacts.length" class="px-4 pb-3 pt-2">
+    <div v-if="sortedContacts.length || normalizedSearchTerm" class="px-4 pb-3 pt-2">
       <oc-search-bar
         v-model="searchTerm"
         :label="$gettext('Search contacts')"
@@ -35,7 +35,7 @@
       />
     </div>
     <no-content-message
-      v-if="!sortedContacts.length"
+      v-if="!sortedContacts.length && !normalizedSearchTerm"
       id="contacts-empty"
       img-src="images/illustrations/contacts.svg"
     >
@@ -70,7 +70,11 @@
               no-hover
               @click="onSelectContact(contact)"
             >
-              <ContactsListItem :contact="contact" :term="normalizedSearchTerm" />
+              <ContactsListItem
+                :contact="contact"
+                :term="normalizedSearchTerm"
+                :address-book-name="getOtherAddressBookName(contact)"
+              />
             </oc-button>
 
             <div class="flex items-center pr-2">
@@ -107,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, nextTick } from 'vue'
+import { computed, ref, unref, watch, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -119,6 +123,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { Contact } from '../types'
 import { useLoadContacts } from '../composables/useLoadContacts'
+import { useLoadAllContacts } from '../composables/useLoadAllContacts'
 import { useContactsStore } from '../composables/piniaStores/contacts'
 import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { useContactEditor } from '../composables/useContactEditor'
@@ -127,8 +132,11 @@ import { useContactActionsDelete } from '../composables/actions/useContactAction
 import { useContactActionsEdit } from '../composables/actions/useContactActionsEdit'
 import { getContactDisplayName } from '../helpers'
 import ContactsListItem from '../components/ContactsListItem.vue'
+import { useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
 
-const { isLoading, error, reloadContacts } = useLoadContacts()
+const { isLoading, error, reloadContacts, loadContacts } = useLoadContacts()
+const { allContacts, loadedAccountId, loadAllContacts } = useLoadAllContacts()
+const accountsStore = useGroupwareAccountsStore()
 const { $gettext } = useGettext()
 const contactsStore = useContactsStore()
 const addressBooksStore = useAddressBooksStore()
@@ -136,21 +144,64 @@ const { runWithDiscardConfirmation } = useContactEditor()
 const { getDeleteAction } = useContactActionsDelete()
 const { getEditAction } = useContactActionsEdit()
 const { contacts, currentContact } = storeToRefs(contactsStore)
-const { currentAddressBook } = storeToRefs(addressBooksStore)
+const { currentAddressBook, addressBooks } = storeToRefs(addressBooksStore)
 const { setCurrentContact } = contactsStore
+const { setCurrentAddressBook } = addressBooksStore
 
 const actionOptions = {} as ActionOptions
 
-const sortedContacts = computed(() => {
-  return [...contacts.value].sort((a, b) => {
+const sortByName = (values: Contact[]) => {
+  return [...values].sort((a, b) => {
     const aSortName = getContactDisplayName(a)
     const bSortName = getContactDisplayName(b)
 
     return aSortName.localeCompare(bSortName, undefined, { sensitivity: 'base' })
   })
+}
+
+const sortedContacts = computed(() => sortByName(unref(contacts)))
+
+const isInCurrentAddressBook = (contact: Contact) => {
+  return unref(contacts).some(({ id }) => id === contact.id)
+}
+
+// while searching, the contacts of all address books are searched
+const isSearchingAllAddressBooks = ref(false)
+const searchedContacts = computed(() => {
+  const accountId = unref(accountsStore.currentAccount)?.accountId
+  if (!unref(isSearchingAllAddressBooks) || unref(loadedAccountId) !== accountId) {
+    return unref(sortedContacts)
+  }
+
+  // the loaded contacts of the current address book are up to date, e.g. after editing one
+  const currentAddressBookId = unref(currentAddressBook)?.id
+  const otherContacts = unref(allContacts).filter(
+    ({ addressBookIds }) => !addressBookIds?.[currentAddressBookId]
+  )
+  return sortByName([...unref(contacts), ...otherContacts])
 })
 
-const { searchTerm, normalizedSearchTerm, filteredContacts } = useContactSearch(sortedContacts)
+const { searchTerm, normalizedSearchTerm, filteredContacts } = useContactSearch(searchedContacts)
+
+watch(normalizedSearchTerm, (term, previousTerm) => {
+  isSearchingAllAddressBooks.value = !!term
+  const accountId = unref(accountsStore.currentAccount)?.accountId
+  // reload when a new search starts to include changes made in the meantime
+  if (term && !previousTerm && accountId) {
+    loadAllContacts(accountId)
+  }
+})
+
+const getContactAddressBook = (contact: Contact) => {
+  return unref(addressBooks).find(({ id }) => contact.addressBookIds?.[id])
+}
+
+const getOtherAddressBookName = (contact: Contact) => {
+  if (isInCurrentAddressBook(contact)) {
+    return undefined
+  }
+  return getContactAddressBook(contact)?.name
+}
 
 const onRetry = async () => {
   try {
@@ -161,8 +212,21 @@ const onRetry = async () => {
 }
 
 const onSelectContact = (contact: Contact) => {
-  runWithDiscardConfirmation(() => {
-    setCurrentContact(contact)
+  runWithDiscardConfirmation(async () => {
+    const addressBook = getContactAddressBook(contact)
+    if (isInCurrentAddressBook(contact) || !addressBook) {
+      setCurrentContact(contact)
+      return
+    }
+
+    // search results of other address books open in their address book
+    setCurrentAddressBook(addressBook)
+    try {
+      await loadContacts(unref(accountsStore.currentAccount).accountId, addressBook.id)
+      setCurrentContact(unref(contacts).find(({ id }) => id === contact.id))
+    } catch {
+      // the error state is shown in the contacts list
+    }
   })
 }
 
@@ -180,12 +244,13 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
             void onSelectContact(contact)
           }
         },
-        getEditAction(contact)
+        // contacts of other address books can be changed after opening them
+        ...(isInCurrentAddressBook(contact) ? [getEditAction(contact)] : [])
       ]
     },
     {
       name: 'secondary',
-      items: [getDeleteAction(contact)]
+      items: isInCurrentAddressBook(contact) ? [getDeleteAction(contact)] : []
     }
   ]
 
