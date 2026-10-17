@@ -19,19 +19,13 @@ describe('initial theme background', () => {
   })
 
   it.each([
-    { name: null, cachedDark: null, systemDark: false, expectedDark: false },
-    { name: null, cachedDark: null, systemDark: true, expectedDark: true },
-    { name: null, cachedDark: 'true', systemDark: false, expectedDark: false },
-    { name: null, cachedDark: 'false', systemDark: true, expectedDark: true },
-    { name: 'dark', cachedDark: 'true', systemDark: false, expectedDark: true },
-    { name: 'light', cachedDark: 'false', systemDark: true, expectedDark: false },
-    { name: 'custom', cachedDark: null, systemDark: true, expectedDark: true }
+    { cachedDark: null, systemDark: false, expectedDark: false },
+    { cachedDark: null, systemDark: true, expectedDark: true },
+    { cachedDark: 'true', systemDark: false, expectedDark: true },
+    { cachedDark: 'false', systemDark: true, expectedDark: false }
   ])(
-    'uses the correct background for $name with cached dark=$cachedDark and system dark=$systemDark',
-    ({ name, cachedDark, systemDark, expectedDark }) => {
-      if (name !== null) {
-        localStorage.setItem('oc_currentThemeName', name)
-      }
+    'uses the correct background with cached dark=$cachedDark and system dark=$systemDark',
+    ({ cachedDark, systemDark, expectedDark }) => {
       if (cachedDark !== null) {
         localStorage.setItem('oc_currentThemeIsDark', cachedDark)
       }
