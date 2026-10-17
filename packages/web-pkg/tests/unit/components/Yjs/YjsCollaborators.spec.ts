@@ -10,7 +10,13 @@ const users: YjsCollaborator[] = [
   { id: 'p4', name: 'Dan', color: '#555555', isSelf: false }
 ]
 
-function getWrapper(props: Partial<{ users: YjsCollaborator[]; maxDisplayed: number }> = {}) {
+function getWrapper(
+  props: Partial<{
+    users: YjsCollaborator[]
+    followingSupported: boolean
+    following: string | null
+  }> = {}
+) {
   const wrapper = mount(YjsCollaborators, {
     props: { users, ...props },
     global: {
@@ -62,5 +68,75 @@ describe('YjsCollaborators', () => {
     expect(wrapper.find('.yjs-collaborators-trigger').attributes('aria-label')).toBe(
       '5 people in this editing session'
     )
+  })
+
+  describe('following', () => {
+    it('shows no follow controls unless the app opts in', () => {
+      const { wrapper } = getWrapper({ following: 'p1' })
+      expect(wrapper.find('.yjs-collaborators-follow-toggle').exists()).toBe(false)
+      expect(wrapper.find('.yjs-collaborator-follow-badge').exists()).toBe(false)
+      expect(wrapper.emitted('update:following')).toBeUndefined()
+    })
+
+    it('offers a follow toggle for everyone but the own user', () => {
+      const { wrapper } = getWrapper({ followingSupported: true })
+      const items = wrapper.findAll('.yjs-collaborators-item')
+      expect(items[0].find('.yjs-collaborators-follow-toggle').exists()).toBe(false)
+      expect(wrapper.findAll('.yjs-collaborators-follow-toggle')).toHaveLength(4)
+      expect(items[1].find('.yjs-collaborators-follow-toggle').attributes('aria-label')).toBe(
+        'Follow Alice'
+      )
+    })
+
+    it('emits the user to follow and null to stop following', async () => {
+      const { wrapper } = getWrapper({ followingSupported: true })
+      await wrapper
+        .find('[data-test-user-id="p2"] .yjs-collaborators-follow-toggle')
+        .trigger('click')
+      expect(wrapper.emitted('update:following')).toEqual([['p2']])
+
+      await wrapper.setProps({ following: 'p2' })
+      await wrapper
+        .find('[data-test-user-id="p2"] .yjs-collaborators-follow-toggle')
+        .trigger('click')
+      expect(wrapper.emitted('update:following')).toEqual([['p2'], [null]])
+    })
+
+    it('highlights the followed user in the list and labels the trigger', () => {
+      const { wrapper } = getWrapper({ followingSupported: true, following: 'p2' })
+      const row = wrapper.find('.yjs-collaborators-item[data-test-user-id="p2"]')
+      expect(row.classes()).toContain('yjs-collaborators-item-followed')
+      expect(row.find('.yjs-collaborators-follow-toggle').attributes('aria-label')).toBe(
+        'Stop following Bob'
+      )
+      expect(wrapper.find('.yjs-collaborators-trigger').attributes('aria-label')).toBe(
+        'Following Bob. 5 people in this editing session'
+      )
+    })
+
+    it('brings a followed user from the overflow into the avatar stack with a badge', () => {
+      const { wrapper } = getWrapper({ followingSupported: true, following: 'p4' })
+      const avatars = wrapper.find('.yjs-collaborators-trigger').findAll('.yjs-collaborator-avatar')
+      expect(avatars.map((avatar) => avatar.attributes('data-test-user-id'))).toEqual([
+        'me',
+        'p4',
+        'p1'
+      ])
+      expect(avatars[1].find('.yjs-collaborator-follow-badge').exists()).toBe(true)
+    })
+
+    it('never follows the own user', () => {
+      const { wrapper } = getWrapper({ followingSupported: true, following: 'me' })
+      expect(wrapper.find('.yjs-collaborator-follow-badge').exists()).toBe(false)
+      expect(wrapper.emitted('update:following')).toEqual([[null]])
+    })
+
+    it('stops following when the followed user leaves the session', async () => {
+      const { wrapper } = getWrapper({ followingSupported: true, following: 'p3' })
+      expect(wrapper.emitted('update:following')).toBeUndefined()
+
+      await wrapper.setProps({ users: users.filter((user) => user.id !== 'p3') })
+      expect(wrapper.emitted('update:following')).toEqual([[null]])
+    })
   })
 })
