@@ -9,6 +9,10 @@ const callableNavItems = navItems as (args: GlobalProperties) => AppNavigationIt
 const callableRoutes = routes as (args: GlobalProperties) => RouteRecordRaw[]
 const getPropMock = (ability: Ability) =>
   mock<GlobalProperties>({ $ability: ability, $gettext: (s: string) => s })
+const callBeforeEnter = (ability: Ability, path: string) => {
+  const route = callableRoutes(getPropMock(ability)).find((n) => n.path === path)
+  return (route.beforeEnter as () => unknown)()
+}
 
 describe('admin settings index', () => {
   describe('navItems', () => {
@@ -54,29 +58,20 @@ describe('admin settings index', () => {
       it('should redirect to general if permission given', () => {
         const ability = mock<Ability>()
         ability.can.mockReturnValueOnce(true)
-        const route = callableRoutes(getPropMock(ability)).find((n) => n.path === '/')
-        const nextMock = vi.fn()
-        ;(route.beforeEnter as any)({}, {}, nextMock)
-        expect(nextMock).toHaveBeenCalledWith({ name: 'admin-settings-general' })
+        expect(callBeforeEnter(ability, '/')).toEqual({ name: 'admin-settings-general' })
       })
       it('should redirect to user management if permission given', () => {
         const ability = mock<Ability>()
         ability.can.mockReturnValueOnce(false)
         ability.can.mockReturnValueOnce(true)
-        const route = callableRoutes(getPropMock(ability)).find((n) => n.path === '/')
-        const nextMock = vi.fn()
-        ;(route.beforeEnter as any)({}, {}, nextMock)
-        expect(nextMock).toHaveBeenCalledWith({ name: 'admin-settings-users' })
+        expect(callBeforeEnter(ability, '/')).toEqual({ name: 'admin-settings-users' })
       })
       it('should redirect to group management if permission given', () => {
         const ability = mock<Ability>()
         ability.can.mockReturnValueOnce(false)
         ability.can.mockReturnValueOnce(false)
         ability.can.mockReturnValueOnce(true)
-        const route = callableRoutes(getPropMock(ability)).find((n) => n.path === '/')
-        const nextMock = vi.fn()
-        ;(route.beforeEnter as any)({}, {}, nextMock)
-        expect(nextMock).toHaveBeenCalledWith({ name: 'admin-settings-groups' })
+        expect(callBeforeEnter(ability, '/')).toEqual({ name: 'admin-settings-groups' })
       })
       it('should redirect to space management if permission given', () => {
         const ability = mock<Ability>()
@@ -84,63 +79,24 @@ describe('admin settings index', () => {
         ability.can.mockReturnValueOnce(false)
         ability.can.mockReturnValueOnce(false)
         ability.can.mockReturnValueOnce(true)
-        const route = callableRoutes(getPropMock(ability)).find((n) => n.path === '/')
-        const nextMock = vi.fn()
-        ;(route.beforeEnter as any)({}, {}, nextMock)
-        expect(nextMock).toHaveBeenCalledWith({ name: 'admin-settings-spaces' })
+        expect(callBeforeEnter(ability, '/')).toEqual({ name: 'admin-settings-spaces' })
+      })
+      it('should redirect to the first permitted page if multiple permissions are given', () => {
+        expect(callBeforeEnter(getAbilityMock(true), '/')).toEqual({
+          name: 'admin-settings-general'
+        })
       })
       it('redirects to / if permissions are insufficient', () => {
-        const ability = mock<Ability>()
-        ability.can.mockReturnValue(false)
-        const route = callableRoutes(getPropMock(ability)).find((n) => n.path === '/')
-        const nextMock = vi.fn()
-        ;(route.beforeEnter as any)({}, {}, nextMock)
-        expect(nextMock).toHaveBeenCalledWith({ path: '/' })
+        expect(callBeforeEnter(getAbilityMock(false), '/')).toEqual({ path: '/' })
       })
     })
-    it.each([
-      { can: true, redirect: null },
-      { can: false, redirect: { path: '/' } }
-    ])('redirects "/general" with sufficient permissions', ({ can, redirect }) => {
-      const ability = mock<Ability>({ can: vi.fn(() => can) })
-      const route = callableRoutes(getPropMock(ability)).find((n) => n.path === '/general')
-      const nextMock = vi.fn()
-      ;(route.beforeEnter as any)({}, {}, nextMock)
-      const args = [...(redirect ? [redirect] : [])]
-      expect(nextMock).toHaveBeenCalledWith(...args)
-    })
-    it.each([
-      { can: true, redirect: null },
-      { can: false, redirect: { path: '/' } }
-    ])('redirects "/users" with sufficient permissions', ({ can, redirect }) => {
-      const ability = mock<Ability>({ can: vi.fn(() => can) })
-      const route = callableRoutes(getPropMock(ability)).find((n) => n.path === '/users')
-      const nextMock = vi.fn()
-      ;(route.beforeEnter as any)({}, {}, nextMock)
-      const args = [...(redirect ? [redirect] : [])]
-      expect(nextMock).toHaveBeenCalledWith(...args)
-    })
-    it.each([
-      { can: true, redirect: null },
-      { can: false, redirect: { path: '/' } }
-    ])('redirects "/groups" with sufficient permissions', ({ can, redirect }) => {
-      const ability = mock<Ability>({ can: vi.fn(() => can) })
-      const route = callableRoutes(getPropMock(ability)).find((n) => n.path === '/groups')
-      const nextMock = vi.fn()
-      ;(route.beforeEnter as any)({}, {}, nextMock)
-      const args = [...(redirect ? [redirect] : [])]
-      expect(nextMock).toHaveBeenCalledWith(...args)
-    })
-    it.each([
-      { can: true, redirect: null },
-      { can: false, redirect: { path: '/' } }
-    ])('redirects "/spaces" with sufficient permissions', ({ can, redirect }) => {
-      const ability = mock<Ability>({ can: vi.fn(() => can) })
-      const route = callableRoutes(getPropMock(ability)).find((n) => n.path === '/spaces')
-      const nextMock = vi.fn()
-      ;(route.beforeEnter as any)({}, {}, nextMock)
-      const args = [...(redirect ? [redirect] : [])]
-      expect(nextMock).toHaveBeenCalledWith(...args)
+    describe.each(['/general', '/users', '/groups', '/spaces', '/apps'])('route "%s"', (path) => {
+      it('allows the navigation with sufficient permissions', () => {
+        expect(callBeforeEnter(getAbilityMock(true), path)).toBeUndefined()
+      })
+      it('redirects to / with insufficient permissions', () => {
+        expect(callBeforeEnter(getAbilityMock(false), path)).toEqual({ path: '/' })
+      })
     })
   })
 })
