@@ -1,6 +1,12 @@
 import DriveResolver from '../../../../src/views/spaces/DriveResolver.vue'
-import { queryItemAsString, useDriveResolver, useRouteParam } from '@opencloud-eu/web-pkg'
+import {
+  queryItemAsString,
+  useDriveResolver,
+  useRouteParam,
+  useSpacesStore
+} from '@opencloud-eu/web-pkg'
 import { computed, ref } from 'vue'
+import { flushPromises } from '@vue/test-utils'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { ClientService } from '@opencloud-eu/web-pkg'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
@@ -71,6 +77,28 @@ describe('DriveResolver view', () => {
       name: locationPublicUpload.name,
       params: { token: space.id }
     })
+  })
+  it('sets the real file id of a public folder link after a reload', async () => {
+    const space = mock<SpaceResource>({
+      id: 'token',
+      fileId: 'token',
+      getDriveAliasAndItem: vi.fn(),
+      driveType: 'public'
+    })
+    const clientService = mockDeep<ClientService>()
+    clientService.webdav.getFileInfo.mockResolvedValue(
+      mock<PublicSpaceResource>({ fileId: 'storage$space!folder', publicLinkPermission: 15 })
+    )
+    const { wrapper } = getMountedWrapper({ space, mocks: { $clientService: clientService } })
+    await flushPromises()
+
+    const { updateSpaceField } = useSpacesStore()
+    expect(updateSpaceField).toHaveBeenCalledWith({
+      id: 'token',
+      field: 'fileId',
+      value: 'storage$space!folder'
+    })
+    expect(wrapper.find('generic-space-stub').exists()).toBeTruthy()
   })
   it('redirects to personal space if user has access to the resource via their personal space', async () => {
     const space = mock<SpaceResource>({
