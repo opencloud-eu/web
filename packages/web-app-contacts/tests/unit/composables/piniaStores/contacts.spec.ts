@@ -1,34 +1,50 @@
 import { unref } from 'vue'
-import { createPinia, setActivePinia } from 'pinia'
+import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { useContactsStore } from '../../../../src/composables/piniaStores/contacts'
 import type { Contact } from '../../../../src/types'
 
+const ada: Contact = { id: '1', name: { full: 'Ada' } }
+const grace: Contact = { id: '2', name: { full: 'Grace' } }
+
 describe('contacts store', () => {
-  beforeEach(() => {
-    setActivePinia(createPinia())
+  it('upserts contacts', () => {
+    getWrapper((store) => {
+      store.setContacts([ada])
+      store.upsertContact({ id: '1', name: { full: 'Ada Lovelace' } })
+      store.upsertContact(grace)
+
+      expect(unref(store.contacts).map(({ name }) => name.full)).toEqual(['Ada Lovelace', 'Grace'])
+    })
   })
 
-  describe('upsertContact', () => {
-    it('adds a new contact', () => {
-      const store = useContactsStore()
-      store.upsertContact({ id: 'contact-1' })
+  it('replaces an existing contact without keeping removed properties', () => {
+    getWrapper((store) => {
+      store.setContacts([{ ...ada, nicknames: { k1: { name: 'Countess' } } }])
+      store.upsertContact(ada)
 
-      expect(unref(store.contacts)).toEqual([{ id: 'contact-1' }])
+      expect(unref(store.contacts)).toEqual([ada])
     })
+  })
 
-    it('replaces an existing contact without keeping removed properties', () => {
-      const store = useContactsStore()
-      const contact: Contact = {
-        id: 'contact-1',
-        nicknames: { k1: { name: 'Countess' } },
-        notes: { n1: { note: 'First programmer.' } }
-      }
-      store.upsertContact(contact)
-      store.upsertContact({ id: 'contact-1', notes: { n1: { note: 'Mathematician.' } } })
+  it('clears the current contact when it is removed', () => {
+    getWrapper((store) => {
+      store.setContacts([ada, grace])
+      store.setCurrentContact(ada)
+      expect(unref(store.currentContact)).toEqual(ada)
 
-      expect(unref(store.contacts)).toEqual([
-        { id: 'contact-1', notes: { n1: { note: 'Mathematician.' } } }
-      ])
+      store.removeContacts([ada])
+
+      expect(unref(store.contacts)).toEqual([grace])
+      expect(unref(store.currentContact)).toBeUndefined()
     })
   })
 })
+
+function getWrapper(setup: (store: ReturnType<typeof useContactsStore>) => void) {
+  const mocks = defaultComponentMocks()
+  return getComposableWrapper(() => setup(useContactsStore()), {
+    mocks,
+    provide: mocks,
+    pluginOptions: { piniaOptions: { stubActions: false } }
+  })
+}
