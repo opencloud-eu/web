@@ -22,6 +22,8 @@ const { app } = defineProps<{
 
 const colorClasses = computed(() => {
   switch (app.badge?.color) {
+    case 'primary':
+      return ['bg-[#e2baff]', 'text-black']
     case 'danger':
       return ['bg-role-error', 'text-role-on-error']
     default:
