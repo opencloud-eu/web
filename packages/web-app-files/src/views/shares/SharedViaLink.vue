@@ -38,7 +38,7 @@
           v-else
           :fields-displayed="['name', 'sdate']"
           :are-paths-displayed="true"
-          :resources="filteredItems"
+          :resources="paginatedResources"
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
@@ -60,7 +60,7 @@
           </template>
           <template #footer>
             <pagination :pages="paginationPages" :current-page="paginationPage" />
-            <list-info v-if="filteredItems.length > 0" class="w-full my-2" />
+            <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
           </template>
         </component>
       </template>
@@ -76,6 +76,8 @@ import {
   useFileActions,
   useLoadPreview,
   useResourcesStore,
+  useRoute,
+  useRouter,
   AppLoadingSpinner,
   NoContentMessage,
   AppBar,
@@ -92,7 +94,7 @@ import {
   useKeyboardFileNavigation,
   useKeyboardFileMouseActions
 } from '../../composables/keyboardActions'
-import { computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
 import { folderViewsSharedViaLinkExtensionPoint } from '../../extensionPoints'
@@ -105,8 +107,21 @@ const { $gettext } = useGettext()
 const { getMatchingSpace } = useGetMatchingSpace()
 
 const resourcesStore = useResourcesStore()
+const router = useRouter()
+const route = useRoute()
+
+const filterTerm = ref('')
+
+function filterShares(shares: OutgoingShareResource[]) {
+  if (!unref(filterTerm)) {
+    return shares
+  }
+  const searchEngine = new Fuse(shares, { ...defaultFuseOptions, keys: ['name'] })
+  return searchEngine.search(unref(filterTerm)).map((r) => r.item)
+}
 
 const {
+  sortedResources,
   paginatedResources,
   selectedResources,
   selectedResourcesIds,
@@ -127,27 +142,20 @@ const {
   isResourceInSelection,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
-  folderViewExtensionPoint: folderViewsSharedViaLinkExtensionPoint
+  folderViewExtensionPoint: folderViewsSharedViaLinkExtensionPoint,
+  filterResources: filterShares
 })
 
 const { triggerDefaultAction } = useFileActions()
 
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
-const filterTerm = ref('')
-const filteredItems = computed(() => {
-  if (unref(filterTerm)) {
-    const searchEngine = new Fuse(unref(paginatedResources), {
-      ...defaultFuseOptions,
-      keys: ['name']
-    })
-    return searchEngine.search(unref(filterTerm)).map((r) => r.item)
-  }
-  return unref(paginatedResources)
+watch(filterTerm, async () => {
+  await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
 
 const keyActions = useKeyboardActions()
-useKeyboardFileNavigation(keyActions, filteredItems, viewMode)
+useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 
 resourcesStore.$onAction(async (action) => {
@@ -188,7 +196,7 @@ const breadcrumbs = computed(() => {
 })
 
 const isEmpty = computed(() => {
-  return unref(filteredItems).length < 1
+  return unref(paginatedResources).length < 1
 })
 
 let loadResourcesEventToken: string
@@ -197,7 +205,7 @@ onMounted(async () => {
     loadResourcesTask.perform()
   )
   await loadResourcesTask.perform()
-  scrollToResourceFromRoute(unref(paginatedResources), 'files-app-bar')
+  scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
 })
 
 onBeforeUnmount(() => {

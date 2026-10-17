@@ -62,7 +62,7 @@
           v-else
           :fields-displayed="['name', 'sharedWith', 'sdate']"
           :are-paths-displayed="true"
-          :resources="filteredItems"
+          :resources="paginatedResources"
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
@@ -84,7 +84,7 @@
           </template>
           <template #footer>
             <pagination :pages="paginationPages" :current-page="paginationPage" />
-            <list-info v-if="filteredItems.length > 0" class="w-full my-2" />
+            <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
           </template>
         </component>
       </template>
@@ -101,7 +101,9 @@ import {
   useFileActions,
   useLoadPreview,
   useResourcesStore,
+  useRoute,
   useRouteQuery,
+  useRouter,
   FileSideBar,
   AppLoadingSpinner,
   NoContentMessage,
@@ -121,7 +123,7 @@ import {
   useKeyboardFileNavigation,
   useKeyboardFileMouseActions
 } from '../../composables/keyboardActions'
-import { computed, unref, ref, onBeforeUnmount, onMounted } from 'vue'
+import { computed, unref, ref, onBeforeUnmount, onMounted, watch } from 'vue'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
@@ -135,8 +137,33 @@ const appsStore = useAppsStore()
 const { $gettext } = useGettext()
 
 const resourcesStore = useResourcesStore()
+const router = useRouter()
+const route = useRoute()
+
+const selectedShareTypesQuery = useRouteQuery('q_shareType')
+const filterTerm = ref('')
+
+function filterShares(shares: OutgoingShareResource[]) {
+  let result = shares
+  if (unref(filterTerm)) {
+    const searchEngine = new Fuse(result, { ...defaultFuseOptions, keys: ['name'] })
+    result = searchEngine.search(unref(filterTerm)).map((r) => r.item)
+  }
+
+  const selectedShareTypes = queryItemAsString(unref(selectedShareTypesQuery))?.split('+')
+  if (!selectedShareTypes || selectedShareTypes.length === 0) {
+    return result
+  }
+  return result.filter((item) => {
+    return ShareTypes.getByKeys(selectedShareTypes)
+      .map(({ value }) => value)
+      .some((t) => item.shareTypes.includes(t))
+  })
+}
 
 const {
+  storeItems,
+  sortedResources,
   paginatedResources,
   selectedResources,
   selectedResourcesIds,
@@ -157,7 +184,8 @@ const {
   isResourceInSelection,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
-  folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint
+  folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint,
+  filterResources: filterShares
 })
 
 const { triggerDefaultAction } = useFileActions()
@@ -176,7 +204,7 @@ const breadcrumbs = computed(() => {
 })
 
 const shareTypes = computed(() => {
-  const uniqueShareTypes = uniq(unref(paginatedResources).flatMap((i) => i.shareTypes))
+  const uniqueShareTypes = uniq(unref(storeItems).flatMap((i) => i.shareTypes))
 
   const ocmAvailable = appsStore.appIds.includes('open-cloud-mesh')
   if (ocmAvailable && !uniqueShareTypes.includes(ShareTypes.remote.value)) {
@@ -191,28 +219,13 @@ const shareTypes = computed(() => {
     }
   })
 })
-const selectedShareTypesQuery = useRouteQuery('q_shareType')
-const filterTerm = ref('')
-const filteredItems = computed(() => {
-  let items = unref(paginatedResources)
-  if (unref(filterTerm)) {
-    const searchEngine = new Fuse(items, { ...defaultFuseOptions, keys: ['name'] })
-    items = searchEngine.search(unref(filterTerm)).map((r) => r.item)
-  }
 
-  const selectedShareTypes = queryItemAsString(unref(selectedShareTypesQuery))?.split('+')
-  if (!selectedShareTypes || selectedShareTypes.length === 0) {
-    return items
-  }
-  return items.filter((item) => {
-    return ShareTypes.getByKeys(selectedShareTypes)
-      .map(({ value }) => value)
-      .some((t) => item.shareTypes.includes(t))
-  })
+watch(filterTerm, async () => {
+  await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
 
 const keyActions = useKeyboardActions()
-useKeyboardFileNavigation(keyActions, filteredItems, viewMode)
+useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 
 resourcesStore.$onAction(async (action) => {
@@ -242,7 +255,7 @@ resourcesStore.$onAction(async (action) => {
 })
 
 const isEmpty = computed(() => {
-  return unref(filteredItems).length < 1
+  return unref(paginatedResources).length < 1
 })
 
 let loadResourcesEventToken: string
@@ -251,7 +264,7 @@ onMounted(async () => {
     loadResourcesTask.perform()
   )
   await loadResourcesTask.perform()
-  scrollToResourceFromRoute(unref(filteredItems), 'files-app-bar')
+  scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
 })
 
 onBeforeUnmount(() => {
