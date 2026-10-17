@@ -3,6 +3,7 @@ import { useGroupwareAccountsStore, useMessages, useModals } from '@opencloud-eu
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { useContactActionsDelete } from '../../../../src/composables/actions/useContactActionsDelete'
 import { useContactsStore } from '../../../../src/composables/piniaStores/contacts'
+import { useAddressBooksStore } from '../../../../src/composables/piniaStores/addressbooks'
 import type { Contact } from '../../../../src/types'
 
 const contact = mock<Contact>({
@@ -12,6 +13,17 @@ const contact = mock<Contact>({
 })
 
 describe('useContactActionsDelete', () => {
+  describe('method "isVisible"', () => {
+    it.each([true, false])('is only visible with write permission: %s', (canWrite) => {
+      getWrapper({
+        canWrite,
+        setup: ({ getDeleteAction }) => {
+          expect(getDeleteAction(contact).isVisible()).toBe(canWrite)
+        }
+      })
+    })
+  })
+
   describe('method "getDeleteAction"', () => {
     it('asks for confirmation before deleting', () => {
       getWrapper({
@@ -59,8 +71,10 @@ describe('useContactActionsDelete', () => {
 })
 
 function getWrapper({
-  setup
+  setup,
+  canWrite = true
 }: {
+  canWrite?: boolean
   setup: (
     instance: ReturnType<typeof useContactActionsDelete>,
     {
@@ -77,6 +91,8 @@ function getWrapper({
       accountsStore.accounts = [{ accountId: 'account-1' } as (typeof accountsStore.accounts)[0]]
       // @ts-expect-error getters are writable in the testing pinia
       accountsStore.currentAccount = accountsStore.accounts[0]
+      // @ts-expect-error getters are writable in the testing pinia
+      useAddressBooksStore().canWriteCurrentAddressBook = canWrite
 
       const instance = useContactActionsDelete()
       setup(instance, { clientService: mocks.$clientService })

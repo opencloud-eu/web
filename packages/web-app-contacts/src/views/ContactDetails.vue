@@ -15,7 +15,15 @@
       >
         <oc-icon name="arrow-left" fill-type="line" />
       </oc-button>
+      <div
+        v-if="!canWriteCurrentAddressBook"
+        class="contact-details-read-only ml-auto flex items-center gap-1 text-sm text-role-on-surface-variant"
+      >
+        <oc-icon name="lock" fill-type="line" size="small" />
+        <span v-text="$gettext('Read-only')" />
+      </div>
       <oc-button
+        v-if="canWriteCurrentAddressBook"
         class="contact-details-edit ml-auto h-10 w-10 shrink-0 p-0"
         appearance="raw"
         :aria-label="$gettext('Edit contact')"
@@ -24,6 +32,7 @@
         <oc-icon name="pencil" fill-type="line" />
       </oc-button>
       <oc-button
+        v-if="canWriteCurrentAddressBook"
         class="contact-details-delete h-10 w-10 shrink-0 p-0"
         appearance="raw"
         :aria-label="$gettext('Delete contact')"
@@ -43,6 +52,7 @@ import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useContactsStore } from '../composables/piniaStores/contacts'
+import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { useContactEditor } from '../composables/useContactEditor'
 import { useContactActionsDelete } from '../composables/actions/useContactActionsDelete'
 import { useContactActionsEdit } from '../composables/actions/useContactActionsEdit'
@@ -53,6 +63,7 @@ const { runWithDiscardConfirmation } = useContactEditor()
 const { getDeleteAction } = useContactActionsDelete()
 const { getEditAction } = useContactActionsEdit()
 const { currentContact } = storeToRefs(contactsStore)
+const { canWriteCurrentAddressBook } = storeToRefs(useAddressBooksStore())
 const { setCurrentContact } = contactsStore
 
 const onNavigateBack = () => {
