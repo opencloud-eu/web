@@ -8,6 +8,13 @@
       <div class="truncate text-sm text-role-on-surface-variant">
         <oc-filter-highlight :text="getContactPrimaryEmail(contact)" :term="term" />
       </div>
+      <div
+        v-if="addressBookName"
+        class="contacts-list-item-address-book flex items-center gap-1 truncate text-sm text-role-on-surface-variant"
+      >
+        <oc-icon name="folder" fill-type="line" size="small" />
+        <span class="truncate" v-text="addressBookName" />
+      </div>
     </div>
   </div>
 </template>
@@ -17,8 +24,13 @@ import { Contact } from '../types'
 import { getContactDisplayName, getContactPrimaryEmail } from '../helpers'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
-const { contact, term = '' } = defineProps<{
+const {
+  contact,
+  term = '',
+  addressBookName = undefined
+} = defineProps<{
   contact: Contact
   term?: string
+  addressBookName?: string
 }>()
 </script>
