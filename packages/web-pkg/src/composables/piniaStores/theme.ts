@@ -1,7 +1,7 @@
 import merge from 'deepmerge'
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
-import { useLocalStorage, usePreferredDark } from '@vueuse/core'
+import { StorageSerializers, useLocalStorage, usePreferredDark } from '@vueuse/core'
 import { z } from 'zod'
 import { applyCustomProp } from '@opencloud-eu/design-system/helpers'
 import { ShareRole } from '@opencloud-eu/web-client'
@@ -80,7 +80,13 @@ const setFavicon = (url: string) => {
 
 export const useThemeStore = defineStore('theme', () => {
   const currentLocalStorageThemeName = useLocalStorage(themeStorageKey, null)
-  const currentLocalStorageThemeIsDark = useLocalStorage(themeIsDarkStorageKey, false)
+  const currentLocalStorageThemeIsDark = useLocalStorage<boolean | null>(
+    themeIsDarkStorageKey,
+    null,
+    {
+      serializer: StorageSerializers.boolean
+    }
+  )
 
   const isDark = usePreferredDark()
 
@@ -159,8 +165,8 @@ export const useThemeStore = defineStore('theme', () => {
     currentTheme.value = theme
     if (updateStorage) {
       currentLocalStorageThemeName.value = unref(currentTheme).label
-      currentLocalStorageThemeIsDark.value = theme.isDark
     }
+    currentLocalStorageThemeIsDark.value = unref(isCurrentThemeAutoSystem) ? null : theme.isDark
 
     document.documentElement.style.colorScheme = theme.isDark ? 'dark' : 'light'
     document.documentElement.dataset.colorScheme = theme.isDark ? 'dark' : 'light'
