@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-full overflow-auto p-4 md:px-8">
     <div class="flex flex-wrap items-center justify-between gap-4 mt-2 mb-4">
       <div>
         <div class="flex items-center gap-1">
@@ -11,19 +11,16 @@
           v-text="$gettext('Extensions for your OpenCloud – from OpenCloud and the community.')"
         />
       </div>
-      <div class="flex items-center gap-2 w-full sm:w-auto">
-        <oc-search-bar
-          is-filter
-          class="apps-filter w-full sm:w-auto"
-          :model-value="filterTermInput"
-          :label="$gettext('Search')"
-          :placeholder="$gettext('Search for apps')"
-          button-hidden
-          :is-rounded="false"
-          @update:model-value="setFilterTerm"
-        />
-        <app-view-mode-switch v-model="viewMode" />
-      </div>
+      <oc-search-bar
+        is-filter
+        class="apps-filter w-full sm:w-auto"
+        :model-value="filterTermInput"
+        :label="$gettext('Search')"
+        :placeholder="$gettext('Search for apps')"
+        button-hidden
+        :is-rounded="false"
+        @update:model-value="setFilterTerm"
+      />
     </div>
     <app-tag-filter
       class="mb-6"
@@ -33,11 +30,39 @@
     />
     <span class="sr-only" role="status" v-text="resultCountText" />
     <div v-if="filteredApps.length" class="flex items-center justify-between gap-4 mb-2">
-      <h2 class="app-list-results-title my-0 text-base capitalize" v-text="resultsTitle" />
-      <span
-        class="app-list-results-count text-sm text-role-on-surface-variant"
-        v-text="resultCountText"
-      />
+      <div class="flex items-center gap-1">
+        <h2
+          class="app-list-results-title my-0 text-base capitalize"
+          v-text="`${resultsTitle} (${filteredApps.length})`"
+        />
+        <oc-filter-chip
+          class="app-list-sort [&_.oc-filter-chip-label]:text-sm"
+          :filter-label="$gettext('Sort by')"
+          :selected-item-names="[currentSortField.label]"
+          :has-active-state="false"
+          close-on-click
+          raw
+        >
+          <template #default>
+            <oc-list>
+              <li v-for="field in sortFields" :key="field.label">
+                <oc-button
+                  :appearance="currentSortField === field ? 'filled' : 'raw-inverse'"
+                  :color-role="currentSortField === field ? 'secondaryContainer' : 'surface'"
+                  :no-hover="currentSortField === field"
+                  justify-content="space-between"
+                  class="app-list-sort-item"
+                  @click="setSortField(field)"
+                >
+                  <span v-text="field.label" />
+                  <oc-icon v-if="currentSortField === field" name="check" />
+                </oc-button>
+              </li>
+            </oc-list>
+          </template>
+        </oc-filter-chip>
+      </div>
+      <app-view-mode-switch v-model="viewMode" />
     </div>
     <no-content-message
       v-if="!filteredApps.length"
@@ -53,7 +78,7 @@
     </no-content-message>
     <oc-list v-else-if="viewMode === 'list'" class="flex flex-col gap-2">
       <app-list-item
-        v-for="app in filteredApps"
+        v-for="app in sortedApps"
         :key="`app-${app.repository.name}-${app.id}`"
         :app="app"
         :term="filterTerm"
@@ -62,7 +87,7 @@
     </oc-list>
     <oc-list v-else class="grid [grid-template-columns:repeat(auto-fill,minmax(240px,1fr))] gap-4">
       <app-tile
-        v-for="app in filteredApps"
+        v-for="app in sortedApps"
         :key="`app-${app.repository.name}-${app.id}`"
         :app="app"
         :term="filterTerm"
@@ -78,7 +103,7 @@ import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { useAppsStore } from '../piniaStores'
-import { useAppFilter, useAppViewMode } from '../composables'
+import { useAppFilter, useAppSort, useAppViewMode } from '../composables'
 import AppTile from '../components/AppTile.vue'
 import AppListItem from '../components/AppListItem.vue'
 import AppContextualHelper from '../components/AppContextualHelper.vue'
@@ -90,6 +115,7 @@ const { apps } = storeToRefs(appsStore)
 
 const { filterTerm, activeTag, searchedApps, filteredApps, setFilterTerm, setActiveTag } =
   useAppFilter(apps)
+const { sortFields, sortedApps, currentSortField, setSortField } = useAppSort(filteredApps)
 const { viewMode } = useAppViewMode()
 
 // clicking the tag that is currently filtered by resets the filter

@@ -135,25 +135,22 @@
       <resource-size :size="item.size || Number.NaN" />
     </template>
     <template #tags="{ item }">
-      <component
-        :is="userContextReady ? 'router-link' : 'span'"
+      <oc-tag
         v-for="tag in item.tags.slice(0, 2)"
         :key="tag"
+        v-oc-tooltip="getTagToolTip(tag)"
+        :type="userContextReady ? 'router-link' : 'span'"
         v-bind="getTagComponentAttrs(tag)"
-        class="resource-table-tag-wrapper"
+        class="resource-table-tag-wrapper resource-table-tag ml-1 max-w-20"
+        :rounded="true"
+        size="small"
       >
-        <oc-tag
-          v-oc-tooltip="getTagToolTip(tag)"
-          class="resource-table-tag ml-1 max-w-20"
-          :rounded="true"
-          size="small"
-        >
-          <oc-icon name="price-tag-3" size-class="size-4" />
-          <span class="truncate">{{ tag }}</span>
-        </oc-tag>
-      </component>
+        <oc-icon name="price-tag-3" size-class="size-4" />
+        <span class="truncate">{{ tag }}</span>
+      </oc-tag>
       <oc-tag
         v-if="item.tags.length > 2"
+        type="button"
         size="small"
         class="resource-table-tag-more align-text-bottom cursor-pointer"
         @click="sidebarStore.openSideBar()"

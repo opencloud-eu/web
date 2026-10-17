@@ -11,11 +11,13 @@ export const AppStoreConfigSchema = z.object({
 })
 
 export const AppVersionSchema = z.object({
-  version: z.string(),
+  version: z.string().min(1),
   minOpenCloud: z.string().optional(),
   maxOpenCloud: z.string().optional(),
-  url: z.string(),
-  filename: z.string().optional()
+  url: z.url({ protocol: /^https?$/ }),
+  filename: z.string().optional(),
+  // ISO date (YYYY-MM-DD) the version was released
+  releaseDate: z.string().optional()
 })
 export type AppVersion = z.infer<typeof AppVersionSchema>
 
@@ -47,16 +49,16 @@ export const AppResourceSchema = z.object({
 export type AppResource = z.infer<typeof AppResourceSchema>
 
 export const RawAppSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  subtitle: z.string(),
+  id: z.string().min(1),
+  name: z.string().min(1),
+  subtitle: z.string().default(''),
   badge: AppBadgeSchema.optional(),
   description: z.string().optional(),
-  license: z.string(),
-  versions: z.array(AppVersionSchema), // versions are expected to be sorted from newest to oldest
-  authors: z.array(AppAuthorSchema),
+  license: z.string().optional(),
+  versions: z.array(AppVersionSchema).min(1), // versions are expected to be sorted from newest to oldest
+  authors: z.array(AppAuthorSchema).default([]),
   official: z.boolean().optional().default(false),
-  tags: z.array(z.string()),
+  tags: z.array(z.string()).default([]),
   coverImage: AppImageSchema.optional(),
   screenshots: z.array(AppImageSchema).optional().default([]),
   resources: z.array(AppResourceSchema).optional().default([]) // e.g. documentation, github, etc.
@@ -69,7 +71,7 @@ export const AppSchema = RawAppSchema.extend({
 export type App = z.infer<typeof AppSchema>
 
 export const RawAppListSchema = z.object({
-  apps: z.array(RawAppSchema)
+  apps: z.array(z.unknown())
 })
 
 export const APP_VIEW_MODES = ['tiles', 'list'] as const
