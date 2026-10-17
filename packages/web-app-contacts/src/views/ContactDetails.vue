@@ -15,7 +15,14 @@
       >
         <oc-icon name="arrow-left" fill-type="line" />
       </oc-button>
-      <div class="ml-auto flex items-center">
+      <div
+        v-if="!canWriteCurrentAddressBook"
+        class="contact-details-read-only ml-auto flex items-center gap-1 text-sm text-role-on-surface-variant"
+      >
+        <oc-icon name="lock" fill-type="line" size="small" />
+        <span v-text="$gettext('Read-only')" />
+      </div>
+      <div v-else class="ml-auto flex items-center">
         <oc-button
           v-if="editAction"
           v-oc-tooltip="$gettext('Edit contact')"
@@ -49,6 +56,7 @@ import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { computed, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useContactsStore } from '../composables/piniaStores/contacts'
+import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { useContactEditor } from '../composables/useContactEditor'
 import { useContactActionsDelete } from '../composables/actions/useContactActionsDelete'
 import { useContactActionsEdit } from '../composables/actions/useContactActionsEdit'
@@ -60,6 +68,7 @@ const { runWithDiscardConfirmation } = useContactEditor()
 const { actions: deleteActions } = useContactActionsDelete()
 const { actions: editActions } = useContactActionsEdit()
 const { currentContact } = storeToRefs(contactsStore)
+const { canWriteCurrentAddressBook } = storeToRefs(useAddressBooksStore())
 const { setCurrentContact } = contactsStore
 
 const actionOptions = computed<ContactActionOptions>(() => ({
