@@ -21,6 +21,9 @@
                 :items="shareTypes"
                 :option-filter-label="$gettext('Filter share types')"
                 :show-option-filter="true"
+                :no-items-message="
+                  $gettext('No shares yet. Available share types will appear here.')
+                "
                 id-attribute="key"
                 class="share-type-filter"
                 display-name-attribute="label"
