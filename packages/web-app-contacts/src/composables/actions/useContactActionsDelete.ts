@@ -9,6 +9,7 @@ import {
   useModals
 } from '@opencloud-eu/web-pkg'
 import { useContactsStore } from '../piniaStores/contacts'
+import { useAddressBooksStore } from '../piniaStores/addressbooks'
 import { getContactDisplayName, getContactPrimaryEmail } from '../../helpers'
 import type { Contact } from '../../types'
 import type { ContactAction, ContactActionOptions } from './types'
@@ -21,6 +22,7 @@ export function useContactActionsDelete() {
   const configStore = useConfigStore()
   const accountsStore = useGroupwareAccountsStore()
   const contactsStore = useContactsStore()
+  const addressBooksStore = useAddressBooksStore()
 
   function getContactName(contact: Contact) {
     return getContactDisplayName(contact) || getContactPrimaryEmail(contact) || ''
@@ -87,7 +89,8 @@ export function useContactActionsDelete() {
       name: 'delete',
       icon: 'delete-bin',
       label: () => $gettext('Delete'),
-      isVisible: ({ resources }) => resources.length === 1,
+      isVisible: ({ resources }) =>
+        resources.length === 1 && unref(addressBooksStore.canWriteCurrentAddressBook),
       handler,
       class: 'oc-contacts-actions-delete-trigger'
     }

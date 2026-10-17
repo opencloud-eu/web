@@ -13,6 +13,9 @@ export const useAddressBooksStore = defineStore('addressBooks', () => {
     unref(addressBooks).find((addressBook) => addressBook.id === unref(currentAddressBookId))
   )
 
+  // contacts can only be created, changed and deleted in address books with write permission
+  const canWriteCurrentAddressBook = computed(() => !!unref(currentAddressBook)?.myRights?.mayWrite)
+
   const setAddressBooks = (data: AddressBook[]) => {
     addressBooks.value = data
   }
@@ -66,6 +69,7 @@ export const useAddressBooksStore = defineStore('addressBooks', () => {
   return {
     addressBooks,
     currentAddressBook,
+    canWriteCurrentAddressBook,
     updateAddressBookField,
     setAddressBooks,
     upsertAddressBook,
