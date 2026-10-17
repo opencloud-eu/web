@@ -107,6 +107,7 @@ import { useContactsStore } from '../composables/piniaStores/contacts'
 import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { useContactEditor } from '../composables/useContactEditor'
 import { useContactSearch } from '../composables/useContactSearch'
+import { useContactActionsDelete } from '../composables/actions/useContactActionsDelete'
 import { getContactDisplayName } from '../helpers'
 import ContactsListItem from '../components/ContactsListItem.vue'
 
@@ -115,6 +116,7 @@ const { $gettext } = useGettext()
 const contactsStore = useContactsStore()
 const addressBooksStore = useAddressBooksStore()
 const { runWithDiscardConfirmation } = useContactEditor()
+const { getDeleteAction } = useContactActionsDelete()
 const { contacts, currentContact } = storeToRefs(contactsStore)
 const { currentAddressBook } = storeToRefs(addressBooksStore)
 const { setCurrentContact } = contactsStore
@@ -153,6 +155,10 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
           }
         }
       ]
+    },
+    {
+      name: 'secondary',
+      items: [getDeleteAction(contact)]
     }
   ]
 }
