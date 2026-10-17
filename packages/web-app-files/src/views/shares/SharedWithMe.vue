@@ -37,6 +37,11 @@
                 :items="fileOwners"
                 :option-filter-label="$gettext('Filter shared by')"
                 :show-option-filter="true"
+                :no-items-message="
+                  $gettext(
+                    'No shares yet. People who share files and folders with you will appear here.'
+                  )
+                "
                 id-attribute="id"
                 class="shared-by-filter"
                 display-name-attribute="displayName"
