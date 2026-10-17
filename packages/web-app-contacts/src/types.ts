@@ -34,18 +34,24 @@ export type AddressBooksListResponse = z.infer<typeof AddressBooksListResponseSc
 export const AddressBookIdsSchema = z.record(z.string(), z.boolean())
 export const KeywordsSchema = z.record(z.string(), z.boolean())
 
-export const AddressComponentSchema = z.object({
-  kind: z.string(),
-  value: z.string()
-})
+export const AddressComponentSchema = z
+  .object({
+    kind: z.string(),
+    value: z.string()
+  })
+  .loose()
 
 export const ContextsSchema = z.record(z.string(), z.boolean())
 
-export const AddressSchema = z.object({
-  components: z.array(AddressComponentSchema).optional(),
-  contexts: ContextsSchema.optional(),
-  countryCode: z.string().optional()
-})
+// Schemas of properties that can be edited keep unknown fields (`loose`), so saving a contact
+// doesn't drop data the web UI doesn't know about.
+export const AddressSchema = z
+  .object({
+    components: z.array(AddressComponentSchema).optional(),
+    contexts: ContextsSchema.optional(),
+    countryCode: z.string().optional()
+  })
+  .loose()
 
 export const PartialDateSchema = z.object({
   '@type': z.string().optional(),
@@ -59,10 +65,12 @@ export const AnniversarySchema = z.object({
   kind: z.string().optional()
 })
 
-export const EmailSchema = z.object({
-  address: z.string(),
-  contexts: ContextsSchema.optional()
-})
+export const EmailSchema = z
+  .object({
+    address: z.string(),
+    contexts: ContextsSchema.optional()
+  })
+  .loose()
 
 export const MediaSchema = z.object({
   blobId: z.string().optional(),
@@ -72,33 +80,41 @@ export const MediaSchema = z.object({
   mediaType: z.string().optional()
 })
 
-export const NameComponentSchema = z.object({
-  kind: z.string(),
-  value: z.string()
-})
+export const NameComponentSchema = z
+  .object({
+    kind: z.string(),
+    value: z.string()
+  })
+  .loose()
 
-export const NameSchema = z.object({
-  '@type': z.string().optional(),
-  full: z.string().optional(),
-  components: z.array(NameComponentSchema).optional(),
-  defaultSeparator: z.string().optional(),
-  isOrdered: z.boolean().optional()
-})
+export const NameSchema = z
+  .object({
+    '@type': z.string().optional(),
+    full: z.string().optional(),
+    components: z.array(NameComponentSchema).optional(),
+    defaultSeparator: z.string().optional(),
+    isOrdered: z.boolean().optional()
+  })
+  .loose()
 
-export const NicknameSchema = z.object({
-  name: z.string(),
-  contexts: ContextsSchema.optional()
-})
+export const NicknameSchema = z
+  .object({
+    name: z.string(),
+    contexts: ContextsSchema.optional()
+  })
+  .loose()
 
 export const NoteAuthorSchema = z.object({
   name: z.string().optional()
 })
 
-export const NoteSchema = z.object({
-  author: NoteAuthorSchema.optional(),
-  created: z.string().optional(),
-  note: z.string()
-})
+export const NoteSchema = z
+  .object({
+    author: NoteAuthorSchema.optional(),
+    created: z.string().optional(),
+    note: z.string()
+  })
+  .loose()
 
 export const OnlineServiceSchema = z.object({
   service: z.string().optional(),
@@ -106,20 +122,26 @@ export const OnlineServiceSchema = z.object({
   contexts: ContextsSchema.optional()
 })
 
-export const OrganizationUnitSchema = z.object({
-  name: z.string()
-})
+export const OrganizationUnitSchema = z
+  .object({
+    name: z.string()
+  })
+  .loose()
 
-export const OrganizationSchema = z.object({
-  name: z.string(),
-  units: z.array(OrganizationUnitSchema).optional()
-})
+export const OrganizationSchema = z
+  .object({
+    name: z.string(),
+    units: z.array(OrganizationUnitSchema).optional()
+  })
+  .loose()
 
-export const PhoneSchema = z.object({
-  number: z.string(),
-  contexts: ContextsSchema.optional(),
-  features: z.record(z.string(), z.boolean()).optional()
-})
+export const PhoneSchema = z
+  .object({
+    number: z.string(),
+    contexts: ContextsSchema.optional(),
+    features: z.record(z.string(), z.boolean()).optional()
+  })
+  .loose()
 
 export const PreferredLanguageSchema = z.object({
   language: z.string(),
@@ -138,11 +160,13 @@ export const SpeakToAsSchema = z.object({
   pronouns: z.string().optional()
 })
 
-export const TitleSchema = z.object({
-  name: z.string(),
-  kind: z.string().optional(),
-  organizationId: z.string().optional()
-})
+export const TitleSchema = z
+  .object({
+    name: z.string(),
+    kind: z.string().optional(),
+    organizationId: z.string().optional()
+  })
+  .loose()
 
 export const ContactSchema = z.object({
   '@type': z.string().optional(),
