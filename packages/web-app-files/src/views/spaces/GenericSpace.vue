@@ -273,7 +273,7 @@ const breadcrumbs = computed(() => {
   } else if (isShareSpaceResource(unref(space))) {
     spaceBreadcrumbItem = {
       id: uuidV4(),
-      allowContextActions: true,
+      allowContextActions: !authStore.isGuestContext,
       text: unref(space).name,
       to: authStore.isGuestContext
         ? createLocationGuest('files-guest-link', { params, query: omit(query, 'fileId') })
