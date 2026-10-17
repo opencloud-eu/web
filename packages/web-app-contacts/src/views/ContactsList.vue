@@ -1,6 +1,12 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
-  <no-content-message v-else-if="error" id="contacts-error" class="px-4 py-8" icon="error-warning">
+  <no-content-message
+    v-else-if="error"
+    id="contacts-error"
+    class="px-4 py-8"
+    icon="error-warning"
+    icon-fill-type="line"
+  >
     <template #message>
       <span v-text="$gettext('Contacts could not be loaded')" />
     </template>
