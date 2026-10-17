@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, unref } from 'vue'
-import { App, AppStoreRepository, RawAppListSchema } from '../types'
+import { App, AppStoreRepository, RawAppListSchema, RawAppSchema } from '../types'
 import { APPID } from '../appid'
 import { useRepositoriesStore } from './repositories'
 
@@ -21,9 +21,20 @@ export const useAppsStore = defineStore(`${APPID}-apps`, () => {
         throw new Error(`Failed to load apps from ${repo.url}: ${response.status}`)
       }
       const { apps } = RawAppListSchema.parse(await response.json())
-      return apps
-        .map((app) => ({ ...app, repository: repo, mostRecentVersion: app.versions[0] }))
-        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
+      const loadedApps: App[] = []
+      for (const [index, rawApp] of apps.entries()) {
+        const result = RawAppSchema.safeParse(rawApp)
+        if (!result.success) {
+          console.warn(`Skipping invalid app at index ${index} from ${repo.url}`, result.error)
+          continue
+        }
+        const app = result.data
+        loadedApps.push({ ...app, repository: repo, mostRecentVersion: app.versions[0] })
+      }
+      if (apps.length && !loadedApps.length) {
+        return null
+      }
+      return loadedApps.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
     } catch (e) {
       console.error(e)
       return null

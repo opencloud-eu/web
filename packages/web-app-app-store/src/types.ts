@@ -49,16 +49,16 @@ export const AppResourceSchema = z.object({
 export type AppResource = z.infer<typeof AppResourceSchema>
 
 export const RawAppSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  subtitle: z.string(),
+  id: z.string().min(1),
+  name: z.string().min(1),
+  subtitle: z.string().default(''),
   badge: AppBadgeSchema.optional(),
   description: z.string().optional(),
-  license: z.string(),
+  license: z.string().optional(),
   versions: z.array(AppVersionSchema), // versions are expected to be sorted from newest to oldest
-  authors: z.array(AppAuthorSchema),
+  authors: z.array(AppAuthorSchema).default([]),
   official: z.boolean().optional().default(false),
-  tags: z.array(z.string()),
+  tags: z.array(z.string()).default([]),
   coverImage: AppImageSchema.optional(),
   screenshots: z.array(AppImageSchema).optional().default([]),
   resources: z.array(AppResourceSchema).optional().default([]) // e.g. documentation, github, etc.
@@ -71,7 +71,7 @@ export const AppSchema = RawAppSchema.extend({
 export type App = z.infer<typeof AppSchema>
 
 export const RawAppListSchema = z.object({
-  apps: z.array(RawAppSchema)
+  apps: z.array(z.unknown())
 })
 
 export const APP_VIEW_MODES = ['tiles', 'list'] as const
