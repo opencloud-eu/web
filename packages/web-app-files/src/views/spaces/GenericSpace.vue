@@ -237,7 +237,14 @@ const breadcrumbs = computed(() => {
       to: createLocationSpaces('files-spaces-projects'),
       isStaticNav: true
     })
-  } else if (isShareSpaceResource(unref(space)) && !authStore.isGuestContext) {
+  } else if (isShareSpaceResource(unref(space)) && authStore.isGuestContext) {
+    rootBreadcrumbItems.push({
+      id: uuidV4(),
+      text: $gettext('Shares'),
+      to: createLocationGuest('files-guest-shares'),
+      isStaticNav: true
+    })
+  } else if (isShareSpaceResource(unref(space))) {
     rootBreadcrumbItems.push(
       {
         id: uuidV4(),

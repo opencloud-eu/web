@@ -110,6 +110,16 @@ describe('useFileActionsMove', () => {
           }
         })
       })
+      it('returns false for the root of a received share', () => {
+        getWrapper({
+          setup: ({ actions }) => {
+            const resource = getResource({ id: '1', path: '/', isShareRoot: () => true })
+            expect(
+              unref(actions)[0].isVisible({ space: mock<SpaceResource>(), resources: [resource] })
+            ).toBeFalsy()
+          }
+        })
+      })
       it('returns false in search context when resources contain a project space', () => {
         getWrapper({
           searchLocation: true,

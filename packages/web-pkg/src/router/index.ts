@@ -9,7 +9,8 @@ import {
   buildRoutes as buildGuestRoutes,
   createLocationGuest,
   isLocationGuestActive,
-  locationGuestLink
+  locationGuestLink,
+  locationGuestShares
 } from './guest'
 import {
   buildRoutes as buildPublicRoutes,
@@ -78,6 +79,7 @@ export {
   locationPublicLink,
   locationPublicUpload,
   locationGuestLink,
+  locationGuestShares,
   locationSpacesGeneric,
   locationSharesViaLink,
   locationSharesWithMe,

@@ -114,7 +114,21 @@ describe('useLinkTargetRoute', () => {
         }
       })
     })
-    it('resolves a guest to the guest route without the parent of a single file share', () => {
+    it('resolves a file inside a share of a guest to the guest route', () => {
+      getWrapper({
+        isGuestContext: true,
+        setup: ({ getLinkTargetRoute }) => {
+          const route = getLinkTargetRoute({
+            space: buildSpace({ driveType: 'share', driveAlias: 'share/folder' }),
+            resource: buildFile(),
+            path: '/file.txt'
+          })
+
+          expect(route.name).toBe('files-guest-link')
+        }
+      })
+    })
+    it('resolves a single file share of a guest to the guest shares', () => {
       getWrapper({
         isGuestContext: true,
         setup: ({ getLinkTargetRoute }) => {
@@ -129,9 +143,9 @@ describe('useLinkTargetRoute', () => {
             path: '/'
           })
 
-          expect(route.name).toBe('files-guest-link')
-          expect(route.params).toEqual({ driveAliasAndItem: 'share/file.txt' })
-          expect(route.query).toEqual({ shareId: 'share-id', scrollTo: 'file-id' })
+          expect(route.name).toBe('files-guest-shares')
+          expect(route.query).toEqual(expect.objectContaining({ scrollTo: 'file-id' }))
+          expect(route.query).toEqual(expect.not.objectContaining({ fileId: expect.anything() }))
         }
       })
     })
@@ -177,7 +191,7 @@ describe('useLinkTargetRoute', () => {
         }
       })
     })
-    it('closes the app of a single file share into the guest route', () => {
+    it('closes the app of a single file share into the guest shares', () => {
       getWrapper({
         isGuestContext: true,
         resourceLink: {
@@ -195,7 +209,7 @@ describe('useLinkTargetRoute', () => {
           expect(route.name).toBe('preview')
           expect(route.query).toEqual(
             expect.objectContaining({
-              contextRouteName: 'files-guest-link',
+              contextRouteName: 'files-guest-shares',
               contextRouteParams: { driveAliasAndItem: 'share/file.png' },
               contextRouteQuery: { shareId: 'share-id' }
             })

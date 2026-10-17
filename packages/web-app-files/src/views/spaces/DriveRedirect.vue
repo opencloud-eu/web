@@ -9,7 +9,7 @@ import { computed, unref } from 'vue'
 import { useAuthStore, useRoute, useRouter, useSpacesStore } from '@opencloud-eu/web-pkg'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { createFileRouteOptions, createGuestHomeLocation } from '@opencloud-eu/web-pkg'
+import { createFileRouteOptions, createLocationGuest } from '@opencloud-eu/web-pkg'
 import { createLocationSpaces } from '@opencloud-eu/web-pkg'
 import omit from 'lodash-es/omit'
 import { RouteLocationRaw } from 'vue-router'
@@ -38,8 +38,7 @@ const itemPath = computed(() => {
 })
 
 if (authStore.isGuestContext) {
-  // guests are scoped to the share they were invited to
-  router.replace(createGuestHomeLocation({ authStore, spacesStore }))
+  router.replace(createLocationGuest('files-guest-shares'))
 } else if (!unref(personalSpace)) {
   router.replace(createLocationSpaces('files-spaces-projects'))
 } else {

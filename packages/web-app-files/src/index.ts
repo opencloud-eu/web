@@ -1,6 +1,7 @@
 import App from './App.vue'
 import Favorites from './views/Favorites.vue'
 import FilesDrop from './views/FilesDrop.vue'
+import GuestSharedWithMe from './views/shares/GuestSharedWithMe.vue'
 import SharedWithMe from './views/shares/SharedWithMe.vue'
 import SharedWithOthers from './views/shares/SharedWithOthers.vue'
 import SharedViaLink from './views/shares/SharedViaLink.vue'
@@ -91,6 +92,16 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
       priority: 30
     },
     {
+      name: $gettext('Shares'),
+      icon: 'share-forward',
+      route: {
+        path: `/${appInfo.id}/guest/shares`
+      },
+      activeFor: [{ path: `/${appInfo.id}/guest/share` }],
+      authContext: 'guest',
+      priority: 30
+    },
+    {
       name: $gettext('Spaces'),
       icon: 'layout-grid',
       route: {
@@ -134,6 +145,7 @@ export default defineWebApplication({
         FilesDrop,
         SearchResults,
         Shares: {
+          GuestSharedWithMe,
           SharedViaLink,
           SharedWithMe,
           SharedWithOthers

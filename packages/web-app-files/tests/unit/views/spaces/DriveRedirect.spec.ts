@@ -1,7 +1,5 @@
 import DriveRedirect from '../../../../src/views/spaces/DriveRedirect.vue'
 import { mock } from 'vitest-mock-extended'
-import { ShareSpaceResource } from '@opencloud-eu/web-client'
-import { useSpacesStore } from '@opencloud-eu/web-pkg'
 import {
   defaultPlugins,
   mount,
@@ -18,44 +16,19 @@ describe('DriveRedirect view', () => {
     })
   })
 
-  it('redirects guests to the root of their share', () => {
-    const space = mock<ShareSpaceResource>({ id: 'share-id', driveType: 'share' })
-    space.getDriveAliasAndItem.mockReturnValue('share/Invited folder')
-    const { mocks } = getMountedWrapper({ guestSpace: space })
-    expect(mocks.$router.replace).toHaveBeenCalledWith({
-      name: 'files-guest-link',
-      params: { driveAliasAndItem: 'share/Invited folder' },
-      query: { shareId: 'share-id' }
-    })
-  })
-
-  it('resumes the guest session if the guest space is missing', () => {
+  it('redirects guests to their shares', () => {
     const { mocks } = getMountedWrapper({ isGuest: true })
-    expect(mocks.$router.replace).toHaveBeenCalledWith({
-      name: 'renewGuestLink',
-      params: { permissionId: 'permission-id' },
-      query: { resume: 'true' }
-    })
+    expect(mocks.$router.replace).toHaveBeenCalledWith({ name: 'files-guest-shares' })
   })
 })
 
 function getMountedWrapper({
   currentRouteName = 'files-spaces-generic',
-  guestSpace = undefined,
-  isGuest = !!guestSpace
-}: { currentRouteName?: string; guestSpace?: ShareSpaceResource; isGuest?: boolean } = {}) {
+  isGuest = false
+}: { currentRouteName?: string; isGuest?: boolean } = {}) {
   const plugins = defaultPlugins({
-    piniaOptions: {
-      ...(isGuest && {
-        authState: {
-          guestContextReady: true,
-          guestSpaceId: guestSpace?.id,
-          guestPermissionId: 'permission-id'
-        }
-      })
-    }
+    piniaOptions: { ...(isGuest && { authState: { guestContextReady: true } }) }
   })
-  vi.mocked(useSpacesStore().getSpace).mockReturnValue(guestSpace)
 
   const mocks = {
     ...defaultComponentMocks({ currentRoute: mock<RouteLocation>({ name: currentRouteName }) })
