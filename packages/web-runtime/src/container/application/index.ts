@@ -53,7 +53,7 @@ export const lazySharedModules: Record<string, () => Promise<unknown>> = {
  * Register shared modules with Module Federation.
  * Called once during bootstrap before any applications are loaded.
  */
-export function registerSharedModules(federation: ModuleFederation) {
+function registerSharedModules(federation: ModuleFederation) {
   const shared: Record<
     string,
     { version: string; scope: string[]; get: () => Promise<() => unknown> }

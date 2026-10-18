@@ -2,7 +2,7 @@ import { ConfigStore, SearchFunction, SearchPreview, SearchResult } from '@openc
 import { Component } from 'vue'
 import { ResourcePreview } from '@opencloud-eu/web-pkg'
 
-export const previewSearchLimit = 8
+const previewSearchLimit = 8
 
 export default class Preview implements SearchPreview {
   public readonly component: Component

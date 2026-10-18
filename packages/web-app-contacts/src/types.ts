@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const AddressBookRightsSchema = z.object({
+const AddressBookRightsSchema = z.object({
   mayAdmin: z.boolean(),
   mayDelete: z.boolean(),
   mayRead: z.boolean(),
@@ -16,54 +16,52 @@ export const AddressBookSchema = z.object({
   myRights: AddressBookRightsSchema
 })
 
-export const AddressBooksListResponseSchema = z.object({
+const AddressBooksListResponseSchema = z.object({
   accountId: z.string().optional(),
   state: z.string().optional(),
   list: z.array(AddressBookSchema),
   notFound: z.array(z.string()).optional()
 })
 
-export const AddressBooksArrayResponseSchema = z.array(AddressBookSchema)
+const AddressBooksArrayResponseSchema = z.array(AddressBookSchema)
 
 export type AddressBook = z.infer<typeof AddressBookSchema>
-export type AddressBookRights = z.infer<typeof AddressBookRightsSchema>
-export type AddressBooksListResponse = z.infer<typeof AddressBooksListResponseSchema>
 
 // Contact schemas
-export const AddressBookIdsSchema = z.record(z.string(), z.boolean())
-export const KeywordsSchema = z.record(z.string(), z.boolean())
+const AddressBookIdsSchema = z.record(z.string(), z.boolean())
+const KeywordsSchema = z.record(z.string(), z.boolean())
 
-export const AddressComponentSchema = z.object({
+const AddressComponentSchema = z.object({
   kind: z.string(),
   value: z.string()
 })
 
-export const ContextsSchema = z.record(z.string(), z.boolean())
+const ContextsSchema = z.record(z.string(), z.boolean())
 
-export const AddressSchema = z.object({
+const AddressSchema = z.object({
   components: z.array(AddressComponentSchema).optional(),
   contexts: ContextsSchema.optional(),
   countryCode: z.string().optional()
 })
 
-export const PartialDateSchema = z.object({
+const PartialDateSchema = z.object({
   '@type': z.string().optional(),
   day: z.number().optional(),
   month: z.number().optional(),
   year: z.number().optional()
 })
 
-export const AnniversarySchema = z.object({
+const AnniversarySchema = z.object({
   date: PartialDateSchema.optional(),
   kind: z.string().optional()
 })
 
-export const EmailSchema = z.object({
+const EmailSchema = z.object({
   address: z.string(),
   contexts: ContextsSchema.optional()
 })
 
-export const MediaSchema = z.object({
+const MediaSchema = z.object({
   blobId: z.string().optional(),
   uri: z.string().optional(),
   contexts: ContextsSchema.optional(),
@@ -71,12 +69,12 @@ export const MediaSchema = z.object({
   mediaType: z.string().optional()
 })
 
-export const NameComponentSchema = z.object({
+const NameComponentSchema = z.object({
   kind: z.string(),
   value: z.string()
 })
 
-export const NameSchema = z.object({
+const NameSchema = z.object({
   '@type': z.string().optional(),
   full: z.string().optional(),
   components: z.array(NameComponentSchema).optional(),
@@ -84,59 +82,59 @@ export const NameSchema = z.object({
   isOrdered: z.boolean().optional()
 })
 
-export const NicknameSchema = z.object({
+const NicknameSchema = z.object({
   name: z.string(),
   contexts: ContextsSchema.optional()
 })
 
-export const NoteAuthorSchema = z.object({
+const NoteAuthorSchema = z.object({
   name: z.string().optional()
 })
 
-export const NoteSchema = z.object({
+const NoteSchema = z.object({
   author: NoteAuthorSchema.optional(),
   created: z.string().optional(),
   note: z.string()
 })
 
-export const OnlineServiceSchema = z.object({
+const OnlineServiceSchema = z.object({
   service: z.string().optional(),
   user: z.string().optional(),
   contexts: ContextsSchema.optional()
 })
 
-export const OrganizationUnitSchema = z.object({
+const OrganizationUnitSchema = z.object({
   name: z.string()
 })
 
-export const OrganizationSchema = z.object({
+const OrganizationSchema = z.object({
   name: z.string(),
   units: z.array(OrganizationUnitSchema).optional()
 })
 
-export const PhoneSchema = z.object({
+const PhoneSchema = z.object({
   number: z.string(),
   contexts: ContextsSchema.optional()
 })
 
-export const PreferredLanguageSchema = z.object({
+const PreferredLanguageSchema = z.object({
   language: z.string(),
   pref: z.number().optional(),
   contexts: ContextsSchema.optional()
 })
 
-export const RelationSchema = z.record(z.string(), z.boolean())
+const RelationSchema = z.record(z.string(), z.boolean())
 
-export const RelatedToSchema = z.object({
+const RelatedToSchema = z.object({
   relation: RelationSchema.optional()
 })
 
-export const SpeakToAsSchema = z.object({
+const SpeakToAsSchema = z.object({
   grammaticalGender: z.string().optional(),
   pronouns: z.string().optional()
 })
 
-export const TitleSchema = z.object({
+const TitleSchema = z.object({
   name: z.string(),
   kind: z.string().optional(),
   organizationId: z.string().optional()
@@ -170,7 +168,7 @@ export const ContactSchema = z.object({
   titles: z.record(z.string(), TitleSchema).optional()
 })
 
-export const ContactSearchResultsSchema = z.object({
+const ContactSearchResultsSchema = z.object({
   results: z.array(ContactSchema),
   canCalculateChanges: z.boolean().optional(),
   position: z.number().optional(),
@@ -178,24 +176,16 @@ export const ContactSearchResultsSchema = z.object({
   total: z.number().optional()
 })
 
-export const ContactListResponseSchema = z.object({
+const ContactListResponseSchema = z.object({
   accountId: z.string().optional(),
   state: z.string().optional(),
   list: z.array(ContactSchema),
   notFound: z.array(z.string()).optional()
 })
 
-export const ContactsArrayResponseSchema = z.array(ContactSchema)
+const ContactsArrayResponseSchema = z.array(ContactSchema)
 
 export type Contact = z.infer<typeof ContactSchema>
-export type ContactName = z.infer<typeof NameSchema>
-export type ContactEmail = z.infer<typeof EmailSchema>
-export type ContactPhone = z.infer<typeof PhoneSchema>
-export type ContactAddress = z.infer<typeof AddressSchema>
-export type ContactOrganization = z.infer<typeof OrganizationSchema>
-export type ContactMedia = z.infer<typeof MediaSchema>
-export type ContactSearchResults = z.infer<typeof ContactSearchResultsSchema>
-export type ContactListResponse = z.infer<typeof ContactListResponseSchema>
 
 export const parseAddressBooksResponse = (data: unknown): AddressBook[] => {
   const listResponse = AddressBooksListResponseSchema.safeParse(data)

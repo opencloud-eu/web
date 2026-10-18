@@ -98,8 +98,6 @@ export const isLocationActiveDirector = <T extends string>(
   }
 }
 
-export { $gettext } from '../utils/dummyGettext'
-
 /**
  * create a location with attached default values
  */

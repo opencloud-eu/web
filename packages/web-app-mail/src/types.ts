@@ -8,7 +8,7 @@ export const MailAddressSchema = z.object({
 export const MailboxIdsSchema = z.record(z.string(), z.boolean())
 export const KeywordsSchema = z.record(z.string(), z.boolean())
 
-export const MailHeaderSchema = z.object({
+const MailHeaderSchema = z.object({
   name: z.string(),
   value: z.string()
 })
@@ -27,7 +27,7 @@ export type MailBodyPart = {
   subParts?: MailBodyPart[]
 }
 
-export const MailBodyPartSchema: z.ZodType<MailBodyPart> = z.lazy(() =>
+const MailBodyPartSchema: z.ZodType<MailBodyPart> = z.lazy(() =>
   z.object({
     partId: z.string().optional(),
     blobId: z.string().optional(),
@@ -119,7 +119,6 @@ export type Mail = z.infer<typeof MailSchema>
 export type MailAddress = z.infer<typeof MailAddressSchema>
 export type MailboxIds = z.infer<typeof MailboxIdsSchema>
 export type Keywords = z.infer<typeof KeywordsSchema>
-export type MailHeader = z.infer<typeof MailHeaderSchema>
 export type MailBodyValue = z.infer<typeof MailBodyValueSchema>
 export type Mailbox = z.infer<typeof MailboxSchema>
 export type AttachmentBlobUploadResponse = z.infer<typeof AttachmentBlobUploadResponseSchema>

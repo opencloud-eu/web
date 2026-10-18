@@ -15,7 +15,7 @@ const escapeHtml = (value: string): string =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
 
-export const getContactShareEmailSubject = (
+const getContactShareEmailSubject = (
   resourceName: string,
   $gettext: Language['$gettext']
 ): string => $gettext('«%{name}» was shared with you', { name: resourceName })

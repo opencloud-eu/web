@@ -28,5 +28,3 @@ export const useSpaceSettingsStore = defineStore('spaceSettings', () => {
     reset
   }
 })
-
-export type SpaceSettingsStore = ReturnType<typeof useSpaceSettingsStore>
