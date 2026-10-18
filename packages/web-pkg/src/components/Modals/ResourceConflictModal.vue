@@ -109,4 +109,6 @@ const onCancel = () => {
     doForAllConflicts: unref(checkboxValue)
   })
 }
+
+defineExpose({ onCancel })
 </script>
