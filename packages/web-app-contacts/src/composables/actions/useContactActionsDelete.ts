@@ -1,8 +1,7 @@
-import { unref } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { urlJoin } from '@opencloud-eu/web-client'
 import {
-  Action,
   useClientService,
   useConfigStore,
   useGroupwareAccountsStore,
@@ -12,8 +11,9 @@ import {
 import { useContactsStore } from '../piniaStores/contacts'
 import { getContactDisplayName, getContactPrimaryEmail } from '../../helpers'
 import type { Contact } from '../../types'
+import type { ContactAction, ContactActionOptions } from './types'
 
-export const useContactActionsDelete = () => {
+export function useContactActionsDelete() {
   const { $gettext } = useGettext()
   const { showMessage, showErrorMessage } = useMessages()
   const { dispatchModal } = useModals()
@@ -22,15 +22,19 @@ export const useContactActionsDelete = () => {
   const accountsStore = useGroupwareAccountsStore()
   const contactsStore = useContactsStore()
 
-  const getContactName = (contact: Contact) => {
+  function getContactName(contact: Contact) {
     return getContactDisplayName(contact) || getContactPrimaryEmail(contact) || ''
   }
 
-  const deleteContact = async (contact: Contact) => {
+  async function deleteContact(contact: Contact) {
     const accountId = unref(accountsStore.currentAccount)?.accountId
     const name = getContactName(contact)
 
     try {
+      if (!accountId) {
+        throw new Error('No groupware account selected')
+      }
+
       await clientService.httpAuthenticated.delete(
         urlJoin(configStore.groupwareUrl, `accounts/${accountId}/contacts/${contact.id}`)
       )
@@ -52,7 +56,12 @@ export const useContactActionsDelete = () => {
     }
   }
 
-  const handler = (contact: Contact) => {
+  function handler({ resources }: ContactActionOptions) {
+    if (!resources.length) {
+      return
+    }
+
+    const [contact] = resources
     const name = getContactName(contact)
 
     dispatchModal({
@@ -66,17 +75,19 @@ export const useContactActionsDelete = () => {
     })
   }
 
-  const getDeleteAction = (contact: Contact): Action => ({
-    name: 'delete',
-    icon: 'delete-bin',
-    label: () => $gettext('Delete'),
-    isVisible: () => true,
-    handler: () => handler(contact),
-    class: 'contact-actions-delete-trigger'
-  })
+  const actions = computed((): ContactAction[] => [
+    {
+      name: 'delete',
+      icon: 'delete-bin',
+      label: () => $gettext('Delete'),
+      isVisible: ({ resources }) => resources.length === 1,
+      handler,
+      class: 'oc-contacts-actions-delete-trigger'
+    }
+  ])
 
   return {
-    getDeleteAction,
+    actions,
     // HACK: exported for unit tests:
     deleteContact
   }
