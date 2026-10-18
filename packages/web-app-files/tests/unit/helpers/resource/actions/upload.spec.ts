@@ -56,6 +56,143 @@ describe('upload helper', () => {
     })
   })
   describe('method "displayOverwriteDialog"', () => {
+    it.each([false, true])(
+      'reserves names of other uploaded files when keeping both (reverse order: %s)',
+      async (reverseOrder) => {
+        const files = [createUploadFile('a.txt'), createUploadFile('a (1).txt')]
+        if (reverseOrder) {
+          files.reverse()
+        }
+        const instance = getResourceConflictInstance({
+          currentFiles: [mock<Resource>({ name: 'a.txt' })]
+        })
+        instance.resolveFileExists = vi.fn().mockResolvedValue({
+          strategy: ResolveStrategy.KEEP_BOTH,
+          doForAllConflicts: false
+        })
+
+        const result = await instance.displayOverwriteDialog(files, [
+          { name: 'a.txt', type: 'file' }
+        ])
+
+        expect(result.files).toHaveLength(2)
+        const renamed = result.files.find(({ id }) => id === '/a.txt')
+        expect(renamed.name).toBe('a (2).txt')
+        expect(renamed.meta.name).toBe('a (2).txt')
+        expect(renamed.xhrUpload.endpoint).toBe('https://example.com/dav/a%20(2).txt')
+        expect(result.files.find(({ id }) => id === '/a (1).txt').name).toBe('a (1).txt')
+      }
+    )
+
+    it('reserves replacement names already assigned to other uploaded files', async () => {
+      const first = createUploadFile('a.txt')
+      const second = createUploadFile('a.txt')
+      second.id = 'second'
+      const instance = getResourceConflictInstance({
+        currentFiles: [mock<Resource>({ name: 'a.txt' })]
+      })
+      instance.resolveFileExists = vi.fn().mockResolvedValue({
+        strategy: ResolveStrategy.KEEP_BOTH,
+        doForAllConflicts: true
+      })
+
+      const result = await instance.displayOverwriteDialog(
+        [first, second],
+        [
+          { name: 'a.txt', type: 'file' },
+          { name: 'a.txt', type: 'file' }
+        ]
+      )
+
+      expect(result.files.map(({ name }) => name)).toEqual(['a (1).txt', 'a (2).txt'])
+    })
+
+    it.each(['xhr', 'tus'] as const)(
+      'reserves other uploaded folders and gives all children the same replacement folder (%s)',
+      async (transport) => {
+        const files = [
+          createUploadFile('one.txt', '/folder', transport),
+          createUploadFile('two.txt', '/folder/nested', transport),
+          createUploadFile('three.txt', '/folder (1)', transport)
+        ]
+        const instance = getResourceConflictInstance({
+          currentFiles: [mock<Resource>({ name: 'folder' })]
+        })
+        instance.resolveFileExists = vi.fn().mockResolvedValue({
+          strategy: ResolveStrategy.KEEP_BOTH,
+          doForAllConflicts: false
+        })
+
+        const result = await instance.displayOverwriteDialog(files, [
+          { name: 'folder', type: 'folder' }
+        ])
+
+        expect(result.files.map(({ meta }) => meta.relativeFolder)).toEqual([
+          '/folder (2)',
+          '/folder (2)/nested',
+          '/folder (1)'
+        ])
+        expect(result.files.map(({ meta }) => meta.relativePath)).toEqual([
+          '/folder (2)/one.txt',
+          '/folder (2)/nested/two.txt',
+          '/folder (1)/three.txt'
+        ])
+        const folderEndpoints = [
+          'https://example.com/dav/folder%20(2)',
+          'https://example.com/dav/folder%20(2)/nested',
+          'https://example.com/dav/folder%20(1)'
+        ]
+        const fileEndpoints = [
+          'https://example.com/dav/folder%20(2)/one.txt',
+          'https://example.com/dav/folder%20(2)/nested/two.txt',
+          'https://example.com/dav/folder%20(1)/three.txt'
+        ]
+        expect(result.files.map(({ meta }) => meta.tusEndpoint)).toEqual(
+          transport === 'xhr' ? fileEndpoints : folderEndpoints
+        )
+        if (transport === 'xhr') {
+          expect(result.files.map(({ xhrUpload }) => xhrUpload.endpoint)).toEqual(fileEndpoints)
+        } else {
+          expect(result.files.map(({ tus }) => tus.endpoint)).toEqual(folderEndpoints)
+        }
+      }
+    )
+
+    it('reserves replacement file names when renaming folders in the same batch', async () => {
+      const files = [createUploadFile('folder'), createUploadFile('one.txt', '/folder')]
+      const instance = getResourceConflictInstance({
+        currentFiles: [mock<Resource>({ name: 'folder' })]
+      })
+      instance.resolveFileExists = vi.fn().mockResolvedValue({
+        strategy: ResolveStrategy.KEEP_BOTH,
+        doForAllConflicts: true
+      })
+
+      const result = await instance.displayOverwriteDialog(files, [
+        { name: 'folder', type: 'file' },
+        { name: 'folder', type: 'folder' }
+      ])
+
+      expect(result.files[0].name).toBe('folder (1)')
+      expect(result.files[1].meta.relativeFolder).toBe('/folder (2)')
+    })
+
+    it('does not reserve nested file names in the target folder', async () => {
+      const files = [createUploadFile('a.txt'), createUploadFile('a (1).txt', '/nested')]
+      const instance = getResourceConflictInstance({
+        currentFiles: [mock<Resource>({ name: 'a.txt' })]
+      })
+      instance.resolveFileExists = vi.fn().mockResolvedValue({
+        strategy: ResolveStrategy.KEEP_BOTH,
+        doForAllConflicts: false
+      })
+
+      const result = await instance.displayOverwriteDialog(files, [{ name: 'a.txt', type: 'file' }])
+
+      expect(result.files[0].name).toBe('a (1).txt')
+      expect(result.files[1].meta.relativePath).toBe('/nested/a (1).txt')
+    })
+
     it('should pass the type of the existing resource to the dialog', async () => {
       const file = mockDeep<OcUppyFile>({ name: 'dup', meta: { relativeFolder: '' } })
       const conflict = { name: 'dup', type: 'file', existingIsFolder: true }
@@ -474,3 +611,24 @@ describe('upload helper', () => {
     })
   })
 })
+
+function createUploadFile(name: string, relativeFolder = '', transport: 'xhr' | 'tus' = 'xhr') {
+  const relativePath = `${relativeFolder}/${name}`
+  const folderEndpoint = `https://example.com/dav${relativeFolder
+    .split('/')
+    .map(encodeURIComponent)
+    .join('/')}`
+  const fileEndpoint = `${folderEndpoint}/${encodeURIComponent(name)}`
+  return mockDeep<OcUppyFile>({
+    id: relativePath,
+    name,
+    meta: {
+      name,
+      relativeFolder,
+      relativePath,
+      tusEndpoint: transport === 'xhr' ? fileEndpoint : folderEndpoint
+    },
+    xhrUpload: transport === 'xhr' ? { endpoint: fileEndpoint } : undefined,
+    tus: transport === 'tus' ? { endpoint: folderEndpoint } : undefined
+  })
+}

@@ -5,7 +5,7 @@ import { withoutExtension } from '../../fileExtension'
 export const resolveFileNameDuplicate = (
   name: string,
   extension: string,
-  existingResources: Resource[],
+  existingResources: Pick<Resource, 'name'>[],
   iteration = 1
 ): string => {
   const nameWithoutExtension = extension ? withoutExtension(name, extension) : name
