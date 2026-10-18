@@ -41,7 +41,6 @@ const emit = defineEmits<{
   (e: 'navigateRight'): void
 }>()
 
-// keep the book iframes light: a dark scheme makes Chromium paint an opaque white backdrop
 const bookContainer = useTemplateRef<HTMLElement>('bookContainer')
 const { $gettext } = useGettext()
 
