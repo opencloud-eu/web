@@ -52,7 +52,7 @@
                 :user-id="el.messageRichParameters?.user?.id || el.user"
                 :user-name="el.messageRichParameters?.user?.displayname || el.user"
               />
-              <div>
+              <div class="min-w-0 wrap-anywhere">
                 <div v-if="!el.message && !el.messageRich" class="oc-notifications-subject">
                   <span v-text="el.subject" />
                 </div>
