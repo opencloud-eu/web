@@ -12,10 +12,33 @@ describe('useAuthStore', () => {
         setup: (instance) => {
           expect(instance.guestContextReady).toBeFalsy()
 
-          instance.setGuestContext('permission-id', 'share-id')
+          instance.setGuestContext('permission-id', 'share-id', 'guest@example.org')
 
           expect(instance.guestContextReady).toBeTruthy()
           expect(instance.guestPermissionId).toEqual('permission-id')
+          expect(instance.guestEmail).toEqual('guest@example.org')
+        }
+      })
+    })
+  })
+
+  describe('computed "isGuestContext"', () => {
+    it('is true with a guest context', () => {
+      getWrapper({
+        setup: (instance) => {
+          instance.setGuestContext('permission-id', 'share-id')
+
+          expect(instance.isGuestContext).toBeTruthy()
+        }
+      })
+    })
+    it('is false while a user is signed in', () => {
+      getWrapper({
+        setup: (instance) => {
+          instance.setGuestContext('permission-id', 'share-id')
+          instance.setUserContextReady(true)
+
+          expect(instance.isGuestContext).toBeFalsy()
         }
       })
     })
@@ -25,11 +48,12 @@ describe('useAuthStore', () => {
     it('wipes the guest context', () => {
       getWrapper({
         setup: (instance) => {
-          instance.setGuestContext('permission-id', 'share-id')
+          instance.setGuestContext('permission-id', 'share-id', 'guest@example.org')
           instance.clearGuestContext()
 
           expect(instance.guestContextReady).toBeFalsy()
           expect(instance.guestPermissionId).toBeNull()
+          expect(instance.guestEmail).toBeNull()
         }
       })
     })

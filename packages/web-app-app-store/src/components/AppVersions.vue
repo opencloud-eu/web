@@ -1,10 +1,10 @@
 <template>
   <section v-if="versions.length" class="app-versions">
     <div class="flex items-baseline justify-between gap-4 mb-2">
-      <h3 class="my-0 text-base" v-text="$gettext('Versions')" />
+      <h2 class="my-0 text-base" v-text="$gettext('Versions')" />
       <span class="text-sm text-role-on-surface-variant" v-text="versionCountText" />
     </div>
-    <ul class="m-0 p-0">
+    <ul :id="versionsId" class="m-0 p-0">
       <li
         v-for="(version, index) in visibleVersions"
         :key="version.version"
@@ -29,6 +29,8 @@
       v-if="versions.length > collapsedCount"
       appearance="raw"
       class="app-versions-toggle mt-2 text-sm"
+      :aria-expanded="expanded"
+      :aria-controls="versionsId"
       @click="expanded = !expanded"
     >
       {{
@@ -41,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref } from 'vue'
+import { computed, ref, unref, useId } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { App } from '../types'
 import { isValidUrl } from '../helpers'
@@ -57,6 +59,7 @@ const { getVersionRange } = useOpenCloudRequirement()
 
 const collapsedCount = 3
 const expanded = ref(false)
+const versionsId = `app-versions-${useId()}`
 
 // versions are expected to be sorted from newest to oldest
 const versions = computed(() => {

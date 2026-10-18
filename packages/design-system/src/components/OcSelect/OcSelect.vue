@@ -366,9 +366,9 @@ if (positionFixed) {
 }
 
 onMounted(() => {
-  unref(selectRef)
-    .$el.querySelector('div:first-child')
-    ?.setAttribute('aria-label', `${label} - ${$gettext('Search for option')}`)
+  const toggle = unref(selectRef).$el.querySelector('.vs__dropdown-toggle')
+  toggle?.setAttribute('aria-label', `${label} - ${$gettext('Search for option')}`)
+  toggle?.setAttribute('aria-controls', toggle.getAttribute('aria-owns'))
 })
 </script>
 
@@ -400,11 +400,11 @@ onMounted(() => {
 }
 
 .oc-select :is(.vs__dropdown-toggle, .vs__dropdown-menu) {
-  @apply min-h-9 p-1 -mt-px rounded-sm border border-role-outline-variant bg-role-surface;
+  @apply min-h-9 p-1 -mt-px rounded-sm border border-role-outline bg-role-surface;
 }
 
-.oc-select:focus-within :is(.vs__dropdown-toggle, .vs__dropdown-menu) {
-  @apply border-role-outline;
+.oc-select:focus-within:not(.vs--open) .vs__dropdown-toggle {
+  @apply outline-1 outline-role-outline -outline-offset-2;
 }
 
 .oc-select .vs__selected-options {
@@ -436,7 +436,7 @@ onMounted(() => {
 }
 
 .oc-select-keyboard-navigation .vs__dropdown-option--highlight {
-  @apply outline outline-role-outline-variant;
+  @apply outline outline-role-outline;
 }
 
 .oc-select.vs--single.vs--open .vs__selected {

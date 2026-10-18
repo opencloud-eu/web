@@ -1,5 +1,6 @@
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { createApp, defineComponent, App } from 'vue'
+import { createApp, defineComponent, App, reactive } from 'vue'
+import { flushPromises } from '@vue/test-utils'
 import { Language } from 'vue3-gettext'
 import {
   ApplicationInformation,
@@ -8,6 +9,8 @@ import {
   ClientService,
   ConfigStore,
   ResourceIconMapping,
+  SharesStore,
+  SpacesStore,
   useAppsStore,
   useConfigStore,
   useUpdatesStore
@@ -21,6 +24,7 @@ import {
   announceConfiguration,
   announceUpdates,
   announceTranslations,
+  announceGuestContext,
   _resetEmbedConfigCache
 } from '../../../src/container/bootstrap'
 import { buildApplication, loadApplication } from '../../../src/container/application'
@@ -418,5 +422,106 @@ describe('announceTranslations', () => {
     expect(Object.keys(gettext.translations.de).length).toBeGreaterThan(2)
     expect(gettext.translations.de['App string']).toBe('App-Text')
     expect(gettext.translations.de.Delete).toBe('Custom')
+  })
+})
+
+describe('announceGuestContext', () => {
+  function getWrapper({
+    supportSSE = true,
+    listRoleDefinitions = () => Promise.resolve([])
+  }: {
+    supportSSE?: boolean
+    listRoleDefinitions?: () => Promise<unknown[]>
+  } = {}) {
+    const authStore = reactive({ isGuestContext: false })
+    const clientService = mockDeep<ClientService>()
+    clientService.graphAuthenticated.permissions.listRoleDefinitions.mockImplementation(
+      listRoleDefinitions as never
+    )
+    const sharesStore = mock<SharesStore>()
+    const spacesStore = mock<SpacesStore>()
+    const stopSSE = vi.fn()
+    const registerSSE = vi.fn(() => stopSSE)
+
+    const stop = announceGuestContext({
+      authStore: authStore as unknown as AuthStore,
+      capabilityStore: mock<CapabilityStore>({ supportSSE }),
+      clientService,
+      sharesStore,
+      spacesStore,
+      registerSSE
+    })
+    onTestFinished(stop)
+
+    return { authStore, sharesStore, spacesStore, registerSSE, stopSSE }
+  }
+
+  it('does nothing without a guest context', async () => {
+    const { registerSSE, spacesStore } = getWrapper()
+    await flushPromises()
+
+    expect(registerSSE).not.toHaveBeenCalled()
+    expect(spacesStore.setSpacesInitialized).not.toHaveBeenCalled()
+  })
+
+  it('loads the roles, registers sse and initializes the spaces', async () => {
+    const roles = [{ id: 'role' }]
+    const { authStore, sharesStore, spacesStore, registerSSE } = getWrapper({
+      listRoleDefinitions: () => Promise.resolve(roles)
+    })
+    authStore.isGuestContext = true
+    await flushPromises()
+
+    expect(sharesStore.setGraphRoles).toHaveBeenCalledWith(roles)
+    expect(registerSSE).toHaveBeenCalledOnce()
+    expect(spacesStore.setSpacesInitialized).toHaveBeenCalledWith(true)
+  })
+
+  it('initializes the spaces even if the roles fail to load', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const { authStore, sharesStore, spacesStore } = getWrapper({
+      listRoleDefinitions: () => Promise.reject(new Error('failed'))
+    })
+    authStore.isGuestContext = true
+    await flushPromises()
+
+    expect(sharesStore.setGraphRoles).not.toHaveBeenCalled()
+    expect(spacesStore.setSpacesInitialized).toHaveBeenCalledWith(true)
+  })
+
+  it('does not register sse if not supported', async () => {
+    const { authStore, spacesStore, registerSSE } = getWrapper({ supportSSE: false })
+    authStore.isGuestContext = true
+    await flushPromises()
+
+    expect(registerSSE).not.toHaveBeenCalled()
+    expect(spacesStore.setSpacesInitialized).toHaveBeenCalledWith(true)
+  })
+
+  it('skips a run that got superseded while loading the roles', async () => {
+    let resolveRoles: (roles: unknown[]) => void
+    const { authStore, spacesStore, registerSSE } = getWrapper({
+      listRoleDefinitions: () => new Promise((resolve) => (resolveRoles = resolve))
+    })
+    authStore.isGuestContext = true
+    await flushPromises()
+    authStore.isGuestContext = false
+    await flushPromises()
+    resolveRoles([])
+    await flushPromises()
+
+    expect(registerSSE).not.toHaveBeenCalled()
+    expect(spacesStore.setSpacesInitialized).not.toHaveBeenCalled()
+  })
+
+  it('stops the sse watch of the previous run', async () => {
+    const { authStore, stopSSE } = getWrapper()
+    authStore.isGuestContext = true
+    await flushPromises()
+    expect(stopSSE).not.toHaveBeenCalled()
+
+    authStore.isGuestContext = false
+    await flushPromises()
+    expect(stopSSE).toHaveBeenCalledOnce()
   })
 })

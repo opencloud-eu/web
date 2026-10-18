@@ -21,6 +21,10 @@ describe('Top Bar component', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find('applications-menu-stub').exists()).toBeTruthy()
   })
+  it('hides the applications menu in a guest context', () => {
+    const { wrapper } = getWrapper({ userContextReady: false, guestContextReady: true })
+    expect(wrapper.find('applications-menu-stub').exists()).toBeFalsy()
+  })
   describe('notifications bell', () => {
     it('should display in authenticated context if announced via capabilities', () => {
       const { wrapper } = getWrapper({
@@ -76,16 +80,18 @@ describe('Top Bar component', () => {
 
 const getWrapper = ({
   capabilities = {},
-  userContextReady = true
+  userContextReady = true,
+  guestContextReady = false
 }: {
   capabilities?: Partial<Capabilities['capabilities']>
   userContextReady?: boolean
+  guestContextReady?: boolean
 } = {}) => {
   const mocks = { ...defaultComponentMocks() }
 
   const plugins = defaultPlugins({
     piniaOptions: {
-      authState: { userContextReady },
+      authState: { userContextReady, guestContextReady },
       capabilityState: { capabilities },
       configState: { options: { disableFeedbackLink: false } }
     }

@@ -1,7 +1,7 @@
 <template>
   <div class="app-details-header flex flex-col md:flex-row md:items-start md:justify-between gap-4">
     <div class="flex flex-col gap-1 min-w-0">
-      <h2 class="app-details-title my-0 text-2xl font-bold">{{ app.name }}</h2>
+      <h1 class="app-details-title my-0 text-2xl font-bold">{{ app.name }}</h1>
       <p class="app-details-subtitle my-0 text-base" v-text="app.subtitle" />
       <p
         v-if="authorNames"

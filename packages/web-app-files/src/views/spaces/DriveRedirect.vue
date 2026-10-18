@@ -6,10 +6,10 @@
 
 <script setup lang="ts">
 import { computed, unref } from 'vue'
-import { useRoute, useRouter, useSpacesStore } from '@opencloud-eu/web-pkg'
+import { useAuthStore, useRoute, useRouter, useSpacesStore } from '@opencloud-eu/web-pkg'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
+import { createFileRouteOptions, createGuestHomeLocation } from '@opencloud-eu/web-pkg'
 import { createLocationSpaces } from '@opencloud-eu/web-pkg'
 import omit from 'lodash-es/omit'
 import { RouteLocationRaw } from 'vue-router'
@@ -25,6 +25,7 @@ const { driveAliasAndItem = '' } = defineProps<{
 const router = useRouter()
 const route = useRoute()
 const spacesStore = useSpacesStore()
+const authStore = useAuthStore()
 
 const personalSpace = computed(() => {
   return spacesStore.spaces.find((space) => space.driveType === 'personal')
@@ -36,7 +37,10 @@ const itemPath = computed(() => {
     : '/'
 })
 
-if (!unref(personalSpace)) {
+if (authStore.isGuestContext) {
+  // guests are scoped to the share they were invited to
+  router.replace(createGuestHomeLocation({ authStore, spacesStore }))
+} else if (!unref(personalSpace)) {
   router.replace(createLocationSpaces('files-spaces-projects'))
 } else {
   const { params, query } = createFileRouteOptions(unref(personalSpace), {

@@ -13,7 +13,6 @@ export interface RouteComponents {
   App: Component
   Favorites: Component
   FilesDrop: Component
-  GuestLink: Component
   SearchResults: Component
   Shares: {
     SharedWithMe: Component

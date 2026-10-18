@@ -59,6 +59,15 @@ describe('CreateUserModal', () => {
         'User "jan" already exists'
       )
     })
+    it('disables the confirm button while the name check is running', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { getUser } = mocks.$clientService.graphAuthenticated.users
+      getUser.mockRejectedValueOnce(new Error(''))
+      await fillForm(wrapper)
+      getUser.mockReturnValueOnce(new Promise(() => undefined))
+      await setInput(wrapper, selectors.userName, 'jan')
+      expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([true])
+    })
     it.each(['jana', 'sk@domain.tld'])('accepts "%s" as user name', async (userName) => {
       const { wrapper, mocks } = getWrapper()
       mocks.$clientService.graphAuthenticated.users.getUser.mockRejectedValue(new Error(''))
@@ -129,18 +138,47 @@ describe('CreateUserModal', () => {
       const { showMessage } = useMessages()
       expect(showMessage).toHaveBeenCalled()
     })
-    it('shows an error message on failure', async () => {
+    it('shows an error message and keeps the dialog open when creating the user fails', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper, mocks } = getWrapper()
       const { users } = mocks.$clientService.graphAuthenticated
-      users.getUser.mockRejectedValue(new Error(''))
+      users.getUser.mockRejectedValueOnce(new Error(''))
       await fillForm(wrapper)
 
-      users.createUser.mockResolvedValue(mock<User>({ id: '1' }))
-      await wrapper.vm.onConfirm()
+      const error = new Error('Could not create user')
+      users.createUser.mockRejectedValueOnce(error)
+      await expect(wrapper.vm.onConfirm()).rejects.toBe(error)
 
-      const { showErrorMessage } = useMessages()
-      expect(showErrorMessage).toHaveBeenCalled()
+      const { showMessage, showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith({
+        title: 'Failed to create user',
+        errors: [error]
+      })
+      expect(showMessage).not.toHaveBeenCalled()
+      expect(users.getUser).toHaveBeenCalledExactlyOnceWith('foo')
+      const { upsertUser } = useUserSettingsStore()
+      expect(upsertUser).not.toHaveBeenCalled()
+    })
+    it('allows the dialog to close when the user is created but loading their details fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const { wrapper, mocks } = getWrapper()
+      const { users } = mocks.$clientService.graphAuthenticated
+      users.getUser.mockRejectedValueOnce(new Error(''))
+      await fillForm(wrapper)
+
+      const error = new Error('Could not load user')
+      users.createUser.mockResolvedValueOnce(mock<User>({ id: '1' }))
+      users.getUser.mockRejectedValueOnce(error)
+
+      await expect(wrapper.vm.onConfirm()).resolves.toBeUndefined()
+
+      expect(users.getUser).toHaveBeenLastCalledWith('1')
+      const { showMessage, showErrorMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledWith({ title: 'User was created successfully' })
+      expect(showErrorMessage).toHaveBeenCalledExactlyOnceWith({
+        title: 'Failed to load user',
+        errors: [error]
+      })
       const { upsertUser } = useUserSettingsStore()
       expect(upsertUser).not.toHaveBeenCalled()
     })

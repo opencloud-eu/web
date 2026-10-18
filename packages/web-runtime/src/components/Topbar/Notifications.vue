@@ -43,10 +43,10 @@
             class="oc-notifications-item [&>a]:text-role-on-surface z-1000 relative"
           >
             <component
-              :is="el.computedLink ? 'router-link' : 'div'"
+              :is="notificationLinks[index] ? 'router-link' : 'div'"
               class="flex items-center gap-2"
-              :to="el.computedLink"
-              @click="onNotificationClick(el)"
+              :to="notificationLinks[index]"
+              @click="onNotificationClick(index)"
             >
               <user-avatar
                 :user-id="el.messageRichParameters?.user?.id || el.user"
@@ -186,8 +186,10 @@ const getLink = ({ messageRichParameters, object_type }: Notification) => {
   return null
 }
 
-function onNotificationClick({ computedLink }: Notification) {
-  if (!computedLink) {
+const notificationLinks = computed(() => unref(notifications).map((n) => getLink(n)))
+
+function onNotificationClick(index: number) {
+  if (!unref(notificationLinks)[index]) {
     return
   }
   unref(notificationsDrop)?.hide()
@@ -232,7 +234,6 @@ const deleteNotificationsTask = useTask(function* (signal, ids) {
 
 const setAdditionalNotificationData = (notification: Notification) => {
   notification.computedMessage = getMessage(notification)
-  notification.computedLink = getLink(notification)
 }
 
 const onSSENotificationEvent = (event: MessageEvent) => {

@@ -28,7 +28,7 @@ export const useLayout = (options?: LayoutOptions) => {
       'logout',
       'resolvePublicLink',
       'resolveGuestLink',
-      'files-guest-link',
+      'renewGuestLink',
       'accessDenied'
     ]
 

@@ -31,6 +31,18 @@ describe('conflict dialog', () => {
       expect(resolvedConflicts[0].resource).toEqual(resource)
       expect(resolvedConflicts[0].strategy).toEqual(strategy)
     })
+    it('should pass the type of the existing resource', async () => {
+      const conflictDialog = getConflictDialogInstance()
+      conflictDialog.resolveFileExists = vi
+        .fn()
+        .mockResolvedValue({ strategy: null, doForAllConflicts: false })
+      const resource = mock<Resource>({ name: 'dup', isFolder: false })
+      const targetFolder = mock<Resource>({ path: '/' })
+      const targetFolderResources = [mock<Resource>({ path: '/dup', isFolder: true })]
+      await conflictDialog.resolveAllConflicts([resource], targetFolder, targetFolderResources)
+
+      expect(conflictDialog.resolveFileExists).toHaveBeenCalledWith(resource, 1, false, false, true)
+    })
   })
   describe('method "resolveFileExists"', () => {
     it('should create the modal in the end', () => {
@@ -39,6 +51,15 @@ describe('conflict dialog', () => {
       const conflictDialog = getConflictDialogInstance()
       conflictDialog.resolveFileExists(mock<Resource>(), 2, true)
       expect(dispatchModal).toHaveBeenCalledTimes(1)
+    })
+    it('should name the type of the existing resource in the title', () => {
+      setActivePinia(createMockStore())
+      const { dispatchModal } = useModals()
+      const conflictDialog = new ConflictDialog((s: string) => s, vi.fn())
+      conflictDialog.resolveFileExists(mock<Resource>({ isFolder: false }), 1, false, false, true)
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Folder already exists' })
+      )
     })
   })
 })

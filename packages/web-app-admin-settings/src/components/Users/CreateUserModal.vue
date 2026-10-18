@@ -117,6 +117,7 @@ async function validateUserName() {
     return setFieldError('userName', error)
   }
 
+  formData.value.userName.valid = false
   // the user name is taken if fetching a user with it succeeds
   const exists = await clientService.graphAuthenticated.users.getUser(userName).then(
     () => true,
@@ -171,16 +172,30 @@ async function onConfirm() {
     return Promise.reject()
   }
 
+  const client = clientService.graphAuthenticated
+  let createdUserId: string
+
   try {
-    const client = clientService.graphAuthenticated
-    const { id: createdUserId } = await client.users.createUser(unref(user))
-    const createdUser = await client.users.getUser(createdUserId)
-    showMessage({ title: $gettext('User was created successfully') })
-    userSettingsStore.upsertUser(createdUser)
+    const createdUser = await client.users.createUser(unref(user))
+    createdUserId = createdUser.id
   } catch (error) {
     console.error(error)
     showErrorMessage({
       title: $gettext('Failed to create user'),
+      errors: [error]
+    })
+    throw error
+  }
+
+  showMessage({ title: $gettext('User was created successfully') })
+
+  try {
+    const createdUser = await client.users.getUser(createdUserId)
+    userSettingsStore.upsertUser(createdUser)
+  } catch (error) {
+    console.error(error)
+    showErrorMessage({
+      title: $gettext('Failed to load user'),
       errors: [error]
     })
   }

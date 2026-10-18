@@ -2,10 +2,10 @@
   <div>
     <div class="flex flex-wrap items-center justify-between gap-4 mt-2 mb-4">
       <div>
-        <h1 class="my-0 text-2xl app-list-headline flex items-center gap-1">
-          {{ $gettext('App Store') }}
+        <div class="flex items-center gap-1">
+          <h1 class="my-0 text-2xl app-list-headline" v-text="$gettext('App Store')" />
           <app-contextual-helper />
-        </h1>
+        </div>
         <p
           class="app-list-subtitle text-sm text-role-on-surface-variant mt-1 mb-0"
           v-text="$gettext('Extensions for your OpenCloud – from OpenCloud and the community.')"
@@ -13,6 +13,7 @@
       </div>
       <div class="flex items-center gap-2 w-full sm:w-auto">
         <oc-search-bar
+          is-filter
           class="apps-filter w-full sm:w-auto"
           :model-value="filterTermInput"
           :label="$gettext('Search')"
@@ -30,6 +31,7 @@
       :active-tag="activeTag"
       @select="setActiveTag"
     />
+    <span class="sr-only" role="status" v-text="resultCountText" />
     <div v-if="filteredApps.length" class="flex items-center justify-between gap-4 mb-2">
       <h2 class="app-list-results-title my-0 text-base capitalize" v-text="resultsTitle" />
       <span

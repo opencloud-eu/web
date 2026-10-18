@@ -28,7 +28,7 @@
           name="lock-password"
           class="oc-files-file-link-has-password ml-1 p-1"
           fill-type="line"
-          :aria-label="$gettext('This link is password-protected')"
+          :accessible-label="$gettext('This link is password-protected')"
         />
       </div>
       <expiration-date-indicator

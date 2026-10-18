@@ -8,10 +8,28 @@ import { isAxiosError } from 'axios'
 import { resetSSE } from '@opencloud-eu/web-client/sse'
 
 const storageKey = 'oc.guestPermissionId'
+// the last link token of a share, it authorizes a renewal once the session expired
+const tokenStorageKey = 'oc.guestLinkToken'
+
+// marks a renewal whose PIN is still valid, so the renew page doesn't request another one
+const renewalStorageKey = 'oc.guestLinkRenewal'
+// keep in sync with `guestPinTTL` in opencloud services/auth-guest/pkg/service/authguest/service.go
+const pinLifetime = 30 * 60 * 1000
+
+interface StoredGuestLinkToken {
+  permissionId: string
+  token: string
+}
+
+interface StoredGuestLinkRenewal {
+  permissionId: string
+  renewedAt: number
+}
 
 export interface GuestSession {
   permissionId: string
   space: ShareSpaceResource
+  email?: string
 }
 
 const sessionExpiredErrorType = 'session_expired'
@@ -33,15 +51,25 @@ export class GuestShareNotFoundError extends Error {
   }
 }
 
+export class GuestLinkTokenMissingError extends Error {
+  constructor() {
+    super('no guest link token to renew with')
+    this.name = 'GuestLinkTokenMissingError'
+  }
+}
+
 // endpoints the proxy authenticates with the guest session cookie, keep in sync with
 // `guestLinkPathPrefixes` in opencloud services/proxy/pkg/middleware/guest_link_auth.go
 const guestPathSegments = [
   '/graph/v1beta1/me/drive/sharedWithMe',
+  '/graph/v1beta1/roleManagement/permissions/roleDefinitions',
   '/dav/',
   '/remote.php/dav/',
   '/webdav/',
   '/remote.php/webdav/',
-  '/ocs/v2.php/apps/notifications/api/v1/notifications/sse'
+  '/ocs/v2.php/apps/notifications/api/v1/notifications/sse',
+  '/app/open',
+  '/app/new'
 ]
 
 function isGuestPath(url: string | undefined): boolean {
@@ -75,15 +103,49 @@ export function isGuestSessionInvalidError(error: unknown): boolean {
   return isGuestSessionExpiredError(error) || isGuestPath(getUnauthorizedRequestUrl(error))
 }
 
-function getAlreadyRedeemedPermissionId(error: unknown): string | undefined {
+// the session cookie can't be used for the share anymore
+function isUnusableSessionError(error: unknown): boolean {
+  return isGuestSessionInvalidError(error) || error instanceof GuestShareNotFoundError
+}
+
+export function getGuestLinkError(error: unknown): GuestLinkError | undefined {
   if (!isAxiosError<GuestLinkError>(error)) {
     return undefined
   }
-  const data = error.response?.data
-  if (data?.errorType !== GuestLinkErrorErrorTypeEnum.TokenAlreadyRedeemed) {
+  return error.response?.data || undefined
+}
+
+export type GuestLinkErrorType = GuestLinkErrorErrorTypeEnum | 'unknown'
+
+export function getGuestLinkErrorType(error: unknown): GuestLinkErrorType {
+  if (error instanceof GuestShareNotFoundError) {
+    return GuestLinkErrorErrorTypeEnum.ShareNotFound
+  }
+  return getGuestLinkError(error)?.errorType || 'unknown'
+}
+
+const retryableGuestLinkErrorTypes: GuestLinkErrorType[] = [
+  'unknown',
+  GuestLinkErrorErrorTypeEnum.InternalError,
+  GuestLinkErrorErrorTypeEnum.ServiceUnavailable
+]
+
+export function isRetryableGuestLinkErrorType(errorType: GuestLinkErrorType): boolean {
+  return retryableGuestLinkErrorTypes.includes(errorType)
+}
+
+// a token rejected with one of these still matches the share and can authorize a renewal
+const renewableTokenErrorTypes: GuestLinkErrorErrorTypeEnum[] = [
+  GuestLinkErrorErrorTypeEnum.TokenExpired,
+  GuestLinkErrorErrorTypeEnum.TokenAlreadyRedeemed
+]
+
+export function getRenewablePermissionId(error: unknown): string | undefined {
+  const guestLinkError = getGuestLinkError(error)
+  if (!renewableTokenErrorTypes.includes(guestLinkError?.errorType)) {
     return undefined
   }
-  return data.permissionId || undefined
+  return guestLinkError.permissionId || undefined
 }
 
 export interface GuestSessionManagerOptions {
@@ -100,6 +162,8 @@ export class GuestSessionManager {
   private restorePromises = new Map<string, Promise<void>>()
   // only the most recently requested restore may change the guest context
   private latestRestorePermissionId: string | undefined
+  private expiredPermissionId: string | undefined
+  private unavailablePermissionId: string | undefined
 
   constructor(options: GuestSessionManagerOptions) {
     this.clientService = options.clientService
@@ -121,22 +185,119 @@ export class GuestSessionManager {
         }
       )
     } catch (error) {
+      this.storeRenewableToken(token, error)
       return this.reuseRedeemedSession(error)
     }
     localStorage.removeItem(storageKey)
+    localStorage.removeItem(renewalStorageKey)
+    this.storeToken({ permissionId, token })
     return this.establish(permissionId)
   }
 
+  /**
+   * Requests a new link and PIN via email, authorized by the last link token of the share.
+   */
+  public async renew(permissionId: string): Promise<void> {
+    const token = this.getStoredToken(permissionId)
+    if (!token) {
+      throw new GuestLinkTokenMissingError()
+    }
+    try {
+      await this.clientService.graphAuthenticated.guestLinks.renewGuestLink({ permissionId, token })
+    } catch (error) {
+      if (!isRetryableGuestLinkErrorType(getGuestLinkErrorType(error))) {
+        localStorage.removeItem(tokenStorageKey)
+      }
+      throw error
+    }
+    // the renewal replaces the token, so it can't authorize another one
+    localStorage.removeItem(tokenStorageKey)
+    const renewal: StoredGuestLinkRenewal = { permissionId, renewedAt: Date.now() }
+    localStorage.setItem(renewalStorageKey, JSON.stringify(renewal))
+  }
+
+  /**
+   * Whether a new link and PIN were sent for the share and the PIN is still valid.
+   */
+  public isRenewalPending(permissionId: string): boolean {
+    try {
+      const renewal: StoredGuestLinkRenewal = JSON.parse(localStorage.getItem(renewalStorageKey))
+      return renewal?.permissionId === permissionId && Date.now() - renewal.renewedAt < pinLifetime
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * Exchanges the PIN for a session, `resume` loads its context afterwards.
+   */
+  public async verifyPin(permissionId: string, pin: string): Promise<void> {
+    this.deactivate()
+    const verifiedPermissionId =
+      await this.clientService.graphAuthenticated.guestLinks.verifyGuestLinkPin(
+        { pin, permissionId },
+        { withCredentials: true }
+      )
+    // the PIN is single-use, persist the session to resume it if loading its context fails
+    localStorage.setItem(storageKey, verifiedPermissionId)
+    localStorage.removeItem(renewalStorageKey)
+  }
+
+  /**
+   * Whether a session is persisted for the share, e.g. one whose context couldn't be loaded.
+   */
+  public hasSession(permissionId: string): boolean {
+    return localStorage.getItem(storageKey) === permissionId
+  }
+
+  /**
+   * Loads the context of the persisted session of the share, drops the session if it's unusable.
+   */
+  public async resume(permissionId: string): Promise<GuestSession> {
+    try {
+      return await this.establish(permissionId)
+    } catch (error) {
+      if (isUnusableSessionError(error)) {
+        this.dropSession(permissionId)
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Returns and resets the permission id of a session that expired while restoring it.
+   */
+  public consumeExpiredPermissionId(): string | undefined {
+    const permissionId = this.expiredPermissionId
+    this.expiredPermissionId = undefined
+    return permissionId
+  }
+
+  /**
+   * Returns and resets the permission id of a session that couldn't be restored, e.g. due to a
+   * network error. The session might still be valid.
+   */
+  public consumeUnavailablePermissionId(): string | undefined {
+    const permissionId = this.unavailablePermissionId
+    this.unavailablePermissionId = undefined
+    return permissionId
+  }
+
+  // a redeemed link is reported as expired once its lifetime is over, the session might still be valid
   private async reuseRedeemedSession(redeemError: unknown): Promise<GuestSession> {
-    const permissionId = getAlreadyRedeemedPermissionId(redeemError)
+    const permissionId = getRenewablePermissionId(redeemError)
     if (!permissionId) {
       throw redeemError
     }
     try {
       return await this.establish(permissionId)
     } catch (error) {
-      // only report the token as used if there is no session to reuse, otherwise keep it retryable
-      throw isGuestSessionInvalidError(error) ? redeemError : error
+      // only report the token error if there is no usable session for the share, otherwise keep it retryable
+      if (!isUnusableSessionError(error)) {
+        throw error
+      }
+      this.dropSession(permissionId)
+      throw redeemError
     }
   }
 
@@ -144,8 +305,8 @@ export class GuestSessionManager {
     if (!permissionId) {
       return Promise.resolve()
     }
+    // keep the session, the guard reloads the page to restore it without the user context
     if (this.authStore.userContextReady) {
-      this.clear()
       return Promise.resolve()
     }
     if (this.authStore.guestContextReady && this.authStore.guestPermissionId === permissionId) {
@@ -177,7 +338,8 @@ export class GuestSessionManager {
   private handleRestoreError(permissionId: string, error: unknown): void {
     console.error('guest session could not be restored', error)
     if (isGuestSessionInvalidError(error)) {
-      this.clear()
+      this.expire()
+      this.expiredPermissionId = permissionId
       return
     }
     if (error instanceof GuestShareNotFoundError) {
@@ -189,10 +351,19 @@ export class GuestSessionManager {
       this.deactivate()
       return
     }
-    this.authStore.setGuestContextUnavailable(true)
+    this.unavailablePermissionId = permissionId
   }
 
   public clear(): void {
+    localStorage.removeItem(tokenStorageKey)
+    localStorage.removeItem(renewalStorageKey)
+    this.expire()
+  }
+
+  /**
+   * Ends an expired session but keeps the link token to renew it.
+   */
+  public expire(): void {
     localStorage.removeItem(storageKey)
     this.deactivate()
   }
@@ -212,9 +383,39 @@ export class GuestSessionManager {
     return session
   }
 
-  private activate({ permissionId, space }: GuestSession): void {
+  private activate({ permissionId, space, email }: GuestSession): void {
+    this.expiredPermissionId = undefined
+    this.unavailablePermissionId = undefined
     localStorage.setItem(storageKey, permissionId)
-    this.authStore.setGuestContext(permissionId, space.id)
+    this.authStore.setGuestContext(permissionId, space.id, email)
+  }
+
+  // another tab might have persisted the session of a different share meanwhile
+  private dropSession(permissionId: string): void {
+    if (localStorage.getItem(storageKey) === permissionId) {
+      localStorage.removeItem(storageKey)
+    }
+  }
+
+  private storeToken(storedToken: StoredGuestLinkToken): void {
+    localStorage.setItem(tokenStorageKey, JSON.stringify(storedToken))
+  }
+
+  private storeRenewableToken(token: string, redeemError: unknown): void {
+    const permissionId = getRenewablePermissionId(redeemError)
+    if (!permissionId) {
+      return
+    }
+    this.storeToken({ permissionId, token })
+  }
+
+  private getStoredToken(permissionId: string): string | undefined {
+    try {
+      const storedToken: StoredGuestLinkToken = JSON.parse(localStorage.getItem(tokenStorageKey))
+      return storedToken?.permissionId === permissionId ? storedToken.token : undefined
+    } catch {
+      return undefined
+    }
   }
 
   private async findSession(permissionId: string): Promise<GuestSession> {
@@ -237,6 +438,7 @@ export class GuestSessionManager {
         shareName: driveItem.name
       })
 
-    return { permissionId, space }
+    const permission = driveItem.remoteItem.permissions.find(({ id }) => id === permissionId)
+    return { permissionId, space, email: permission.grantedToV2?.user?.id }
   }
 }

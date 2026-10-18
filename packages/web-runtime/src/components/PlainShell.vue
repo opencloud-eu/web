@@ -1,5 +1,5 @@
 <template>
-  <div
+  <main
     class="min-h-screen overflow-y-auto flex flex-col bg-gradient-to-br from-role-surface-container to-role-surface-container-highest dark:to-role-surface-container-lowest"
     :style="backgroundImgStyle"
   >
@@ -20,7 +20,7 @@
         v-text="footerSlogan"
       />
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

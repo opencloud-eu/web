@@ -100,6 +100,41 @@ describe('useLinkTargetRoute', () => {
         }
       })
     })
+    it('omits the parent of a single file share for users', () => {
+      getWrapper({
+        setup: ({ getLinkTargetRoute }) => {
+          const route = getLinkTargetRoute({
+            space: buildSpace({ driveType: 'share', id: 'share-id', driveAlias: 'share/file.txt' }),
+            resource: buildFile(),
+            path: '/'
+          })
+
+          expect(route.name).toBe('files-shares-with-me')
+          expect(route.query).toEqual(expect.not.objectContaining({ fileId: expect.anything() }))
+        }
+      })
+    })
+    it('resolves a guest to the guest route without the parent of a single file share', () => {
+      getWrapper({
+        isGuestContext: true,
+        setup: ({ getLinkTargetRoute }) => {
+          const route = getLinkTargetRoute({
+            space: buildSpace({
+              driveType: 'share',
+              id: 'share-id',
+              driveAlias: 'share/file.txt',
+              getDriveAliasAndItem: () => 'share/file.txt'
+            }),
+            resource: buildFile(),
+            path: '/'
+          })
+
+          expect(route.name).toBe('files-guest-link')
+          expect(route.params).toEqual({ driveAliasAndItem: 'share/file.txt' })
+          expect(route.query).toEqual({ shareId: 'share-id', scrollTo: 'file-id' })
+        }
+      })
+    })
     it('passes the details and the file list query', () => {
       getWrapper({
         setup: ({ getLinkTargetRoute }) => {
@@ -137,6 +172,32 @@ describe('useLinkTargetRoute', () => {
               contextRouteName: 'files-spaces-generic',
               contextRouteParams: { driveAliasAndItem: 'personal/admin/folder' },
               contextRouteQuery: { fileId: 'folder-id', 'q_share-visibility': 'hidden' }
+            })
+          )
+        }
+      })
+    })
+    it('closes the app of a single file share into the guest route', () => {
+      getWrapper({
+        isGuestContext: true,
+        resourceLink: {
+          name: 'preview',
+          params: { driveAliasAndItem: 'share/file.png' },
+          query: { shareId: 'share-id' }
+        },
+        setup: ({ getLinkTargetRoute }) => {
+          const route = getLinkTargetRoute({
+            space: buildSpace({ driveType: 'share', driveAlias: 'share/file.png' }),
+            resource: buildFile(),
+            path: '/'
+          })
+
+          expect(route.name).toBe('preview')
+          expect(route.query).toEqual(
+            expect.objectContaining({
+              contextRouteName: 'files-guest-link',
+              contextRouteParams: { driveAliasAndItem: 'share/file.png' },
+              contextRouteQuery: { shareId: 'share-id' }
             })
           )
         }
@@ -192,18 +253,27 @@ describe('useLinkTargetRoute', () => {
 
 function getWrapper({
   setup,
-  resourceLink = undefined
+  resourceLink = undefined,
+  isGuestContext = false
 }: {
   setup: (instance: ReturnType<typeof useLinkTargetRoute>) => void
   resourceLink?: RouteLocationNamedRaw
+  isGuestContext?: boolean
 }) {
   vi.mocked(useResourceLink).mockReturnValue({
     getResourceLink: vi.fn().mockReturnValue(resourceLink)
   })
 
   return {
-    wrapper: getComposableWrapper(() => {
-      setup(useLinkTargetRoute())
-    })
+    wrapper: getComposableWrapper(
+      () => {
+        setup(useLinkTargetRoute())
+      },
+      {
+        pluginOptions: {
+          piniaOptions: { authState: { guestContextReady: isGuestContext } }
+        }
+      }
+    )
   }
 }

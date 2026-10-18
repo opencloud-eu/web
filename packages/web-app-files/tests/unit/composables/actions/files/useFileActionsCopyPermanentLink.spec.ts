@@ -43,6 +43,17 @@ describe('useFileActionsCopyPermanentLink', () => {
       })
     })
 
+    it('should return false in a guest context', () => {
+      getWrapper({
+        isGuest: true,
+        setup: ({ actions }) => {
+          expect(
+            unref(actions)[0].isVisible({ resources: [mock<Resource>()], space: undefined })
+          ).toBeFalsy()
+        }
+      })
+    })
+
     it('should return true if one resource selected', () => {
       getWrapper({
         setup: ({ actions }) => {
@@ -71,12 +82,14 @@ describe('useFileActionsCopyPermanentLink', () => {
 })
 
 function getWrapper({
-  setup
+  setup,
+  isGuest = false
 }: {
   setup: (
     instance: ReturnType<typeof useFileActionsCopyPermanentLink>,
     mocks: Record<string, any>
   ) => void
+  isGuest?: boolean
 }) {
   const copyToClipboardMock = vi.fn()
   vi.mocked(useClipboard).mockReturnValue(
@@ -92,7 +105,8 @@ function getWrapper({
       },
       {
         mocks,
-        provide: mocks
+        provide: mocks,
+        pluginOptions: { piniaOptions: { authState: { guestContextReady: isGuest } } }
       }
     )
   }

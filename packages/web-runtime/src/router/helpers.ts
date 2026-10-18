@@ -1,9 +1,15 @@
-import { RouteLocation, RouteParams, Router, RouteRecordNormalized } from 'vue-router'
+import qs from 'qs'
+import {
+  LocationQueryRaw,
+  RouteLocation,
+  RouteParams,
+  Router,
+  RouteRecordNormalized
+} from 'vue-router'
 import {
   AuthContext,
   authContextValues,
   contextQueryToFileContextProps,
-  locationGuestLink,
   queryItemAsString,
   WebRouteMeta
 } from '@opencloud-eu/web-pkg'
@@ -81,20 +87,26 @@ export const isPublicLinkContextRequired = (router: Router, to: RouteLocation): 
 }
 
 /**
- * Checks if the `to` route or the route it was reached from (i.e. the `contextRoute`) is a guest link route.
+ * Checks if the `to` route or the route it was reached from (i.e. the `contextRoute`) needs a guest session.
  *
  * @param router {Router}
  * @param to {Route}
  * @returns {boolean}
  */
-export const isGuestLinkContextRequired = (router: Router, to: RouteLocation): boolean => {
-  if (to.name === locationGuestLink.name) {
+export const isGuestContextRequired = (router: Router, to: RouteLocation): boolean => {
+  const meta = getRouteMeta(to)
+  if (meta.authContext === 'guest') {
     return true
   }
-  if (getRouteMeta(to).authContext !== 'hybrid') {
+  if (meta.authContext !== 'hybrid') {
     return false
   }
-  return getContextRoute(router, to)?.name === locationGuestLink.name
+
+  const contextRoute = getContextRoute(router, to)
+  return (
+    contextRoute &&
+    getRouteMeta({ meta: contextRoute.meta } as RouteLocation).authContext === 'guest'
+  )
 }
 
 /**
@@ -162,12 +174,13 @@ const getContextRoute = (router: Router, to: RouteLocation): RouteRecordNormaliz
  * Vue Router's resolve() silently drops query params embedded in the path string,
  * so they need to be passed via the query field explicitly.
  */
-export const parsePathQuery = (url: string): { path: string; query?: Record<string, string> } => {
+export const parsePathQuery = (url: string): { path: string; query?: LocationQueryRaw } => {
   if (!url.includes('?')) {
     return { path: url }
   }
   const [path, queryString] = url.split('?')
-  return { path, query: Object.fromEntries(new URLSearchParams(queryString)) }
+  // same options as the router's parseQuery, e.g. for nested contextRouteParams
+  return { path, query: qs.parse(queryString, { allowDots: true }) as LocationQueryRaw }
 }
 
 const getRouteMeta = (to: RouteLocation): WebRouteMeta => {

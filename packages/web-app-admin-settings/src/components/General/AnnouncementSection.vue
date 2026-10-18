@@ -34,7 +34,9 @@
           "
         />
       </span>
-      <div class="border border-role-outline-variant rounded-lg overflow-hidden bg-role-surface">
+      <div
+        class="border border-role-outline rounded-lg overflow-hidden bg-role-surface focus-within:outline-1 focus-within:outline-role-outline focus-within:-outline-offset-2"
+      >
         <text-editor-provider :editor="infoEditor">
           <text-editor-toolbar />
           <text-editor-content class="min-h-[32rem] max-h-[48rem] py-2 overflow-auto" />

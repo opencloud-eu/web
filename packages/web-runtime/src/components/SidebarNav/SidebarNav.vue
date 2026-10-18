@@ -1,6 +1,7 @@
 <template>
-  <div
+  <aside
     id="web-nav-sidebar"
+    :aria-label="$gettext('Sidebar')"
     class="bg-role-surface-container z-40 flex flex-col rounded-l-xl overflow-x-hidden overflow-y-auto transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)] max-w-[230px] min-w-[230px]"
   >
     <div class="flex flex-col grow">
@@ -60,7 +61,7 @@
         <version-check />
       </div>
     </div>
-  </div>
+  </aside>
 </template>
 
 <script setup lang="ts">

@@ -3,6 +3,7 @@ import {
   FileAction,
   FileActionOptions,
   isLocationSpacesActive,
+  useAuthStore,
   useClientService,
   useConfigStore,
   useLoadingService,
@@ -23,6 +24,7 @@ export const useFileActionsDisableSync = () => {
   const clientService = useClientService()
   const loadingService = useLoadingService()
   const configStore = useConfigStore()
+  const authStore = useAuthStore()
   const resourcesStore = useResourcesStore()
   const { updateResourceField } = resourcesStore
 
@@ -87,7 +89,7 @@ export const useFileActionsDisableSync = () => {
       handler: (args) => loadingService.addTask(() => handler(args)),
       label: () => $gettext('Disable sync'),
       isVisible: ({ resources }) => {
-        if (resources.length === 0) {
+        if (resources.length === 0 || authStore.isGuestContext) {
           return false
         }
 

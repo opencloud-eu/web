@@ -15,7 +15,7 @@
     <template v-if="hasCollaborators">
       <div id="files-collaborators-headline" class="flex items-center justify-between relative">
         <div class="flex">
-          <h4 class="font-semibold my-0" v-text="$gettext('Members')" />
+          <h3 class="font-semibold text-base my-0" v-text="$gettext('Members')" />
           <oc-button
             v-oc-tooltip="$gettext('Filter members')"
             class="open-filter-btn ml-2"
