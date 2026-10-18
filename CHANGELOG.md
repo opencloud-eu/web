@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: skip the conflict when closing the resource conflict modal [[#3742](https://github.com/opencloud-eu/web/pull/3742)]
 - fix: let space toggle a focused checkbox in lists [[#3752](https://github.com/opencloud-eu/web/pull/3752)]
 - fix: refresh files list and quota after cancelling uploads [[#3701](https://github.com/opencloud-eu/web/pull/3701)]
 - fix: follow the search term in the admin users route query [[#3753](https://github.com/opencloud-eu/web/pull/3753)]
