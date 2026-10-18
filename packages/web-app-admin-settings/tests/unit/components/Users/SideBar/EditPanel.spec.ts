@@ -3,7 +3,12 @@ import EditPanel from '../../../../../src/components/Users/SideBar/EditPanel.vue
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { Drive, Group, User } from '@opencloud-eu/web-client/graph/generated'
-import { CapabilityStore, CompareSaveDialog, QuotaSelect } from '@opencloud-eu/web-pkg'
+import {
+  type AuthServiceInterface,
+  CapabilityStore,
+  CompareSaveDialog,
+  QuotaSelect
+} from '@opencloud-eu/web-pkg'
 import { OcSelect, OcSwitch, OcTextInput } from '@opencloud-eu/design-system/components'
 import { flushPromises } from '@vue/test-utils'
 import GroupSelect from '../../../../../src/components/Users/GroupSelect.vue'
@@ -200,6 +205,22 @@ describe('EditPanel', () => {
     })
   })
 
+  describe('saving', () => {
+    it('does not renew the login of the current user when renaming another user', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { getUser, editUser } = mocks.$clientService.graphAuthenticated.users
+      getUser.mockRejectedValueOnce(new Error(''))
+      await setInput(wrapper, selectors.userNameInput, 'jana')
+      getUser.mockResolvedValue(mock<User>({ id: '2', onPremisesSamAccountName: 'jana' }))
+
+      getCompareSaveDialog(wrapper).vm.$emit('confirm')
+      await flushPromises()
+
+      expect(editUser).toHaveBeenCalledWith('2', { onPremisesSamAccountName: 'jana' })
+      expect(mocks.$authService.signinSilent).not.toHaveBeenCalled()
+    })
+  })
+
   describe('expanded user attributes', () => {
     it('are applied to the edit user once loaded', async () => {
       const user = reactive({ id: '2', displayName: 'jan' } as User)
@@ -249,7 +270,7 @@ function getWrapper({
   groups?: Group[]
   user?: User
 } = {}) {
-  const mocks = defaultComponentMocks()
+  const mocks = { ...defaultComponentMocks(), $authService: mock<AuthServiceInterface>() }
   const capabilities = {
     graph: { users: { read_only_attributes: readOnlyUserAttributes } }
   } satisfies Partial<CapabilityStore['capabilities']>
@@ -266,7 +287,8 @@ function getWrapper({
             mail: 'jan@opencloud.eu',
             passwordProfile: { password: '' },
             drive: { quota: {} } as Drive,
-            memberOf: selectedGroups
+            memberOf: selectedGroups,
+            appRoleAssignments: []
           } as User),
         roles: [{ id: '1', displayName: 'admin' }],
         groups,
