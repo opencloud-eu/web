@@ -1,7 +1,7 @@
 import { useFileActionsRename } from '../../../../../src/composables/actions/files'
 import { useMessages, useModals, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { IncomingShareResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
 
@@ -22,6 +22,22 @@ describe('rename', () => {
         },
         {
           resources: [{ canRename: () => true, locked: true }] as Resource[],
+          expectedStatus: false
+        },
+        {
+          resources: [
+            { canRename: () => true, remoteItemId: '1', path: '/', sharedWith: [] }
+          ] as IncomingShareResource[],
+          expectedStatus: true
+        },
+        {
+          resources: [
+            { canRename: () => true, remoteItemId: '1', path: '/', sharedWith: [], outgoing: true }
+          ] as IncomingShareResource[],
+          expectedStatus: false
+        },
+        {
+          resources: [{ canRename: () => true, remoteItemId: '1', path: '/' }] as Resource[],
           expectedStatus: false
         }
       ])('should be set correctly', (inputData) => {
@@ -126,6 +142,35 @@ describe('rename', () => {
             expect.objectContaining({ path: '/my.vault/report.txt' }),
             space,
             { path: '/my.vault/renamed.txt' }
+          )
+        }
+      })
+    })
+
+    it('renames the mount point of an incoming share inside the share jail', () => {
+      getWrapper({
+        setup: async ({ renameResource }, { space, clientService }) => {
+          const shareJailId = 'a0ca6a90-a365-4782-871e-d44447bbc668'
+          const resource = {
+            id: `${shareJailId}$${shareJailId}!share-1`,
+            remoteItemId: 'storage$space!item',
+            path: '/',
+            name: 'Mum',
+            sharedWith: [],
+            outgoing: false,
+            isShareRoot: () => true
+          } as IncomingShareResource
+          await renameResource(space, resource, 'Photos from Mum')
+
+          expect(clientService.webdav.moveFiles).toHaveBeenCalledWith(
+            space,
+            { fileId: resource.id },
+            space,
+            { parentFolderId: `${shareJailId}$${shareJailId}`, name: 'Photos from Mum' }
+          )
+          const { upsertResource } = useResourcesStore()
+          expect(upsertResource).toHaveBeenCalledWith(
+            expect.objectContaining({ id: resource.id, name: 'Photos from Mum', path: '/' })
           )
         }
       })

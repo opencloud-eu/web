@@ -1,12 +1,14 @@
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
+  extractExtensionFromFile,
   extractNameWithoutExtension,
   isIncomingShareResource,
   isProjectSpaceResource,
   isShareSpaceResource,
   isTrashResource,
   Resource,
+  SHARE_JAIL_ID,
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { dirname, join } from 'path'
@@ -51,6 +53,19 @@ export const useFileActionsRename = () => {
     let currentFolder = resourcesStore.currentFolder
 
     try {
+      if (isIncomingShareResource(resource) && resource.isShareRoot()) {
+        // Renaming an incoming share only changes the recipient's mount point inside the
+        // share jail. The shared resource itself and the owner's view stay untouched.
+        await (clientService.webdav as WebDAV).moveFiles(space, { fileId: resource.id }, space, {
+          parentFolderId: `${SHARE_JAIL_ID}$${SHARE_JAIL_ID}`,
+          name: newName
+        })
+        const shareResource = { ...resource, name: newName }
+        shareResource.extension = extractExtensionFromFile(shareResource)
+        upsertResource(shareResource)
+        return
+      }
+
       const newPath = join(dirname(resource.path), newName)
 
       await (clientService.webdav as WebDAV).moveFiles(space, resource, space, {
@@ -192,9 +207,11 @@ export const useFileActionsRename = () => {
           return false
         }
 
-        // FIXME: Remove this check as soon as renaming shares works as expected.
-        // Might be the case? Needs to be retested.
-        const rootShareIncluded = resources.some((r) => r.remoteItemId && r.path === '/')
+        // Incoming shares (e.g. in "Shared with me") can be renamed by the recipient,
+        // which only changes their mount point. Other share roots can't be renamed.
+        const rootShareIncluded = resources.some(
+          (r) => r.remoteItemId && r.path === '/' && !isIncomingShareResource(r)
+        )
         if (rootShareIncluded) {
           return false
         }
