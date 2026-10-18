@@ -6,9 +6,10 @@ import { useSideBarPanels } from '../../../../src/composables/extensions/useFile
 describe('useSideBarPanels', () => {
   describe('activities panel', () => {
     it.each([
-      { isGuest: false, isVisible: true },
-      { isGuest: true, isVisible: false }
-    ])('is visible for users only (%o)', ({ isGuest, isVisible }) => {
+      { isGuest: false, driveType: 'project', isVisible: true },
+      { isGuest: true, driveType: 'project', isVisible: false },
+      { isGuest: false, driveType: 'public', isVisible: false }
+    ])('is visible for users only (%o)', ({ isGuest, driveType, isVisible }) => {
       getWrapper({
         isGuest,
         setup: (panels) => {
@@ -16,7 +17,7 @@ describe('useSideBarPanels', () => {
           const visible = panel.isVisible({
             parent: mock<Resource>(),
             items: [mock<Resource>()],
-            root: mock<SpaceResource>()
+            root: mock<SpaceResource>({ driveType })
           })
           expect(visible).toBe(isVisible)
         }
