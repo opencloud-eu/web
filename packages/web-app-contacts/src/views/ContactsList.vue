@@ -80,7 +80,7 @@
               >
                 <ContextActionMenu
                   :menu-sections="getContactMenuSections(contact)"
-                  :action-options="actionOptions"
+                  :action-options="{ resources: [contact] }"
                 />
               </oc-drop>
             </div>
@@ -92,15 +92,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, nextTick } from 'vue'
+import { computed, watch, nextTick, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import {
   AppLoadingSpinner,
   ContextActionMenu,
   NoContentMessage,
-  MenuSection,
-  ActionOptions
+  MenuSection
 } from '@opencloud-eu/web-pkg'
 import { Contact } from '../types'
 import { useLoadContacts } from '../composables/useLoadContacts'
@@ -117,12 +116,10 @@ const { $gettext } = useGettext()
 const contactsStore = useContactsStore()
 const addressBooksStore = useAddressBooksStore()
 const { runWithDiscardConfirmation } = useContactEditor()
-const { getDeleteAction } = useContactActionsDelete()
+const { actions: deleteActions } = useContactActionsDelete()
 const { contacts, currentContact } = storeToRefs(contactsStore)
 const { currentAddressBook } = storeToRefs(addressBooksStore)
 const { setCurrentContact } = contactsStore
-
-const actionOptions = {} as ActionOptions
 
 const sortedContacts = computed(() => {
   return [...contacts.value].sort((a, b) => {
@@ -159,7 +156,7 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
     },
     {
       name: 'secondary',
-      items: [getDeleteAction(contact)]
+      items: unref(deleteActions)
     }
   ]
 }

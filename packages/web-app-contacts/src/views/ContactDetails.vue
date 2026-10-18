@@ -16,6 +16,7 @@
         <oc-icon name="arrow-left" fill-type="line" />
       </oc-button>
       <oc-button
+        v-oc-tooltip="$gettext('Delete contact')"
         class="contact-details-delete ml-auto h-10 w-10 shrink-0 p-0"
         appearance="raw"
         :aria-label="$gettext('Delete contact')"
@@ -41,7 +42,7 @@ import ContactDetailsContent from '../components/ContactDetailsContent.vue'
 
 const contactsStore = useContactsStore()
 const { runWithDiscardConfirmation } = useContactEditor()
-const { getDeleteAction } = useContactActionsDelete()
+const { actions: deleteActions } = useContactActionsDelete()
 const { currentContact } = storeToRefs(contactsStore)
 const { setCurrentContact } = contactsStore
 
@@ -52,6 +53,7 @@ const onNavigateBack = () => {
 }
 
 const onDelete = () => {
-  getDeleteAction(unref(currentContact)).handler()
+  const [deleteAction] = unref(deleteActions)
+  deleteAction.handler({ resources: [unref(currentContact)] })
 }
 </script>
