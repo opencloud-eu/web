@@ -25,7 +25,6 @@ export const AddressBooksListResponseSchema = z.object({
 
 export const AddressBooksArrayResponseSchema = z.array(AddressBookSchema)
 
-export const AddressBook = AddressBookSchema
 export type AddressBook = z.infer<typeof AddressBookSchema>
 export type AddressBookRights = z.infer<typeof AddressBookRightsSchema>
 export type AddressBooksListResponse = z.infer<typeof AddressBooksListResponseSchema>
@@ -188,7 +187,6 @@ export const ContactListResponseSchema = z.object({
 
 export const ContactsArrayResponseSchema = z.array(ContactSchema)
 
-export const Contact = ContactSchema
 export type Contact = z.infer<typeof ContactSchema>
 export type ContactName = z.infer<typeof NameSchema>
 export type ContactEmail = z.infer<typeof EmailSchema>

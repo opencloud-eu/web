@@ -1,6 +1,6 @@
 import { FederatedConnection, FederatedUser } from '@opencloud-eu/web-pkg'
 
-export const getConnectionId = (user: FederatedUser) => {
+const getConnectionId = (user: FederatedUser) => {
   return `${user.user_id}@${user.idp}`
 }
 

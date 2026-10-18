@@ -8,8 +8,8 @@ type commonTypes = 'files-common-favorites' | 'files-common-search'
 export const createLocationCommon = (name: commonTypes, location = {}): RouteLocationNamedRaw =>
   createLocation(name, location)
 
-export const locationFavorites = createLocationCommon('files-common-favorites')
-export const locationSearch = createLocationCommon('files-common-search')
+const locationFavorites = createLocationCommon('files-common-favorites')
+const locationSearch = createLocationCommon('files-common-search')
 
 export const isLocationCommonActive = isLocationActiveDirector<commonTypes>(
   locationFavorites,
