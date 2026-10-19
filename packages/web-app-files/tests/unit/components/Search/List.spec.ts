@@ -38,6 +38,7 @@ const AppBarStub = defineComponent({
 
 const selectors = {
   noContentMessageStub: 'no-content-message-stub',
+  noContentMessage: '.no-content-message',
   resourceTableStub: 'resource-table-stub',
   tagFilter: '.files-search-filter-tags',
   lastModifiedFilter: '.files-search-filter-last-modified',
@@ -49,6 +50,19 @@ describe('List component', () => {
   it('should render no-content-message if no resources found', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find(selectors.noContentMessageStub).exists()).toBeTruthy()
+  })
+  it('shows "No results found" if only a tag filter is active', async () => {
+    const $router = createRouter({
+      routes: [{ name: 'files-common-search', path: '/files-common-search', redirect: null }],
+      history: createMemoryHistory()
+    })
+    const { wrapper } = getWrapper({
+      mocks: { $router },
+      stubs: { NoContentMessage: false }
+    })
+    await $router.push({ name: 'files-common-search', query: { q_tags: 'doesnotexist' } })
+    await flushPromises()
+    expect(wrapper.find(selectors.noContentMessage).text()).toContain('No results found')
   })
   it('should render resource table if resources found', () => {
     const { wrapper } = getWrapper({ resources: [mock<Resource>()] })
