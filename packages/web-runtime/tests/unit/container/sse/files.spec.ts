@@ -30,6 +30,118 @@ import { Language } from 'vue3-gettext'
 import PQueue from 'p-queue'
 
 describe('file events', () => {
+  describe('in an incoming share', () => {
+    // share recipients don't have the space of the shared resource, only the share space
+    const getShareMocks = (resources: Resource[] = []) => {
+      const shareSpace = mockDeep<SpaceResource>({ id: 'shareJail!share1', driveType: 'share' })
+      const mocks = getMocks({
+        currentFolder: mockDeep<Resource>({
+          id: 'shareJail!share1',
+          fileId: 'space1!sharedFolder',
+          storageId: 'space1',
+          path: '/',
+          isFolder: true
+        }),
+        resources,
+        spaces: [shareSpace],
+        currentSpace: shareSpace
+      })
+      return { ...mocks, shareSpace }
+    }
+
+    // the resource is looked up by id first, then loaded via its path in the share
+    const mockGetFileInfo = (
+      mocks: ReturnType<typeof getShareMocks>,
+      { id, name, parentFolderId }: { id: string; name: string; parentFolderId: string }
+    ) => {
+      mocks.clientService.webdav.getFileInfo.mockImplementation((space) =>
+        Promise.resolve(
+          space === mocks.shareSpace
+            ? mock<Resource>({ id, name, parentFolderId, path: `/${name}` })
+            : mock<Resource>({ id, name, parentFolderId })
+        )
+      )
+    }
+
+    it('adds a folder created in the share root', async () => {
+      const mocks = getShareMocks()
+      mockGetFileInfo(mocks, {
+        id: 'space1!newFolder',
+        name: 'newFolder',
+        parentFolderId: 'space1!sharedFolder'
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: 'space1!newFolder',
+        spaceid: 'space1',
+        parentitemid: 'space1!sharedFolder'
+      })
+      await onSSEFolderCreatedEvent({ sseData, ...mocks })
+      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenLastCalledWith(mocks.shareSpace, {
+        path: '/newFolder'
+      })
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalled()
+    })
+    it('updates a renamed resource', async () => {
+      const resourceToRename = mock<Resource>({
+        id: 'space1!folder1',
+        name: 'folder1',
+        path: '/folder1',
+        storageId: 'space1',
+        parentFolderId: 'space1!sharedFolder'
+      })
+      const mocks = getShareMocks([resourceToRename])
+      mockGetFileInfo(mocks, {
+        id: 'space1!folder1',
+        name: 'renamed',
+        parentFolderId: 'space1!sharedFolder'
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: resourceToRename.id,
+        spaceid: 'space1',
+        parentitemid: resourceToRename.parentFolderId
+      })
+      await onSSEItemRenamedEvent({ sseData, ...mocks })
+      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenLastCalledWith(mocks.shareSpace, {
+        path: '/renamed'
+      })
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'renamed' })
+      )
+    })
+    it('removes a resource that was moved out of the current folder', async () => {
+      const resourceToMove = mock<Resource>({
+        id: 'space1!folder1',
+        storageId: 'space1',
+        parentFolderId: 'space1!sharedFolder'
+      })
+      const mocks = getShareMocks([resourceToMove])
+      mockGetFileInfo(mocks, {
+        id: 'space1!folder1',
+        name: 'folder1',
+        parentFolderId: 'space1!otherFolder'
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: resourceToMove.id,
+        spaceid: 'space1',
+        parentitemid: 'space1!otherFolder'
+      })
+      await onSSEItemMovedEvent({ sseData, ...mocks })
+      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalledTimes(1)
+      expect(mocks.resourcesStore.removeResources).toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+    })
+    it('ignores events of other spaces', async () => {
+      const mocks = getShareMocks()
+      const sseData = mock<EventSchemaType>({
+        itemid: 'space2!newFolder',
+        spaceid: 'space2',
+        parentitemid: 'space2!folder'
+      })
+      await onSSEFolderCreatedEvent({ sseData, ...mocks })
+      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+    })
+  })
   describe('onSSEItemRenamedEvent', () => {
     it('calls "upsertResource" when resource has been renamed', async () => {
       const resourceToRename = mock<Resource>({
@@ -534,11 +646,13 @@ const getMocks = ({
   }),
   resources = [],
   spaces = [mockDeep<SpaceResource>({ id: 'space1' })],
+  currentSpace = undefined,
   currentRouteName = 'files-spaces-generic'
 }: {
   currentFolder?: Resource
   resources?: Resource[]
   spaces?: SpaceResource[]
+  currentSpace?: SpaceResource
   currentRouteName?: string
 } = {}) => {
   createTestingPinia()
@@ -547,6 +661,7 @@ const getMocks = ({
   resourcesStore.resources = resources
   const spacesStore = useSpacesStore()
   spacesStore.spaces = spaces
+  spacesStore.currentSpace = currentSpace
   const messageStore = useMessages()
   const userStore = useUserStore()
   userStore.user = mockDeep<User>({ id: '1' })

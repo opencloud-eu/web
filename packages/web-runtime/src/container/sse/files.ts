@@ -4,7 +4,69 @@ import {
   isItemInCurrentFolder,
   isLocationCommonActive
 } from '@opencloud-eu/web-pkg'
+import {
+  buildSpace,
+  isShareSpaceResource,
+  Resource,
+  SpaceResource,
+  urlJoin
+} from '@opencloud-eu/web-client'
+import { DavProperty } from '@opencloud-eu/web-client/webdav'
+import { dirname } from 'path'
 import { SSEEventOptions } from './types'
+
+/**
+ * Returns the space with the given id. Share recipients don't know the space a shared
+ * resource lives in, so if it is the space of the current folder, the current space
+ * (e.g. the share) is used to access the resource instead.
+ */
+const getEventSpace = (
+  { spacesStore, resourcesStore }: Pick<SSEEventOptions, 'spacesStore' | 'resourcesStore'>,
+  spaceId: string
+) => {
+  const space = spacesStore.spaces.find((s) => s.id === spaceId)
+  if (space) {
+    return space
+  }
+
+  if (spaceId && resourcesStore.currentFolder?.storageId === spaceId) {
+    return spacesStore.currentSpace
+  }
+}
+
+/**
+ * Loads the resource with the given id. Within shares the path of a file id can't be resolved
+ * relative to the share, so the resource is looked up by its id first and then loaded via its
+ * path in the current folder. Resources outside the current folder are returned as looked up
+ * by their id, without a path.
+ */
+const loadEventResource = async (
+  { clientService, resourcesStore }: Pick<SSEEventOptions, 'clientService' | 'resourcesStore'>,
+  space: SpaceResource,
+  fileId: string
+): Promise<Resource> => {
+  if (!isShareSpaceResource(space)) {
+    return clientService.webdav.getFileInfo(space, { path: '', fileId })
+  }
+
+  const resource = await clientService.webdav.getFileInfo(
+    buildSpace({ id: fileId, name: '' }),
+    { fileId },
+    { davProperties: [DavProperty.FileId, DavProperty.FileParent, DavProperty.Name] }
+  )
+
+  const currentFolder = resourcesStore.currentFolder
+  let parentPath: string
+  if (isItemInCurrentFolder({ resourcesStore, parentFolderId: resource.parentFolderId })) {
+    parentPath = currentFolder.path
+  } else if (currentFolder?.id === resource.id) {
+    parentPath = dirname(currentFolder.path)
+  } else {
+    return resource
+  }
+
+  return clientService.webdav.getFileInfo(space, { path: urlJoin(parentPath, resource.name) })
+}
 
 export const onSSEItemRenamedEvent = async ({
   sseData,
@@ -27,16 +89,17 @@ export const onSSEItemRenamedEvent = async ({
   if (!resource) {
     return
   }
-  const space = spacesStore.spaces.find((s) => s.id === resource.storageId)
+  const space = getEventSpace({ spacesStore, resourcesStore }, resource.storageId)
 
   if (!space) {
     return
   }
 
-  const updatedResource = await clientService.webdav.getFileInfo(space, {
-    path: '',
-    fileId: sseData.itemid
-  })
+  const updatedResource = await loadEventResource(
+    { clientService, resourcesStore },
+    space,
+    sseData.itemid
+  )
 
   if (resourceIsCurrentFolder) {
     resourcesStore.setCurrentFolder(updatedResource)
@@ -58,16 +121,17 @@ export const onSSEFileLockingEvent = async ({
   clientService
 }: SSEEventOptions) => {
   const resource = resourcesStore.resources.find((f) => f.id === sseData.itemid)
-  const space = spacesStore.spaces.find((s) => s.id === resource?.storageId)
+  const space = getEventSpace({ spacesStore, resourcesStore }, resource?.storageId)
 
   if (!resource || !space) {
     return
   }
 
-  const updatedResource = await clientService.webdav.getFileInfo(space, {
-    path: '',
-    fileId: sseData.itemid
-  })
+  const updatedResource = await loadEventResource(
+    { clientService, resourcesStore },
+    space,
+    sseData.itemid
+  )
 
   resourcesStore.upsertResource(updatedResource)
 }
@@ -84,7 +148,7 @@ export const onSSEProcessingFinishedEvent = async ({
     return false
   }
   const resource = resourcesStore.resources.find((f) => f.id === sseData.itemid)
-  const space = spacesStore.spaces.find((s) => s.id === sseData.spaceid)
+  const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
   if (!space) {
     return
   }
@@ -102,10 +166,11 @@ export const onSSEProcessingFinishedEvent = async ({
     }
 
     return resourceQueue.add(async () => {
-      const { resource } = await clientService.webdav.listFiles(space, {
-        path: '',
-        fileId: sseData.itemid
-      })
+      const resource = await loadEventResource(
+        { clientService, resourcesStore },
+        space,
+        sseData.itemid
+      )
 
       // check again for the current folder in case the user has navigated away in the meantime
       if (isItemInCurrentFolder({ resourcesStore, parentFolderId: sseData.parentitemid })) {
@@ -125,10 +190,11 @@ export const onSSEProcessingFinishedEvent = async ({
     })
   }
 
-  const updatedResource = await clientService.webdav.getFileInfo(space, {
-    path: '',
-    fileId: sseData.itemid
-  })
+  const updatedResource = await loadEventResource(
+    { clientService, resourcesStore },
+    space,
+    sseData.itemid
+  )
   resourcesStore.upsertResource(updatedResource)
 
   const preview = await previewService.loadPreview({
@@ -190,15 +256,12 @@ export const onSSEItemRestoredEvent = async ({
     return
   }
 
-  const space = spacesStore.spaces.find((space) => space.id === sseData.spaceid)
+  const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
   if (!space) {
     return
   }
 
-  const resource = await clientService.webdav.getFileInfo(space, {
-    path: '',
-    fileId: sseData.itemid
-  })
+  const resource = await loadEventResource({ clientService, resourcesStore }, space, sseData.itemid)
 
   if (!resource) {
     return
@@ -222,21 +285,18 @@ export const onSSEItemMovedEvent = async ({
     return
   }
 
-  const space = spacesStore.spaces.find((space) => space.id === sseData.spaceid)
+  const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
   if (!space) {
     return
   }
 
-  const resource = await clientService.webdav.getFileInfo(space, {
-    path: '',
-    fileId: sseData.itemid
-  })
+  const resource = await loadEventResource({ clientService, resourcesStore }, space, sseData.itemid)
 
   if (!resource) {
     return
   }
 
-  if (resource.parentFolderId !== resourcesStore.currentFolder?.id) {
+  if (!isItemInCurrentFolder({ resourcesStore, parentFolderId: resource.parentFolderId })) {
     return resourcesStore.removeResources([resource])
   }
 
@@ -259,15 +319,12 @@ export const onSSEFileTouchedEvent = async ({
     return
   }
 
-  const space = spacesStore.spaces.find((space) => space.id === sseData.spaceid)
+  const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
   if (!space) {
     return
   }
 
-  const resource = await clientService.webdav.getFileInfo(space, {
-    path: '',
-    fileId: sseData.itemid
-  })
+  const resource = await loadEventResource({ clientService, resourcesStore }, space, sseData.itemid)
 
   if (!resource) {
     return
@@ -291,15 +348,12 @@ export const onSSEFolderCreatedEvent = async ({
     return
   }
 
-  const space = spacesStore.spaces.find((space) => space.id === sseData.spaceid)
+  const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
   if (!space) {
     return
   }
 
-  const resource = await clientService.webdav.getFileInfo(space, {
-    path: '',
-    fileId: sseData.itemid
-  })
+  const resource = await loadEventResource({ clientService, resourcesStore }, space, sseData.itemid)
 
   if (!resource) {
     return
