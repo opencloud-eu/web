@@ -11,7 +11,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
 			};
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-full"></svg></span></div>
-  <div class="flex-1">
+  <div class="flex-1 min-w-0">
     <div class="flex flex-wrap items-center justify-between gap-x-4 max-w-full">
       <div class="flex items-center min-w-0 max-w-full">
         <h2 class="break-words min-w-0 my-1">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
@@ -62,7 +62,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
 			};
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-full"></svg></span></div>
-  <div class="flex-1">
+  <div class="flex-1 min-w-0">
     <div class="flex flex-wrap items-center justify-between gap-x-4 max-w-full">
       <div class="flex items-center min-w-0 max-w-full">
         <h2 class="break-words min-w-0 my-1">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
@@ -107,7 +107,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
 exports[`SpaceHeader > space image > should show the set image 1`] = `
 "<div class="space-header py-4 flex">
   <div class="space-header-image mr-6 aspect-[16/9] w-[180px] max-h-[100px] shrink-0"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image" decoding="async"></div>
-  <div class="flex-1">
+  <div class="flex-1 min-w-0">
     <div class="flex flex-wrap items-center justify-between gap-x-4 max-w-full">
       <div class="flex items-center min-w-0 max-w-full">
         <h2 class="break-words min-w-0 my-1">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
