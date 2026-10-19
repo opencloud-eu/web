@@ -10,6 +10,16 @@
       class="w-auto md:w-lg rounded-lg"
     >
       <p data-testid="error-message" class="text-xl">{{ errorMessage }}</p>
+      <oc-button
+        v-if="showLoginAction"
+        appearance="filled"
+        size="large"
+        class="w-full p-2"
+        data-testid="login-button"
+        @click="login"
+      >
+        <span v-text="$gettext('Log in')" />
+      </oc-button>
     </oc-card>
   </main>
 </template>
@@ -26,12 +36,14 @@ import {
   useSpacesStore,
   useGetResourceContext,
   useLinkTargetRoute,
+  useAuthStore,
   AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
 import { unref, computed, onMounted } from 'vue'
 import { useTask } from 'vue-concurrency'
 import {
   call,
+  HttpError,
   isShareSpaceResource,
   Resource,
   SHARE_JAIL_ID,
@@ -39,12 +51,15 @@ import {
 } from '@opencloud-eu/web-client'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
+import { authService } from '../services/auth'
+import { isGuestSessionInvalidError } from '../services/auth/guestSessionManager'
 
 const router = useRouter()
 const id = useRouteParam('fileId')
 const { $gettext } = useGettext()
 const clientService = useClientService()
 const spacesStore = useSpacesStore()
+const authStore = useAuthStore()
 
 const { getLinkTargetRoute } = useLinkTargetRoute()
 const { getResourceContext } = useGetResourceContext()
@@ -62,7 +77,9 @@ onMounted(() => {
 })
 
 const resolvePrivateLinkTask = useTask(function* (signal, id) {
+  // share jail routes would end the guest session
   if (
+    !authStore.isGuestContext &&
     [
       `${SHARE_JAIL_ID}$${SHARE_JAIL_ID}!${SHARE_JAIL_ID}`,
       `${SHARE_JAIL_ID}$${SHARE_JAIL_ID}`
@@ -82,9 +99,32 @@ const resolvePrivateLinkTask = useTask(function* (signal, id) {
     router.push(targetRoute)
   } catch (e) {
     console.error('Error resolving private link', e)
+    if (authStore.isGuestContext && isGuestSessionInvalidError(e)) {
+      return authService.handleAuthError(unref(router.currentRoute), e)
+    }
     throw e
   }
 })
+
+function isAccessDeniedError(error: unknown) {
+  return error instanceof HttpError && [403, 404].includes(error.statusCode)
+}
+
+// the guest has no access, but a user might
+const showLoginAction = computed(() => {
+  return (
+    authStore.isGuestContext &&
+    resolvePrivateLinkTask.isError &&
+    isAccessDeniedError(resolvePrivateLinkTask.last.error)
+  )
+})
+
+function login() {
+  return router.push({
+    path: '/login',
+    query: { redirectUrl: unref(router.currentRoute).fullPath }
+  })
+}
 
 const getTargetRoute = async ({
   resource,
@@ -96,7 +136,8 @@ const getTargetRoute = async ({
   path: string
 }): Promise<RouteLocationNamedRaw> => {
   let isHiddenShare = false
-  if (isShareSpaceResource(space) && path === '/') {
+  // a guest lists its share in the regular file list, which has no visibility filter
+  if (isShareSpaceResource(space) && path === '/' && !authStore.isGuestContext) {
     // if the resource is a share, we need to check if it is hidden to add the correct
     // filter query param to the url so the filter gets populated correctly in the file list.
     try {

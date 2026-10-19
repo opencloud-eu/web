@@ -7,13 +7,14 @@ import {
 import { computed, unref } from 'vue'
 import { useClientService } from '../clientService'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { useSpacesStore } from '../piniaStores'
+import { useAuthStore, useSpacesStore } from '../piniaStores'
 import { DavProperty, DavPropertyValue } from '@opencloud-eu/web-client/webdav'
 import { useTask } from 'vue-concurrency'
 
 export const useGetResourceContext = () => {
   const clientService = useClientService()
   const spacesStore = useSpacesStore()
+  const authStore = useAuthStore()
 
   const spaces = computed(() => spacesStore.spaces)
 
@@ -38,6 +39,33 @@ export const useGetResourceContext = () => {
   const resourceContextTask = useTask(function* (signal, id) {
     let path: string
     let resource: Resource
+
+    if (authStore.isGuestContext) {
+      // a guest has no mount points, so walk up to the root of its share instead
+      const space = spacesStore.getSpace(authStore.guestSpaceId)
+      if (!space) {
+        throw new Error('The guest share space is not loaded')
+      }
+      resource = yield loadFileInfoById(id, { signal })
+      const sharePathSegments: string[] = []
+      const visitedIds = new Set<string>()
+      let tmpResource = resource
+
+      while (tmpResource.id !== space.id) {
+        if (!tmpResource.parentFolderId || visitedIds.has(tmpResource.id)) {
+          throw new Error('The resource is not part of the guest share')
+        }
+        visitedIds.add(tmpResource.id)
+        sharePathSegments.unshift(tmpResource.name)
+        tmpResource = yield loadFileInfoById(tmpResource.parentFolderId, {
+          signal,
+          davProperties: [DavProperty.FileId, DavProperty.FileParent, DavProperty.Name]
+        })
+      }
+
+      return { space, resource, path: urlJoin(...sharePathSegments) }
+    }
+
     let space = getMatchingSpaceByFileId(id)
 
     if (space) {

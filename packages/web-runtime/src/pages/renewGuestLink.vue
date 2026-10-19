@@ -60,7 +60,7 @@ import {
 } from '../services/auth/guestSessionManager'
 import PlainCard from '../components/PlainCard.vue'
 import { useGuestLinkTargetRoute } from '../composables/guestLink'
-import { isGuestContextRequired, parsePathQuery } from '../router/helpers'
+import { isGuestContextAllowed, isGuestContextRequired, parsePathQuery } from '../router/helpers'
 
 const router = useRouter()
 const { $gettext } = useGettext()
@@ -83,8 +83,9 @@ async function openSession(session: GuestSession) {
   const url = queryItemAsString(unref(redirectUrl))
   if (url) {
     const location = parsePathQuery(url)
+    const route = router.resolve(location)
     // other routes would end the guest session
-    if (isGuestContextRequired(router, router.resolve(location))) {
+    if (isGuestContextRequired(router, route) || isGuestContextAllowed(route)) {
       return router.replace(location)
     }
   }
