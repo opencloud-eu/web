@@ -311,6 +311,7 @@ function getFakeResourceForIcon(item: SearchMediaTypeFilterOption) {
 
 const hasFilter = computed(() => {
   return (
+    !!unref(tagParam) ||
     !!unref(lastModifiedParam) ||
     !!unref(mediaTypeParam) ||
     !!unref(titleOnlyParam) ||
