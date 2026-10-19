@@ -5,18 +5,32 @@
       <span class="text-base">({{ items.length }})</span>
     </h2>
 
-    <no-content-message
-      v-if="!items.length"
-      class="files-empty"
-      img-src="images/illustrations/shared-with-me.svg"
-    >
-      <template #message>
-        <span v-text="$gettext('Nothing shared, yet')" />
-      </template>
-      <template #callToAction>
-        <span v-text="$gettext('All received shares will show up here')" />
-      </template>
-    </no-content-message>
+    <template v-if="!items.length">
+      <no-content-message
+        v-if="!hasShares"
+        class="files-empty"
+        img-src="images/illustrations/shared-with-me.svg"
+      >
+        <template #message>
+          <span v-text="$gettext('Nothing shared, yet')" />
+        </template>
+        <template #callToAction>
+          <span v-text="$gettext('All received shares will show up here')" />
+        </template>
+      </no-content-message>
+      <no-content-message
+        v-else
+        class="files-no-results"
+        img-src="images/illustrations/shared-with-me.svg"
+      >
+        <template #message>
+          <span v-text="$gettext('No shares found')" />
+        </template>
+        <template #callToAction>
+          <span v-text="$gettext('Try refining the search term or filters to get results')" />
+        </template>
+      </no-content-message>
+    </template>
     <component
       :is="folderView.component"
       v-else
@@ -102,6 +116,7 @@ import { useGettext } from 'vue3-gettext'
 const {
   title,
   items,
+  hasShares = false,
   sortBy = undefined,
   sortDir = undefined,
   sortHandler,
@@ -119,6 +134,11 @@ const {
 } = defineProps<{
   title: string
   items: IncomingShareResource[]
+  /**
+   * Whether there are any shares before filtering. If so, an empty `items` list
+   * means that only the search term or the filters match nothing.
+   */
+  hasShares?: boolean
   sortBy?: string
   sortDir?: SortDir
   sortHandler: ({ sortBy, sortDir }: { sortBy: string; sortDir: SortDir }) => void

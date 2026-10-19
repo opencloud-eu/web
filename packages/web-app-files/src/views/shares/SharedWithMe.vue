@@ -79,6 +79,7 @@
           class="h-full"
           :file-list-header-y="fileListHeaderY"
           :items="paginatedResources"
+          :has-shares="storeItems.length > 0"
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :sort-handler="handleSort"

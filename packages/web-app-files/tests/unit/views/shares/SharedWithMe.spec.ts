@@ -87,6 +87,28 @@ describe('SharedWithMe view', () => {
           .props('items')
         expect(items.map(({ name }) => name)).toEqual(['share-30'])
       })
+      it('tells the section that shares exist when there are no hidden shares', async () => {
+        const { wrapper } = getMountedWrapper({
+          files: [
+            mock<IncomingShareResource>({ hidden: false, shareTypes: [ShareTypes.user.value] })
+          ]
+        })
+        ;(wrapper.vm as any).setAreHiddenFilesShown(mock<InlineFilterOption>({ name: 'hidden' }))
+        await wrapper.vm.$nextTick()
+
+        const section = wrapper.findComponent<typeof SharedWithMeSection>(
+          'shared-with-me-section-stub'
+        )
+        expect(section.props('items')).toEqual([])
+        expect(section.props('hasShares')).toBe(true)
+      })
+      it('tells the section that no shares exist when there are none', () => {
+        const { wrapper } = getMountedWrapper()
+        const section = wrapper.findComponent<typeof SharedWithMeSection>(
+          'shared-with-me-section-stub'
+        )
+        expect(section.props('hasShares')).toBe(false)
+      })
     })
     describe('share type', () => {
       it('shows all available share types as filter option', () => {
@@ -159,6 +181,25 @@ describe('SharedWithMe view', () => {
         )
         expect(sharedWithMeSec.props('items').find(({ name }) => name === 'share1')).toBeDefined()
         expect(sharedWithMeSec.props('items').find(({ name }) => name === 'share2')).toBeUndefined()
+      })
+      it('tells the section that shares exist when the search matches none', async () => {
+        const { wrapper } = getMountedWrapper({
+          files: [
+            mock<IncomingShareResource>({
+              name: 'share1',
+              hidden: false,
+              shareTypes: [ShareTypes.user.value]
+            })
+          ]
+        })
+        ;(wrapper.vm as any).filterTerm = 'nomatch'
+        await wrapper.vm.$nextTick()
+
+        const section = wrapper.findComponent<typeof SharedWithMeSection>(
+          'shared-with-me-section-stub'
+        )
+        expect(section.props('items')).toEqual([])
+        expect(section.props('hasShares')).toBe(true)
       })
       it('finds shares beyond the current page', async () => {
         const files = Array.from({ length: 30 }, (_, i) =>

@@ -45,18 +45,32 @@
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <no-content-message
-          v-if="isEmpty"
-          id="files-shared-with-others-empty"
-          img-src="images/illustrations/shared-with-others.svg"
-        >
-          <template #message>
-            <span v-text="$gettext('Nothing shared, yet')" />
-          </template>
-          <template #callToAction>
-            <span v-text="$gettext('Anything you shared will show up here')" />
-          </template>
-        </no-content-message>
+        <template v-if="isEmpty">
+          <no-content-message
+            v-if="!storeItems.length"
+            id="files-shared-with-others-empty"
+            img-src="images/illustrations/shared-with-others.svg"
+          >
+            <template #message>
+              <span v-text="$gettext('Nothing shared, yet')" />
+            </template>
+            <template #callToAction>
+              <span v-text="$gettext('Anything you shared will show up here')" />
+            </template>
+          </no-content-message>
+          <no-content-message
+            v-else
+            id="files-shared-with-others-no-results"
+            img-src="images/illustrations/shared-with-others.svg"
+          >
+            <template #message>
+              <span v-text="$gettext('No shares found')" />
+            </template>
+            <template #callToAction>
+              <span v-text="$gettext('Try refining the search term or filters to get results')" />
+            </template>
+          </no-content-message>
+        </template>
         <component
           :is="folderView.component"
           v-else
