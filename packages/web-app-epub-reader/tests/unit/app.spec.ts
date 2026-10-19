@@ -14,6 +14,21 @@ import { ref } from 'vue'
 let areGlobalLocationsGenerated = false
 let deferGlobalLocationsGeneration = false
 let resolveGlobalLocationsGenerationPromise: (() => void) | null = null
+let deferInitialDisplay = false
+let resolveInitialDisplayPromise: (() => void) | null = null
+
+class ResizeObserverMock {
+  static instances: ResizeObserverMock[] = []
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+  constructor(public callback: ResizeObserverCallback) {
+    ResizeObserverMock.instances.push(this)
+  }
+  triggerResize() {
+    this.callback([], this as unknown as ResizeObserver)
+  }
+}
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -41,6 +56,7 @@ vi.mock('epubjs', () => ({
     return {
       ready: Promise.resolve(),
       load: vi.fn(),
+      destroy: vi.fn(),
       locations: {
         generate: vi.fn(() => {
           if (!deferGlobalLocationsGeneration) {
@@ -91,7 +107,17 @@ vi.mock('epubjs', () => ({
           highlight: vi.fn(),
           remove: vi.fn()
         },
-        display: vi.fn(),
+        display: vi.fn(() => {
+          if (!deferInitialDisplay) {
+            return undefined
+          }
+          deferInitialDisplay = false
+          return new Promise<void>((resolve) => {
+            resolveInitialDisplayPromise = resolve
+          })
+        }),
+        resize: vi.fn(),
+        destroy: vi.fn(),
         prev: vi.fn(),
         next: vi.fn()
       }))
@@ -110,6 +136,10 @@ const selectors = {
   progressSlider: '.epub-reader-progress-slider'
 }
 describe('Epub reader app', () => {
+  beforeEach(() => {
+    ResizeObserverMock.instances = []
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock)
+  })
   it('renders correctly', async () => {
     const { wrapper } = getWrapper()
     await nextTicks(2)
@@ -533,6 +563,97 @@ describe('Epub reader app', () => {
       })
     })
   })
+  describe('book container resize', () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('relayouts the book when the book container is resized', async () => {
+      vi.useFakeTimers()
+      const { wrapper } = getWrapper()
+      await nextTicks(6)
+
+      expect(ResizeObserverMock.instances).toHaveLength(1)
+      const [resizeObserver] = ResizeObserverMock.instances
+      expect(resizeObserver.observe).toHaveBeenCalledWith(wrapper.find('#reader').element)
+
+      const rendition = (wrapper.vm as any).rendition
+      // Has to happen synchronously, epub.js adopts the new size on its next location report.
+      resizeObserver.triggerResize()
+      expect(rendition.resize).toHaveBeenCalledTimes(1)
+      expect(rendition.resize).toHaveBeenCalledWith(undefined, undefined)
+
+      resizeObserver.triggerResize()
+      expect(rendition.resize).toHaveBeenCalledTimes(1)
+
+      vi.runAllTimers()
+      expect(rendition.resize).toHaveBeenCalledTimes(2)
+    })
+
+    it('does not observe the book container before the book is displayed', async () => {
+      const { wrapper } = getWrapper({ deferInitialDisplay: true })
+      await nextTicks(6)
+
+      expect((wrapper.vm as any).rendition.display).toHaveBeenCalled()
+      expect(ResizeObserverMock.instances).toHaveLength(0)
+
+      resolveInitialDisplayPromise()
+      await nextTicks(2)
+
+      expect(ResizeObserverMock.instances).toHaveLength(1)
+      expect(ResizeObserverMock.instances[0].observe).toHaveBeenCalled()
+    })
+
+    it('disconnects the book container observer on unmount', async () => {
+      const { wrapper } = getWrapper()
+      await nextTicks(6)
+
+      const rendition = (wrapper.vm as any).rendition
+      const [resizeObserver] = ResizeObserverMock.instances
+      wrapper.unmount()
+
+      expect(resizeObserver.disconnect).toHaveBeenCalled()
+      expect(rendition.destroy).toHaveBeenCalled()
+    })
+
+    it('stops observing the previous book when the content changes', async () => {
+      vi.useFakeTimers()
+      const { wrapper } = getWrapper()
+      await nextTicks(6)
+
+      const previousRendition = (wrapper.vm as any).rendition
+      const [previousResizeObserver] = ResizeObserverMock.instances
+      previousResizeObserver.triggerResize()
+      // Schedules a trailing relayout.
+      previousResizeObserver.triggerResize()
+      expect(previousRendition.resize).toHaveBeenCalledTimes(1)
+
+      deferInitialDisplay = true
+      await wrapper.setProps({ currentContent: 'other-content' })
+      await nextTicks(6)
+
+      // The new book is still being displayed, so it isn't observed yet.
+      const rendition = (wrapper.vm as any).rendition
+      expect(rendition).not.toBe(previousRendition)
+      expect(rendition.display).toHaveBeenCalled()
+      expect(previousRendition.destroy).toHaveBeenCalled()
+      expect(previousResizeObserver.disconnect).toHaveBeenCalled()
+      expect(ResizeObserverMock.instances).toHaveLength(1)
+
+      // The trailing relayout requested for the previous book must not run against the new one.
+      vi.runAllTimers()
+      expect(previousRendition.resize).toHaveBeenCalledTimes(1)
+      expect(rendition.resize).not.toHaveBeenCalled()
+
+      resolveInitialDisplayPromise()
+      await nextTicks(2)
+      expect(ResizeObserverMock.instances).toHaveLength(2)
+
+      ResizeObserverMock.instances[1].triggerResize()
+      vi.runAllTimers()
+      expect(rendition.resize).toHaveBeenCalledTimes(1)
+    })
+  })
   describe('navigate', () => {
     describe('keyboard navigation', () => {
       it('calls method "prev" when left arrow key is pressed', async () => {
@@ -573,16 +694,20 @@ function getWrapper({
   propsData = {},
   localStorageGeneral = {},
   localStorageResource = {},
-  deferGlobalLocationsGeneration: shouldDeferGlobalLocationsGeneration = false
+  deferGlobalLocationsGeneration: shouldDeferGlobalLocationsGeneration = false,
+  deferInitialDisplay: shouldDeferInitialDisplay = false
 }: {
   propsData?: PartialComponentProps<typeof App>
   localStorageGeneral?: Record<string, unknown>
   localStorageResource?: Record<string, unknown>
   deferGlobalLocationsGeneration?: boolean
+  deferInitialDisplay?: boolean
 } = {}) {
   areGlobalLocationsGenerated = false
   deferGlobalLocationsGeneration = shouldDeferGlobalLocationsGeneration
   resolveGlobalLocationsGenerationPromise = null
+  deferInitialDisplay = shouldDeferInitialDisplay
+  resolveInitialDisplayPromise = null
 
   vi.mocked(useLocalStorage<unknown>).mockImplementationOnce(() => ref(localStorageGeneral))
   vi.mocked(useLocalStorage<unknown>).mockImplementationOnce(() => ref(localStorageResource))

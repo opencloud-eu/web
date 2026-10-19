@@ -84,6 +84,7 @@ import {
   type EditorSlotProps
 } from '@opencloud-eu/web-pkg'
 import ePub, { Book, NavItem, Rendition, Location } from 'epubjs'
+import { throttle } from 'lodash-es'
 import ReaderToolbar from './components/ReaderToolbar.vue'
 import ChapterList from './components/ChapterList.vue'
 import ReaderProgressBar from './components/ReaderProgressBar.vue'
@@ -108,6 +109,7 @@ const MIN_FONT_SIZE_PERCENTAGE = 50
 const FONT_SIZE_PERCENTAGE_STEP = 10
 const GLOBAL_LOCATION_CHARS = 3000
 const MAX_TEXT_SEARCH_RESULTS = 300
+const BOOK_CONTAINER_RESIZE_THROTTLE_MS = 50
 const SEARCH_HIGHLIGHT_STYLES = {
   fill: 'var(--color-yellow-500)',
   'fill-opacity': '0.35'
@@ -155,6 +157,34 @@ const book = ref<Book>()
 const rendition = ref<Rendition>()
 const isFullScreenModeActivated = ref(false)
 const isReaderLoading = ref(true)
+let bookContainerResizeObserver: ResizeObserver | undefined
+
+// epub.js only relayouts on window resize, so also relayout when the book container itself
+// changes size, e.g. when the details sidebar opens or closes. Like epub.js' own window resize
+// handler, the first call has to run right away: epub.js silently adopts the new size on its
+// next scroll or location report, after which resize() would be a no-op and the pages stay
+// misaligned.
+const resizeRendition = throttle(() => {
+  // Without a size, epub.js re-measures the container like on window resize (the typings
+  // wrongly mark both arguments as required). It's a no-op if the size didn't change.
+  unref(rendition)?.resize(undefined, undefined)
+}, BOOK_CONTAINER_RESIZE_THROTTLE_MS)
+
+function stopObservingBookContainerSize() {
+  resizeRendition.cancel()
+  bookContainerResizeObserver?.disconnect()
+  bookContainerResizeObserver = undefined
+}
+
+function observeBookContainerSize(bookContainer: HTMLElement) {
+  stopObservingBookContainerSize()
+  if (!unref(rendition)) {
+    return
+  }
+
+  bookContainerResizeObserver = new ResizeObserver(() => resizeRendition())
+  bookContainerResizeObserver.observe(bookContainer)
+}
 
 async function showChapter(chapter: NavItem) {
   const currentRendition = unref(rendition)
@@ -457,6 +487,7 @@ watch(
     // Cancel ongoing searches before destroying
     textSearchRequestId.value = unref(textSearchRequestId) + 1
     clearSearchHighlight()
+    stopObservingBookContainerSize()
 
     if (unref(rendition)) {
       unref(rendition).destroy()
@@ -507,6 +538,7 @@ watch(
     unref(rendition).themes.register('light', LIGHT_THEME_CONFIG)
 
     await unref(rendition).display(unref(localStorageResourceData)?.currentLocation?.start?.cfi)
+    observeBookContainerSize(bookContainer)
 
     unref(rendition).themes.select(themeStore.currentTheme.isDark ? 'dark' : 'light')
     unref(rendition).themes.fontSize(`${unref(currentFontSizePercentage)}%`)
@@ -603,6 +635,7 @@ onBeforeUnmount(() => {
   // Cancel ongoing searches before destroying
   textSearchRequestId.value = unref(textSearchRequestId) + 1
   clearSearchHighlight()
+  stopObservingBookContainerSize()
 
   if (unref(rendition)) {
     unref(rendition).destroy()
