@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: distinguish default and unlimited space quotas [[#3728](https://github.com/opencloud-eu/web/pull/3728)]
 - fix: follow the current folder when it is moved [[#3873](https://github.com/opencloud-eu/web/pull/3873)]
 - fix: show errors for failed drag and drop moves [[#3872](https://github.com/opencloud-eu/web/pull/3872)]
 - Make archiver work with guest link auth [[#3900](https://github.com/opencloud-eu/web/pull/3900)]
