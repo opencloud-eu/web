@@ -8,6 +8,9 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep notifications and show an error when marking all as read fails [[#3886](https://github.com/opencloud-eu/web/pull/3886)]
+- fix: show the no results message for a tag-only search [[#3885](https://github.com/opencloud-eu/web/pull/3885)]
+- fix(preview): show an error for a deep link to a file that can't be previewed [[#3773](https://github.com/opencloud-eu/web/pull/3773)]
 - fix: avoid batch name collisions when keeping both on paste and upload [[#3697](https://github.com/opencloud-eu/web/pull/3697)]
 - fix: skip the conflict when closing the resource conflict modal [[#3742](https://github.com/opencloud-eu/web/pull/3742)]
 - fix: let space toggle a focused checkbox in lists [[#3752](https://github.com/opencloud-eu/web/pull/3752)]
