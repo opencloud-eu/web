@@ -8,6 +8,7 @@
         <template #actions>
           <div class="flex justify-end w-full mt-2 mb-4 items-center">
             <oc-search-bar
+              is-filter
               v-model="filterTerm"
               class="search-filter w-full sm:w-3xs"
               :label="$gettext('Search')"

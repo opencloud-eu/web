@@ -78,7 +78,7 @@
         </li>
         <template v-else>
           <li v-for="provider in displayProviders" :key="provider.id" class="provider">
-            <oc-list role="menu">
+            <oc-list>
               <li
                 class="truncate flex justify-between text-role-on-surface-variant provider-details py-1 px-2 text-xs"
               >

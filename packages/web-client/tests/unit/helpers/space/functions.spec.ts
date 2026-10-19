@@ -24,6 +24,23 @@ describe('buildSpace', () => {
     )
   })
 
+  describe('isOwner', () => {
+    it('is true for the owner', () => {
+      const space = buildSpace({ owner: { user: { id } } } as Drive)
+      expect(space.isOwner(mock<User>({ id }))).toBeTruthy()
+    })
+
+    it('is false for another user', () => {
+      const space = buildSpace({ owner: { user: { id } } } as Drive)
+      expect(space.isOwner(mock<User>({ id: '2' }))).toBeFalsy()
+    })
+
+    it('is false without a user and owner, e.g. for a guest in a share space', () => {
+      const space = buildSpace({} as Drive)
+      expect(space.isOwner(undefined)).toBeFalsy()
+    })
+  })
+
   describe('canDownload', () => {
     it('is always true', () => {
       const space = getSpace({ permissions: [] })

@@ -7,9 +7,24 @@ import { ShareSpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import ResolveGuestLink from '../../../src/pages/resolveGuestLink.vue'
 import { authService } from '../../../src/services/auth'
-import { GuestShareNotFoundError } from '../../../src/services/auth/guestSessionManager'
+import {
+  GuestSession,
+  GuestShareNotFoundError
+} from '../../../src/services/auth/guestSessionManager'
 
 vi.mock('../../../src/services/auth')
+const { getGuestLinkTargetRoute } = vi.hoisted(() => ({
+  getGuestLinkTargetRoute: vi.fn(({ permissionId, space }: GuestSession) =>
+    Promise.resolve({
+      name: 'files-guest-link',
+      params: { driveAliasAndItem: space.driveAlias },
+      query: { shareId: space.id, permissionId }
+    })
+  )
+}))
+vi.mock('../../../src/composables/guestLink', () => ({
+  useGuestLinkTargetRoute: () => ({ getGuestLinkTargetRoute })
+}))
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -35,23 +50,51 @@ describe('resolveGuestLink', () => {
     expect(authService.redeemGuestLink).toHaveBeenCalledWith('magic-token')
   })
 
-  it('replaces the route with the guest link page carrying the permission id', async () => {
+  it('replaces the route with the shared resource carrying the share and permission ids', async () => {
     const { mocks } = getWrapper()
     await flushPromises()
 
+    expect(getGuestLinkTargetRoute).toHaveBeenCalledWith(
+      expect.objectContaining({ permissionId: 'permission-id' })
+    )
     expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'files-guest-link',
-        params: { shareName: 'Invited folder' },
-        query: { permissionId: 'permission-id' }
+        params: { driveAliasAndItem: 'share/Invited folder' },
+        query: { shareId: 'share-id', permissionId: 'permission-id' }
       })
     )
     expect(mocks.$router.push).not.toHaveBeenCalled()
   })
 
+  it.each(['tokenExpired', 'tokenAlreadyRedeemed'])(
+    'hands a link rejected with %s over to the renew page',
+    async (errorType) => {
+      const { wrapper, mocks } = getWrapper({ redeemError: guestLinkError(errorType) })
+      await flushPromises()
+
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
+        name: 'renewGuestLink',
+        params: { permissionId: 'permission-id' }
+      })
+      expect(wrapper.find(selectors.errorMessage).exists()).toBeFalsy()
+    }
+  )
+
   it.each([
     ['tokenExpired', 'This invitation link has expired.'],
-    ['tokenAlreadyRedeemed', 'This invitation link has already been used.'],
+    ['tokenAlreadyRedeemed', 'This invitation link has already been used.']
+  ])('shows an error for %s without a permission id', async (errorType, message) => {
+    const redeemError = guestLinkError(errorType)
+    redeemError.response.data = { errorType }
+    const { wrapper, mocks } = getWrapper({ redeemError })
+    await flushPromises()
+
+    expect(wrapper.find(selectors.errorMessage).text()).toEqual(message)
+    expect(mocks.$router.replace).not.toHaveBeenCalled()
+  })
+
+  it.each([
     ['shareExpired', 'Your access to the shared item has expired.'],
     ['shareNotFound', 'The shared item is no longer available.']
   ])('shows a specific error for %s', async (errorType, message) => {

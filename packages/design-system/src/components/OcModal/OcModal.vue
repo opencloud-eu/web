@@ -3,7 +3,11 @@
     class="oc-modal-background fixed left-0 top-0 z-[var(--z-index-modal)] flex items-center justify-center flex-row flex-wrap size-full"
     :class="{ 'bg-black/40': active }"
   >
-    <focus-trap :active="true" :initial-focus="initialFocusRef" :tabbable-options="tabbableOptions">
+    <focus-trap
+      :active="active"
+      :initial-focus="initialFocusRef"
+      :tabbable-options="tabbableOptions"
+    >
       <div
         :id="elementId"
         :class="classes"
@@ -113,6 +117,7 @@ import OcTextInput from '../OcTextInput/OcTextInput.vue'
 import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
 import { ContextualHelperData, isComposingEvent } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
+import { useEventListener } from '@vueuse/core'
 
 export interface Props {
   /**
@@ -356,6 +361,16 @@ const cancelModalAction = () => {
   }
   emit('cancel')
 }
+
+const onDocumentKeydown = (event: KeyboardEvent) => {
+  if (!active || event.key !== 'Escape') {
+    return
+  }
+  event.stopPropagation()
+  cancelModalAction()
+}
+
+useEventListener(document, 'keydown', onDocumentKeydown)
 
 const confirm = () => {
   if (buttonConfirmDisabled || inputError) {

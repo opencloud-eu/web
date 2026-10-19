@@ -6,6 +6,7 @@ import { isProjectSpaceResource, isTrashResource } from '@opencloud-eu/web-clien
 import {
   createFileRouteOptions,
   isSameResource,
+  createLocationGuest,
   createLocationPublic,
   createLocationSpaces,
   createLocationTrash,
@@ -13,12 +14,14 @@ import {
   isLocationTrashActive,
   useRouter,
   FileAction,
+  useAuthStore,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 
 export const useFileActionsNavigate = () => {
   const router = useRouter()
   const { $gettext } = useGettext()
+  const authStore = useAuthStore()
 
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
@@ -26,6 +29,9 @@ export const useFileActionsNavigate = () => {
   const routeName = computed(() => {
     if (isLocationPublicActive(router, 'files-public-link')) {
       return createLocationPublic('files-public-link')
+    }
+    if (authStore.isGuestContext) {
+      return createLocationGuest('files-guest-link')
     }
     if (isLocationTrashActive(router, 'files-trash-overview')) {
       return createLocationTrash('files-trash-generic')

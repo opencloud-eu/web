@@ -9,6 +9,7 @@ import type { Language } from 'vue3-gettext'
 
 export interface FileConflict {
   resource: Resource
+  existingResource?: Resource
   strategy?: ResolveStrategy
 }
 
@@ -27,9 +28,9 @@ export class ConflictDialog {
     const allConflicts: FileConflict[] = []
     for (const resource of resourcesToMove) {
       const targetFilePath = join(targetFolder.path, resource.name)
-      const exists = targetFolderResources.some((r) => r.path === targetFilePath)
-      if (exists) {
-        allConflicts.push({ resource, strategy: null })
+      const existingResource = targetFolderResources.find((r) => r.path === targetFilePath)
+      if (existingResource) {
+        allConflicts.push({ resource, existingResource, strategy: null })
       }
     }
     let count = 0
@@ -46,7 +47,13 @@ export class ConflictDialog {
 
       // Resolve next conflict
       const conflictsLeft = allConflicts.length - count
-      const result: ResolveConflict = await this.resolveFileExists(conflict.resource, conflictsLeft)
+      const result: ResolveConflict = await this.resolveFileExists(
+        conflict.resource,
+        conflictsLeft,
+        false,
+        false,
+        conflict.existingResource.isFolder
+      )
       conflict.strategy = result.strategy
       resolvedConflicts.push(conflict)
       count += 1
@@ -65,13 +72,14 @@ export class ConflictDialog {
     resource: Resource,
     conflictCount: number,
     suggestMerge = false,
-    separateSkipHandling = false // separate skip-handling between files and folders
+    separateSkipHandling = false, // separate skip-handling between files and folders
+    existingIsFolder = resource.isFolder
   ): Promise<ResolveConflict> {
     const { dispatchModal } = useModals()
 
     return new Promise<ResolveConflict>((resolve) => {
       dispatchModal({
-        title: resource.isFolder
+        title: existingIsFolder
           ? this.$gettext('Folder already exists')
           : this.$gettext('File already exists'),
         hideConfirmButton: true,
@@ -82,6 +90,7 @@ export class ConflictDialog {
           conflictCount,
           suggestMerge,
           separateSkipHandling,
+          existingIsFolder,
           callbackFn: (conflict: ResolveConflict) => {
             resolve(conflict)
           }

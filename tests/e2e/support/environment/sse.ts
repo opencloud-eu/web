@@ -48,7 +48,7 @@ export const listenSSE = (baseUrl: string, user: User): Promise<void> => {
 
 export const getSSEEvents = (user: string): Array<string> => {
   // recent events should be evaluated first
-  return sseEventStore[user.toLowerCase()].reverse()
+  return (sseEventStore[user.toLowerCase()] ?? []).reverse()
 }
 
 export const closeSSEConnections = () => {

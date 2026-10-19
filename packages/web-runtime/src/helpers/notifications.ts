@@ -1,5 +1,3 @@
-import { RouteLocationNamedRaw } from 'vue-router'
-
 export interface Notification {
   notification_id: string
   app: string
@@ -13,5 +11,4 @@ export interface Notification {
   object_id?: string
   link?: string
   computedMessage?: string
-  computedLink?: RouteLocationNamedRaw
 }

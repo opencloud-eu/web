@@ -1,6 +1,6 @@
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
-import { SpacesStore } from '../../composables'
+import { SpacesStore, useAuthStore } from '../../composables'
 
 /**
  * Gets the drive item for a given shared space.
@@ -16,6 +16,12 @@ export const getSharedDriveItem = async ({
   space: SpaceResource
   signal?: AbortSignal
 }) => {
+  if (useAuthStore().isGuestContext) {
+    // guests can't access their mount points, but `sharedWithMe` lists the shared drive item
+    const driveItems = await graphClient.driveItems.listSharedWithMe({}, { signal })
+    return driveItems.find(({ remoteItem }) => remoteItem?.id === space.id) || null
+  }
+
   const matchingMountPoint = await spacesStore.getMountPointForSpace({
     graphClient,
     space,

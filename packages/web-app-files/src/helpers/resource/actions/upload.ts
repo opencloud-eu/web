@@ -17,7 +17,12 @@ import {
 interface ConflictedResource {
   name: string
   type: string
-  typeMismatch?: boolean
+  existingIsFolder?: boolean
+}
+
+// a file uploaded onto an existing folder or vice versa, which can neither be replaced nor merged
+function isTypeMismatch({ type, existingIsFolder }: ConflictedResource) {
+  return existingIsFolder !== undefined && existingIsFolder !== (type === 'folder')
 }
 
 // renames the first of the relative segments the endpoint ends with, leaving the current folder path untouched
@@ -45,13 +50,13 @@ export class UploadResourceConflict extends ConflictDialog {
     conflictCount: number,
     suggestMerge = false,
     separateSkipHandling = false, // separate skip-handling between files and folders
-    typeMismatch = false
+    existingIsFolder = resource.isFolder
   ): Promise<ResolveConflict> {
     const { dispatchModal } = useModals()
 
     return new Promise<ResolveConflict>((resolve) => {
       dispatchModal({
-        title: resource.isFolder
+        title: existingIsFolder
           ? this.$gettext('Folder already exists')
           : this.$gettext('File already exists'),
         hideConfirmButton: true,
@@ -64,7 +69,8 @@ export class UploadResourceConflict extends ConflictDialog {
           conflictCount,
           suggestMerge,
           separateSkipHandling,
-          hideSecondaryAction: typeMismatch,
+          existingIsFolder,
+          hideSecondaryAction: existingIsFolder !== resource.isFolder,
           callbackFn: (conflict: ResolveConflict) => {
             resolve(conflict)
           }
@@ -85,7 +91,7 @@ export class UploadResourceConflict extends ConflictDialog {
           if (conflicts.some((conflict) => conflict.name === rootFolder)) {
             continue
           }
-          conflicts.push({ name: rootFolder, type: 'folder', typeMismatch: !exists.isFolder })
+          conflicts.push({ name: rootFolder, type: 'folder', existingIsFolder: exists.isFolder })
           continue
         }
       }
@@ -94,7 +100,7 @@ export class UploadResourceConflict extends ConflictDialog {
         (f) => f.name === file.name && !file.meta.relativeFolder
       )
       if (exists) {
-        conflicts.push({ name: file.name, type: 'file', typeMismatch: !!exists.isFolder })
+        conflicts.push({ name: file.name, type: 'file', existingIsFolder: exists.isFolder })
       }
     }
     return conflicts
@@ -115,13 +121,13 @@ export class UploadResourceConflict extends ConflictDialog {
       const isFolder = conflict.type === 'folder'
       const conflictArray = isFolder ? resolvedFolderConflicts : resolvedFileConflicts
       const strategies = allStrategies[isFolder ? 'folder' : 'file']
-      const allStrategy = conflict.typeMismatch
+      const typeMismatch = isTypeMismatch(conflict)
+      const allStrategy = typeMismatch
         ? (strategies.typeMismatch ?? strategies.regular)
         : strategies.regular
       const canApplyAllStrategy =
         allStrategy !== undefined &&
-        (!conflict.typeMismatch ||
-          [ResolveStrategy.SKIP, ResolveStrategy.KEEP_BOTH].includes(allStrategy))
+        (!typeMismatch || [ResolveStrategy.SKIP, ResolveStrategy.KEEP_BOTH].includes(allStrategy))
 
       if (canApplyAllStrategy) {
         conflictArray.push({
@@ -135,10 +141,10 @@ export class UploadResourceConflict extends ConflictDialog {
         if (remaining.type !== conflict.type) {
           return false
         }
-        if (conflict.typeMismatch) {
-          return remaining.typeMismatch
+        if (typeMismatch) {
+          return isTypeMismatch(remaining)
         }
-        return !remaining.typeMismatch || strategies.typeMismatch === undefined
+        return !isTypeMismatch(remaining) || strategies.typeMismatch === undefined
       }).length
 
       const resolvedConflict: ResolveConflict = await this.resolveFileExists(
@@ -146,10 +152,10 @@ export class UploadResourceConflict extends ConflictDialog {
         conflictsLeft,
         isFolder,
         true,
-        conflict.typeMismatch
+        conflict.existingIsFolder
       )
       if (resolvedConflict.doForAllConflicts) {
-        strategies[conflict.typeMismatch ? 'typeMismatch' : 'regular'] = resolvedConflict.strategy
+        strategies[typeMismatch ? 'typeMismatch' : 'regular'] = resolvedConflict.strategy
       }
 
       conflictArray.push({
@@ -181,10 +187,23 @@ export class UploadResourceConflict extends ConflictDialog {
       .filter((e) => e.strategy === ResolveStrategy.KEEP_BOTH)
       .map((e) => e.name)
 
+    if (!filesToKeepBoth.length && !foldersToKeepBoth.length) {
+      return { files, mergedFolders }
+    }
+
+    // Reserve all top-level batch names before assigning replacements.
+    const occupiedResources = [
+      ...this.resourcesStore.resources,
+      ...files.map((file) => ({
+        name: file.meta.relativeFolder?.split('/').filter(Boolean)[0] || file.name
+      }))
+    ]
+
     for (const fileName of filesToKeepBoth) {
       const file = files.find((e) => e.name === fileName && !e.meta.relativeFolder)
       const extension = extractExtensionFromFile({ name: fileName } as Resource)
-      file.name = resolveFileNameDuplicate(fileName, extension, this.resourcesStore.resources)
+      file.name = resolveFileNameDuplicate(fileName, extension, occupiedResources)
+      occupiedResources.push({ name: file.name })
       file.meta.name = file.name
       if (file.xhrUpload?.endpoint) {
         file.xhrUpload.endpoint = file.xhrUpload.endpoint
@@ -197,8 +216,9 @@ export class UploadResourceConflict extends ConflictDialog {
     }
     for (const folder of foldersToKeepBoth) {
       const filesInFolder = files.filter((e) => e.meta.relativeFolder.split('/')[1] === folder)
+      const newFolderName = resolveFileNameDuplicate(folder, '', occupiedResources)
+      occupiedResources.push({ name: newFolderName })
       for (const file of filesInFolder) {
-        const newFolderName = resolveFileNameDuplicate(folder, '', this.resourcesStore.resources)
         const folderSegments = file.meta.relativeFolder.split('/').filter(Boolean)
         // a directory entry's relative folder includes its own name, its tus endpoint doesn't
         const tusSegments = file.type === 'directory' ? folderSegments.slice(0, -1) : folderSegments

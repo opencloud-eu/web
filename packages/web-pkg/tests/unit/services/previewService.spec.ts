@@ -103,6 +103,30 @@ describe('PreviewService', () => {
       })
       expect(preview).toBeUndefined()
     })
+    it('loads preview in a guest context without user and access token', async () => {
+      const objectUrl = 'objectUrl'
+      const supportedMimeTypes = ['image/png']
+      const { previewService, clientService } = getWrapper({
+        supportedMimeTypes,
+        version: '1',
+        user: null,
+        accessToken: null,
+        guestContextReady: true
+      })
+      window.URL.createObjectURL = vi.fn().mockImplementation(() => objectUrl)
+      const preview = await previewService.loadPreview({
+        space: mock<SpaceResource>({ driveType: 'share' }),
+        resource: mock<Resource>({
+          mimeType: supportedMimeTypes[0],
+          webDavPath: '/',
+          etag: '',
+          canDownload: () => true,
+          hasPreview: () => true
+        })
+      })
+      expect(preview).toEqual(objectUrl)
+      expect(clientService.httpAuthenticated.get).toHaveBeenCalledTimes(1)
+    })
     it.each([425, 429])('retries when the server returns a %s status code', async (status) => {
       const supportedMimeTypes = ['image/png']
       const { previewService, clientService } = getWrapper({
@@ -277,7 +301,8 @@ const getWrapper = ({
   supportedMimeTypes = [],
   version = undefined,
   accessToken = 'token',
-  user = mock<User>()
+  user = mock<User>(),
+  guestContextReady = false
 } = {}) => {
   const clientService = mockDeep<ClientService>()
   clientService.httpAuthenticated.get.mockResolvedValue({ data: {}, status: 200 } as AxiosResponse)
@@ -286,7 +311,9 @@ const getWrapper = ({
     status: 200
   } as AxiosResponse)
 
-  createTestingPinia({ initialState: { user: { user }, auth: { accessToken } } })
+  createTestingPinia({
+    initialState: { user: { user }, auth: { accessToken, guestContextReady } }
+  })
   const userStore = useUserStore()
   const authStore = useAuthStore()
   const capabilityStore = useCapabilityStore()

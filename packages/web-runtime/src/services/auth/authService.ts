@@ -1,6 +1,7 @@
 import { UserManager } from './userManager'
 import { PublicLinkManager } from './publicLinkManager'
 import {
+  getGuestLinkError,
   GuestSession,
   GuestSessionManager,
   isGuestSessionInvalidError
@@ -20,7 +21,7 @@ import { RouteLocation, Router } from 'vue-router'
 import {
   extractPublicLinkToken,
   isAnonymousContext,
-  isGuestLinkContextRequired,
+  isGuestContextRequired,
   isIdpContextRequired,
   isPublicLinkContextRequired,
   isUserContextRequired
@@ -149,9 +150,15 @@ export class AuthService implements AuthServiceInterface {
       }
     }
 
-    if (await this.isGuestContextExcluded(to)) {
-      this.guestSessionManager.clear()
-    } else if (isGuestLinkContextRequired(this.router, to)) {
+    const isUserSignedIn = await this.isUserSignedIn()
+    if (this.isGuestContextExcluded(to, isUserSignedIn)) {
+      // a guest might only pass a user route, keep what renews the guest link until a user signs in
+      if (isUserSignedIn) {
+        this.guestSessionManager.clear()
+      } else {
+        this.guestSessionManager.expire()
+      }
+    } else if (isGuestContextRequired(this.router, to)) {
       await this.guestSessionManager.restoreContext(queryItemAsString(to.query.permissionId))
     } else if (to.name !== 'resolveGuestLink') {
       this.guestSessionManager.deactivate()
@@ -169,7 +176,7 @@ export class AuthService implements AuthServiceInterface {
       }
     }
 
-    if (!isAnonymousContext(this.router, to)) {
+    if (!isAnonymousContext(this.router, to) && !isGuestContextRequired(this.router, to)) {
       const fetchUserData = !isIdpContextRequired(this.router, to)
 
       if (!this.userManager.areEventHandlersRegistered) {
@@ -275,13 +282,17 @@ export class AuthService implements AuthServiceInterface {
     }
   }
 
-  private async isGuestContextExcluded(to: RouteLocation): Promise<boolean> {
+  private isGuestContextExcluded(to: RouteLocation, isUserSignedIn: boolean): boolean {
     if (isUserContextRequired(this.router, to) || isIdpContextRequired(this.router, to)) {
       return true
     }
-    if (isAnonymousContext(this.router, to)) {
+    if (isAnonymousContext(this.router, to) || isGuestContextRequired(this.router, to)) {
       return false
     }
+    return isUserSignedIn
+  }
+
+  private async isUserSignedIn(): Promise<boolean> {
     const user = await this.userManager.getUser()
     return !!user && !user.expired
   }
@@ -338,12 +349,24 @@ export class AuthService implements AuthServiceInterface {
     if (
       !this.authStore.userContextReady &&
       !isPublicLinkContextRequired(this.router, route) &&
-      (isGuestLinkContextRequired(this.router, route) || isGuestSessionInvalidError(error))
+      (isGuestContextRequired(this.router, route) || isGuestSessionInvalidError(error))
     ) {
-      if (isGuestSessionInvalidError(error)) {
-        this.guestSessionManager.clear()
+      if (!isGuestSessionInvalidError(error)) {
+        return
       }
-      return
+      const permissionId =
+        getGuestLinkError(error)?.permissionId || this.authStore.guestPermissionId
+      this.guestSessionManager.expire()
+      if (!permissionId) {
+        return
+      }
+      return this.router.replace({
+        name: 'renewGuestLink',
+        params: { permissionId },
+        ...(isGuestContextRequired(this.router, route) && {
+          query: { redirectUrl: route.fullPath }
+        })
+      })
     }
     if (isPublicLinkContextRequired(this.router, route)) {
       const token = extractPublicLinkToken(route)
@@ -437,6 +460,34 @@ export class AuthService implements AuthServiceInterface {
 
   public redeemGuestLink(token: string): Promise<GuestSession> {
     return this.guestSessionManager.redeem(token)
+  }
+
+  public renewGuestLink(permissionId: string): Promise<void> {
+    return this.guestSessionManager.renew(permissionId)
+  }
+
+  public verifyGuestLinkPin(permissionId: string, pin: string): Promise<void> {
+    return this.guestSessionManager.verifyPin(permissionId, pin)
+  }
+
+  public isGuestLinkRenewalPending(permissionId: string): boolean {
+    return this.guestSessionManager.isRenewalPending(permissionId)
+  }
+
+  public hasGuestSession(permissionId: string): boolean {
+    return this.guestSessionManager.hasSession(permissionId)
+  }
+
+  public resumeGuestSession(permissionId: string): Promise<GuestSession> {
+    return this.guestSessionManager.resume(permissionId)
+  }
+
+  public consumeExpiredGuestPermissionId(): string | undefined {
+    return this.guestSessionManager.consumeExpiredPermissionId()
+  }
+
+  public consumeUnavailableGuestPermissionId(): string | undefined {
+    return this.guestSessionManager.consumeUnavailablePermissionId()
   }
 
   public async logoutUser() {

@@ -1,3 +1,4 @@
+/* Editor layout styles */
 .text-editor-content {
   --text-editor-zoom-factor: 1;
   flex: 1;
@@ -28,12 +29,14 @@
   zoom: var(--text-editor-zoom-factor);
 }
 
+/* Focus styles */
 .text-editor-content .ProseMirror:focus,
 .text-editor-content .ProseMirror:focus-visible {
   outline: none;
   box-shadow: none;
 }
 
+/* Placeholder styles */
 .text-editor-content .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
@@ -43,6 +46,7 @@
   height: 0;
 }
 
+/* Slash command filter styles */
 .text-editor-content .ProseMirror .text-editor-slash-filter {
   display: inline-flex;
   align-items: center;
@@ -63,21 +67,36 @@
   opacity: 0.9;
 }
 
+/* Paragraph styles */
 .text-editor-content .ProseMirror p {
   margin: 0 0 8px;
 }
 
+/* Heading styles */
+.text-editor-content .ProseMirror :is(h1, h2, h3, h4, h5, h6) {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+/* First block styles */
+.text-editor-content .ProseMirror > :first-child {
+  margin-top: 0;
+}
+
+/* Link styles */
 .text-editor-content .ProseMirror a {
   color: var(--oc-role-primary);
   text-decoration: underline;
   cursor: pointer;
 }
 
+/* Mention styles */
 .text-editor-content .ProseMirror .text-editor-mention {
   color: var(--oc-role-primary);
   font-weight: 600;
 }
 
+/* List styles */
 .text-editor-content .ProseMirror ul:not(.vs__dropdown-menu) {
   list-style-type: disc;
   padding-left: 20px;
@@ -94,6 +113,7 @@
   margin: 2px 0;
 }
 
+/* Text formatting styles */
 .text-editor-content .ProseMirror strong {
   font-weight: 600;
 }
@@ -106,6 +126,7 @@
   text-decoration: underline;
 }
 
+/* Blockquote styles */
 .text-editor-content .ProseMirror blockquote {
   border-left: 2px solid var(--oc-role-outline-variant);
   padding-left: 12px;
@@ -114,6 +135,7 @@
   opacity: 0.9;
 }
 
+/* Source view styles */
 .text-editor-content textarea {
   font-size: 15px;
   zoom: var(--text-editor-zoom-factor);
@@ -137,6 +159,7 @@
   background: var(--oc-role-surface-container-high);
 }
 
+/* Codeblock container styles */
 .text-editor-content .ProseMirror .code-block {
   position: relative;
 }
@@ -211,7 +234,7 @@
   margin-top: 2px;
 }
 
-/* Horizontal rule */
+/* Horizontal rule styles */
 .text-editor-content .ProseMirror hr {
   border: none;
   border-top: 1px solid var(--oc-role-outline-variant);

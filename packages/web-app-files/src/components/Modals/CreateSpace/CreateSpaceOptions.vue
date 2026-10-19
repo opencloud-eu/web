@@ -19,7 +19,9 @@
       />
       <div v-if="!encrypted" class="create-space-description">
         <span class="inline-block mb-0.5" v-text="$gettext('Description')" />
-        <div class="border border-role-outline-variant rounded-lg overflow-hidden bg-role-surface">
+        <div
+          class="border border-role-outline rounded-lg overflow-hidden bg-role-surface focus-within:outline-1 focus-within:outline-role-outline focus-within:-outline-offset-2"
+        >
           <text-editor-provider :editor="descriptionEditor" :teleport="editorTeleportTarget">
             <text-editor-toolbar />
             <text-editor-content class="min-h-40 max-h-72 py-2 overflow-auto" />

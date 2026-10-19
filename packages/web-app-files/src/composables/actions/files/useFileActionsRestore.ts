@@ -88,7 +88,10 @@ export const useFileActionsRestore = ({
   }
 
   // FIXME: use ConflictDialog class for this
-  const collectResolveStrategies = async (conflicts: Resource[]) => {
+  const collectResolveStrategies = async (
+    conflicts: Resource[],
+    existingResourcesByPath: Record<string, Resource[]>
+  ) => {
     let count = 0
     const resolvedConflicts = []
     const allConflictsCount = conflicts.length
@@ -104,11 +107,16 @@ export const useFileActionsRestore = ({
         continue
       }
       const remainingConflictCount = allConflictsCount - count
+      const existingResource = existingResourcesByPath[dirname(conflict.path)]?.find(
+        (r) => r.name === conflict.name
+      )
       const conflictDialog = new ConflictDialog($gettext, $ngettext)
       const resolvedConflict: ResolveConflict = await conflictDialog.resolveFileExists(
         { name: conflict.name, isFolder } as Resource,
         remainingConflictCount,
-        false
+        false,
+        false,
+        existingResource ? existingResource.isFolder : isFolder
       )
       count++
       if (resolvedConflict.doForAllConflicts) {
@@ -192,7 +200,7 @@ export const useFileActionsRestore = ({
       await collectConflicts(space, sortedResources)
 
     // iterate through conflicts and collect resolve strategies
-    const resolvedConflicts = await collectResolveStrategies(conflicts)
+    const resolvedConflicts = await collectResolveStrategies(conflicts, existingResourcesByPath)
 
     // iterate through conflicts and behave according to strategy
     const filesToOverwrite = resolvedConflicts

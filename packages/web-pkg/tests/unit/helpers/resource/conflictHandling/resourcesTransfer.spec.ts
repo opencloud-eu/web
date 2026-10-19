@@ -1,5 +1,6 @@
 import {
   ResolveConflict,
+  ResolveStrategy,
   ResourceTransfer,
   TransferType,
   resolveFileNameDuplicate
@@ -127,6 +128,33 @@ describe('resourcesTransfer', () => {
         }
       }
     )
+  })
+  it('keeps both with names that are not taken by other items of the same batch', async () => {
+    const files = [
+      { id: '1', name: 'a.txt', extension: 'txt', path: '/a.txt' },
+      { id: '2', name: 'a (1).txt', extension: 'txt', path: '/a (1).txt' }
+    ] as Resource[]
+    clientServiceMock.webdav.listFiles.mockResolvedValueOnce({
+      resource: targetFolder,
+      children: [{ id: '3', name: 'a.txt', path: 'target/a.txt' } as Resource]
+    })
+    const resourcesTransfer = new ResourceTransfer(
+      sourceSpace,
+      files,
+      targetSpace,
+      targetFolder,
+      computed(() => mock<Resource>()),
+      clientServiceMock,
+      vi.fn(),
+      vi.fn()
+    )
+    resourcesTransfer.resolveAllConflicts = vi
+      .fn()
+      .mockResolvedValue([{ resource: files[0], strategy: ResolveStrategy.KEEP_BOTH }])
+
+    const transferData = await resourcesTransfer.getTransferData(TransferType.COPY)
+
+    expect(transferData.map(({ path }) => path)).toEqual(['target/a (2).txt', 'target/a (1).txt'])
   })
   it('should show message if conflict exists', async () => {
     const targetFolderItems = [

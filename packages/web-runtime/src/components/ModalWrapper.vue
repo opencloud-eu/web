@@ -72,6 +72,11 @@ const setCustomComponentRef = (id: Modal['id'], instance: unknown) => {
 }
 
 const onModalConfirm = async (modal: Modal, value?: unknown) => {
+  // custom components can confirm on their own (e.g. on Enter), which must not bypass the disabled button
+  if (modal.confirmDisabled) {
+    return
+  }
+
   const customComponent = customComponentRefs.get(modal.id)
 
   try {

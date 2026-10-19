@@ -3,6 +3,7 @@
     v-if="isVisible"
     v-oc-tooltip="label"
     class="yjs-status-indicator inline-flex items-center"
+    role="img"
     :aria-label="label"
     :data-test-yjs-status="status"
   >

@@ -21,6 +21,7 @@
           :id="dropId"
           ref="drop"
           class="oc-drop shadow-sm/10 rounded-xl bg-role-surface border border-role-surface-container-highest"
+          data-custom-key-bindings-disabled="true"
           :class="attrs?.class"
           :tabindex="-1"
           @click="onClick"
@@ -489,8 +490,8 @@ const handleAnchorKeydown = async (event: Event) => {
   const openDropAndFocusFirstEl = async () => {
     showDrop()
     await nextTick()
-    const focusableItems = getFocusableItems(unref(drop))
-    focusableItems[0]?.focus()
+    const focusTarget = getFocusableItems(unref(drop))[0] || unref(drop)
+    focusTarget.focus()
   }
 
   if (event.code === 'Enter') {

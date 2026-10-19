@@ -1,8 +1,12 @@
 import { computed, markRaw, unref, Ref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { isPublicSpaceResource, SharePermissionBit } from '@opencloud-eu/web-client'
+import {
+  GraphSharePermission,
+  isPublicSpaceResource,
+  SharePermissionBit
+} from '@opencloud-eu/web-client'
 import { FileAction, FileActionOptions } from './types'
-import { useModals } from '../piniaStores'
+import { useAuthStore, useModals } from '../piniaStores'
 import SaveAsModal from '../../components/Modals/SaveAsModal.vue'
 import { useFolderLink } from '../folderLink'
 
@@ -21,6 +25,7 @@ export function useFileActionsSave({
 }) {
   const { $gettext } = useGettext()
   const { dispatchModal } = useModals()
+  const authStore = useAuthStore()
   const { getParentFolderLink } = useFolderLink()
 
   function saveAsHandler({ resources }: FileActionOptions) {
@@ -56,6 +61,10 @@ export function useFileActionsSave({
     isVisible: ({ space }) => {
       if (!unref(isEditor)) {
         return false
+      }
+      // guests can only save into their share, which a single file share has no folder for
+      if (authStore.isGuestContext) {
+        return !!space?.graphPermissions?.includes(GraphSharePermission.createChildren)
       }
       if (!isPublicSpaceResource(space)) {
         return true

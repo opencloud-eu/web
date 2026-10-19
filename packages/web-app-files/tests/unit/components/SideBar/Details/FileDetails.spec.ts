@@ -203,6 +203,11 @@ describe('Details SideBar Panel', () => {
       const { wrapper } = createWrapper({ resource, tagsEnabled: false })
       expect(wrapper.find(selectors.tags).exists()).toBeFalsy()
     })
+    it('does not show in a guest context', () => {
+      const resource = getResourceMock()
+      const { wrapper } = createWrapper({ resource, isGuestContext: true })
+      expect(wrapper.find(selectors.tags).exists()).toBeFalsy()
+    })
     it('does not show for root folders', () => {
       const resource = getResourceMock({ path: '/' })
       const { wrapper } = createWrapper({ resource })
@@ -231,6 +236,7 @@ describe('Details SideBar Panel', () => {
 function createWrapper({
   resource = null,
   isPublicLinkContext = false,
+  isGuestContext = false,
   ancestorMetaData = {},
   user = { onPremisesSamAccountName: 'marie' } as User,
   versions = [],
@@ -238,6 +244,7 @@ function createWrapper({
 }: {
   resource?: Resource
   isPublicLinkContext?: boolean
+  isGuestContext?: boolean
   ancestorMetaData?: AncestorMetaData
   user?: User
   versions?: string[]
@@ -263,7 +270,10 @@ function createWrapper({
           ...defaultPlugins({
             piniaOptions: {
               userState: { user },
-              authState: { publicLinkContextReady: isPublicLinkContext },
+              authState: {
+                publicLinkContextReady: isPublicLinkContext,
+                guestContextReady: isGuestContext
+              },
               capabilityState: { capabilities },
               resourcesStore: { ancestorMetaData, currentFolder: mock<Resource>() }
             }

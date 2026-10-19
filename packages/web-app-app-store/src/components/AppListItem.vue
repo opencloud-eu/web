@@ -1,16 +1,20 @@
 <template>
   <li
-    class="app-list-item relative bg-role-surface-container flex items-center gap-4 border rounded-lg p-3 overflow-hidden"
+    class="app-list-item relative bg-role-surface-container flex flex-col items-start sm:flex-row sm:items-center gap-4 border rounded-lg p-3 overflow-hidden"
   >
     <div class="relative shrink-0 pointer-events-none">
       <app-official-badge :app="app" class="absolute top-1 left-1" />
       <app-preview-image :app="app" icon-size-class="size-8" class="w-24 rounded-sm" />
     </div>
-    <div class="app-list-item-content flex flex-col min-w-0 grow gap-1">
+    <div
+      class="app-list-item-content flex flex-col min-w-0 grow gap-1 w-full sm:w-auto wrap-anywhere [&_.app-list-item-title]:whitespace-normal sm:[&_.app-list-item-title]:whitespace-nowrap"
+    >
       <app-title :app="app" :term="term" title-class="m-0 text-base app-list-item-title" />
-      <p class="m-0 truncate"><oc-filter-highlight :text="app.subtitle" :term="term" /></p>
+      <p class="m-0 whitespace-normal sm:truncate">
+        <oc-filter-highlight :text="app.subtitle" :term="term" />
+      </p>
       <span
-        class="app-list-item-authors truncate text-sm text-role-on-surface-variant"
+        class="app-list-item-authors whitespace-normal sm:truncate text-sm text-role-on-surface-variant"
         v-text="getAuthorNames(app)"
       />
       <app-tags :app="app" :term="term" @click="emit('search', $event)" />

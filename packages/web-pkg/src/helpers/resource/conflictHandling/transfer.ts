@@ -123,6 +123,8 @@ export class ResourceTransfer extends ConflictDialog {
     )
 
     const result: TransferData[] = []
+    // new names must not collide with existing items nor with other items of this batch
+    const occupiedResources = [...targetFolderResources, ...this.resourcesToMove]
 
     for (const resourceToMove of this.resourcesToMove) {
       // shallow copy of resources to prevent modifying existing rows
@@ -147,8 +149,9 @@ export class ResourceTransfer extends ConflictDialog {
           overwriteTarget = true
         }
         if (resolveStrategy === ResolveStrategy.KEEP_BOTH) {
-          targetName = resolveFileNameDuplicate(name, extension, targetFolderResources)
+          targetName = resolveFileNameDuplicate(name, extension, occupiedResources)
           resource.name = targetName
+          occupiedResources.push(resource)
         }
       }
 

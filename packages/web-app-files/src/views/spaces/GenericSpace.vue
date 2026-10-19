@@ -112,6 +112,7 @@ import {
 import {
   ResourceTransfer,
   TransferType,
+  canBeMoved,
   getVaultClaim,
   useExtensionRegistry,
   useFileActions,
@@ -121,6 +122,7 @@ import {
   useResourcesStore,
   useRouter,
   useUserStore,
+  useAuthStore,
   AppBar,
   AppLoadingSpinner,
   ContextActions,
@@ -128,6 +130,7 @@ import {
   NoContentMessage,
   Pagination,
   createFileRouteOptions,
+  createLocationGuest,
   createLocationPublic,
   createLocationSpaces,
   useBreadcrumbsFromPath,
@@ -172,9 +175,10 @@ const props = defineProps<{
 
 const router = useRouter()
 const userStore = useUserStore()
+const authStore = useAuthStore()
 const { $gettext, $ngettext } = useGettext()
 const { isTablet } = useIsMobile()
-const { showMessage } = useMessages()
+const { showMessage, showErrorMessage } = useMessages()
 const extensionRegistry = useExtensionRegistry()
 const clientService = useClientService()
 const { startWorker } = usePasteWorker()
@@ -234,7 +238,7 @@ const breadcrumbs = computed(() => {
       to: createLocationSpaces('files-spaces-projects'),
       isStaticNav: true
     })
-  } else if (isShareSpaceResource(unref(space))) {
+  } else if (isShareSpaceResource(unref(space)) && !authStore.isGuestContext) {
     rootBreadcrumbItems.push(
       {
         id: uuidV4(),
@@ -272,10 +276,9 @@ const breadcrumbs = computed(() => {
       id: uuidV4(),
       allowContextActions: true,
       text: unref(space).name,
-      to: createLocationSpaces('files-spaces-generic', {
-        params,
-        query: omit(query, 'fileId')
-      })
+      to: authStore.isGuestContext
+        ? createLocationGuest('files-guest-link', { params, query: omit(query, 'fileId') })
+        : createLocationSpaces('files-spaces-generic', { params, query: omit(query, 'fileId') })
     }
   } else if (isPublicSpaceResource(unref(space))) {
     spaceBreadcrumbItem = {
@@ -452,12 +455,11 @@ const fileDropped = async (fileTarget: string | RouteLocationRaw) => {
       return
     }
   } else if (fileTarget instanceof Object) {
+    const spaceRootLocation = { params: { driveAliasAndItem: unref(space).driveAlias } }
     const spaceRootRoutePath = router.resolve(
-      createLocationSpaces('files-spaces-generic', {
-        params: {
-          driveAliasAndItem: unref(space).driveAlias
-        }
-      })
+      authStore.isGuestContext
+        ? createLocationGuest('files-guest-link', spaceRootLocation)
+        : createLocationSpaces('files-spaces-generic', spaceRootLocation)
     ).path
 
     const splitIndex = fileTarget.path.indexOf(spaceRootRoutePath) + spaceRootRoutePath.length
@@ -490,6 +492,18 @@ const fileDropped = async (fileTarget: string | RouteLocationRaw) => {
     return
   }
 
+  const canMoveSelection = selected.every((r) => canBeMoved(r, unref(currentFolder)?.path))
+  if (!canMoveSelection || !targetFolder.canUpload({ user: userStore.user })) {
+    showErrorMessage({
+      title: $ngettext(
+        'You have no permission to move this item here.',
+        'You have no permission to move these items here.',
+        selected.length
+      )
+    })
+    return
+  }
+
   const resourceTransfer = new ResourceTransfer(
     unref(space),
     selected,
@@ -503,7 +517,8 @@ const fileDropped = async (fileTarget: string | RouteLocationRaw) => {
 
   const transferData = await resourceTransfer.getTransferData(TransferType.MOVE)
 
-  startWorker(transferData, ({ successful }) => {
+  startWorker(transferData, ({ successful, failed }) => {
+    resourceTransfer.showResultMessage(failed, successful, TransferType.MOVE)
     removeResources(successful)
     resetSelection()
   })
@@ -530,7 +545,8 @@ const displayResourceAsSingleResource = computed(() => {
     return true
   }
 
-  return false
+  // single file share
+  return isShareSpaceResource(unref(space)) && unref(currentFolder)?.isFolder === false
 })
 
 const displayFullAppBar = computed(() => {

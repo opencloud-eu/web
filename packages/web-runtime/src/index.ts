@@ -22,6 +22,7 @@ import {
   announcePreviewService,
   announcePasswordPolicyService,
   registerSSEEventListeners,
+  announceGuestContext,
   setViewOptions,
   announceGettext,
   announceArchiverService,
@@ -100,7 +101,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   })
 
   announceLoadingService({ app })
-  announceArchiverService({ app, configStore, userStore, capabilityStore })
+  announceArchiverService({ app, configStore, userStore, authStore, capabilityStore })
   announcePreviewService({
     app,
     configStore,
@@ -179,6 +180,22 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     }
   )
 
+  function registerSSE() {
+    return registerSSEEventListeners({
+      language: gettext,
+      resourcesStore,
+      spacesStore,
+      messageStore: messagesStore,
+      sharesStore,
+      clientService,
+      userStore,
+      previewService: app.config.globalProperties.$previewService,
+      configStore,
+      authStore,
+      router
+    })
+  }
+
   watch(
     () => authStore.userContextReady,
     async (userContextReady) => {
@@ -204,23 +221,8 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
         })
       ])
 
-      const previewService = app.config.globalProperties.$previewService
-
-      // Register SSE event listeners
       if (capabilityStore.supportSSE) {
-        registerSSEEventListeners({
-          language: gettext,
-          resourcesStore,
-          spacesStore,
-          messageStore: messagesStore,
-          sharesStore,
-          clientService,
-          userStore,
-          previewService,
-          configStore,
-          authStore,
-          router
-        })
+        registerSSE()
       }
 
       sharesStore.setGraphRoles(graphRoleDefinitions)
@@ -269,6 +271,14 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       immediate: true
     }
   )
+  announceGuestContext({
+    authStore,
+    capabilityStore,
+    clientService,
+    sharesStore,
+    spacesStore,
+    registerSSE
+  })
   watch(
     // only needed if a public link gets re-resolved with a changed password prop (changed or removed).
     // don't need to set { immediate: true } on the watcher.

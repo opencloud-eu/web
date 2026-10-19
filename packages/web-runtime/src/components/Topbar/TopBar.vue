@@ -32,7 +32,7 @@
           class="hidden sm:flex"
         />
         <applications-menu
-          v-if="appMenuExtensions.length && !isEmbedModeEnabled"
+          v-if="appMenuExtensions.length && !isEmbedModeEnabled && !authStore.isGuestContext"
           :menu-items="appMenuExtensions"
         />
         <user-menu />
@@ -51,6 +51,7 @@ import FeedbackLink from './FeedbackLink.vue'
 import SideBarToggle from './SideBarToggle.vue'
 import {
   CustomComponentTarget,
+  createGuestHomeLocation,
   useAuthStore,
   useCapabilityStore,
   useConfigStore,
@@ -58,6 +59,7 @@ import {
   useExtensionRegistry,
   useIsAppActive,
   useRouter,
+  useSpacesStore,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
 import SidebarNavMobile from '../SidebarNav/SidebarNavMobile.vue'
@@ -82,6 +84,7 @@ const extensionRegistry = useExtensionRegistry()
 const isAppActive = useIsAppActive()
 
 const authStore = useAuthStore()
+const spacesStore = useSpacesStore()
 const router = useRouter()
 const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 
@@ -103,6 +106,11 @@ const homeLink = computed(() => {
     }
   }
 
+  if (authStore.isGuestContext) {
+    // other routes would end the guest session
+    return createGuestHomeLocation({ authStore, spacesStore })
+  }
+
   return '/'
 })
 
@@ -110,13 +118,16 @@ const isRuntimeRoute = (route: RouteLocationNormalizedLoaded) => {
   return Object.values(routeNames).includes(route.name.toString())
 }
 const isSideBarToggleVisible = computed(() => {
-  return authStore.userContextReady || authStore.publicLinkContextReady
+  return authStore.userContextReady || authStore.publicLinkContextReady || authStore.isGuestContext
 })
 const isSideBarToggleDisabled = computed(() => {
   return isRuntimeRoute(unref(router.currentRoute))
 })
 
 const sidebarLogoAlt = computed(() => {
+  if (authStore.publicLinkContextReady && !authStore.userContextReady) {
+    return $gettext('Navigate to public link root')
+  }
   return $gettext('Navigate to personal files page')
 })
 

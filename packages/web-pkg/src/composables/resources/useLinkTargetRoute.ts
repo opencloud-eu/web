@@ -10,12 +10,18 @@ import {
 } from '@opencloud-eu/web-client'
 import { useResourceLink } from './useResourceLink'
 import { createFileRouteOptions } from '../../helpers/router'
-import { createLocationPublic, createLocationShares, createLocationSpaces } from '../../router'
+import {
+  createLocationGuest,
+  createLocationPublic,
+  createLocationShares,
+  createLocationSpaces
+} from '../../router'
 import {
   contextRouteNameKey,
   contextRouteParamsKey,
   contextRouteQueryKey
 } from '../appDefaults/useAppNavigation'
+import { useAuthStore } from '../piniaStores'
 
 export type LinkTargetRouteOptions = {
   space: SpaceResource
@@ -37,16 +43,20 @@ export type LinkTargetRouteOptions = {
 }
 
 /**
- * Builds the target route for link resolving (private links, public links).
+ * Builds the target route for link resolving (private links, public links, guest links).
  * Resolves to the resource's default app if there is one, otherwise to the file list.
  */
 export const useLinkTargetRoute = () => {
+  const authStore = useAuthStore()
   const linkSpace = ref<SpaceResource>()
   const { getResourceLink } = useResourceLink({ space: linkSpace })
 
   const getFileListLocation = (space: SpaceResource, path: string) => {
     if (isPublicSpaceResource(space)) {
       return createLocationPublic('files-public-link')
+    }
+    if (authStore.isGuestContext) {
+      return createLocationGuest('files-guest-link')
     }
     if (isShareSpaceResource(space) && path === '/') {
       return createLocationShares('files-shares-with-me')
@@ -69,9 +79,13 @@ export const useLinkTargetRoute = () => {
 
     // inside a public link the parent folder id of a resource points to a location outside of the
     // link, so the link root is the only id that can be resolved by the file list.
-    const parentFolderId = isPublicSpaceResource(targetSpace)
-      ? targetSpace.fileId
-      : resource.parentFolderId
+    // the same applies to the root of a single file share, which has no parent within the share.
+    let parentFolderId = resource.parentFolderId
+    if (isPublicSpaceResource(targetSpace)) {
+      parentFolderId = targetSpace.fileId
+    } else if (isShareSpaceResource(targetSpace) && path === '/') {
+      parentFolderId = undefined
+    }
 
     if (openWithDefaultApp && !details) {
       // try to get the resource link via a registered action for this resource type.

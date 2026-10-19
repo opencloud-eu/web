@@ -2,15 +2,114 @@ import { useLocalStorage, usePreferredDark } from '@vueuse/core'
 import { ThemeConfigType, useThemeStore } from '../../../../src/composables/piniaStores'
 import { mockDeep } from 'vitest-mock-extended'
 import { createPinia, setActivePinia } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 
-vi.mock('@vueuse/core', () => {
-  return { useLocalStorage: vi.fn(() => ref('')), usePreferredDark: vi.fn(() => ref(false)) }
+vi.mock('@vueuse/core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@vueuse/core')>()
+  return {
+    ...actual,
+    useLocalStorage: vi.fn(() => ref('')),
+    usePreferredDark: vi.fn(() => computed(() => false))
+  }
 })
 
 describe('useThemeStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    vi.mocked(useLocalStorage)
+      .mockReset()
+      .mockImplementation(() => ref(''))
+    vi.mocked(usePreferredDark).mockReturnValue(computed(() => false))
+  })
+
+  describe('persisted color scheme', () => {
+    const themeConfig = mockDeep<ThemeConfigType>({
+      clients: {
+        web: {
+          defaults: {},
+          themes: [
+            { label: 'light', isDark: false },
+            { label: 'dark', isDark: true }
+          ]
+        }
+      }
+    })
+
+    beforeEach(async () => {
+      const { useLocalStorage: actualUseLocalStorage } =
+        await vi.importActual<typeof import('@vueuse/core')>('@vueuse/core')
+      vi.mocked(useLocalStorage).mockImplementation(actualUseLocalStorage)
+      localStorage.clear()
+    })
+
+    afterEach(() => {
+      useThemeStore().$dispose()
+      localStorage.clear()
+    })
+
+    it.each([true, false])(
+      'removes a stale color scheme when initializing automatic mode (dark: %s)',
+      async (isDark) => {
+        localStorage.setItem('oc_currentThemeIsDark', String(!isDark))
+        vi.mocked(usePreferredDark).mockReturnValue(computed(() => isDark))
+
+        const store = useThemeStore()
+        store.initializeThemes(themeConfig)
+        await nextTick()
+
+        expect(store.currentTheme.isDark).toBe(isDark)
+        expect(store.isCurrentThemeAutoSystem).toBe(true)
+        expect(localStorage.getItem('oc_currentThemeIsDark')).toBeNull()
+        expect(localStorage.getItem('oc_currentThemeName')).toBeNull()
+      }
+    )
+
+    it.each([true, false])(
+      'removes the saved color scheme when switching to automatic (dark: %s)',
+      async (isDark) => {
+        vi.mocked(usePreferredDark).mockReturnValue(computed(() => isDark))
+
+        const store = useThemeStore()
+        expect(localStorage.getItem('oc_currentThemeIsDark')).toBeNull()
+        store.initializeThemes(themeConfig)
+        const selectedTheme = store.availableThemes.find((theme) => theme.isDark !== isDark)
+        store.setAndApplyTheme(selectedTheme)
+        await nextTick()
+
+        expect(localStorage.getItem('oc_currentThemeIsDark')).toBe(String(!isDark))
+        expect(localStorage.getItem('oc_currentThemeName')).toBe(selectedTheme.label)
+        expect(store.isCurrentThemeAutoSystem).toBe(false)
+
+        store.setAutoSystemTheme()
+        await nextTick()
+
+        expect(store.currentTheme.isDark).toBe(isDark)
+        expect(store.isCurrentThemeAutoSystem).toBe(true)
+        expect(localStorage.getItem('oc_currentThemeIsDark')).toBeNull()
+        expect(localStorage.getItem('oc_currentThemeName')).toBeNull()
+      }
+    )
+
+    it.each([true, false])(
+      'restores a manually selected color scheme (dark: %s)',
+      async (isDark) => {
+        const selectedTheme = themeConfig.clients.web.themes.find(
+          (theme) => theme.isDark === isDark
+        )
+        localStorage.setItem('oc_currentThemeName', selectedTheme.label)
+        localStorage.setItem('oc_currentThemeIsDark', String(isDark))
+        vi.mocked(usePreferredDark).mockReturnValue(computed(() => !isDark))
+
+        const store = useThemeStore()
+        store.initializeThemes(themeConfig)
+        await nextTick()
+
+        expect(store.currentTheme.isDark).toBe(isDark)
+        expect(store.isCurrentThemeAutoSystem).toBe(false)
+        expect(localStorage.getItem('oc_currentThemeIsDark')).toBe(String(isDark))
+        expect(localStorage.getItem('oc_currentThemeName')).toBe(selectedTheme.label)
+      }
+    )
   })
 
   describe('initializeThemes', () => {

@@ -13,6 +13,11 @@ export const isItemInCurrentFolder = ({
     return false
   }
 
+  // the root of an incoming share has the share jail id, the items in it reference the id of the shared resource
+  if (currentFolder.fileId && currentFolder.fileId === parentFolderId) {
+    return true
+  }
+
   if (!extractNodeId(currentFolder.id)) {
     // if we don't have a nodeId here, we have a space (root) as current folder and can only check against the storageId
     const spaceNodeId = currentFolder.id.split('$')[1]

@@ -25,11 +25,11 @@ export const useResourceViewSelection = ({
   const getResourceCheckboxLabel = (resource: Resource) => {
     switch (resource.type) {
       case 'folder':
-        return $gettext('Select folder')
+        return $gettext('Select folder %{name}', { name: resource.name })
       case 'space':
-        return $gettext('Select space')
+        return $gettext('Select space %{name}', { name: resource.name })
       default:
-        return $gettext('Select file')
+        return $gettext('Select file %{name}', { name: resource.name })
     }
   }
 

@@ -83,6 +83,15 @@ export function useKeyboardTableNavigation(
     selectedRows.value = [...unref(paginatedResources)]
   }
 
+  function handleSpaceAction(event: KeyboardEvent) {
+    // a focused checkbox toggles its own row natively
+    if (event.target instanceof HTMLInputElement && event.target.type === 'checkbox') {
+      return
+    }
+    event.preventDefault()
+    toggleLastSelectedRow()
+  }
+
   function handleEscAction() {
     keyActions.resetSelectionCursor()
     selectedRows.value = []
@@ -97,6 +106,6 @@ export function useKeyboardTableNavigation(
     handleShiftAction(false)
   )
   keyActions.bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.A }, handleSelectAllAction)
-  keyActions.bindKeyAction({ primary: Key.Space }, toggleLastSelectedRow)
+  keyActions.bindKeyAction({ primary: Key.Space }, handleSpaceAction, { preventDefault: false })
   keyActions.bindKeyAction({ primary: Key.Esc }, handleEscAction)
 }

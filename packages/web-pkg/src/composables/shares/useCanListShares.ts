@@ -6,19 +6,20 @@ import {
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { useCapabilityStore } from '../piniaStores'
+import { useAuthStore, useCapabilityStore } from '../piniaStores'
 import { isShareSpaceResource } from '@opencloud-eu/web-client'
 import { useGetMatchingSpace } from '../spaces'
 
 export const useCanListShares = () => {
   const capabilityStore = useCapabilityStore()
+  const authStore = useAuthStore()
   const { isPersonalSpaceRoot } = useGetMatchingSpace()
 
   const canListShares = ({ space, resource }: { space: SpaceResource; resource: Resource }) => {
     if (!capabilityStore.sharingApiEnabled) {
       return false
     }
-    if (isPublicSpaceResource(space)) {
+    if (isPublicSpaceResource(space) || authStore.isGuestContext) {
       return false
     }
     if (isPersonalSpaceRoot(resource)) {

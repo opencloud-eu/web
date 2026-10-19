@@ -6,12 +6,14 @@ import {
   FileActionOptionsWithEvent,
   useCanShare,
   useInterceptModifierClick,
+  useResourcesStore,
   useSideBar
 } from '@opencloud-eu/web-pkg'
 
 export const useFileActionsShowShares = () => {
   const { $gettext } = useGettext()
   const { canShare } = useCanShare()
+  const resourcesStore = useResourcesStore()
   const { openSideBarPanel } = useSideBar()
   const { interceptModifierClick } = useInterceptModifierClick()
 
@@ -22,6 +24,8 @@ export const useFileActionsShowShares = () => {
       return
     }
 
+    // the sidebar shows the selection, which can differ from the resource, e.g. in the breadcrumb
+    resourcesStore.setSelection([resource.id])
     openSideBarPanel('sharing')
   }
 

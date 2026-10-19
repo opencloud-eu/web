@@ -51,12 +51,14 @@ describe('useFileActionsCreateNewFile', () => {
 
   describe('isVisible', () => {
     it.each([
-      { permissions: 'CKZ', visible: false },
-      { permissions: 'DNVCKZ', visible: true }
+      { driveType: 'public', permissions: 'CKZ', visible: false },
+      { driveType: 'public', permissions: 'DNVCKZ', visible: true },
+      { driveType: 'share', permissions: 'SCK', visible: false },
+      { driveType: 'share', permissions: 'SDNVCK', visible: true }
     ])(
-      'visible: $visible in a public link with folder permissions "$permissions"',
-      ({ permissions, visible }) => {
-        const space = mock<SpaceResource>({ id: '1', driveType: 'public' })
+      'visible: $visible in a $driveType space with folder permissions "$permissions"',
+      ({ driveType, permissions, visible }) => {
+        const space = mock<SpaceResource>({ id: '1', driveType })
         getWrapper({
           space,
           currentFolder: mock<Resource>({ id: '1', path: '/', permissions, canUpload: () => true }),

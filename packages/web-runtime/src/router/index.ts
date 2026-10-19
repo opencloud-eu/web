@@ -6,6 +6,7 @@ import OidcCallbackPage from '../pages/oidcCallback.vue'
 import ResolvePublicLinkPage from '../pages/resolvePublicLink.vue'
 import ResolvePrivateLinkPage from '../pages/resolvePrivateLink.vue'
 import ResolveGuestLinkPage from '../pages/resolveGuestLink.vue'
+import RenewGuestLinkPage from '../pages/renewGuestLink.vue'
 import { setupRouterHooks } from './setupRouter'
 import { setupAuthGuard } from './setupAuthGuard'
 import { patchRouter } from './patchCleanPath'
@@ -98,6 +99,12 @@ const routes: readonly RouteRecordRaw[] = [
     meta: { title: $gettext('OCM link'), authContext: 'anonymous' }
   },
   {
+    path: '/g/renew/:permissionId',
+    name: routeNames.renewGuestLink,
+    component: RenewGuestLinkPage,
+    meta: { title: $gettext('Guest invitation'), authContext: 'anonymous' }
+  },
+  {
     path: '/g/:token',
     name: routeNames.resolveGuestLink,
     component: ResolveGuestLinkPage,
@@ -120,36 +127,37 @@ const routes: readonly RouteRecordRaw[] = [
         path: 'information',
         name: locationAccountInformation.name,
         component: AccountInformation,
-        meta: { authContext: 'user' }
+        meta: { title: $gettext('Profile'), authContext: 'user' }
       },
       {
         path: 'preferences',
         name: locationAccountPreferences.name,
         component: AccountPreferences,
-        meta: { authContext: 'hybrid' }
+        meta: { title: $gettext('Preferences'), authContext: 'hybrid' }
       },
       {
         path: 'apps',
         name: locationAccountExtensions.name,
         component: AccountExtensions,
-        meta: { authContext: 'user' }
+        meta: { title: $gettext('Apps'), authContext: 'user' }
       },
       {
         path: 'calendar',
         name: locationAccountCalendar.name,
-        component: AccountCalendar
+        component: AccountCalendar,
+        meta: { title: $gettext('Calendar') }
       },
       {
         path: 'gdpr',
         name: locationAccountGDPR.name,
         component: AccountGDPR,
-        meta: { authContext: 'user' }
+        meta: { title: $gettext('GDPR'), authContext: 'user' }
       },
       {
         path: 'extension',
         name: locationAccountExtension.name,
         component: AccountExtensionLayout,
-        meta: { authContext: 'user' }
+        meta: { title: $gettext('App preferences'), authContext: 'user' }
       }
     ]
   },

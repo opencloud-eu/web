@@ -114,6 +114,10 @@ export function useAppFolderHandling({
 
       if (isShareSpaceResource(space)) {
         children.forEach((r) => (r.remoteItemId = space.id))
+        // the root of a single file share is the file itself, needed to resolve its share space
+        if (!resource.remoteItemId) {
+          resource.remoteItemId = space.id
+        }
       }
 
       if (resource.type === 'file') {

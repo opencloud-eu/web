@@ -43,16 +43,16 @@
             class="oc-notifications-item [&>a]:text-role-on-surface z-1000 relative"
           >
             <component
-              :is="el.computedLink ? 'router-link' : 'div'"
+              :is="notificationLinks[index] ? 'router-link' : 'div'"
               class="flex items-center gap-2"
-              :to="el.computedLink"
-              @click="onNotificationClick(el)"
+              :to="notificationLinks[index]"
+              @click="onNotificationClick(index)"
             >
               <user-avatar
                 :user-id="el.messageRichParameters?.user?.id || el.user"
                 :user-name="el.messageRichParameters?.user?.displayname || el.user"
               />
-              <div>
+              <div class="min-w-0 wrap-anywhere">
                 <div v-if="!el.message && !el.messageRich" class="oc-notifications-subject">
                   <span v-text="el.subject" />
                 </div>
@@ -92,6 +92,7 @@ import {
   formatDateFromISO,
   formatRelativeDateFromISO,
   useClientService,
+  useMessages,
   UserAvatar
 } from '@opencloud-eu/web-pkg'
 import { OcDrop } from '@opencloud-eu/design-system/components'
@@ -109,6 +110,7 @@ const spacesStore = useSpacesStore()
 const capabilityStore = useCapabilityStore()
 const clientService = useClientService()
 const language = useGettext()
+const { showErrorMessage } = useMessages()
 
 const notificationsDrop = useTemplateRef<InstanceType<typeof OcDrop>>('notificationsDrop')
 const notifications: Ref<Notification[]> = ref([])
@@ -186,8 +188,10 @@ const getLink = ({ messageRichParameters, object_type }: Notification) => {
   return null
 }
 
-function onNotificationClick({ computedLink }: Notification) {
-  if (!computedLink) {
+const notificationLinks = computed(() => unref(notifications).map((n) => getLink(n)))
+
+function onNotificationClick(index: number) {
+  if (!unref(notificationLinks)[index]) {
     return
   }
   unref(notificationsDrop)?.hide()
@@ -223,16 +227,18 @@ const deleteNotificationsTask = useTask(function* (signal, ids) {
       { data: { ids } },
       { signal }
     )
+    notifications.value = unref(notifications).filter((n) => !ids.includes(n.notification_id))
   } catch (e) {
     console.error(e)
-  } finally {
-    notifications.value = unref(notifications).filter((n) => !ids.includes(n.notification_id))
+    showErrorMessage({
+      title: language.$gettext('Failed to mark notifications as read'),
+      errors: [e]
+    })
   }
 }).restartable()
 
 const setAdditionalNotificationData = (notification: Notification) => {
   notification.computedMessage = getMessage(notification)
-  notification.computedLink = getLink(notification)
 }
 
 const onSSENotificationEvent = (event: MessageEvent) => {

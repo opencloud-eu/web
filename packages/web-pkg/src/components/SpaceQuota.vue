@@ -4,6 +4,7 @@
     <oc-progress
       v-if="spaceQuota.total"
       :value="quotaUsagePercent"
+      :aria-label="spaceStorageDetailsLabel"
       :max="100"
       size="small"
       :color="quotaProgressColor"

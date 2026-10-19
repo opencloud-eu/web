@@ -115,6 +115,11 @@ export const extensions = (appInfo: ApplicationInformation) => {
           return true
         }
 
+        // the root of a single file share is the file itself
+        if (unref(currentFolder)?.isFolder === false) {
+          return true
+        }
+
         // permission checks on the space are preferred over the current folder,
         // as the current folder resets on every navigation, causing a button flicker.
         const space = unref(currentSpace)

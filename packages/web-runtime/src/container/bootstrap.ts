@@ -1,6 +1,6 @@
 import { buildApplication, loadApplication, NextApplication } from './application'
 import { RouteLocationRaw, Router, RouteRecordNormalized } from 'vue-router'
-import { App, computed, watch } from 'vue'
+import { App, computed, watch, WatchStopHandle } from 'vue'
 import { loadTheme } from '../helpers/theme'
 import { createGettext, GetTextOptions, Language, Translations } from 'vue3-gettext'
 import {
@@ -508,16 +508,19 @@ export const announceArchiverService = ({
   app,
   configStore,
   userStore,
+  authStore,
   capabilityStore
 }: {
   app: App
   configStore: ConfigStore
   userStore: UserStore
+  authStore: AuthStore
   capabilityStore: CapabilityStore
 }): void => {
   app.config.globalProperties.$archiverService = new ArchiverService(
     app.config.globalProperties.$clientService,
     userStore,
+    authStore,
     configStore.serverUrl,
     computed(
       () =>
@@ -859,12 +862,12 @@ export const registerSSEEventListeners = ({
   userStore: UserStore
   authStore: AuthStore
   router: Router
-}): void => {
+}): WatchStopHandle => {
   const resourceQueue = new PQueue({
     concurrency: configStore.options.concurrentRequests.sse
   })
 
-  watch(
+  const stopFolderWatch = watch(
     () => resourcesStore.currentFolder,
     () => {
       resourceQueue.clear()
@@ -1109,6 +1112,75 @@ export const registerSSEEventListeners = ({
       ...sseEventWrapperOptions,
       method: onSSEBackchannelLogoutEvent
     })
+  )
+
+  // the listeners themselves are dropped with the SSE client reset
+  return stopFolderWatch
+}
+
+/**
+ * announceGuestContext loads the role definitions and registers SSE listeners
+ * whenever a guest context becomes active.
+ *
+ * @param authStore
+ * @param capabilityStore
+ * @param clientService
+ * @param sharesStore
+ * @param spacesStore
+ * @param registerSSE
+ */
+export const announceGuestContext = ({
+  authStore,
+  capabilityStore,
+  clientService,
+  sharesStore,
+  spacesStore,
+  registerSSE
+}: {
+  authStore: AuthStore
+  capabilityStore: CapabilityStore
+  clientService: ClientService
+  sharesStore: SharesStore
+  spacesStore: SpacesStore
+  registerSSE: () => WatchStopHandle
+}): WatchStopHandle => {
+  let stopSSEWatch: WatchStopHandle
+  return watch(
+    () => authStore.isGuestContext,
+    async (isGuestContext, _, onCleanup) => {
+      stopSSEWatch?.()
+      stopSSEWatch = undefined
+      if (!isGuestContext) {
+        return
+      }
+
+      let superseded = false
+      onCleanup(() => {
+        superseded = true
+      })
+
+      try {
+        sharesStore.setGraphRoles(
+          await clientService.graphAuthenticated.permissions.listRoleDefinitions()
+        )
+      } catch (error) {
+        console.error('role definitions could not be loaded for the guest', error)
+      }
+
+      // guest context ended or restarted while loading
+      if (superseded) {
+        return
+      }
+
+      if (capabilityStore.supportSSE) {
+        stopSSEWatch = registerSSE()
+      }
+
+      spacesStore.setSpacesInitialized(true)
+    },
+    {
+      immediate: true
+    }
   )
 }
 

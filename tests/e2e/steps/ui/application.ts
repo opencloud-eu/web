@@ -1,7 +1,7 @@
-import { When } from '../../environment/fixtures'
+import { Then, When } from '../../environment/fixtures'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
-import { waitForSSEEvent } from '../../support/utils/locator'
+import { expectNoSSEEvent, waitForSSEEvent } from '../../support/utils/locator'
 import { pageObjectFor, actorPage } from '../../environment/pageObject'
 
 When(
@@ -40,6 +40,13 @@ When(
   '{string} should get {string} SSE event',
   async ({}: { world: World }, user: string, event: string): Promise<void> => {
     await waitForSSEEvent(user, event)
+  }
+)
+
+Then(
+  '{string} should not get {string} SSE event',
+  async ({}: { world: World }, user: string, event: string): Promise<void> => {
+    await expectNoSSEEvent(user, event)
   }
 )
 

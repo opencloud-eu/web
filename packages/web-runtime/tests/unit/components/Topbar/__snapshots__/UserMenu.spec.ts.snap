@@ -201,6 +201,7 @@ exports[`User Menu component > when user is not logged in > renders a navigation
   </oc-button-stub>
   <oc-drop-stub title="Account" closeonclick="true" dropid="account-info-container" mode="click" offset="5" paddingsize="small" maxwidth="400" position="bottom-start" toggle="#_userMenuButton" enforcedroponmobile="false" teleport="" ismenu="true" class="overflow-hidden">
     <oc-list-stub raw="false" class="user-menu-list">
+      <!--v-if-->
       <li class="flex items-center">
         <oc-button-stub to="[object Object]" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" id="oc-topbar-account-manage">
           <oc-icon-stub accessiblelabel="" color="" filltype="line" name="settings-4" sizeclass="size-5" type="span" uniqueids="false" class="p-1"></oc-icon-stub> <span>Preferences</span>
