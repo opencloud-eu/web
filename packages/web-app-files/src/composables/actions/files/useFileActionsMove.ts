@@ -13,12 +13,14 @@ import { computed, markRaw, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   canBeMoved,
+  createFileRouteOptions,
   FileAction,
   FileActionOptions,
   LocationPickerModal,
   ResourceTransfer,
   TransferType,
   isLocationCommonActive,
+  isSameResource,
   useClientService,
   useFolderLink,
   useGetMatchingSpace,
@@ -91,6 +93,18 @@ export const useFileActionsMove = () => {
         !isLocationCommonActive(router, 'files-common-search')
 
       if (shouldRemoveResourcesFromView) {
+        const movedCurrentFolder = successful.find((resource) =>
+          isSameResource(resource, unref(currentFolder))
+        )
+        if (movedCurrentFolder) {
+          return router.push(
+            createFileRouteOptions(sourceSpace, {
+              path: movedCurrentFolder.path,
+              fileId: movedCurrentFolder.fileId
+            })
+          )
+        }
+
         resourcesStore.removeResources(successful)
         return
       }
