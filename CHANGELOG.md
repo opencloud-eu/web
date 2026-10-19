@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- Keep Preview photo-roll icons centered when the sidebar opens [[#3840](https://github.com/opencloud-eu/web/pull/3840)]
 - fix: don't confirm a modal while its confirm button is disabled [[#3880](https://github.com/opencloud-eu/web/pull/3880)]
 - fix: leave a space when it gets disabled or deleted [[#3774](https://github.com/opencloud-eu/web/pull/3774)]
 - fix: only renew the login when admins rename themselves [[#3882](https://github.com/opencloud-eu/web/pull/3882)]
