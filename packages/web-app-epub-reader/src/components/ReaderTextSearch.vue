@@ -111,16 +111,19 @@ const searchTerm = ref('')
 const searchDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('searchDropRef')
 const { $gettext } = useGettext()
 const skipNextSearchTermEmit = ref(false)
+// true between typing and the debounced search request, so the status doesn't show 0/0 meanwhile
+const isSearchPending = ref(false)
 const emitSearchTermChangedDebounced = debounce((value: string) => {
+  isSearchPending.value = false
   emit('searchTermChanged', value.trim())
 }, SEARCH_TERM_DEBOUNCE_MS)
 
 const searchResultStatusLabel = computed(() => {
-  if (searching) {
-    return $gettext('Searching...')
-  }
   if (unref(searchTerm).trim() === '') {
     return ''
+  }
+  if (searching || unref(isSearchPending)) {
+    return $gettext('Searching...')
   }
   if (resultCount <= 0 || currentResultIndex < 0) {
     return '0/0'
@@ -134,11 +137,13 @@ watch(searchTerm, (value) => {
     skipNextSearchTermEmit.value = false
     return
   }
+  isSearchPending.value = true
   emitSearchTermChangedDebounced(value)
 })
 
 function onCloseSearch() {
   emitSearchTermChangedDebounced.cancel()
+  isSearchPending.value = false
   skipNextSearchTermEmit.value = true
   searchTerm.value = ''
   emit('searchTermChanged', '')

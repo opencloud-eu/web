@@ -3,11 +3,15 @@ import ReaderProgressBar from '../../../src/components/ReaderProgressBar.vue'
 
 const progressSliderSelector = '.epub-reader-progress-slider input[type="range"]'
 
-function getWrapper({ enabled = true }: { enabled?: boolean } = {}) {
+function getWrapper({
+  enabled = true,
+  loading = !enabled
+}: { enabled?: boolean; loading?: boolean } = {}) {
   return mount(ReaderProgressBar, {
     props: {
       readingProgressPercent: 12.3,
-      enabled
+      enabled,
+      loading
     },
     global: {
       plugins: [...defaultPlugins()]
@@ -90,11 +94,20 @@ describe('ReaderProgressBar component', () => {
     expect(getRowHeightClasses(false)).toEqual(loadedRowHeightClasses)
   })
 
+  it('shows nothing but keeps its height when the book has no locations', () => {
+    const wrapper = getWrapper({ enabled: false, loading: false })
+
+    expect(wrapper.find(progressSliderSelector).exists()).toBe(false)
+    expect(wrapper.find('.epub-reader-progress-shimmer').exists()).toBe(false)
+    expect(wrapper.element.firstElementChild.classList.contains('h-4')).toBe(true)
+  })
+
   it('omits trailing decimal zeros in the displayed label', () => {
     const wrapper = mount(ReaderProgressBar, {
       props: {
         readingProgressPercent: 12,
-        enabled: true
+        enabled: true,
+        loading: false
       },
       global: {
         plugins: [...defaultPlugins()]
