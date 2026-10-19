@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: follow the current folder when it is moved [[#3873](https://github.com/opencloud-eu/web/pull/3873)]
+- fix: show errors for failed drag and drop moves [[#3872](https://github.com/opencloud-eu/web/pull/3872)]
 - Make archiver work with guest link auth [[#3900](https://github.com/opencloud-eu/web/pull/3900)]
 - Fix background flash with automatic theme [[#3843](https://github.com/opencloud-eu/web/pull/3843)]
 - Keep Preview photo-roll icons centered when the sidebar opens [[#3840](https://github.com/opencloud-eu/web/pull/3840)]
