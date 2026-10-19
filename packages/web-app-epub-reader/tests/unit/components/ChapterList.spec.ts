@@ -1,11 +1,11 @@
 import { mount, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 import ChapterList from '../../../src/components/ChapterList.vue'
-import { NavItem } from 'epubjs'
+import { Chapter } from '../../../src/types'
 import { nextTick } from 'vue'
 
-const chapters: NavItem[] = [
-  { id: '1', label: 'Chapter 1', href: 'c1' } as NavItem,
-  { id: '2', label: 'Chapter 2', href: 'c2' } as NavItem
+const chapters: Chapter[] = [
+  { id: '1', label: 'Chapter 1', href: 'c1', depth: 0 },
+  { id: '2', label: 'Chapter 2', href: 'c2', depth: 1 }
 ]
 
 describe('ChapterList component', () => {
