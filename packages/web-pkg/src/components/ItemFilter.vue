@@ -14,7 +14,7 @@
           v-text="noItemsMessage"
         />
         <oc-text-input
-          v-if="canFilterOptions && items.length"
+          v-if="canFilterOptions && (items.length || !noItemsMessage)"
           ref="filterInputRef"
           v-model="filterTerm"
           class="item-filter-input mb-4 mt-2"
