@@ -248,7 +248,7 @@ describe('PreviewService', () => {
             canDownload: () => true
           })
         })
-        expect(preview).toEqual(`${downloadURL}?scalingup=0&preview=1&a=1`)
+        expect(preview).toEqual(`${downloadURL}?scalingup=0&preview=1`)
       })
     })
   })

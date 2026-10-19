@@ -2,7 +2,8 @@ import {
   createFileRouteOptions,
   ImageDimension,
   isItemInCurrentFolder,
-  isLocationCommonActive
+  isLocationCommonActive,
+  ProcessorType
 } from '@opencloud-eu/web-pkg'
 import { SSEEventOptions } from './types'
 
@@ -134,7 +135,8 @@ export const onSSEProcessingFinishedEvent = async ({
   const preview = await previewService.loadPreview({
     resource,
     space,
-    dimensions: ImageDimension.Thumbnail
+    dimensions: ImageDimension.Thumbnail,
+    processor: ProcessorType.enum.thumbnail
   })
 
   if (preview) {
