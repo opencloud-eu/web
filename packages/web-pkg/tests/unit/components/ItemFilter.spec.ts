@@ -37,7 +37,12 @@ describe('ItemFilter', () => {
   })
   it('shows the no items message instead of the list if there are no items', () => {
     const { wrapper } = getWrapper({
-      props: { items: [], noItemsMessage: 'Nothing here yet', showOptionFilter: true }
+      props: {
+        items: [],
+        noItemsMessage: 'Nothing here yet',
+        showOptionFilter: true,
+        filterableAttributes: ['name']
+      }
     })
     expect(wrapper.find('.item-filter-no-items').text()).toBe('Nothing here yet')
     expect(wrapper.find('.item-filter-input').exists()).toBeFalsy()
@@ -58,6 +63,20 @@ describe('ItemFilter', () => {
         props: { showOptionFilter: true, filterableAttributes: ['name'] }
       })
       expect(wrapper.find(selectors.filterInput).exists()).toBeTruthy()
+    })
+    it('keeps the search available without an empty-state message and filters items arriving later', async () => {
+      const { wrapper } = getWrapper({
+        props: { items: [], showOptionFilter: true, filterableAttributes: ['name'] }
+      })
+      expect(wrapper.find(selectors.filterInput).exists()).toBeTruthy()
+
+      await wrapper.find(selectors.filterInput).setValue('Albert')
+      await wrapper.setProps({ items: filterItems })
+
+      expect(wrapper.findAll(selectors.filterListItem)).toHaveLength(1)
+      expect(wrapper.find(selectors.filterListItem).attributes('data-test-value')).toBe(
+        'Albert Einstein'
+      )
     })
     it.each([
       { filterTerm: '', expectedResult: 2 },
