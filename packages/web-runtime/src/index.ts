@@ -101,7 +101,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   })
 
   announceLoadingService({ app })
-  announceArchiverService({ app, configStore, userStore, capabilityStore })
+  announceArchiverService({ app, configStore, userStore, authStore, capabilityStore })
   announcePreviewService({
     app,
     configStore,
