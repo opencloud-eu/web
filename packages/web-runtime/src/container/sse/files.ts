@@ -17,8 +17,8 @@ import { SSEEventOptions } from './types'
 
 /**
  * Returns the space with the given id. Share recipients don't know the space a shared
- * resource lives in, so if it is the space of the current folder, the current space
- * (e.g. the share) is used to access the resource instead.
+ * resource lives in, so if it is the space of the current folder, the current share
+ * space is used to access the resource instead.
  */
 const getEventSpace = (
   { spacesStore, resourcesStore }: Pick<SSEEventOptions, 'spacesStore' | 'resourcesStore'>,
@@ -29,8 +29,13 @@ const getEventSpace = (
     return space
   }
 
-  if (spaceId && resourcesStore.currentFolder?.storageId === spaceId) {
-    return spacesStore.currentSpace
+  const currentSpace = spacesStore.currentSpace
+  if (
+    spaceId &&
+    isShareSpaceResource(currentSpace) &&
+    resourcesStore.currentFolder?.storageId === spaceId
+  ) {
+    return currentSpace
   }
 }
 
@@ -285,6 +290,16 @@ export const onSSEItemMovedEvent = async ({
     return
   }
 
+  // the new location might not be accessible anymore (e.g. moved out of a share), hence don't load the resource
+  if (!isItemInCurrentFolder({ resourcesStore, parentFolderId: sseData.parentitemid })) {
+    const resource = resourcesStore.resources.find((r) => r.id === sseData.itemid)
+    if (!resource) {
+      return
+    }
+
+    return resourcesStore.removeResources([resource])
+  }
+
   const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
   if (!space) {
     return
@@ -296,8 +311,9 @@ export const onSSEItemMovedEvent = async ({
     return
   }
 
+  // check again for the current folder in case the user has navigated away in the meantime
   if (!isItemInCurrentFolder({ resourcesStore, parentFolderId: resource.parentFolderId })) {
-    return resourcesStore.removeResources([resource])
+    return false
   }
 
   resourcesStore.upsertResource(resource)
