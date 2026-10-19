@@ -20,6 +20,11 @@ interface ConflictedResource {
   existingIsFolder?: boolean
 }
 
+// a file uploaded onto an existing folder or vice versa, which can neither be replaced nor merged
+function isTypeMismatch({ type, existingIsFolder }: ConflictedResource) {
+  return existingIsFolder !== undefined && existingIsFolder !== (type === 'folder')
+}
+
 // renames the first of the relative segments the endpoint ends with, leaving the current folder path untouched
 function renameUploadFolderInEndpoint(endpoint: string, segments: string[], newFolderName: string) {
   const encodedTail = `/${segments.map(encodeURIComponent).join('/')}`
@@ -65,6 +70,7 @@ export class UploadResourceConflict extends ConflictDialog {
           suggestMerge,
           separateSkipHandling,
           existingIsFolder,
+          hideSecondaryAction: existingIsFolder !== resource.isFolder,
           callbackFn: (conflict: ResolveConflict) => {
             resolve(conflict)
           }
@@ -104,37 +110,43 @@ export class UploadResourceConflict extends ConflictDialog {
     files: OcUppyFile[],
     conflicts: ConflictedResource[]
   ): Promise<{ files: OcUppyFile[]; mergedFolders: string[] }> {
-    let fileCount = 0
-    let folderCount = 0
     const resolvedFileConflicts: { name: string; strategy: ResolveStrategy }[] = []
     const resolvedFolderConflicts: { name: string; strategy: ResolveStrategy }[] = []
-    let doForAllConflicts = false
-    let allConflictsStrategy
-    let doForAllConflictsFolders = false
-    let allConflictsStrategyFolders
+    const allStrategies: Record<
+      'file' | 'folder',
+      { regular?: ResolveStrategy; typeMismatch?: ResolveStrategy }
+    > = { file: {}, folder: {} }
 
-    for (const conflict of conflicts) {
+    for (const [index, conflict] of conflicts.entries()) {
       const isFolder = conflict.type === 'folder'
       const conflictArray = isFolder ? resolvedFolderConflicts : resolvedFileConflicts
+      const strategies = allStrategies[isFolder ? 'folder' : 'file']
+      const typeMismatch = isTypeMismatch(conflict)
+      const allStrategy =
+        typeMismatch && strategies.typeMismatch !== undefined
+          ? strategies.typeMismatch
+          : strategies.regular
+      const canApplyAllStrategy =
+        allStrategy !== undefined &&
+        (!typeMismatch || [ResolveStrategy.SKIP, ResolveStrategy.KEEP_BOTH].includes(allStrategy))
 
-      if (doForAllConflicts && !isFolder) {
+      if (canApplyAllStrategy) {
         conflictArray.push({
           name: conflict.name,
-          strategy: allConflictsStrategy
+          strategy: allStrategy
         })
         continue
       }
-      if (doForAllConflictsFolders && isFolder) {
-        conflictArray.push({
-          name: conflict.name,
-          strategy: allConflictsStrategyFolders
-        })
-        continue
-      }
 
-      const conflictsLeft =
-        conflicts.filter((c) => c.type === conflict.type).length -
-        (isFolder ? folderCount : fileCount)
+      const conflictsLeft = conflicts.slice(index).filter((remaining) => {
+        if (remaining.type !== conflict.type) {
+          return false
+        }
+        if (typeMismatch) {
+          return isTypeMismatch(remaining)
+        }
+        return !isTypeMismatch(remaining) || strategies.typeMismatch === undefined
+      }).length
 
       const resolvedConflict: ResolveConflict = await this.resolveFileExists(
         { name: conflict.name, isFolder } as Resource,
@@ -143,15 +155,8 @@ export class UploadResourceConflict extends ConflictDialog {
         true,
         conflict.existingIsFolder
       )
-      isFolder ? folderCount++ : fileCount++
       if (resolvedConflict.doForAllConflicts) {
-        if (isFolder) {
-          doForAllConflictsFolders = true
-          allConflictsStrategyFolders = resolvedConflict.strategy
-        } else {
-          doForAllConflicts = true
-          allConflictsStrategy = resolvedConflict.strategy
-        }
+        strategies[typeMismatch ? 'typeMismatch' : 'regular'] = resolvedConflict.strategy
       }
 
       conflictArray.push({
