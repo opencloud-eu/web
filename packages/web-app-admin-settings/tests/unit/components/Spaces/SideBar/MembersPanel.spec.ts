@@ -13,10 +13,16 @@ import MembersRoleSection from '../../../../../src/components/Spaces/SideBar/Mem
 import { Permission } from '@opencloud-eu/web-client/graph/generated'
 import { OcPaginationInline } from '@opencloud-eu/design-system/components'
 
+function roleWithActions(id: string, displayName: string, amountOfActions: number) {
+  const allowedResourceActions = Array.from({ length: amountOfActions }, (_, i) => `action-${i}`)
+  return mock<ShareRole>({ id, displayName, rolePermissions: [{ allowedResourceActions }] })
+}
+
+// roles are sorted by their amount of allowed actions
 const graphRoles = {
-  '1': mock<ShareRole>({ id: '1', displayName: 'Managers', rolePermissions: [] }),
-  '2': mock<ShareRole>({ id: '2', displayName: 'Editors', rolePermissions: [] }),
-  '3': mock<ShareRole>({ id: '3', displayName: 'Viewers', rolePermissions: [] })
+  '1': roleWithActions('1', 'Managers', 3),
+  '2': roleWithActions('2', 'Editors', 2),
+  '3': roleWithActions('3', 'Viewers', 1)
 }
 
 const spaceMock = {
@@ -64,6 +70,66 @@ describe('MembersPanel', () => {
         .findAllComponents<typeof MembersRoleSection>(selectors.membersRolePanelStub)
         .map((section) => section.props().permissions[0].grantedToV2.user.displayName)
     ).toEqual(['admin', 'marie', 'einstein'])
+  })
+  it('should sort members by name within a role, independent of the order returned by the server', () => {
+    const permissions = [
+      mock<Permission>({
+        id: 'p-zoe',
+        grantedToV2: { user: { displayName: 'Zoe' } },
+        roles: ['1']
+      }),
+      mock<Permission>({
+        id: 'p-marie',
+        grantedToV2: { user: { displayName: 'marie' } },
+        roles: ['3']
+      }),
+      mock<Permission>({
+        id: 'p-group',
+        grantedToV2: { group: { displayName: 'Physics' } },
+        roles: ['3']
+      }),
+      mock<Permission>({
+        id: 'p-admin-2',
+        grantedToV2: { user: { displayName: 'Admin' } },
+        roles: ['3']
+      }),
+      mock<Permission>({
+        id: 'p-einstein',
+        grantedToV2: { user: { displayName: 'Einstein' } },
+        roles: ['1']
+      }),
+      mock<Permission>({
+        id: 'p-admin-1',
+        grantedToV2: { user: { displayName: 'admin' } },
+        roles: ['3']
+      }),
+      mock<Permission>({
+        id: 'p-user-10',
+        grantedToV2: { user: { displayName: 'User 10' } },
+        roles: ['3']
+      }),
+      mock<Permission>({
+        id: 'p-user-2',
+        grantedToV2: { user: { displayName: 'User 2' } },
+        roles: ['3']
+      })
+    ]
+
+    for (const order of [permissions, [...permissions].reverse()]) {
+      const { wrapper } = getWrapper({
+        spaceResource: { root: { permissions: order } } as undefined as SpaceResource
+      })
+
+      expect(rolesOnPage(wrapper)).toEqual(['Managers', 'Viewers'])
+      expect(
+        wrapper
+          .findAllComponents<typeof MembersRoleSection>(selectors.membersRolePanelStub)
+          .map((section) => section.props().permissions.map(({ id }: Permission) => id))
+      ).toEqual([
+        ['p-einstein', 'p-zoe'],
+        ['p-admin-1', 'p-admin-2', 'p-marie', 'p-group', 'p-user-2', 'p-user-10']
+      ])
+    }
   })
   it('should filter members accordingly to the entered search term', async () => {
     const userToFilterFor = spaceMock.root.permissions[2]

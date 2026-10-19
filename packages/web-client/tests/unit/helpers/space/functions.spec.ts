@@ -1,7 +1,7 @@
-import { buildSpace, SpaceResource } from '../../../../src/helpers/space'
+import { buildSpace, getSpaceManagers, SpaceResource } from '../../../../src/helpers/space'
 import { mock } from 'vitest-mock-extended'
 import { Ability, GraphSharePermission } from '@opencloud-eu/web-client'
-import { Drive, User } from '@opencloud-eu/web-client/graph/generated'
+import { Drive, Permission, User } from '@opencloud-eu/web-client/graph/generated'
 
 describe('buildSpace', () => {
   const id = '1'
@@ -283,5 +283,39 @@ describe('buildSpace', () => {
         expect(space.canEditReadme({ user: mock<User>({ id, memberOf: [] }) })).toBe(expectedResult)
       }
     )
+  })
+})
+
+describe('getSpaceManagers', () => {
+  function permission(id: string, grantedToV2: Permission['grantedToV2'], isManager = true) {
+    return mock<Permission>({
+      id,
+      grantedToV2,
+      roles: [],
+      '@libre.graph.permissions.actions': isManager
+        ? [GraphSharePermission.deletePermissions]
+        : [GraphSharePermission.readBasic]
+    })
+  }
+
+  it('returns the managers sorted by name, independent of the order returned by the server', () => {
+    const permissions = [
+      permission('p-user-10', { user: { id: 'u10', displayName: 'User 10' } }),
+      permission('p-viewer', { user: { id: 'viewer', displayName: 'Anna' } }, false),
+      permission('p-admin-2', { user: { id: 'admin2', displayName: 'Admin' } }),
+      permission('p-group', { group: { id: 'group', displayName: 'physics' } }),
+      permission('p-user-2', { user: { id: 'u2', displayName: 'User 2' } }),
+      permission('p-admin-1', { user: { id: 'admin1', displayName: 'admin' } })
+    ]
+    const expectedOrder = ['p-admin-1', 'p-admin-2', 'p-group', 'p-user-2', 'p-user-10']
+
+    for (const order of [permissions, [...permissions].reverse()]) {
+      const space = mock<SpaceResource>({ root: { permissions: order } })
+      const serverOrder = order.map(({ id }) => id)
+
+      expect(getSpaceManagers(space, {}).map(({ id }) => id)).toEqual(expectedOrder)
+      // the permissions of the space itself are not reordered
+      expect(space.root.permissions.map(({ id }) => id)).toEqual(serverOrder)
+    }
   })
 })
