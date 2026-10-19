@@ -1,7 +1,9 @@
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
+import { flushPromises } from '@vue/test-utils'
 import { useFileActionsEnableSync } from '../../../../../src/composables/actions/files'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
+import { useMessages } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   getComposableWrapper,
@@ -9,7 +11,15 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 
 function incomingShare(syncEnabled: boolean) {
-  return { sharedWith: [], outgoing: false, syncEnabled } as unknown as IncomingShareResource
+  const name = syncEnabled ? 'synced' : 'unsynced'
+  return {
+    id: name,
+    name,
+    fileId: name,
+    sharedWith: [],
+    outgoing: false,
+    syncEnabled
+  } as unknown as IncomingShareResource
 }
 
 describe('enableSync', () => {
@@ -61,6 +71,31 @@ describe('enableSync', () => {
         })
       })
     })
+
+    describe('handler', () => {
+      it('only triggers the request for shares that are not yet synced on a mixed selection', async () => {
+        let instance: ReturnType<typeof useFileActionsEnableSync>
+        const { mocks } = getWrapper({
+          setup: (i) => {
+            instance = i
+          }
+        })
+
+        const resources = [incomingShare(true), incomingShare(false)]
+        await unref(instance.actions)[0].handler({ space: null, resources })
+        await flushPromises()
+
+        expect(
+          mocks.$clientService.graphAuthenticated.driveItems.createDriveItem
+        ).toHaveBeenCalledTimes(1)
+        expect(
+          mocks.$clientService.graphAuthenticated.driveItems.createDriveItem
+        ).toHaveBeenCalledWith(undefined, expect.objectContaining({ name: 'unsynced' }))
+
+        const { showErrorMessage } = useMessages()
+        expect(showErrorMessage).not.toHaveBeenCalled()
+      })
+    })
   })
 })
 
@@ -75,10 +110,16 @@ function getWrapper({
     currentRoute: mock<RouteLocation>({ name: 'files-shares-with-me' })
   })
   return {
-    wrapper: getComposableWrapper(setup, {
-      mocks,
-      provide: mocks,
-      pluginOptions: { piniaOptions: { authState: { guestContextReady: isGuest } } }
-    })
+    mocks,
+    wrapper: getComposableWrapper(
+      () => {
+        setup(useFileActionsEnableSync())
+      },
+      {
+        mocks,
+        provide: mocks,
+        pluginOptions: { piniaOptions: { authState: { guestContextReady: isGuest } } }
+      }
+    )
   }
 }
