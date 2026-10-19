@@ -122,9 +122,10 @@ export class UploadResourceConflict extends ConflictDialog {
       const conflictArray = isFolder ? resolvedFolderConflicts : resolvedFileConflicts
       const strategies = allStrategies[isFolder ? 'folder' : 'file']
       const typeMismatch = isTypeMismatch(conflict)
-      const allStrategy = typeMismatch
-        ? (strategies.typeMismatch ?? strategies.regular)
-        : strategies.regular
+      const allStrategy =
+        typeMismatch && strategies.typeMismatch !== undefined
+          ? strategies.typeMismatch
+          : strategies.regular
       const canApplyAllStrategy =
         allStrategy !== undefined &&
         (!typeMismatch || [ResolveStrategy.SKIP, ResolveStrategy.KEEP_BOTH].includes(allStrategy))
