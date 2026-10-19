@@ -23,6 +23,36 @@ describe('helpers', () => {
         })
       ).toBeFalsy()
     })
+    describe('current folder is the root of an incoming share', () => {
+      it('returns "true" when item is in the shared folder', () => {
+        const mocks = getMocks({
+          currentFolder: mock<Resource>({
+            id: 'shareJail$shareJail!share1',
+            fileId: 'space1!sharedFolder'
+          })
+        })
+        expect(
+          isItemInCurrentFolder({
+            resourcesStore: mocks.resourcesStore,
+            parentFolderId: 'space1!sharedFolder'
+          })
+        ).toBeTruthy()
+      })
+      it('returns "false" when item is not in the shared folder', () => {
+        const mocks = getMocks({
+          currentFolder: mock<Resource>({
+            id: 'shareJail$shareJail!share1',
+            fileId: 'space1!sharedFolder'
+          })
+        })
+        expect(
+          isItemInCurrentFolder({
+            resourcesStore: mocks.resourcesStore,
+            parentFolderId: 'space1!otherFolder'
+          })
+        ).toBeFalsy()
+      })
+    })
     describe('current folder is space', () => {
       it('returns "true" when item is in current folder', () => {
         const mocks = getMocks({
