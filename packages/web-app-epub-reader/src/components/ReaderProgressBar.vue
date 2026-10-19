@@ -1,6 +1,6 @@
 <template>
   <div class="px-3 pb-3 pt-1">
-    <div v-if="enabled" class="flex items-center gap-2">
+    <div v-if="enabled" class="flex h-4 items-center gap-2">
       <div class="relative flex-1">
         <oc-range
           :model-value="sliderValue"
@@ -22,7 +22,7 @@
         {{ progressLabel }}
       </span>
     </div>
-    <div v-else>
+    <div v-else class="flex h-4 items-center">
       <div
         class="epub-reader-progress-shimmer relative h-[14px] w-full overflow-hidden rounded-sm bg-role-surface-container-high"
       />
