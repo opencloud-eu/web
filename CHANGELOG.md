@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- Make archiver work with guest link auth [[#3900](https://github.com/opencloud-eu/web/pull/3900)]
 - Fix background flash with automatic theme [[#3843](https://github.com/opencloud-eu/web/pull/3843)]
 - Keep Preview photo-roll icons centered when the sidebar opens [[#3840](https://github.com/opencloud-eu/web/pull/3840)]
 - fix: don't confirm a modal while its confirm button is disabled [[#3880](https://github.com/opencloud-eu/web/pull/3880)]
