@@ -305,16 +305,23 @@ function getRoleDisplayNameByUser(user: User) {
   return getRoleDisplayName(user.appRoleAssignments)
 }
 
+function selectOnlyUser(user: User) {
+  unselectAllUsers()
+  selectUser(user)
+}
+
+// the click on a quick action also reaches the row, which selects only this user. doing the same
+// here keeps the selection from changing twice, which would load the user details twice.
 function showDetails(user: User) {
   if (!isUserSelected(user)) {
-    selectUser(user)
+    selectOnlyUser(user)
   }
   openSideBar()
 }
 
 function showEditPanel(user: User) {
   if (!isUserSelected(user)) {
-    selectUser(user)
+    selectOnlyUser(user)
   }
   openSideBarPanel('EditPanel')
 }
@@ -344,8 +351,7 @@ function rowClicked([user, event]: [User, MouseEvent | KeyboardEvent]) {
     return selectUser(user)
   }
 
-  unselectAllUsers()
-  selectUser(user)
+  selectOnlyUser(user)
 }
 
 function showContextMenuOnBtnClick(event: MouseEvent | KeyboardEvent, user: User) {
