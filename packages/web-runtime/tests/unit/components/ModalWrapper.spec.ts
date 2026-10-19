@@ -54,6 +54,16 @@ describe('ModalWrapper', () => {
       expect(modalStore.updateModal).toHaveBeenCalled()
       expect(modalStore.removeModal).toHaveBeenCalledWith(activeModal.id)
     })
+    it('does nothing if confirm is disabled', async () => {
+      const activeModal = modal({ onConfirm: vi.fn(), confirmDisabled: true })
+      const { wrapper } = getShallowWrapper({ modals: [activeModal] })
+      const modalStore = useModals()
+
+      await (wrapper.vm as any).onModalConfirm(activeModal)
+
+      expect(activeModal.onConfirm).not.toHaveBeenCalled()
+      expect(modalStore.removeModal).not.toHaveBeenCalled()
+    })
     it('does not remove the modal if the promise has not been resolved', async () => {
       const activeModal = modal({ onConfirm: vi.fn().mockRejectedValue(new Error('')) })
       const { wrapper } = getShallowWrapper({ modals: [activeModal] })
