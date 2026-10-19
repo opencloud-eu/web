@@ -92,6 +92,7 @@ import {
   formatDateFromISO,
   formatRelativeDateFromISO,
   useClientService,
+  useMessages,
   UserAvatar
 } from '@opencloud-eu/web-pkg'
 import { OcDrop } from '@opencloud-eu/design-system/components'
@@ -109,6 +110,7 @@ const spacesStore = useSpacesStore()
 const capabilityStore = useCapabilityStore()
 const clientService = useClientService()
 const language = useGettext()
+const { showErrorMessage } = useMessages()
 
 const notificationsDrop = useTemplateRef<InstanceType<typeof OcDrop>>('notificationsDrop')
 const notifications: Ref<Notification[]> = ref([])
@@ -225,10 +227,13 @@ const deleteNotificationsTask = useTask(function* (signal, ids) {
       { data: { ids } },
       { signal }
     )
+    notifications.value = unref(notifications).filter((n) => !ids.includes(n.notification_id))
   } catch (e) {
     console.error(e)
-  } finally {
-    notifications.value = unref(notifications).filter((n) => !ids.includes(n.notification_id))
+    showErrorMessage({
+      title: language.$gettext('Failed to mark notifications as read'),
+      errors: [e]
+    })
   }
 }).restartable()
 

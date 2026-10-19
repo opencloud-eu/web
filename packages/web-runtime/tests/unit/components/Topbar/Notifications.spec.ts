@@ -5,7 +5,7 @@ import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { RouterLink, RouteLocationNamedRaw, RouteLocationNormalizedLoaded } from 'vue-router'
 import { AxiosResponse } from 'axios'
-import { UserAvatar, useSpacesStore } from '@opencloud-eu/web-pkg'
+import { UserAvatar, useMessages, useSpacesStore } from '@opencloud-eu/web-pkg'
 import { flushPromises } from '@vue/test-utils'
 import { defineComponent } from 'vue'
 
@@ -60,6 +60,19 @@ describe('Notification component', () => {
     await wrapper.vm.$nextTick()
     expect(wrapper.find(selectors.notificationItem).exists()).toBeFalsy()
     expect(mocks.$clientService.httpAuthenticated.delete).toHaveBeenCalledTimes(1)
+  })
+  it('keeps the notifications and shows an error if marking all as read fails', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const notifications = [mock<Notification>({ messageRich: undefined })]
+    const { wrapper, mocks } = getWrapper({ notifications })
+    const error = new Error('delete failed')
+    mocks.$clientService.httpAuthenticated.delete.mockRejectedValue(error)
+    await flushPromises()
+    await wrapper.find(selectors.markAll).trigger('click')
+    await flushPromises()
+    expect(wrapper.findAll(selectors.notificationItem).length).toBe(notifications.length)
+    const { showErrorMessage } = useMessages()
+    expect(showErrorMessage).toHaveBeenCalledWith(expect.objectContaining({ errors: [error] }))
   })
   describe('drop', () => {
     it('hides when a linked notification is clicked', async () => {
