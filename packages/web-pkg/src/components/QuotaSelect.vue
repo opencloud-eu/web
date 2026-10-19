@@ -1,11 +1,9 @@
 <template>
   <div class="quota-select-batch-action-form">
     <oc-select
-      ref="select"
       :model-value="selectedOption"
       :selectable="optionSelectable"
       taggable
-      push-tags
       :clearable="false"
       :options="options"
       :create-option="createOption"
@@ -33,14 +31,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, unref, onMounted, watch } from 'vue'
-import { isNumber } from 'lodash-es'
+import { ref, computed, unref, watch } from 'vue'
 import { formatFileSize } from '../helpers/filesize'
 import { useGettext } from 'vue3-gettext'
 
-const { totalQuota = 0, maxQuota = 0 } = defineProps<{
-  totalQuota?: number
+const {
+  totalQuota = 0,
+  maxQuota = 0,
+  allowDefault = false
+} = defineProps<{
+  totalQuota?: number | null
   maxQuota?: number
+  allowDefault?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -48,23 +50,56 @@ const emit = defineEmits<{
 }>()
 
 type Option = {
-  value: number
+  value: number | null
   displayValue: string
   selectable?: boolean
+  error?: string
 }
 
 const { $gettext, current: currentLanguage } = useGettext()
 
-const selectedOption = ref<Option>(undefined)
-const options = ref<Option[]>([])
+const PRESET_QUOTAS = [1, 2, 5, 10, 50, 100].map((gigabytes) => gigabytes * 1e9)
+const customQuotas = ref<number[]>([])
+const selectedQuota = ref(totalQuota)
+const quotaLimit = computed(() => maxQuota || 1e15)
+const options = computed<Option[]>(() => {
+  const availableOptions: Option[] = [...PRESET_QUOTAS, ...unref(customQuotas)]
+    .filter((value) => !maxQuota || value <= maxQuota)
+    .map((value) => ({ value, displayValue: getFormattedFileSize(value) }))
+  const currentQuota = unref(selectedQuota)
 
-function isValueValidNumber(value: string | number) {
-  if (isNumber(value)) {
-    return value > 0
+  if (
+    currentQuota !== null &&
+    currentQuota !== 0 &&
+    !availableOptions.some((option) => option.value === currentQuota)
+  ) {
+    availableOptions.push({
+      value: currentQuota,
+      displayValue: getFormattedFileSize(currentQuota),
+      selectable: currentQuota <= unref(quotaLimit)
+    })
   }
 
-  const optionIsNumberRegex = /^[0-9]\d*(([.,])\d+)?$/g
-  return optionIsNumberRegex.test(value)
+  availableOptions.sort((a, b) => a.value - b.value)
+
+  if (allowDefault) {
+    availableOptions.unshift({ value: null, displayValue: $gettext('Default') })
+  }
+  if (!maxQuota || currentQuota === 0) {
+    availableOptions.push({
+      value: 0,
+      displayValue: $gettext('No restriction'),
+      ...(maxQuota && { selectable: false })
+    })
+  }
+  return availableOptions
+})
+const selectedOption = computed(() =>
+  unref(options).find((option) => option.value === unref(selectedQuota))
+)
+
+function isValueValidNumber(value: string) {
+  return /^\d+([.,]\d+)?$/.test(value)
 }
 
 function isZeroInput(input: string) {
@@ -73,49 +108,31 @@ function isZeroInput(input: string) {
 }
 
 function getFormattedFileSize(value: number) {
-  const formattedFilesize = formatFileSize(value, unref(currentLanguage))
-  return !isValueValidNumber(value) ? value.toString() : formattedFilesize
+  return value > 0 ? formatFileSize(value, unref(currentLanguage)) : value.toString()
 }
-
-const quotaLimit = computed(() => maxQuota || 1e15)
-
-const DEFAULT_OPTIONS = computed<Option[]>(() => {
-  return [
-    {
-      value: Math.pow(10, 9),
-      displayValue: getFormattedFileSize(Math.pow(10, 9))
-    },
-    {
-      value: 2 * Math.pow(10, 9),
-      displayValue: getFormattedFileSize(2 * Math.pow(10, 9))
-    },
-    {
-      value: 5 * Math.pow(10, 9),
-      displayValue: getFormattedFileSize(5 * Math.pow(10, 9))
-    },
-    {
-      value: 10 * Math.pow(10, 9),
-      displayValue: getFormattedFileSize(10 * Math.pow(10, 9))
-    },
-    {
-      value: 50 * Math.pow(10, 9),
-      displayValue: getFormattedFileSize(50 * Math.pow(10, 9))
-    },
-    {
-      value: 100 * Math.pow(10, 9),
-      displayValue: getFormattedFileSize(100 * Math.pow(10, 9))
-    },
-    {
-      displayValue: $gettext('No restriction'),
-      value: 0
-    }
-  ]
-})
 
 function onUpdate(event: Option) {
-  selectedOption.value = event
-  emit('selectedOptionChange', unref(selectedOption))
+  if (!optionSelectable(event)) {
+    return
+  }
+  rememberCustomQuota(unref(selectedQuota))
+  rememberCustomQuota(event.value)
+  selectedQuota.value = event.value
+  emit('selectedOptionChange', event)
 }
+
+function rememberCustomQuota(value: number | null) {
+  if (
+    value === null ||
+    value <= 0 ||
+    PRESET_QUOTAS.includes(value) ||
+    unref(customQuotas).includes(value)
+  ) {
+    return
+  }
+  customQuotas.value.push(value)
+}
+
 function optionSelectable(option: Option) {
   return option.selectable !== false
 }
@@ -129,7 +146,7 @@ function filterOptions(items: Option[], search: string) {
   return items.filter((item) => item.displayValue.toLocaleLowerCase().includes(normalizedSearch))
 }
 
-function createOption(option: string) {
+function createOption(option: string): Option {
   if (isZeroInput(option)) {
     const unlimitedOption = unref(options).find((o) => o.value === 0)
     if (unlimitedOption) {
@@ -142,17 +159,17 @@ function createOption(option: string) {
   if (!isValueValidNumber(option)) {
     return {
       displayValue: option,
-      value: option,
+      value: null,
       error: $gettext('Please enter only numbers'),
       selectable: false
     }
   }
-  const value = Math.round(parseFloat(option) * Math.pow(10, 9))
+  const value = Math.round(parseFloat(option) * 1e9)
 
   if (value < 1) {
     return {
       displayValue: option,
-      value: option,
+      value: null,
       error: $gettext('Please enter a value greater than 0'),
       selectable: false
     }
@@ -170,54 +187,17 @@ function createOption(option: string) {
     }
   }
 
-  return {
-    value,
-    displayValue: getFormattedFileSize(value)
-  }
+  return (
+    unref(options).find((existing) => existing.value === value) || {
+      value,
+      displayValue: getFormattedFileSize(value)
+    }
+  )
 }
-function setOptions() {
-  let availableOptions = [...unref(DEFAULT_OPTIONS)]
-
-  if (maxQuota) {
-    availableOptions = availableOptions.filter((availableOption) => {
-      if (totalQuota === 0 && availableOption.value === 0) {
-        availableOption.selectable = false
-        return true
-      }
-      return availableOption.value !== 0 && availableOption.value <= maxQuota
-    })
-  }
-
-  const selectedQuotaInOptions = availableOptions.find((option) => option.value === totalQuota)
-
-  if (!selectedQuotaInOptions) {
-    availableOptions.push({
-      displayValue: getFormattedFileSize(totalQuota),
-      value: totalQuota,
-      selectable: totalQuota <= unref(quotaLimit)
-    })
-  }
-
-  // Sort options and make sure that unlimited is at the end
-  availableOptions = [
-    ...availableOptions.filter((o) => o.value).sort((a, b) => a.value - b.value),
-    ...availableOptions.filter((o) => !o.value)
-  ]
-  options.value = availableOptions
-}
-
 watch(
   () => totalQuota,
-  () => {
-    const selected = unref(options).find((o) => o.value === totalQuota)
-    if (selected) {
-      selectedOption.value = selected
-    }
+  (value) => {
+    selectedQuota.value = value
   }
 )
-
-onMounted(() => {
-  setOptions()
-  selectedOption.value = unref(options).find((o) => o.value === totalQuota)
-})
 </script>

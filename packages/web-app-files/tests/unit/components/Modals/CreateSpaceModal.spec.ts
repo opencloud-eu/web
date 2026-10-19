@@ -254,6 +254,107 @@ describe('CreateSpaceModal', () => {
       expect(privileged.find('.create-space-quota').exists()).toBeTruthy()
     })
 
+    it.each([0, 5e9])(
+      'leaves the quota to the server by default with maximum %i',
+      async (maxQuota) => {
+        const { wrapper } = getWrapper({
+          abilities: [{ action: 'set-quota-all', subject: 'Drive' }],
+          maxQuota
+        })
+
+        await wrapper.vm.onConfirm()
+
+        expect(addNewSpace).toHaveBeenCalledWith(
+          'New space',
+          expect.objectContaining({ quota: undefined })
+        )
+        await revealOptions(wrapper)
+        await expandAdvanced(wrapper)
+        expect(wrapper.find('.create-space-quota .vs__selected').text()).toBe('Default')
+      }
+    )
+
+    it.each([
+      ['No restriction', 0],
+      ['2 GB', 2e9]
+    ] as const)('passes the explicitly selected quota "%s" to creation', async (label, quota) => {
+      const { wrapper } = getWrapper({
+        abilities: [{ action: 'set-quota-all', subject: 'Drive' }]
+      })
+      await revealOptions(wrapper)
+      await expandAdvanced(wrapper)
+      await selectQuota(wrapper, label)
+
+      await wrapper.vm.onConfirm()
+
+      expect(addNewSpace).toHaveBeenCalledWith('New space', expect.objectContaining({ quota }))
+    })
+
+    it('uses the server default again after reselecting Default', async () => {
+      const { wrapper } = getWrapper({
+        abilities: [{ action: 'set-quota-all', subject: 'Drive' }]
+      })
+      await revealOptions(wrapper)
+      await expandAdvanced(wrapper)
+      await selectQuota(wrapper, 'No restriction')
+      await selectQuota(wrapper, 'Default')
+
+      await wrapper.vm.onConfirm()
+
+      expect(addNewSpace).toHaveBeenCalledWith(
+        'New space',
+        expect.objectContaining({ quota: undefined })
+      )
+    })
+
+    it('keeps the picked quota when advanced options are closed and reopened', async () => {
+      const { wrapper } = getWrapper({
+        abilities: [{ action: 'set-quota-all', subject: 'Drive' }]
+      })
+      await revealOptions(wrapper)
+      await expandAdvanced(wrapper)
+      await selectQuota(wrapper, '2 GB')
+      await expandAdvanced(wrapper)
+      await expandAdvanced(wrapper)
+
+      expect(wrapper.find('.create-space-quota .vs__selected').text()).toBe('2 GB')
+    })
+
+    it('keeps Default when an unlimited quota is blocked by a maximum', async () => {
+      const { wrapper } = getWrapper({
+        abilities: [{ action: 'set-quota-all', subject: 'Drive' }],
+        maxQuota: 5e9
+      })
+      await revealOptions(wrapper)
+      await expandAdvanced(wrapper)
+      const search = wrapper.find('.create-space-quota input.vs__search')
+      await search.trigger('click')
+      await search.trigger('focus')
+      await search.setValue('0')
+      await search.trigger('keydown', { key: 'Enter', keyCode: 13 })
+
+      await wrapper.vm.onConfirm()
+
+      expect(addNewSpace).toHaveBeenCalledWith(
+        'New space',
+        expect.objectContaining({ quota: undefined })
+      )
+    })
+
+    it('omits quota without permission even if options emit a value', async () => {
+      const { wrapper } = getWrapper()
+      await revealOptions(wrapper)
+      wrapper.findComponent({ name: 'CreateSpaceOptions' }).vm.$emit('update:quota', 2e9)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.onConfirm()
+
+      expect(addNewSpace).toHaveBeenCalledWith(
+        'New space',
+        expect.objectContaining({ quota: undefined })
+      )
+    })
+
     it('drop the description and the image for an encrypted space', async () => {
       const { wrapper } = getWrapper()
       await revealOptions(wrapper)
@@ -400,6 +501,16 @@ function revealOptions(wrapper: Wrapper) {
   return wrapper.find('.create-space-options-toggle').trigger('click')
 }
 
+async function selectQuota(wrapper: Wrapper, label: string) {
+  const search = wrapper.find('.create-space-quota input.vs__search')
+  await search.trigger('click')
+  await search.trigger('focus')
+  await wrapper
+    .findAll('.create-space-quota .vs__dropdown-option')
+    .find((option) => option.text() === label)
+    .trigger('click')
+}
+
 function setName(wrapper: Wrapper, name: string) {
   return wrapper.find('#create-space-input').setValue(name)
 }
@@ -412,7 +523,8 @@ function getWrapper({
   canEncrypt = true,
   isLoading = false,
   abilities = [] as AbilityRule[],
-  spaces = [] as SpaceResource[]
+  spaces = [] as SpaceResource[],
+  maxQuota = 0
 } = {}) {
   const mocks = { ...defaultComponentMocks() }
 
@@ -430,7 +542,15 @@ function getWrapper({
         modal: mock<Modal>({ isLoading })
       },
       global: {
-        plugins: [...defaultPlugins({ abilities, piniaOptions: { spacesState: { spaces } } })],
+        plugins: [
+          ...defaultPlugins({
+            abilities,
+            piniaOptions: {
+              spacesState: { spaces },
+              capabilityState: { capabilities: { spaces: { max_quota: maxQuota } } }
+            }
+          })
+        ],
         mocks,
         provide: mocks,
         // the actions row only exists inside OcModal, so render them in place

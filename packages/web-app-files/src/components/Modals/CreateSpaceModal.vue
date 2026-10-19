@@ -117,6 +117,7 @@ import {
   modalActionsTarget,
   ResourceIcon,
   resolveFileNameDuplicate,
+  useAbility,
   useCreateSpace,
   useExtensionRegistry,
   useIsResourceNameValid,
@@ -141,6 +142,7 @@ const { $gettext } = useGettext()
 const { isSpaceNameValid } = useIsResourceNameValid()
 const { updateModal } = useModals()
 const { addNewSpace } = useCreateSpace()
+const { can } = useAbility()
 const extensionRegistry = useExtensionRegistry()
 
 const vaultCreation = computed(() => getVaultCreator(extensionRegistry)?.creation)
@@ -159,7 +161,7 @@ const spaceName = ref(
 )
 
 const showOptions = ref(false)
-const quota = ref(0)
+const quota = ref<number | null>(null)
 const subtitle = ref('')
 const description = ref('')
 const image = ref<ArrayBuffer>(null)
@@ -217,7 +219,7 @@ async function onConfirm() {
   await addNewSpace(unref(spaceName), {
     encrypt: unref(encrypt),
     finalizeVault: unref(setupComponent)?.finalize,
-    quota: unref(quota) || undefined,
+    quota: can('set-quota-all', 'Drive') ? (unref(quota) ?? undefined) : undefined,
     subtitle: unref(subtitle) || undefined,
     description: (!unref(encrypt) && unref(description)) || undefined,
     image: (!unref(encrypt) && unref(image)) || undefined,
