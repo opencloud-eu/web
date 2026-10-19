@@ -8,6 +8,10 @@
 
 ### 🐛 Bug Fixes
 
+- fix: leave a space when it gets disabled or deleted [[#3774](https://github.com/opencloud-eu/web/pull/3774)]
+- fix: only renew the login when admins rename themselves [[#3882](https://github.com/opencloud-eu/web/pull/3882)]
+- fix: wrap long names in notifications and keep placeholders in activity names [[#3892](https://github.com/opencloud-eu/web/pull/3892)]
+- fix: show epub content in dark theme in chromium [[#3888](https://github.com/opencloud-eu/web/pull/3888)]
 - fix: keep notifications and show an error when marking all as read fails [[#3886](https://github.com/opencloud-eu/web/pull/3886)]
 - fix: show the no results message for a tag-only search [[#3885](https://github.com/opencloud-eu/web/pull/3885)]
 - fix(preview): show an error for a deep link to a file that can't be previewed [[#3773](https://github.com/opencloud-eu/web/pull/3773)]
