@@ -6,6 +6,7 @@ import {
   defaultStubs,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
+import { flushPromises } from '@vue/test-utils'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { ClientService } from '@opencloud-eu/web-pkg'
 import { ListFilesResult } from '@opencloud-eu/web-client/webdav'
@@ -24,11 +25,31 @@ describe('FilesDrop view', () => {
       expect(wrapper.find('resource-upload-stub').exists()).toBeTruthy()
     })
   })
+
+  describe('error handling', () => {
+    it('shows the "could not be located" message when the link was deleted (404)', async () => {
+      const { wrapper } = getMountedWrapper({ listFilesError: { statusCode: 404 } })
+      await flushPromises()
+      expect(wrapper.text()).toContain(
+        'The resource could not be located, it may not exist anymore.'
+      )
+    })
+    it('shows a generic message for other errors instead of the raw error', async () => {
+      const { wrapper } = getMountedWrapper({ listFilesError: new Error('Unknown error') })
+      await flushPromises()
+      expect(wrapper.text()).toContain('An unknown error occurred while loading the public link.')
+      expect(wrapper.text()).not.toContain('Error: Unknown error')
+    })
+  })
 })
 
-function getMountedWrapper() {
+function getMountedWrapper({ listFilesError }: { listFilesError?: unknown } = {}) {
   const $clientService = mockDeep<ClientService>()
-  $clientService.webdav.listFiles.mockResolvedValue(mock<ListFilesResult>())
+  if (listFilesError) {
+    $clientService.webdav.listFiles.mockRejectedValue(listFilesError)
+  } else {
+    $clientService.webdav.listFiles.mockResolvedValue(mock<ListFilesResult>())
+  }
   const defaultMocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files-common-favorites' })

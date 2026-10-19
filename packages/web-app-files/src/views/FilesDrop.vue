@@ -246,7 +246,13 @@ const resolvePublicLink = async () => {
         return authService.handleAuthError(unref(router.currentRoute))
       }
       console.error(error)
-      errorMessage.value = error
+      if (error.statusCode === 404) {
+        errorMessage.value = $gettext(
+          'The resource could not be located, it may not exist anymore.'
+        )
+        return
+      }
+      errorMessage.value = $gettext('An unknown error occurred while loading the public link.')
     })
     .finally(() => {
       loading.value = false
