@@ -166,6 +166,25 @@ describe('spaces events', () => {
       expect(mocks.spacesStore.upsertSpace).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
     })
+
+    it.each([403, 404])(
+      'removes the space when it can no longer be fetched (%s)',
+      async (status) => {
+        const space = mock<SpaceResource>({ id: 'space1' })
+        const mocks = getMocks({ spaces: [space], currentRouteFilesSpacesProjects: true })
+        const sseData = mock<EventSchemaType>({ spaceid: space.id })
+        ;(mocks.spacesStore.getSpace as any).mockReturnValue(space)
+        mocks.clientService.graphAuthenticated.drives.getDrive.mockRejectedValue({
+          response: { status }
+        })
+
+        await onSSESpaceDisabledEvent({ sseData, ...mocks })
+
+        expect(mocks.spacesStore.removeSpace).toHaveBeenCalledWith(space)
+        expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([space])
+        expect(mocks.spacesStore.upsertSpace).not.toHaveBeenCalled()
+      }
+    )
   })
 
   describe('onSSESpaceDeletedEvent', () => {
@@ -215,6 +234,81 @@ describe('spaces events', () => {
 
       expect(mocks.spacesStore.removeSpace).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('when the user is inside the affected space', () => {
+    function setup({ currentSpaceId }: { currentSpaceId: string }) {
+      const space = mock<SpaceResource>({ id: 'space1', name: 'Project' })
+      const mocks = getMocks({
+        spaces: [space],
+        currentFolder: mockDeep<Resource>({ id: 'folder1', storageId: currentSpaceId })
+      })
+      ;(mocks.spacesStore.getSpace as any).mockReturnValue(space)
+      mocks.clientService.graphAuthenticated.drives.getDrive.mockRejectedValue({
+        response: { status: 404 }
+      })
+      const sseData = mock<EventSchemaType>({ spaceid: space.id })
+      return { mocks, sseData, space }
+    }
+
+    it.each([
+      { event: 'disabled', handler: onSSESpaceDisabledEvent },
+      { event: 'deleted', handler: onSSESpaceDeletedEvent }
+    ])(
+      'navigates to the projects overview when the space was $event',
+      async ({ event, handler }) => {
+        const { mocks, sseData, space } = setup({ currentSpaceId: 'space1' })
+
+        await handler({ sseData, ...mocks })
+
+        expect(mocks.spacesStore.removeSpace).toHaveBeenCalledWith(space)
+        expect(mocks.messageStore.showMessage).toHaveBeenCalledWith({
+          title: `Space »%{space}« has been ${event}`
+        })
+        expect(mocks.router.push).toHaveBeenCalledWith(
+          expect.objectContaining({ name: 'files-spaces-projects' })
+        )
+      }
+    )
+
+    it.each([onSSESpaceDisabledEvent, onSSESpaceDeletedEvent])(
+      'does not navigate when the user is in another space',
+      async (handler) => {
+        const { mocks, sseData } = setup({ currentSpaceId: 'space2' })
+
+        await handler({ sseData, ...mocks })
+
+        expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+        expect(mocks.router.push).not.toHaveBeenCalled()
+      }
+    )
+
+    it('keeps the disabled space for managers but navigates them to the projects overview', async () => {
+      const { mocks, sseData, space } = setup({ currentSpaceId: 'space1' })
+      mocks.clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(space)
+
+      await onSSESpaceDisabledEvent({ sseData, ...mocks })
+
+      expect(mocks.spacesStore.upsertSpace).toHaveBeenCalledWith(space)
+      expect(mocks.spacesStore.removeSpace).not.toHaveBeenCalled()
+      expect(mocks.messageStore.showMessage).toHaveBeenCalledWith({
+        title: 'Space »%{space}« has been disabled'
+      })
+      expect(mocks.router.push).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'files-spaces-projects' })
+      )
+    })
+
+    it('does not navigate managers who are in another space', async () => {
+      const { mocks, sseData, space } = setup({ currentSpaceId: 'space2' })
+      mocks.clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(space)
+
+      await onSSESpaceDisabledEvent({ sseData, ...mocks })
+
+      expect(mocks.spacesStore.upsertSpace).toHaveBeenCalledWith(space)
+      expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+      expect(mocks.router.push).not.toHaveBeenCalled()
     })
   })
 })

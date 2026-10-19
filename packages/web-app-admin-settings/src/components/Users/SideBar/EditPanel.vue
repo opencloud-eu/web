@@ -258,7 +258,7 @@ async function onEditUser({ user, editUser }: { user: User; editUser: User }) {
 
     // When the username of the current user changes, we need to obtain a new token
     if (
-      editUser.id === user.id &&
+      userStore.user.id === user.id &&
       editUser.onPremisesSamAccountName !== user.onPremisesSamAccountName
     ) {
       await authService.signinSilent()

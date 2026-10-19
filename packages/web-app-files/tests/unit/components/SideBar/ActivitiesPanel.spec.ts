@@ -106,6 +106,31 @@ describe('ActivitiesPanel', () => {
     await flushPromises()
     expect(wrapper.html()).toMatchSnapshot()
   })
+  it('does not interpolate placeholders inside the inserted values', async () => {
+    const resourceName = 'test-{user}.txt'
+    const activities = [
+      {
+        id: '1',
+        times: { recordedTime: '2024-07-29T18:34:40Z' },
+        template: {
+          message: '{resource} was created by {user}.',
+          variables: {
+            resource: { id: 'r1', name: resourceName },
+            user: { id: 'u1', displayName: 'Marie Curie' }
+          }
+        }
+      }
+    ] as unknown as Activity[]
+
+    const { wrapper } = getMountedWrapper({ activities })
+    await flushPromises()
+
+    const item = wrapper.find('.oc-timeline li')
+    expect(item.findAll('span.font-medium').map((el) => el.text())).toEqual([
+      resourceName,
+      'Marie Curie'
+    ])
+  })
   it('decrypts vault resource names in the feed and leaves user names untouched', async () => {
     const engine = {
       vaultRoot: '/my.vault',
