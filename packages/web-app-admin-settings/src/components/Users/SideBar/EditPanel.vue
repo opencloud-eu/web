@@ -42,6 +42,7 @@
           id="password-input"
           :model-value="editUser.passwordProfile?.password"
           :label="$gettext('Password')"
+          :error-message="formData.password.errorMessage"
           type="password"
           :fix-message-line="true"
           placeholder="●●●●●●●●"
@@ -164,6 +165,10 @@ const formData = ref({
     valid: true
   },
   email: {
+    errorMessage: '',
+    valid: true
+  },
+  password: {
     errorMessage: '',
     valid: true
   }
@@ -405,6 +410,23 @@ function onUpdateRole(role: AppRoleAssignment) {
 }
 
 function onUpdatePassword(password: string) {
+  formData.value.password.valid = false
+
+  // an empty field means the password should stay unchanged
+  if (password === '') {
+    delete unref(editUser).passwordProfile
+    formData.value.password.errorMessage = ''
+    formData.value.password.valid = true
+    return
+  }
+
+  if (password.trim() === '') {
+    formData.value.password.errorMessage = $gettext('Password cannot be empty')
+    return
+  }
+
+  formData.value.password.errorMessage = ''
+  formData.value.password.valid = true
   unref(editUser).passwordProfile = {
     password
   }
