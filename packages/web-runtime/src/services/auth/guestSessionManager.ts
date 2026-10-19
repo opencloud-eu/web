@@ -69,7 +69,8 @@ const guestPathSegments = [
   '/remote.php/webdav/',
   '/ocs/v2.php/apps/notifications/api/v1/notifications/sse',
   '/app/open',
-  '/app/new'
+  '/app/new',
+  '/archiver'
 ]
 
 function isGuestPath(url: string | undefined): boolean {
