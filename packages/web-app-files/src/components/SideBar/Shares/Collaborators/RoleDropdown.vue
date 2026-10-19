@@ -148,6 +148,14 @@ const selectRole = (role: ShareRole) => {
   emit('optionChange', unref(selectedRole))
 }
 
+const resetSelectedRole = () => {
+  if (existingShareRole) {
+    selectedRole.value = existingShareRole
+  }
+}
+
+defineExpose({ resetSelectedRole })
+
 watch(
   () => isExternal,
   () => {

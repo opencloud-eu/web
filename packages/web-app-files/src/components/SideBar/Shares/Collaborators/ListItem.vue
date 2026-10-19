@@ -42,6 +42,7 @@
           <div>
             <div v-if="modifiable" class="flex flex-nowrap items-center">
               <role-dropdown
+                ref="roleDropdown"
                 :dom-selector="shareDomSelector"
                 :existing-share-role="share.role"
                 :existing-share-permissions="share.permissions"
@@ -109,7 +110,7 @@ import {
   useSharesStore
 } from '@opencloud-eu/web-pkg'
 import { Resource, extractDomSelector } from '@opencloud-eu/web-client'
-import { computed, inject, Ref, unref } from 'vue'
+import { computed, inject, ref, Ref, unref } from 'vue'
 import { formatDateFromDateTime, useClientService, UserAvatar } from '@opencloud-eu/web-pkg'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
@@ -151,6 +152,8 @@ const { updateShare } = sharesStore
 const { upsertSpace, loadGraphPermissions } = useSpacesStore()
 
 const { user } = storeToRefs(userStore)
+
+const roleDropdown = ref<InstanceType<typeof RoleDropdown>>()
 
 const sharedParentDir = computed(() => {
   return queryItemAsString(sharedParentRoute?.params?.driveAliasAndItem).split('/').pop()
@@ -262,13 +265,19 @@ const saveShareChanges = async ({
   expirationDateTime?: string | null
 }) => {
   try {
-    await updateShare({
-      clientService,
-      space: unref(space),
-      resource: unref(resource),
-      collaboratorShare: share,
-      options: { roles: [role.id], expirationDateTime }
-    })
+    try {
+      await updateShare({
+        clientService,
+        space: unref(space),
+        resource: unref(resource),
+        collaboratorShare: share,
+        options: { roles: [role.id], expirationDateTime }
+      })
+    } catch (e) {
+      // the change could not be saved, revert the dropdown to the previously saved role
+      unref(roleDropdown)?.resetSelectedRole()
+      throw e
+    }
 
     const item = unref(resource)
     if (isProjectSpaceResource(item)) {
