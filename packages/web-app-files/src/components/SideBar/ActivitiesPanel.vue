@@ -134,17 +134,19 @@ const isLoading = computed(() => {
   return loadActivitiesTask.isRunning || !loadActivitiesTask.last
 })
 
+// interpolate in a single pass, so placeholders inside the inserted values
+// (e.g. a file named "{user}") are not interpolated again
 const getHtmlFromActivity = (activity: Activity) => {
-  let message = activity.template.message
-  for (const [key, value] of Object.entries(activity.template.variables)) {
+  // FIXME: graph sdk type is wrong
+  const variables = activity.template.variables as Record<string, any>
+  return escape(activity.template.message).replace(/\{(\w+)\}/g, (placeholder, key: string) => {
+    const value = variables[key]
+    if (!value) {
+      return placeholder
+    }
     const escapedValue = escape(value.displayName || value.name)
-
-    message = message.replace(
-      `{${key}}`,
-      `<span class="font-medium text-role-on-surface">${escapedValue}</span>`
-    )
-  }
-  return message
+    return `<span class="font-medium text-role-on-surface">${escapedValue}</span>`
+  })
 }
 
 const getAvatarsFromActivity = (activity: Activity) => {
