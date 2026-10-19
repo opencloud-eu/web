@@ -5,8 +5,10 @@
     }`"
     class="p-2 bg-role-surface-container rounded-xl"
   >
-    <div class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
-      <div class="flex items-center">
+    <div
+      class="w-full grid grid-cols-[1fr_auto] items-center files-collaborators-collaborator-details"
+    >
+      <div class="flex items-center min-w-0">
         <div>
           <user-avatar
             v-if="isAnyUserShareType"
@@ -23,9 +25,13 @@
             class="files-collaborators-collaborator-indicator"
           />
         </div>
-        <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
+        <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full min-w-0">
           <div class="truncate">
-            <span aria-hidden="true" class="files-collaborators-collaborator-name">
+            <span
+              :title="shareDisplayName"
+              aria-hidden="true"
+              class="files-collaborators-collaborator-name"
+            >
               <oc-filter-highlight :text="shareDisplayName" :term="filterTerm" />
             </span>
             <span class="sr-only" v-text="screenreaderShareDisplayName" />
