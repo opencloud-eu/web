@@ -112,6 +112,7 @@ import {
 import {
   ResourceTransfer,
   TransferType,
+  canBeMoved,
   getVaultClaim,
   useExtensionRegistry,
   useFileActions,
@@ -177,7 +178,7 @@ const userStore = useUserStore()
 const authStore = useAuthStore()
 const { $gettext, $ngettext } = useGettext()
 const { isTablet } = useIsMobile()
-const { showMessage } = useMessages()
+const { showMessage, showErrorMessage } = useMessages()
 const extensionRegistry = useExtensionRegistry()
 const clientService = useClientService()
 const { startWorker } = usePasteWorker()
@@ -491,6 +492,18 @@ const fileDropped = async (fileTarget: string | RouteLocationRaw) => {
     return
   }
 
+  const canMoveSelection = selected.every((r) => canBeMoved(r, unref(currentFolder)?.path))
+  if (!canMoveSelection || !targetFolder.canUpload({ user: userStore.user })) {
+    showErrorMessage({
+      title: $ngettext(
+        'You have no permission to move this item here.',
+        'You have no permission to move these items here.',
+        selected.length
+      )
+    })
+    return
+  }
+
   const resourceTransfer = new ResourceTransfer(
     unref(space),
     selected,
@@ -504,7 +517,8 @@ const fileDropped = async (fileTarget: string | RouteLocationRaw) => {
 
   const transferData = await resourceTransfer.getTransferData(TransferType.MOVE)
 
-  startWorker(transferData, ({ successful }) => {
+  startWorker(transferData, ({ successful, failed }) => {
+    resourceTransfer.showResultMessage(failed, successful, TransferType.MOVE)
     removeResources(successful)
     resetSelection()
   })
