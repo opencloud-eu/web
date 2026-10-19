@@ -4,7 +4,7 @@ import { ClientService } from '../services'
 import { triggerDownloadWithFilename } from '../helpers/download'
 import { Ref, ref, computed, unref } from 'vue'
 import { ArchiverCapability } from '@opencloud-eu/web-client/ocs'
-import { UserStore } from '../composables'
+import { AuthStore, UserStore } from '../composables'
 import { compareVersions } from '../utils'
 
 interface TriggerDownloadOptions {
@@ -17,6 +17,7 @@ interface TriggerDownloadOptions {
 export class ArchiverService {
   clientService: ClientService
   userStore: UserStore
+  authStore: AuthStore
   serverUrl: string
   capability: Ref<ArchiverCapability>
   available: Ref<boolean>
@@ -24,11 +25,13 @@ export class ArchiverService {
   constructor(
     clientService: ClientService,
     userStore: UserStore,
+    authStore: AuthStore,
     serverUrl: string,
     archiverCapabilities: Ref<ArchiverCapability[]> = ref([])
   ) {
     this.clientService = clientService
     this.userStore = userStore
+    this.authStore = authStore
     this.serverUrl = serverUrl
     this.capability = computed(() => {
       const archivers = unref(archiverCapabilities)
@@ -56,12 +59,15 @@ export class ArchiverService {
       throw new RuntimeError('download url could not be built')
     }
 
-    let url = options.publicToken
-      ? downloadUrl
-      : await this.clientService.ocs.signUrl(
-          downloadUrl,
-          this.userStore.user?.onPremisesSamAccountName
-        )
+    // public links carry their token in the url and guests are authenticated via their
+    // session cookie, so only regular users need a signed url
+    let url =
+      options.publicToken || this.authStore.isGuestContext
+        ? downloadUrl
+        : await this.clientService.ocs.signUrl(
+            downloadUrl,
+            this.userStore.user?.onPremisesSamAccountName
+          )
 
     let fileName: string
     if (options.publicLinkPassword) {
