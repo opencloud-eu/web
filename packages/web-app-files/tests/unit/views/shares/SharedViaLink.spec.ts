@@ -93,6 +93,20 @@ describe('SharedViaLink view', () => {
     })
   })
 
+  describe('selection', () => {
+    it('deselects the resources a filter hides, also when it hides all of them', async () => {
+      const files = [mock<OutgoingShareResource>({ id: '1', name: 'file.txt' })]
+      const { wrapper } = getMountedWrapper({ files, stubAppBar: false })
+      const resourcesStore = useResourcesStore()
+      resourcesStore.setSelection(['1'])
+
+      await wrapper.find('.search-filter input').setValue('no match')
+
+      expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
+      expect(resourcesStore.selectedIds).toEqual([])
+    })
+  })
+
   describe('resource field updates', () => {
     async function setup() {
       const paginatedResources = ref([
@@ -161,12 +175,14 @@ function getMountedWrapper({
   mocks = {},
   files = [],
   loading = false,
-  viewDefaults = {}
+  viewDefaults = {},
+  stubAppBar = true
 }: {
   mocks?: Record<string, unknown>
   files?: OutgoingShareResource[]
   loading?: boolean
   viewDefaults?: Partial<ReturnType<typeof useResourcesViewDefaults>>
+  stubAppBar?: boolean
 } = {}) {
   const plugins = [...defaultPlugins({ piniaOptions: { stubActions: false } })]
 
@@ -196,7 +212,7 @@ function getMountedWrapper({
         plugins,
         mocks: defaultMocks,
         provide: defaultMocks,
-        stubs: defaultStubs
+        stubs: { ...defaultStubs, 'app-bar': stubAppBar }
       }
     })
   }

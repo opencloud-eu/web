@@ -31,6 +31,10 @@ export const useKeyboardFileNavigation = (
     if (!unref(latestSelectedId)) {
       return
     }
+    // the latest selected resource can be on another page by now, it must not be toggled then
+    if (!unref(paginatedResources).some(({ id }) => id === unref(latestSelectedId))) {
+      return
+    }
     resourcesStore.toggleSelection(unref(latestSelectedId))
   })
 

@@ -116,6 +116,7 @@ import {
   useFileActions,
   useLoadPreview,
   useResourcesStore,
+  useResourcesSelectionVisibilityGuard,
   useRoute,
   useRouteQuery,
   useRouter,
@@ -242,6 +243,9 @@ const showShareTypeFilter = computed(
 watch(filterTerm, async () => {
   await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
+
+// the folder view gets replaced when nothing is left to show, its guard can't deselect then
+useResourcesSelectionVisibilityGuard(paginatedResources)
 
 const keyActions = useKeyboardActions()
 useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)

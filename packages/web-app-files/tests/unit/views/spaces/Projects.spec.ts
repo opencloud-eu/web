@@ -7,7 +7,8 @@ import {
   FolderViewExtension,
   ResourceTable,
   FileSideBar,
-  eventBus
+  eventBus,
+  useResourcesStore
 } from '@opencloud-eu/web-pkg'
 
 import {
@@ -159,6 +160,51 @@ describe('Projects view', () => {
     expect(mocks.$router.push).toHaveBeenCalledWith(
       expect.objectContaining({ query: expect.objectContaining({ page: 2 }) })
     )
+  })
+  describe('selection', () => {
+    it('selects only the spaces of the current page via keyboard shortcut', async () => {
+      const { wrapper } = getMountedWrapper({
+        spaces: spacesResources,
+        query: { 'items-per-page': '1' }
+      })
+      await flushPromises()
+      const rows = wrapper.findAll('tbody tr')
+      expect(rows.length).toBe(1)
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true }))
+
+      const { setSelection } = useResourcesStore()
+      expect(setSelection).toHaveBeenCalledWith([rows[0].attributes('data-item-id')])
+    })
+    it('deselects disabled spaces when they get hidden', async () => {
+      const { wrapper } = getMountedWrapper({ spaces: spacesResources, includeDisabled: true })
+      await flushPromises()
+      const resourcesStore = useResourcesStore()
+      resourcesStore.selectedIds = ['1', '3']
+      await nextTick()
+
+      resourcesStore.areDisabledSpacesShown = false
+      await nextTick()
+
+      expect(wrapper.findAll('tbody tr').length).toBe(2)
+      expect(resourcesStore.deselectResources).toHaveBeenCalledWith(new Set(['3']))
+    })
+    it('deselects the spaces a filter hides, also when it hides all of them', async () => {
+      const { wrapper } = getMountedWrapper({
+        spaces: spacesResources,
+        includeDisabled: true,
+        stubAppBar: false
+      })
+      await flushPromises()
+      const resourcesStore = useResourcesStore()
+      resourcesStore.selectedIds = ['3']
+      await nextTick()
+
+      await wrapper.find('input').setValue('no match')
+
+      expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
+      expect(resourcesStore.deselectResources).toHaveBeenCalledWith(new Set(['3']))
+    })
   })
   it('should not pass selected resource as space to sidebar when driveType is not "project"', () => {
     const resource = mock<SpaceResource>({ id: 'selected-resource', driveType: 'personal' })

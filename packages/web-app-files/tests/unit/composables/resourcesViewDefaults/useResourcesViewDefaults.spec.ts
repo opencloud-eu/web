@@ -62,6 +62,19 @@ describe('useResourcesViewDefaults', () => {
         )
       )
     })
+    it('removes the param when selected resources leave the view', async () => {
+      const { mocks } = getWrapper()
+      const resourcesStore = useResourcesStore()
+      resourcesStore.setSelection(['1'])
+      vi.mocked(mocks.$router.replace).mockClear()
+
+      resourcesStore.deselectResources(new Set(['1']))
+      await vi.waitFor(() =>
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
+          expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
+        )
+      )
+    })
     it('keeps the param when an unselected resource gets removed from the list', async () => {
       const resources = [
         { id: '1', name: 'file.txt' },

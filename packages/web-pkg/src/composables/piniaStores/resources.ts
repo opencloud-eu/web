@@ -377,6 +377,7 @@ export const useResourcesStore = defineStore('resources', () => {
     toggleSelection,
     resetSelection,
     setLastSelectedId,
+    deselectResources,
 
     areHiddenFilesShown,
     areFileExtensionsShown,

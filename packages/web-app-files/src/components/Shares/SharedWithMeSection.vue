@@ -108,7 +108,7 @@ import ListInfo from '../../components/FilesList/ListInfo.vue'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
 import { ContextActions } from '@opencloud-eu/web-pkg'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
-import { useSelectedResources } from '@opencloud-eu/web-pkg'
+import { useResourcesSelectionVisibilityGuard, useSelectedResources } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { useFileActionsToggleHideShare } from '../../composables/actions/files'
 import { useGettext } from 'vue3-gettext'
@@ -192,6 +192,9 @@ const resourceItems = computed(() => {
   }
   return items.slice(0, showMoreToggleCount)
 })
+
+// the folder view gets replaced when nothing is left to show, its guard can't deselect then
+useResourcesSelectionVisibilityGuard(resourceItems)
 
 const toggleShowMore = () => {
   showMore.value = !showMore.value
