@@ -177,6 +177,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency qs to v6.16.1 [[#3940](https://github.com/opencloud-eu/web/pull/3940)]
+- chore(deps): update tiptap monorepo [[#3791](https://github.com/opencloud-eu/web/pull/3791)]
 - chore(deps): update traefik docker tag to v3.7.15 [[#3935](https://github.com/opencloud-eu/web/pull/3935)]
 - fix(deps): update dependency pinia to v4.1.0 [[#3810](https://github.com/opencloud-eu/web/pull/3810)]
 - chore(deps): update dependency happy-dom to v21 [[#3650](https://github.com/opencloud-eu/web/pull/3650)]
