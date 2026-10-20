@@ -15,7 +15,7 @@ import type {
   PreviewService,
   UppyService
 } from '../services'
-import type { AuthServiceInterface } from '../composables'
+import type { AuthContext, AuthServiceInterface } from '../composables'
 
 export interface GlobalProperties extends ComponentCustomProperties, Language {
   $ability: Ability
@@ -49,6 +49,8 @@ export interface AppNavigationItem {
   route?: RouteLocationRaw
   handler?: () => void
   priority?: number
+  /** the auth context the item is shown in, defaults to `user` */
+  authContext?: Extract<AuthContext, 'user' | 'guest'>
 }
 
 export type AppConfigObject = Record<string, any>

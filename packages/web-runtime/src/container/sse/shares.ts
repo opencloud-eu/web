@@ -5,11 +5,20 @@ import {
 } from '@opencloud-eu/web-client'
 import {
   eventBus,
+  isLocationGuestActive,
   isLocationSharesActive,
   isLocationSpacesActive,
   isItemInCurrentFolder
 } from '@opencloud-eu/web-pkg'
 import { SSEEventOptions } from './types'
+import { Router } from 'vue-router'
+
+function isSharedWithMeActive(router: Router) {
+  return (
+    isLocationSharesActive(router, 'files-shares-with-me') ||
+    isLocationGuestActive(router, 'files-guest-shares')
+  )
+}
 
 export const onSSESpaceMemberAddedEvent = async ({
   sseData,
@@ -155,7 +164,7 @@ export const onSSEShareCreatedEvent = async ({
     resourcesStore.upsertResource(resource)
   }
 
-  if (isLocationSharesActive(router, 'files-shares-with-me')) {
+  if (isSharedWithMeActive(router)) {
     // FIXME: get drive item by id as soon as server supports it
     const driveItems = await clientService.graphAuthenticated.driveItems.listSharedWithMe({
       expand: new Set(['thumbnails'])
@@ -211,7 +220,7 @@ export const onSSEShareUpdatedEvent = async ({
     return eventBus.publish('app.files.list.load')
   }
 
-  if (isLocationSharesActive(router, 'files-shares-with-me')) {
+  if (isSharedWithMeActive(router)) {
     // FIXME: get drive item by id as soon as server supports it
     const driveItems = await clientService.graphAuthenticated.driveItems.listSharedWithMe({
       expand: new Set(['thumbnails'])
@@ -297,7 +306,7 @@ export const onSSEShareRemovedEvent = async ({
     }
   }
 
-  if (isLocationSharesActive(router, 'files-shares-with-me')) {
+  if (isSharedWithMeActive(router)) {
     const removedShareResource = resourcesStore.resources.find((r) => r.fileId === sseData.itemid)
     if (!removedShareResource) {
       return

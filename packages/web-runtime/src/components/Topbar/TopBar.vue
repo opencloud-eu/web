@@ -51,7 +51,7 @@ import FeedbackLink from './FeedbackLink.vue'
 import SideBarToggle from './SideBarToggle.vue'
 import {
   CustomComponentTarget,
-  createGuestHomeLocation,
+  createLocationGuest,
   useAuthStore,
   useCapabilityStore,
   useConfigStore,
@@ -59,7 +59,6 @@ import {
   useExtensionRegistry,
   useIsAppActive,
   useRouter,
-  useSpacesStore,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
 import SidebarNavMobile from '../SidebarNav/SidebarNavMobile.vue'
@@ -84,7 +83,6 @@ const extensionRegistry = useExtensionRegistry()
 const isAppActive = useIsAppActive()
 
 const authStore = useAuthStore()
-const spacesStore = useSpacesStore()
 const router = useRouter()
 const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 
@@ -108,7 +106,7 @@ const homeLink = computed(() => {
 
   if (authStore.isGuestContext) {
     // other routes would end the guest session
-    return createGuestHomeLocation({ authStore, spacesStore })
+    return createLocationGuest('files-guest-shares')
   }
 
   return '/'

@@ -54,7 +54,7 @@
         </div>
         <oc-button
           v-if="memberCount"
-          :aria-label="$gettext('Open context menu and show members')"
+          :aria-label="showMembersLabel"
           appearance="raw"
           no-hover
           @click="openSideBarSharePanel"
@@ -296,6 +296,12 @@ watch(
 
 const memberCountString = computed(() => {
   return $ngettext('%{count} member', '%{count} members', unref(memberCount), {
+    count: unref(memberCount).toString()
+  })
+})
+
+const showMembersLabel = computed(() => {
+  return $ngettext('Show %{count} member', 'Show %{count} members', unref(memberCount), {
     count: unref(memberCount).toString()
   })
 })

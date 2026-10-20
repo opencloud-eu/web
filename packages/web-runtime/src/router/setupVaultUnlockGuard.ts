@@ -6,6 +6,7 @@ import {
   queryItemAsString,
   resolveVaultEngine,
   routeToContextQuery,
+  useAuthStore,
   useExtensionRegistry,
   useSpacesLoading,
   useSpacesStore,
@@ -73,6 +74,7 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
     if (!driveAliasAndItem) return true
     if (to.name === 'rclone-crypt-unlock') return true
 
+    const authStore = useAuthStore()
     const spacesStore = useSpacesStore()
     const extensionRegistry = useExtensionRegistry()
     const { waitForSpaces } = useSpacesLoading()
@@ -80,16 +82,32 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
     // Spaces need to be loaded for vaults to be claimed.
     await waitForSpaces()
 
-    let space = getSpaceForDriveAliasAndItem(
-      spacesStore.spaces,
-      driveAliasAndItem,
-      queryItemAsString(to.query?.fileId)
-    )
-
     const isShareSpace =
       driveAliasAndItem.startsWith('share/') || driveAliasAndItem.startsWith('ocm-share/')
+    // same fallback as the drive resolver, so both pick the same share
+    const shareId =
+      queryItemAsString(to.query?.shareId) ||
+      (isShareSpace && authStore.isGuestContext ? authStore.guestSpaceId : undefined)
+    const driveAliasPrefix = driveAliasAndItem.startsWith('ocm-share/') ? 'ocm-share' : 'share'
 
-    if (!space && isShareSpace && to.query?.shareId) {
+    // shares with the same name share a drive alias, so a share id is the only reliable match
+    let space =
+      isShareSpace && shareId
+        ? spacesStore.getSpace(shareId)
+        : getSpaceForDriveAliasAndItem(
+            spacesStore.spaces,
+            driveAliasAndItem,
+            queryItemAsString(to.query?.fileId)
+          )
+
+    if (!space && isShareSpace && shareId && authStore.isGuestContext) {
+      // guests can't list mount points, so the share space is built from the share id
+      space = spacesStore.createShareSpace({
+        driveAliasPrefix,
+        id: shareId,
+        shareName: driveAliasAndItem.split('/')[1]
+      })
+    } else if (!space && isShareSpace && shareId) {
       // Share spaces are loaded as mount-point spaces, which we only fetch on
       // demand (it's expensive). `spacesInitialized` doesn't cover them, so we
       // trigger the lazy load explicitly here. `loadMountPoints` is idempotent
@@ -99,12 +117,11 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
       }
 
       // Find a matching mount point for the given share id and create a share space.
-      const mountPoint = spacesStore.spaces.find((s) => s.root?.remoteItem?.id === to.query.shareId)
+      const mountPoint = spacesStore.spaces.find((s) => s.root?.remoteItem?.id === shareId)
       if (!mountPoint) {
         return true
       }
 
-      const driveAliasPrefix = driveAliasAndItem.startsWith('ocm-share/') ? 'ocm-share' : 'share'
       space = spacesStore.createShareSpace({
         driveAliasPrefix,
         id: mountPoint.root?.remoteItem?.id,

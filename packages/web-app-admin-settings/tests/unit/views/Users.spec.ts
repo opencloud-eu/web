@@ -9,7 +9,7 @@ import {
   shallowMount,
   useAppDefaultsMock
 } from '@opencloud-eu/web-test-helpers'
-import { Action, ClientService, SideBarPanel } from '@opencloud-eu/web-pkg'
+import { Action, ClientService, SideBarPanel, useMessages } from '@opencloud-eu/web-pkg'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { flushPromises } from '@vue/test-utils'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
@@ -123,13 +123,16 @@ describe('Users view', () => {
   })
 
   describe('side bar panels', () => {
-    it('should contain EditPanel when one user is selected', () => {
+    it('should contain EditPanel when one user is selected and loaded', async () => {
       const { wrapper } = getMountedWrapper()
-      expect(
-        getSideBarPanels(wrapper)
-          .find(({ name }) => name === 'EditPanel')
-          .isVisible({ items: [{ id: '1' } as User] })
-      ).toBeTruthy()
+      await flushPromises()
+      const user = getDefaultUser()
+      const editPanel = getSideBarPanels(wrapper).find(({ name }) => name === 'EditPanel')
+      expect(editPanel.isVisible({ items: [user] })).toBeFalsy()
+
+      useUserSettingsStore().selectedUsers = [user]
+      await flushPromises()
+      expect(editPanel.isVisible({ items: [user] })).toBeTruthy()
     })
     it('should contain DetailsPanel no user is selected', () => {
       const { wrapper } = getMountedWrapper()
@@ -179,6 +182,81 @@ describe('Users view', () => {
         {},
         expect.anything()
       )
+    })
+
+    it('shows an error, disables the group actions and loads the user again on reselect if loading fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const clientService = getClientService()
+      const { wrapper } = getMountedWrapper({ mountType: mount, clientService })
+      await flushPromises()
+      const userSettingsStore = useUserSettingsStore()
+      const user = { ...getDefaultUser(), id: '2' }
+      const getBatchAction = (actionName: string) =>
+        (wrapper.findComponent(AppTemplate).props('batchActions') as Action[]).find(
+          ({ name }) => name === actionName
+        )
+      const isAddToGroupsDisabled = () => getBatchAction('add-to-groups').isDisabled()
+      clientService.graphAuthenticated.users.getUser.mockRejectedValueOnce(new Error('failed'))
+
+      userSettingsStore.selectedUsers = [user]
+      await flushPromises()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to load user details' })
+      )
+      expect(isAddToGroupsDisabled()).toBe(true)
+      expect(getBatchAction('remove-users-from-groups').isDisabled()).toBe(true)
+      expect(
+        getSideBarPanels(wrapper)
+          .find(({ name }) => name === 'EditPanel')
+          .isVisible({ items: [user] })
+      ).toBeFalsy()
+
+      userSettingsStore.selectedUsers = []
+      await flushPromises()
+      clientService.graphAuthenticated.users.getUser.mockClear()
+      clientService.graphAuthenticated.users.getUser.mockResolvedValue(mock<User>(user))
+      userSettingsStore.selectedUsers = [user]
+      await flushPromises()
+      expect(clientService.graphAuthenticated.users.getUser).toHaveBeenCalledTimes(1)
+      expect(clientService.graphAuthenticated.users.getUser).toHaveBeenCalledWith(
+        '2',
+        {},
+        expect.anything()
+      )
+      expect(isAddToGroupsDisabled()).toBe(false)
+    })
+
+    it('shows the error only once when the edit quick action of a user is clicked while another user is selected', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const clientService = getClientService()
+      const failingUser = { ...getDefaultUser(), id: '2' }
+      const otherUser = { ...getDefaultUser(), id: '3' }
+      clientService.graphAuthenticated.users.listUsers.mockResolvedValue([failingUser, otherUser])
+      clientService.graphAuthenticated.users.getUser.mockImplementation((id) =>
+        id === failingUser.id
+          ? Promise.reject(new Error('failed'))
+          : Promise.resolve(mock<User>(otherUser))
+      )
+      const { wrapper } = getMountedWrapper({
+        mountType: mount,
+        clientService,
+        selectedUsers: [otherUser],
+        stubActions: false
+      })
+      await flushPromises()
+
+      // the click reaches the quick action and then the row. the browser runs the pending
+      // reactive updates in between, so the row only gets the click after they are done.
+      const row = wrapper.find(`[data-item-id="${failingUser.id}"]`)
+      const editButton = row.find('.users-table-btn-edit')
+      editButton.element.parentElement.addEventListener('click', (event) => event.stopPropagation())
+      await editButton.trigger('click')
+      await flushPromises()
+      await row.trigger('click')
+      await flushPromises()
+
+      expect(useUserSettingsStore().selectedUsers.map(({ id }) => id)).toEqual([failingUser.id])
+      expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -416,7 +494,8 @@ function getMountedWrapper({
   roleFilterQuery = null,
   options = {},
   users = [],
-  selectedUsers = []
+  selectedUsers = [],
+  stubActions = true
 }: {
   mountType?: typeof shallowMount | typeof mount
   clientService?: ReturnType<typeof mockDeep<ClientService>>
@@ -426,6 +505,7 @@ function getMountedWrapper({
   options?: OptionsConfig
   users?: User[]
   selectedUsers?: User[]
+  stubActions?: boolean
 } = {}) {
   const query: Record<string, string> = reactive({
     ...(displayNameFilterQuery && { q_displayName: displayNameFilterQuery }),
@@ -448,6 +528,7 @@ function getMountedWrapper({
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
+              stubActions,
               userState: { user },
               configState: { options },
               userSettingsStore: { users, selectedUsers }

@@ -1,12 +1,14 @@
 <template>
-  <div v-if="isSvgImage" ref="img" :data-id="file.id">
+  <div v-if="isSvgImage" ref="img" class="size-full" :data-id="file.id">
+    <!-- the wrapper fills the stage so the svg's size-full has a basis; the svg's
+      preserveAspectRatio then scales the drawing to fit, like a raster image -->
     <inline-svg
       :key="`media-svg-${file.id}`"
       :src="file.url"
       :transform-source="sanitizeSvgElement"
       role="img"
       :aria-label="file.name"
-      class="max-w-full max-h-full"
+      class="size-full"
       @loaded="initPanzoom"
     />
   </div>

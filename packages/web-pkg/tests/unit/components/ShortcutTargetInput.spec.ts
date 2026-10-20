@@ -139,7 +139,7 @@ describe('ShortcutTargetInput', () => {
     const { input, drop } = setup()
     await input('report')
     await vi.advanceTimersByTimeAsync(200)
-    await wrapper.get('.selectable-item oc-button-stub').trigger('click')
+    await wrapper.get('.selectable-item').trigger('click')
     expect(wrapper.emitted('select')).toEqual([
       [`${window.location.origin}/f/report.pdf-id`, 'report.pdf']
     ])
@@ -174,10 +174,30 @@ describe('ShortcutTargetInput', () => {
     const { input } = setup()
     await input('disabled')
     await vi.advanceTimersByTimeAsync(200)
-    const button = wrapper.get('.selectable-item oc-button-stub')
-    expect(button.attributes('disabled')).toBeDefined()
-    await button.trigger('click')
+    const option = wrapper.get('.selectable-item')
+    expect(option.attributes('aria-disabled')).toBe('true')
+    await option.trigger('click')
     expect(wrapper.emitted('select')).toBeUndefined()
+  })
+
+  it('exposes the suggestions as a combobox with a listbox and the active option', async () => {
+    search.mockResolvedValueOnce({ values: [result('report.pdf')], totalResults: 1 })
+    const { input, keydown, textInput, drop } = setup()
+    const listbox = wrapper.get('[role="listbox"]')
+    expect(textInput.attributes('role')).toBe('combobox')
+    expect(textInput.attributes('aria-autocomplete')).toBe('list')
+    expect(textInput.attributes('aria-controls')).toBe(listbox.attributes('id'))
+    expect(drop.attributes('popup-type')).toBe('listbox')
+    await input('report')
+    await vi.advanceTimersByTimeAsync(200)
+    const option = wrapper.get('[role="option"]')
+    expect(option.attributes('aria-selected')).toBe('false')
+    expect(textInput.attributes('aria-activedescendant')).toBeUndefined()
+    await keydown('ArrowDown')
+    expect(option.attributes('aria-selected')).toBe('true')
+    expect(textInput.attributes('aria-activedescendant')).toBe(option.attributes('id'))
+    await keydown('Escape')
+    expect(textInput.attributes('aria-activedescendant')).toBeUndefined()
   })
 
   it('consumes Enter only while the suggestions are open and not during composition', async () => {

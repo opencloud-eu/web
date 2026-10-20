@@ -1,6 +1,7 @@
 import { mergeConfig, ViteDevServer } from 'vite'
-import { join, posix as posixPath } from 'path'
+import { dirname, join, posix as posixPath } from 'path'
 import { cwd } from 'process'
+import { fileURLToPath } from 'url'
 import { readFileSync, existsSync } from 'fs'
 import type { IncomingMessage, ServerResponse } from 'http'
 import tailwindcss from '@tailwindcss/vite'
@@ -159,6 +160,7 @@ export function defineConfig(overrides: ExtensionConfigOverrides = {}) {
           globals: true,
           environment: 'happy-dom',
           clearMocks: true,
+          setupFiles: [join(dirname(fileURLToPath(import.meta.url)), 'vitest.setup.js')],
           include: ['**/*.spec.ts'],
           exclude: [
             '**/node_modules/**',

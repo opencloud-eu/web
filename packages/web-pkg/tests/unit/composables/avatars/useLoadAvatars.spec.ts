@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useLoadAvatars } from '../../../../src/composables/avatars/useLoadAvatars'
-import { useAvatarsStore } from '../../../../src/composables/piniaStores'
+import { useAuthStore, useAvatarsStore } from '../../../../src/composables/piniaStores'
 import { useClientService } from '../../../../src/composables/clientService'
 import { createTestingPinia, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 
@@ -33,6 +33,22 @@ describe('useLoadAvatars', () => {
 
           expect(avatarsStore.abortControllers.has(userId)).toBe(true)
           expect(avatarsStore.pendingAvatarsRequests.has(userId)).toBe(true)
+        }
+      })
+    })
+
+    it('should not enqueue a request in a guest context', () => {
+      getWrapper({
+        setup: ({ enqueueAvatar }) => {
+          const authStore = useAuthStore()
+          authStore.setGuestContext('permission-id', 'space-id')
+          const avatarsStore = useAvatarsStore()
+          const userId = 'user123'
+
+          enqueueAvatar(userId)
+
+          expect(avatarsStore.pendingAvatarsRequests.has(userId)).toBe(false)
+          expect(mockGetUserPhoto).not.toHaveBeenCalled()
         }
       })
     })

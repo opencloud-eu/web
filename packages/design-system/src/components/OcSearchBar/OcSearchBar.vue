@@ -41,7 +41,7 @@
         :disabled="loading || model.length < 1"
         @click="onSearch"
       >
-        {{ buttonLabel }}
+        {{ buttonLabel || $gettext('Search') }}
       </oc-button>
     </div>
     <oc-button
@@ -84,8 +84,8 @@ export interface Props {
    */
   small?: boolean
   /**
-   * @docs The label of the search button.
-   * @default Search
+   * @docs The label of the search button. Falls back to the translated "Search".
+   * @default ''
    */
   buttonLabel?: string
   /**
@@ -172,7 +172,7 @@ const {
   placeholder = '',
   label,
   small = false,
-  buttonLabel = 'Search',
+  buttonLabel = '',
   buttonHidden = false,
   typeAhead = false,
   trimQuery = true,
@@ -224,7 +224,7 @@ const inputClass = computed(() => {
 })
 
 const loadingAccessibleLabelValue = computed(() => {
-  return loadingAccessibleLabel || 'Loading results'
+  return loadingAccessibleLabel || $gettext('Loading results')
 })
 
 const onSearch = () => {

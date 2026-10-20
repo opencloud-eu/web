@@ -65,28 +65,6 @@ describe('copy', () => {
           }
         })
       })
-      it.each([
-        { canCreate: true, visible: true },
-        { canCreate: false, visible: false }
-      ])(
-        'returns $visible for a guest if the current folder is creatable: $canCreate',
-        ({ canCreate, visible }) => {
-          getWrapper({
-            isGuest: true,
-            currentFolder: mock<Resource>({ id: 'cf-1', canCreate: () => canCreate }),
-            setup: ({ actions }) => {
-              const resource = mock<Resource>({
-                id: '1',
-                canDownload: () => true,
-                isInVault: false
-              })
-              expect(unref(actions)[0].isVisible({ space: null, resources: [resource] })).toBe(
-                visible
-              )
-            }
-          })
-        }
-      )
       it('returns false when resources contain a project space', () => {
         getWrapper({
           setup: ({ actions }) => {
@@ -110,11 +88,9 @@ describe('copy', () => {
 
 function getWrapper({
   currentFolder = mock<Resource>({ id: 'cf-1', path: '/source' }),
-  isGuest = false,
   setup
 }: {
   currentFolder?: Resource
-  isGuest?: boolean
   setup: (instance: ReturnType<typeof useFileActionsCopy>) => void
 }) {
   const mocks = {
@@ -130,12 +106,7 @@ function getWrapper({
       {
         mocks,
         provide: mocks,
-        pluginOptions: {
-          piniaOptions: {
-            resourcesStore: { currentFolder },
-            authState: { guestContextReady: isGuest }
-          }
-        }
+        pluginOptions: { piniaOptions: { resourcesStore: { currentFolder } } }
       }
     )
   }

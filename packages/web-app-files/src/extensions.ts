@@ -3,6 +3,7 @@ import {
   Extension,
   FloatingActionButtonExtension,
   isLocationCommonActive,
+  isLocationGuestActive,
   isLocationPublicActive,
   isLocationSharesActive,
   isLocationSpacesActive,
@@ -38,7 +39,9 @@ export const extensions = (appInfo: ApplicationInformation) => {
   const { currentFolder } = storeToRefs(useResourcesStore())
   const { currentSpace } = storeToRefs(useSpacesStore())
   const router = useRouter()
-  const { search: searchFunction } = useSearch()
+  // preview and list search need their own (restartable) tasks, so that one doesn't cancel the other
+  const { search: previewSearchFunction } = useSearch()
+  const { search: listSearchFunction } = useSearch()
   const { $gettext } = useGettext()
   const { can } = useAbility()
 
@@ -51,7 +54,12 @@ export const extensions = (appInfo: ApplicationInformation) => {
   const folderViewExtensions = useFolderViews()
   const sideBarPanelExtensions = useSideBarPanels()
   const vaultIndicator = useVaultIndicator()
-  const searchProvider = new SDKSearch(capabilityStore, searchFunction, configStore)
+  const searchProvider = new SDKSearch(
+    capabilityStore,
+    previewSearchFunction,
+    configStore,
+    listSearchFunction
+  )
 
   return computed<Extension[]>(() => [
     ...fileActionExtensions,
@@ -82,6 +90,10 @@ export const extensions = (appInfo: ApplicationInformation) => {
 
         if (isLocationSharesActive(router)) {
           return $gettext('To share a file or folder, open the Sharing panel')
+        }
+
+        if (isLocationGuestActive(router, 'files-guest-shares')) {
+          return $gettext('To create or upload files, open a share')
         }
 
         if (isLocationCommonActive(router, 'files-common-favorites')) {

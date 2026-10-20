@@ -69,7 +69,9 @@
           <div v-if="selectedResources.length" class="flex items-center gap-1">
             <oc-button
               v-oc-tooltip="$gettext('Clear selection')"
-              :aria-label="$gettext('Clear selection')"
+              :aria-label="
+                $gettext('%{count} selected, clear selection', { count: selectedResources.length })
+              "
               appearance="raw"
               gap-size="small"
               class="p-1 clear-selection-btn"
@@ -95,6 +97,7 @@ import last from 'lodash-es/last'
 import { computed, onBeforeUnmount, onMounted, ref, unref, useSlots, useTemplateRef } from 'vue'
 import {
   isProjectSpaceResource,
+  isPublicSpaceResource,
   isShareSpaceResource,
   Resource,
   SpaceResource
@@ -208,6 +211,9 @@ const routeMetaTitle = useRouteMeta('title')
 const pageTitle = computed(() => {
   if (unref(routeMetaTitle)) {
     return $gettext(unref(routeMetaTitle))
+  }
+  if (isPublicSpaceResource(unref(space))) {
+    return unref(space).name || $gettext('Public link')
   }
   return unref(space)?.name || ''
 })

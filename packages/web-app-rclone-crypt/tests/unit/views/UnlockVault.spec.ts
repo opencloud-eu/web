@@ -28,12 +28,14 @@ function mountUnlockVault({
   needsSetup = false,
   spaces = [{ id: spaceId, driveType: 'personal', driveAlias: 'personal/admin', name: 'Admin' }],
   spacesInitialized = true,
-  query = { spaceId, vaultRoot }
+  query = { spaceId, vaultRoot },
+  isGuestContext = false
 }: {
   needsSetup?: boolean
   spaces?: Space[]
   spacesInitialized?: boolean
   query?: Record<string, string>
+  isGuestContext?: boolean
 } = {}) {
   vi.mocked(probeVaultNeedsSetup).mockResolvedValue(needsSetup)
   vi.mocked(unlockVault).mockResolvedValue({
@@ -49,7 +51,10 @@ function mountUnlockVault({
     global: {
       plugins: [
         ...defaultPlugins({
-          piniaOptions: { spacesState: { spaces: spaces as never, spacesInitialized } }
+          piniaOptions: {
+            spacesState: { spaces: spaces as never, spacesInitialized },
+            authState: { guestContextReady: isGuestContext }
+          }
         })
       ],
       mocks,
@@ -242,6 +247,19 @@ describe('UnlockVault', () => {
 
       expect(mocks.$router.push).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'files-shares-with-me' })
+      )
+    })
+
+    it('falls back to the guest shares list for a directly shared vault in guest context', async () => {
+      const { wrapper, mocks } = await mountProbed({
+        spaces: [{ id: spaceId, driveType: 'share', driveAlias: 'shares/my.vault' }],
+        query: { spaceId, vaultRoot: '/' },
+        isGuestContext: true
+      })
+      await (wrapper.vm as any).onCancel()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'files-guest-shares' })
       )
     })
 

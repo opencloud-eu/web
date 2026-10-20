@@ -182,6 +182,34 @@ describe('EditPanel', () => {
     })
   })
 
+  describe('password validation', () => {
+    it('rejects a whitespace-only password', async () => {
+      const { wrapper } = getWrapper()
+      await setInput(wrapper, selectors.passwordInput, '   ')
+      expect(getInput(wrapper, selectors.passwordInput).props('errorMessage')).toBe(
+        'Password cannot be empty'
+      )
+      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeTruthy()
+    })
+    it('treats an empty password field as no change', async () => {
+      const { wrapper } = getWrapper()
+      await setInput(wrapper, selectors.passwordInput, '   ')
+      await setInput(wrapper, selectors.passwordInput, '')
+      expect(getInput(wrapper, selectors.passwordInput).props('errorMessage')).toBe('')
+      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeFalsy()
+      expect(getCompareSaveDialog(wrapper).props('compareObject').passwordProfile).toBeUndefined()
+    })
+    it('accepts a valid password', async () => {
+      const { wrapper } = getWrapper()
+      await setInput(wrapper, selectors.passwordInput, 'secret123')
+      expect(getInput(wrapper, selectors.passwordInput).props('errorMessage')).toBe('')
+      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeFalsy()
+      expect(getCompareSaveDialog(wrapper).props('compareObject').passwordProfile).toEqual({
+        password: 'secret123'
+      })
+    })
+  })
+
   describe('group select', () => {
     it('takes all available groups', () => {
       const { wrapper } = getWrapper()
