@@ -9,23 +9,32 @@ const mostRecentVersion: AppVersion = {
 }
 
 const selectors = {
-  downloadButton: 'button'
+  downloadLink: 'a'
 }
 
 describe('AppActions', () => {
-  it('renders a "Download" button', () => {
+  it('renders a "Download" link to the most recent version', () => {
     const { wrapper } = getWrapper()
-    expect(wrapper.find(selectors.downloadButton).text()).toBe('Download')
+    const link = wrapper.find(selectors.downloadLink)
+    expect(link.text()).toBe('Download')
+    expect(link.attributes('href')).toBe(mostRecentVersion.url)
+    expect(link.attributes('download')).toBe('app-1.1.0.zip')
   })
-  it('downloads the most recent version', async () => {
-    const { wrapper } = getWrapper()
-    await wrapper.find(selectors.downloadButton).trigger('click')
-    expect(window.location.href).toBe(mostRecentVersion.url)
+
+  it('uses the configured filename for the download', () => {
+    const { wrapper } = getWrapper({
+      ...mostRecentVersion,
+      url: 'https://example.com/release',
+      filename: 'custom-app-1.1.0.tar.gz'
+    })
+    const link = wrapper.find(selectors.downloadLink)
+    expect(link.attributes('href')).toBe('https://example.com/release')
+    expect(link.attributes('download')).toBe('custom-app-1.1.0.tar.gz')
   })
 })
 
-function getWrapper() {
-  const app = { ...mock<App>({}), mostRecentVersion }
+function getWrapper(version: AppVersion = mostRecentVersion) {
+  const app = { ...mock<App>({}), mostRecentVersion: version }
   return {
     wrapper: mount(AppActions, {
       props: { app },

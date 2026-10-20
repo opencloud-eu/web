@@ -2,8 +2,10 @@
   <oc-button
     class="app-download-button relative shrink-0 raw-hover-surface p-1"
     appearance="raw"
+    type="a"
+    :href="getDownloadVersion({ app, version }).url"
+    :download="getDownloadFilename({ app, version })"
     :aria-label="label"
-    @click="downloadAppAction.handler({ app, version })"
   >
     <oc-icon name="download" fill-type="line" />
     <span class="sr-only" v-text="label" />
@@ -22,7 +24,7 @@ const { app, version = undefined } = defineProps<{
 }>()
 
 const { $gettext } = useGettext()
-const { downloadAppAction } = useAppActionsDownload()
+const { getDownloadVersion, getDownloadFilename } = useAppActionsDownload()
 
 const label = computed(() => {
   if (version) {

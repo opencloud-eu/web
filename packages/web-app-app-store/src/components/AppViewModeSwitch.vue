@@ -14,7 +14,7 @@
       :no-hover="modelValue === mode.name"
       :aria-label="mode.label"
       :aria-pressed="modelValue === mode.name"
-      class="p-2"
+      class="p-1"
       @click="emit('update:modelValue', mode.name)"
     >
       <oc-icon :icon="mode.icon" />

@@ -630,8 +630,10 @@ onBeforeUnmount(() => {
 
   .oc-mobile-drop li a,
   .oc-mobile-drop li button,
+  .oc-mobile-drop li .oc-button,
   .oc-drop li a,
-  .oc-drop li button {
+  .oc-drop li button,
+  .oc-drop li .oc-button {
     @apply p-1.5 w-full;
   }
 

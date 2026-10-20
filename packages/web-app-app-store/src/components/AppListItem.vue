@@ -1,6 +1,6 @@
 <template>
   <li
-    class="app-list-item relative bg-role-surface-container flex flex-col items-start sm:flex-row sm:items-center gap-4 border rounded-lg p-3 overflow-hidden"
+    class="app-list-item relative bg-role-surface-container hover:bg-role-surface-container-highest flex flex-col items-start sm:flex-row sm:items-center gap-4 border rounded-lg p-3 overflow-hidden"
   >
     <div class="relative shrink-0 pointer-events-none">
       <app-official-badge :app="app" class="absolute top-1 left-1" />
