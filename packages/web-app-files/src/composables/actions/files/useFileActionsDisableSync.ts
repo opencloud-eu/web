@@ -34,7 +34,8 @@ export const useFileActionsDisableSync = () => {
     const triggerQueue = new PQueue({
       concurrency: configStore.options.concurrentRequests.resourceBatchActions
     })
-    resources.forEach((resource) => {
+    const resourcesToUnsync = resources.filter((resource) => resource.syncEnabled)
+    resourcesToUnsync.forEach((resource) => {
       triggerPromises.push(
         triggerQueue.add(async () => {
           try {
@@ -63,7 +64,7 @@ export const useFileActionsDisableSync = () => {
           title: $ngettext(
             'Sync for the selected share was disabled successfully',
             'Sync for the selected shares was disabled successfully',
-            resources.length
+            resourcesToUnsync.length
           )
         })
         router.push(createLocationShares('files-shares-with-me'))
@@ -76,7 +77,7 @@ export const useFileActionsDisableSync = () => {
       title: $ngettext(
         'Failed to disable sync for the the selected share',
         'Failed to disable sync for the selected shares',
-        resources.length
+        resourcesToUnsync.length
       ),
       errors
     })
