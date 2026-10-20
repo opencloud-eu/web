@@ -214,7 +214,7 @@ importers:
         version: 1.64.1
       qs:
         specifier: ^6.15.0
-        version: 6.16.0
+        version: 6.16.1
       tailwindcss:
         specifier: ^4.2.2
         version: 4.3.3
@@ -555,7 +555,7 @@ importers:
         version: 4.1.0(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.44(typescript@6.0.3))
       qs:
         specifier: ^6.13.0
-        version: 6.16.0
+        version: 6.16.1
       uuid:
         specifier: 14.0.3
         version: 14.0.3
@@ -615,8 +615,8 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.44(typescript@6.0.3))
       qs:
-        specifier: 6.16.0
-        version: 6.16.0
+        specifier: 6.16.1
+        version: 6.16.1
       uuid:
         specifier: 14.0.3
         version: 14.0.3
@@ -1134,7 +1134,7 @@ importers:
         version: 1.12.2
       qs:
         specifier: ^6.15.0
-        version: 6.16.0
+        version: 6.16.1
       uuid:
         specifier: ^14.0.0
         version: 14.0.3
@@ -1239,8 +1239,8 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.44(typescript@6.0.3))
       qs:
-        specifier: 6.16.0
-        version: 6.16.0
+        specifier: 6.16.1
+        version: 6.16.1
       uuid:
         specifier: 14.0.3
         version: 14.0.3
@@ -4644,8 +4644,8 @@ packages:
     resolution: {integrity: sha512-+Owyggi9IxT1ePKGafcI87ubSmxol6smwJ+RAHDQlx9+9cPwFWDiKFFCPuWhr9ignlGpZ9vDQLw67N4dcTVFEA==}
     engines: {node: '>=20'}
 
-  qs@6.16.0:
-    resolution: {integrity: sha512-h6fhOIaRrID2CbEY2fqs+7t+UXZo+MLAnU5gRIq85uFtdiUPCdsApMlHhXogKVM4HM2DVbIjGNTTYH2OcmP1vA==}
+  qs@6.16.1:
+    resolution: {integrity: sha512-5Px6J7rfHBAGUhNQ3es4YzcOdBBw0SDcVtThJml4RdnKw4tKs2epA0kPZ+K8X+WiHktT93RHVcQ/3ym5aTCgtg==}
     engines: {node: '>=0.6'}
 
   quansync@0.2.11:
@@ -8884,7 +8884,7 @@ snapshots:
     dependencies:
       hookified: 2.2.0
 
-  qs@6.16.0:
+  qs@6.16.1:
     dependencies:
       es-define-property: 1.0.1
       side-channel: 1.1.1
@@ -9407,7 +9407,7 @@ snapshots:
   url@0.11.4:
     dependencies:
       punycode: 1.4.1
-      qs: 6.16.0
+      qs: 6.16.1
 
   util-deprecate@1.0.2: {}
 
