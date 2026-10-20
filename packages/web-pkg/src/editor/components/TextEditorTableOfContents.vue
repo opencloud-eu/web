@@ -70,7 +70,7 @@ const { editor, scrollContainer = null } = defineProps<{
 
 const { $gettext } = useGettext()
 
-const collapsed = ref(true)
+const collapsed = defineModel<boolean>('collapsed', { default: true })
 const activeId = ref<string | null>(null)
 const listRef = useTemplateRef<HTMLUListElement>('listRef')
 const isNavigating = ref(false)

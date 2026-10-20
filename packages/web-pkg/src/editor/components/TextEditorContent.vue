@@ -12,6 +12,7 @@
     <TextEditorTableOfContents
       v-if="textEditor.showTableOfContents"
       v-show="!isSourceMode"
+      v-model:collapsed="tableOfContentsCollapsed"
       :editor="textEditor"
       :scroll-container="contentRef"
     />
@@ -46,7 +47,14 @@
     </DragHandle>
     <TextEditorTableBubbleMenu v-show="!isSourceMode" :scroll-target="contentRef" />
     <TextEditorLinkBubbleMenu v-show="!isSourceMode" />
-    <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" class="h-full" />
+    <!-- pr-68 matches the outline's width plus its offset; a container of its own, so the content
+    styles (e.g. the room for the hover controls) see the width left beside the open outline -->
+    <EditorContent
+      v-show="!isSourceMode"
+      :editor="textEditor.editor.value"
+      class="@container h-full"
+      :class="{ '@min-[768px]:pr-68': isTableOfContentsOpen }"
+    />
     <TextEditorSourceView v-if="isSourceMode" :editor="textEditor" />
   </div>
 </template>
@@ -87,6 +95,13 @@ const isDarkTheme = computed(() => unref(currentTheme)?.isDark)
 const hljsThemeStyleElement = ref<HTMLLinkElement | null>(null)
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
+
+// The open outline floats over the right edge of the editor. Where both fit, the text makes room
+// for it, on narrow screens it keeps overlaying the text.
+const tableOfContentsCollapsed = ref(true)
+const isTableOfContentsOpen = computed(
+  () => textEditor.showTableOfContents && !unref(tableOfContentsCollapsed)
+)
 
 const isDraggable = computed(() => {
   // Frontmatter is pinned to the top of the document and cannot be moved, so

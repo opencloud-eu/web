@@ -150,6 +150,20 @@ describe('TextEditorContent', () => {
     expect(toc.attributes('style')).toContain('display: none')
   })
 
+  it('makes room for the table of contents while it is open', async () => {
+    const { wrapper } = mountEditorContent({ showTableOfContents: true })
+    const reservesRoom = () =>
+      wrapper.find('.mock-editor-content').classes().includes('@min-[768px]:pr-68')
+
+    expect(reservesRoom()).toBe(false)
+
+    await wrapper.find('.text-editor-table-of-contents-toggle').trigger('click')
+    expect(reservesRoom()).toBe(true)
+
+    await wrapper.find('.text-editor-table-of-contents-toggle').trigger('click')
+    expect(reservesRoom()).toBe(false)
+  })
+
   it('shows plus button only when slash commands extension is available', () => {
     const { wrapper } = mountEditorContent({ hasSlashCommands: true })
     expect(wrapper.find('.drag-handle-plus-button').exists()).toBe(true)
