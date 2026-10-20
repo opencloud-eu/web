@@ -149,9 +149,7 @@ const selectRole = (role: ShareRole) => {
 }
 
 const resetSelectedRole = () => {
-  if (existingShareRole) {
-    selectedRole.value = existingShareRole
-  }
+  selectedRole.value = existingShareRole || initialSelectedRole
 }
 
 defineExpose({ resetSelectedRole })

@@ -46,6 +46,45 @@ describe('RoleDropdown', () => {
     await wrapper.find(selectors.roleButton).trigger('click')
     expect(wrapper.emitted('optionChange')).toBeTruthy()
   })
+  describe('resetSelectedRole', () => {
+    it('reverts to the existing share role', async () => {
+      const canView = mock<ShareRole>({ id: 'view', displayName: 'Can view', description: '' })
+      const canEdit = mock<ShareRole>({ id: 'edit', displayName: 'Can edit', description: '' })
+      const { wrapper } = getWrapper({
+        mountType: shallowMount,
+        existingShareRole: canEdit,
+        availableInternalShareRoles: [canView, canEdit]
+      })
+      await wrapper.find(`#files-recipient-role-drop-btn-${canView.id}`).trigger('click')
+      expect(wrapper.find(`${selectors.recipientRoleBtn} span`).text()).toEqual('Can view')
+
+      wrapper.vm.resetSelectedRole()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find(`${selectors.recipientRoleBtn} span`).text()).toEqual('Can edit')
+    })
+    it('reverts to "Custom permissions" if the share has permissions but no role', async () => {
+      const canView = mock<ShareRole>({ id: 'view', displayName: 'Can view', description: '' })
+      const { wrapper } = getWrapper({
+        mountType: shallowMount,
+        existingSharePermissions: ['read', 'update'],
+        availableInternalShareRoles: [
+          canView,
+          mock<ShareRole>({ id: 'edit', displayName: 'Can edit', description: '' })
+        ]
+      })
+      expect(wrapper.find(`${selectors.recipientRoleBtn} span`).text()).toEqual(
+        'Custom permissions'
+      )
+      await wrapper.find(`#files-recipient-role-drop-btn-${canView.id}`).trigger('click')
+      expect(wrapper.find(`${selectors.recipientRoleBtn} span`).text()).toEqual('Can view')
+
+      wrapper.vm.resetSelectedRole()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find(`${selectors.recipientRoleBtn} span`).text()).toEqual(
+        'Custom permissions'
+      )
+    })
+  })
   it('renders a button for each available role', () => {
     const { wrapper } = getWrapper({ mountType: shallowMount })
     expect(wrapper.findAll(selectors.roleButton).length).toBe(2)
