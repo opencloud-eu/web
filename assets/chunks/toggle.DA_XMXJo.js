@@ -1,0 +1,1 @@
+import{Nt as e,_t as t,dn as n,kt as r,lt as i,rn as a}from"./framework.CkCltKs4.js";var o=t({__name:`toggle`,setup(t){let o=a(!1),s=()=>{o.value=!n(o)};return(t,n)=>{let a=e(`oc-filter-chip`);return r(),i(a,{"filter-label":`Toggle filter`,"is-toggle":!0,"is-toggle-active":o.value,onToggleFilter:s,onClearFilter:s},null,8,[`is-toggle-active`])}}});export{o as default};
