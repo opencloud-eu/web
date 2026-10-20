@@ -83,6 +83,38 @@ describe('useAppsStore', () => {
   })
 
   it.each([
+    ['not a date', 'yesterday'],
+    ['a wrong format', '01.09.2026'],
+    ['a wrong type', 20260901],
+    ['null', null]
+  ])('drops an invalid release date (%s) but keeps the app', async (_reason, releaseDate) => {
+    const store = getStore({
+      [repos[0].url]: () =>
+        new Response(
+          JSON.stringify({
+            apps: [
+              { ...rawApp, versions: [{ ...rawApp.versions[0], releaseDate }] },
+              {
+                ...rawApp,
+                id: 'dated',
+                versions: [{ ...rawApp.versions[0], releaseDate: '2026-09-01' }]
+              }
+            ]
+          })
+        ),
+      [repos[1].url]: () => new Response(JSON.stringify({ apps: [] }))
+    })
+
+    await store.loadApps()
+
+    expect(store.loadingFailed).toBe(false)
+    expect(store.apps).toHaveLength(2)
+    expect(store.getById('app').mostRecentVersion.releaseDate).toBeUndefined()
+    expect(store.getById('dated').mostRecentVersion.releaseDate).toBe('2026-09-01')
+    expect(console.warn).not.toHaveBeenCalled()
+  })
+
+  it.each([
     ['missing id', { ...rawApp, id: undefined }],
     ['empty id', { ...rawApp, id: '' }],
     ['missing name', { ...rawApp, name: undefined }],

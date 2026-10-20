@@ -16,8 +16,8 @@ export const AppVersionSchema = z.object({
   maxOpenCloud: z.string().optional(),
   url: z.url({ protocol: /^https?$/ }),
   filename: z.string().optional(),
-  // ISO date (YYYY-MM-DD) the version was released
-  releaseDate: z.string().optional()
+  // ISO date (YYYY-MM-DD) the version was released; an invalid or missing date is dropped instead of rejecting the app
+  releaseDate: z.iso.date().optional().catch(undefined)
 })
 export type AppVersion = z.infer<typeof AppVersionSchema>
 
