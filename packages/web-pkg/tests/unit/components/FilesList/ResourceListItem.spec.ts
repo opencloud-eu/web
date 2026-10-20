@@ -129,11 +129,36 @@ describe('OcResource', () => {
     expect(wrapper.find('oc-resource-icon').exists()).toBeFalsy()
   })
 
+  it('renders the nameAppend slot in the name line, not after the parent folder line', () => {
+    const wrapper = getWrapper(
+      { resource: fileResource, isPathDisplayed: true, parentFolderName: 'nature' },
+      { nameAppend: '<button class="name-append" />' }
+    )
+
+    const container = wrapper.find('.name-append').element.parentElement
+    expect(container.querySelector('.oc-resource-name')).not.toBeNull()
+    expect(container.querySelector('.parent-folder')).toBeNull()
+    expect(wrapper.find('.oc-resource-details').classes()).not.toContain('truncate')
+  })
+
+  it('clips the name next to the nameAppend slot so a long name cannot overflow it', () => {
+    const wrapper = getWrapper(
+      { resource: fileResource, isPathDisplayed: true, parentFolderName: 'nature' },
+      { nameAppend: '<button class="name-append" />' }
+    )
+
+    expect(wrapper.find('.oc-resource-name-line .oc-resource-link').classes()).toContain(
+      'overflow-hidden'
+    )
+  })
+
   function getWrapper(
-    props: PartialComponentProps<typeof ResourceListItem> & { resource: Resource }
+    props: PartialComponentProps<typeof ResourceListItem> & { resource: Resource },
+    slots: Record<string, string> = {}
   ) {
     return mount(ResourceListItem, {
       props,
+      slots,
       global: {
         stubs: { RouterLink: true },
         renderStubDefaultSlot: true,
