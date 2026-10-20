@@ -9,6 +9,7 @@
       :placeholder="$gettext('Search chapters')"
       :is-rounded="false"
       button-hidden
+      is-filter
     />
     <oc-list ref="chapterListRoot" class="min-h-0 flex-1 overflow-y-auto p-2">
       <li
