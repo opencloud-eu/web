@@ -15,19 +15,20 @@ const dom = ({
   position = 'auto',
   mode = 'click',
   paddingSize = 'medium',
-  enforceDropOnMobile = false
+  enforceDropOnMobile = false,
+  popupType = undefined
 } = {}) => {
   document.body.innerHTML = ''
   const wrapper = mount(
     {
       template:
-        '<div><p id="trigger">trigger</p><oc-drop :position="position" :mode="mode" :padding-size="paddingSize" :enforce-drop-on-mobile="enforceDropOnMobile" toggle="#trigger">show</oc-drop></div>',
+        '<div><p id="trigger">trigger</p><oc-drop :position="position" :mode="mode" :padding-size="paddingSize" :enforce-drop-on-mobile="enforceDropOnMobile" :popup-type="popupType" toggle="#trigger">show</oc-drop></div>',
       components: { 'oc-drop': Drop }
     },
     {
       global: { plugins: defaultPlugins(), stubs: { OcMobileDrop: true } },
       attachTo: document.body,
-      data: () => ({ position, mode, paddingSize, enforceDropOnMobile })
+      data: () => ({ position, mode, paddingSize, enforceDropOnMobile, popupType })
     }
   )
 
@@ -60,6 +61,15 @@ describe('OcDrop', () => {
       await nextTick()
       expect(wrapper.find('div').attributes().id).toBe(id)
     }
+  })
+
+  it.each([
+    [undefined, 'true'],
+    ['listbox', 'listbox']
+  ])('sets aria-haspopup on the toggle for popup type %s', async (popupType, expected) => {
+    const { wrapper } = dom({ popupType })
+    await nextTick()
+    expect(wrapper.find('#trigger').attributes('aria-haspopup')).toBe(expected)
   })
 
   describe('floating UI', () => {

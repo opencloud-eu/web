@@ -84,8 +84,8 @@ export interface Props {
    */
   small?: boolean
   /**
-   * @docs The label of the search button.
-   * @default Search
+   * @docs The label of the search button. Falls back to the translated "Search".
+   * @default ''
    */
   buttonLabel?: string
   /**

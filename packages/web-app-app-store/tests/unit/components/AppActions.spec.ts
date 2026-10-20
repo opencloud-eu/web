@@ -13,10 +13,11 @@ const selectors = {
 }
 
 describe('AppActions', () => {
-  it('renders a "Download" link to the most recent version', () => {
+  it('renders a "Download" link to the most recent version, named with the app name', () => {
     const { wrapper } = getWrapper()
     const link = wrapper.find(selectors.downloadLink)
     expect(link.text()).toBe('Download')
+    expect(link.attributes('aria-label')).toBe('Download Draw.io')
     expect(link.attributes('href')).toBe(mostRecentVersion.url)
     expect(link.attributes('download')).toBe('app-1.1.0.zip')
   })
@@ -34,7 +35,7 @@ describe('AppActions', () => {
 })
 
 function getWrapper(version: AppVersion = mostRecentVersion) {
-  const app = { ...mock<App>({}), mostRecentVersion: version }
+  const app = { ...mock<App>({}), name: 'Draw.io', mostRecentVersion: version }
   return {
     wrapper: mount(AppActions, {
       props: { app },

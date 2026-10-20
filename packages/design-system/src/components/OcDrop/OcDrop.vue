@@ -127,6 +127,11 @@ export interface Props {
    * @default true
    */
   isMenu?: boolean
+  /**
+   * @docs The `aria-haspopup` value of the toggle, e.g. `listbox` for the suggestions of a combobox. The bottom drawer always uses `dialog`.
+   * @default 'true'
+   */
+  popupType?: 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog'
 }
 
 export interface Emits {
@@ -164,7 +169,8 @@ const {
   title = '',
   enforceDropOnMobile = false,
   teleport = '',
-  isMenu = true
+  isMenu = true,
+  popupType = 'true'
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -547,7 +553,7 @@ const handleAnchorMouseLeave = () => {
 }
 
 const setupAriaAttributes = () => {
-  unref(anchor)?.setAttribute('aria-haspopup', unref(useBottomDrawer) ? 'dialog' : 'true')
+  unref(anchor)?.setAttribute('aria-haspopup', unref(useBottomDrawer) ? 'dialog' : popupType)
   unref(anchor)?.setAttribute('aria-expanded', 'false')
 }
 
