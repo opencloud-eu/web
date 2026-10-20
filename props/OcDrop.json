@@ -82,5 +82,12 @@
     "description": "Enables navigation through the drop with arrow keys. Use this if the drop only contains menu items. Disabling this disables arrow key navigation but enables regular tab navigation.",
     "default": "true",
     "type": "boolean"
+  },
+  {
+    "name": "popupType",
+    "required": false,
+    "description": "The `aria-haspopup` value of the toggle, e.g. `listbox` for the suggestions of a combobox. The bottom drawer always uses `dialog`.",
+    "default": "'true'",
+    "type": "'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog'"
   }
 ]
