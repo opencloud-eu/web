@@ -35,9 +35,9 @@ Feature: Users can see all activities of the resources and spaces
     And "Anonymous" edits the following resource
       | resource     | content     |
       | textfile.txt | new content |
-    Then "Anonymous" should not see any activity of the following resource
-      | resource     |
-      | textfile.txt |
+    And "Anonymous" opens the right sidebar of the resource "textfile.txt"
+    Then "Anonymous" should see the file details in the sidebar
+    And "Anonymous" should not see the element "#sidebar-panel-activities-select"
 
     And "Alice" logs in
     And "Alice" renames the following resource

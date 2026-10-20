@@ -34,7 +34,8 @@ export const useFileActionsEnableSync = () => {
     const triggerQueue = new PQueue({
       concurrency: configStore.options.concurrentRequests.resourceBatchActions
     })
-    resources.forEach((resource) => {
+    const resourcesToSync = resources.filter((resource) => !resource.syncEnabled)
+    resourcesToSync.forEach((resource) => {
       triggerPromises.push(
         triggerQueue.add(async () => {
           try {
@@ -66,7 +67,7 @@ export const useFileActionsEnableSync = () => {
           title: $ngettext(
             'Sync for the selected share was enabled successfully',
             'Sync for the selected shares was enabled successfully',
-            resources.length
+            resourcesToSync.length
           )
         })
       }
@@ -78,7 +79,7 @@ export const useFileActionsEnableSync = () => {
       title: $ngettext(
         'Failed to enable sync for the the selected share',
         'Failed to enable sync for the selected shares',
-        resources.length
+        resourcesToSync.length
       ),
       errors
     })

@@ -25,7 +25,7 @@ import {
   useAuthStore
 } from '@opencloud-eu/web-pkg'
 import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
-import { Resource } from '@opencloud-eu/web-client'
+import { isPublicSpaceResource, Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { markRaw, unref } from 'vue'
 import { fileSideBarExtensionPoint } from '../../extensionPoints'
@@ -315,14 +315,14 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
         icon: { name: 'time', fillType: 'line' },
         title: () => $gettext('Activities'),
         component: markRaw(ActivitiesPanel),
-        isVisible: ({ items }) => {
+        isVisible: ({ items, root }) => {
           if (items?.length !== 1) {
             return false
           }
           if (isLocationTrashActive(router, 'files-trash-generic')) {
             return false
           }
-          return !authStore.isGuestContext
+          return !isPublicSpaceResource(root) && !authStore.isGuestContext
         }
       }
     }
