@@ -1,102 +1,18 @@
 <template>
-  <oc-text-input
-    id="create-shortcut-modal-url-input"
-    v-model="inputUrl"
-    :placeholder="'example.org'"
-    :label="$gettext('Webpage or file')"
-    @keydown.up="onKeyUpDrop"
-    @keydown.down="onKeyDownDrop"
-    @keydown.esc="onKeyEscDrop"
-    @keydown.enter="onKeyEnterDrop"
-    @update:model-value="onInputUrlInput"
-    @click="onClickUrlInput"
-  >
-    <template #label>
-      <div class="flex items-center mb-1">
-        <label for="create-shortcut-modal-url-input">
-          {{ $gettext('Webpage or file') }}
-          <span class="text-role-error" aria-hidden="true">*</span>
-        </label>
-        <oc-contextual-helper
-          :text="
-            $gettext(
-              'Enter the target URL of a webpage or the name of a file. Users will be directed to this webpage or file.'
-            )
-          "
-          :title="$gettext('Webpage or file')"
-          class="ml-1"
-        />
-      </div>
-    </template>
-  </oc-text-input>
-  <oc-drop
-    ref="dropRef"
-    toggle="#create-shortcut-modal-url-input"
-    class="w-lg"
-    padding-size="remove"
-    drop-id="create-shortcut-modal-contextmenu"
-    mode="manual"
-    position="bottom-start"
-    close-on-click
-    enforce-drop-on-mobile
-    :is-menu="false"
-    @hide-drop="onHideDrop"
-    @show-drop="onShowDrop"
-  >
-    <oc-list>
-      <li
-        class="selectable-item selectable-item-url"
-        :class="{
-          active: isDropItemActive(0)
-        }"
-      >
-        <oc-button
-          class="w-full"
-          appearance="raw"
-          justify-content="left"
-          @click="dropItemUrlClicked"
-        >
-          <oc-icon name="external-link" />
-          <span v-text="dropItemUrl" />
-        </oc-button>
-      </li>
-      <li v-if="searchTask.isRunning" class="p-1 flex justify-center">
-        <oc-spinner />
-      </li>
-      <template v-if="searchResult?.values?.length">
-        <li
-          class="create-shortcut-modal-search-separator text-role-on-surface-variant text-sm pl-1"
-        >
-          <span v-text="$gettext('Link to a file')" />
-        </li>
-        <li
-          v-for="(value, index) in searchResult.values"
-          :key="index"
-          class="selectable-item"
-          :class="{
-            active: isDropItemActive(index + 1)
-          }"
-        >
-          <oc-button
-            class="w-full"
-            appearance="raw"
-            justify-content="left"
-            @click="dropItemResourceClicked(value)"
-          >
-            <resource-preview :search-result="value" :is-clickable="false" :term="inputUrl" />
-          </oc-button>
-        </li>
-      </template>
-    </oc-list>
-  </oc-drop>
-  <div v-show="inputFilename" class="flex w-full mt-4">
+  <shortcut-target-input
+    :model-value="inputUrl"
+    @update:model-value="onInputUrl"
+    @select="onSelectTarget"
+  />
+  <div v-show="inputUrl || inputFilename" class="flex w-full mt-4">
     <oc-text-input
       id="create-shortcut-modal-filename-input"
-      v-model="inputFilename"
+      :model-value="inputFilename"
       :label="$gettext('Shortcut name')"
       class="w-full"
       :error-message="inputFileNameErrorMessage"
       :fix-message-line="true"
+      @update:model-value="onInputFilename"
     >
       <template #label>
         <div class="flex items-center mb-1">
@@ -116,40 +32,19 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ComponentPublicInstance,
-  computed,
-  nextTick,
-  Ref,
-  ref,
-  unref,
-  useTemplateRef,
-  watch
-} from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import { Resource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import {
   Modal,
   useClientService,
   useIsResourceNameValid,
   useMessages,
-  useResourcesStore,
-  useRouter,
-  useSearch
+  useResourcesStore
 } from '../composables'
 import { useGettext } from 'vue3-gettext'
-import DOMPurify from 'dompurify'
-import { OcDrop } from '@opencloud-eu/design-system/components'
-import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
-import { resolveFileNameDuplicate } from '../helpers'
-import { useTask } from 'vue-concurrency'
-import { debounce } from 'lodash-es'
-import ResourcePreview from './Search/ResourcePreview.vue'
-import { SearchResult, SearchResultValue } from './Search'
-import { isLocationPublicActive } from '../router'
+import { getShortcutUrl, resolveFileNameDuplicate } from '../helpers'
 import { storeToRefs } from 'pinia'
-
-const SEARCH_LIMIT = 7
-const SEARCH_DEBOUNCE_TIME = 200
+import ShortcutTargetInput from './ShortcutTargetInput.vue'
 
 const { space } = defineProps<{
   modal: Modal
@@ -163,248 +58,74 @@ const emit = defineEmits<{
 const clientService = useClientService()
 const { $gettext } = useGettext()
 const { showMessage, showErrorMessage } = useMessages()
-const router = useRouter()
-const { search } = useSearch()
 const { isFileNameValid } = useIsResourceNameValid()
-
 const resourcesStore = useResourcesStore()
 const { resources, currentFolder } = storeToRefs(resourcesStore)
-
-const dropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('dropRef')
 const inputUrl = ref('')
 const inputFilename = ref('')
-const searchResult: Ref<SearchResult | null> = ref(null)
-const activeDropItemIndex = ref<number | null>(null)
-const isDropOpen = ref(false)
-
-const getInputUrlWithProtocol = (input: string) => {
-  const url = input.trim()
-  if (isMaybeUrl(url)) {
-    return url
-  }
-  return `https://${url}`
-}
-
-const dropItemUrl = computed(() => {
-  return getInputUrlWithProtocol(unref(inputUrl))
-})
+const isFilenameEdited = ref(false)
+const shortcutUrl = computed(() => getShortcutUrl(unref(inputUrl)))
 
 const inputFilenameValidation = computed(() => {
-  const newName = `${unref(inputFilename)}.url`
+  const name = `${unref(inputFilename)}.url`
   const resource = {
-    path: urlJoin(unref(currentFolder)?.path || '/', newName),
-    name: newName,
+    path: urlJoin(unref(currentFolder)?.path || '/', name),
+    name,
     extension: 'url'
   } as Resource
-
-  return isFileNameValid(resource, newName, unref(resources))
+  return isFileNameValid(resource, name, unref(resources))
 })
-
+const inputFileNameErrorMessage = computed(() => unref(inputFilenameValidation).error || '')
 const confirmButtonDisabled = computed(
-  () => !unref(inputUrl) || !unref(inputFilename) || !unref(inputFilenameValidation).isValid
+  () => !unref(shortcutUrl) || !unref(inputFilename) || !unref(inputFilenameValidation).isValid
 )
-
-watch(
-  confirmButtonDisabled,
-  () => {
-    emit('update:confirmDisabled', unref(confirmButtonDisabled))
-  },
-  { immediate: true }
-)
-
-const inputFileNameErrorMessage = computed(() => {
-  if (unref(inputFilenameValidation).isValid) {
-    return ''
-  }
-
-  return unref(inputFilenameValidation).error || ''
+watch(confirmButtonDisabled, (disabled) => emit('update:confirmDisabled', disabled), {
+  immediate: true
 })
 
-const searchTask = useTask(function* (signal, searchTerm: string) {
-  searchResult.value = null
-  searchTerm = `name:"*${searchTerm}*" NOT name:"*.url"`
+function onInputUrl(value: string) {
+  inputUrl.value = value
+  const url = unref(shortcutUrl)
+  suggestFilename(url ? new URL(url).host : '')
+}
 
+function onSelectTarget(url: string, name: string) {
+  inputUrl.value = url
+  suggestFilename(name)
+}
+
+function onInputFilename(value: string) {
+  inputFilename.value = value
+  isFilenameEdited.value = true
+}
+
+function suggestFilename(name: string) {
+  if (unref(isFilenameEdited)) {
+    return
+  }
+  const filename = `${name}.url`
+  inputFilename.value =
+    name && unref(resources).some((resource) => resource.name === filename)
+      ? resolveFileNameDuplicate(filename, 'url', unref(resources)).slice(0, -4)
+      : name
+}
+
+async function onConfirm() {
+  if (unref(confirmButtonDisabled)) {
+    return
+  }
   try {
-    searchResult.value = yield search(searchTerm, SEARCH_LIMIT)
-  } catch {
-    // Don't show user facing error, as the core functionality does work without an intact search
-  }
-})
-
-const debouncedSearch = debounce(() => {
-  searchTask.perform(unref(inputUrl))
-}, SEARCH_DEBOUNCE_TIME)
-
-const isMaybeUrl = (input: string) => {
-  const urlPrefixes = ['http://', 'https://']
-  return urlPrefixes.some((prefix) => prefix.startsWith(input) || input.startsWith(prefix))
-}
-
-const dropItemUrlClicked = () => {
-  searchResult.value = null
-  inputUrl.value = unref(dropItemUrl)
-  try {
-    let filename = new URL(unref(dropItemUrl)).host
-    if (unref(resources).some((f) => f.name === `${filename}.url`)) {
-      filename = resolveFileNameDuplicate(`${filename}.url`, 'url', unref(resources)).slice(0, -4)
-    }
-    inputFilename.value = filename
-  } catch {}
-}
-
-const dropItemResourceClicked = (item: SearchResultValue) => {
-  searchResult.value = null
-  const webURL = new URL(window.location.href)
-  let filename = item.data.name
-
-  inputUrl.value = `${webURL.origin}/f/${item.id}`
-
-  if (unref(resources).some((f) => f.name === `${filename}.url`)) {
-    filename = resolveFileNameDuplicate(`${filename}.url`, 'url', unref(resources)).slice(0, -4)
-  }
-
-  inputFilename.value = filename
-}
-
-const isDropItemActive = (index: number) => {
-  return unref(activeDropItemIndex) === index
-}
-
-const findNextDropItemIndex = (previous = false) => {
-  const elements = Array.from(document.querySelectorAll('li.selectable-item'))
-  let index =
-    unref(activeDropItemIndex) !== null
-      ? unref(activeDropItemIndex)
-      : previous
-        ? elements.length
-        : -1
-  const increment = previous ? -1 : 1
-
-  do {
-    index += increment
-    if (index < 0 || index > elements.length - 1) {
-      return null
-    }
-  } while (elements[index].classList.contains('disabled'))
-
-  return index
-}
-
-const onKeyUpDrop = () => {
-  activeDropItemIndex.value = findNextDropItemIndex(true)
-}
-
-const onKeyDownDrop = () => {
-  activeDropItemIndex.value = findNextDropItemIndex(false)
-}
-
-const onKeyEscDrop = (e: Event) => {
-  if (!unref(isDropOpen)) {
-    return
-  }
-
-  e.stopPropagation()
-  unref(dropRef).hide()
-}
-
-const onKeyEnterDrop = (e: KeyboardEvent) => {
-  if (isComposingEvent(e) || !unref(isDropOpen)) {
-    return
-  }
-
-  e.stopPropagation()
-  if (unref(activeDropItemIndex) === null) {
-    return
-  }
-
-  if (unref(activeDropItemIndex) === 0) {
-    dropItemUrlClicked()
-  } else {
-    const item = unref(searchResult)?.values?.[unref(activeDropItemIndex) - 1]
-    if (item) {
-      dropItemResourceClicked(item)
-    }
-  }
-
-  unref(dropRef).hide()
-}
-
-const onHideDrop = () => {
-  isDropOpen.value = false
-  activeDropItemIndex.value = null
-}
-
-const onShowDrop = () => {
-  isDropOpen.value = true
-  activeDropItemIndex.value = 0
-}
-
-const onClickUrlInput = () => {
-  const showDrop = inputUrl.value.trim().length
-
-  if (showDrop) {
-    unref(dropRef).show({ noFocus: true })
-  }
-}
-
-const onInputUrlInput = async () => {
-  await nextTick()
-
-  inputFilename.value = inputUrl.value.trim()
-  const hideDrop = !inputUrl.value.trim().length
-
-  if (hideDrop) {
-    unref(dropRef).hide()
-    return
-  }
-
-  unref(dropRef).show({ noFocus: true })
-
-  if (!isLocationPublicActive(router, 'files-public-link')) {
-    debouncedSearch()
-  }
-}
-
-const onConfirm = async () => {
-  try {
-    // Omit possible xss code
-    const sanitizedUrl = DOMPurify.sanitize(getInputUrlWithProtocol(unref(inputUrl)), {
-      USE_PROFILES: { html: true }
-    })
-
-    const content = `[InternetShortcut]\nURL=${sanitizedUrl}`
-    const path = urlJoin(unref(currentFolder).path, `${unref(inputFilename)}.url`)
     const resource = await clientService.webdav.putFileContents(space, {
-      path,
-      content
+      path: urlJoin(unref(currentFolder).path, `${unref(inputFilename)}.url`),
+      content: `[InternetShortcut]\nURL=${unref(shortcutUrl)}`
     })
     resourcesStore.upsertResource(resource)
     showMessage({ title: $gettext('Shortcut was created successfully') })
-  } catch (e) {
-    console.error(e)
-    showErrorMessage({
-      title: $gettext('Failed to create shortcut'),
-      errors: [e]
-    })
+  } catch (error) {
+    console.error(error)
+    showErrorMessage({ title: $gettext('Failed to create shortcut'), errors: [error] })
   }
 }
-
-watch(activeDropItemIndex, () => {
-  if (!unref(isDropOpen) || typeof unref(dropRef)?.$el?.scrollTo !== 'function') {
-    return
-  }
-
-  const elements = unref(dropRef).$el.querySelectorAll('.selectable-item')
-  if (elements[unref(activeDropItemIndex)]) {
-    unref(dropRef).$el.scrollTo(
-      0,
-      unref(activeDropItemIndex) === null
-        ? 0
-        : elements[unref(activeDropItemIndex)].getBoundingClientRect().y -
-            elements[unref(activeDropItemIndex)].getBoundingClientRect().height
-    )
-  }
-})
 
 defineExpose({ onConfirm })
 </script>
