@@ -74,6 +74,7 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
     if (!driveAliasAndItem) return true
     if (to.name === 'rclone-crypt-unlock') return true
 
+    const authStore = useAuthStore()
     const spacesStore = useSpacesStore()
     const extensionRegistry = useExtensionRegistry()
     const { waitForSpaces } = useSpacesLoading()
@@ -83,7 +84,10 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
 
     const isShareSpace =
       driveAliasAndItem.startsWith('share/') || driveAliasAndItem.startsWith('ocm-share/')
-    const shareId = queryItemAsString(to.query?.shareId)
+    // same fallback as the drive resolver, so both pick the same share
+    const shareId =
+      queryItemAsString(to.query?.shareId) ||
+      (isShareSpace && authStore.isGuestContext ? authStore.guestSpaceId : undefined)
     const driveAliasPrefix = driveAliasAndItem.startsWith('ocm-share/') ? 'ocm-share' : 'share'
 
     // shares with the same name share a drive alias, so a share id is the only reliable match
@@ -96,7 +100,7 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
             queryItemAsString(to.query?.fileId)
           )
 
-    if (!space && isShareSpace && shareId && useAuthStore().isGuestContext) {
+    if (!space && isShareSpace && shareId && authStore.isGuestContext) {
       // guests can't list mount points, so the share space is built from the share id
       space = spacesStore.createShareSpace({
         driveAliasPrefix,

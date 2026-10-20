@@ -79,7 +79,13 @@
 </template>
 
 <script setup lang="ts">
-import { FolderView, SortField, useFileActions, useLoadPreview } from '@opencloud-eu/web-pkg'
+import {
+  FolderView,
+  SortField,
+  useAuthStore,
+  useFileActions,
+  useLoadPreview
+} from '@opencloud-eu/web-pkg'
 import { computed, ref, unref } from 'vue'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
@@ -127,6 +133,7 @@ const {
 }>()
 
 const { $gettext } = useGettext()
+const authStore = useAuthStore()
 const { getMatchingSpace } = useGetMatchingSpace()
 
 const { loadPreview, dropPreview } = useLoadPreview(computed(() => viewMode))
@@ -140,7 +147,9 @@ const { selectedResources, selectedResourcesIds, isResourceInSelection } = useSe
 const showMore = ref(false)
 
 const displayedFields = computed(() => {
-  return ['name', 'sharedBy', 'sdate', 'sharedWith']
+  const fields = ['name', 'sharedBy', 'sdate']
+  // a guest is the only recipient of their shares
+  return authStore.isGuestContext ? fields : [...fields, 'sharedWith']
 })
 
 const toggleMoreLabel = computed(() => {

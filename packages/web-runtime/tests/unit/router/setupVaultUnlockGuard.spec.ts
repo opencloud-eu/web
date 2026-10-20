@@ -555,6 +555,25 @@ describe('setupVaultUnlockGuard', () => {
     expect(getVaultClaim).toHaveBeenCalledWith(expect.anything(), shareSpace, '/')
   })
 
+  it('falls back to the invited share for guests without a share id, like the drive resolver', async () => {
+    vi.mocked(useAuthStore).mockReturnValueOnce({
+      isGuestContext: true,
+      guestSpaceId: 'share-123'
+    } as any)
+    const otherShareSpace = { id: 'other-share', driveAlias: 'share/myvault.vault' }
+    const shareSpace = { id: 'share-123', driveAlias: 'share/myvault.vault' }
+    getSpace.mockReturnValueOnce(shareSpace)
+    const guard = installGuard({ spaces: [otherShareSpace, shareSpace], claim: null })
+
+    await guard({
+      params: { driveAliasAndItem: 'share/myvault.vault' },
+      fullPath: '/x'
+    })
+
+    expect(getSpace).toHaveBeenCalledWith('share-123')
+    expect(getVaultClaim).toHaveBeenCalledWith(expect.anything(), shareSpace, '/')
+  })
+
   it('skips the mount-point lazy load when the share space is already in the store', async () => {
     const shareSpace = { id: 'share-123', driveAlias: 'share/myvault.vault' }
     getSpace.mockReturnValueOnce(shareSpace)

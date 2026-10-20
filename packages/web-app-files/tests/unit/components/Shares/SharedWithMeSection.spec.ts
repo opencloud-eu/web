@@ -21,12 +21,17 @@ const FolderViewStub = defineComponent({
     resources: {
       type: Array as PropType<IncomingShareResource[]>,
       default: (): IncomingShareResource[] => []
+    },
+    fieldsDisplayed: {
+      type: Array as PropType<string[]>,
+      default: (): string[] => []
     }
   },
   setup(props, { slots }) {
     return () =>
       h(
         'div',
+        { class: 'folder-view-stub', 'data-fields': props.fieldsDisplayed.join(',') },
         props.resources.map((resource) => slots.quickActions?.({ resource }))
       )
   }
@@ -37,9 +42,18 @@ describe('SharedWithMeSection', () => {
     const { wrapper } = getWrapper({ isVisible })
     expect(wrapper.find('.hide-share-action').exists()).toBe(isVisible)
   })
+
+  it.each([
+    { isGuest: false, shown: true },
+    { isGuest: true, shown: false }
+  ])('shows the "shared with" column: $shown (guest: $isGuest)', ({ isGuest, shown }) => {
+    const { wrapper } = getWrapper({ isGuest })
+    const fields = wrapper.find('.folder-view-stub').attributes('data-fields').split(',')
+    expect(fields.includes('sharedWith')).toBe(shown)
+  })
 })
 
-function getWrapper({ isVisible }: { isVisible: boolean }) {
+function getWrapper({ isVisible = true, isGuest = false } = {}) {
   vi.mocked(useFileActionsToggleHideShare).mockReturnValue({
     actions: computed(() => [
       mock<FileAction<IncomingShareResource>>({
@@ -73,7 +87,13 @@ function getWrapper({ isVisible }: { isVisible: boolean }) {
         sortFields: []
       },
       global: {
-        plugins: [...defaultPlugins()],
+        plugins: [
+          ...defaultPlugins({
+            piniaOptions: {
+              authState: isGuest ? { guestContextReady: true } : { userContextReady: true }
+            }
+          })
+        ],
         mocks,
         provide: mocks
       }
