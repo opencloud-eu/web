@@ -5,6 +5,7 @@
         type="a"
         :href="getDownloadVersion({ app }).url"
         :download="getDownloadFilename({ app })"
+        :aria-label="$gettext('Download %{app}', { app: app.name })"
         appearance="outline"
         size="small"
         class="raw-hover-surface"

@@ -2,6 +2,10 @@
   <oc-text-input
     id="create-shortcut-modal-url-input"
     :model-value="modelValue"
+    role="combobox"
+    :aria-controls="listboxId"
+    aria-autocomplete="list"
+    :aria-activedescendant="activeOptionId"
     :placeholder="'example.org'"
     :label="$gettext('Webpage or file')"
     :error-message="inputUrlErrorMessage"
@@ -38,42 +42,47 @@
     close-on-click
     enforce-drop-on-mobile
     :is-menu="false"
+    popup-type="listbox"
     @hide-drop="isDropOpen = false"
     @show-drop="onShowDrop"
   >
-    <oc-list ref="suggestionsRef" class="p-2">
+    <oc-list
+      :id="listboxId"
+      ref="suggestionsRef"
+      class="p-2"
+      role="listbox"
+      :aria-label="$gettext('Link to a file')"
+    >
       <li
         class="create-shortcut-modal-search-separator text-role-on-surface-variant text-xs py-1 px-2"
+        aria-hidden="true"
       >
         <span v-text="$gettext('Link to a file')" />
       </li>
       <li
         v-for="(value, index) in searchResults"
+        :id="getOptionId(index)"
         :key="value.id"
-        class="selectable-item hover:bg-role-surface-container"
+        role="option"
+        :aria-selected="activeIndex === index"
+        :aria-disabled="isDisabled(value)"
+        class="selectable-item flex items-center w-full py-1 px-2 min-h-10 text-sm rounded-sm hover:bg-role-surface-container"
         :class="{
           'active bg-role-secondary-container': activeIndex === index,
-          disabled: isDisabled(value)
+          'disabled opacity-60': isDisabled(value),
+          'cursor-pointer': !isDisabled(value)
         }"
+        @mousedown.prevent
+        @click="selectSuggestion(index)"
       >
-        <oc-button
-          class="w-full py-1 px-2 min-h-10"
-          appearance="raw"
-          justify-content="left"
-          size="small"
-          no-hover
-          :disabled="isDisabled(value)"
-          @click="selectSuggestion(index)"
-        >
-          <resource-preview :search-result="value" :is-clickable="false" :term="modelValue" />
-        </oc-button>
+        <resource-preview :search-result="value" :is-clickable="false" :term="modelValue" />
       </li>
     </oc-list>
   </oc-drop>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, unref, useTemplateRef, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, unref, useId, useTemplateRef, watch } from 'vue'
 import { debounce } from 'lodash-es'
 import { useCycleList } from '@vueuse/core'
 import { useTask } from 'vue-concurrency'
@@ -100,6 +109,7 @@ const dropRef = useTemplateRef<typeof OcDrop>('dropRef')
 const suggestionsRef = useTemplateRef<typeof OcList>('suggestionsRef')
 const isDropOpen = ref(false)
 const searchResults = ref<SearchResultValue[]>([])
+const listboxId = useId()
 
 const shortcutUrl = computed(() => getShortcutUrl(modelValue))
 const inputUrlErrorMessage = computed(() =>
@@ -111,6 +121,12 @@ const selectableIndices = computed(() => [
   ...unref(searchResults).flatMap((item, index) => (isDisabled(item) ? [] : [index]))
 ])
 const { state: activeIndex, next, prev } = useCycleList(selectableIndices)
+const activeOptionId = computed(() => {
+  if (!unref(isDropOpen) || unref(activeIndex) < 0) {
+    return undefined
+  }
+  return getOptionId(unref(activeIndex))
+})
 const searchTask = useTask(function* (_signal, term: string) {
   try {
     const result: SearchResult = yield search(`name:"*${term}*" NOT name:"*.url"`, 7)
@@ -148,6 +164,10 @@ function showSuggestions() {
   if (unref(searchResults).length) {
     unref(dropRef)?.show({ noFocus: true })
   }
+}
+
+function getOptionId(index: number) {
+  return `${listboxId}-option-${index}`
 }
 
 function isDisabled(item: SearchResultValue) {

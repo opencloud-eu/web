@@ -2,6 +2,7 @@
 
 exports[`resolvePublicLink > password required form > should display if password is required 1`] = `
 "<form class="flex flex-col gap-4"><input modelvalue="" label="Password" type="password">
+  <oc-hidden-announcer-stub announcement="" level="assertive"></oc-hidden-announcer-stub>
   <oc-button-stub appearance="filled" colorrole="secondary" disabled="true" gapsize="medium" justifycontent="center" showspinner="false" size="large" submit="submit" type="button" nohover="false" class="oc-login-authorize-button w-full p-2"></oc-button-stub>
 </form>"
 `;

@@ -8,7 +8,6 @@
     :aria-label="label"
   >
     <oc-icon name="download" fill-type="line" />
-    <span class="sr-only" v-text="label" />
   </oc-button>
 </template>
 
@@ -30,6 +29,6 @@ const label = computed(() => {
   if (version) {
     return $gettext('Download version %{version}', { version: version.version })
   }
-  return $gettext('Download')
+  return $gettext('Download %{app}', { app: app.name })
 })
 </script>

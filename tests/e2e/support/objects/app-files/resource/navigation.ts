@@ -245,8 +245,8 @@ export const createShotcut = async (args: shortcutArgs): Promise<void> => {
     case 'space':
     case 'file': {
       await page.locator(shortcutResorceInput).fill(resource)
-      const searchResult = page.locator('#create-shortcut-modal-contextmenu .oc-resource-name')
-      await expect(searchResult).toHaveText(resource)
+      const searchResult = page.locator('#create-shortcut-modal-contextmenu [role="option"]')
+      await expect(searchResult.locator('.oc-resource-name')).toHaveText(resource)
       await searchResult.click()
       break
     }

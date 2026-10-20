@@ -26,8 +26,6 @@ Feature: Keyboard accessibility
     And "Alice" logs out
 
 
-  # @issue-3795 #10
-  @skip
   Scenario: space key toggles the focused row checkbox
     When "Alice" selects the resource "lorem.txt" using the checkbox
     And "Alice" toggles the checkbox of resource "testavatar.jpeg" using the space key
