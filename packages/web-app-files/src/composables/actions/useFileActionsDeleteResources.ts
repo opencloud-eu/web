@@ -29,6 +29,23 @@ import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useFileActionsUndoDelete } from './files/useFileActionsUndoDelete'
 
+interface UndoKeyAction {
+  id: string
+  deletionId: number
+  remove: () => void
+}
+
+// Ctrl+Z only undoes the latest deletion. Kept at module level because every instance of this
+// composable has its own keyboard actions, but there must only be one undo shortcut for the app.
+let deletionCount = 0
+let latestNotifiedDeletionId = 0
+let undoKeyActions: UndoKeyAction[] = []
+
+function removeUndoKeyActions(predicate: (action: UndoKeyAction) => boolean) {
+  undoKeyActions.filter(predicate).forEach(({ remove }) => remove())
+  undoKeyActions = undoKeyActions.filter((action) => !predicate(action))
+}
+
 export const useFileActionsDeleteResources = () => {
   const configStore = useConfigStore()
   const { showMessage, showErrorMessage, removeMessage } = useMessages()
@@ -71,11 +88,13 @@ export const useFileActionsDeleteResources = () => {
   const showSuccessMessage = ({
     space,
     filesToDelete,
-    deletedFiles
+    deletedFiles,
+    deletionId
   }: {
     space: SpaceResource
     filesToDelete: Resource[]
     deletedFiles: Resource[]
+    deletionId: number
   }) => {
     const title =
       deletedFiles.length === 1 && filesToDelete.length === 1
@@ -91,6 +110,14 @@ export const useFileActionsDeleteResources = () => {
     const undoAction = unref(undoActions)[0]
     const undoAvailable = undoAction.isVisible({ space, resources: deletedFiles })
 
+    // only the latest deletion can be undone via Ctrl+Z (one deletion in several spaces has one undo per space),
+    // an earlier deletion that finishes late only keeps the undo button of its message
+    const isLatestDeletion = deletionId >= latestNotifiedDeletionId
+    if (isLatestDeletion) {
+      latestNotifiedDeletionId = deletionId
+      removeUndoKeyActions((action) => action.deletionId !== deletionId)
+    }
+
     let keyActionId: string | undefined
     const message = showMessage({
       title,
@@ -102,15 +129,15 @@ export const useFileActionsDeleteResources = () => {
         callback: () => {
           removeMessage(message)
           if (keyActionId) {
-            removeKeyAction(keyActionId)
+            removeUndoKeyActions(({ id }) => id === keyActionId)
           }
         }
       }
     })
 
-    if (undoAvailable) {
+    if (undoAvailable && isLatestDeletion) {
       keyActionId = bindKeyAction({ primary: Key.Z, modifier: Modifier.Ctrl }, () => {
-        removeKeyAction(keyActionId)
+        removeUndoKeyActions(({ id }) => id === keyActionId)
         return undoAction.handler({
           space,
           resources: deletedFiles,
@@ -119,7 +146,12 @@ export const useFileActionsDeleteResources = () => {
           }
         })
       })
-      setTimeout(() => removeKeyAction(keyActionId), messageTimeout * 1000)
+      undoKeyActions.push({
+        id: keyActionId,
+        deletionId,
+        remove: () => removeKeyAction(keyActionId)
+      })
+      setTimeout(() => removeUndoKeyActions(({ id }) => id === keyActionId), messageTimeout * 1000)
     }
   }
 
@@ -207,6 +239,7 @@ export const useFileActionsDeleteResources = () => {
   }
 
   const filesList_delete = (resources: Resource[]) => {
+    const deletionId = ++deletionCount
     resourcesToDelete.value = [...resources]
     resourcesStore.addResourcesIntoDeleteQueue(unref(resourcesToDelete).map(({ id }) => id))
     unref(resourcesToDelete).forEach(({ id }) => resourcesStore.removeSelection(id))
@@ -250,7 +283,8 @@ export const useFileActionsDeleteResources = () => {
             showSuccessMessage({
               space: spaceForDeletion,
               filesToDelete: resourcesForDeletion,
-              deletedFiles: successful
+              deletedFiles: successful,
+              deletionId
             })
             eventBus.publish('runtime.resource.deleted', successful)
 
