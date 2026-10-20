@@ -476,37 +476,37 @@ watch(hasUnsavedChanges, (dirty) => {
 
 let isNavigationConfirmationOpen = false
 
-const removeNavigationGuard = router.beforeEach((to, _from, next) => {
+const removeNavigationGuard = router.beforeEach((to) => {
   if (isMailRoute(to) || !unref(hasUnsavedChanges)) {
-    next()
     return
   }
 
   if (isNavigationConfirmationOpen) {
-    next(false)
-    return
+    return false
   }
 
   if (!unref(canSaveDraft)) {
-    next(false)
-    return
+    return false
   }
 
   isNavigationConfirmationOpen = true
 
-  requestUnsavedComposeSave({
-    onCancel: () => {
-      isNavigationConfirmationOpen = false
-      next(false)
-    },
-    onSave: async () => {
-      try {
-        await onSaveDraftAndClose()
-        next()
-      } finally {
+  // the navigation stays pending until the user saves or cancels; a failed save keeps the modal open
+  return new Promise<boolean>((resolve) => {
+    requestUnsavedComposeSave({
+      onCancel: () => {
         isNavigationConfirmationOpen = false
+        resolve(false)
+      },
+      onSave: async () => {
+        try {
+          await onSaveDraftAndClose()
+          resolve(true)
+        } finally {
+          isNavigationConfirmationOpen = false
+        }
       }
-    }
+    })
   })
 })
 
