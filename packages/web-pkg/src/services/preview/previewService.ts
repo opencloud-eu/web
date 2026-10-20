@@ -121,7 +121,6 @@ export class PreviewService {
     return stringify({
       scalingup: options.scalingup || 0,
       preview: Object.hasOwnProperty.call(options, 'preview') ? options.preview : 1,
-      a: Object.hasOwnProperty.call(options, 'a') ? options.a : 1,
       ...(options.processor && { processor: options.processor }),
       ...(options.etag && { c: options.etag.replaceAll('"', '') }),
       ...(options.dimensions && options.dimensions[0] && { x: options.dimensions[0] }),
