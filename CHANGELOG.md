@@ -8,6 +8,9 @@
 
 ### 📈 Enhancement
 
+- feat: list all shares for guest users [[#3829](https://github.com/opencloud-eu/web/pull/3829)]
+- feat(extension-sdk): add the base element in unit tests [[#3800](https://github.com/opencloud-eu/web/pull/3800)]
+- feat(web-pkg): allow following users in the yjs collaborators list [[#3803](https://github.com/opencloud-eu/web/pull/3803)]
 - feat(app-store): add sorting and release dates [[#3825](https://github.com/opencloud-eu/web/pull/3825)]
 - feat: accept route locations in buildUrl [[#3798](https://github.com/opencloud-eu/web/pull/3798)]
 - Handle SSEs for resources in incoming shares [[#3898](https://github.com/opencloud-eu/web/pull/3898)]
@@ -37,6 +40,15 @@
 
 ### 🐛 Bug Fixes
 
+- fix: scale SVG previews to fit the preview stage [[#3911](https://github.com/opencloud-eu/web/pull/3911)]
+- fix: address attribute-only accessibility audit findings [[#3823](https://github.com/opencloud-eu/web/pull/3823)]
+- fix: reject a whitespace-only password when editing a user [[#3907](https://github.com/opencloud-eu/web/pull/3907)]
+- fix: copy link without ClipboardItem and keep the clipboard when there is no single link [[#3871](https://github.com/opencloud-eu/web/pull/3871)]
+- fix: show a clear message when a file drop link was deleted [[#3905](https://github.com/opencloud-eu/web/pull/3905)]
+- Fix Guest SVG previews across Web and API origins [[#3835](https://github.com/opencloud-eu/web/pull/3835)]
+- fix: deselect hidden files when they get hidden [[#3870](https://github.com/opencloud-eu/web/pull/3870)]
+- fix: show an error when the user details can't be loaded in admin Users [[#3775](https://github.com/opencloud-eu/web/pull/3775)]
+- fix: give the search list its own task so the preview can't cancel it [[#3869](https://github.com/opencloud-eu/web/pull/3869)]
 - fix: normalize shortcut URLs without HTML sanitization [[#3814](https://github.com/opencloud-eu/web/pull/3814)]
 - fix: keep Save as in folder edit links after a reload [[#3784](https://github.com/opencloud-eu/web/pull/3784)]
 - fix: keep search scope in sync across reloads and view changes [[#3703](https://github.com/opencloud-eu/web/pull/3703)]
@@ -165,6 +177,16 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.7.15 [[#3935](https://github.com/opencloud-eu/web/pull/3935)]
+- fix(deps): update dependency pinia to v4.1.0 [[#3810](https://github.com/opencloud-eu/web/pull/3810)]
+- chore(deps): update dependency happy-dom to v21 [[#3650](https://github.com/opencloud-eu/web/pull/3650)]
+- chore(deps): update typescript-eslint monorepo to v8.72.0 [[#3747](https://github.com/opencloud-eu/web/pull/3747)]
+- chore(deps): update pnpm to v11.28.6 [[#3931](https://github.com/opencloud-eu/web/pull/3931)]
+- chore(deps): update node.js to v24.22.0 [[#3802](https://github.com/opencloud-eu/web/pull/3802)]
+- chore(deps): update dependency @pinia/testing to v2.0.2 [[#3808](https://github.com/opencloud-eu/web/pull/3808)]
+- chore(deps): update dependency cropperjs to v2.3.1 [[#3930](https://github.com/opencloud-eu/web/pull/3930)]
+- fix(deps): update dependency zod to v4.6.7 [[#3644](https://github.com/opencloud-eu/web/pull/3644)]
+- chore(deps): update devdependencies (non-major) [[#3613](https://github.com/opencloud-eu/web/pull/3613)]
 - chore(deps): update dependency filesize to v11.0.26 [[#3643](https://github.com/opencloud-eu/web/pull/3643)]
 - chore(deps): update dependency p-queue to v9.3.5 [[#3642](https://github.com/opencloud-eu/web/pull/3642)]
 - fix(deps): update dependency uuid to v14.0.3 [[#3640](https://github.com/opencloud-eu/web/pull/3640)]
