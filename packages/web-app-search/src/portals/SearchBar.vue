@@ -37,7 +37,8 @@
           id="files-global-search-filter"
           :current-folder-available="currentFolderAvailable"
           :current-folder-is-in-vault="currentFolderIsInVault"
-          @update:model-value="onLocationFilterChange"
+          @update:model-value="locationFilterId = $event.value.id"
+          @select="onLocationFilterSelect"
         />
       </template>
     </oc-search-bar>
@@ -256,6 +257,10 @@ const optionsDrop = computed(() => {
 })
 
 const scope = computed(() => {
+  if (isLocationCommonActive(router, 'files-common-search')) {
+    return queryItemAsString(unref(scopeQueryValue))
+  }
+
   if (unref(currentFolderAvailable) && unref(currentFolder)?.fileId) {
     return unref(currentFolder).fileId
   }
@@ -266,6 +271,7 @@ const scope = computed(() => {
 const useScope = computed(() => {
   return (
     unref(currentFolderAvailable) &&
+    !unref(currentFolderIsInVault) &&
     unref(locationFilterId) === SearchLocationFilterConstants.currentFolder
   )
 })
@@ -310,9 +316,8 @@ function onKeyUpEnter() {
     return
   }
 
-  if (isLocationCommonActive(router, 'files-common-search')) {
-    debouncedSearch.cancel()
-  }
+  // the preview gets hidden, a pending preview search would only cancel the results search
+  debouncedSearch.cancel()
 
   if (unref(optionsDrop)) {
     unref(optionsDrop)?.hide()
@@ -350,20 +355,10 @@ function getSearchResultLocation(providerId: string) {
   })
 }
 
-async function onLocationFilterChange(event: { value: { id: string } }) {
-  locationFilterId.value = event.value.id
+function onLocationFilterSelect() {
   if (isLocationCommonActive(router, 'files-common-search')) {
     onKeyUpEnter()
-    return
   }
-
-  if (!unref(term)) {
-    return
-  }
-
-  await nextTick()
-  updateLocationFilterInputPadding()
-  search()
 }
 
 async function showPreview() {
@@ -385,7 +380,13 @@ function updateTerm(input: string) {
 
 const debouncedSearch = debounce(search, 500)
 
-watch(term, () => {
+watch([term, scope, useScope], ([newTerm], [oldTerm]) => {
+  // On the results page the results list follows scope changes, a preview search in the background
+  // would only cancel it. The preview gets refreshed when it is opened or the term changes.
+  if (newTerm === oldTerm && isLocationCommonActive(router, 'files-common-search')) {
+    return
+  }
+
   if (unref(restoreSearchFromRoute)) {
     restoreSearchFromRoute.value = false
     return
@@ -414,6 +415,9 @@ bindKeyAction({ primary: Key.Slash, modifier: Modifier.Shift }, onSearchShortcut
 
 onMounted(() => {
   updateLocationFilterInputPadding()
+})
+watch([locationFilterId, locationFilterAvailable], updateLocationFilterInputPadding, {
+  flush: 'post'
 })
 onBeforeUnmount(() => {
   eventBus.unsubscribe('app.search.term.clear', clearTermEvent)
