@@ -1,7 +1,9 @@
 import { commands as coreCommands, Node, mergeAttributes } from '@tiptap/core'
 import type { CommandProps, JSONContent, MarkdownToken } from '@tiptap/core'
 import type { Marked } from 'marked'
-import { TextSelection } from '@tiptap/pm/state'
+import { Plugin, TextSelection } from '@tiptap/pm/state'
+import { ySyncPluginKey } from '@tiptap/y-tiptap'
+import * as Y from 'yjs'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import FrontmatterComponent from '../components/FrontmatterComponent.vue'
 import { frontmatterHighlightPlugin } from './frontmatterHighlight'
@@ -70,6 +72,51 @@ export function registerFrontmatterTokenizer(instance: Marked): void {
 }
 
 /**
+ * The CRDT merges concurrent edits below the schema layer, so the shared
+ * content can end up with a block the schema rejects. The binding then refuses
+ * to show it and locks the editor until it fits again.
+ *
+ * Two peers adding a block at once leave a duplicate: every block after the
+ * first is dropped. A peer inserting above the block, or an undo restoring it
+ * below one, leaves it out of place: it moves back to the top.
+ *
+ * Every peer repairs on its own. Concurrent deletes of the same item merge, and
+ * concurrent moves only leave duplicates behind, which the next pass drops, with
+ * Yjs order making every peer agree on which block stays.
+ *
+ * Like any remote deletion, a repair can leave undo entries that no longer
+ * change anything, and Yjs then undoes the next older entry instead.
+ */
+function repairFrontmatterPlacement(fragment: Y.XmlFragment, nodeName: string): void {
+  const children = fragment.toArray()
+  const isFrontmatter = (child: (typeof children)[number]): child is Y.XmlElement =>
+    child instanceof Y.XmlElement && child.nodeName === nodeName
+
+  const first = children.find(isFrontmatter)
+  const firstIndex = first ? children.indexOf(first) : -1
+  const duplicates = children.flatMap((child, index) =>
+    index > firstIndex && isFrontmatter(child) ? [index] : []
+  )
+
+  if (firstIndex <= 0 && !duplicates.length) {
+    return
+  }
+
+  fragment.doc?.transact(() => {
+    // Back to front, so the indexes of the remaining blocks stay valid.
+    for (const index of duplicates.reverse()) {
+      fragment.delete(index, 1)
+    }
+
+    if (first && firstIndex > 0) {
+      const block = first.clone()
+      fragment.delete(firstIndex, 1)
+      fragment.insert(0, [block])
+    }
+  })
+}
+
+/**
  * Frontmatter is metadata, not prose. Marked has no rule for it, so without
  * this node the opening `---` lexes as a thematic break and the metadata turns
  * into paragraphs and headings, which destroys it on the next save.
@@ -103,7 +150,42 @@ export const Frontmatter = Node.create({
   },
 
   addProseMirrorPlugins() {
-    return [frontmatterHighlightPlugin(this.name)]
+    return [
+      frontmatterHighlightPlugin(this.name),
+      new Plugin({
+        view: (view) => {
+          const fragment = ySyncPluginKey.getState(view.state)?.type
+          if (!fragment) {
+            return {}
+          }
+
+          // The server drops a read only peer's writes, so a repair of its own
+          // would only exist locally and could shadow the writers' block.
+          let editable = this.editor.options.editable
+          const repair = () => {
+            if (editable) {
+              repairFrontmatterPlacement(fragment, this.name)
+            }
+          }
+
+          // Blocks only ever land out of place through a top level change, so a
+          // shallow observer is enough and stays quiet while someone is typing.
+          repair()
+          fragment.observe(repair)
+
+          return {
+            update: () => {
+              const wasEditable = editable
+              editable = this.editor.options.editable
+              if (editable && !wasEditable) {
+                repair()
+              }
+            },
+            destroy: () => fragment.unobserve(repair)
+          }
+        }
+      })
+    ]
   },
 
   addCommands() {
