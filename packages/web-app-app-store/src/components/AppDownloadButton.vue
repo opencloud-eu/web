@@ -8,7 +8,6 @@
     :aria-label="label"
   >
     <oc-icon name="download" fill-type="line" />
-    <span class="sr-only" v-text="label" />
   </oc-button>
 </template>
 
