@@ -169,6 +169,12 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
             resetScrollToParam()
           }
           break
+        case 'deselectResources':
+          // selected resources left the view, e.g. on a page change, so the param is outdated
+          if (hadSelection && unref(scrollToParam)) {
+            resetScrollToParam()
+          }
+          break
         case 'setSelection':
           if (action.args[0].length === 0 && unref(scrollToParam)) {
             // selection reset

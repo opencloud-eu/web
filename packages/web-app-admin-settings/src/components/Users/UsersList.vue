@@ -134,6 +134,7 @@ import {
   UserAvatar,
   useSideBar,
   useSort,
+  useSelectionVisibilityGuard,
   createVirtualCursorElement,
   SortField
 } from '@opencloud-eu/web-pkg'
@@ -210,7 +211,15 @@ const keyActions = useKeyboardActions()
 useKeyboardTableNavigation(keyActions, paginatedItems, selectedUsers, lastSelectedUserId)
 useKeyboardTableMouseActions(keyActions, paginatedItems, selectedUsers, lastSelectedUserId)
 
-// the selection is kept across pages, so only the users of the current page count
+// users that leave the current page (paging, sorting, filtering) leave the selection
+useSelectionVisibilityGuard({
+  visibleIds: () => unref(paginatedItems).map(({ id }) => id),
+  selectedIds: () => unref(selectedUsers).map(({ id }) => id),
+  deselect: (ids) => {
+    userSettingsStore.setSelectedUsers(unref(selectedUsers).filter(({ id }) => !ids.includes(id)))
+  }
+})
+
 const allUsersSelected = computed(
   () => unref(paginatedItems).length > 0 && unref(paginatedItems).every(isUserSelected)
 )

@@ -1,4 +1,4 @@
-import { computed, Ref, unref } from 'vue'
+import { computed, ref, Ref, unref } from 'vue'
 import { useClipboardStore, useResourcesStore } from '../piniaStores'
 import { useRouter } from '../router'
 import { useEventBus } from '../eventBus'
@@ -14,6 +14,7 @@ import { useResourceViewSelection } from './useResourceViewSelection'
 import { ClipboardActions } from '../../helpers'
 import { storeToRefs } from 'pinia'
 import { useResourceLink } from './useResourceLink'
+import { useSelectionVisibilityGuard } from '../selection/useSelectionVisibilityGuard'
 
 /**
  * Shared helpers for resource view components (like ResourceTable and ResourceTiles).
@@ -21,10 +22,12 @@ import { useResourceLink } from './useResourceLink'
 export const useResourceViewHelpers = ({
   space,
   resources,
+  isSelectable = ref(true),
   emit
 }: {
   space: Ref<SpaceResource>
   resources: Ref<Resource[]>
+  isSelectable?: Ref<boolean>
   emit: ReturnType<typeof defineEmits>
 }) => {
   const resourcesStore = useResourcesStore()
@@ -45,6 +48,18 @@ export const useResourceViewHelpers = ({
   const { resources: clipboardResources, action: clipboardAction } = storeToRefs(clipboardStore)
 
   const selectedIdsSet = computed(() => new Set(unref(selectedIds)))
+
+  useSelectionVisibilityGuard({
+    visibleIds: () => (unref(resources) || []).map(({ id }) => id),
+    selectedIds,
+    deselect: (ids) => {
+      // a view that can't select resources doesn't own the selection, so it must not change it
+      if (!unref(isSelectable)) {
+        return
+      }
+      resourcesStore.deselectResources(ids)
+    }
+  })
 
   const isResourceSelected = (item: Resource) => {
     return unref(selectedIdsSet).has(item.id)

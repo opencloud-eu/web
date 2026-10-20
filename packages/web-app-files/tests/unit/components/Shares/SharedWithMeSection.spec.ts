@@ -1,7 +1,7 @@
 import { computed, defineComponent, h, markRaw, PropType } from 'vue'
 import { mock } from 'vitest-mock-extended'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
-import { FileAction, FolderView, Pagination } from '@opencloud-eu/web-pkg'
+import { FileAction, FolderView, Pagination, useResourcesStore } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   defaultPlugins,
@@ -69,6 +69,17 @@ describe('SharedWithMeSection', () => {
     expect(message.text()).toContain('No shares found')
     expect(message.text()).toContain('Try refining the search term or filters to get results')
     expect(wrapper.find('.files-empty').exists()).toBeFalsy()
+  })
+  it('deselects the shares a filter hides, also when it hides all of them', async () => {
+    const { wrapper } = getWrapper()
+    const resourcesStore = useResourcesStore()
+    resourcesStore.selectedIds = ['1']
+
+    // the parent view passes the filtered shares
+    await wrapper.setProps({ items: [] })
+
+    expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
+    expect(resourcesStore.deselectResources).toHaveBeenCalledWith(['1'])
   })
 })
 

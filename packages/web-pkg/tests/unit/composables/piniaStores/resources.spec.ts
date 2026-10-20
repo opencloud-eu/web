@@ -90,6 +90,21 @@ describe('useResourcesStore', () => {
     })
   })
 
+  describe('deselectResources', () => {
+    it('removes the resources from the selection and resets the latest selected resource', () => {
+      const store = useResourcesStore()
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+      store.setSelection(['1', '2', '3'])
+      store.setLastSelectedId('2')
+
+      store.deselectResources(['2', '3'])
+
+      expect(store.selectedIds).toEqual(['1'])
+      expect(store.latestSelectedId).toBeNull()
+      expect(publishSpy).toHaveBeenCalledWith('app.files.shiftAnchor.reset')
+    })
+  })
+
   describe('hiding hidden files', () => {
     const visibleFile = mock<Resource>({ id: '1', name: 'file.txt', type: 'file' })
     const hiddenFile = mock<Resource>({ id: '2', name: '.hidden', type: 'file' })

@@ -139,6 +139,7 @@ import {
   useRouter,
   usePagination,
   useSort,
+  useSelectionVisibilityGuard,
   spaceTilesSortFields,
   translateSortFields
 } from '@opencloud-eu/web-pkg'
@@ -262,7 +263,17 @@ onBeforeUnmount(() => {
   eventBus.unsubscribe('app.files.spaces.uploaded-image', uploadedImageToken)
 })
 
-// the selection is kept across pages, so only the spaces of the current page count
+// spaces that leave the current page (paging, sorting, filtering) leave the selection
+useSelectionVisibilityGuard({
+  visibleIds: () => unref(paginatedItems).map(({ id }) => id),
+  selectedIds: () => unref(selectedSpaces).map(({ id }) => id),
+  deselect: (ids) => {
+    spaceSettingsStore.setSelectedSpaces(
+      unref(selectedSpaces).filter(({ id }) => !ids.includes(id))
+    )
+  }
+})
+
 const allSpacesSelected = computed(
   () => unref(paginatedItems).length > 0 && unref(paginatedItems).every(isSpaceSelected)
 )
