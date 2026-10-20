@@ -76,11 +76,14 @@ describe('emptyTrashBin', () => {
   describe('empty trash bin action', () => {
     it('should trigger the empty trash bin modal window', () => {
       getWrapper({
-        setup: async ({ actions }) => {
+        setup: ({ actions }) => {
           const { dispatchModal } = useModals()
-          await unref(actions)[0].handler(mockDeep<SpaceActionOptions>())
+          unref(actions)[0].handler(mockDeep<SpaceActionOptions>())
 
           expect(dispatchModal).toHaveBeenCalledTimes(1)
+          expect(dispatchModal).toHaveBeenCalledWith(
+            expect.objectContaining({ showCancelAction: true })
+          )
         }
       })
     })

@@ -46,7 +46,8 @@ window.URL.createObjectURL = vi.fn(() => 'foo')
 const selectors = {
   removeAvatarButton: '.avatar-upload-remove-button',
   avatarFileInput: '.avatar-file-input',
-  modalConfirm: '.oc-modal-body-actions-confirm '
+  modalConfirm: '.oc-modal-body-actions-confirm ',
+  modalCancel: '.oc-modal-body-actions-cancel'
 }
 
 describe('AvatarUpload', () => {
@@ -91,6 +92,28 @@ describe('AvatarUpload', () => {
           title: 'Failed to remove profile picture'
         })
       )
+    })
+  })
+  describe('remove modal', () => {
+    it('disables cancel and confirm while the removal is in flight and closes afterwards', async () => {
+      const { wrapper, mocks } = getWrapper()
+      let finishRemoval: () => void
+      mocks.$clientService.graphAuthenticated.photos.deleteOwnUserPhoto.mockReturnValueOnce(
+        new Promise<void>((resolve) => {
+          finishRemoval = resolve
+        }) as any
+      )
+      await wrapper.vm.$nextTick()
+      await wrapper.find(selectors.removeAvatarButton).trigger('click')
+      await wrapper.find(selectors.modalConfirm).trigger('click')
+
+      expect(wrapper.find(selectors.modalCancel).attributes('disabled')).toBeDefined()
+      expect(wrapper.find(selectors.modalConfirm).attributes('disabled')).toBeDefined()
+
+      finishRemoval()
+      await flushPromises()
+
+      expect(wrapper.find(selectors.modalCancel).exists()).toBeFalsy()
     })
   })
   describe('uploadButton', () => {

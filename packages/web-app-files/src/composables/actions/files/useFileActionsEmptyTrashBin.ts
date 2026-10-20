@@ -46,6 +46,7 @@ export const useFileActionsEmptyTrashBin = () => {
     dispatchModal({
       title: $gettext('Empty trash bin for »%{name}«', { name: resources[0].name }),
       confirmText: $gettext('Delete'),
+      showCancelAction: true,
       message: $gettext(
         'Are you sure you want to permanently delete the items in »%{name}«? You can’t undo this action.',
         {

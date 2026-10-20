@@ -31,7 +31,6 @@
     <oc-modal
       v-if="showCropModal"
       :title="$gettext('Crop your new profile picture')"
-      :button-cancel-text="$gettext('Cancel')"
       :button-confirm-text="$gettext('Set')"
       :button-confirm-disabled="!imageUrl"
       focus-trap-initial="#image-cropper-selection"
@@ -51,8 +50,9 @@
       v-if="showRemoveModal"
       :message="$gettext('Are you sure you want to remove your profile picture?')"
       :title="$gettext('Remove profile picture')"
-      :button-cancel-text="$gettext('Cancel')"
       :button-confirm-text="$gettext('Remove')"
+      :is-loading="isRemoving"
+      show-cancel-action
       @cancel="showRemoveModal = false"
       @confirm="onRemoveModalConfirm"
     />
@@ -84,6 +84,7 @@ const imageUrl = useObjectUrl(selectedFile)
 const imageCropperRef = ref<InstanceType<typeof ImageCropper> | null>(null)
 const showCropModal = ref(false)
 const showRemoveModal = ref(false)
+const isRemoving = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const maxFileSize = AVATAR_UPLOAD_MAX_FILE_SIZE_MB * 1024 * 1024
@@ -168,6 +169,8 @@ const onCropModalConfirm = async () => {
 }
 
 const onRemoveModalConfirm = async () => {
+  // keeps the dialog from being cancelled or confirmed again while the removal is in flight
+  isRemoving.value = true
   try {
     await graphAuthenticated.photos.deleteOwnUserPhoto()
     avatarsStore.removeAvatar(unref(user).id)
@@ -177,6 +180,8 @@ const onRemoveModalConfirm = async () => {
       title: $gettext('Failed to remove profile picture'),
       errors: [error]
     })
+  } finally {
+    isRemoving.value = false
   }
 
   showRemoveModal.value = false

@@ -2,7 +2,7 @@ import { useUserActionsDelete } from '../../../../../src/composables/actions/use
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { useCapabilityStore, useUserStore } from '@opencloud-eu/web-pkg'
+import { useCapabilityStore, useModals, useUserStore } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   getComposableWrapper,
@@ -36,6 +36,20 @@ describe('useUserActionsDelete', () => {
         })
       }
     )
+  })
+  describe('handler', () => {
+    it('shows a cancel action in the confirmation', () => {
+      getWrapper({
+        setup: ({ actions }) => {
+          const { dispatchModal } = useModals()
+          unref(actions)[0].handler({ resources: [mock<User>()] })
+
+          expect(dispatchModal).toHaveBeenCalledWith(
+            expect.objectContaining({ showCancelAction: true })
+          )
+        }
+      })
+    })
   })
   describe('method "deleteUsers"', () => {
     it('should successfully delete all given users and reload the users list', () => {

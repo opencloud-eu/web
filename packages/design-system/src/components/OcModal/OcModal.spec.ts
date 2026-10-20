@@ -141,6 +141,45 @@ describe('OcModal', () => {
 
       expect(wrapper.emitted('cancel')).toBeFalsy()
     })
+
+    describe('cancel action', () => {
+      it('is not rendered by default', () => {
+        const wrapper = mountModal()
+        expect(wrapper.find('.oc-modal-body-actions-cancel').exists()).toBeFalsy()
+      })
+
+      it('is rendered in front of the confirm button if "showCancelAction" is set', () => {
+        const wrapper = mountModal({ showCancelAction: true })
+        const buttons = wrapper.findAll('.oc-modal-body-actions-grid button')
+
+        expect(buttons.length).toBe(2)
+        expect(buttons[0].classes()).toContain('oc-modal-body-actions-cancel')
+        expect(buttons[0].text()).toBe('Cancel')
+        expect(buttons[1].classes()).toContain('oc-modal-body-actions-confirm')
+      })
+
+      // custom components teleport their buttons into the actions container, e.g. the
+      // unsaved changes dialog's "Don't Save", which belongs between Cancel and Save
+      it('keeps the actions container between the cancel action and the confirm button', () => {
+        const wrapper = mountModal({ showCancelAction: true, actionsId: 'custom-actions' })
+        const children = wrapper.find('.oc-modal-body-actions-grid').element.children
+
+        expect(children[0].classList).toContain('oc-modal-body-actions-cancel')
+        expect(children[1].id).toBe('custom-actions')
+        expect(children[2].classList).toContain('oc-modal-body-actions-confirm')
+      })
+
+      it('emits cancel when clicked', async () => {
+        const wrapper = mountModal({ showCancelAction: true })
+        await wrapper.find('.oc-modal-body-actions-cancel').trigger('click')
+        expect(wrapper.emitted('cancel')).toBeTruthy()
+      })
+
+      it('is disabled while loading', () => {
+        const wrapper = mountModal({ showCancelAction: true, isLoading: true })
+        expect(wrapper.find('.oc-modal-body-actions-cancel').attributes('disabled')).toBeDefined()
+      })
+    })
   })
 
   it('displays loading state', async () => {

@@ -9,6 +9,7 @@ import {
 import {
   useDeleteWorker,
   useGetMatchingSpace,
+  useModals,
   useResourcesStore,
   eventBus
 } from '@opencloud-eu/web-pkg'
@@ -25,6 +26,21 @@ const currentFolder = {
 }
 
 describe('deleteResources', () => {
+  describe('method "displayDialog"', () => {
+    it('shows a cancel action in the confirmation', () => {
+      getWrapper({
+        currentFolder,
+        setup: ({ displayDialog }, { space }) => {
+          displayDialog(space, [{ id: '2', type: 'file', name: 'file.txt' } as Resource])
+
+          const { dispatchModal } = useModals()
+          expect(dispatchModal).toHaveBeenCalledWith(
+            expect.objectContaining({ showCancelAction: true })
+          )
+        }
+      })
+    })
+  })
   describe('method "filesList_delete"', () => {
     it('should call the delete action on a resource in the file list', () => {
       const filesToDelete = [{ id: '2', path: '/folder/fileToDelete.txt' }]

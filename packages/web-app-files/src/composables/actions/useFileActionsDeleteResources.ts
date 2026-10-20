@@ -335,6 +335,7 @@ export const useFileActionsDeleteResources = () => {
       title: unref(dialogTitle),
       message: unref(dialogMessage),
       confirmText: $gettext('Delete'),
+      showCancelAction: true,
       onConfirm: () => trashbin_delete(space)
     })
   }

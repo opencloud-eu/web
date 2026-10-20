@@ -55,6 +55,7 @@ export const useSpaceActionsDeleteImage = () => {
     dispatchModal({
       title: $gettext('Delete »%{space}« image', { space: resources[0].name }),
       confirmText: $gettext('Delete'),
+      showCancelAction: true,
       onConfirm: () => deleteSpaceImage({ space: resources[0] }),
       message: $gettext('Are you sure you want to delete the image of »%{space}«?', {
         space: resources[0].name
