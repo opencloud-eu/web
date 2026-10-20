@@ -53,7 +53,7 @@ const resolveGuestLinkTask = useTask(function* () {
   yield router.replace(location)
 })
 
-// an expired or used link can still authorize sending a new link and PIN
+// an expired or used link still identifies the share to send a new link for
 function renewLink(error: unknown) {
   const permissionId = getRenewablePermissionId(error)
   if (!permissionId) {
