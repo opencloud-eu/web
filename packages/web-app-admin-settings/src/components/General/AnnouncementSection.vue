@@ -35,7 +35,7 @@
         />
       </span>
       <div
-        class="border border-role-outline rounded-lg overflow-hidden bg-role-surface focus-within:outline-1 focus-within:outline-role-outline focus-within:-outline-offset-2"
+        class="border border-role-outline rounded-lg overflow-hidden bg-role-surface focus-within:outline-1 focus-within:outline-role-secondary focus-within:-outline-offset-2"
       >
         <text-editor-provider :editor="infoEditor">
           <text-editor-toolbar />

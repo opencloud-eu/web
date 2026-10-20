@@ -12,6 +12,24 @@ describe('OcTextInputPassword', () => {
     await wrapper.setProps({ value: '' })
     expect(wrapper.find('input').element.value).toBe('')
   })
+  it.each([false, true])('shows the error border when invalid (focused: %s)', async (focused) => {
+    const wrapper = getWrapper('secret', { hasError: true })
+    if (focused) {
+      await wrapper.find('input').trigger('focus')
+    }
+    const classes = wrapper.find('.oc-text-input-password-wrapper').classes()
+    expect(classes).toContain('border-role-error')
+    expect(classes).not.toContain('border-role-outline')
+    if (focused) {
+      expect(classes).toContain('outline-role-secondary')
+    }
+  })
+  it('uses the regular border when valid', () => {
+    const wrapper = getWrapper('secret')
+    const classes = wrapper.find('.oc-text-input-password-wrapper').classes()
+    expect(classes).toContain('border-role-outline')
+    expect(classes).not.toContain('border-role-error')
+  })
 })
 
 const passwordPolicy: PasswordPolicy = {
@@ -20,9 +38,9 @@ const passwordPolicy: PasswordPolicy = {
   missing: () => ({ rules: [] })
 }
 
-function getWrapper(value: string) {
+function getWrapper(value: string, props: { hasError?: boolean } = {}) {
   return mount(OcTextInputPassword, {
-    props: { value, passwordPolicy },
+    props: { value, passwordPolicy, ...props },
     global: { plugins: [...defaultPlugins()] }
   })
 }
