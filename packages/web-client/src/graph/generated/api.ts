@@ -928,6 +928,10 @@ export interface GuestLinkError {
      * Permission (share) identifier related to the error, when known.
      */
     'permissionId': string;
+    /**
+     * Number of seconds the client should wait before retrying. Present on rate-limited (429) responses and mirrored in the Retry-After response header.
+     */
+    'retryAfter'?: number;
 }
 
 export const GuestLinkErrorErrorTypeEnum = {
@@ -935,11 +939,14 @@ export const GuestLinkErrorErrorTypeEnum = {
     TokenNotFound: 'tokenNotFound',
     TokenExpired: 'tokenExpired',
     TokenAlreadyRedeemed: 'tokenAlreadyRedeemed',
-    SessionInvalid: 'sessionInvalid',
     ShareNotFound: 'shareNotFound',
     ShareExpired: 'shareExpired',
     PinInvalid: 'pinInvalid',
     PinExpired: 'pinExpired',
+    NonceInvalid: 'nonceInvalid',
+    NonceExpired: 'nonceExpired',
+    Conflict: 'conflict',
+    TooManyRequests: 'tooManyRequests',
     ServiceUnavailable: 'serviceUnavailable',
     InvalidRequest: 'invalidRequest',
     InternalError: 'internalError',
@@ -948,26 +955,26 @@ export const GuestLinkErrorErrorTypeEnum = {
 export type GuestLinkErrorErrorTypeEnum = typeof GuestLinkErrorErrorTypeEnum[keyof typeof GuestLinkErrorErrorTypeEnum];
 
 /**
- * Request body for renewing a guest link. Besides the share (permission) id, the previous guest link token or a (possibly expired) guest session cookie is required to authorize the renewal.
+ * Request body for renewing a guest link. Only the share (permission) id is sent; the request is authorized by the guest session cookie when one is present.
  */
 export interface GuestLinkRenewRequest {
     /**
      * Identifier of the share (permission) the guest was invited to.
      */
     'permissionId': string;
-    /**
-     * Previous guest link token. Optional when the guest session cookie is sent instead.
-     */
-    'token'?: string;
 }
 /**
- * Response body for a successful guest link authentication: the share (permission) id the guest was invited to. A session cookie is set via the Set-Cookie header.
+ * Response body for a successful guest link authentication: the share (permission) id the guest was invited to and the expiry of the guest session. A session cookie is set via the Set-Cookie header.
  */
 export interface GuestLinkSessionResponse {
     /**
      * Identifier of the share (permission) the guest was invited to.
      */
     'permissionId': string;
+    /**
+     * The date and time when the guest session expires, in UTC. After that the guest has to renew the guest link.
+     */
+    'expirationDateTime': string;
 }
 /**
  * Request body for verifying a guest link PIN.
@@ -1757,6 +1764,10 @@ export interface Thumbnail {
      * The width of the thumbnail, in pixels.
      */
     'width'?: number;
+    /**
+     * The mime type the thumbnail is served in, e.g. `image/png`. It can differ from the mime type of the item the thumbnail belongs to, for example when the thumbnail is an image taken from inside the item, such as the cover art of an audio file. 
+     */
+    '@libre.graph.mimeType'?: string;
 }
 /**
  * The ThumbnailSet resource is a keyed collection of thumbnail resources. It\'s used to represent a set of thumbnails associated with a DriveItem. 
@@ -8069,7 +8080,7 @@ export type ListGroupsExpandEnum = typeof ListGroupsExpandEnum[keyof typeof List
 export const GuestLinksApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Generate a new guest link token and PIN for an existing guest link and publish the renewal event so the guest can be notified.
+         * Renew a guest link. When the request carries a valid guest session cookie (possibly expired), a new link token and PIN are generated, the renewal event is published so the guest can be notified, and the nonce cookie that binds the PIN to the browser is set. Without a valid session the link token is rotated silently: no new PIN is generated, no nonce cookie is set, and the request is rate limited.
          * @summary Renew a guest link
          * @param {GuestLinkRenewRequest} guestLinkRenewRequest 
          * @param {*} [options] Override http request option.
@@ -8112,11 +8123,14 @@ export const GuestLinksApiAxiosParamCreator = function (configuration?: Configur
         /**
          * Exchange a PIN and a share id for a guest session.
          * @summary Verify a guest link PIN
+         * @param {string} hostOcGuestNonce Per-share nonce cookie set by the renew endpoint (&#x60;__Host-oc_guest_nonce_&lt;share-hash&gt;&#x60;), binding the PIN to the browser that renewed the link.
          * @param {GuestLinkVerifyPinRequest} guestLinkVerifyPinRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        verifyGuestLinkPin: async (guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        verifyGuestLinkPin: async (hostOcGuestNonce: string, guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'hostOcGuestNonce' is not null or undefined
+            assertParamExists('verifyGuestLinkPin', 'hostOcGuestNonce', hostOcGuestNonce)
             // verify required parameter 'guestLinkVerifyPinRequest' is not null or undefined
             assertParamExists('verifyGuestLinkPin', 'guestLinkVerifyPinRequest', guestLinkVerifyPinRequest)
             const localVarPath = `/v1beta1/extensions/org.libregraph/guestLinks/verify/pin`;
@@ -8201,7 +8215,7 @@ export const GuestLinksApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = GuestLinksApiAxiosParamCreator(configuration)
     return {
         /**
-         * Generate a new guest link token and PIN for an existing guest link and publish the renewal event so the guest can be notified.
+         * Renew a guest link. When the request carries a valid guest session cookie (possibly expired), a new link token and PIN are generated, the renewal event is published so the guest can be notified, and the nonce cookie that binds the PIN to the browser is set. Without a valid session the link token is rotated silently: no new PIN is generated, no nonce cookie is set, and the request is rate limited.
          * @summary Renew a guest link
          * @param {GuestLinkRenewRequest} guestLinkRenewRequest 
          * @param {*} [options] Override http request option.
@@ -8216,12 +8230,13 @@ export const GuestLinksApiFp = function(configuration?: Configuration) {
         /**
          * Exchange a PIN and a share id for a guest session.
          * @summary Verify a guest link PIN
+         * @param {string} hostOcGuestNonce Per-share nonce cookie set by the renew endpoint (&#x60;__Host-oc_guest_nonce_&lt;share-hash&gt;&#x60;), binding the PIN to the browser that renewed the link.
          * @param {GuestLinkVerifyPinRequest} guestLinkVerifyPinRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async verifyGuestLinkPin(guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GuestLinkSessionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.verifyGuestLinkPin(guestLinkVerifyPinRequest, options);
+        async verifyGuestLinkPin(hostOcGuestNonce: string, guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GuestLinkSessionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.verifyGuestLinkPin(hostOcGuestNonce, guestLinkVerifyPinRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['GuestLinksApi.verifyGuestLinkPin']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -8249,7 +8264,7 @@ export const GuestLinksApiFactory = function (configuration?: Configuration, bas
     const localVarFp = GuestLinksApiFp(configuration)
     return {
         /**
-         * Generate a new guest link token and PIN for an existing guest link and publish the renewal event so the guest can be notified.
+         * Renew a guest link. When the request carries a valid guest session cookie (possibly expired), a new link token and PIN are generated, the renewal event is published so the guest can be notified, and the nonce cookie that binds the PIN to the browser is set. Without a valid session the link token is rotated silently: no new PIN is generated, no nonce cookie is set, and the request is rate limited.
          * @summary Renew a guest link
          * @param {GuestLinkRenewRequest} guestLinkRenewRequest 
          * @param {*} [options] Override http request option.
@@ -8261,12 +8276,13 @@ export const GuestLinksApiFactory = function (configuration?: Configuration, bas
         /**
          * Exchange a PIN and a share id for a guest session.
          * @summary Verify a guest link PIN
+         * @param {string} hostOcGuestNonce Per-share nonce cookie set by the renew endpoint (&#x60;__Host-oc_guest_nonce_&lt;share-hash&gt;&#x60;), binding the PIN to the browser that renewed the link.
          * @param {GuestLinkVerifyPinRequest} guestLinkVerifyPinRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        verifyGuestLinkPin(guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options?: RawAxiosRequestConfig): AxiosPromise<GuestLinkSessionResponse> {
-            return localVarFp.verifyGuestLinkPin(guestLinkVerifyPinRequest, options).then((request) => request(axios, basePath));
+        verifyGuestLinkPin(hostOcGuestNonce: string, guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options?: RawAxiosRequestConfig): AxiosPromise<GuestLinkSessionResponse> {
+            return localVarFp.verifyGuestLinkPin(hostOcGuestNonce, guestLinkVerifyPinRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Verify a guest link token to obtain a guest session.
@@ -8286,7 +8302,7 @@ export const GuestLinksApiFactory = function (configuration?: Configuration, bas
  */
 export class GuestLinksApi extends BaseAPI {
     /**
-     * Generate a new guest link token and PIN for an existing guest link and publish the renewal event so the guest can be notified.
+     * Renew a guest link. When the request carries a valid guest session cookie (possibly expired), a new link token and PIN are generated, the renewal event is published so the guest can be notified, and the nonce cookie that binds the PIN to the browser is set. Without a valid session the link token is rotated silently: no new PIN is generated, no nonce cookie is set, and the request is rate limited.
      * @summary Renew a guest link
      * @param {GuestLinkRenewRequest} guestLinkRenewRequest 
      * @param {*} [options] Override http request option.
@@ -8299,12 +8315,13 @@ export class GuestLinksApi extends BaseAPI {
     /**
      * Exchange a PIN and a share id for a guest session.
      * @summary Verify a guest link PIN
+     * @param {string} hostOcGuestNonce Per-share nonce cookie set by the renew endpoint (&#x60;__Host-oc_guest_nonce_&lt;share-hash&gt;&#x60;), binding the PIN to the browser that renewed the link.
      * @param {GuestLinkVerifyPinRequest} guestLinkVerifyPinRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public verifyGuestLinkPin(guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options?: RawAxiosRequestConfig) {
-        return GuestLinksApiFp(this.configuration).verifyGuestLinkPin(guestLinkVerifyPinRequest, options).then((request) => request(this.axios, this.basePath));
+    public verifyGuestLinkPin(hostOcGuestNonce: string, guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options?: RawAxiosRequestConfig) {
+        return GuestLinksApiFp(this.configuration).verifyGuestLinkPin(hostOcGuestNonce, guestLinkVerifyPinRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
