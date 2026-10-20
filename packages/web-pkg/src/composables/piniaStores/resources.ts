@@ -165,6 +165,27 @@ export const useResourcesStore = defineStore('resources', () => {
   const setAreHiddenFilesShown = (value: boolean) => {
     areHiddenFilesShown.value = value
     window.localStorage.setItem('oc_hiddenFilesShown', value.toString())
+
+    if (!value) {
+      deselectHiddenResources()
+    }
+  }
+
+  function deselectHiddenResources() {
+    const hiddenIds = new Set(
+      unref(resources)
+        .filter(({ name }) => name.startsWith('.'))
+        .map(({ id }) => id)
+    )
+    if (!hiddenIds.size) {
+      return
+    }
+
+    selectedIds.value = unref(selectedIds).filter((id) => !hiddenIds.has(id))
+    if (hiddenIds.has(unref(latestSelectedId))) {
+      latestSelectedId.value = null
+    }
+    eventBus.publish('app.files.shiftAnchor.reset')
   }
   const setAreFileExtensionsShown = (value: boolean) => {
     areFileExtensionsShown.value = value
