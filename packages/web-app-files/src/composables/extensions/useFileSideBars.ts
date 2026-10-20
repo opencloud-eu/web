@@ -13,6 +13,7 @@ import {
   isLocationTrashActive,
   isLocationSpacesActive,
   isLocationSharesActive,
+  isLocationGuestActive,
   useRouter,
   SidebarPanelExtension,
   useIsFilesAppActive,
@@ -124,6 +125,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
             return (
               !isLocationSpacesActive(router, 'files-spaces-generic') &&
               !isLocationSharesActive(router, 'files-shares-with-me') &&
+              !isLocationGuestActive(router) &&
               !isLocationTrashActive(router, 'files-trash-generic')
             )
           }

@@ -18,10 +18,12 @@ export interface NavItem extends Omit<AppNavigationItem, 'name'> {
 
 export const getExtensionNavItems = ({
   extensionRegistry,
-  appId
+  appId,
+  authContext = 'user'
 }: {
   extensionRegistry: ExtensionRegistry
   appId: string
+  authContext?: AppNavigationItem['authContext']
 }) =>
   extensionRegistry
     .requestExtensions<SidebarNavExtension>({
@@ -29,6 +31,7 @@ export const getExtensionNavItems = ({
       extensionType: 'sidebarNav'
     })
     .map(({ navItem }) => navItem)
+    .filter((n) => (n.authContext || 'user') === authContext)
     .filter((n) => !Object.hasOwn(n, 'isVisible') || n.isVisible())
 
 export const useNavItems = () => {
@@ -40,11 +43,15 @@ export const useNavItems = () => {
   const extensionRegistry = useExtensionRegistry()
 
   const extensionNavItems = computed(() => {
-    return getExtensionNavItems({ extensionRegistry, appId: unref(activeApp) })
+    return getExtensionNavItems({
+      extensionRegistry,
+      appId: unref(activeApp),
+      authContext: authStore.isGuestContext ? 'guest' : 'user'
+    })
   })
 
   const navItems = computed<NavItem[]>(() => {
-    if (!authStore.userContextReady) {
+    if (!authStore.userContextReady && !authStore.isGuestContext) {
       return []
     }
 

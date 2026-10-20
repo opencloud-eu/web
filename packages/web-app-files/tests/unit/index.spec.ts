@@ -30,7 +30,9 @@ const routes: RouteRecordRaw[] = [
   'files/shares',
   'files/spaces/projects',
   'files/spaces/:driveAliasAndItem(.*)?',
-  'files/trash/overview'
+  'files/trash/overview',
+  'files/guest/shares',
+  'files/guest/:driveAliasAndItem(.*)?'
 ].map((path) => ({
   path: `/${path}`,
   name: path,
@@ -76,6 +78,18 @@ describe('Web app files', () => {
           expect(getActiveNames()).toEqual(['Shares'])
         }
       )
+      it.each(['/files/guest/shares', '/files/guest/share/some-share'])(
+        'only shows "Shares" as active to guests on the guest route %s',
+        async (path) => {
+          const { getNames, getActiveNames } = await getNavItemsWrapper({ path, isGuest: true })
+          expect(getNames()).toEqual(['Shares'])
+          expect(getActiveNames()).toEqual(['Shares'])
+        }
+      )
+      it('does not show guest items to users', async () => {
+        const { getNames } = await getNavItemsWrapper({ path: '/files/shares' })
+        expect(getNames()).toEqual(['Personal', 'Favorites', 'Shares', 'Spaces'])
+      })
       it('marks only "Personal" as active when navigating from the project spaces overview to the personal space', async () => {
         const { router, getActiveNames } = await getNavItemsWrapper({
           path: '/files/spaces/projects'
@@ -90,11 +104,11 @@ describe('Web app files', () => {
   })
 })
 
-async function getNavItemsWrapper({ path }: { path: string }) {
+async function getNavItemsWrapper({ path, isGuest = false }: { path: string; isGuest?: boolean }) {
   const plugins = defaultPlugins({
     piniaOptions: {
       stubActions: false,
-      authState: { userContextReady: true },
+      authState: isGuest ? { guestContextReady: true } : { userContextReady: true },
       capabilityState: {
         capabilities: { spaces: mock<Capabilities['capabilities']['spaces']>({ projects: true }) }
       }
@@ -146,6 +160,7 @@ async function getNavItemsWrapper({ path }: { path: string }) {
   return {
     wrapper,
     router,
+    getNames: () => unref(resolvedNavItems).map(({ name }) => name),
     getActiveNames: () =>
       unref(resolvedNavItems)
         .filter(({ active }) => active)
