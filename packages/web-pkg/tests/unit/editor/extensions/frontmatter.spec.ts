@@ -3,6 +3,7 @@ import { Editor } from '@tiptap/vue-3'
 import { GapCursor } from '@tiptap/pm/gapcursor'
 import * as Y from 'yjs'
 import { Collaboration } from '@tiptap/extension-collaboration'
+import { yUndoPluginKey } from '@tiptap/y-tiptap'
 import { DEFAULT_YDOC_FRAGMENT } from '../../../../src/editor/types'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { useStrategyMarkdown } from '../../../../src/editor/composables/strategies/markdown'
@@ -444,9 +445,10 @@ describe('frontmatter', () => {
   // Two peers can each add a frontmatter block before their edits meet. The CRDT
   // merges below the schema layer, so the result has to be checked, not assumed.
   describe('collaboration', () => {
-    function boundEditor(strategy: ContentTypeStrategy, ydoc: Y.Doc): Editor {
+    function boundEditor(strategy: ContentTypeStrategy, ydoc: Y.Doc, editable = true): Editor {
       return new Editor({
         element: document.createElement('div'),
+        editable,
         extensions: [
           ...strategy.extensions({ yjs: true }),
           Collaboration.configure({ document: ydoc, field: DEFAULT_YDOC_FRAGMENT })
@@ -458,11 +460,17 @@ describe('frontmatter', () => {
       Y.applyUpdate(to, Y.encodeStateAsUpdate(from, Y.encodeStateVector(to)))
     }
 
-    /** Two peers holding the same seed content, ready to diverge. */
-    function peers(seed: string) {
+    /**
+     * Two peers holding the same seed content, ready to diverge. Fixed client
+     * ids pin the Yjs order of concurrent inserts at the same spot.
+     */
+    function peers(seed: string, clientIds?: [number, number]) {
       const strategy = createStrategy()
       const docA = new Y.Doc()
       const docB = new Y.Doc()
+      if (clientIds) {
+        ;[docA.clientID, docB.clientID] = clientIds
+      }
       const a = boundEditor(strategy, docA)
       a.commands.setContent(seed, { contentType: 'markdown' })
       sync(docA, docB)
@@ -494,13 +502,16 @@ describe('frontmatter', () => {
       expect(frontmatterBlocks(a)).toHaveLength(1)
       expect(frontmatterBlocks(b)).toHaveLength(1)
       expect(strategy.serialize(a.state.doc)).toBe(strategy.serialize(b.state.doc))
+      // The binding locks a peer whose shared content does not fit the schema.
+      expect(a.isEditable).toBe(true)
+      expect(b.isEditable).toBe(true)
       a.destroy()
       b.destroy()
     })
 
-    // The losing block is demoted to a paragraph rather than dropped, so the
-    // metadata stays visible in the document and the result survives a reload.
-    it('keeps the losing metadata in the body and reloads unchanged', () => {
+    // Yjs order picks the same winner on every peer, so the result is one
+    // complete block rather than a mix of both, and it survives a reload.
+    it('keeps exactly one block and reloads unchanged', () => {
       const { strategy, a, b, reconnect } = peers('# Heading')
       a.commands.setFrontmatter()
       a.commands.insertContent('title: from A')
@@ -510,14 +521,176 @@ describe('frontmatter', () => {
       reconnect()
 
       const merged = strategy.serialize(a.state.doc)
-      expect(merged).toContain('title: from A')
-      expect(merged).toContain('title: from B')
+      expect(['title: from A', 'title: from B'].filter((t) => merged.includes(t))).toHaveLength(1)
 
       const reloaded = createEditor(strategy, merged)
       expect(strategy.serialize(reloaded.state.doc)).toBe(merged)
       reloaded.destroy()
       a.destroy()
       b.destroy()
+    })
+
+    // Which insert lands first depends on the client ids, so cover both orders.
+    describe.each([
+      [1, 2],
+      [2, 1]
+    ])('with client ids %i and %i', (idA, idB) => {
+      it('keeps the block when a peer inserts above it concurrently', () => {
+        const { strategy, a, b, reconnect } = peers('# Heading', [idA, idB])
+        a.commands.setFrontmatter()
+        a.commands.insertContent('title: from A')
+        b.commands.insertContentAt(0, {
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'Top' }]
+        })
+
+        reconnect()
+
+        expect(a.state.doc.firstChild?.type.name).toBe('frontmatter')
+        expect(a.state.doc.firstChild?.textContent).toBe('title: from A')
+        expect(strategy.serialize(a.state.doc)).toContain('Top')
+        expect(strategy.serialize(a.state.doc)).toBe(strategy.serialize(b.state.doc))
+        expect(a.isEditable).toBe(true)
+        expect(b.isEditable).toBe(true)
+        a.destroy()
+        b.destroy()
+      })
+
+      it('keeps the block when an undo restores it below a new block', () => {
+        const { strategy, a, b, reconnect } = peers('---\ntitle: X\n---\n\n# Heading', [idA, idB])
+        // Otherwise the undo below also takes back the seed content.
+        yUndoPluginKey.getState(a.state)?.undoManager.stopCapturing()
+        a.commands.unsetFrontmatter()
+        reconnect()
+        b.commands.insertContentAt(0, {
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'Top' }]
+        })
+        reconnect()
+
+        a.commands.undo()
+        reconnect()
+
+        expect(a.state.doc.firstChild?.type.name).toBe('frontmatter')
+        expect(a.state.doc.firstChild?.textContent).toBe('title: X')
+        expect(strategy.serialize(a.state.doc)).toBe(strategy.serialize(b.state.doc))
+        a.destroy()
+        b.destroy()
+      })
+    })
+
+    // The server drops writes from a read only peer, so a repair of its own
+    // would only ever exist locally and could shadow the writers' block.
+    it('leaves the repair to writers on a read only peer', () => {
+      const strategy = createStrategy()
+      const docA = new Y.Doc()
+      const docB = new Y.Doc()
+      const docR = new Y.Doc()
+      ;[docA.clientID, docB.clientID, docR.clientID] = [3, 2, 1]
+      const a = boundEditor(strategy, docA)
+      a.commands.setContent('# Heading', { contentType: 'markdown' })
+      sync(docA, docB)
+      sync(docA, docR)
+      const b = boundEditor(strategy, docB)
+      const r = boundEditor(strategy, docR, false)
+
+      a.commands.setFrontmatter()
+      a.commands.insertContent('title: A')
+      b.commands.insertContentAt(0, { type: 'paragraph', content: [{ type: 'text', text: 'Top' }] })
+      // Updates only ever flow towards the reader.
+      const deliver = () => {
+        sync(docA, docR)
+        sync(docB, docR)
+      }
+      deliver()
+      sync(docA, docB)
+      sync(docB, docA)
+      deliver()
+
+      a.commands.setTextSelection(4)
+      a.commands.insertContent('LIVE')
+      sync(docA, docB)
+      deliver()
+
+      expect(r.state.doc.firstChild?.textContent).toBe(a.state.doc.firstChild?.textContent)
+      expect(strategy.serialize(r.state.doc)).toBe(strategy.serialize(a.state.doc))
+      a.destroy()
+      b.destroy()
+      r.destroy()
+    })
+
+    // Peers on a client without the repair can leave a conflict in a live room.
+    it('repairs a document that already holds a second block', () => {
+      const strategy = createStrategy()
+      const ydoc = new Y.Doc()
+      const block = (nodeName: string, text: string) => {
+        const element = new Y.XmlElement(nodeName)
+        element.insert(0, [new Y.XmlText(text)])
+        return element
+      }
+      ydoc
+        .getXmlFragment(DEFAULT_YDOC_FRAGMENT)
+        .insert(0, [
+          block('frontmatter', 'title: first'),
+          block('frontmatter', 'title: second'),
+          block('paragraph', 'Some text.')
+        ])
+
+      const editor = boundEditor(strategy, ydoc)
+
+      expect(editor.isEditable).toBe(true)
+      expect(strategy.serialize(editor.state.doc)).toBe('---\ntitle: first\n---\n\nSome text.')
+      editor.destroy()
+    })
+
+    // Each peer moves the block on its own, the extra copies are dropped on sync.
+    it('converges when two peers move the same block at once', () => {
+      const strategy = createStrategy()
+      const stored = new Y.Doc()
+      const top = new Y.XmlElement('paragraph')
+      top.insert(0, [new Y.XmlText('Top')])
+      const metadata = new Y.XmlElement('frontmatter')
+      metadata.insert(0, [new Y.XmlText('title: X')])
+      stored.getXmlFragment(DEFAULT_YDOC_FRAGMENT).insert(0, [top, metadata])
+
+      const docA = new Y.Doc()
+      const docB = new Y.Doc()
+      sync(stored, docA)
+      sync(stored, docB)
+      const a = boundEditor(strategy, docA)
+      const b = boundEditor(strategy, docB)
+      sync(docA, docB)
+      sync(docB, docA)
+
+      expect(frontmatterBlocks(a)).toHaveLength(1)
+      expect(a.state.doc.firstChild?.textContent).toBe('title: X')
+      expect(strategy.serialize(a.state.doc)).toBe(strategy.serialize(b.state.doc))
+      expect(a.isEditable).toBe(true)
+      expect(b.isEditable).toBe(true)
+      a.destroy()
+      b.destroy()
+    })
+
+    it('repairs once a read only peer becomes writable', () => {
+      const strategy = createStrategy()
+      const ydoc = new Y.Doc()
+      const block = (nodeName: string, text: string) => {
+        const element = new Y.XmlElement(nodeName)
+        element.insert(0, [new Y.XmlText(text)])
+        return element
+      }
+      ydoc
+        .getXmlFragment(DEFAULT_YDOC_FRAGMENT)
+        .insert(0, [block('paragraph', 'Top'), block('frontmatter', 'title: X')])
+
+      const editor = boundEditor(strategy, ydoc, false)
+      expect(editor.state.doc.firstChild?.type.name).toBe('paragraph')
+
+      editor.setEditable(true)
+
+      expect(editor.isEditable).toBe(true)
+      expect(strategy.serialize(editor.state.doc)).toBe('---\ntitle: X\n---\n\nTop')
+      editor.destroy()
     })
 
     it('merges concurrent edits of the same metadata character by character', () => {
