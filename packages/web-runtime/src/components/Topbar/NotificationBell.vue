@@ -20,7 +20,7 @@
   </oc-button>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { ref } from 'vue'
 import { watch } from 'vue'
@@ -31,17 +31,17 @@ const { notificationCount } = defineProps<{
 
 const { $gettext } = useGettext()
 const animate = ref(false)
-const notificationsLabel = computed(() =>
-  notificationCount > 0
-    ? $gettext('Notifications (%{count} unread)', { count: notificationCount.toString() })
-    : $gettext('Notifications')
-)
 const notificationCountLabel = computed(() => {
   if (notificationCount > 99) {
     return '99+'
   }
   return `${notificationCount}`
 })
+const notificationsLabel = computed(() =>
+  notificationCount > 0
+    ? $gettext('Notifications, %{count} unread', { count: unref(notificationCountLabel) })
+    : $gettext('Notifications')
+)
 
 watch(
   () => notificationCount,

@@ -10,9 +10,7 @@
         appearance="raw"
         gap-size="none"
         :disabled="isLocked"
-        :aria-label="
-          mode === 'create' ? $gettext('Select permission') : $gettext('Edit permission')
-        "
+        :aria-label="roleButtonLabel"
         no-hover
       >
         <span class="truncate" v-text="inviteLabel" />
@@ -167,5 +165,12 @@ const roleButtonId = computed(() => {
 
 const inviteLabel = computed(() => {
   return $gettext(selectedRole.value?.displayName || '')
+})
+
+const roleButtonLabel = computed(() => {
+  if (mode === 'create') {
+    return $gettext('Select permission: %{role}', { role: unref(inviteLabel) })
+  }
+  return $gettext('Edit permission: %{role}', { role: unref(inviteLabel) })
 })
 </script>
