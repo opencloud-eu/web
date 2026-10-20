@@ -85,6 +85,12 @@ export const useResourcesStore = defineStore('resources', () => {
     if (resource) {
       resource[field] = value
     }
+
+    // actions on the open folder itself (e.g. via the breadcrumb) need to update it as well
+    const folder = unref(currentFolder) as T
+    if (id && folder?.id === id) {
+      folder[field] = value
+    }
   }
 
   const setCurrentFolder = (value: Resource) => {
