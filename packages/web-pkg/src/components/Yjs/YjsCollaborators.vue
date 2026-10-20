@@ -51,6 +51,7 @@
       position="bottom-end"
       padding-size="small"
       enforce-drop-on-mobile
+      :is-menu="false"
       class="yjs-collaborators-drop"
     >
       <oc-list class="yjs-collaborators-list">
