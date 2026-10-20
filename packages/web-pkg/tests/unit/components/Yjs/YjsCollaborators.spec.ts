@@ -131,6 +131,17 @@ describe('YjsCollaborators', () => {
       expect(wrapper.emitted('update:following')).toEqual([[null]])
     })
 
+    it('keeps the followed user while the session has not synced yet', async () => {
+      const { wrapper } = getWrapper({ followingSupported: true, following: 'p3', users: [] })
+      expect(wrapper.emitted('update:following')).toBeUndefined()
+
+      await wrapper.setProps({ users })
+      expect(wrapper.emitted('update:following')).toBeUndefined()
+      expect(wrapper.find('.yjs-collaborators-item[data-test-user-id="p3"]').classes()).toContain(
+        'yjs-collaborators-item-followed'
+      )
+    })
+
     it('stops following when the followed user leaves the session', async () => {
       const { wrapper } = getWrapper({ followingSupported: true, following: 'p3' })
       expect(wrapper.emitted('update:following')).toBeUndefined()

@@ -175,8 +175,9 @@ function toggleFollow(user: YjsCollaborator) {
   emit('update:following', user.id === unref(followedUser)?.id ? null : user.id)
 }
 
+// an empty list is a session that has not synced yet, not a user who left
 watch(
-  () => followingSupported && following !== null && !unref(followedUser),
+  () => followingSupported && following !== null && users.length > 0 && !unref(followedUser),
   (isStale) => {
     if (isStale) emit('update:following', null)
   },
