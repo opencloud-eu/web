@@ -62,7 +62,11 @@
                   <div v-if="batchActionItems.length" class="flex items-center gap-1">
                     <oc-button
                       v-oc-tooltip="$gettext('Clear selection')"
-                      :aria-label="$gettext('Clear selection')"
+                      :aria-label="
+                        $gettext('%{count} selected, clear selection', {
+                          count: batchActionItems.length
+                        })
+                      "
                       appearance="raw"
                       gap-size="small"
                       class="p-1 clear-selection-btn"

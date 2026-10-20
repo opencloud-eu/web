@@ -124,13 +124,12 @@ describe('MembersPanel', () => {
       await nextTick()
       await goToPage(wrapper, 2)
 
-      // the leading `U2` is the initials of the rendered avatar
       expect(wrapper.findAll(selectors.memberListItem).map((item) => item.text())).toEqual([
-        'U2 User 20',
-        'U2 User 21',
-        'U2 User 22',
-        'U2 User 23',
-        'U2 User 24'
+        'User 20',
+        'User 21',
+        'User 22',
+        'User 23',
+        'User 24'
       ])
     })
   })

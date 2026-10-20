@@ -167,8 +167,10 @@ describe('User Menu component', () => {
 
       expect(guest.find('span.block').text()).toBe('Guest')
       expect(guest.find('span.text-sm').text()).toBe('alex.ackermann@example.org')
-      expect(guest.find('.avatar-initials').text()).toBe('AA')
-      expect(wrapper.find('.oc-topbar-guest-avatar .avatar-initials').text()).toBe('AA')
+      expect(guest.find('.avatar-initials').attributes('data-initials')).toBe('AA')
+      expect(
+        wrapper.find('.oc-topbar-guest-avatar .avatar-initials').attributes('data-initials')
+      ).toBe('AA')
       expect(wrapper.find('#oc-topbar-account-login').exists()).toBeFalsy()
       expect(wrapper.find('#oc-topbar-account-logout').exists()).toBeFalsy()
     })

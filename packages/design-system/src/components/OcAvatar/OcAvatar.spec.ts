@@ -78,7 +78,7 @@ describe('OcAvatar', () => {
         })
         const userInitialElement = wrapper.find(selectors.initials)
         expect(userInitialElement.exists()).toBeTruthy()
-        expect(userInitialElement.text()).toBe('TU')
+        expect(userInitialElement.attributes('data-initials')).toBe('TU')
       })
     })
     describe('when width is set', () => {

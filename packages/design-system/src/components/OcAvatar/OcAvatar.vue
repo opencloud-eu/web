@@ -16,7 +16,12 @@
       :src="src"
       @error="onImgError"
     />
-    <span v-else class="avatar-initials" :style="{ color }">{{ userInitial }}</span>
+    <span
+      v-else
+      class="avatar-initials before:content-[attr(data-initials)]"
+      :data-initials="userInitial"
+      :style="{ color }"
+    />
   </span>
 </template>
 
@@ -113,6 +118,7 @@ const style = computed(() => {
   return style
 })
 
+// rendered as CSS generated content, so axe doesn't treat initials as visible label of a labelled parent
 const userInitial = computed(() => {
   if (!isImage.value) {
     return extractInitials(userName)
