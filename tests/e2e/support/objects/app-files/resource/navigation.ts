@@ -256,7 +256,6 @@ export const createShotcut = async (args: shortcutArgs): Promise<void> => {
       break
     case 'website': {
       await page.locator(shortcutResorceInput).fill(resource)
-      await page.locator('#create-shortcut-modal-contextmenu').click()
       break
     }
   }
