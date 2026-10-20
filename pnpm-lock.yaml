@@ -186,8 +186,8 @@ importers:
         specifier: ^6.2.0
         version: 6.2.0
       happy-dom:
-        specifier: 20.14.6
-        version: 20.14.6
+        specifier: 21.0.3
+        version: 21.0.3
       knip:
         specifier: 5.88.1
         version: 5.88.1(@types/node@25.9.9)(typescript@6.0.3)
@@ -238,7 +238,7 @@ importers:
         version: 4.1.1(patch_hash=b4b816bcbbbd46a52560de210fc39a55df2f65d64cc8b1ac8dcc6e097258ad1c)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
       vitest:
         specifier: ^5.0.0
-        version: 5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@20.14.6)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
+        version: 5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.3)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
       vitest-mock-extended:
         specifier: 5.1.1
         version: 5.1.1(typescript@6.0.3)(vitest@5.0.5)
@@ -374,7 +374,7 @@ importers:
         version: 8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0)
       vitest:
         specifier: ^4.0.0 || ^5.0.0
-        version: 5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@20.14.6)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
+        version: 5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.3)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
     devDependencies:
       vite-plugin-static-copy:
         specifier: ^4.0.0
@@ -3615,8 +3615,8 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
-  happy-dom@20.14.6:
-    resolution: {integrity: sha512-5DDsf4QmEIlRL6NkCv/fxSjYHHkZceL/IaYQdJc2h3G7DRTEai++VTjbfL0LB9geW2VrA3+vrjF3Efx+OTtX0Q==}
+  happy-dom@21.0.3:
+    resolution: {integrity: sha512-PesNgu5BnIEmAwzKGewB3K1ORFeznFZJ4JrRz89ea1wkHnxskdpzX9sN/+zb4KO6k8oSMhyJSj/cwXAFrYBBNA==}
     engines: {node: '>=20.0.0'}
 
   has-flag@4.0.0:
@@ -6715,7 +6715,7 @@ snapshots:
       obug: 3.0.0
       std-env: 4.3.0
       tinyrainbow: 3.2.0
-      vitest: 5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@20.14.6)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
+      vitest: 5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.3)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
 
   '@vitest/istanbul-lib-coverage@1.0.2': {}
 
@@ -6737,7 +6737,7 @@ snapshots:
   '@vitest/web-worker@5.0.5(vitest@5.0.5)':
     dependencies:
       obug: 3.0.0
-      vitest: 5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@20.14.6)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
+      vitest: 5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.3)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
 
   '@volar/language-core@2.4.28':
     dependencies:
@@ -7824,7 +7824,7 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  happy-dom@20.14.6:
+  happy-dom@21.0.3:
     dependencies:
       '@types/node': 25.9.9
       '@types/whatwg-mimetype': 3.0.2
@@ -9518,9 +9518,9 @@ snapshots:
     dependencies:
       ts-essentials: 10.2.1(typescript@6.0.3)
       typescript: 6.0.3
-      vitest: 5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@20.14.6)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
+      vitest: 5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.3)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
 
-  vitest@5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@20.14.6)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0)):
+  vitest@5.0.5(@types/node@25.9.9)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.3)(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0)):
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/mocker': 5.0.5(vite@8.3.4(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))
@@ -9539,7 +9539,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 25.9.9
       '@vitest/coverage-v8': 5.0.5(vitest@5.0.5)
-      happy-dom: 20.14.6
+      happy-dom: 21.0.3
     transitivePeerDependencies:
       - msw
 
