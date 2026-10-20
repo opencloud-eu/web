@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat(app-store): add sorting and release dates [[#3825](https://github.com/opencloud-eu/web/pull/3825)]
 - feat: accept route locations in buildUrl [[#3798](https://github.com/opencloud-eu/web/pull/3798)]
 - Handle SSEs for resources in incoming shares [[#3898](https://github.com/opencloud-eu/web/pull/3898)]
 - feat: resolve guest links into file listing [[#3816](https://github.com/opencloud-eu/web/pull/3816)]
