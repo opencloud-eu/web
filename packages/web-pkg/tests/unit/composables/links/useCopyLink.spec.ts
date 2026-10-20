@@ -6,12 +6,16 @@ import { useMessages } from '../../../../src/composables/piniaStores'
 
 const copiedMessage = 'The link has been copied to your clipboard.'
 const notCopiedMessage = "The link has been created, but it couldn't be copied to your clipboard."
+const previousClipboardContent = 'previous clipboard content'
+const linkUrl = 'https://example.com/s/link'
 
 describe('useCopyLink', () => {
   const originalClipboard = navigator.clipboard
   let clipboardWrite: ReturnType<typeof vi.fn>
+  let clipboardContent: string
 
   beforeEach(() => {
+    clipboardContent = previousClipboardContent
     vi.stubGlobal(
       'ClipboardItem',
       class {
@@ -19,11 +23,20 @@ describe('useCopyLink', () => {
       }
     )
     clipboardWrite = vi.fn(async ([item]: { items: Record<string, Promise<Blob>> }[]) => {
-      await item.items['text/plain']
+      const blob = await item.items['text/plain']
+      clipboardContent = await blob.text()
     })
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
       value: { write: clipboardWrite }
+    })
+    // legacy fallback of useClipboard, copies the selected textarea
+    Object.defineProperty(document, 'execCommand', {
+      configurable: true,
+      value: vi.fn(() => {
+        clipboardContent = document.querySelector('textarea').value
+        return true
+      })
     })
     vi.spyOn(console, 'warn').mockImplementation(() => undefined)
   })
@@ -31,6 +44,7 @@ describe('useCopyLink', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
     Object.defineProperty(navigator, 'clipboard', { configurable: true, value: originalClipboard })
+    Reflect.deleteProperty(document, 'execCommand')
   })
 
   it('shows the copied message when the clipboard write succeeds', () => {
@@ -39,7 +53,73 @@ describe('useCopyLink', () => {
         await copyLink({ createLinkHandler })
 
         expect(clipboardWrite).toHaveBeenCalled()
+        expect(clipboardContent).toBe(linkUrl)
         expect(useMessages().showMessage).toHaveBeenCalledWith({ title: copiedMessage })
+      }
+    })
+  })
+
+  it('copies the link with the fallback when ClipboardItem is not supported', () => {
+    vi.stubGlobal('ClipboardItem', undefined)
+
+    return getWrapper({
+      setup: async ({ copyLink }) => {
+        await copyLink({ createLinkHandler })
+
+        expect(clipboardContent).toBe(linkUrl)
+        expect(useMessages().showMessage).toHaveBeenCalledWith({ title: copiedMessage })
+      }
+    })
+  })
+
+  describe('without clipboard access in an insecure context', () => {
+    const navigatorPrototype = Object.getPrototypeOf(navigator)
+    const clipboardDescriptor = Object.getOwnPropertyDescriptor(navigatorPrototype, 'clipboard')
+
+    beforeEach(() => {
+      Reflect.deleteProperty(navigator, 'clipboard')
+      Reflect.deleteProperty(navigatorPrototype, 'clipboard')
+    })
+
+    afterEach(() => {
+      Object.defineProperty(navigatorPrototype, 'clipboard', clipboardDescriptor)
+    })
+
+    it('creates the link and copies it with the legacy fallback', () => {
+      const linkHandler = vi.fn(createLinkHandler)
+
+      return getWrapper({
+        setup: async ({ copyLink }) => {
+          await copyLink({ createLinkHandler: linkHandler })
+
+          expect(linkHandler).toHaveBeenCalled()
+          expect(clipboardContent).toBe(linkUrl)
+          expect(useMessages().showMessage).toHaveBeenCalledWith({ title: copiedMessage })
+        }
+      })
+    })
+  })
+
+  it.each([
+    {
+      case: 'several links are created',
+      linkHandler: () =>
+        Promise.allSettled([
+          Promise.resolve(mock<LinkShare>({ webUrl: linkUrl })),
+          Promise.resolve(mock<LinkShare>({ webUrl: 'https://example.com/s/other' }))
+        ])
+    },
+    {
+      case: 'the link creation fails',
+      linkHandler: () => Promise.allSettled([Promise.reject(new Error('server error'))])
+    }
+  ])('keeps the previous clipboard content when $case', ({ linkHandler }) => {
+    return getWrapper({
+      setup: async ({ copyLink }) => {
+        await copyLink({ createLinkHandler: linkHandler })
+
+        expect(clipboardContent).toBe(previousClipboardContent)
+        expect(console.warn).not.toHaveBeenCalled()
       }
     })
   })
@@ -92,9 +172,7 @@ describe('useCopyLink', () => {
 })
 
 function createLinkHandler() {
-  return Promise.allSettled([
-    Promise.resolve(mock<LinkShare>({ webUrl: 'https://example.com/s/link' }))
-  ])
+  return Promise.allSettled([Promise.resolve(mock<LinkShare>({ webUrl: linkUrl }))])
 }
 
 function getWrapper({
