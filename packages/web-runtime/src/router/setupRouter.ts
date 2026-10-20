@@ -1,4 +1,4 @@
-import { eventBus, useModals } from '@opencloud-eu/web-pkg'
+import { buildUrl, eventBus, useModals } from '@opencloud-eu/web-pkg'
 import { Router } from 'vue-router'
 
 export const setupRouterHooks = (router: Router) => {
@@ -18,8 +18,8 @@ export const setupRouterHooks = (router: Router) => {
 
     const event = new CustomEvent('pathchange', {
       detail: {
-        to: { url: new URL(to.fullPath, window.location.origin).href, name: to.name },
-        from: { name: from.name, url: new URL(from.fullPath, window.location.origin).href }
+        to: { url: buildUrl(router, to.fullPath), name: to.name },
+        from: { name: from.name, url: buildUrl(router, from.fullPath) }
       }
     })
     window.dispatchEvent(event)
