@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep Save as in folder edit links after a reload [[#3784](https://github.com/opencloud-eu/web/pull/3784)]
+- fix: keep search scope in sync across reloads and view changes [[#3703](https://github.com/opencloud-eu/web/pull/3703)]
 - fix: offer only keep both and skip for upload conflicts between file and folder [[#3735](https://github.com/opencloud-eu/web/pull/3735)]
 - fix: distinguish default and unlimited space quotas [[#3728](https://github.com/opencloud-eu/web/pull/3728)]
 - fix: follow the current folder when it is moved [[#3873](https://github.com/opencloud-eu/web/pull/3873)]
