@@ -74,6 +74,7 @@ import { ComponentPublicInstance, computed, nextTick, ref, unref, useTemplateRef
 import Fuse, { FuseOptionKey } from 'fuse.js'
 import omit from 'lodash-es/omit'
 import isEqual from 'lodash-es/isEqual'
+import uniq from 'lodash-es/uniq'
 import { useRoute, useRouteQuery, useRouter } from '../composables'
 import { defaultFuseOptions } from '../helpers'
 import { queryItemAsString } from '../composables/appDefaults'
@@ -99,7 +100,8 @@ const {
   displayNameAttribute = 'name',
   filterableAttributes = [],
   closeOnClick = false,
-  noItemsMessage = ''
+  noItemsMessage = '',
+  loading = false
 } = defineProps<{
   filterLabel: string
   filterName: string
@@ -115,6 +117,11 @@ const {
    * Shown instead of the list if there are no items to choose from.
    */
   noItemsMessage?: string
+  /**
+   * Set while the items are being loaded. Values from the route query that are not part of the
+   * items are only shown as selected once loading has finished.
+   */
+  loading?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -192,7 +199,13 @@ const clearFilter = () => {
 }
 
 const canFilterOptions = computed(() => showOptionFilter && !!filterableAttributes.length)
-const filteredItems = computed(() => filter(items, unref(filterTerm)))
+// selected values from the route query that are not part of the items, e.g. a deleted group
+const unknownSelectedItems = computed(() =>
+  unref(selectedItems).filter((s) => !items.some((i) => getId(i) === getId(s)))
+)
+const filteredItems = computed(() =>
+  filter([...items, ...unref(unknownSelectedItems)], unref(filterTerm))
+)
 const displayedItems = computed(() => {
   const filtered = unref(filteredItems)
   if (!unref(canFilterOptions) || filtered.length <= maxDisplayedItems) {
@@ -224,7 +237,17 @@ const showDrop = async () => {
 
 const setSelectedItemsBasedOnQuery = () => {
   const ids = queryItemAsString(unref(currentRouteQuery))?.split('+') || []
-  selectedItems.value = items.filter((s) => ids.includes(getId(s)))
+  const knownItems = items.filter((s) => ids.includes(getId(s)))
+  if (loading) {
+    selectedItems.value = knownItems
+    return
+  }
+
+  // keep unknown values selected so the filter shows why the list is empty and they can be removed
+  const unknownItems = uniq(ids)
+    .filter((id) => id && !items.some((i) => getId(i) === id))
+    .map((id) => ({ [idAttribute]: id, [displayNameAttribute]: id }))
+  selectedItems.value = [...knownItems, ...unknownItems]
 }
 
 defineExpose({
@@ -233,7 +256,7 @@ defineExpose({
 })
 
 // items can arrive after mount (e.g. loaded tags), the selection from the query needs them
-watch(() => items, setSelectedItemsBasedOnQuery, { immediate: true })
+watch([() => items, () => loading], setSelectedItemsBasedOnQuery, { immediate: true })
 
 // the query can change without the filter being involved, e.g. via browser back
 watch(currentRouteQuery, () => {

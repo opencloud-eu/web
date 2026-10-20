@@ -29,11 +29,12 @@
       <div class="flex flex-wrap gap-2 justify-between w-full my-2 items-center">
         <div class="flex items-center">
           <item-filter
-            v-if="groups.length"
+            v-if="groups.length || filterGroupIds.length"
             :allow-multiple="true"
             :filter-label="$gettext('Groups')"
             :filterable-attributes="['displayName']"
             :items="groups"
+            :loading="loadGroupsTask.isRunning || !loadGroupsTask.last"
             :option-filter-label="$gettext('Filter groups')"
             :show-option-filter="true"
             class="mr-2"
@@ -244,18 +245,25 @@ const loadUsersTask = useTask(function* (signal) {
     return userSettingsStore.setUsers([])
   }
 
-  const usersResponse = yield* call(
-    clientService.graphAuthenticated.users.listUsers(
-      {
-        orderBy: ['displayName'],
-        filter: unref(usersFilter),
-        ...(unref(usersSearch) && { search: unref(usersSearch) }),
-        expand: ['appRoleAssignments']
-      },
-      { signal }
+  try {
+    const usersResponse = yield* call(
+      clientService.graphAuthenticated.users.listUsers(
+        {
+          orderBy: ['displayName'],
+          filter: unref(usersFilter),
+          ...(unref(usersSearch) && { search: unref(usersSearch) }),
+          expand: ['appRoleAssignments']
+        },
+        { signal }
+      )
     )
-  )
-  userSettingsStore.setUsers(usersResponse || [])
+    userSettingsStore.setUsers(usersResponse || [])
+  } catch (e) {
+    // e.g. a filter with a group that does not exist anymore
+    console.error(e)
+    userSettingsStore.setUsers([])
+    showErrorMessage({ title: $gettext('Failed to load users'), errors: [e] })
+  }
 })
 
 const loadResourcesTask = useTask(function* () {
