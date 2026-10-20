@@ -16,7 +16,9 @@
         appearance="filled"
         color-role="secondary"
         size="large"
-        @click="downloadAppAction.handler({ app })"
+        type="a"
+        :href="getDownloadVersion({ app }).url"
+        :download="getDownloadFilename({ app })"
       >
         <oc-icon name="download" fill-type="line" />
         <span
@@ -49,7 +51,7 @@ const emit = defineEmits<{
 }>()
 
 const { $gettext } = useGettext()
-const { downloadAppAction } = useAppActionsDownload()
+const { getDownloadVersion, getDownloadFilename } = useAppActionsDownload()
 const { getRequirementText } = useOpenCloudRequirement()
 
 const authorNames = computed(() => getAuthorNames(app))

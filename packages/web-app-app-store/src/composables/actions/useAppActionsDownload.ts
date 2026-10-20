@@ -1,5 +1,3 @@
-import { Action, triggerDownloadWithFilename } from '@opencloud-eu/web-pkg'
-import { useGettext } from 'vue3-gettext'
 import { App, AppVersion } from '../../types'
 
 export type AppActionOptions = {
@@ -8,26 +6,17 @@ export type AppActionOptions = {
 }
 
 export function useAppActionsDownload() {
-  const { $gettext } = useGettext()
+  function getDownloadVersion({ app, version }: AppActionOptions) {
+    return version || app.mostRecentVersion
+  }
 
-  const downloadAppAction: Action<AppActionOptions> = {
-    name: 'download-app',
-    icon: 'download',
-    label: () => {
-      return $gettext('Download')
-    },
-    handler(options?) {
-      const version = options.version || options.app.mostRecentVersion
-      const filename = version.filename || version.url.split('/').pop()
-      triggerDownloadWithFilename(version.url, filename)
-    },
-    isVisible: () => {
-      return true
-    },
-    appearance: 'outline'
+  function getDownloadFilename(options: AppActionOptions) {
+    const { filename, url } = getDownloadVersion(options)
+    return filename || url.split('/').pop()
   }
 
   return {
-    downloadAppAction
+    getDownloadVersion,
+    getDownloadFilename
   }
 }

@@ -14,9 +14,12 @@
         'p-1 text-xs': size === 'small',
         'py-1 px-2 text-sm min-h-6': size === 'medium',
         'py-2 px-4 text-lg min-h-8': size === 'large',
-        // transition for links and buttons
-        'ease-in-out duration-200 transition-colors [&_svg]:ease-in-out [&_svg]:duration-200 [&_svg]:transition-colors':
-          ['link', 'button'].includes(type)
+        // links and buttons react to hover like outline and filled buttons
+        'ease-in-out duration-200 transition-[color,background-color,filter] [&_svg]:ease-in-out [&_svg]:duration-200 [&_svg]:transition-colors':
+          isInteractive,
+        'hover:bg-role-surface-container hover:text-role-on-surface':
+          isInteractive && appearance === 'outline',
+        'hover:brightness-85': isInteractive && appearance === 'filled'
       }
     ]"
     :to="to"
@@ -88,6 +91,8 @@ const {
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
+
+const isInteractive = computed(() => type !== 'span')
 
 const appearanceClasses = computed(() => {
   const classes: string[] = []

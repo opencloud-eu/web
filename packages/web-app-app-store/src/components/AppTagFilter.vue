@@ -9,7 +9,8 @@
       :aria-pressed="!activeTag"
       @click="emit('select', '')"
     >
-      {{ $gettext('All') }} ({{ apps.length }})
+      {{ $gettext('All') }}
+      <app-tag-count :count="apps.length" :active="!activeTag" />
     </oc-tag>
     <oc-tag
       v-for="tag in visibleTags"
@@ -22,7 +23,8 @@
       :aria-pressed="isActive(tag.name)"
       @click="toggleTag(tag.name)"
     >
-      {{ tag.name }} ({{ tag.count }})
+      {{ tag.name }}
+      <app-tag-count :count="tag.count" :active="isActive(tag.name)" />
     </oc-tag>
     <template v-if="hiddenTags.length">
       <oc-tag
@@ -33,7 +35,11 @@
         class="whitespace-nowrap cursor-pointer"
         :appearance="hiddenTags.some((tag) => isActive(tag.name)) ? 'filled' : 'outline'"
       >
-        {{ $gettext('Additional tags') }} ({{ hiddenTags.length }})
+        {{ $gettext('Additional tags') }}
+        <app-tag-count
+          :count="hiddenTags.length"
+          :active="hiddenTags.some((tag) => isActive(tag.name))"
+        />
         <oc-icon name="arrow-down-s" size-class="size-4" />
       </oc-tag>
       <oc-drop
@@ -55,7 +61,8 @@
             :aria-pressed="isActive(tag.name)"
             @click="toggleTag(tag.name)"
           >
-            {{ tag.name }} ({{ tag.count }})
+            {{ tag.name }}
+            <app-tag-count :count="tag.count" :active="isActive(tag.name)" />
           </oc-tag>
         </div>
       </oc-drop>
@@ -76,6 +83,7 @@ import {
 } from 'vue'
 import { uniqueId } from 'lodash-es'
 import { App } from '../types'
+import AppTagCount from './AppTagCount.vue'
 
 const MAX_ROWS = 1
 
@@ -92,19 +100,26 @@ const container = useTemplateRef<HTMLElement>('container')
 const toggleId = uniqueId('app-tag-filter-more-')
 
 const tags = computed(() => {
-  const counts = new Map<string, number>()
+  const counts = new Map<string, { name: string; count: number }>()
   for (const app of apps) {
-    for (const tag of new Set(app.tags)) {
-      counts.set(tag, (counts.get(tag) || 0) + 1)
+    const countedTags = new Set<string>()
+    for (const tag of app.tags) {
+      const key = tag.toLowerCase()
+      if (countedTags.has(key)) {
+        continue
+      }
+      countedTags.add(key)
+      const existing = counts.get(key)
+      counts.set(key, { name: existing?.name ?? tag, count: (existing?.count ?? 0) + 1 })
     }
   }
   // keep the active tag selectable even if the search term excludes all of its apps
-  if (activeTag && ![...counts.keys()].some(isActive)) {
-    counts.set(activeTag, 0)
+  if (activeTag && !counts.has(activeTag.toLowerCase())) {
+    counts.set(activeTag.toLowerCase(), { name: activeTag, count: 0 })
   }
-  return [...counts.entries()]
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count || a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
+  return [...counts.values()].sort(
+    (a, b) => b.count - a.count || a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  )
 })
 
 const visibleCount = ref<number>(Infinity)

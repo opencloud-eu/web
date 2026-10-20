@@ -1,7 +1,7 @@
 <template>
   <oc-card
     tag="li"
-    class="app-tile relative bg-role-surface-container flex flex-col border overflow-hidden shadow-none"
+    class="app-tile relative bg-role-surface-container hover:bg-role-surface-container-highest flex flex-col border overflow-hidden shadow-none"
     header-class="p-0"
     body-class="grow flex flex-col"
   >
