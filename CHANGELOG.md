@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keyboard focus and space handling from accessibility audit [[#3824](https://github.com/opencloud-eu/web/pull/3824)]
 - fix: re-root unlocked vault engines when a vault or its parent folder is renamed [[#3964](https://github.com/opencloud-eu/web/pull/3964)]
 - fix: keep filter values from the URL that no longer exist [[#3951](https://github.com/opencloud-eu/web/pull/3951)]
 - fix: show a not found message for links to inaccessible project spaces [[#3953](https://github.com/opencloud-eu/web/pull/3953)]
