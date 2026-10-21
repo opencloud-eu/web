@@ -10,7 +10,7 @@ import { IncomingShareResource } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ShareTypes } from '@opencloud-eu/web-client'
 import { useSortMock } from '../../../mocks/useSortMock'
-import { AppBar, ResourceTable, useResourcesStore } from '@opencloud-eu/web-pkg'
+import { AppBar, ResourceTable, useResourcesStore, useRouteQuery } from '@opencloud-eu/web-pkg'
 
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -105,6 +105,13 @@ describe('SharedWithOthers view', () => {
           })
         )
         const { wrapper } = getMountedWrapper({ files })
+        expect(wrapper.find('.share-type-filter').exists()).toBeTruthy()
+      })
+      it('shows filter if only one share type is present but another one is selected via query', () => {
+        vi.mocked(useRouteQuery).mockReturnValueOnce(ref('group'))
+        const { wrapper } = getMountedWrapper({
+          files: [mock<IncomingShareResource>({ shareTypes: [ShareTypes.user.value] })]
+        })
         expect(wrapper.find('.share-type-filter').exists()).toBeTruthy()
       })
     })

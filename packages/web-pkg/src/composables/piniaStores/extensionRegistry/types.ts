@@ -105,7 +105,7 @@ export interface AppMenuItemExtension extends Extension {
  *
  * Its `encryptPath`/`decryptPath` operate on paths RELATIVE to the vault root
  * (e.g. `"sub/x"`); the engine never deals with the vault root in a path. The
- * vault root lives only on the `vaultRoot` field (identity), and the full-path
+ * vault root lives only on the `vaultRoot` field, and the full-path
  * conversion is done once, generically, by `encryptVaultPath`/`decryptVaultPath`
  * (web-pkg helpers) - so callers with FULL clear-text paths use those, not the
  * engine's relative methods directly.
@@ -121,7 +121,14 @@ export interface AppMenuItemExtension extends Extension {
  * depend on where the name sits.
  */
 export interface VaultEngine {
-  /** Where this vault is rooted, for identity only (e.g. `/myvault.vault`, or `/` for a vault space or a share-rooted vault). */
+  /**
+   * Where this vault is rooted (e.g. `/myvault.vault`, or `/` for a vault space or a share-rooted vault).
+   * `encryptVaultPath`/`decryptVaultPath` map full paths against it.
+   *
+   * Must be a plain, writable property (no getter, not readonly or frozen): when the vault or one of its
+   * parent folders gets renamed, the vault store re-roots it in place, so the engine keeps its key material
+   * and the vault stays unlocked.
+   */
   vaultRoot: string
   /** Encrypt a vault-root-RELATIVE clear-text path, e.g. `"sub/x"` or a bare name `"q1.txt"`. Full paths: use `encryptVaultPath`. */
   encryptPath: (relativePath: string) => Promise<string>

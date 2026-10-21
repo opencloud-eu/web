@@ -9,7 +9,7 @@ import {
   shallowMount,
   useAppDefaultsMock
 } from '@opencloud-eu/web-test-helpers'
-import { Action, ClientService, SideBarPanel, useMessages } from '@opencloud-eu/web-pkg'
+import { Action, ClientService, SideBarPanel, eventBus, useMessages } from '@opencloud-eu/web-pkg'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { flushPromises } from '@vue/test-utils'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
@@ -93,6 +93,10 @@ const selectors = {
 }
 
 describe('Users view', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   describe('list view', () => {
     it('renders the loaded users initially', async () => {
       const clientService = getClientService()
@@ -119,6 +123,22 @@ describe('Users view', () => {
       expect(clientService.graphAuthenticated.users.listUsers).not.toHaveBeenCalled()
       expect(wrapper.find('.users-table').exists()).toBeFalsy()
       expect(wrapper.find('no-content-message-stub').exists()).toBeTruthy()
+    })
+    it('shows an error and an empty list if loading the users fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const subscribeSpy = vi.spyOn(eventBus, 'subscribe')
+      const clientService = getClientService()
+      clientService.graphAuthenticated.users.listUsers.mockRejectedValueOnce(new Error('failed'))
+      const { wrapper } = getMountedWrapper({ mountType: mount, clientService })
+      await flushPromises()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to load users' })
+      )
+      expect(wrapper.find('no-content-message-stub').exists()).toBeTruthy()
+      expect(subscribeSpy).toHaveBeenCalledWith(
+        'app.admin-settings.users.user.quota.updated',
+        expect.any(Function)
+      )
     })
   })
 
@@ -360,6 +380,42 @@ describe('Users view', () => {
           expect.anything()
         )
       })
+      it.each([
+        { description: 'other groups exist', groups: [{ id: '1', displayName: 'Group 1' }] },
+        { description: 'it was the last group', groups: [] }
+      ])(
+        'shows a group id from the query param that does not exist anymore as removable filter if $description',
+        async ({ groups }) => {
+          vi.spyOn(console, 'error').mockImplementation(() => undefined)
+          const clientService = getClientService()
+          clientService.graphAuthenticated.groups.listGroups.mockResolvedValue(
+            groups.map((g) => mock<Group>(g))
+          )
+          // the server responds with 404 for a filter with an unknown group
+          clientService.graphAuthenticated.users.listUsers.mockRejectedValueOnce(new Error('404'))
+          const { wrapper } = getMountedWrapper({
+            mountType: mount,
+            clientService,
+            groupFilterQuery: 'deleted-group',
+            stubs: { ItemFilter: false, OcButton: false }
+          })
+          // the id must not be shown as unknown before the groups have been loaded
+          expect(wrapper.text()).not.toContain('deleted-group')
+          await flushPromises()
+          expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+            expect.objectContaining({ title: 'Failed to load users' })
+          )
+          const groupFilter = wrapper.find('.item-filter-groups')
+          expect(groupFilter.find('.oc-filter-chip').text()).toContain('deleted-group')
+
+          await groupFilter.find('.oc-filter-chip-clear').trigger('click')
+          await flushPromises()
+          expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenLastCalledWith(
+            { orderBy: ['displayName'], filter: '', expand: ['appRoleAssignments'] },
+            expect.anything()
+          )
+        }
+      )
     })
     describe('roles', () => {
       it('does filter users by roles when the "selectionChange"-event is triggered', async () => {
@@ -495,7 +551,8 @@ function getMountedWrapper({
   options = {},
   users = [],
   selectedUsers = [],
-  stubActions = true
+  stubActions = true,
+  stubs = {}
 }: {
   mountType?: typeof shallowMount | typeof mount
   clientService?: ReturnType<typeof mockDeep<ClientService>>
@@ -506,6 +563,7 @@ function getMountedWrapper({
   users?: User[]
   selectedUsers?: User[]
   stubActions?: boolean
+  stubs?: Record<string, boolean>
 } = {}) {
   const query: Record<string, string> = reactive({
     ...(displayNameFilterQuery && { q_displayName: displayNameFilterQuery }),
@@ -544,7 +602,8 @@ function getMountedWrapper({
           NoContentMessage: true,
           ItemFilter: true,
           BatchActions: true,
-          OcButton: true
+          OcButton: true,
+          ...stubs
         }
       }
     })
