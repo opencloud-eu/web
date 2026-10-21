@@ -117,8 +117,8 @@ describe('renewGuestLink', () => {
     expect(wrapper.find(selectors.pinInput).exists()).toBeFalsy()
   })
 
-  it('points to the most recent email for tokenInvalid', async () => {
-    const { wrapper } = getWrapper({ renewError: guestLinkError('tokenInvalid') })
+  it('points to the most recent email for an error without a specific message', async () => {
+    const { wrapper } = getWrapper({ renewError: guestLinkError('invalidRequest') })
     await flushPromises()
 
     expect(wrapper.find(selectors.errorMessage).text()).toEqual(

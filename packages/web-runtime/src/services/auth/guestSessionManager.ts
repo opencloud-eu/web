@@ -19,7 +19,7 @@ export interface GuestLinkRenewal {
   withPin: boolean
 }
 
-interface StoredGuestLinkRenewal extends GuestLinkRenewal {
+interface StoredGuestLinkRenewal {
   permissionId: string
   renewedAt: number
 }
@@ -198,7 +198,7 @@ export class GuestSessionManager {
     })
     // without a PIN the backend might not have sent anything, so a later renewal must still ask it
     if (withPin) {
-      const renewal: StoredGuestLinkRenewal = { permissionId, renewedAt: Date.now(), withPin }
+      const renewal: StoredGuestLinkRenewal = { permissionId, renewedAt: Date.now() }
       localStorage.setItem(renewalStorageKey, JSON.stringify(renewal))
     }
     return { withPin }
@@ -210,10 +210,8 @@ export class GuestSessionManager {
   public getPendingRenewal(permissionId: string): GuestLinkRenewal | undefined {
     try {
       const renewal: StoredGuestLinkRenewal = JSON.parse(localStorage.getItem(renewalStorageKey))
-      // renewals without a PIN might be stored by older builds
       if (
         renewal?.permissionId !== permissionId ||
-        renewal.withPin !== true ||
         Date.now() - renewal.renewedAt >= renewalLifetime
       ) {
         return undefined

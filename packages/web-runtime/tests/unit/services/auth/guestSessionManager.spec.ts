@@ -284,16 +284,6 @@ describe('GuestSessionManager', () => {
       expect(manager.getPendingRenewal('other-permission-id')).toBeUndefined()
     })
 
-    it('ignores a stored renewal without pin', () => {
-      const { manager } = getManager()
-      localStorage.setItem(
-        'oc.guestLinkRenewal',
-        JSON.stringify({ permissionId: 'permission-id', renewedAt: Date.now() })
-      )
-
-      expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
-    })
-
     it('returns nothing without a renewal', () => {
       const { manager } = getManager()
       expect(manager.getPendingRenewal('permission-id')).toBeUndefined()

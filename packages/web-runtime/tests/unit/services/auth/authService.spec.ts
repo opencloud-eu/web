@@ -414,11 +414,7 @@ describe('AuthService', () => {
       expect(removeUser).toHaveBeenCalledWith('authError')
     })
 
-    const storedRenewal = JSON.stringify({
-      permissionId: 'permission-id',
-      renewedAt: Date.now(),
-      withPin: false
-    })
+    const storedRenewal = JSON.stringify({ permissionId: 'permission-id', renewedAt: Date.now() })
     const guestLinkRoute = {
       name: 'files-guest-link',
       fullPath: '/files/guest/share/folder',
@@ -811,8 +807,7 @@ describe('AuthService', () => {
       async (authContext) => {
         const storedRenewal = JSON.stringify({
           permissionId: 'permission-id',
-          renewedAt: Date.now(),
-          withPin: false
+          renewedAt: Date.now()
         })
         localStorage.setItem('oc.guestPermissionId', 'permission-id')
         localStorage.setItem('oc.guestLinkRenewal', storedRenewal)
@@ -851,7 +846,7 @@ describe('AuthService', () => {
       localStorage.setItem('oc.guestPermissionId', 'permission-id')
       localStorage.setItem(
         'oc.guestLinkRenewal',
-        JSON.stringify({ permissionId: 'permission-id', renewedAt: Date.now(), withPin: false })
+        JSON.stringify({ permissionId: 'permission-id', renewedAt: Date.now() })
       )
       const { clientService, listSharedWithMe } = getClientService([
         {
@@ -1076,10 +1071,10 @@ describe('AuthService', () => {
         expect(authService.consumeUnavailableGuestPermissionId()).toBeUndefined()
       })
 
-      it('does not restore with only a link token of an expired session', async () => {
+      it('does not restore with only a pending renewal of an expired session', async () => {
         localStorage.setItem(
-          'oc.guestLinkToken',
-          JSON.stringify({ permissionId: 'permission-id', token: 'magic-token' })
+          'oc.guestLinkRenewal',
+          JSON.stringify({ permissionId: 'permission-id', renewedAt: Date.now() })
         )
         const { clientService, listSharedWithMe } = getClientService(sharedDriveItems)
 
