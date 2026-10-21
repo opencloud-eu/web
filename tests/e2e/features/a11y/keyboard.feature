@@ -64,8 +64,6 @@ Feature: Keyboard accessibility
     And "Alice" logs out
 
 
-  # @issue-3795 #13
-  @skip
   Scenario: mobile navigation drawer traps the focus and closes with escape
     When "Alice" switches to the "mobile" viewport
     And "Alice" clicks the element "#mobile-nav-button"
