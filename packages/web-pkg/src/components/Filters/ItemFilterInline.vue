@@ -47,7 +47,7 @@ const currentRouteQuery = useRouteQuery(queryParam)
 const setRouteQuery = (optionName: string) => {
   return router.push({
     query: {
-      ...omit(unref(currentRoute).query, [queryParam]),
+      ...omit(unref(currentRoute).query, [queryParam, 'page']),
       [queryParam]: optionName
     }
   })

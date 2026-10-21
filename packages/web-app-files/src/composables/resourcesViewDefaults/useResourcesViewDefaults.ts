@@ -32,9 +32,13 @@ import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { ScrollToResult, useScrollTo } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
-interface ResourcesViewDefaultsOptions<T, U extends any[]> {
+interface ResourcesViewDefaultsOptions<T, U extends any[], R extends Resource = Resource> {
   folderViewExtensionPoint: ExtensionPoint<FolderViewExtension>
   loadResourcesTask?: Task<T, U>
+  /**
+   * Narrows down the resources (e.g. via search or filters) before they get sorted and paginated.
+   */
+  filterResources?: (resources: R[]) => R[]
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
@@ -44,6 +48,7 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   areResourcesLoading: ReadOnlyRef<boolean>
   storeItems: ReadOnlyRef<T[]>
   sortFields: ReadOnlyRef<SortField[]>
+  sortedResources: Ref<T[]>
   paginatedResources: Ref<T[]>
   paginationPages: ReadOnlyRef<number>
   paginationPage: ReadOnlyRef<number>
@@ -61,7 +66,7 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   ScrollToResult
 
 export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[]>(
-  options: ResourcesViewDefaultsOptions<TT, TU>
+  options: ResourcesViewDefaultsOptions<TT, TU, T>
 ): ResourcesViewDefaultsResult<T, TT, TU> => {
   const loadResourcesTask = options.loadResourcesTask || folderService.getTask()
   const areResourcesLoading = computed(() => {
@@ -106,8 +111,15 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     return determineResourceTableSortFields(unref(storeItems)[0])
   })
 
+  const filteredItems = computed(() => {
+    if (!options.filterResources) {
+      return unref(storeItems)
+    }
+    return options.filterResources(unref(storeItems))
+  })
+
   const { sortBy, sortDir, items, handleSort } = useSort<T>({
-    items: storeItems,
+    items: filteredItems,
     fields: sortFields,
     foldersFirst: computed(() => resourcesStore.areFoldersSortedFirst)
   })
@@ -174,6 +186,7 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     areResourcesLoading,
     storeItems,
     sortFields,
+    sortedResources: items,
     viewMode,
     viewSize,
     viewModes,
