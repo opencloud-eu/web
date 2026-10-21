@@ -1,13 +1,14 @@
 <template>
   <div class="no-content-message flex flex-col justify-center items-center text-center">
     <component
-      :is="imgSrc?.toLowerCase().endsWith('.svg') ? InlineSvg : 'oc-image'"
+      :is="isSvg ? InlineSvg : 'oc-image'"
       v-if="imgSrc"
       :src="imgSrcWithVersion"
       class="mb-4 no-content-message-image"
       width="120"
       height="120"
-      :alt="$gettext('No content image')"
+      :alt="isSvg ? undefined : ''"
+      aria-hidden="true"
     />
     <oc-icon
       v-if="icon"
@@ -43,6 +44,8 @@ const {
   iconFillType?: FillType
   imgSrc?: string
 }>()
+
+const isSvg = computed(() => imgSrc?.toLowerCase().endsWith('.svg'))
 
 const imgSrcWithVersion = computed(() => {
   if (!imgSrc) {
