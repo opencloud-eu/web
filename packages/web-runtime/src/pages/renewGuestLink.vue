@@ -147,7 +147,10 @@ const errorMessage = computed(() => {
   if (unref(isRateLimited)) {
     if (unref(renewRetryAt)) {
       return $gettext('Too many new invitations were requested. Please try again %{time}.', {
-        time: formatRelativeDateFromJSDate(unref(renewRetryAt), currentLanguage)
+        // round up, an early retry would be rejected again
+        time: formatRelativeDateFromJSDate(unref(renewRetryAt), currentLanguage, {
+          rounding: 'ceil'
+        })
       })
     }
     return $gettext('Too many new invitations were requested. Please try again later.')
@@ -272,7 +275,7 @@ async function resumeSession() {
     await resumeSessionTask.perform()
   } catch (error) {
     // opening the session unmounts this page, which cancels the task
-    if (resumeSessionTask.last?.isCanceled) {
+    if (error === 'cancel') {
       return
     }
     if (isGuestSessionInvalidError(error)) {

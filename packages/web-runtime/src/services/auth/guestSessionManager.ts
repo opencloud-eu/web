@@ -210,13 +210,15 @@ export class GuestSessionManager {
   public getPendingRenewal(permissionId: string): GuestLinkRenewal | undefined {
     try {
       const renewal: StoredGuestLinkRenewal = JSON.parse(localStorage.getItem(renewalStorageKey))
+      // renewals without a PIN might be stored by older builds
       if (
         renewal?.permissionId !== permissionId ||
+        renewal.withPin !== true ||
         Date.now() - renewal.renewedAt >= renewalLifetime
       ) {
         return undefined
       }
-      return { withPin: !!renewal.withPin }
+      return { withPin: true }
     } catch {
       return undefined
     }

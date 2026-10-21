@@ -284,6 +284,16 @@ describe('GuestSessionManager', () => {
       expect(manager.getPendingRenewal('other-permission-id')).toBeUndefined()
     })
 
+    it('ignores a stored renewal without pin', () => {
+      const { manager } = getManager()
+      localStorage.setItem(
+        'oc.guestLinkRenewal',
+        JSON.stringify({ permissionId: 'permission-id', renewedAt: Date.now() })
+      )
+
+      expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
+    })
+
     it('returns nothing without a renewal', () => {
       const { manager } = getManager()
       expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
@@ -294,6 +304,7 @@ describe('GuestSessionManager', () => {
       const { manager } = getManager()
       await manager.redeem('magic-token')
       await manager.renew('permission-id')
+      expect(manager.getPendingRenewal('permission-id')).toEqual({ withPin: true })
 
       vi.advanceTimersByTime(30 * 60 * 1000)
 
@@ -311,6 +322,7 @@ describe('GuestSessionManager', () => {
       const { manager } = getManager()
       await manager.redeem('magic-token')
       await manager.renew('permission-id')
+      expect(manager.getPendingRenewal('permission-id')).toEqual({ withPin: true })
 
       await action(manager)
 

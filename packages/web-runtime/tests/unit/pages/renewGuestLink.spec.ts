@@ -5,6 +5,7 @@ import { enableAutoUnmount, flushPromises } from '@vue/test-utils'
 import { useRouteParam, useRouteQuery } from '@opencloud-eu/web-pkg'
 import { ShareSpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationResolved } from 'vue-router'
+import { Settings } from 'luxon'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import RenewGuestLink from '../../../src/pages/renewGuestLink.vue'
 import { authService } from '../../../src/services/auth'
@@ -41,6 +42,11 @@ const selectors = {
 const guestRedirectUrl = '/files/guest/share/folder/sub?permissionId=permission-id'
 
 enableAutoUnmount(afterEach)
+
+const defaultNow = Settings.now
+afterEach(() => {
+  Settings.now = defaultNow
+})
 
 describe('renewGuestLink', () => {
   it('shows a spinner while renewing', () => {
@@ -136,14 +142,14 @@ describe('renewGuestLink', () => {
   })
 
   it('tells how long to wait when too many renewals were requested', async () => {
-    vi.useFakeTimers({ toFake: ['Date'] })
+    // time passes between receiving the error and rendering the wait time
+    Settings.now = () => Date.now() + 1000
     const { wrapper } = getWrapper({ renewError: guestLinkError('tooManyRequests', 300) })
     await flushPromises()
 
     expect(wrapper.find(selectors.errorMessage).text()).toEqual(
       'Too many new invitations were requested. Please try again in 5 minutes.'
     )
-    vi.useRealTimers()
   })
 
   it('renews again on retry after too many renewals were requested', async () => {
@@ -245,6 +251,7 @@ describe('renewGuestLink', () => {
     ],
     ['tooManyRequests', 'Too many attempts. Please try again later.'],
     ['shareExpired', 'Your access to the shared item has expired.'],
+    ['tokenNotFound', 'The shared item is no longer available.'],
     ['internalError', 'The PIN could not be verified. Please try again later.']
   ])('shows an error for %s', async (errorType, message) => {
     const { wrapper, mocks } = getWrapper({ pinError: guestLinkError(errorType) })
@@ -358,6 +365,20 @@ describe('renewGuestLink', () => {
         query: { shareId: 'share-id', permissionId: 'permission-id' }
       })
     )
+  })
+
+  it('does not log an error once opening the shared item unmounts the page', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const { wrapper, mocks } = getWrapper({ hasGuestSession: true })
+    mocks.$router.replace.mockImplementation(() => {
+      wrapper.unmount()
+      return Promise.resolve(undefined)
+    })
+    await flushPromises()
+
+    expect(mocks.$router.replace).toHaveBeenCalled()
+    expect(consoleError).not.toHaveBeenCalled()
+    consoleError.mockRestore()
   })
 
   it('opens the redirect url after resuming the session', async () => {

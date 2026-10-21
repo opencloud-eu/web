@@ -97,7 +97,8 @@ describe('resolveGuestLink', () => {
 
   it.each([
     ['shareExpired', 'Your access to the shared item has expired.'],
-    ['shareNotFound', 'The shared item is no longer available.']
+    ['shareNotFound', 'The shared item is no longer available.'],
+    ['tokenNotFound', 'The shared item is no longer available.']
   ])('shows a specific error for %s', async (errorType, message) => {
     const { wrapper, mocks } = getWrapper({ redeemError: guestLinkError(errorType) })
     await flushPromises()
@@ -108,7 +109,7 @@ describe('resolveGuestLink', () => {
     expect(mocks.$router.replace).not.toHaveBeenCalled()
   })
 
-  it.each(['tokenInvalid', 'tokenNotFound', 'invalidRequest'])(
+  it.each(['tokenInvalid', 'invalidRequest'])(
     'shows only the generic error for %s',
     async (errorType) => {
       const { wrapper } = getWrapper({ redeemError: guestLinkError(errorType) })
@@ -183,6 +184,20 @@ describe('resolveGuestLink', () => {
     await flushPromises()
 
     expect(JSON.stringify(consoleError.mock.calls)).not.toContain('magic-token')
+    consoleError.mockRestore()
+  })
+
+  it('does not log an error once opening the shared item unmounts the page', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const { wrapper, mocks } = getWrapper()
+    mocks.$router.replace.mockImplementation(() => {
+      wrapper.unmount()
+      return Promise.resolve(undefined)
+    })
+    await flushPromises()
+
+    expect(mocks.$router.replace).toHaveBeenCalled()
+    expect(consoleError).not.toHaveBeenCalled()
     consoleError.mockRestore()
   })
 
