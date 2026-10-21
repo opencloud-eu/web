@@ -18,7 +18,8 @@ import { APPID } from '../../../src/appid'
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useRouteParam: vi.fn(),
-  useRouter: vi.fn()
+  useRouter: vi.fn(),
+  TextEditorViewer: { name: 'TextEditorViewer', template: '<div />' }
 }))
 
 const app: App = {
@@ -63,6 +64,12 @@ describe('AppDetails', () => {
   it('falls back to the subtitle if the app has no description', () => {
     const { wrapper } = getWrapper(app)
     expect(wrapper.find(selectors.description).text()).toContain('An example app')
+  })
+  it('gives the description viewer an accessible name', () => {
+    const { wrapper } = getWrapper({ ...app, description: '# Example' })
+    expect(wrapper.findComponent({ name: 'TextEditorViewer' }).attributes('aria-label')).toBe(
+      'App description'
+    )
   })
   describe('back link', () => {
     it('returns to the previous list including its filters', () => {

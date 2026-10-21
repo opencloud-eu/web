@@ -31,6 +31,7 @@
                 v-if="app.description"
                 class="max-w-[70ch]"
                 :content="app.description"
+                :aria-label="$gettext('App description')"
               />
               <p v-else class="my-0 max-w-[70ch]" v-text="app.subtitle" />
             </section>
