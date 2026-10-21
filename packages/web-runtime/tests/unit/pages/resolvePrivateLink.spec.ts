@@ -146,12 +146,23 @@ describe('resolvePrivateLink', () => {
         expect(wrapper.find(selectors.errorMessage).exists()).toBeTruthy()
 
         await wrapper.find(selectors.loginButton).trigger('click')
-        expect(mocks.$router.push).toHaveBeenCalledWith({
+        expect(mocks.$router.replace).toHaveBeenCalledWith({
           path: '/login',
           query: { redirectUrl: '/f/1' }
         })
       }
     )
+    it('links the login action to "loginUrl" if set in config', async () => {
+      const { wrapper } = getWrapper({
+        isGuest: true,
+        resolveError: new HttpError('denied', undefined, 403),
+        loginUrl: 'https://myidp.int/login'
+      })
+      await flushPromises()
+      const loginUrl = new URL(wrapper.find(selectors.loginButton).attributes('href'))
+      expect(loginUrl.origin + loginUrl.pathname).toEqual('https://myidp.int/login')
+      expect(loginUrl.searchParams.get('redirectUrl')).toEqual('/f/1')
+    })
     it.each([new HttpError('server error', undefined, 500), new Error('network error')])(
       'shows an error message without a login action for other errors',
       async (resolveError) => {
@@ -198,7 +209,8 @@ function getWrapper({
   hiddenShare = false,
   openWithDefaultAppQuery = 'true',
   isGuest = false,
-  resolveError = undefined
+  resolveError = undefined,
+  loginUrl = ''
 }: {
   space?: SpaceResource
   resource?: Resource
@@ -209,6 +221,7 @@ function getWrapper({
   openWithDefaultAppQuery?: string
   isGuest?: boolean
   resolveError?: Error
+  loginUrl?: string
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementation((str) => {
     if (str === 'fileId') {
@@ -246,7 +259,12 @@ function getWrapper({
     wrapper: shallowMount(resolvePrivateLink, {
       global: {
         plugins: [
-          ...defaultPlugins({ piniaOptions: { authState: { guestContextReady: isGuest } } })
+          ...defaultPlugins({
+            piniaOptions: {
+              authState: { guestContextReady: isGuest },
+              configState: { options: { loginUrl } }
+            }
+          })
         ],
         mocks,
         provide: mocks,

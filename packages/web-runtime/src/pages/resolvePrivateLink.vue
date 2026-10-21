@@ -16,7 +16,7 @@
         size="large"
         class="w-full p-2"
         data-testid="login-button"
-        @click="login"
+        v-bind="loginButtonAttrs"
       >
         <span v-text="$gettext('Log in')" />
       </oc-button>
@@ -37,6 +37,7 @@ import {
   useGetResourceContext,
   useLinkTargetRoute,
   useAuthStore,
+  useConfigStore,
   AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
 import { unref, computed, onMounted } from 'vue'
@@ -60,6 +61,7 @@ const { $gettext } = useGettext()
 const clientService = useClientService()
 const spacesStore = useSpacesStore()
 const authStore = useAuthStore()
+const configStore = useConfigStore()
 
 const { getLinkTargetRoute } = useLinkTargetRoute()
 const { getResourceContext } = useGetResourceContext()
@@ -119,12 +121,16 @@ const showLoginAction = computed(() => {
   )
 })
 
-function login() {
-  return router.push({
-    path: '/login',
-    query: { redirectUrl: unref(router.currentRoute).fullPath }
-  })
-}
+const loginButtonAttrs = computed(() => {
+  const redirectUrl = unref(router.currentRoute).fullPath
+  if (configStore.options.loginUrl) {
+    const loginUrl = new URL(encodeURI(configStore.options.loginUrl))
+    loginUrl.searchParams.append('redirectUrl', redirectUrl)
+    return { type: 'a' as const, href: loginUrl.toString() }
+  }
+  // the login page redirects to the IdP right away, so keep it out of the history
+  return { onClick: () => router.replace({ path: '/login', query: { redirectUrl } }) }
+})
 
 const getTargetRoute = async ({
   resource,

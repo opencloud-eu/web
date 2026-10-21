@@ -1,10 +1,17 @@
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { Resource, ShareSpaceResource } from '@opencloud-eu/web-client'
+import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { useGetResourceContext } from '../../../../src/composables/resources'
 import { useSpacesStore } from '../../../../src/composables/piniaStores'
 
 const guestSpace = mock<ShareSpaceResource>({ id: 'share-id', driveType: 'share' })
+const otherSpace = mock<ShareSpaceResource>({ id: 'other-share-id', driveType: 'share' })
+
+const driveItems = [
+  mock<DriveItem>({ name: 'Invited folder', remoteItem: { id: 'share-id' } }),
+  mock<DriveItem>({ name: 'Other folder', remoteItem: { id: 'other-share-id' } })
+]
 
 const buildResource = (attrs: Partial<Resource>) => mock<Resource>({ ...attrs })
 
@@ -39,7 +46,41 @@ describe('useGetResourceContext', () => {
       expect(loadMountPoints).not.toHaveBeenCalled()
     })
 
-    it('fails for resources outside of the guest share', async () => {
+    it('resolves resources in other shares of the guest', async () => {
+      const resource = buildResource({
+        id: 'file-id',
+        name: 'file.txt',
+        parentFolderId: 'other-share-id'
+      })
+      const { getResourceContext } = getWrapper({
+        resources: [resource, buildResource({ id: 'other-share-id', name: 'Other folder' })]
+      })
+
+      const context = await getResourceContext('file-id')
+
+      expect(context).toEqual({ space: otherSpace, resource, path: '/file.txt' })
+    })
+
+    it('creates the share space if it is not loaded', async () => {
+      const resource = buildResource({ id: 'file-id', name: 'file.txt', parentFolderId: 'new-id' })
+      const newSpace = mock<ShareSpaceResource>({ id: 'new-id' })
+      const { getResourceContext, createShareSpace } = getWrapper({
+        resources: [resource, buildResource({ id: 'new-id', name: 'New folder' })],
+        driveItems: [mock<DriveItem>({ name: 'New folder', remoteItem: { id: 'new-id' } })]
+      })
+      createShareSpace.mockReturnValue(newSpace)
+
+      const context = await getResourceContext('file-id')
+
+      expect(context).toEqual({ space: newSpace, resource, path: '/file.txt' })
+      expect(createShareSpace).toHaveBeenCalledWith({
+        driveAliasPrefix: 'share',
+        id: 'new-id',
+        shareName: 'New folder'
+      })
+    })
+
+    it('fails for resources outside of the guest shares', async () => {
       const { getResourceContext } = getWrapper({
         resources: [
           buildResource({ id: 'file-id', name: 'file.txt', parentFolderId: 'other-id' }),
@@ -48,11 +89,11 @@ describe('useGetResourceContext', () => {
       })
 
       await expect(getResourceContext('file-id')).rejects.toThrow(
-        'The resource is not part of the guest share'
+        'The resource is not part of a guest share'
       )
     })
 
-    it('fails for a parent chain that does not reach the guest share', async () => {
+    it('fails for a parent chain that does not reach a guest share', async () => {
       const { getResourceContext } = getWrapper({
         resources: [
           buildResource({ id: 'file-id', name: 'file.txt', parentFolderId: 'other-id' }),
@@ -61,56 +102,51 @@ describe('useGetResourceContext', () => {
       })
 
       await expect(getResourceContext('file-id')).rejects.toThrow(
-        'The resource is not part of the guest share'
+        'The resource is not part of a guest share'
       )
-    })
-
-    it('fails without a request if the guest share space is not loaded', async () => {
-      const { getResourceContext, getFileInfo } = getWrapper({
-        resources: [buildResource({ id: 'file-id', name: 'file.txt' })],
-        guestSpaceId: 'unknown-id'
-      })
-
-      await expect(getResourceContext('file-id')).rejects.toThrow(
-        'The guest share space is not loaded'
-      )
-      expect(getFileInfo).not.toHaveBeenCalled()
     })
   })
 })
 
 function getWrapper({
   resources,
-  guestSpaceId = guestSpace.id
+  driveItems: sharedDriveItems = driveItems
 }: {
   resources: Resource[]
-  guestSpaceId?: string
+  driveItems?: DriveItem[]
 }) {
   const mocks = defaultComponentMocks()
   const getFileInfo = vi.mocked(mocks.$clientService.webdav.getFileInfo)
   getFileInfo.mockImplementation((_space, { fileId }) =>
     Promise.resolve(resources.find(({ id }) => id === fileId))
   )
+  mocks.$clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue(
+    sharedDriveItems
+  )
 
   let getResourceContext: ReturnType<typeof useGetResourceContext>['getResourceContext']
-  let loadMountPoints: ReturnType<typeof useSpacesStore>['loadMountPoints']
+  let spacesStore: ReturnType<typeof useSpacesStore>
   getComposableWrapper(
     () => {
-      const spacesStore = useSpacesStore()
-      vi.mocked(spacesStore.getSpace).mockImplementation((id) =>
-        id === guestSpace.id ? guestSpace : undefined
+      spacesStore = useSpacesStore()
+      vi.mocked(spacesStore.getSpace).mockImplementation(
+        (id) => [guestSpace, otherSpace].find((space) => space.id === id) as ShareSpaceResource
       )
-      loadMountPoints = spacesStore.loadMountPoints
       getResourceContext = useGetResourceContext().getResourceContext
     },
     {
       mocks,
       provide: mocks,
       pluginOptions: {
-        piniaOptions: { authState: { guestContextReady: true, guestSpaceId } }
+        piniaOptions: { authState: { guestContextReady: true } }
       }
     }
   )
 
-  return { getResourceContext, loadMountPoints, getFileInfo }
+  return {
+    getResourceContext,
+    getFileInfo,
+    loadMountPoints: spacesStore.loadMountPoints,
+    createShareSpace: vi.mocked(spacesStore.createShareSpace)
+  }
 }
