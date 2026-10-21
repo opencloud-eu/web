@@ -18,10 +18,10 @@ import type { VaultEngine } from './extensionRegistry'
  * Keys are `(spaceId, vaultRootPath)` rather than `(spaceId, vaultId)` by
  * design: the vault root path is the handle every callsite already has (the
  * route guard only has the path on cold reload), so path-based keying keeps
- * resolvers free of an extra path→id lookup. An engine does not depend on the
- * path it's filed under, so a vault root can be renamed without rebuilding it -
- * only this store has to be re-keyed, which `moveEngine` does from the rename
- * handler.
+ * resolvers free of an extra path→id lookup. The key material doesn't depend on
+ * the path, so a renamed vault root needs no re-unlock - but its store key and
+ * the engine's `vaultRoot` (which maps clear-text paths) do, which `moveEngine`
+ * updates from the rename handler.
  */
 export const useVaultStore = defineStore('vault', () => {
   // shallowRef, not ref: only the Map *reference* is reactive (every mutator
@@ -48,17 +48,45 @@ export const useVaultStore = defineStore('vault', () => {
   }
 
   /**
-   * Re-file the engine of a vault whose root was renamed/moved from
-   * `fromVaultRoot` to `toVaultRoot`. No-op when nothing is stored under the
-   * old key, so it is safe to call for every rename. The engine stays valid
-   * under its new key (it doesn't depend on the path it's filed under).
+   * Vault roots of the space's engines that sit at - or below - `path`: "/foo"
+   * covers "/foo" and "/foo/anything", but not "/foobar".
    */
-  const moveEngine = (spaceId: string, fromVaultRoot: string, toVaultRoot: string) => {
-    const fromKey = buildKey(spaceId, fromVaultRoot)
-    if (!unref(engines).has(fromKey)) return
-    const engine = unref(engines).get(fromKey)
-    unref(engines).delete(fromKey)
-    unref(engines).set(buildKey(spaceId, toVaultRoot), engine)
+  const vaultRootsUnder = (spaceId: string, path: string): string[] => {
+    const ownedKeyPrefix = `${spaceId}::`
+    return Array.from(unref(engines).keys())
+      .filter((key) => key.startsWith(ownedKeyPrefix))
+      .map((key) => key.slice(ownedKeyPrefix.length))
+      .filter((vaultRoot) => vaultRoot === path || vaultRoot.startsWith(`${path}/`))
+  }
+
+  /**
+   * Re-file the engines of the vaults at - or below - `fromPath` after it got
+   * renamed to `toPath`: the vault root itself, or a folder holding vaults. Each
+   * engine gets its new key and its `vaultRoot` re-rooted, so paths map to the
+   * new location while the vault stays unlocked. No-op when nothing is stored
+   * there, so it is safe to call for every rename.
+   */
+  const moveEngine = (spaceId: string, fromPath: string, toPath: string) => {
+    const from = fromPath.replace(/\/+$/, '')
+    const to = toPath.replace(/\/+$/, '')
+    // the space root itself can't be renamed
+    if (!from || !to || from === to) {
+      return
+    }
+    const vaultRoots = vaultRootsUnder(spaceId, from)
+    if (!vaultRoots.length) {
+      return
+    }
+    const movedEngines = vaultRoots.map((vaultRoot) => {
+      const engine = unref(engines).get(buildKey(spaceId, vaultRoot))
+      unref(engines).delete(buildKey(spaceId, vaultRoot))
+      // re-root in place: the engine keeps its identity and key material
+      engine.vaultRoot = to + vaultRoot.slice(from.length)
+      return engine
+    })
+    for (const engine of movedEngines) {
+      unref(engines).set(buildKey(spaceId, engine.vaultRoot), engine)
+    }
     engines.value = new Map(unref(engines))
   }
 
@@ -71,22 +99,14 @@ export const useVaultStore = defineStore('vault', () => {
    */
   const clearEnginesUnder = (spaceId: string, pathPrefix: string) => {
     if (!pathPrefix) return
-    // Normalise: treat "/foo" as covering "/foo" and "/foo/anything", but not
-    // "/foobar".
-    const prefix = pathPrefix.replace(/\/+$/, '')
-    const ownedKeyPrefix = `${spaceId}::`
-    let changed = false
-    for (const key of Array.from(unref(engines).keys())) {
-      if (!key.startsWith(ownedKeyPrefix)) continue
-      const vaultRoot = key.slice(ownedKeyPrefix.length)
-      if (vaultRoot === prefix || vaultRoot.startsWith(`${prefix}/`)) {
-        unref(engines).delete(key)
-        changed = true
-      }
+    const vaultRoots = vaultRootsUnder(spaceId, pathPrefix.replace(/\/+$/, ''))
+    if (!vaultRoots.length) {
+      return
     }
-    if (changed) {
-      engines.value = new Map(unref(engines))
+    for (const vaultRoot of vaultRoots) {
+      unref(engines).delete(buildKey(spaceId, vaultRoot))
     }
+    engines.value = new Map(unref(engines))
   }
 
   const isUnlocked = (spaceId: string, vaultRoot: string) => {
