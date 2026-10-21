@@ -58,7 +58,7 @@
     "eslint": "10.13.0",
     "franc-min": "^6.2.0",
     "happy-dom": "21.0.3",
-    "knip": "5.88.1",
+    "knip": "6.42.1",
     "license-checker-rseidelsohn": "4.4.2",
     "node-fetch": "3.3.2",
     "pino": "10.4.0",
