@@ -1,5 +1,6 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { mock } from 'vitest-mock-extended'
+import { computed, unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { useResourcesStore } from '../../../../src/composables/piniaStores/resources'
 import { buildFilePreviewCacheKey, cacheService, eventBus } from '../../../../src/services'
@@ -42,6 +43,50 @@ describe('useResourcesStore', () => {
       expect(cacheService.filePreview.get(buildFilePreviewCacheKey('1'))).toEqual({
         src: 'blob:preview-1'
       })
+    })
+  })
+
+  describe('updateResourceField', () => {
+    it('updates the current folder reactively if the id matches', () => {
+      const store = useResourcesStore()
+      store.setCurrentFolder({ id: '1', starred: false } as Resource)
+      const isStarred = computed(() => store.currentFolder.starred)
+      expect(unref(isStarred)).toBe(false)
+
+      store.updateResourceField({ id: '1', field: 'starred', value: true })
+
+      expect(unref(isStarred)).toBe(true)
+    })
+
+    it('does not update the current folder if the id does not match', () => {
+      const store = useResourcesStore()
+      store.setCurrentFolder({ id: '1', starred: false } as Resource)
+      store.setResources([{ id: '2', starred: false } as Resource])
+
+      store.updateResourceField({ id: '2', field: 'starred', value: true })
+
+      expect(store.currentFolder.starred).toBe(false)
+      expect(store.resources[0].starred).toBe(true)
+    })
+
+    it('updates both the current folder and a resource with the same id', () => {
+      const store = useResourcesStore()
+      store.setCurrentFolder({ id: '1', starred: false } as Resource)
+      store.setResources([{ id: '1', starred: false } as Resource])
+
+      store.updateResourceField({ id: '1', field: 'starred', value: true })
+
+      expect(store.currentFolder.starred).toBe(true)
+      expect(store.resources[0].starred).toBe(true)
+    })
+
+    it('does not update a current folder without id', () => {
+      const store = useResourcesStore()
+      store.setCurrentFolder({ starred: false } as Resource)
+
+      store.updateResourceField({ id: undefined, field: 'starred', value: true })
+
+      expect(store.currentFolder.starred).toBe(false)
     })
   })
 

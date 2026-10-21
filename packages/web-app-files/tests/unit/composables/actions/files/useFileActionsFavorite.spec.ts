@@ -1,6 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { useResourcesStore } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   getComposableWrapper,
@@ -128,6 +129,26 @@ describe('favorite', () => {
         })
       })
     })
+    describe('handler', () => {
+      it('updates the label when adding the current folder to the favorites', async () => {
+        let instance: ReturnType<typeof useFileActionsFavorite>
+        getWrapper({
+          currentFolder: getResource({ id: 'cf-1', type: 'folder', starred: false }),
+          setup: (i) => {
+            instance = i
+          }
+        })
+
+        const space = mock<SpaceResource>({ driveType: 'personal' })
+        const { currentFolder } = useResourcesStore()
+        const resources = [currentFolder]
+        expect(unref(instance.actions)[0].label({ space, resources })).toBe('Add to favorites')
+
+        await unref(instance.actions)[0].handler({ space, resources })
+
+        expect(unref(instance.actions)[0].label({ space, resources })).toBe('Remove from favorites')
+      })
+    })
   })
 })
 
@@ -159,7 +180,7 @@ function getWrapper({
         provide: mocks,
         pluginOptions: {
           abilities: [{ action: 'create', subject: 'Favorite' }],
-          piniaOptions: { resourcesStore: { currentFolder } }
+          piniaOptions: { stubActions: false, resourcesStore: { currentFolder } }
         }
       }
     )
