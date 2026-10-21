@@ -55,7 +55,7 @@
     </oc-button>
   </div>
   <teleport v-if="showPasswordPolicyInformation" defer :to="`#${teleportId}`">
-    <div :id="passwordPolicyId" class="flex flex-row flex-wrap text-sm pt-2 gap-x-2">
+    <div class="flex flex-row flex-wrap text-sm pt-2 gap-x-2">
       <div
         v-for="(testedRule, index) in testedPasswordPolicy.rules"
         :key="index"
@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, useAttrs, useId, useTemplateRef, watch } from 'vue'
+import { computed, HTMLAttributes, ref, unref, useAttrs, useTemplateRef, watch } from 'vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcButton from '../OcButton/OcButton.vue'
 import { useGettext } from 'vue3-gettext'
@@ -136,17 +136,17 @@ const testedPasswordPolicy = computed(() => {
 
 // attrs are not reactive, so these are plain functions evaluated on every render
 const attrs = useAttrs()
-const passwordPolicyId = useId()
 
 function getAriaDescribedBy() {
   const ids = [attrs['aria-describedby'] as string]
-  if (unref(showPasswordPolicyInformation)) {
-    ids.push(passwordPolicyId)
+  // the teleport target only holds the policy rules
+  if (unref(showPasswordPolicyInformation) && teleportId) {
+    ids.push(teleportId)
   }
   return ids.filter(Boolean).join(' ') || undefined
 }
 
-function getAriaInvalid() {
+function getAriaInvalid(): HTMLAttributes['aria-invalid'] {
   const policyFailed =
     unref(showPasswordPolicyInformation) &&
     !!unref(password) &&
@@ -154,7 +154,7 @@ function getAriaInvalid() {
   if (policyFailed) {
     return 'true'
   }
-  return attrs['aria-invalid'] as string
+  return attrs['aria-invalid'] as HTMLAttributes['aria-invalid']
 }
 
 const getPasswordPolicyRuleMessage = (rule: PasswordPolicyRule) => {

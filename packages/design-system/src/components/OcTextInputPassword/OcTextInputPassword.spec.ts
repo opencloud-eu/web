@@ -40,7 +40,7 @@ describe('OcTextInputPassword', () => {
         })
       }
       return mount(OcTextInputPassword, {
-        props: { value, passwordPolicy: policy },
+        props: { value, passwordPolicy: policy, teleportId: 'policy-rules' },
         attrs,
         global: { plugins: [...defaultPlugins()], stubs: { Teleport: true } }
       })
@@ -48,19 +48,16 @@ describe('OcTextInputPassword', () => {
 
     it('describes the input with the policy rules and their state', () => {
       const wrapper = getPolicyWrapper('ab', false, { 'aria-describedby': 'message-id' })
-      const rulesId = wrapper.find('.oc-text-input-password-policy-rule').element.parentElement.id
-      expect(rulesId).toBeTruthy()
-      expect(wrapper.find('input').attributes('aria-describedby')).toBe(`message-id ${rulesId}`)
+      expect(wrapper.find('input').attributes('aria-describedby')).toBe('message-id policy-rules')
       expect(wrapper.find('.oc-text-input-password-policy-rule .sr-only').text()).toBe(
         'Requirement not met'
       )
     })
     it('keeps the policy rules when the described-by attribute changes', async () => {
       const wrapper = getPolicyWrapper('ab', false)
-      const rulesId = wrapper.find('.oc-text-input-password-policy-rule').element.parentElement.id
-      expect(wrapper.find('input').attributes('aria-describedby')).toBe(rulesId)
+      expect(wrapper.find('input').attributes('aria-describedby')).toBe('policy-rules')
       await wrapper.setProps({ 'aria-describedby': 'message-id' } as any)
-      expect(wrapper.find('input').attributes('aria-describedby')).toBe(`message-id ${rulesId}`)
+      expect(wrapper.find('input').attributes('aria-describedby')).toBe('message-id policy-rules')
     })
     it('announces a met rule', () => {
       const wrapper = getPolicyWrapper('abcdefghij', true)
