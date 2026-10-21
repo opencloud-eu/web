@@ -22,6 +22,7 @@ import {
   type YjsAdapter,
   type YjsSession
 } from '../../../../src/composables/yjs'
+import { useAuthStore } from '../../../../src/composables/piniaStores'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 
 // vi.hoisted is required so providerInstances is reachable from the hoisted
@@ -40,7 +41,9 @@ interface MockProvider {
   sendStateless: ReturnType<typeof vi.fn>
   sendToken: ReturnType<typeof vi.fn>
   startSync: ReturnType<typeof vi.fn>
+  openedWithTokens: (string | undefined)[]
   triggerSynced(): void
+  triggerOpen(): Promise<void>
   triggerStatus(status: string): void
   triggerAuthFailed(reason: string): void
   triggerAuthenticated(): void
@@ -140,6 +143,7 @@ vi.mock('@hocuspocus/provider', async () => {
     })
     sendToken = vi.fn(() => Promise.resolve())
     startSync = vi.fn()
+    openedWithTokens: (string | undefined)[] = []
     private _opts: any
     constructor(opts: any) {
       this.url = opts.url
@@ -170,6 +174,11 @@ vi.mock('@hocuspocus/provider', async () => {
     }
     triggerStatus(status: string) {
       this._opts.onStatus?.({ status })
+    }
+    // Like the real `onOpen`: the token goes out once the getter resolves.
+    async triggerOpen() {
+      this._opts.onStatus?.({ status: 'connected' })
+      this.openedWithTokens.push(await this._opts.token())
     }
     triggerAuthFailed(reason: string) {
       this._opts.onAuthenticationFailed?.({ reason })
@@ -238,7 +247,7 @@ function setupSession({
   // callback alone, on for the ones about what that write-back does to the
   // staleness checks that read `resource.etag`.
   mirrorEtagToResource = false,
-  signinSilent = vi.fn(() => Promise.resolve())
+  renewToken = vi.fn(() => Promise.resolve(true))
 } = {}) {
   const resourceRef = ref(resource)
   const adapterRef = shallowRef(adapter)
@@ -254,7 +263,7 @@ function setupSession({
     resourceRef.value = { ...unref(resourceRef), etag } as Resource
   })
   const onExternalUpdate = vi.fn()
-  const authService = { signinSilent }
+  const authService = { renewToken }
   let session: YjsSession
 
   const wrapper = getComposableWrapper(
@@ -917,13 +926,24 @@ describe('useYjsSession — token renewal', () => {
     return s
   }
 
+  function pendingRenewal() {
+    let finish: (isRenewed: boolean) => void = () => undefined
+    const renewToken = vi.fn(
+      () =>
+        new Promise<boolean>((resolve) => {
+          finish = resolve
+        })
+    )
+    return { renewToken, finish: (isRenewed: boolean) => finish(isRenewed) }
+  }
+
   it('renews a refused token and authenticates again', async () => {
     silenceConsoleError()
     const s = await setupLiveSession()
     providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
     await flushPromises()
 
-    expect(s.authService.signinSilent).toHaveBeenCalledOnce()
+    expect(s.authService.renewToken).toHaveBeenCalledOnce()
     expect(providerInstances[0].sendToken).toHaveBeenCalledOnce()
     expect(providerInstances[0].startSync).toHaveBeenCalledOnce()
     expect(providerInstances[0].disconnect).not.toHaveBeenCalled()
@@ -937,7 +957,7 @@ describe('useYjsSession — token renewal', () => {
     providerInstances[0].triggerStatus('disconnected')
     await flushPromises()
 
-    expect(s.authService.signinSilent).toHaveBeenCalledOnce()
+    expect(s.authService.renewToken).toHaveBeenCalledOnce()
     expect(providerInstances[0].sendToken).not.toHaveBeenCalled()
     expect(providerInstances[0].disconnect).not.toHaveBeenCalled()
     expect(unref(s.session.error)).toBeNull()
@@ -945,21 +965,15 @@ describe('useYjsSession — token renewal', () => {
 
   it('ignores refusals of the old token while renewing', async () => {
     silenceConsoleError()
-    let finishRenewal: () => void
-    const signinSilent = vi.fn(
-      () =>
-        new Promise<void>((resolve) => {
-          finishRenewal = resolve
-        })
-    )
-    const s = await setupLiveSession({ signinSilent })
+    const renewal = pendingRenewal()
+    const s = await setupLiveSession({ renewToken: renewal.renewToken })
     providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
     providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
     await flushPromises()
-    finishRenewal!()
+    renewal.finish(true)
     await flushPromises()
 
-    expect(signinSilent).toHaveBeenCalledOnce()
+    expect(renewal.renewToken).toHaveBeenCalledOnce()
     expect(providerInstances[0].disconnect).not.toHaveBeenCalled()
     expect(unref(s.session.error)).toBeNull()
   })
@@ -967,7 +981,7 @@ describe('useYjsSession — token renewal', () => {
   it('gives up when the renewal fails', async () => {
     silenceConsoleError()
     const s = await setupLiveSession({
-      signinSilent: vi.fn(() => Promise.reject(new Error('session gone')))
+      renewToken: vi.fn(() => Promise.resolve(false))
     })
     providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
     await flushPromises()
@@ -986,7 +1000,7 @@ describe('useYjsSession — token renewal', () => {
     providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
     await flushPromises()
 
-    expect(s.authService.signinSilent).toHaveBeenCalledOnce()
+    expect(s.authService.renewToken).toHaveBeenCalledOnce()
     expect(unref(s.session.error)?.message).toContain('Your session expired')
     expect(providerInstances[0].disconnect).toHaveBeenCalled()
   })
@@ -1000,27 +1014,90 @@ describe('useYjsSession — token renewal', () => {
     providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
     await flushPromises()
 
-    expect(s.authService.signinSilent).toHaveBeenCalledTimes(2)
+    expect(s.authService.renewToken).toHaveBeenCalledTimes(2)
     expect(unref(s.session.error)).toBeNull()
   })
 
   it('does not reconnect a session that was torn down while renewing', async () => {
     silenceConsoleError()
-    let finishRenewal: () => void
-    const signinSilent = vi.fn(
-      () =>
-        new Promise<void>((resolve) => {
-          finishRenewal = resolve
-        })
-    )
-    const s = await setupLiveSession({ signinSilent })
+    const renewal = pendingRenewal()
+    const s = await setupLiveSession({ renewToken: renewal.renewToken })
     providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
     await flushPromises()
     s.wrapper.unmount()
-    finishRenewal!()
+    renewal.finish(true)
     await flushPromises()
 
     expect(providerInstances[0].sendToken).not.toHaveBeenCalled()
+  })
+
+  it('reads connecting until the server accepts the renewed token', async () => {
+    silenceConsoleError()
+    const renewal = pendingRenewal()
+    const s = await setupLiveSession({ renewToken: renewal.renewToken })
+    providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
+    await flushPromises()
+    expect(unref(s.session.status)).toBe('connecting')
+
+    renewal.finish(true)
+    await flushPromises()
+    expect(unref(s.session.status)).toBe('connecting')
+
+    providerInstances[0].triggerAuthenticated()
+    expect(unref(s.session.status)).toBe('connected')
+  })
+
+  it('reads connecting while the socket reconnects during the renewal', async () => {
+    silenceConsoleError()
+    const renewal = pendingRenewal()
+    const s = await setupLiveSession({ renewToken: renewal.renewToken })
+    providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
+    providerInstances[0].triggerStatus('disconnected')
+    void providerInstances[0].triggerOpen()
+    await flushPromises()
+    expect(unref(s.session.status)).toBe('connecting')
+
+    renewal.finish(true)
+    await flushPromises()
+    providerInstances[0].triggerAuthenticated()
+    expect(unref(s.session.status)).toBe('connected')
+  })
+
+  // Regression: the reconnect sent the old token, and its late refusal ended
+  // the session although the renewal had succeeded.
+  it('sends only the renewed token on a reconnect during the renewal', async () => {
+    silenceConsoleError()
+    const renewal = pendingRenewal()
+    const s = await setupLiveSession({ renewToken: renewal.renewToken })
+    providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
+    providerInstances[0].triggerStatus('disconnected')
+    void providerInstances[0].triggerOpen()
+    await flushPromises()
+    expect(providerInstances[0].openedWithTokens).toEqual([])
+
+    useAuthStore().accessToken = 'renewed-token'
+    renewal.finish(true)
+    await flushPromises()
+
+    expect(providerInstances[0].openedWithTokens).toEqual(['renewed-token'])
+    expect(providerInstances[0].sendToken).not.toHaveBeenCalled()
+    providerInstances[0].triggerAuthenticated()
+    expect(unref(s.session.status)).toBe('connected')
+    expect(unref(s.session.error)).toBeNull()
+  })
+
+  it('does not touch a session that was replaced while the renewal failed', async () => {
+    silenceConsoleError()
+    const renewal = pendingRenewal()
+    const s = await setupLiveSession({ renewToken: renewal.renewToken })
+    providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
+    await flushPromises()
+    s.enabledRef.value = false
+    await flushPromises()
+    renewal.finish(false)
+    await flushPromises()
+
+    expect(unref(s.session.error)).toBeNull()
   })
 
   it.each([YjsDeniedReason.AccessDenied, YjsDeniedReason.ServerError])(
@@ -1031,7 +1108,7 @@ describe('useYjsSession — token renewal', () => {
       providerInstances[0].triggerAuthFailed(reason)
       await flushPromises()
 
-      expect(s.authService.signinSilent).not.toHaveBeenCalled()
+      expect(s.authService.renewToken).not.toHaveBeenCalled()
       expect(unref(s.session.error)).not.toBeNull()
     }
   )
@@ -1043,7 +1120,7 @@ describe('useYjsSession — token renewal', () => {
     providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
     await flushPromises()
 
-    expect(s.authService.signinSilent).not.toHaveBeenCalled()
+    expect(s.authService.renewToken).not.toHaveBeenCalled()
     expect(unref(s.session.error)?.message).toContain('Your session expired')
   })
 })

@@ -212,7 +212,7 @@ export class AuthService implements AuthServiceInterface {
             if (this.silentRenewRetryPromise) {
               // This event was raised by a silent renewal that is still in flight. Handling
               // the error here would wait for that very renewal to finish (see
-              // `renewTokenWithBackoff`) and therefore deadlock. Let the renewal fail
+              // `renewToken`) and therefore deadlock. Let the renewal fail
               // instead, its caller takes care of the error.
               throw e
             }
@@ -396,7 +396,7 @@ export class AuthService implements AuthServiceInterface {
       // out if renewal ultimately fails (non-transient error or retries
       // exhausted), so a brief interruption doesn't kill an otherwise-valid
       // session.
-      if (user && (await this.renewTokenWithBackoff())) {
+      if (user && (await this.renewToken())) {
         return
       }
 
@@ -418,7 +418,7 @@ export class AuthService implements AuthServiceInterface {
    * Concurrent callers share the same in-flight attempt to avoid overlapping
    * silent renewals.
    */
-  private renewTokenWithBackoff(): Promise<boolean> {
+  public renewToken(): Promise<boolean> {
     if (this.silentRenewRetryPromise) {
       return this.silentRenewRetryPromise
     }

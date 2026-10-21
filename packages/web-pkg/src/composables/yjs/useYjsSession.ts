@@ -983,10 +983,30 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       connectTimer = undefined
     }
 
-    // A rejected token is renewed once per accepted one, so a token the server
-    // keeps refusing still ends the session.
-    let hasRenewedToken = false
-    let isRenewingToken = false
+    /**
+     * Renewal of a refused token: `renewing` while the new token is fetched,
+     * `verifying` until the server accepts it. A refusal while verifying ends
+     * the session, so a token the server keeps refusing is renewed only once.
+     */
+    let tokenRenewal: 'idle' | 'renewing' | 'verifying' = 'idle'
+    /** The socket's own state. `status` reads `connecting` during a renewal. */
+    let socketStatus: YjsStatus = YjsStatus.Connecting
+    let renewal: Promise<boolean> | undefined
+    /** Whether a reconnect is waiting in `getToken` for the pending renewal. */
+    let isTokenAwaited = false
+
+    /**
+     * A reconnect during a renewal waits for the new token. Sending the old
+     * one instead would get refused after the renewal finished, and the server
+     * would drop the renewed token queued behind it along with the refusal.
+     */
+    async function getToken() {
+      if (renewal) {
+        isTokenAwaited = true
+        await renewal
+      }
+      return authStore.accessToken
+    }
 
     function stopOnAuthFailure(reason: string) {
       error.value = new Error(deniedMessage(reason))
@@ -1011,20 +1031,24 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
      * place; a socket that closed meanwhile sends the new token on reconnect.
      */
     async function renewTokenAndReauthenticate() {
-      isRenewingToken = true
-      try {
-        await authService.signinSilent()
-      } catch (e) {
-        console.error('[yjs] token renewal failed:', e)
-        stopOnAuthFailure(YjsDeniedReason.TokenInvalid)
-        return
-      } finally {
-        isRenewingToken = false
-      }
+      tokenRenewal = 'renewing'
+      isTokenAwaited = false
+      status.value = YjsStatus.Connecting
+      renewal = authService.renewToken()
+      const isRenewed = await renewal
+      renewal = undefined
 
       if (doc.isDestroyed || unref(ydoc) !== doc) return
       if (unref(isConflicted) || unref(isLockedForReload)) return
-      if (unref(status) !== YjsStatus.Connected) return
+      if (!isRenewed) {
+        console.error('[yjs] token renewal failed')
+        stopOnAuthFailure(YjsDeniedReason.TokenInvalid)
+        return
+      }
+
+      tokenRenewal = 'verifying'
+      // A reconnect meanwhile sends the renewed token on open by itself.
+      if (socketStatus !== YjsStatus.Connected || isTokenAwaited) return
 
       await prov.sendToken()
       prov.startSync()
@@ -1034,23 +1058,26 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       url: serverUrl,
       name,
       document: doc,
-      token: () => authStore.accessToken,
+      token: getToken,
       onStatus({ status: s }) {
-        status.value = s as YjsStatus
+        socketStatus = s as YjsStatus
+        const isAuthPending = tokenRenewal !== 'idle' && socketStatus === YjsStatus.Connected
+        status.value = isAuthPending ? YjsStatus.Connecting : socketStatus
       },
       onAuthenticated() {
-        hasRenewedToken = false
+        if (tokenRenewal === 'idle') return
+        tokenRenewal = 'idle'
+        status.value = socketStatus
       },
       onAuthenticationFailed({ reason }) {
         // Refusals of the old token, still in flight.
-        if (isRenewingToken) return
+        if (tokenRenewal === 'renewing') return
 
         console.error('[yjs] auth failed:', reason)
         clearConnectTimer()
 
         // Only mid-session: an opening connect usually has a fresh token.
-        if (reason === YjsDeniedReason.TokenInvalid && unref(isReady) && !hasRenewedToken) {
-          hasRenewedToken = true
+        if (reason === YjsDeniedReason.TokenInvalid && unref(isReady) && tokenRenewal === 'idle') {
           void renewTokenAndReauthenticate()
           return
         }
