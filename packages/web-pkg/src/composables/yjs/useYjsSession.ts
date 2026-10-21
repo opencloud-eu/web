@@ -6,6 +6,7 @@ import { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { useAuthStore, useConfigStore } from '../piniaStores'
+import { useAuthService } from '../authContext/useAuthService'
 import type { YjsAdapter } from './types'
 import { decodeIdentityMessage } from './useYjsCollaborators'
 
@@ -317,6 +318,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
 
   const { $gettext } = useGettext()
   const authStore = useAuthStore()
+  const authService = useAuthService()
   const configStore = useConfigStore()
 
   const sessionNonce = ref(0)
@@ -981,6 +983,53 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       connectTimer = undefined
     }
 
+    // A rejected token is renewed once per accepted one, so a token the server
+    // keeps refusing still ends the session.
+    let hasRenewedToken = false
+    let isRenewingToken = false
+
+    function stopOnAuthFailure(reason: string) {
+      error.value = new Error(deniedMessage(reason))
+
+      // Stop retrying: `permissionDeniedHandler` leaves `shouldConnect`
+      // true, so the socket layer keeps reconnecting - and a later attempt
+      // that authenticates would merge our locally seeded copy into a room
+      // already holding the same content.
+      stopProvider(prov)
+
+      // Hydrate and release the loading gate, but only for a failed
+      // *opening* connect. Mid-session the document is already live and
+      // populated; re-running the hydration checks there could plant a
+      // stale flag against a room this client has just left.
+      void onProviderSynced(doc, null)
+    }
+
+    /**
+     * The server refused a token that expired while the regular renewal could
+     * not run (device asleep, tab frozen). Renew it and authenticate again.
+     * The server keeps the socket open after a refusal, so this happens in
+     * place; a socket that closed meanwhile sends the new token on reconnect.
+     */
+    async function renewTokenAndReauthenticate() {
+      isRenewingToken = true
+      try {
+        await authService.signinSilent()
+      } catch (e) {
+        console.error('[yjs] token renewal failed:', e)
+        stopOnAuthFailure(YjsDeniedReason.TokenInvalid)
+        return
+      } finally {
+        isRenewingToken = false
+      }
+
+      if (doc.isDestroyed || unref(ydoc) !== doc) return
+      if (unref(isConflicted) || unref(isLockedForReload)) return
+      if (unref(status) !== YjsStatus.Connected) return
+
+      await prov.sendToken()
+      prov.startSync()
+    }
+
     const prov: HocuspocusProvider = new HocuspocusProvider({
       url: serverUrl,
       name,
@@ -989,22 +1038,24 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       onStatus({ status: s }) {
         status.value = s as YjsStatus
       },
+      onAuthenticated() {
+        hasRenewedToken = false
+      },
       onAuthenticationFailed({ reason }) {
+        // Refusals of the old token, still in flight.
+        if (isRenewingToken) return
+
         console.error('[yjs] auth failed:', reason)
         clearConnectTimer()
-        error.value = new Error(deniedMessage(reason))
 
-        // Stop retrying: `permissionDeniedHandler` leaves `shouldConnect`
-        // true, so the socket layer keeps reconnecting - and a later attempt
-        // that authenticates would merge our locally seeded copy into a room
-        // already holding the same content.
-        stopProvider(prov)
+        // Only mid-session: an opening connect usually has a fresh token.
+        if (reason === YjsDeniedReason.TokenInvalid && unref(isReady) && !hasRenewedToken) {
+          hasRenewedToken = true
+          void renewTokenAndReauthenticate()
+          return
+        }
 
-        // Hydrate and release the loading gate, but only for a failed
-        // *opening* connect. Mid-session the document is already live and
-        // populated; re-running the hydration checks there could plant a
-        // stale flag against a room this client has just left.
-        void onProviderSynced(doc, null)
+        stopOnAuthFailure(reason)
       },
       onStateless({ payload }) {
         const identity = decodeIdentityMessage(payload)
