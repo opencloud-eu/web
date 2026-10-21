@@ -9,16 +9,17 @@
           <div
             class="flex flex-wrap gap-2 w-full mt-2 mb-4 items-center"
             :class="{
-              'justify-between': shareTypes.length > 1,
-              'justify-end': shareTypes.length <= 1
+              'justify-between': showShareTypeFilter,
+              'justify-end': !showShareTypeFilter
             }"
           >
-            <div v-if="shareTypes.length > 1" class="flex">
+            <div v-if="showShareTypeFilter" class="flex">
               <item-filter
                 :allow-multiple="true"
                 :filter-label="$gettext('Share Type')"
                 :filterable-attributes="['label']"
                 :items="shareTypes"
+                :loading="areResourcesLoading"
                 :option-filter-label="$gettext('Filter share types')"
                 :show-option-filter="true"
                 id-attribute="key"
@@ -233,6 +234,10 @@ const shareTypes = computed(() => {
     }
   })
 })
+// a share type from the query that no longer exists in the list still needs to be removable
+const showShareTypeFilter = computed(
+  () => unref(shareTypes).length > 1 || !!unref(selectedShareTypesQuery)
+)
 
 watch(filterTerm, async () => {
   await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })

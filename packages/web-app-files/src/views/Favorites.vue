@@ -33,6 +33,7 @@
               :filter-label="$gettext('Tags')"
               :filterable-attributes="['label']"
               :items="availableTags"
+              :loading="loadAvailableTagsTask.isRunning || !loadAvailableTagsTask.last"
               :option-filter-label="$gettext('Filter tags')"
               :show-option-filter="true"
               :no-items-message="

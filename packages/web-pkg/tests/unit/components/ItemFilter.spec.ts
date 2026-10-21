@@ -212,10 +212,61 @@ describe('ItemFilter', () => {
       expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
     })
     it('sets the selected items from the query param when the items arrive after mount', async () => {
-      const { wrapper } = getWrapper({ initialQuery: '1', props: { items: [] } })
+      const { wrapper } = getWrapper({ initialQuery: '1', props: { items: [], loading: true } })
       expect((wrapper.vm as any).selectedItems).toEqual([])
+      await wrapper.setProps({ items: filterItems, loading: false })
+      expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
+    })
+    it('shows values from the query param that are not part of the items as selected', () => {
+      const { wrapper } = getWrapper({ initialQuery: '1+unknown', props: { allowMultiple: true } })
+      expect((wrapper.vm as any).selectedItems).toEqual([
+        filterItems[0],
+        { id: 'unknown', name: 'unknown' }
+      ])
+      expect(wrapper.find('.oc-filter-chip').text()).toContain('Albert Einstein')
+      const unknownItem = wrapper.find('[data-test-value="unknown"]')
+      expect(
+        unknownItem.findComponent<typeof OcCheckbox>(selectors.checkboxStub).props('modelValue')
+      ).toBeTruthy()
+    })
+    it('shows unknown values from the query param as selected if there are no items', () => {
+      const { wrapper } = getWrapper({ initialQuery: 'unknown', props: { items: [] } })
+      expect((wrapper.vm as any).selectedItems).toEqual([{ id: 'unknown', name: 'unknown' }])
+      expect(wrapper.find('.oc-filter-chip').text()).toContain('unknown')
+    })
+    it('does not show unknown values from the query param while the items are loading', async () => {
+      const { wrapper } = getWrapper({
+        initialQuery: '1+unknown',
+        props: { items: [], loading: true }
+      })
+      expect((wrapper.vm as any).selectedItems).toEqual([])
+      expect(wrapper.find('[data-test-value="unknown"]').exists()).toBeFalsy()
       await wrapper.setProps({ items: filterItems })
       expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
+      await wrapper.setProps({ loading: false })
+      expect((wrapper.vm as any).selectedItems).toEqual([
+        filterItems[0],
+        { id: 'unknown', name: 'unknown' }
+      ])
+      expect(wrapper.emitted('selectionChange')).toBeFalsy()
+    })
+    it('removes an unknown value from the query param on click', async () => {
+      const currentRoute = reactive({ query: { q_users: '1+unknown' } as Record<string, string> })
+      const { wrapper, mocks } = getWrapper({ currentRoute, props: { allowMultiple: true } })
+      await wrapper.find('[data-test-value="unknown"]').trigger('click')
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({ query: { q_users: '1' } })
+      )
+      expect(wrapper.emitted('selectionChange')).toEqual([[[filterItems[0]]]])
+      expect(wrapper.find('[data-test-value="unknown"]').exists()).toBeFalsy()
+    })
+    it('emits the selection when an unknown value is removed from the route', async () => {
+      const currentRoute = reactive({ query: { q_users: '1+unknown' } as Record<string, string> })
+      const { wrapper } = getWrapper({ currentRoute })
+      currentRoute.query.q_users = '1'
+      await nextTick()
+      expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
+      expect(wrapper.emitted('selectionChange')).toEqual([[[filterItems[0]]]])
     })
     it('clears the selected items when the query param is removed from the route', async () => {
       const currentRoute = reactive({ query: { q_users: '1' } as Record<string, string> })
