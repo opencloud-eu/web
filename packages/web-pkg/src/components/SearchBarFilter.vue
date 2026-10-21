@@ -77,7 +77,6 @@ const currentFolderUsable = computed(() => currentFolderAvailable && !currentFol
 
 const currentSelection = ref<LocationOption>()
 const userSelection = ref<LocationOption>()
-const currentSelectionTitle = computed(() => $gettext(unref(currentSelection)?.title))
 const locationOptions = computed<LocationOption[]>(() => [
   {
     id: SearchLocationFilterConstants.currentFolder,
@@ -90,6 +89,10 @@ const locationOptions = computed<LocationOption[]>(() => [
     enabled: true
   }
 ])
+
+const currentSelectionTitle = computed(
+  () => unref(locationOptions).find(({ id }) => id === unref(currentSelection)?.id)?.title
+)
 
 watch(
   currentSelection,

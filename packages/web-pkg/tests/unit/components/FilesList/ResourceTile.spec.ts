@@ -47,6 +47,19 @@ describe('OcTile component', () => {
     const wrapper = getWrapper({ resource: getSpaceMock(), isLoading: true })
     expect(wrapper.find('.oc-tile-card-loading-spinner').exists()).toBeTruthy()
   })
+  it('renders the selection slot outside the media link', () => {
+    const wrapper = getWrapper(
+      { resource: getSpaceMock() },
+      {},
+      {},
+      {
+        selection: '<input type="checkbox" class="selection-checkbox" />'
+      }
+    )
+    expect(wrapper.find('.selection-checkbox').exists()).toBe(true)
+    // interactive elements must not be nested inside the link (axe nested-interactive)
+    expect(wrapper.find('resource-link-stub .selection-checkbox').exists()).toBe(false)
+  })
   it('mounts the motion photo player only for resources with a motionPhoto facet', () => {
     const resource = {
       ...getSpaceMock(),
@@ -106,7 +119,8 @@ describe('OcTile component', () => {
   function getWrapper(
     props: PartialComponentProps<typeof ResourceTile> & { resource: Resource },
     resourcesStore = {},
-    stubs: Record<string, unknown> = {}
+    stubs: Record<string, unknown> = {},
+    slots: Record<string, string> = {}
   ) {
     const defaultMocks = defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files' })
@@ -114,6 +128,7 @@ describe('OcTile component', () => {
 
     return shallowMount(ResourceTile, {
       props,
+      slots,
       global: {
         plugins: [
           ...defaultPlugins({

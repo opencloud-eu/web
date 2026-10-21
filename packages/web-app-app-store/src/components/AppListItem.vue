@@ -7,9 +7,14 @@
       <app-preview-image :app="app" icon-size-class="size-8" class="w-24 rounded-sm" />
     </div>
     <div
-      class="app-list-item-content flex flex-col min-w-0 grow gap-1 w-full sm:w-auto wrap-anywhere [&_.app-list-item-title]:whitespace-normal sm:[&_.app-list-item-title]:whitespace-nowrap"
+      class="app-list-item-content flex flex-col min-w-0 grow gap-1 w-full sm:w-auto wrap-anywhere"
     >
-      <app-title :app="app" :term="term" title-class="m-0 text-base app-list-item-title" />
+      <app-title
+        :app="app"
+        :term="term"
+        title-class="m-0 text-base app-list-item-title"
+        name-class="sm:truncate"
+      />
       <p class="m-0 whitespace-normal sm:truncate">
         <oc-filter-highlight :text="app.subtitle" :term="term" />
       </p>

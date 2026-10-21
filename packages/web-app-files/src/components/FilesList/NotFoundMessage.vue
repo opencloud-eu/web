@@ -61,8 +61,9 @@ import {
   isLocationSpacesActive
 } from '@opencloud-eu/web-pkg'
 
-import { useRouter } from '@opencloud-eu/web-pkg'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
+import { SpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
+import { unref } from 'vue'
 import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
 
 const { space = null } = defineProps<{
@@ -70,7 +71,11 @@ const { space = null } = defineProps<{
 }>()
 
 const router = useRouter()
-const isProjectSpace = space?.driveType === 'project'
+const driveAliasAndItem = useRouteParam('driveAliasAndItem')
+// without a space, the drive alias tells whether the link pointed to a project space
+const isProjectSpace = space
+  ? isProjectSpaceResource(space)
+  : !!unref(driveAliasAndItem)?.startsWith('project/')
 
 const showPublicLinkButton = isLocationPublicActive(router, 'files-public-link') && !!space
 const showGuestLinkButton = isLocationGuestActive(router, 'files-guest-link') && !!space

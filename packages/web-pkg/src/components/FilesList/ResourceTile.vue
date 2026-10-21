@@ -26,6 +26,15 @@
     </div>
     <template v-else>
       <div class="relative flex w-full" @mouseenter="onMediaEnter" @mouseleave="onMediaLeave">
+        <!-- a sibling of the link, interactive elements must not be nested inside it -->
+        <div
+          class="z-10 absolute top-0 left-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface-container"
+        >
+          <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
+            <oc-spinner :aria-label="$gettext('File is being processed')" />
+          </div>
+          <slot v-else name="selection" :item="resource" :selected="isResourceSelected" />
+        </div>
         <resource-link
           class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]"
           :resource="resource"
@@ -35,14 +44,6 @@
           tabindex="-1"
           @click="$emit('fileNameClicked', $event)"
         >
-          <div
-            class="z-10 absolute top-0 left-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface-container"
-          >
-            <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
-              <oc-spinner :aria-label="$gettext('File is being processed')" />
-            </div>
-            <slot v-else name="selection" :item="resource" :selected="isResourceSelected" />
-          </div>
           <oc-tag
             v-if="isProjectSpaceResource(resource) && resource.disabled"
             class="z-10 absolute text-role-on-surface"
