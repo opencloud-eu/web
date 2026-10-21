@@ -27,21 +27,12 @@ export const useKeyboardFileNavigation = (
     handleSelectAllAction()
   )
 
-  keyActions.bindKeyAction(
-    { primary: Key.Space },
-    (event: KeyboardEvent) => {
-      // a focused checkbox toggles its own resource natively
-      if (event.target instanceof HTMLInputElement && event.target.type === 'checkbox') {
-        return
-      }
-      event.preventDefault()
-      if (!unref(latestSelectedId)) {
-        return
-      }
-      resourcesStore.toggleSelection(unref(latestSelectedId))
-    },
-    { preventDefault: false }
-  )
+  keyActions.bindKeyAction({ primary: Key.Space }, () => {
+    if (!unref(latestSelectedId)) {
+      return
+    }
+    resourcesStore.toggleSelection(unref(latestSelectedId))
+  })
 
   keyActions.bindKeyAction({ primary: Key.Esc }, () => {
     keyActions.resetSelectionCursor()

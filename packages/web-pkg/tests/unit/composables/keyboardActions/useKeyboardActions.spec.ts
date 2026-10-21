@@ -82,6 +82,63 @@ describe('useKeyboardActions', () => {
     wrapper.unmount()
   })
 
+  it.each([
+    '<input type="checkbox">',
+    '<button><span>Action</span></button>',
+    '<a href="/files">Files</a>',
+    '<div role="checkbox" tabindex="0">Select</div>'
+  ])('leaves Space on a focused control to its own handler: %s', (html) => {
+    const wrapper = getWrapper()
+    const callback = vi.fn()
+    wrapper.vm.keyboardActions.bindKeyAction({ primary: Key.Space }, callback)
+    const container = document.createElement('div')
+    container.innerHTML = html
+    document.body.appendChild(container)
+    const event = new KeyboardEvent('keydown', {
+      key: Key.Space,
+      bubbles: true,
+      cancelable: true
+    })
+
+    container.querySelector('span, input, a, [role]')?.dispatchEvent(event)
+
+    expect(callback).not.toHaveBeenCalled()
+    expect(event.defaultPrevented).toBe(false)
+
+    container.remove()
+    wrapper.unmount()
+  })
+
+  it('still handles Space outside controls', () => {
+    const wrapper = getWrapper()
+    const callback = vi.fn()
+    wrapper.vm.keyboardActions.bindKeyAction({ primary: Key.Space }, callback)
+    const event = new KeyboardEvent('keydown', { key: Key.Space, bubbles: true, cancelable: true })
+
+    document.body.dispatchEvent(event)
+
+    expect(callback).toHaveBeenCalledWith(event)
+    expect(event.defaultPrevented).toBe(true)
+
+    wrapper.unmount()
+  })
+
+  it('still handles arrow keys on a focused checkbox', () => {
+    const wrapper = getWrapper()
+    const callback = vi.fn()
+    wrapper.vm.keyboardActions.bindKeyAction({ primary: Key.ArrowDown }, callback)
+    const checkbox = document.createElement('input')
+    checkbox.type = 'checkbox'
+    document.body.appendChild(checkbox)
+
+    checkbox.dispatchEvent(new KeyboardEvent('keydown', { key: Key.ArrowDown, bubbles: true }))
+
+    expect(callback).toHaveBeenCalledOnce()
+
+    checkbox.remove()
+    wrapper.unmount()
+  })
+
   it('should not execute callback on key event while a modal is open', () => {
     const wrapper = getWrapper()
     const { keyboardActions } = wrapper.vm

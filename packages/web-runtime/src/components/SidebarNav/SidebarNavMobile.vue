@@ -6,7 +6,6 @@
       color-role="chrome"
       no-hover
       aria-haspopup="dialog"
-      aria-current="page"
       :aria-label="$gettext('Show navigation menu')"
       :aria-expanded="isMenuOpen"
       @click="isMenuOpen = true"
@@ -19,16 +18,21 @@
           v-if="isMenuOpen"
           class="mobile-nav-overlay fixed inset-0 bg-black/40 size-full z-[var(--z-index-modal)]"
           open
+          aria-modal="true"
+          aria-labelledby="sidebar-nav-mobile-title"
           @click="handleOverlayClick"
+          @keydown.esc="isMenuOpen = false"
+          @keydown.tab="trapFocus"
         >
           <div
             id="sidebar-nav-mobile-panel"
+            ref="panelRef"
             tabindex="-1"
             class="fixed inset-y-0 left-0 sm:max-w-[85%] w-[85%] xs:w-[320px] bg-role-surface-container overflow-x-hidden"
           >
             <div class="flex flex-col h-full">
               <div class="flex items-center justify-between p-4">
-                <h2 class="text-base m-0" v-text="$gettext('Menu')" />
+                <h2 id="sidebar-nav-mobile-title" class="text-base m-0" v-text="$gettext('Menu')" />
                 <oc-button
                   appearance="raw"
                   :aria-label="$gettext('Close navigation menu')"
@@ -52,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { computed, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
 import {
   CustomComponentExtension,
   useActiveApp,
@@ -68,6 +72,35 @@ const { navItems } = useNavItems()
 const activeApp = useActiveApp()
 
 const isMenuOpen = ref(false)
+const panelRef = useTemplateRef<HTMLElement>('panelRef')
+
+watch(isMenuOpen, async (open) => {
+  await nextTick()
+  if (open) {
+    unref(panelRef)?.focus()
+    return
+  }
+  document.getElementById('mobile-nav-button')?.focus()
+})
+
+// handle every Tab step: browser keyboard settings can otherwise skip links and leave the panel
+function trapFocus(event: KeyboardEvent) {
+  const panel = unref(panelRef)
+  const focusable = Array.from(
+    panel.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, [tabindex]')
+  ).filter(
+    (el) =>
+      el.tabIndex >= 0 &&
+      !el.matches(':disabled') &&
+      el.checkVisibility({ visibilityProperty: true })
+  )
+  const index = focusable.indexOf(document.activeElement as HTMLElement)
+  const nextIndex = event.shiftKey ? Math.max(0, index) - 1 : (index + 1) % focusable.length
+
+  event.preventDefault()
+  const target = focusable.at(nextIndex) || panel
+  target.focus()
+}
 
 function handleNavClick(event: MouseEvent) {
   const target = event.target as HTMLElement
