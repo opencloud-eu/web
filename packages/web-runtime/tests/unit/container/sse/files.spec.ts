@@ -16,6 +16,7 @@ import {
   onSSEFolderCreatedEvent,
   onSSEItemFavoriteAddedEvent,
   onSSEItemFavoriteRemovedEvent,
+  onSSEItemMetadataChangedEvent,
   onSSEItemMovedEvent,
   onSSEItemRenamedEvent,
   onSSEItemRestoredEvent,
@@ -588,6 +589,53 @@ describe('file events', () => {
       expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+    })
+  })
+  describe('onSSEItemMetadataChangedEvent', () => {
+    const changedResource = () =>
+      mock<Resource>({
+        id: 'file1',
+        storageId: 'space1',
+        parentFolderId: 'currenFolder!currentFolder'
+      })
+    const metadataEvent = (resource: Resource, initiatorid = 'other-tab') =>
+      mock<EventSchemaType>({
+        itemid: resource.id,
+        spaceid: resource.storageId,
+        parentitemid: resource.parentFolderId,
+        initiatorid,
+        changedkeys: ['libre.graph.photo.cameraMake'],
+        removedkeys: null
+      })
+
+    it('reloads the resource and upserts it into the store', async () => {
+      const resource = changedResource()
+      const mocks = getMocks()
+      mocks.clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>({ ...resource }))
+      await onSSEItemMetadataChangedEvent({ sseData: metadataEvent(resource), ...mocks })
+      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalled()
+    })
+    it('does not touch the store when the resource is not in the current folder', async () => {
+      const resource = mock<Resource>({
+        id: 'file2',
+        storageId: 'space1',
+        parentFolderId: 'folder2!folder2'
+      })
+      const mocks = getMocks()
+      mocks.clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>({ ...resource }))
+      await onSSEItemMetadataChangedEvent({ sseData: metadataEvent(resource), ...mocks })
+      expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+    })
+    it('ignores events initiated by this client', async () => {
+      const resource = changedResource()
+      const mocks = getMocks()
+      await onSSEItemMetadataChangedEvent({
+        sseData: metadataEvent(resource, mocks.clientService.initiatorId),
+        ...mocks
+      })
+      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
     })
   })
   describe('onSSEFileTouchedEvent', () => {

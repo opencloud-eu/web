@@ -9,6 +9,8 @@ export const sseEventSchema = z.object({
   initiatorid: z.string().optional(),
   etag: z.string().optional(),
   affecteduserids: z.array(z.string()).optional().nullable(),
+  changedkeys: z.array(z.string()).optional().nullable(),
+  removedkeys: z.array(z.string()).optional().nullable(),
   sessionid: z.string().optional()
 })
 
@@ -20,6 +22,7 @@ export enum MESSAGE_TYPE {
   FILE_LOCKED = 'file-locked',
   FILE_UNLOCKED = 'file-unlocked',
   FILE_TOUCHED = 'file-touched',
+  ITEM_METADATA_CHANGED = 'item-metadata-changed',
   ITEM_RENAMED = 'item-renamed',
   ITEM_TRASHED = 'item-trashed',
   ITEM_RESTORED = 'item-restored',

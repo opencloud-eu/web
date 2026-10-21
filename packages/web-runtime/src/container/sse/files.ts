@@ -355,6 +355,35 @@ export const onSSEFileTouchedEvent = async ({
   resourcesStore.upsertResource(resource)
 }
 
+export const onSSEItemMetadataChangedEvent = async ({
+  sseData,
+  resourcesStore,
+  spacesStore,
+  clientService
+}: SSEEventOptions) => {
+  if (sseData.initiatorid === clientService.initiatorId) {
+    // If initiated by current client (browser tab), action unnecessary. Web manages its own logic, return early.
+    return
+  }
+
+  const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
+  if (!space) {
+    return
+  }
+
+  const resource = await loadEventResource({ clientService, resourcesStore }, space, sseData.itemid)
+
+  if (!resource) {
+    return
+  }
+
+  if (!isItemInCurrentFolder({ resourcesStore, parentFolderId: resource.parentFolderId })) {
+    return false
+  }
+
+  resourcesStore.upsertResource(resource)
+}
+
 export const onSSEFolderCreatedEvent = async ({
   sseData,
   resourcesStore,
