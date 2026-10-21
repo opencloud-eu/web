@@ -68,11 +68,8 @@
       <resource-status-indicators :space="item" :resource="item" />
     </template>
     <template #mdate="{ item }">
-      <span
-        v-oc-tooltip="formatDate(item.mdate)"
-        tabindex="0"
-        v-text="formatDateRelative(item.mdate)"
-      />
+      <span v-oc-tooltip="formatDate(item.mdate)" v-text="formatDateRelative(item.mdate)" />
+      <span class="sr-only" v-text="`(${formatDate(item.mdate)})`" />
     </template>
     <template #actions="{ item }">
       <div class="spaces-list-actions">

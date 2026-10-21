@@ -19,6 +19,7 @@
       cancel-button-appearance="raw-inverse"
       cancel-button-color-role="chrome"
       :cancel-handler="cancelSearch"
+      :input-attributes="searchInputAttributes"
       small
       class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg h-12 absolute inset-0 sm:relative invisible sm:visible z-90 sm:z-auto"
       @advanced-search="onKeyUpEnter"
@@ -65,6 +66,8 @@
       close-on-click
       enforce-drop-on-mobile
       :is-menu="false"
+      @show-drop="isPreviewOpen = true"
+      @hide-drop="isPreviewOpen = false"
     >
       <oc-list class="oc-list-divider p-2">
         <li
@@ -79,12 +82,18 @@
         </li>
         <template v-else>
           <li v-for="provider in displayProviders" :key="provider.id" class="provider">
-            <oc-list>
-              <li
-                class="truncate flex justify-between text-role-on-surface-variant provider-details py-1 px-2 text-xs"
+            <div role="grid" :aria-labelledby="getProviderNameId(provider)">
+              <div
+                role="row"
+                class="truncate flex justify-between text-role-on-surface-variant provider-details py-1 px-2 mb-1 text-xs"
               >
-                <span class="display-name" v-text="$gettext(provider.displayName)" />
-                <span v-if="!!provider.listSearch">
+                <span
+                  :id="getProviderNameId(provider)"
+                  role="gridcell"
+                  class="display-name"
+                  v-text="$gettext(provider.displayName)"
+                />
+                <span v-if="!!provider.listSearch" :id="getMoreResultsId(provider)" role="gridcell">
                   <router-link
                     class="more-results p-0"
                     :to="getSearchResultLocation(provider.id)"
@@ -95,27 +104,35 @@
                     <span>{{ getMoreResultsDetailsTextForProvider(provider) }}</span>
                   </router-link>
                 </span>
-              </li>
-              <li
-                v-for="providerSearchResultValue in getSearchResultForProvider(provider).values"
+              </div>
+              <div
+                v-for="(providerSearchResultValue, index) in getSearchResultForProvider(provider)
+                  .values"
                 :key="providerSearchResultValue.id"
-                :data-search-id="providerSearchResultValue.id"
-                :class="{
-                  'active bg-role-secondary-container': isPreviewElementActive(
-                    providerSearchResultValue.id
-                  )
-                }"
-                class="preview flex items-center py-1 px-2 text-sm min-h-10 [&.disabled]:opacity-70 [&.disabled]:grayscale-60 [&.disabled]:pointer-events-none hover:bg-role-surface-container"
+                role="row"
+                class="mb-1 last:mb-0"
               >
-                <component
-                  :is="provider.previewSearch.component"
-                  class="preview-component"
-                  :provider="provider"
-                  :search-result="providerSearchResultValue"
-                  :term="term"
-                />
-              </li>
-            </oc-list>
+                <div
+                  :id="getPreviewId(provider, index)"
+                  role="gridcell"
+                  :data-search-id="providerSearchResultValue.id"
+                  :class="{
+                    'active bg-role-secondary-container': isPreviewElementActive(
+                      providerSearchResultValue.id
+                    )
+                  }"
+                  class="preview flex items-center py-1 px-2 text-sm min-h-10 [&.disabled]:opacity-70 [&.disabled]:grayscale-60 [&.disabled]:pointer-events-none hover:bg-role-surface-container"
+                >
+                  <component
+                    :is="provider.previewSearch.component"
+                    class="preview-component"
+                    :provider="provider"
+                    :search-result="providerSearchResultValue"
+                    :term="term"
+                  />
+                </div>
+              </div>
+            </div>
           </li>
         </template>
       </oc-list>
@@ -152,7 +169,8 @@ import {
   useTemplateRef,
   watch,
   nextTick,
-  onMounted
+  onMounted,
+  useId
 } from 'vue'
 import { SearchLocationFilterConstants } from '@opencloud-eu/web-pkg'
 import { SearchBarFilter } from '@opencloud-eu/web-pkg'
@@ -182,6 +200,8 @@ const locationFilterId = ref(SearchLocationFilterConstants.allFiles)
 const optionsDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('optionsDropRef')
 const searchBarRef = useTemplateRef<HTMLElement>('searchBar')
 const activePreviewIndex = ref<number | null>(null)
+const isPreviewOpen = ref(false)
+const previewIdPrefix = `files-global-search-${useId()}`
 const term = ref('')
 const restoreSearchFromRoute = ref(false)
 const searchResults = ref<
@@ -425,7 +445,7 @@ onBeforeUnmount(() => {
 
 function getFocusableElements() {
   const elements = [document.querySelector('.more-results')]
-  elements.push(...Array.from(document.querySelectorAll('li.preview')))
+  elements.push(...Array.from(document.querySelectorAll('.preview[role="gridcell"]')))
   return elements as HTMLElement[]
 }
 
@@ -520,6 +540,52 @@ function getMoreResultsDetailsTextForProvider(provider: SearchProvider) {
     }
   )
 }
+
+function getProviderNameId(provider: SearchProvider) {
+  return `${previewIdPrefix}-${provider.id}-name`
+}
+
+function getMoreResultsId(provider: SearchProvider) {
+  return `${previewIdPrefix}-${provider.id}-more-results`
+}
+
+function getPreviewId(provider: SearchProvider, index: number) {
+  return `${previewIdPrefix}-${provider.id}-${index}`
+}
+
+// ids of the cells the arrow keys move through, in the same order as getFocusableElements()
+const previewCellIds = computed(() => {
+  const moreResultsProvider = unref(displayProviders).find((provider) => !!provider.listSearch)
+  return [
+    moreResultsProvider ? getMoreResultsId(moreResultsProvider) : undefined,
+    ...unref(displayProviders).flatMap((provider) =>
+      getSearchResultForProvider(provider).values.map((_, index) => getPreviewId(provider, index))
+    )
+  ]
+})
+
+const activeDescendantId = computed(() => {
+  if (!unref(isPreviewOpen) || unref(loading) || unref(activePreviewIndex) === null) {
+    return undefined
+  }
+  return unref(previewCellIds)[unref(activePreviewIndex)]
+})
+
+// the input is a combobox whose popup is the preview drop, the arrow keys move a virtual focus
+// through the preview cells which aria-activedescendant exposes to assistive technologies
+const searchInputAttributes = computed(() => {
+  if (!unref(showDrop)) {
+    return {}
+  }
+  return {
+    role: 'combobox',
+    'aria-autocomplete': 'list' as const,
+    'aria-haspopup': 'grid' as const,
+    'aria-expanded': unref(isPreviewOpen),
+    'aria-controls': 'files-global-search-options',
+    'aria-activedescendant': unref(activeDescendantId)
+  }
+})
 
 function isPreviewElementActive(searchId: string) {
   const previewElements = getFocusableElements()
