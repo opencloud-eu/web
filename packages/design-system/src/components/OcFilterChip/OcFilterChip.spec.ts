@@ -25,10 +25,32 @@ describe('OcFilterChip', () => {
     await wrapper.find(selectors.clearBtn).trigger('click')
     expect(wrapper.emitted('clearFilter')).toBeTruthy()
   })
+  describe('accessible names', () => {
+    it('names the chip after the filter and its selection', () => {
+      const { wrapper } = getWrapper({ props: { selectedItemNames: ['Einstein', 'Marie'] } })
+      expect(wrapper.find(selectors.filterChipBtn).attributes('aria-label')).toBe(
+        'Users: Einstein +1'
+      )
+    })
+    it('keeps the visible label as name without a selection', () => {
+      const { wrapper } = getWrapper()
+      expect(wrapper.find(selectors.filterChipBtn).attributes('aria-label')).toBeUndefined()
+    })
+    it('names the clear button after the filter', () => {
+      const { wrapper } = getWrapper({ props: { selectedItemNames: ['Einstein'] } })
+      expect(wrapper.find(selectors.clearBtn).attributes('aria-label')).toBe('Clear filter Users')
+    })
+  })
   describe('isToggle is true', () => {
     it('does not render a dropdown', () => {
       const { wrapper } = getWrapper({ props: { isToggle: true } })
       expect(wrapper.find(selectors.filterChipDrop).exists()).toBeFalsy()
+    })
+    it.each([true, false])('exposes the toggle state as pressed (%s)', (isToggleActive) => {
+      const { wrapper } = getWrapper({ props: { isToggle: true, isToggleActive } })
+      expect(wrapper.find(selectors.filterChipBtn).attributes('aria-pressed')).toBe(
+        isToggleActive.toString()
+      )
     })
     it('marks filter as active when isToggleActive is true', () => {
       const { wrapper } = getWrapper({ props: { isToggle: true, isToggleActive: true } })

@@ -15,6 +15,8 @@
       :color-role="buttonColorRole"
       :no-hover="filterActive || !hasActiveState"
       :size="size"
+      :aria-pressed="isToggle ? isToggleActive.toString() : undefined"
+      :aria-label="selectionLabel"
       @click="isToggle ? emit('toggleFilter') : false"
     >
       <oc-icon
@@ -59,7 +61,7 @@
       class="oc-filter-chip-clear px-1 rounded-l-none rounded-r-md h-[32px] not-[.oc-filter-chip-toggle_.oc-filter-chip-clear]:ml-[1px] focus:z-90"
       appearance="filled"
       color-role="secondaryContainer"
-      :aria-label="$gettext('Clear filter')"
+      :aria-label="$gettext('Clear filter %{filterLabel}', { filterLabel })"
       :no-hover="filterActive"
       @click="emit('clearFilter')"
     >
@@ -169,6 +171,18 @@ const filterActive = computed(() => {
     return isToggleActive
   }
   return !!selectedItemNames.length
+})
+
+// names the chip after the filter as well, because the visible label is replaced by the selection
+const selectionLabel = computed(() => {
+  if (!selectedItemNames.length) {
+    return undefined
+  }
+  const selection =
+    selectedItemNames.length > 1
+      ? `${selectedItemNames[0]} +${selectedItemNames.length - 1}`
+      : selectedItemNames[0]
+  return `${filterLabel}: ${selection}`
 })
 
 const hideDrop = () => {

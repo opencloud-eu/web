@@ -63,6 +63,14 @@ describe('ItemFilterInline', () => {
       await wrapper.vm.$nextTick()
       expect(wrapper.find(selectors.selectedOptionLabel).text()).toEqual(initialQuery)
     })
+    it('exposes the active option as pressed', async () => {
+      const initialQuery = filterOptions[1].name
+      const { wrapper } = getWrapper({ initialQuery, props: { filterOptions } })
+      await wrapper.vm.$nextTick()
+      const options = wrapper.findAll(selectors.filterOption)
+      expect(options.at(0).attributes('aria-pressed')).toBe('false')
+      expect(options.at(1).attributes('aria-pressed')).toBe('true')
+    })
     it('resets the active option when the query param is removed from the route', async () => {
       const currentRoute = reactive({
         query: { q_InlineFilter: filterOptions[1].name } as Record<string, string>
