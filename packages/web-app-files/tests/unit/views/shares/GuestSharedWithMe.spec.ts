@@ -70,6 +70,21 @@ describe('GuestSharedWithMe view', () => {
       .props('items') as IncomingShareResource[]
     expect(items.find(({ name }) => name === 'share-25')).toBeDefined()
   })
+  it('tells the section that no shares exist when there are none', () => {
+    const { wrapper } = getMountedWrapper()
+    const section = wrapper.findComponent<typeof SharedWithMeSection>('shared-with-me-section-stub')
+    expect(section.props('hasShares')).toBe(false)
+  })
+  it('tells the section that shares exist when the search matches none', async () => {
+    const { wrapper } = getMountedWrapper({
+      files: [mock<IncomingShareResource>({ name: 'share1' })]
+    })
+    ;(wrapper.vm as any).filterTerm = 'nomatch'
+    await nextTick()
+    const section = wrapper.findComponent<typeof SharedWithMeSection>('shared-with-me-section-stub')
+    expect(section.props('items')).toEqual([])
+    expect(section.props('hasShares')).toBe(true)
+  })
   it('resets the pagination to the first page', async () => {
     const { wrapper, mocks } = getMountedWrapper()
     ;(wrapper.vm as any).filterTerm = 'share'

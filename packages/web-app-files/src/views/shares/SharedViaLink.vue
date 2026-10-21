@@ -21,18 +21,32 @@
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <no-content-message
-          v-if="isEmpty"
-          id="files-shared-via-link-empty"
-          img-src="images/illustrations/shared-via-link.svg"
-        >
-          <template #message>
-            <span v-text="$gettext('Nothing shared, yet')" />
-          </template>
-          <template #callToAction>
-            <span v-text="$gettext('All your links will show up here')" />
-          </template>
-        </no-content-message>
+        <template v-if="isEmpty">
+          <no-content-message
+            v-if="!storeItems.length"
+            id="files-shared-via-link-empty"
+            img-src="images/illustrations/shared-via-link.svg"
+          >
+            <template #message>
+              <span v-text="$gettext('Nothing shared, yet')" />
+            </template>
+            <template #callToAction>
+              <span v-text="$gettext('All your links will show up here')" />
+            </template>
+          </no-content-message>
+          <no-content-message
+            v-else
+            id="files-shared-via-link-no-results"
+            img-src="images/illustrations/shared-via-link.svg"
+          >
+            <template #message>
+              <span v-text="$gettext('No shares found')" />
+            </template>
+            <template #callToAction>
+              <span v-text="$gettext('Try refining the search term or filters to get results')" />
+            </template>
+          </no-content-message>
+        </template>
         <component
           :is="folderView.component"
           v-else
@@ -121,6 +135,7 @@ function filterShares(shares: OutgoingShareResource[]) {
 }
 
 const {
+  storeItems,
   sortedResources,
   paginatedResources,
   selectedResources,

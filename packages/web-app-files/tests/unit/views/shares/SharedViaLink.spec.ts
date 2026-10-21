@@ -40,6 +40,23 @@ describe('SharedViaLink view', () => {
       expect(wrapper.find('oc-spinner-stub').exists()).toBeFalsy()
       expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
     })
+    it('shows "Nothing shared, yet" when there are no shares', () => {
+      const { wrapper } = getMountedWrapper()
+      expect(wrapper.find('#files-shared-via-link-empty').text()).toContain('Nothing shared, yet')
+      expect(wrapper.find('#files-shared-via-link-no-results').exists()).toBeFalsy()
+    })
+    it('asks to refine the search when shares exist but none matches', async () => {
+      const { wrapper } = getMountedWrapper({
+        files: [mock<OutgoingShareResource>({ name: 'share1' })]
+      })
+      ;(wrapper.vm as any).filterTerm = 'nomatch'
+      await wrapper.vm.$nextTick()
+
+      const message = wrapper.find('#files-shared-via-link-no-results')
+      expect(message.text()).toContain('No shares found')
+      expect(message.text()).toContain('Try refining the search term or filters to get results')
+      expect(wrapper.find('#files-shared-via-link-empty').exists()).toBeFalsy()
+    })
     it('shows the files table when files are available', () => {
       const mockedFiles = [mockDeep<OutgoingShareResource>(), mockDeep<OutgoingShareResource>()]
       const { wrapper } = getMountedWrapper({ files: mockedFiles })
