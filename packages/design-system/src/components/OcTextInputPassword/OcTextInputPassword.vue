@@ -40,10 +40,7 @@
     >
       <oc-icon size-class="size-4" :name="copyPasswordIcon" />
     </oc-button>
-    <oc-hidden-announcer
-      :announcement="copyPasswordAnnouncement"
-      :announcement-key="copyPasswordAnnouncementKey"
-    />
+    <oc-hidden-announcer ref="copyPasswordAnnouncer" />
     <oc-button
       v-if="generatePasswordMethod && !disabled"
       v-oc-tooltip="$gettext('Generate password')"
@@ -116,13 +113,12 @@ const emit = defineEmits([
 ])
 
 const passwordInput = useTemplateRef('passwordInput')
+const copyPasswordAnnouncer = useTemplateRef('copyPasswordAnnouncer')
 const { $gettext } = useGettext()
 const password = ref(value)
 const showPassword = ref(false)
 const copyPasswordIconInitial = 'file-copy'
 const copyPasswordIcon = ref(copyPasswordIconInitial)
-const copyPasswordAnnouncement = ref('')
-const copyPasswordAnnouncementKey = ref(0)
 const hasFocus = ref(false)
 
 const showPasswordPolicyInformation = computed(() => {
@@ -146,8 +142,7 @@ const getPasswordPolicyRuleMessage = (rule: PasswordPolicyRule) => {
 const copyPasswordToClipboard = () => {
   navigator.clipboard.writeText(unref(password))
   copyPasswordIcon.value = 'check'
-  copyPasswordAnnouncement.value = $gettext('Copied to clipboard!')
-  copyPasswordAnnouncementKey.value++
+  unref(copyPasswordAnnouncer)?.announce($gettext('Copied to clipboard!'))
   setTimeout(() => (copyPasswordIcon.value = copyPasswordIconInitial), 1500)
 }
 

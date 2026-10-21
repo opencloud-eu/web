@@ -28,15 +28,12 @@
     >
       <oc-icon :name="copyWebDAVUrlIcon" />
     </oc-button>
-    <oc-hidden-announcer
-      :announcement="copiedAnnouncement"
-      :announcement-key="copiedAnnouncementKey"
-    />
+    <oc-hidden-announcer ref="copiedAnnouncer" />
   </dd>
 </template>
 
 <script setup lang="ts">
-import { inject, ref, Ref, computed, unref } from 'vue'
+import { inject, ref, Ref, computed, unref, useTemplateRef } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { encodePath } from '../../utils'
 import { useGettext } from 'vue3-gettext'
@@ -51,8 +48,7 @@ const copiedIcon = 'check'
 const copyIcon = 'file-copy'
 const copyWebDAVPathIcon = ref(copyIcon)
 const copyWebDAVUrlIcon = ref(copyIcon)
-const copiedAnnouncement = ref('')
-const copiedAnnouncementKey = ref(0)
+const copiedAnnouncer = useTemplateRef('copiedAnnouncer')
 
 const webDavPath = computed(() => {
   return encodePath(unref(resource).webDavPath)
@@ -62,8 +58,7 @@ const webDavUrl = computed(() => {
 })
 
 function announceCopied() {
-  copiedAnnouncement.value = $gettext('Copied to clipboard!')
-  copiedAnnouncementKey.value++
+  unref(copiedAnnouncer)?.announce($gettext('Copied to clipboard!'))
 }
 
 const copyWebDAVPathToClipboard = () => {

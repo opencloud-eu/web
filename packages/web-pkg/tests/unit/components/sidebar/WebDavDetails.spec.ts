@@ -1,9 +1,17 @@
 import WebDavDetails from '../../../../src/components/SideBar/WebDavDetails.vue'
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
-import { OcHiddenAnnouncer } from '@opencloud-eu/design-system/components'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
-import { ref } from 'vue'
+import { defineComponent, h, ref } from 'vue'
+
+const announceMock = vi.fn()
+// exposes a spy as the announce method, so the tests can check what gets announced
+const OcHiddenAnnouncerStub = defineComponent({
+  setup(_, { expose }) {
+    expose({ announce: announceMock })
+    return () => h('span')
+  }
+})
 
 describe('WebDavDetails', () => {
   beforeEach(() => {
@@ -11,6 +19,7 @@ describe('WebDavDetails', () => {
   })
   afterEach(() => {
     vi.unstubAllGlobals()
+    announceMock.mockReset()
   })
 
   it.each([
@@ -18,16 +27,13 @@ describe('WebDavDetails', () => {
     { index: 1, copied: 'https://example.com/dav/spaces/1/file.txt' }
   ])('announces each copy of the WebDAV path or URL ($copied)', async ({ index, copied }) => {
     const wrapper = getWrapper()
-    const announcer = wrapper.findComponent(OcHiddenAnnouncer)
-    expect(announcer.props('announcement')).toBe('')
 
     await wrapper.findAll('button').at(index).trigger('click')
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(copied)
-    expect(announcer.props('announcement')).toBe('Copied to clipboard!')
-    const firstKey = announcer.props('announcementKey')
+    expect(announceMock).toHaveBeenCalledWith('Copied to clipboard!')
 
     await wrapper.findAll('button').at(index).trigger('click')
-    expect(announcer.props('announcementKey')).not.toBe(firstKey)
+    expect(announceMock).toHaveBeenCalledTimes(2)
   })
 })
 
@@ -41,7 +47,8 @@ function getWrapper() {
     props: { space },
     global: {
       plugins: [...defaultPlugins()],
-      provide: { resource: ref(resource) }
+      provide: { resource: ref(resource) },
+      stubs: { OcHiddenAnnouncer: OcHiddenAnnouncerStub }
     }
   })
 }

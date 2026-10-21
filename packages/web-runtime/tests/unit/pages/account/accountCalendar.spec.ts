@@ -5,11 +5,19 @@ import {
   writable
 } from '@opencloud-eu/web-test-helpers'
 import { flushPromises } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { defineComponent, h, nextTick } from 'vue'
 import AccountCalendar from '../../../../src/pages/account/accountCalendar.vue'
 import { useConfigStore } from '@opencloud-eu/web-pkg'
 import { AxiosResponse } from 'axios'
-import { OcHiddenAnnouncer } from '@opencloud-eu/design-system/components'
+
+const announceMock = vi.fn()
+// exposes a spy as the announce method, so the tests can check what gets announced
+const OcHiddenAnnouncerStub = defineComponent({
+  setup(_, { expose }) {
+    expose({ announce: announceMock })
+    return () => h('span')
+  }
+})
 
 beforeEach(() => {
   vi.stubGlobal('navigator', {
@@ -63,16 +71,12 @@ describe('account calendar page', () => {
 
     await flushPromises()
 
-    const announcer = wrapper.findComponent(OcHiddenAnnouncer)
-    expect(announcer.props('announcement')).toBe('')
-
     await wrapper.get('[data-testid="copy-caldav-url"]').trigger('click')
-    expect(announcer.props('announcement')).toBe('Copied to clipboard!')
-    const firstKey = announcer.props('announcementKey')
+    expect(announceMock).toHaveBeenCalledWith('Copied to clipboard!')
 
     await wrapper.get('[data-testid="copy-caldav-username"]').trigger('click')
-    expect(announcer.props('announcement')).toBe('Copied to clipboard!')
-    expect(announcer.props('announcementKey')).not.toBe(firstKey)
+    expect(announceMock).toHaveBeenCalledTimes(2)
+    expect(announceMock).toHaveBeenLastCalledWith('Copied to clipboard!')
   })
 })
 
@@ -110,7 +114,8 @@ function getWrapper(opts: { available?: boolean } = {}) {
     global: {
       plugins: plugins,
       mocks,
-      provide: mocks
+      provide: mocks,
+      stubs: { OcHiddenAnnouncer: OcHiddenAnnouncerStub }
     }
   })
 }

@@ -88,10 +88,7 @@
             </oc-table-td>
           </oc-table-tr>
         </account-table>
-        <oc-hidden-announcer
-          :announcement="copiedAnnouncement"
-          :announcement-key="copiedAnnouncementKey"
-        />
+        <oc-hidden-announcer ref="copiedAnnouncer" />
       </template>
     </template>
   </div>
@@ -103,7 +100,7 @@ import AccountHeading from '../../components/Account/AccountHeading.vue'
 import AccountLabel from '../../components/Account/AccountLabel.vue'
 import { useClientService, useConfigStore, useUserStore } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref, unref } from 'vue'
+import { computed, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { useTask } from 'vue-concurrency'
 
@@ -119,16 +116,14 @@ const copyIcon = 'file-copy'
 
 const copyCalDavUrlIcon = ref(copyIcon)
 const copyCalDavUsernameIcon = ref(copyIcon)
-const copiedAnnouncement = ref('')
-const copiedAnnouncementKey = ref(0)
+const copiedAnnouncer = useTemplateRef('copiedAnnouncer')
 
 const isCalDavLoading = computed(
   () => unref(loadCalDavTask.isRunning) || !unref(loadCalDavTask.last)
 )
 
 function announceCopied() {
-  copiedAnnouncement.value = $gettext('Copied to clipboard!')
-  copiedAnnouncementKey.value++
+  unref(copiedAnnouncer)?.announce($gettext('Copied to clipboard!'))
 }
 
 const copyCalDavUrlToClipboard = () => {

@@ -7,14 +7,10 @@ import { HTMLAttributes, onBeforeUnmount, ref, watch } from 'vue'
 
 export interface Props {
   /**
-   * @docs The announcement to be read by screen readers.
+   * @docs The announcement to be read by screen readers. Every change of it gets announced. Use the exposed `announce` method to announce a message on an action, also the same text again.
+   * @default ''
    */
-  announcement: string
-  /**
-   * @docs Change this value to announce the same announcement again, e.g. a counter that gets increased on every action.
-   * @default 0
-   */
-  announcementKey?: string | number
+  announcement?: string
   /**
    * @docs Describes the politeness level for the announcement.
    * @default polite
@@ -22,27 +18,36 @@ export interface Props {
   level?: HTMLAttributes['aria-live']
 }
 
-const { announcement, announcementKey = 0, level = 'polite' } = defineProps<Props>()
+const { announcement = '', level = 'polite' } = defineProps<Props>()
 
 // Screen readers only announce a change of the live region's content. Clearing it first and setting
-// the text after a short delay makes sure every change gets announced, also the same text again.
+// the text after a short delay makes sure every announcement gets read, also the same text again.
 const ANNOUNCEMENT_DELAY = 100
 
-const text = ref(announcement || '')
+const text = ref(announcement)
 let announcementTimeout: ReturnType<typeof setTimeout>
 
-watch([() => announcement, () => announcementKey], () => {
+function announce(message: string) {
   clearTimeout(announcementTimeout)
   text.value = ''
-  if (!announcement) {
+  if (!message) {
     return
   }
   announcementTimeout = setTimeout(() => {
-    text.value = announcement
+    text.value = message
   }, ANNOUNCEMENT_DELAY)
-})
+}
+
+watch(
+  () => announcement,
+  (value) => {
+    announce(value)
+  }
+)
 
 onBeforeUnmount(() => {
   clearTimeout(announcementTimeout)
 })
+
+defineExpose({ announce })
 </script>

@@ -52,10 +52,7 @@
             <oc-icon :name="copied ? 'check' : 'file-copy'" fill-type="line" />
           </oc-button>
         </div>
-        <oc-hidden-announcer
-          :announcement="copiedAnnouncement"
-          :announcement-key="copiedAnnouncementKey"
-        />
+        <oc-hidden-announcer ref="copiedAnnouncer" />
         <div class="text-sm text-right mt-2">
           <span v-text="$gettext('Expires on:')" />
           <span v-text="formatDateFromDateTime(expiryDate, currentLanguage)" />
@@ -75,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { computed, ref, unref, useTemplateRef, watch } from 'vue'
 import { DateTime } from 'luxon'
 import {
   formatDateFromDateTime,
@@ -97,8 +94,7 @@ const emit = defineEmits(['confirm', 'cancel', 'created'])
 const { $gettext, current: currentLanguage } = useGettext()
 const { httpAuthenticated: client } = useClientService()
 const { copy, copied } = useClipboard({ legacy: true, copiedDuring: 1500 })
-const copiedAnnouncement = ref('')
-const copiedAnnouncementKey = ref(0)
+const copiedAnnouncer = useTemplateRef('copiedAnnouncer')
 const { showErrorMessage } = useMessages()
 const { updateModal } = useModals()
 const themeStore = useThemeStore()
@@ -158,7 +154,6 @@ async function copyToken() {
   if (!unref(copied)) {
     return
   }
-  copiedAnnouncement.value = $gettext('Copied to clipboard!')
-  copiedAnnouncementKey.value++
+  unref(copiedAnnouncer)?.announce($gettext('Copied to clipboard!'))
 }
 </script>
