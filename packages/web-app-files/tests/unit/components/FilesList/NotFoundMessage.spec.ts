@@ -8,6 +8,7 @@ import { RouteLocationNamedRaw, RouteLocationNormalizedLoaded } from 'vue-router
 
 const selectors = {
   homeButton: '#files-list-not-found-button-go-home',
+  spacesButton: '#space-not-found-button-go-spaces',
   reloadLinkButton: '#files-list-not-found-button-reload-link',
   guestShareButton: '#files-list-not-found-button-go-guest-share'
 }
@@ -48,6 +49,44 @@ describe('NotFoundMessage', () => {
       const routeLocation = homeButton.props('to') as RouteLocationNamedRaw
       expect(routeLocation.name).toBe(spacesLocation.name)
       expect(routeLocation.params.driveAliasAndItem).toBe('personal')
+    })
+  })
+
+  describe('when user on project space route', () => {
+    it('should show the spaces button instead of the home button', () => {
+      const space = mock<SpaceResource>({ driveType: 'project' })
+      const { wrapper } = getWrapper(space, spacesLocation)
+
+      expect(wrapper.find(selectors.spacesButton).exists()).toBeTruthy()
+      expect(wrapper.find(selectors.homeButton).exists()).toBeFalsy()
+    })
+  })
+
+  describe('without a space on the spaces route', () => {
+    it('should show the spaces button for a project space drive alias', () => {
+      const { wrapper } = getWrapper(
+        null,
+        mock<RouteLocationNormalizedLoaded>({
+          name: 'files-spaces-generic',
+          params: { driveAliasAndItem: 'project/unknown' }
+        })
+      )
+
+      expect(wrapper.find(selectors.spacesButton).exists()).toBeTruthy()
+      expect(wrapper.find(selectors.homeButton).exists()).toBeFalsy()
+    })
+
+    it('should show the home button for any other drive alias', () => {
+      const { wrapper } = getWrapper(
+        null,
+        mock<RouteLocationNormalizedLoaded>({
+          name: 'files-spaces-generic',
+          params: { driveAliasAndItem: 'personal/unknown' }
+        })
+      )
+
+      expect(wrapper.find(selectors.homeButton).exists()).toBeTruthy()
+      expect(wrapper.find(selectors.spacesButton).exists()).toBeFalsy()
     })
   })
 
