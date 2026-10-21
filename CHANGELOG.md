@@ -8,6 +8,11 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show a not found message for links to inaccessible project spaces [[#3953](https://github.com/opencloud-eu/web/pull/3953)]
+- fix: update tab title and search location chip on language change [[#3923](https://github.com/opencloud-eu/web/pull/3923)]
+- fix: drop the search app's /search/list route [[#3965](https://github.com/opencloud-eu/web/pull/3965)]
+- fix: address partly fixed accessibility audit findings [[#3939](https://github.com/opencloud-eu/web/pull/3939)]
+- fix: update the current folder when changing a resource field [[#3948](https://github.com/opencloud-eu/web/pull/3948)]
 - fix: show a no results message in share views when only filters match nothing [[#3919](https://github.com/opencloud-eu/web/pull/3919)]
 - fix: only undo the latest deletion with Ctrl+Z [[#3949](https://github.com/opencloud-eu/web/pull/3949)]
 - fix: filter and search all shares before paginating the share views [[#3875](https://github.com/opencloud-eu/web/pull/3875)]
