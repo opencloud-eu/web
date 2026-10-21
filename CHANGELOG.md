@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show a no results message in share views when only filters match nothing [[#3919](https://github.com/opencloud-eu/web/pull/3919)]
 - fix: only undo the latest deletion with Ctrl+Z [[#3949](https://github.com/opencloud-eu/web/pull/3949)]
 - fix: filter and search all shares before paginating the share views [[#3875](https://github.com/opencloud-eu/web/pull/3875)]
 - fix: only change sync for the shares that need it in a mixed selection [[#3906](https://github.com/opencloud-eu/web/pull/3906)]
