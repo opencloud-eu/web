@@ -52,6 +52,16 @@ describe('NotFoundMessage', () => {
     })
   })
 
+  describe('when user on project space route', () => {
+    it('should show the spaces button instead of the home button', () => {
+      const space = mock<SpaceResource>({ driveType: 'project' })
+      const { wrapper } = getWrapper(space, spacesLocation)
+
+      expect(wrapper.find(selectors.spacesButton).exists()).toBeTruthy()
+      expect(wrapper.find(selectors.homeButton).exists()).toBeFalsy()
+    })
+  })
+
   describe('without a space on the spaces route', () => {
     it('should show the spaces button for a project space drive alias', () => {
       const { wrapper } = getWrapper(
