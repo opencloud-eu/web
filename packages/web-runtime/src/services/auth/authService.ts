@@ -415,8 +415,8 @@ export class AuthService implements AuthServiceInterface {
    * exponential backoff. Resolves to `true` if a renewal succeeded, or `false` if
    * it failed with a non-transient error or exhausted all retries.
    *
-   * Concurrent callers share the same in-flight attempt to avoid overlapping
-   * silent renewals.
+   * Concurrent `renewToken()` callers share the same in-flight attempt. Direct
+   * `signinSilent()` calls (e.g. the token timer) don't join it.
    */
   public renewToken(): Promise<boolean> {
     if (this.silentRenewRetryPromise) {

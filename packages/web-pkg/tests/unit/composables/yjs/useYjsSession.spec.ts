@@ -992,6 +992,18 @@ describe('useYjsSession — token renewal', () => {
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('my notes')
   })
 
+  it('gives up when the renewal throws', async () => {
+    silenceConsoleError()
+    const s = await setupLiveSession({
+      renewToken: vi.fn(() => Promise.reject(new Error('renewal failed')))
+    })
+    providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
+    await flushPromises()
+
+    expect(unref(s.session.error)?.message).toContain('Your session expired')
+    expect(providerInstances[0].disconnect).toHaveBeenCalled()
+  })
+
   it('gives up when the renewed token is refused as well', async () => {
     silenceConsoleError()
     const s = await setupLiveSession()

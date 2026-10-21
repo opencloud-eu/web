@@ -1034,7 +1034,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       tokenRenewal = 'renewing'
       isTokenAwaited = false
       status.value = YjsStatus.Connecting
-      renewal = authService.renewToken()
+      // A rejection would leave `renewal` set and every `getToken` throwing.
+      renewal = authService.renewToken().catch(() => false)
       const isRenewed = await renewal
       renewal = undefined
 

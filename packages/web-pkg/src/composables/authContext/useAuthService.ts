@@ -6,7 +6,8 @@ export interface AuthServiceInterface {
   signinSilent(): Promise<unknown>
   /**
    * Silent renewal that retries network errors. Resolves to whether it succeeded.
-   * Concurrent callers share one attempt.
+   * Concurrent `renewToken()` callers share one attempt, direct `signinSilent()` calls
+   * (e.g. the token timer) don't join it.
    */
   renewToken(): Promise<boolean>
   logoutUser(): Promise<void | NavigationFailure>
