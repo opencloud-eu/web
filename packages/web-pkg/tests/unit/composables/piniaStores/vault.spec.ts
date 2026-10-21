@@ -2,6 +2,21 @@ import { createPinia, setActivePinia } from 'pinia'
 import { mock } from 'vitest-mock-extended'
 import { useVaultStore } from '../../../../src/composables/piniaStores/vault'
 import { VaultEngine } from '../../../../src/composables/piniaStores/extensionRegistry'
+import { decryptVaultPath, encryptVaultPath } from '../../../../src/helpers/vaultEngine'
+
+// wraps the relative path it gets, so the tests can tell what the engine saw
+function fakeEngine(vaultRoot: string): VaultEngine {
+  return {
+    vaultRoot,
+    encryptPath: (relative) => Promise.resolve(`E(${relative})`),
+    decryptPath: (relative) => Promise.resolve(`D(${relative})`),
+    encryptContent: (s) => s,
+    decryptContent: (s) => s,
+    verifySegment: () => Promise.resolve(true),
+    createIntegrityToken: () => Promise.resolve('token'),
+    verifyIntegrityToken: () => Promise.resolve(true)
+  }
+}
 
 describe('useVaultStore', () => {
   beforeEach(() => {
@@ -55,6 +70,58 @@ describe('useVaultStore', () => {
       const store = useVaultStore()
       store.moveEngine('space-1', '/my.vault', '/archive.vault')
       expect(store.isUnlocked('space-1', '/archive.vault')).toBe(false)
+    })
+
+    it.each(['/me.vault', '/my-longer-name.vault'])(
+      're-roots the engine so paths map to the new root "%s"',
+      async (toVaultRoot) => {
+        const store = useVaultStore()
+        store.setEngine('space-1', '/my.vault', fakeEngine('/my.vault'))
+
+        store.moveEngine('space-1', '/my.vault', toVaultRoot)
+
+        const engine = store.getEngine('space-1', toVaultRoot)
+        expect(engine.vaultRoot).toBe(toVaultRoot)
+        expect(await encryptVaultPath(engine, toVaultRoot)).toBe(toVaultRoot)
+        expect(await encryptVaultPath(engine, `${toVaultRoot}/notes.txt`)).toBe(
+          `${toVaultRoot}/E(notes.txt)`
+        )
+        expect(await decryptVaultPath(engine, `${toVaultRoot}/E(notes.txt)`)).toBe(
+          `${toVaultRoot}/D(E(notes.txt))`
+        )
+      }
+    )
+
+    it('moves and re-roots the engines of vaults inside a renamed folder', () => {
+      const store = useVaultStore()
+      const nested = fakeEngine('/docs/sub/my.vault')
+      const sibling = fakeEngine('/docs-old/my.vault')
+      const otherSpace = fakeEngine('/docs/my.vault')
+      store.setEngine('space-1', '/docs/sub/my.vault', nested)
+      store.setEngine('space-1', '/docs-old/my.vault', sibling)
+      store.setEngine('space-2', '/docs/my.vault', otherSpace)
+
+      store.moveEngine('space-1', '/docs', '/papers')
+
+      expect(store.isUnlocked('space-1', '/docs/sub/my.vault')).toBe(false)
+      expect(store.getEngine('space-1', '/papers/sub/my.vault')).toBe(nested)
+      expect(nested.vaultRoot).toBe('/papers/sub/my.vault')
+      // sibling whose name merely starts with the old path and other spaces stay untouched
+      expect(store.getEngine('space-1', '/docs-old/my.vault')).toBe(sibling)
+      expect(sibling.vaultRoot).toBe('/docs-old/my.vault')
+      expect(store.getEngine('space-2', '/docs/my.vault')).toBe(otherSpace)
+      expect(otherSpace.vaultRoot).toBe('/docs/my.vault')
+    })
+
+    it('leaves the engine of a space or share vault rooted at "/" alone', () => {
+      const store = useVaultStore()
+      const engine = fakeEngine('/')
+      store.setEngine('space-1', '/', engine)
+
+      store.moveEngine('space-1', '/', '/renamed.vault')
+
+      expect(store.getEngine('space-1', '/')).toBe(engine)
+      expect(engine.vaultRoot).toBe('/')
     })
   })
 

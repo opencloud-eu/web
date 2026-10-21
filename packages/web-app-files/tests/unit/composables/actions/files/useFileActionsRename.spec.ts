@@ -1,5 +1,5 @@
 import { useFileActionsRename } from '../../../../../src/composables/actions/files'
-import { useMessages, useModals, useResourcesStore } from '@opencloud-eu/web-pkg'
+import { useMessages, useModals, useResourcesStore, useVaultStore } from '@opencloud-eu/web-pkg'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
@@ -127,6 +127,18 @@ describe('rename', () => {
             space,
             { path: '/my.vault/renamed.txt' }
           )
+        }
+      })
+    })
+
+    it('moves unlocked vault engines from the old path to the new one', () => {
+      getWrapper({
+        setup: async ({ renameResource }, { space }) => {
+          // a plain folder may hold vaults too, so not only vault roots qualify
+          await renameResource(space, currentFolder, 'new name')
+
+          const { moveEngine } = useVaultStore()
+          expect(moveEngine).toHaveBeenCalledWith(space.id, '/folder', '/new name')
         }
       })
     })

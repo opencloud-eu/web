@@ -15,13 +15,11 @@ import {
   FileAction,
   FileActionOptions,
   createFileRouteOptions,
-  getVaultClaim,
   isSameResource,
   renameResource as renameResourceHelper,
   useAbility,
   useCapabilityStore,
   useClientService,
-  useExtensionRegistry,
   useVaultStore,
   useIsResourceNameValid,
   useMessages,
@@ -44,7 +42,6 @@ export const useFileActionsRename = () => {
   const resourcesStore = useResourcesStore()
   const { setCurrentFolder, upsertResource } = resourcesStore
   const { isFileNameValid } = useIsResourceNameValid()
-  const extensionRegistry = useExtensionRegistry()
   const vaultStore = useVaultStore()
 
   const renameResource = async (space: SpaceResource, resource: Resource, newName: string) => {
@@ -57,13 +54,10 @@ export const useFileActionsRename = () => {
         path: newPath
       })
 
-      // When the renamed resource *is* a vault root, its unlocked engine is
-      // filed under the old path key. Re-file it so the vault stays unlocked
-      // under the new name (no-op when the vault was never unlocked).
-      const claim = getVaultClaim(extensionRegistry, space, resource.path)
-      if (claim?.vaultRoot === resource.path) {
-        vaultStore.moveEngine(space.id, resource.path, newPath)
-      }
+      // Unlocked engines of a renamed vault root - or of vaults inside a renamed
+      // folder - are filed under and rooted at the old path. Move them so those
+      // vaults stay unlocked under the new path (no-op when none is unlocked).
+      vaultStore.moveEngine(space.id, resource.path, newPath)
 
       const isCurrentFolder = isSameResource(resource, currentFolder)
 
