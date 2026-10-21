@@ -187,6 +187,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.7.16 [[#3960](https://github.com/opencloud-eu/web/pull/3960)]
+- chore(deps): update node.js to v24.22.1 [[#3968](https://github.com/opencloud-eu/web/pull/3968)]
 - chore(deps): update dependency happy-dom to v21.0.4 [[#3959](https://github.com/opencloud-eu/web/pull/3959)]
 - chore(deps): update dependency knip to v6 [[#3944](https://github.com/opencloud-eu/web/pull/3944)]
 - fix(deps): update dependency @casl/ability to v7.0.2 [[#3936](https://github.com/opencloud-eu/web/pull/3936)]
