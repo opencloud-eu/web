@@ -2,8 +2,17 @@ import resolvePrivateLink from '../../../src/pages/resolvePrivateLink.vue'
 import { defaultPlugins, defaultComponentMocks, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { getSharedDriveItem, queryItemAsString, useGetResourceContext } from '@opencloud-eu/web-pkg'
-import { Resource, SHARE_JAIL_ID, SpaceResource } from '@opencloud-eu/web-client'
+import { HttpError, Resource, SHARE_JAIL_ID, SpaceResource } from '@opencloud-eu/web-client'
 import { flushPromises } from '@vue/test-utils'
+import { RouteLocationNormalizedLoaded } from 'vue-router'
+import { authService } from '../../../src/services/auth'
+import { isGuestSessionInvalidError } from '../../../src/services/auth/guestSessionManager'
+
+vi.mock('../../../src/services/auth')
+vi.mock('../../../src/services/auth/guestSessionManager', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  isGuestSessionInvalidError: vi.fn(() => false)
+}))
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -16,7 +25,8 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 const selectors = {
   loadingSpinner: '[data-testid="loading-spinner"]',
-  errorMessage: '[data-testid="error-message"]'
+  errorMessage: '[data-testid="error-message"]',
+  loginButton: '[data-testid="login-button"]'
 }
 
 const buildResource = (attrs: Partial<Resource> = {}) =>
@@ -102,6 +112,78 @@ describe('resolvePrivateLink', () => {
       )
     })
   })
+  it('resolves into the guest share without looking up the share visibility', async () => {
+    const fileId = '1'
+    const space = mock<SpaceResource>({
+      driveType: 'share',
+      getDriveAliasAndItem: () => 'share/Invited folder'
+    })
+    const resource = buildResource({ fileId, isFolder: true, type: 'folder' })
+    const { mocks } = getWrapper({ space, resource, fileId, path: '/', isGuest: true })
+    await flushPromises()
+    expect(getSharedDriveItem).not.toHaveBeenCalled()
+    expect(mocks.$router.push).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'files-guest-link' })
+    )
+  })
+  describe('in a guest context', () => {
+    it('does not resolve the share jail id to "files-shares-with-me"', async () => {
+      const { mocks } = getWrapper({ fileId: `${SHARE_JAIL_ID}$${SHARE_JAIL_ID}`, isGuest: true })
+      await flushPromises()
+      expect(mocks.$router.push).not.toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'files-shares-with-me' })
+      )
+    })
+    it.each([403, 404])(
+      'shows an error message with a login action if the guest has no access (%s)',
+      async (statusCode) => {
+        const { wrapper, mocks } = getWrapper({
+          isGuest: true,
+          resolveError: new HttpError('denied', undefined, statusCode)
+        })
+        await flushPromises()
+        expect(mocks.$router.push).not.toHaveBeenCalled()
+        expect(wrapper.find(selectors.errorMessage).exists()).toBeTruthy()
+
+        await wrapper.find(selectors.loginButton).trigger('click')
+        expect(mocks.$router.replace).toHaveBeenCalledWith({
+          path: '/login',
+          query: { redirectUrl: '/f/1' }
+        })
+      }
+    )
+    it('links the login action to "loginUrl" if set in config', async () => {
+      const { wrapper } = getWrapper({
+        isGuest: true,
+        resolveError: new HttpError('denied', undefined, 403),
+        loginUrl: 'https://myidp.int/login'
+      })
+      await flushPromises()
+      const loginUrl = new URL(wrapper.find(selectors.loginButton).attributes('href'))
+      expect(loginUrl.origin + loginUrl.pathname).toEqual('https://myidp.int/login')
+      expect(loginUrl.searchParams.get('redirectUrl')).toEqual('/f/1')
+    })
+    it.each([new HttpError('server error', undefined, 500), new Error('network error')])(
+      'shows an error message without a login action for other errors',
+      async (resolveError) => {
+        const { wrapper } = getWrapper({ isGuest: true, resolveError })
+        await flushPromises()
+        expect(wrapper.find(selectors.errorMessage).exists()).toBeTruthy()
+        expect(wrapper.find(selectors.loginButton).exists()).toBeFalsy()
+      }
+    )
+    it('handles an invalid guest session as auth error', async () => {
+      const error = new Error('unauthorized')
+      vi.mocked(isGuestSessionInvalidError).mockReturnValueOnce(true)
+      const { wrapper, mocks } = getWrapper({ isGuest: true, resolveError: error })
+      await flushPromises()
+      expect(authService.handleAuthError).toHaveBeenCalledWith(
+        mocks.$router.currentRoute.value,
+        error
+      )
+      expect(wrapper.find(selectors.errorMessage).exists()).toBeFalsy()
+    })
+  })
   it('passes the details query param if given via query', async () => {
     const details = 'sharing'
     const { mocks } = getWrapper({ details, path: '/' })
@@ -125,7 +207,10 @@ function getWrapper({
   fileId = '',
   details = '',
   hiddenShare = false,
-  openWithDefaultAppQuery = 'true'
+  openWithDefaultAppQuery = 'true',
+  isGuest = false,
+  resolveError = undefined,
+  loginUrl = ''
 }: {
   space?: SpaceResource
   resource?: Resource
@@ -134,6 +219,9 @@ function getWrapper({
   details?: string
   hiddenShare?: boolean
   openWithDefaultAppQuery?: string
+  isGuest?: boolean
+  resolveError?: Error
+  loginUrl?: string
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementation((str) => {
     if (str === 'fileId') {
@@ -149,22 +237,40 @@ function getWrapper({
   })
 
   vi.mocked(useGetResourceContext).mockReturnValue({
-    getResourceContext: vi.fn().mockResolvedValue({ space, resource, path })
+    getResourceContext: resolveError
+      ? vi.fn().mockRejectedValue(resolveError)
+      : vi.fn().mockResolvedValue({ space, resource, path })
   })
 
   vi.mocked(getSharedDriveItem).mockResolvedValue({ '@UI.Hidden': hiddenShare })
 
-  const mocks = { ...defaultComponentMocks() }
+  const mocks = {
+    ...defaultComponentMocks({
+      currentRoute: mock<RouteLocationNormalizedLoaded>({
+        name: 'resolvePrivateLink',
+        path: '/f/1',
+        fullPath: '/f/1'
+      })
+    })
+  }
 
   return {
     mocks,
     wrapper: shallowMount(resolvePrivateLink, {
       global: {
-        plugins: [...defaultPlugins()],
+        plugins: [
+          ...defaultPlugins({
+            piniaOptions: {
+              authState: { guestContextReady: isGuest },
+              configState: { options: { loginUrl } }
+            }
+          })
+        ],
         mocks,
         provide: mocks,
         stubs: {
-          OcCard: false
+          OcCard: false,
+          OcButton: false
         }
       }
     })

@@ -348,6 +348,20 @@ describe('renewGuestLink', () => {
     })
   })
 
+  it('opens a private link redirect url after resuming the session', async () => {
+    const { mocks } = getWrapper({
+      hasGuestSession: true,
+      query: { redirectUrl: '/f/file-id' }
+    })
+    mocks.$router.resolve.mockReturnValue(
+      mock<RouteLocationResolved>({ name: 'resolvePrivateLink', meta: { authContext: 'user' } })
+    )
+    await flushPromises()
+
+    expect(mocks.$router.replace).toHaveBeenCalledWith({ path: '/f/file-id' })
+    expect(getGuestLinkTargetRoute).not.toHaveBeenCalled()
+  })
+
   it('opens the shared item instead of a redirect url outside of guest routes', async () => {
     const { mocks } = getWrapper({
       hasGuestSession: true,

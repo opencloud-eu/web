@@ -43,13 +43,13 @@ describe('useFileActionsCopyPermanentLink', () => {
       })
     })
 
-    it('should return false in a guest context', () => {
+    it('should return true in a guest context', () => {
       getWrapper({
         isGuest: true,
         setup: ({ actions }) => {
           expect(
             unref(actions)[0].isVisible({ resources: [mock<Resource>()], space: undefined })
-          ).toBeFalsy()
+          ).toBeTruthy()
         }
       })
     })

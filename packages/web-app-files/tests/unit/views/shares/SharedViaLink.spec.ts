@@ -1,7 +1,7 @@
 import SharedViaLink from '../../../../src/views/shares/SharedViaLink.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
-import { ref } from 'vue'
+import { computed, unref, ref } from 'vue'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { Task, TaskInstance } from 'vue-concurrency'
 import { flushPromises } from '@vue/test-utils'
@@ -48,6 +48,31 @@ describe('SharedViaLink view', () => {
       expect(
         wrapper.findComponent<typeof ResourceTable>('resource-table-stub').props().resources.length
       ).toEqual(mockedFiles.length)
+    })
+  })
+
+  describe('search', () => {
+    it('finds shares beyond the current page', async () => {
+      const files = Array.from({ length: 30 }, (_, i) =>
+        mock<OutgoingShareResource>({ id: `${i + 1}`, name: `share-${i + 1}` })
+      )
+      const { wrapper } = getMountedWrapper({ files })
+      ;(wrapper.vm as any).filterTerm = 'share-25'
+      await wrapper.vm.$nextTick()
+
+      const resources = wrapper
+        .findComponent<typeof ResourceTable>('resource-table-stub')
+        .props('resources')
+      expect(resources.find(({ name }) => name === 'share-25')).toBeDefined()
+    })
+    it('resets the pagination to the first page', async () => {
+      const { wrapper, mocks } = getMountedWrapper()
+      ;(wrapper.vm as any).filterTerm = 'share'
+      await flushPromises()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({ query: expect.objectContaining({ page: '1' }) })
+      )
     })
   })
 
@@ -100,6 +125,19 @@ describe('SharedViaLink view', () => {
       expect(selectedResourcesIds.value).toEqual(['old-id'])
     })
   })
+  describe('scrollTo', () => {
+    it('finds the resource to scroll to beyond the current page', async () => {
+      const files = Array.from({ length: 30 }, (_, i) =>
+        mock<OutgoingShareResource>({ id: `${i + 1}`, name: `share-${i + 1}` })
+      )
+      const scrollToResourceFromRoute = vi.fn()
+      getMountedWrapper({ files, viewDefaults: { scrollToResourceFromRoute } })
+      await flushPromises()
+
+      const [resources] = scrollToResourceFromRoute.mock.calls[0]
+      expect(resources).toContain(files[29])
+    })
+  })
 })
 
 function getMountedWrapper({
@@ -122,13 +160,17 @@ function getMountedWrapper({
     ...(mocks && mocks)
   }
 
-  vi.mocked(useResourcesViewDefaults).mockImplementation(() =>
-    useResourcesViewDefaultsMock({
-      paginatedResources: ref(files),
+  vi.mocked(useResourcesViewDefaults).mockImplementation(({ filterResources }) => {
+    // like the real view defaults: filter all resources, then paginate them
+    const sortedResources = computed(() => (filterResources ? filterResources(files) : files))
+    return useResourcesViewDefaultsMock({
+      storeItems: ref(files),
+      sortedResources,
+      paginatedResources: computed(() => unref(sortedResources).slice(0, 20)),
       areResourcesLoading: ref(loading),
       ...viewDefaults
     })
-  )
+  })
 
   return {
     mocks: defaultMocks,

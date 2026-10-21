@@ -8,7 +8,6 @@ import {
 import {
   FileAction,
   FileActionOptionsWithEvent,
-  useAuthStore,
   useInterceptModifierClick,
   useMessages
 } from '@opencloud-eu/web-pkg'
@@ -19,7 +18,6 @@ export const useFileActionsCopyPermanentLink = () => {
   const { $gettext } = useGettext()
   const { copy } = useClipboard()
   const { interceptModifierClick } = useInterceptModifierClick()
-  const authStore = useAuthStore()
 
   const copyLinkToClipboard = async (url: string) => {
     try {
@@ -53,8 +51,7 @@ export const useFileActionsCopyPermanentLink = () => {
           return false
         }
 
-        // private links require a signed-in user
-        if (isPublicSpaceResource(space) || authStore.isGuestContext) {
+        if (isPublicSpaceResource(space)) {
           return false
         }
 

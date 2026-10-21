@@ -22,10 +22,12 @@
           id="files-guest-shared-with-me-view"
           class="h-full"
           :file-list-header-y="fileListHeaderY"
-          :items="items"
+          :items="paginatedResources"
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :sort-handler="handleSort"
+          :pagination-pages="paginationPages"
+          :pagination-page="paginationPage"
           :folder-view="folderView"
           :title="$gettext('Shares')"
           :view-mode="viewMode"
@@ -41,7 +43,7 @@
 
 <script setup lang="ts">
 import Fuse from 'fuse.js'
-import { computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { v4 as uuidV4 } from 'uuid'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
@@ -53,8 +55,8 @@ import {
   eventBus,
   useGetMatchingSpace,
   useKeyboardActions,
-  useResourcesStore,
-  useSort
+  useRoute,
+  useRouter
 } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaults } from '../../composables'
 import {
@@ -66,8 +68,19 @@ import SharedWithMeSection from '../../components/Shares/SharedWithMeSection.vue
 import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
 
 const { $gettext } = useGettext()
-const resourcesStore = useResourcesStore()
+const router = useRouter()
+const route = useRoute()
 const { getMatchingSpace } = useGetMatchingSpace()
+
+const filterTerm = ref('')
+
+function filterShares(shares: IncomingShareResource[]) {
+  if (!unref(filterTerm).trim()) {
+    return shares
+  }
+  const searchEngine = new Fuse(shares, { ...defaultFuseOptions, keys: ['name'] })
+  return searchEngine.search(unref(filterTerm)).map(({ item }) => item)
+}
 
 const {
   viewMode,
@@ -76,16 +89,21 @@ const {
   folderView,
   areResourcesLoading,
   sortFields,
+  sortBy,
+  sortDir,
+  handleSort,
   fileListHeaderY,
   loadResourcesTask,
   selectedResources,
+  sortedResources,
   paginatedResources,
+  paginationPages,
+  paginationPage,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<IncomingShareResource, any, any>({
-  folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint
+  folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint,
+  filterResources: filterShares
 })
-
-const filterTerm = ref('')
 
 const breadcrumbs = computed(() => [
   {
@@ -96,23 +114,12 @@ const breadcrumbs = computed(() => [
   }
 ])
 
-const filteredItems = computed(() => {
-  const resources = unref(paginatedResources)
-  if (!unref(filterTerm).trim()) {
-    return resources
-  }
-  const searchEngine = new Fuse(resources, { ...defaultFuseOptions, keys: ['name'] })
-  return searchEngine.search(unref(filterTerm)).map(({ item }) => item)
-})
-
-const { sortBy, sortDir, items, handleSort } = useSort({
-  items: filteredItems,
-  fields: sortFields,
-  foldersFirst: computed(() => resourcesStore.areFoldersSortedFirst)
+watch(filterTerm, async () => {
+  await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
 
 const keyActions = useKeyboardActions()
-useKeyboardFileNavigation(keyActions, items, viewMode)
+useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 
 const selectedShareSpace = computed(() => {
@@ -124,7 +131,7 @@ const selectedShareSpace = computed(() => {
 
 async function performLoaderTask() {
   await loadResourcesTask.perform()
-  scrollToResourceFromRoute(unref(items), 'files-app-bar')
+  scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
 }
 
 let loadResourcesEventToken: string

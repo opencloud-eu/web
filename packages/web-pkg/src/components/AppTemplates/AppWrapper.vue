@@ -80,6 +80,7 @@ import {
   Key,
   useAppMeta,
   useGetResourceContext,
+  useAuthStore,
   useKeyboardActions,
   useExtensionRegistry,
   CustomComponentExtension,
@@ -146,6 +147,7 @@ const { getResourceContext } = useGetResourceContext()
 const { selectedResources } = useSelectedResources()
 const { dispatchModal } = useModals()
 const spacesStore = useSpacesStore()
+const authStore = useAuthStore()
 const configStore = useConfigStore()
 const resourcesStore = useResourcesStore()
 const sharesStore = useSharesStore()
@@ -363,6 +365,12 @@ const addMissingDriveAliasAndItem = async () => {
     })
   }
 
+  // user context routes would end the guest session
+  let contextRouteName = path === '/' ? 'files-shares-with-me' : 'files-spaces-generic'
+  if (authStore.isGuestContext) {
+    contextRouteName = path === '/' ? 'files-guest-shares' : 'files-guest-link'
+  }
+
   return router.push({
     params: {
       ...unref(currentRoute).params,
@@ -371,7 +379,7 @@ const addMissingDriveAliasAndItem = async () => {
     query: {
       ...unref(currentRoute).query,
       fileId: id,
-      contextRouteName: path === '/' ? 'files-shares-with-me' : 'files-spaces-generic',
+      contextRouteName,
       ...(isShareSpaceResource(space) && { shareId: space.id }),
       contextRouteParams: {
         driveAliasAndItem: dirname(driveAliasAndItem)

@@ -1,17 +1,11 @@
 import SharedWithMe from '../../../../src/views/shares/SharedWithMe.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables'
-import {
-  queryItemAsString,
-  InlineFilterOption,
-  useSort,
-  ItemFilter,
-  AppBar
-} from '@opencloud-eu/web-pkg'
+import { queryItemAsString, InlineFilterOption, ItemFilter, AppBar } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
-import { defineComponent, h, ref } from 'vue'
+import { computed, unref, defineComponent, h, readonly, ref } from 'vue'
 import { defaultStubs, RouteLocation } from '@opencloud-eu/web-test-helpers'
-import { useSortMock } from '../../../../tests/mocks/useSortMock'
 import { mock } from 'vitest-mock-extended'
+import { flushPromises } from '@vue/test-utils'
 import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ShareTypes, IncomingShareResource, ShareType } from '@opencloud-eu/web-client'
 import SharedWithMeSection from '../../../../src/components/Shares/SharedWithMeSection.vue'
@@ -19,7 +13,6 @@ import SharedWithMeSection from '../../../../src/components/Shares/SharedWithMeS
 vi.mock('../../../../src/composables/resourcesViewDefaults')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useSort: vi.fn().mockImplementation(() => useSortMock()),
   queryItemAsString: vi.fn(),
   useRouteQuery: vi.fn()
 }))
@@ -76,6 +69,23 @@ describe('SharedWithMe view', () => {
             .findComponent<typeof SharedWithMeSection>('shared-with-me-section-stub')
             .props('title')
         ).toEqual('Hidden Shares')
+      })
+      it('shows hidden shares beyond the first page', async () => {
+        const files = Array.from({ length: 30 }, (_, i) =>
+          mock<IncomingShareResource>({
+            name: `share-${i + 1}`,
+            hidden: i === 29,
+            shareTypes: [ShareTypes.user.value]
+          })
+        )
+        const { wrapper } = getMountedWrapper({ files })
+        ;(wrapper.vm as any).setAreHiddenFilesShown(mock<InlineFilterOption>({ name: 'hidden' }))
+        await wrapper.vm.$nextTick()
+
+        const items = wrapper
+          .findComponent<typeof SharedWithMeSection>('shared-with-me-section-stub')
+          .props('items')
+        expect(items.map(({ name }) => name)).toEqual(['share-30'])
       })
     })
     describe('share type', () => {
@@ -150,6 +160,62 @@ describe('SharedWithMe view', () => {
         expect(sharedWithMeSec.props('items').find(({ name }) => name === 'share1')).toBeDefined()
         expect(sharedWithMeSec.props('items').find(({ name }) => name === 'share2')).toBeUndefined()
       })
+      it('finds shares beyond the current page', async () => {
+        const files = Array.from({ length: 30 }, (_, i) =>
+          mock<IncomingShareResource>({
+            name: `share-${i + 1}`,
+            hidden: false,
+            shareTypes: [ShareTypes.user.value]
+          })
+        )
+        const { wrapper } = getMountedWrapper({ files })
+        ;(wrapper.vm as any).filterTerm = 'share-25'
+        await wrapper.vm.$nextTick()
+
+        const items = wrapper
+          .findComponent<typeof SharedWithMeSection>('shared-with-me-section-stub')
+          .props('items')
+        expect(items.find(({ name }) => name === 'share-25')).toBeDefined()
+      })
+      it('resets the pagination to the first page', async () => {
+        const { wrapper, mocks } = getMountedWrapper()
+        ;(wrapper.vm as any).filterTerm = 'share'
+        await flushPromises()
+
+        expect(mocks.$router.push).toHaveBeenCalledWith(
+          expect.objectContaining({ query: expect.objectContaining({ page: '1' }) })
+        )
+      })
+    })
+  })
+  describe('pagination', () => {
+    it('passes the pagination to the shares section', () => {
+      const { wrapper } = getMountedWrapper({
+        viewDefaults: { paginationPages: readonly(ref(2)), paginationPage: readonly(ref(1)) }
+      })
+      const sharedWithMeSec = wrapper.findComponent<typeof SharedWithMeSection>(
+        'shared-with-me-section-stub'
+      )
+      expect(sharedWithMeSec.props('paginationPages')).toBe(2)
+      expect(sharedWithMeSec.props('paginationPage')).toBe(1)
+    })
+  })
+  describe('scrollTo', () => {
+    it('finds the resource to scroll to beyond the current page', async () => {
+      const files = Array.from({ length: 30 }, (_, i) =>
+        mock<IncomingShareResource>({
+          id: `${i + 1}`,
+          name: `share-${i + 1}`,
+          hidden: false,
+          shareTypes: [ShareTypes.user.value]
+        })
+      )
+      const scrollToResourceFromRoute = vi.fn()
+      getMountedWrapper({ files, viewDefaults: { scrollToResourceFromRoute } })
+      await flushPromises()
+
+      const [resources] = scrollToResourceFromRoute.mock.calls[0]
+      expect(resources).toContain(files[29])
     })
   })
 })
@@ -157,22 +223,27 @@ describe('SharedWithMe view', () => {
 function getMountedWrapper({
   mocks = {},
   loading = false,
-  files = []
+  files = [],
+  viewDefaults = {}
 }: {
   mocks?: Record<string, unknown>
   files?: IncomingShareResource[]
   loading?: boolean
+  viewDefaults?: Partial<ReturnType<typeof useResourcesViewDefaults>>
 } = {}) {
   const plugins = [...defaultPlugins()]
 
-  vi.mocked(useResourcesViewDefaults).mockImplementation(() =>
-    useResourcesViewDefaultsMock({
-      paginatedResources: ref(files),
-      areResourcesLoading: ref(loading)
+  vi.mocked(useResourcesViewDefaults).mockImplementation(({ filterResources }) => {
+    // like the real view defaults: filter all resources, then paginate them
+    const sortedResources = computed(() => (filterResources ? filterResources(files) : files))
+    return useResourcesViewDefaultsMock({
+      storeItems: ref(files),
+      sortedResources,
+      paginatedResources: computed(() => unref(sortedResources).slice(0, 20)),
+      areResourcesLoading: ref(loading),
+      ...viewDefaults
     })
-  )
-
-  vi.mocked(useSort).mockImplementation((options) => useSortMock({ items: ref(options.items) }))
+  })
   // selected share types
   vi.mocked(queryItemAsString).mockImplementationOnce(() => undefined)
   // selected shared by
@@ -191,6 +262,7 @@ function getMountedWrapper({
       global: {
         plugins,
         mocks: defaultMocks,
+        provide: defaultMocks,
         stubs: {
           ...defaultStubs,
           'app-bar': AppBarStub,

@@ -7,13 +7,15 @@ import {
 import { computed, unref } from 'vue'
 import { useClientService } from '../clientService'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { useSpacesStore } from '../piniaStores'
+import { useAuthStore, useSpacesStore } from '../piniaStores'
 import { DavProperty, DavPropertyValue } from '@opencloud-eu/web-client/webdav'
+import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { useTask } from 'vue-concurrency'
 
 export const useGetResourceContext = () => {
   const clientService = useClientService()
   const spacesStore = useSpacesStore()
+  const authStore = useAuthStore()
 
   const spaces = computed(() => spacesStore.spaces)
 
@@ -38,6 +40,44 @@ export const useGetResourceContext = () => {
   const resourceContextTask = useTask(function* (signal, id) {
     let path: string
     let resource: Resource
+
+    if (authStore.isGuestContext) {
+      // a guest has no mount points, so walk up to the root of one of its shares instead
+      const [driveItems, fileInfo]: [DriveItem[], Resource] = yield Promise.all([
+        clientService.graphAuthenticated.driveItems.listSharedWithMe({}, { signal }),
+        loadFileInfoById(id, { signal })
+      ])
+      resource = fileInfo
+      const sharePathSegments: string[] = []
+      const visitedIds = new Set<string>()
+      let tmpResource = resource
+      const findDriveItem = (resourceId: string) =>
+        driveItems.find(({ remoteItem }) => remoteItem?.id === resourceId)
+      let driveItem = findDriveItem(tmpResource.id)
+
+      while (!driveItem) {
+        if (!tmpResource.parentFolderId || visitedIds.has(tmpResource.id)) {
+          throw new Error('The resource is not part of a guest share')
+        }
+        visitedIds.add(tmpResource.id)
+        sharePathSegments.unshift(tmpResource.name)
+        tmpResource = yield loadFileInfoById(tmpResource.parentFolderId, {
+          signal,
+          davProperties: [DavProperty.FileId, DavProperty.FileParent, DavProperty.Name]
+        })
+        driveItem = findDriveItem(tmpResource.id)
+      }
+
+      const space =
+        spacesStore.getSpace(driveItem.remoteItem.id) ||
+        spacesStore.createShareSpace({
+          driveAliasPrefix: 'share',
+          id: driveItem.remoteItem.id,
+          shareName: driveItem.name
+        })
+      return { space, resource, path: urlJoin(...sharePathSegments) }
+    }
+
     let space = getMatchingSpaceByFileId(id)
 
     if (space) {

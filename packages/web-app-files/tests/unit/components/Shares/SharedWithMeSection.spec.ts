@@ -1,11 +1,12 @@
 import { computed, defineComponent, h, markRaw, PropType } from 'vue'
 import { mock } from 'vitest-mock-extended'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
-import { FileAction, FolderView } from '@opencloud-eu/web-pkg'
+import { FileAction, FolderView, Pagination } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   defaultPlugins,
   mount,
+  PartialComponentProps,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import SharedWithMeSection from '../../../../src/components/Shares/SharedWithMeSection.vue'
@@ -29,11 +30,10 @@ const FolderViewStub = defineComponent({
   },
   setup(props, { slots }) {
     return () =>
-      h(
-        'div',
-        { class: 'folder-view-stub', 'data-fields': props.fieldsDisplayed.join(',') },
-        props.resources.map((resource) => slots.quickActions?.({ resource }))
-      )
+      h('div', { class: 'folder-view-stub', 'data-fields': props.fieldsDisplayed.join(',') }, [
+        ...props.resources.map((resource) => slots.quickActions?.({ resource })),
+        slots.footer?.()
+      ])
   }
 })
 
@@ -51,9 +51,24 @@ describe('SharedWithMeSection', () => {
     const fields = wrapper.find('.folder-view-stub').attributes('data-fields').split(',')
     expect(fields.includes('sharedWith')).toBe(shown)
   })
+
+  it('renders the pagination', () => {
+    const { wrapper } = getWrapper({ props: { paginationPages: 3, paginationPage: 2 } })
+    const pagination = wrapper.findComponent(Pagination)
+    expect(pagination.exists()).toBeTruthy()
+    expect(pagination.props()).toEqual({ pages: 3, currentPage: 2 })
+  })
 })
 
-function getWrapper({ isVisible = true, isGuest = false } = {}) {
+function getWrapper({
+  isVisible = true,
+  isGuest = false,
+  props = {}
+}: {
+  isVisible?: boolean
+  isGuest?: boolean
+  props?: PartialComponentProps<typeof SharedWithMeSection>
+} = {}) {
   vi.mocked(useFileActionsToggleHideShare).mockReturnValue({
     actions: computed(() => [
       mock<FileAction<IncomingShareResource>>({
@@ -84,7 +99,10 @@ function getWrapper({ isVisible = true, isGuest = false } = {}) {
         folderView,
         viewMode: 'resource-table',
         viewSize: 1,
-        sortFields: []
+        sortFields: [],
+        paginationPages: 1,
+        paginationPage: 1,
+        ...props
       },
       global: {
         plugins: [
@@ -95,7 +113,8 @@ function getWrapper({ isVisible = true, isGuest = false } = {}) {
           })
         ],
         mocks,
-        provide: mocks
+        provide: mocks,
+        stubs: { Pagination: true, ListInfo: true }
       }
     })
   }
