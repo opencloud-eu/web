@@ -1,5 +1,11 @@
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import OcFilterChip from './OcFilterChip.vue'
+import { useGettext } from 'vue3-gettext'
+
+vi.mock('vue3-gettext', async (importOriginal) => {
+  const original = await importOriginal<typeof import('vue3-gettext')>()
+  return { ...original, useGettext: vi.fn(original.useGettext) }
+})
 
 const selectors = {
   filterChipBtn: '.oc-filter-chip-button',
@@ -31,6 +37,15 @@ describe('OcFilterChip', () => {
       expect(wrapper.find(selectors.filterChipBtn).attributes('aria-label')).toBe(
         'Users: Einstein +1'
       )
+    })
+    it('translates the chip name', () => {
+      const $gettext = vi.fn((msg: string) => msg)
+      vi.mocked(useGettext).mockReturnValueOnce({ $gettext } as any)
+      getWrapper({ props: { selectedItemNames: ['Einstein'] } })
+      expect($gettext).toHaveBeenCalledWith('%{filter}: %{selection}', {
+        filter: 'Users',
+        selection: 'Einstein'
+      })
     })
     it('keeps the visible label as name without a selection', () => {
       const { wrapper } = getWrapper()

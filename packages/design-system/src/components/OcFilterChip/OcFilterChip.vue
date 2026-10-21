@@ -72,6 +72,7 @@
 
 <script setup lang="ts">
 import { computed, unref, useTemplateRef } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import { uniqueId } from '../../helpers'
 import OcDrop from '../OcDrop/OcDrop.vue'
 
@@ -161,6 +162,8 @@ const {
 const emit = defineEmits<Emits>()
 defineSlots<Slot>()
 
+const { $gettext } = useGettext()
+
 const dropRef = useTemplateRef<typeof OcDrop>('dropRef')
 
 const filterActive = computed(() => {
@@ -182,7 +185,7 @@ const selectionLabel = computed(() => {
     selectedItemNames.length > 1
       ? `${selectedItemNames[0]} +${selectedItemNames.length - 1}`
       : selectedItemNames[0]
-  return `${filterLabel}: ${selection}`
+  return $gettext('%{filter}: %{selection}', { filter: filterLabel, selection })
 })
 
 const hideDrop = () => {
