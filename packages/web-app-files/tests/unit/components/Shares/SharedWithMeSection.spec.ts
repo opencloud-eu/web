@@ -58,6 +58,18 @@ describe('SharedWithMeSection', () => {
     expect(pagination.exists()).toBeTruthy()
     expect(pagination.props()).toEqual({ pages: 3, currentPage: 2 })
   })
+  it('shows "Nothing shared, yet" when there are no shares', () => {
+    const { wrapper } = getWrapper({ props: { items: [] } })
+    expect(wrapper.find('.files-empty').text()).toContain('Nothing shared, yet')
+    expect(wrapper.find('.files-no-results').exists()).toBeFalsy()
+  })
+  it('asks to refine the search or filters when shares exist but none matches', () => {
+    const { wrapper } = getWrapper({ props: { items: [], hasShares: true } })
+    const message = wrapper.find('.files-no-results')
+    expect(message.text()).toContain('No shares found')
+    expect(message.text()).toContain('Try refining the search term or filters to get results')
+    expect(wrapper.find('.files-empty').exists()).toBeFalsy()
+  })
 })
 
 function getWrapper({

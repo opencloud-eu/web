@@ -47,6 +47,27 @@ describe('SharedWithOthers view', () => {
       expect(wrapper.find('#app-loading-spinner').exists()).toBeFalsy()
       expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
     })
+    it('shows "Nothing shared, yet" when there are no shares', () => {
+      const { wrapper } = getMountedWrapper()
+      expect(wrapper.find('#files-shared-with-others-empty').text()).toContain(
+        'Nothing shared, yet'
+      )
+      expect(wrapper.find('#files-shared-with-others-no-results').exists()).toBeFalsy()
+    })
+    it('asks to refine the search when shares exist but none matches', async () => {
+      const { wrapper } = getMountedWrapper({
+        files: [
+          mock<IncomingShareResource>({ name: 'share1', shareTypes: [ShareTypes.user.value] })
+        ]
+      })
+      ;(wrapper.vm as any).filterTerm = 'nomatch'
+      await wrapper.vm.$nextTick()
+
+      const message = wrapper.find('#files-shared-with-others-no-results')
+      expect(message.text()).toContain('No shares found')
+      expect(message.text()).toContain('Try refining the search term or filters to get results')
+      expect(wrapper.find('#files-shared-with-others-empty').exists()).toBeFalsy()
+    })
     it('shows the files table when files are available', () => {
       const mockedFiles = [
         mockDeep<IncomingShareResource>({ shareTypes: [ShareTypes.user.value] }),
