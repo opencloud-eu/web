@@ -603,9 +603,7 @@ describe('file events', () => {
         itemid: resource.id,
         spaceid: resource.storageId,
         parentitemid: resource.parentFolderId,
-        initiatorid,
-        changedkeys: ['libre.graph.photo.cameraMake'],
-        removedkeys: null
+        initiatorid
       })
 
     it('reloads the resource and upserts it into the store', async () => {

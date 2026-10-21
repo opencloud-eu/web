@@ -9,8 +9,6 @@ export const sseEventSchema = z.object({
   initiatorid: z.string().optional(),
   etag: z.string().optional(),
   affecteduserids: z.array(z.string()).optional().nullable(),
-  changedkeys: z.array(z.string()).optional().nullable(),
-  removedkeys: z.array(z.string()).optional().nullable(),
   sessionid: z.string().optional()
 })
 
