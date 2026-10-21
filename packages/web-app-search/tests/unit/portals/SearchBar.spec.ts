@@ -296,93 +296,6 @@ describe('Search Bar portal component', () => {
       expect.stringContaining('folder-id')
     )
   })
-  describe('combobox semantics', () => {
-    function emitPreviewDropEvent(
-      wrapper: ReturnType<typeof getMountedWrapper>['wrapper'],
-      event: 'showDrop' | 'hideDrop'
-    ) {
-      wrapper.findComponent({ ref: 'optionsDropRef' }).vm.$emit(event)
-      return nextTick()
-    }
-
-    test('marks the input as a combobox that controls the preview', async () => {
-      const { wrapper } = getMountedWrapper()
-      const input = wrapper.find(selectors.searchInput)
-      expect(input.attributes('role')).toBe('combobox')
-      expect(input.attributes('aria-haspopup')).toBe('grid')
-      expect(input.attributes('aria-autocomplete')).toBe('list')
-      expect(input.attributes('aria-controls')).toBe('files-global-search-options')
-      expect(input.attributes('aria-expanded')).toBe('false')
-
-      await emitPreviewDropEvent(wrapper, 'showDrop')
-      expect(input.attributes('aria-expanded')).toBe('true')
-
-      await emitPreviewDropEvent(wrapper, 'hideDrop')
-      expect(input.attributes('aria-expanded')).toBe('false')
-    })
-    test('renders the preview results as cells of a grid per provider', async () => {
-      const { wrapper } = getMountedWrapper()
-      wrapper.find(selectors.searchInput).setValue('albert')
-      await flushPromises()
-
-      const grids = wrapper.findAll('[role="grid"]')
-      expect(grids).toHaveLength(2)
-      grids.forEach((grid) => {
-        const rows = grid.findAll(':scope > [role="row"]')
-        expect(rows).toHaveLength(3)
-        rows.forEach((row) => {
-          expect(row.findAll(':scope > [role="gridcell"]').length).toBeGreaterThan(0)
-        })
-      })
-
-      const ids = wrapper.findAll('[role="gridcell"]').map((cell) => cell.attributes('id'))
-      expect(ids.every((id) => !!id)).toBe(true)
-      expect(new Set(ids).size).toBe(ids.length)
-      expect(wrapper.find('.more-results').element.closest('[role="gridcell"]')).not.toBeNull()
-      wrapper.findAll('.preview').forEach((preview) => {
-        expect(preview.attributes('role')).toBe('gridcell')
-      })
-    })
-    test('points aria-activedescendant to the preview cell highlighted with the arrow keys', async () => {
-      const { wrapper } = getMountedWrapper({ attachTo: document.body })
-      const input = wrapper.find(selectors.searchInput)
-      input.setValue('albert')
-      await flushPromises()
-      await emitPreviewDropEvent(wrapper, 'showDrop')
-      expect(input.attributes('aria-activedescendant')).toBeUndefined()
-
-      const moreResultsCellId = wrapper
-        .find('.more-results')
-        .element.closest('[role="gridcell"]').id
-      const previews = wrapper.findAll('.preview')
-
-      await input.trigger('keyup.down')
-      expect(input.attributes('aria-activedescendant')).toBe(moreResultsCellId)
-
-      await input.trigger('keyup.down')
-      expect(input.attributes('aria-activedescendant')).toBe(previews.at(0).attributes('id'))
-      expect(previews.at(0).classes()).toContain('active')
-
-      await input.trigger('keyup.down')
-      expect(input.attributes('aria-activedescendant')).toBe(previews.at(1).attributes('id'))
-      expect(previews.at(1).classes()).toContain('active')
-
-      await input.trigger('keyup.up')
-      expect(input.attributes('aria-activedescendant')).toBe(previews.at(0).attributes('id'))
-    })
-    test('removes aria-activedescendant when the preview gets hidden', async () => {
-      const { wrapper } = getMountedWrapper({ attachTo: document.body })
-      const input = wrapper.find(selectors.searchInput)
-      input.setValue('albert')
-      await flushPromises()
-      await emitPreviewDropEvent(wrapper, 'showDrop')
-      await input.trigger('keyup.down')
-      expect(input.attributes('aria-activedescendant')).toBeDefined()
-
-      await emitPreviewDropEvent(wrapper, 'hideDrop')
-      expect(input.attributes('aria-activedescendant')).toBeUndefined()
-    })
-  })
   describe('search location across views', () => {
     test('discards an in-flight preview from the previous scope', async () => {
       const { wrapper } = getMountedWrapper({
@@ -738,8 +651,7 @@ function getMountedWrapper({
   route = 'files-spaces-generic',
   store = {},
   term = '',
-  query = {} as Record<string, string>,
-  attachTo = undefined as HTMLElement | undefined
+  query = {} as Record<string, string>
 } = {}) {
   vi.mocked(useAvailableProviders).mockReturnValue(ref(providers))
 
@@ -761,7 +673,6 @@ function getMountedWrapper({
   }
 
   const wrapper = mount(SearchBar, {
-    attachTo,
     global: {
       plugins: [
         ...defaultPlugins({

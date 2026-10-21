@@ -6,7 +6,6 @@
   >
     <div class="flex-1 relative">
       <input
-        v-bind="inputAttributes"
         :id="inputId"
         v-model="model"
         :class="inputClass"
@@ -59,7 +58,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, InputHTMLAttributes, unref, useId, watch } from 'vue'
+import { computed, unref, useId, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import OcButton, { Props as OcButtonProps } from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
@@ -142,11 +141,6 @@ export interface Props {
    * @docs The handler for the cancel button.
    */
   cancelHandler?: () => void
-  /**
-   * @docs Additional attributes for the input element, e.g. `role`, `aria-expanded` and `aria-activedescendant` to make it a combobox.
-   * @default {}
-   */
-  inputAttributes?: InputHTMLAttributes
 }
 
 export interface Emits {
@@ -189,8 +183,7 @@ const {
   cancelButtonAppearance = 'raw',
   cancelButtonColorRole = 'secondary',
   isRounded = true,
-  cancelHandler = () => {},
-  inputAttributes = {}
+  cancelHandler = () => {}
 } = defineProps<Props>()
 
 const model = defineModel<string>({ default: '' })

@@ -19,7 +19,7 @@ const locationSearchPanelSelector = '//*[@data-testid="search-bar-filter"]'
 const searchResultItemSelector =
   '//*[@data-test-resource-name="%s"]/ancestor::*[self::tr or contains(@class, "oc-tile-card")][1]'
 const searchPreviewItemSelector =
-  '//div[@id="files-global-search-options"]//*[@data-test-resource-name="%s"]/ancestor::div[@role="gridcell"][contains(@class, "preview")]'
+  '//div[@id="files-global-search-options"]//*[@data-test-resource-name="%s"]/ancestor::li[contains(@class, "preview")]'
 const foundContentSelector = '.search-highlights-content'
 const foundContentMatchSelector = '.search-highlights-content mark'
 const matchingTagSelector = '.search-highlights-tag'

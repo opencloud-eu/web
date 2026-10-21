@@ -138,20 +138,6 @@ describe('OcSearchBar', () => {
       const searchInput = wrapper.find(selectors.searchInput)
       expect(searchInput.attributes('placeholder')).toBe('Start typing..')
     })
-    it('should pass the input attributes to the input', () => {
-      const wrapper = getWrapper({
-        inputAttributes: {
-          role: 'combobox',
-          'aria-expanded': true,
-          'aria-activedescendant': 'option-1'
-        }
-      })
-      const searchInput = wrapper.find(selectors.searchInput)
-      expect(searchInput.attributes('role')).toBe('combobox')
-      expect(searchInput.attributes('aria-expanded')).toBe('true')
-      expect(searchInput.attributes('aria-activedescendant')).toBe('option-1')
-      expect(searchInput.attributes('aria-label')).toBe('Test search label')
-    })
     it('should emit input event on typing', async () => {
       const wrapper = getWrapper()
       const searchInput = wrapper.find(selectors.searchInput)
