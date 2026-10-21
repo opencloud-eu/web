@@ -53,13 +53,18 @@ const resolveGuestLinkTask = useTask(function* () {
   yield router.replace(location)
 })
 
-// an expired or used link can still authorize sending a new link and PIN
+// an expired or used link still identifies the share to send a new link for
 function renewLink(error: unknown) {
   const permissionId = getRenewablePermissionId(error)
   if (!permissionId) {
     return false
   }
-  router.replace({ name: 'renewGuestLink', params: { permissionId } })
+  // an older link would be rejected as invalid, so this is the newest one
+  router.replace({
+    name: 'renewGuestLink',
+    params: { permissionId },
+    query: { linkUnusable: 'true' }
+  })
   return true
 }
 
@@ -70,7 +75,6 @@ const errorMessage = computed(() => {
   switch (unref(errorType)) {
     case undefined:
     case GuestLinkErrorErrorTypeEnum.TokenInvalid:
-    case GuestLinkErrorErrorTypeEnum.TokenNotFound:
     case GuestLinkErrorErrorTypeEnum.InvalidRequest:
       return null
     case GuestLinkErrorErrorTypeEnum.TokenExpired:
@@ -80,6 +84,8 @@ const errorMessage = computed(() => {
     case GuestLinkErrorErrorTypeEnum.ShareExpired:
       return $gettext('Your access to the shared item has expired.')
     case GuestLinkErrorErrorTypeEnum.ShareNotFound:
+    // the backend deletes the link of a removed or expired share
+    case GuestLinkErrorErrorTypeEnum.TokenNotFound:
       return $gettext('The shared item is no longer available.')
     default:
       if (unref(isRetryable)) {
@@ -107,6 +113,10 @@ async function resolveGuestLink() {
   try {
     await resolveGuestLinkTask.perform()
   } catch (error) {
+    // opening the shared item unmounts this page, which cancels the task
+    if (error === 'cancel') {
+      return
+    }
     if (renewLink(error)) {
       return
     }

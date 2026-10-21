@@ -5,7 +5,6 @@ import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { resetSSE } from '@opencloud-eu/web-client/sse'
 import { DavHttpError } from '@opencloud-eu/web-client'
 import {
-  GuestLinkTokenMissingError,
   GuestSessionManager,
   GuestShareNotFoundError,
   isGuestSessionExpiredError,
@@ -236,179 +235,70 @@ describe('GuestSessionManager', () => {
   })
 
   describe('renew', () => {
-    it('requests a new link with the token of a redeemed link', async () => {
+    it('requests a new link with credentials', async () => {
       const { manager, renewGuestLink } = getManager()
-      await manager.redeem('magic-token')
 
       await manager.renew('permission-id')
 
-      expect(renewGuestLink).toHaveBeenCalledWith({
-        permissionId: 'permission-id',
-        token: 'magic-token'
-      })
+      expect(renewGuestLink).toHaveBeenCalledWith('permission-id', { withCredentials: true })
     })
 
-    it.each(['tokenExpired', 'tokenAlreadyRedeemed'])(
-      'requests a new link with the token of a link rejected with %s',
-      async (errorType) => {
-        const { manager, renewGuestLink } = getManager({
-          redeemError: guestLinkError(401, errorType, 'permission-id'),
-          listError: graphUnauthorizedError(sharedWithMeUrl)
-        })
-        await expect(manager.redeem('magic-token')).rejects.toBeDefined()
-
-        await manager.renew('permission-id')
-
-        expect(renewGuestLink).toHaveBeenCalledWith({
-          permissionId: 'permission-id',
-          token: 'magic-token'
-        })
-      }
-    )
-
-    it.each(['tokenInvalid', 'tokenNotFound'])(
-      'does not keep the token of a link rejected with %s',
-      async (errorType) => {
-        const { manager, renewGuestLink } = getManager({
-          redeemError: guestLinkError(401, errorType, 'permission-id')
-        })
-        await expect(manager.redeem('magic-token')).rejects.toBeDefined()
-
-        await expect(manager.renew('permission-id')).rejects.toBeInstanceOf(
-          GuestLinkTokenMissingError
-        )
-        expect(renewGuestLink).not.toHaveBeenCalled()
-      }
-    )
-
-    it('keeps the token when the session expires', async () => {
+    it('does not record a renewal when it fails', async () => {
       const { manager, renewGuestLink } = getManager()
-      await manager.redeem('magic-token')
-
-      manager.expire()
-      await manager.renew('permission-id')
-
-      expect(useAuthStore().guestContextReady).toBeFalsy()
-      expect(localStorage.getItem(storageKey)).toBeNull()
-      expect(renewGuestLink).toHaveBeenCalledWith({
-        permissionId: 'permission-id',
-        token: 'magic-token'
-      })
-    })
-
-    it('drops the token when the session is cleared', async () => {
-      const { manager } = getManager()
-      await manager.redeem('magic-token')
-
-      manager.clear()
-
-      await expect(manager.renew('permission-id')).rejects.toBeInstanceOf(
-        GuestLinkTokenMissingError
-      )
-    })
-
-    it('does not use the token of another share', async () => {
-      const { manager, renewGuestLink } = getManager()
-      await manager.redeem('magic-token')
-
-      await expect(manager.renew('other-permission-id')).rejects.toBeInstanceOf(
-        GuestLinkTokenMissingError
-      )
-      expect(renewGuestLink).not.toHaveBeenCalled()
-    })
-
-    it('drops the token once it was used for a renewal', async () => {
-      const { manager } = getManager()
-      await manager.redeem('magic-token')
-
-      await manager.renew('permission-id')
-
-      await expect(manager.renew('permission-id')).rejects.toBeInstanceOf(
-        GuestLinkTokenMissingError
-      )
-    })
-
-    it('keeps the token when the renewal fails', async () => {
-      const { manager, renewGuestLink } = getManager()
-      await manager.redeem('magic-token')
       renewGuestLink.mockRejectedValueOnce(new Error('500'))
 
       await expect(manager.renew('permission-id')).rejects.toThrow('500')
-      await manager.renew('permission-id')
 
-      expect(renewGuestLink).toHaveBeenCalledTimes(2)
+      expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
     })
   })
 
-  describe('renew errors', () => {
-    it.each(['tokenInvalid', 'shareExpired'])(
-      'drops the token when the renewal is rejected with %s',
-      async (errorType) => {
-        const { manager, renewGuestLink } = getManager()
-        await manager.redeem('magic-token')
-        renewGuestLink.mockRejectedValueOnce(guestLinkError(401, errorType, 'permission-id'))
-
-        await expect(manager.renew('permission-id')).rejects.toBeDefined()
-
-        await expect(manager.renew('permission-id')).rejects.toBeInstanceOf(
-          GuestLinkTokenMissingError
-        )
-      }
-    )
-
-    it('keeps the token when the renewal is rejected with serviceUnavailable', async () => {
-      const { manager, renewGuestLink } = getManager()
-      await manager.redeem('magic-token')
-      renewGuestLink.mockRejectedValueOnce(
-        guestLinkError(503, 'serviceUnavailable', 'permission-id')
-      )
-
-      await expect(manager.renew('permission-id')).rejects.toBeDefined()
-      await manager.renew('permission-id')
-
-      expect(renewGuestLink).toHaveBeenCalledTimes(2)
-    })
-  })
-
-  describe('isRenewalPending', () => {
+  describe('getPendingRenewal', () => {
     afterEach(() => {
       vi.useRealTimers()
     })
 
-    it('is pending for the renewed share after a renewal', async () => {
+    it('returns a renewal with pin when the session of the share is active', async () => {
       const { manager } = getManager()
       await manager.redeem('magic-token')
 
-      await manager.renew('permission-id')
-
-      expect(manager.isRenewalPending('permission-id')).toBeTruthy()
-      expect(manager.isRenewalPending('other-permission-id')).toBeFalsy()
+      expect(await manager.renew('permission-id')).toEqual({ withPin: true })
+      expect(manager.getPendingRenewal('permission-id')).toEqual({ withPin: true })
+      expect(manager.getPendingRenewal('other-permission-id')).toBeUndefined()
     })
 
-    it('is not pending without a renewal', () => {
+    it('does not record a renewal without pin when the session expired', async () => {
       const { manager } = getManager()
-      expect(manager.isRenewalPending('permission-id')).toBeFalsy()
-    })
-
-    it('is not pending when the renewal fails', async () => {
-      const { manager, renewGuestLink } = getManager()
       await manager.redeem('magic-token')
-      renewGuestLink.mockRejectedValueOnce(new Error('500'))
+      manager.expire()
 
-      await expect(manager.renew('permission-id')).rejects.toThrow('500')
-
-      expect(manager.isRenewalPending('permission-id')).toBeFalsy()
+      expect(await manager.renew('permission-id')).toEqual({ withPin: false })
+      expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
     })
 
-    it('is not pending anymore once the pin expired', async () => {
+    it('does not record a renewal without pin when the session belongs to another share', async () => {
+      const { manager } = getManager()
+      await manager.redeem('magic-token')
+
+      expect(await manager.renew('other-permission-id')).toEqual({ withPin: false })
+      expect(manager.getPendingRenewal('other-permission-id')).toBeUndefined()
+    })
+
+    it('returns nothing without a renewal', () => {
+      const { manager } = getManager()
+      expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
+    })
+
+    it('returns nothing once the renewal expired', async () => {
       vi.useFakeTimers()
       const { manager } = getManager()
       await manager.redeem('magic-token')
       await manager.renew('permission-id')
+      expect(manager.getPendingRenewal('permission-id')).toEqual({ withPin: true })
 
       vi.advanceTimersByTime(30 * 60 * 1000)
 
-      expect(manager.isRenewalPending('permission-id')).toBeFalsy()
+      expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
     })
 
     it.each([
@@ -418,24 +308,25 @@ describe('GuestSessionManager', () => {
       ],
       ['a link is redeemed', (manager: GuestSessionManager) => manager.redeem('magic-token')],
       ['the session is cleared', (manager: GuestSessionManager) => manager.clear()]
-    ])('is not pending anymore once %s', async (_, action) => {
+    ])('returns nothing once %s', async (_, action) => {
       const { manager } = getManager()
       await manager.redeem('magic-token')
       await manager.renew('permission-id')
+      expect(manager.getPendingRenewal('permission-id')).toEqual({ withPin: true })
 
       await action(manager)
 
-      expect(manager.isRenewalPending('permission-id')).toBeFalsy()
+      expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
     })
 
-    it('stays pending when the session expires', async () => {
+    it('keeps the renewal when the session expires', async () => {
       const { manager } = getManager()
       await manager.redeem('magic-token')
       await manager.renew('permission-id')
 
       manager.expire()
 
-      expect(manager.isRenewalPending('permission-id')).toBeTruthy()
+      expect(manager.getPendingRenewal('permission-id')).toBeDefined()
     })
   })
 

@@ -414,7 +414,7 @@ describe('AuthService', () => {
       expect(removeUser).toHaveBeenCalledWith('authError')
     })
 
-    const storedToken = JSON.stringify({ permissionId: 'permission-id', token: 'magic-token' })
+    const storedRenewal = JSON.stringify({ permissionId: 'permission-id', renewedAt: Date.now() })
     const guestLinkRoute = {
       name: 'files-guest-link',
       fullPath: '/files/guest/share/folder',
@@ -443,7 +443,7 @@ describe('AuthService', () => {
       const { authStore } = initAuthService({ authService, router })
       authStore.setGuestContext('permission-id', 'share-id')
       localStorage.setItem('oc.guestPermissionId', 'permission-id')
-      localStorage.setItem('oc.guestLinkToken', storedToken)
+      localStorage.setItem('oc.guestLinkRenewal', storedRenewal)
 
       await authService.handleAuthError(
         guestLinkRoute,
@@ -453,7 +453,7 @@ describe('AuthService', () => {
       expect(removeUser).not.toHaveBeenCalled()
       expect(authStore.guestContextReady).toBeFalsy()
       expect(localStorage.getItem('oc.guestPermissionId')).toBeNull()
-      expect(localStorage.getItem('oc.guestLinkToken')).toEqual(storedToken)
+      expect(localStorage.getItem('oc.guestLinkRenewal')).toEqual(storedRenewal)
       expect(replace).toHaveBeenCalledWith({
         name: 'renewGuestLink',
         params: { permissionId: 'permission-id' },
@@ -805,9 +805,12 @@ describe('AuthService', () => {
     it.each(['user', 'idp'])(
       'drops a persisted guest session instead of restoring it on a %s route',
       async (authContext) => {
-        const storedToken = JSON.stringify({ permissionId: 'permission-id', token: 'magic-token' })
+        const storedRenewal = JSON.stringify({
+          permissionId: 'permission-id',
+          renewedAt: Date.now()
+        })
         localStorage.setItem('oc.guestPermissionId', 'permission-id')
-        localStorage.setItem('oc.guestLinkToken', storedToken)
+        localStorage.setItem('oc.guestLinkRenewal', storedRenewal)
         const { clientService, listSharedWithMe } = getClientService([
           {
             name: 'Invited folder',
@@ -834,16 +837,16 @@ describe('AuthService', () => {
         expect(listSharedWithMe).not.toHaveBeenCalled()
         expect(authStore.guestContextReady).toBeFalsy()
         expect(localStorage.getItem('oc.guestPermissionId')).toBeNull()
-        // nobody signed in, so the guest link stays renewable
-        expect(localStorage.getItem('oc.guestLinkToken')).toEqual(storedToken)
+        // nobody signed in, so the pending renewal is kept
+        expect(localStorage.getItem('oc.guestLinkRenewal')).toEqual(storedRenewal)
       }
     )
 
     it('drops a persisted guest session on a public link route when a user is signed in', async () => {
       localStorage.setItem('oc.guestPermissionId', 'permission-id')
       localStorage.setItem(
-        'oc.guestLinkToken',
-        JSON.stringify({ permissionId: 'permission-id', token: 'magic-token' })
+        'oc.guestLinkRenewal',
+        JSON.stringify({ permissionId: 'permission-id', renewedAt: Date.now() })
       )
       const { clientService, listSharedWithMe } = getClientService([
         {
@@ -876,7 +879,7 @@ describe('AuthService', () => {
       expect(listSharedWithMe).not.toHaveBeenCalled()
       expect(authStore.guestContextReady).toBeFalsy()
       expect(localStorage.getItem('oc.guestPermissionId')).toBeNull()
-      expect(localStorage.getItem('oc.guestLinkToken')).toBeNull()
+      expect(localStorage.getItem('oc.guestLinkRenewal')).toBeNull()
     })
 
     it('deactivates the guest context on a public link route but keeps the persisted session', async () => {
@@ -1068,10 +1071,10 @@ describe('AuthService', () => {
         expect(authService.consumeUnavailableGuestPermissionId()).toBeUndefined()
       })
 
-      it('does not restore with only a link token of an expired session', async () => {
+      it('does not restore with only a pending renewal of an expired session', async () => {
         localStorage.setItem(
-          'oc.guestLinkToken',
-          JSON.stringify({ permissionId: 'permission-id', token: 'magic-token' })
+          'oc.guestLinkRenewal',
+          JSON.stringify({ permissionId: 'permission-id', renewedAt: Date.now() })
         )
         const { clientService, listSharedWithMe } = getClientService(sharedDriveItems)
 
