@@ -1,4 +1,5 @@
 import { mock } from 'vitest-mock-extended'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import {
   AppProviderService,
@@ -18,6 +19,11 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useRequest: vi.fn(),
   useRoute: vi.fn()
+}))
+
+vi.mock('@opencloud-eu/design-system/composables', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useIsMobile: vi.fn()
 }))
 
 const appUrl = 'https://example.test/d12ab86/loe009157-MzBw'
@@ -73,6 +79,23 @@ describe('The app provider extension', () => {
     await flushPromises()
     expect(wrapper.html()).toMatchSnapshot()
   })
+  describe('mobile', () => {
+    it.each([
+      { isMobile: true, expected: true },
+      { isMobile: false, expected: false }
+    ])('requests the mobile view on mobile screens', async ({ isMobile, expected }) => {
+      const makeRequest = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        data: providerSuccessResponsePost
+      })
+      createShallowMountWrapper({ makeRequest, isMobile })
+      await flushPromises()
+
+      const url = new URL(makeRequest.mock.calls[0][1], 'https://cloud.test')
+      expect(url.searchParams.get('mobile') === 'true').toBe(expected)
+    })
+  })
   describe('collabora', () => {
     it.each([
       { isDark: false, expected: 'light' },
@@ -107,12 +130,18 @@ describe('The app provider extension', () => {
 function createShallowMountWrapper({
   makeRequest = vi.fn().mockResolvedValue({ status: 200 }),
   appName = 'example-app',
-  isDark = false
+  isDark = false,
+  isMobile = false
 }: {
   makeRequest?: RequestResult['makeRequest']
   appName?: string
   isDark?: boolean
+  isMobile?: boolean
 } = {}) {
+  vi.mocked(useIsMobile).mockReturnValue({
+    isMobile: computed(() => isMobile),
+    isTablet: computed(() => isMobile)
+  })
   vi.mocked(useRequest).mockImplementation(() => ({
     makeRequest
   }))
