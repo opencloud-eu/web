@@ -13,6 +13,7 @@ import {
   queryItemAsString,
   WebRouteMeta
 } from '@opencloud-eu/web-pkg'
+import { routeNames } from './names'
 
 /**
  * Checks if the `to` route or the route it was reached from (i.e. the `contextRoute`) needs authentication from the IdP and a successfully fetched OpenCloud user.
@@ -107,6 +108,17 @@ export const isGuestContextRequired = (router: Router, to: RouteLocation): boole
     contextRoute &&
     getRouteMeta({ meta: contextRoute.meta } as RouteLocation).authContext === 'guest'
   )
+}
+
+/**
+ * Checks if the `to` route accepts a guest session in place of a user, i.e. a private link.
+ * Unlike the other context checks, the context route is ignored on purpose.
+ *
+ * @param to {Route}
+ * @returns {boolean}
+ */
+export const isGuestContextAllowed = (to: RouteLocation): boolean => {
+  return to.name === routeNames.resolvePrivateLink
 }
 
 /**

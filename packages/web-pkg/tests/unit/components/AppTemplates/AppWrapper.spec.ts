@@ -1,7 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { defineComponent, h, nextTick, ref, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
-import type { Resource } from '@opencloud-eu/web-client'
+import type { Resource, ShareSpaceResource } from '@opencloud-eu/web-client'
 import { HttpError } from '@opencloud-eu/web-client'
 import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
 import { createMemoryHistory, createRouter, onBeforeRouteLeave } from 'vue-router'
@@ -22,9 +22,10 @@ import {
   useModals
 } from '../../../../src/composables/piniaStores'
 
-const { useAppDefaultsSpy, useYjsSessionSpy } = vi.hoisted(() => ({
+const { useAppDefaultsSpy, useYjsSessionSpy, getResourceContextSpy } = vi.hoisted(() => ({
   useAppDefaultsSpy: vi.fn(),
-  useYjsSessionSpy: vi.fn()
+  useYjsSessionSpy: vi.fn(),
+  getResourceContextSpy: vi.fn()
 }))
 
 vi.mock('vue-router', async (importOriginal) => ({
@@ -34,6 +35,10 @@ vi.mock('vue-router', async (importOriginal) => ({
 
 vi.mock('../../../../src/composables/appDefaults/useAppDefaults', () => ({
   useAppDefaults: (...args: unknown[]) => useAppDefaultsSpy(...args)
+}))
+
+vi.mock('../../../../src/composables/resources/useGetResourceContext', () => ({
+  useGetResourceContext: () => ({ getResourceContext: getResourceContextSpy })
 }))
 
 // Spread the original: `YjsStatus` is a real const the wrapper compares
@@ -91,7 +96,12 @@ function setup({
   // Whether the runtime has an authenticated SSE stream for this user.
   sse = true,
   fileSizeLimit = undefined as number | undefined,
-  folderLoadingError = undefined as HttpError
+  folderLoadingError = undefined as HttpError,
+  currentRoute = mock<RouteLocation>({
+    query: {},
+    params: { driveAliasAndItem: 'personal/alan/a.md' }
+  }),
+  isGuestContext = false
 } = {}) {
   const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
   const beginSave = vi.fn()
@@ -164,12 +174,7 @@ function setup({
     })
   })
 
-  const mocks = defaultComponentMocks({
-    currentRoute: mock<RouteLocation>({
-      query: {},
-      params: { driveAliasAndItem: 'personal/alan/a.md' }
-    })
-  })
+  const mocks = defaultComponentMocks({ currentRoute })
   // A deep mock hands back a function for every property; the wrapper
   // compares this one against the initiator in SSE events.
   ;(mocks.$clientService as any).initiatorId = 'tab-own'
@@ -186,12 +191,18 @@ function setup({
       appsState: {
         apps: { 'test-app': { id: 'test-app', name: 'Test App', meta: { fileSizeLimit } } }
       },
-      authState: { accessToken: sse ? 'token' : undefined },
+      authState: { accessToken: sse ? 'token' : undefined, guestContextReady: isGuestContext },
       capabilityState: { capabilities: { core: { 'support-sse': sse } as any } }
     }
   })
   const unregisterAppBarExtension = vi.fn()
   vi.mocked(useExtensionRegistry().registerExtensions).mockReturnValue(unregisterAppBarExtension)
+
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/:all(.*)', component: wrappedComponent }]
+  })
+  const routerPush = vi.spyOn(router, 'push').mockResolvedValue(undefined)
 
   let slotProps: any
   const wrapper = mount(AppWrapper, {
@@ -207,13 +218,7 @@ function setup({
       ...(yjsEnabled ? { yjs: { makeAdapter: () => mock<any>() } } : {})
     },
     global: {
-      plugins: [
-        ...piniaPlugins,
-        createRouter({
-          history: createMemoryHistory(),
-          routes: [{ path: '/:all(.*)', component: wrappedComponent }]
-        })
-      ],
+      plugins: [...piniaPlugins, router],
       mocks,
       provide: mocks,
       stubs: { 'file-side-bar': true }
@@ -222,6 +227,7 @@ function setup({
 
   return {
     wrapper,
+    routerPush,
     currentFileContext,
     isEnabled: () => sessionOptions?.enabled(),
     isLockedForReload,
@@ -305,6 +311,36 @@ describe('AppWrapper — ESC close behavior', () => {
       document.removeEventListener('keydown', documentKeydownSpy)
     }
   })
+})
+
+describe('AppWrapper — missing drive alias', () => {
+  const shareSpace = mock<ShareSpaceResource>({
+    id: 'share-id',
+    driveType: 'share',
+    getDriveAliasAndItem: () => 'share/Invited/sub/a.md'
+  })
+  const currentRoute = mock<RouteLocation>({
+    query: { fileId: 'file-id' },
+    params: { driveAliasAndItem: '' }
+  })
+
+  it.each([
+    { isGuestContext: false, path: '/sub/a.md', contextRouteName: 'files-spaces-generic' },
+    { isGuestContext: false, path: '/', contextRouteName: 'files-shares-with-me' },
+    { isGuestContext: true, path: '/sub/a.md', contextRouteName: 'files-guest-link' },
+    { isGuestContext: true, path: '/', contextRouteName: 'files-guest-shares' }
+  ])(
+    'uses $contextRouteName as context route (guest: $isGuestContext, path: $path)',
+    async ({ isGuestContext, path, contextRouteName }) => {
+      getResourceContextSpy.mockResolvedValue({ space: shareSpace, path })
+      const s = setup({ yjsEnabled: false, currentRoute, isGuestContext })
+      await flushPromises()
+
+      expect(s.routerPush).toHaveBeenCalledWith(
+        expect.objectContaining({ query: expect.objectContaining({ contextRouteName }) })
+      )
+    }
+  )
 })
 
 describe('AppWrapper — top bar extension', () => {

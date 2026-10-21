@@ -21,6 +21,7 @@ import { RouteLocation, Router } from 'vue-router'
 import {
   extractPublicLinkToken,
   isAnonymousContext,
+  isGuestContextAllowed,
   isGuestContextRequired,
   isIdpContextRequired,
   isPublicLinkContextRequired,
@@ -151,7 +152,10 @@ export class AuthService implements AuthServiceInterface {
     }
 
     const isUserSignedIn = await this.isUserSignedIn()
-    if (this.isGuestContextExcluded(to, isUserSignedIn)) {
+    if (isGuestContextAllowed(to) && !isUserSignedIn) {
+      // active sessions only, anything else is sent to the login by the guard
+      await this.guestSessionManager.restoreContext()
+    } else if (this.isGuestContextExcluded(to, isUserSignedIn)) {
       // a guest might only pass a user route, keep what renews the guest link until a user signs in
       if (isUserSignedIn) {
         this.guestSessionManager.clear()
@@ -357,6 +361,10 @@ export class AuthService implements AuthServiceInterface {
       const permissionId =
         getGuestLinkError(error)?.permissionId || this.authStore.guestPermissionId
       this.guestSessionManager.expire()
+      // a private link only resolves for an active guest session, anything else needs a user
+      if (isGuestContextAllowed(route)) {
+        return this.router.replace({ path: '/login', query: { redirectUrl: route.fullPath } })
+      }
       if (!permissionId) {
         return
       }

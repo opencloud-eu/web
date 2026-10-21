@@ -1,5 +1,6 @@
 import {
   extractPublicLinkToken,
+  isGuestContextAllowed,
   isGuestContextRequired,
   isIdpContextRequired,
   isPublicLinkContextRequired,
@@ -37,7 +38,8 @@ export const setupAuthGuard = (router: Router) => {
       return to.name === 'accessDenied' || { name: 'accessDenied' }
     }
 
-    if (expiredGuestPermissionId) {
+    // a private link only resolves for an active guest session, anything else needs a user
+    if (expiredGuestPermissionId && !isGuestContextAllowed(to)) {
       return {
         name: 'renewGuestLink',
         params: { permissionId: expiredGuestPermissionId },
@@ -78,6 +80,20 @@ export const setupAuthGuard = (router: Router) => {
         }
       }
       return true
+    }
+
+    if (isGuestContextAllowed(to)) {
+      if (authStore.isGuestContext) {
+        return true
+      }
+      // the session might still be valid, e.g. after a network error
+      if (unavailableGuestPermissionId) {
+        return {
+          name: 'renewGuestLink',
+          params: { permissionId: unavailableGuestPermissionId },
+          query: { resume: 'true', redirectUrl: to.fullPath }
+        }
+      }
     }
 
     if (isUserContextRequired(router, to)) {

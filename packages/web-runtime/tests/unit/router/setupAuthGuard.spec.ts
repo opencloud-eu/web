@@ -132,6 +132,74 @@ describe('setupAuthGuard', () => {
     })
   })
 
+  describe('private link', () => {
+    const privateLinkPath = '/f/file-id'
+
+    it('allows private links with a guest context', async () => {
+      const router = getRouter()
+      useAuthStore().setGuestContext('permission-id', 'share-id')
+
+      await router.push(privateLinkPath)
+
+      expect(router.currentRoute.value.name).toEqual('resolvePrivateLink')
+      expect(router.currentRoute.value.query).toEqual({})
+    })
+
+    it('redirects to the login page if the guest session expired', async () => {
+      const router = getRouter()
+      vi.mocked(authService.consumeExpiredGuestPermissionId).mockReturnValueOnce('permission-id')
+
+      await router.push(privateLinkPath)
+
+      expect(router.currentRoute.value.name).toEqual('login')
+      expect(router.currentRoute.value.query.redirectUrl).toEqual(privateLinkPath)
+    })
+
+    it('resumes the guest session if it could not be restored', async () => {
+      const router = getRouter()
+      vi.mocked(authService.consumeUnavailableGuestPermissionId).mockReturnValueOnce(
+        'permission-id'
+      )
+
+      await router.push(privateLinkPath)
+
+      expect(router.currentRoute.value.name).toEqual('renewGuestLink')
+      expect(router.currentRoute.value.params.permissionId).toEqual('permission-id')
+      expect(router.currentRoute.value.query.resume).toEqual('true')
+      expect(router.currentRoute.value.query.redirectUrl).toEqual(privateLinkPath)
+    })
+
+    it('redirects to the login page without a guest session', async () => {
+      const router = getRouter()
+
+      await router.push(privateLinkPath)
+
+      expect(router.currentRoute.value.name).toEqual('login')
+      expect(router.currentRoute.value.query.redirectUrl).toEqual(privateLinkPath)
+    })
+
+    it('allows private links with a user context', async () => {
+      const router = getRouter()
+      useAuthStore().setUserContextReady(true)
+
+      await router.push(privateLinkPath)
+
+      expect(router.currentRoute.value.name).toEqual('resolvePrivateLink')
+    })
+
+    it('prefers the user context over a guest context', async () => {
+      const router = getRouter()
+      const authStore = useAuthStore()
+      authStore.setGuestContext('permission-id', 'share-id')
+      authStore.setUserContextReady(true)
+
+      await router.push(privateLinkPath)
+
+      expect(router.currentRoute.value.name).toEqual('resolvePrivateLink')
+      expect(authStore.isGuestContext).toBeFalsy()
+    })
+  })
+
   describe('guest permission id', () => {
     it('is appended to the query while a guest context is active', async () => {
       const router = getRouter()
@@ -210,6 +278,12 @@ function getRouter() {
         meta: { authContext: 'guest' }
       },
       { path: '/app', name: 'app', component, meta: { authContext: 'hybrid' } },
+      {
+        path: '/f/:fileId',
+        name: 'resolvePrivateLink',
+        component,
+        meta: { authContext: 'user' }
+      },
       { path: '/g/renew/:permissionId', name: 'renewGuestLink', component, meta },
       { path: '/g/:token', name: 'resolveGuestLink', component, meta },
       { path: '/login', name: 'login', component, meta },
