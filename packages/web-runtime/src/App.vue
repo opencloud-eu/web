@@ -13,7 +13,7 @@
 import SkipTo from './components/SkipTo.vue'
 import ModalWrapper from './components/ModalWrapper.vue'
 import { useLayout } from './composables/layout'
-import { onMounted, ref, unref } from 'vue'
+import { onMounted, ref, unref, watch } from 'vue'
 import { additionalTranslations } from './helpers/additionalTranslations' // eslint-disable-line
 import {
   eventBus,
@@ -27,7 +27,8 @@ import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 
 const themeStore = useThemeStore()
-const { $gettext } = useGettext()
+const language = useGettext()
+const { $gettext } = language
 const { currentTheme } = storeToRefs(themeStore)
 
 const router = useRouter()
@@ -38,6 +39,7 @@ const { onInitialLoad } = useSideBar()
 onInitialLoad()
 
 const announcement = ref<string>()
+let isRouteDocumentTitle = false
 
 const extractPageTitleFromRoute = (route: RouteLocation) => {
   const routeTitle = route.meta.title ? $gettext(route.meta.title.toString()) : undefined
@@ -64,6 +66,7 @@ function announceRouteChange({
 }
 
 function onPathChange() {
+  isRouteDocumentTitle = false
   if (
     isLocationSpacesActive(router, 'files-spaces-generic') &&
     !isLocationSpacesActive(router, 'files-spaces-projects')
@@ -74,13 +77,36 @@ function onPathChange() {
 
   const extracted = extractPageTitleFromRoute(unref(route))
   if (extracted) {
+    isRouteDocumentTitle = true
     announceRouteChange(extracted)
   }
 }
 
+function onDocumentTitleChanged(payload: {
+  shortDocumentTitle: string
+  fullDocumentTitle: string
+}) {
+  isRouteDocumentTitle = false
+  announceRouteChange(payload)
+}
+
+watch(
+  () => language.current,
+  () => {
+    if (!isRouteDocumentTitle) {
+      return
+    }
+    // re-translate the route based title, without announcing a navigation
+    const extracted = extractPageTitleFromRoute(unref(route))
+    if (extracted) {
+      document.title = extracted.fullDocumentTitle
+    }
+  }
+)
+
 onMounted(() => {
   eventBus.subscribe('runtime.router.path-chaged.after', onPathChange)
-  eventBus.subscribe('runtime.documentTitle.changed', announceRouteChange)
+  eventBus.subscribe('runtime.documentTitle.changed', onDocumentTitleChanged)
 
   if (unref(layoutType) !== 'application') {
     const loader = document.getElementById('splash-loading')

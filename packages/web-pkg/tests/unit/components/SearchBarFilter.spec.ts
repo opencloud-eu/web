@@ -2,7 +2,8 @@ import { useRouteQuery } from '../../../src/composables/router/useRouteQuery'
 import SearchBarFilter from '../../../src/components/SearchBarFilter.vue'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
+import { createGettext } from 'vue3-gettext'
 import { SearchLocationFilterConstants } from '../../../src/composables/search/constants'
 
 vi.mock('../../../src/composables/router/useRouteQuery')
@@ -102,13 +103,33 @@ describe('SearchBarFilter', () => {
     ])
     expect(wrapper.emitted('select')).toHaveLength(1)
   })
+  it('follows a language change from a non-English language', async () => {
+    const language = createGettext({
+      translations: { de: { 'All files': 'Alle Dateien' } },
+      defaultLanguage: 'de',
+      silent: true
+    })
+    const { wrapper } = getWrapper({ language })
+    const filterChip = wrapper.findComponent<typeof OcFilterChip>(selectors.filterChipStub)
+    expect(filterChip.props('selectedItemNames')[0]).toBe('Alle Dateien')
+
+    language.current = 'en'
+    await nextTick()
+    expect(filterChip.props('selectedItemNames')[0]).toBe('All files')
+  })
 })
 
 function getWrapper({
   currentFolderAvailable = false,
   currentFolderIsInVault = false,
-  useScope = null
-}: { currentFolderAvailable?: boolean; currentFolderIsInVault?: boolean; useScope?: string } = {}) {
+  useScope = null,
+  language = undefined
+}: {
+  currentFolderAvailable?: boolean
+  currentFolderIsInVault?: boolean
+  useScope?: string
+  language?: ReturnType<typeof createGettext>
+} = {}) {
   const scopeQuery = ref(useScope)
   vi.mocked(useRouteQuery).mockImplementationOnce(() => scopeQuery)
 
@@ -122,7 +143,9 @@ function getWrapper({
         currentFolderIsInVault
       },
       global: {
-        plugins: [...defaultPlugins()],
+        plugins: language
+          ? [...defaultPlugins({ gettext: false }), language]
+          : [...defaultPlugins()],
         renderStubDefaultSlot: true,
         mocks,
         provide: mocks
