@@ -9,6 +9,7 @@ import { nextTick } from 'vue'
 import AccountCalendar from '../../../../src/pages/account/accountCalendar.vue'
 import { useConfigStore } from '@opencloud-eu/web-pkg'
 import { AxiosResponse } from 'axios'
+import { OcHiddenAnnouncer } from '@opencloud-eu/design-system/components'
 
 beforeEach(() => {
   vi.stubGlobal('navigator', {
@@ -55,6 +56,23 @@ describe('account calendar page', () => {
 
     await userBtn.trigger('click')
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith('test-user')
+  })
+
+  it('announces each copy of the CalDAV URL and username', async () => {
+    const wrapper = getWrapper()
+
+    await flushPromises()
+
+    const announcer = wrapper.findComponent(OcHiddenAnnouncer)
+    expect(announcer.props('announcement')).toBe('')
+
+    await wrapper.get('[data-testid="copy-caldav-url"]').trigger('click')
+    expect(announcer.props('announcement')).toBe('Copied to clipboard!')
+    const firstKey = announcer.props('announcementKey')
+
+    await wrapper.get('[data-testid="copy-caldav-username"]').trigger('click')
+    expect(announcer.props('announcement')).toBe('Copied to clipboard!')
+    expect(announcer.props('announcementKey')).not.toBe(firstKey)
   })
 })
 

@@ -88,6 +88,10 @@
             </oc-table-td>
           </oc-table-tr>
         </account-table>
+        <oc-hidden-announcer
+          :announcement="copiedAnnouncement"
+          :announcement-key="copiedAnnouncementKey"
+        />
       </template>
     </template>
   </div>
@@ -115,20 +119,29 @@ const copyIcon = 'file-copy'
 
 const copyCalDavUrlIcon = ref(copyIcon)
 const copyCalDavUsernameIcon = ref(copyIcon)
+const copiedAnnouncement = ref('')
+const copiedAnnouncementKey = ref(0)
 
 const isCalDavLoading = computed(
   () => unref(loadCalDavTask.isRunning) || !unref(loadCalDavTask.last)
 )
 
+function announceCopied() {
+  copiedAnnouncement.value = $gettext('Copied to clipboard!')
+  copiedAnnouncementKey.value++
+}
+
 const copyCalDavUrlToClipboard = () => {
   navigator.clipboard.writeText(unref(configStore.serverUrl))
   copyCalDavUrlIcon.value = copiedIcon
+  announceCopied()
   setTimeout(() => (copyCalDavUrlIcon.value = copyIcon), 1500)
 }
 
 const copyCalDavUsernameToClipboard = () => {
   navigator.clipboard.writeText(user.value.onPremisesSamAccountName)
   copyCalDavUsernameIcon.value = copiedIcon
+  announceCopied()
   setTimeout(() => (copyCalDavUsernameIcon.value = copyIcon), 1500)
 }
 

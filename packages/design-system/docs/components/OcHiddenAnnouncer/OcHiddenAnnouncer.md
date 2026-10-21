@@ -16,7 +16,7 @@ Screen reader software detect dynamic changes in regions registered as live regi
 
 ## Examples
 
-The default use case of the component needs an `announcement` property to be passed to it. This string is not visible on the screen and will only be read by screen readers.
+The default use case of the component needs an `announcement` property to be passed to it. This string is not visible on the screen and will only be read by screen readers. Every change of the `announcement` gets announced. To announce the same text again, change the `announcementKey` property as well, e.g. by increasing a counter.
 
 ### Default
 

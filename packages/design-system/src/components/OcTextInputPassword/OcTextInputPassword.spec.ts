@@ -1,8 +1,12 @@
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import OcTextInputPassword from './OcTextInputPassword.vue'
+import OcHiddenAnnouncer from '../OcHiddenAnnouncer/OcHiddenAnnouncer.vue'
 import { PasswordPolicy } from '../../helpers'
 
 describe('OcTextInputPassword', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
   it('shows the initial value', () => {
     const wrapper = getWrapper('secret')
     expect(wrapper.find('input').element.value).toBe('secret')
@@ -23,6 +27,20 @@ describe('OcTextInputPassword', () => {
     if (focused) {
       expect(classes).toContain('outline-role-secondary')
     }
+  })
+  it('announces each copy of the password to screen readers', async () => {
+    vi.stubGlobal('navigator', { clipboard: { writeText: vi.fn() } })
+    const wrapper = getWrapper('secret')
+    const announcer = wrapper.findComponent(OcHiddenAnnouncer)
+    expect(announcer.props('announcement')).toBe('')
+
+    await wrapper.find('.oc-text-input-copy-password-button').trigger('click')
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('secret')
+    expect(announcer.props('announcement')).toBe('Copied to clipboard!')
+    const firstKey = announcer.props('announcementKey')
+
+    await wrapper.find('.oc-text-input-copy-password-button').trigger('click')
+    expect(announcer.props('announcementKey')).not.toBe(firstKey)
   })
   it('uses the regular border when valid', () => {
     const wrapper = getWrapper('secret')

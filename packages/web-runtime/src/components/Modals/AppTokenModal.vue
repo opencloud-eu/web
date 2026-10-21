@@ -47,11 +47,15 @@
             appearance="raw"
             class="copy-app-token-btn ml-2 p-1"
             :aria-label="$gettext('Copy app token to clipboard')"
-            @click="copy(createdToken)"
+            @click="copyToken"
           >
             <oc-icon :name="copied ? 'check' : 'file-copy'" fill-type="line" />
           </oc-button>
         </div>
+        <oc-hidden-announcer
+          :announcement="copiedAnnouncement"
+          :announcement-key="copiedAnnouncementKey"
+        />
         <div class="text-sm text-right mt-2">
           <span v-text="$gettext('Expires on:')" />
           <span v-text="formatDateFromDateTime(expiryDate, currentLanguage)" />
@@ -93,6 +97,8 @@ const emit = defineEmits(['confirm', 'cancel', 'created'])
 const { $gettext, current: currentLanguage } = useGettext()
 const { httpAuthenticated: client } = useClientService()
 const { copy, copied } = useClipboard({ legacy: true, copiedDuring: 1500 })
+const copiedAnnouncement = ref('')
+const copiedAnnouncementKey = ref(0)
 const { showErrorMessage } = useMessages()
 const { updateModal } = useModals()
 const themeStore = useThemeStore()
@@ -145,5 +151,14 @@ const createAppToken = async () => {
     isCreating.value = false
     updateModal(modal.id, 'isLoading', false)
   }
+}
+
+async function copyToken() {
+  await copy(unref(createdToken))
+  if (!unref(copied)) {
+    return
+  }
+  copiedAnnouncement.value = $gettext('Copied to clipboard!')
+  copiedAnnouncementKey.value++
 }
 </script>
