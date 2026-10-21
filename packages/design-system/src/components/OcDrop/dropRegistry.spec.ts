@@ -1,6 +1,8 @@
 import {
+  getOutermostDropAnchor,
   hideAncestorDrops,
   isInDropChain,
+  isInOpenDrop,
   registerOpenDrop,
   unregisterOpenDrop
 } from './dropRegistry'
@@ -216,6 +218,42 @@ describe('dropRegistry', () => {
       hideAncestorDrops(drop)
 
       expect(hide).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('getOutermostDropAnchor', () => {
+    it('returns null for an element outside of any drop', () => {
+      expect(getOutermostDropAnchor(createAnchor(document.body))).toBeNull()
+    })
+
+    it('returns the anchor of the outermost drop, even after the drops closed', () => {
+      const [parent, nested] = track(createDrop('parent'), createDrop('nested'))
+      const toggle = createAnchor(document.body)
+      register(parent, toggle)
+      register(nested, createAnchor(parent))
+      unregisterOpenDrop(nested)
+      unregisterOpenDrop(parent)
+
+      expect(getOutermostDropAnchor(createAnchor(nested))).toBe(toggle)
+    })
+
+    it('returns null for a drop without anchor element', () => {
+      const [drop] = track(createDrop('drop'))
+      register(drop)
+
+      expect(getOutermostDropAnchor(createAnchor(drop))).toBeNull()
+    })
+  })
+
+  describe('isInOpenDrop', () => {
+    it('returns whether the drop of an element is open', () => {
+      const [drop] = track(createDrop('drop'))
+      const item = createAnchor(drop)
+      register(drop)
+      expect(isInOpenDrop(item)).toBe(true)
+
+      unregisterOpenDrop(drop)
+      expect(isInOpenDrop(item)).toBe(false)
     })
   })
 })

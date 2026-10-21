@@ -6,6 +6,6 @@ export function getAppListRoute(tag?: string): RouteLocationRaw {
   return { name: `${APPID}-list`, ...(tag && { query: { q_tag: tag } }) }
 }
 
-export function getAppDetailsRoute(app: App): RouteLocationRaw {
+export function getAppDetailsRoute(app: Pick<App, 'id'>): RouteLocationRaw {
   return { name: `${APPID}-details`, params: { appId: app.id } }
 }

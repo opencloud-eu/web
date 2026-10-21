@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full overflow-auto p-4 md:px-8">
+  <div ref="appListRef" class="h-full overflow-auto p-4 md:px-8">
     <div class="flex flex-wrap items-center justify-between gap-4 mt-2 mb-4">
       <div>
         <div class="flex items-center gap-1">
@@ -98,12 +98,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { computed, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
-import { NoContentMessage } from '@opencloud-eu/web-pkg'
+import { NoContentMessage, useRouter } from '@opencloud-eu/web-pkg'
 import { useAppsStore } from '../piniaStores'
 import { useAppFilter, useAppSort, useAppViewMode } from '../composables'
+import { getAppDetailsRoute } from '../helpers'
 import AppTile from '../components/AppTile.vue'
 import AppListItem from '../components/AppListItem.vue'
 import AppContextualHelper from '../components/AppContextualHelper.vue'
@@ -111,7 +112,9 @@ import AppTagFilter from '../components/AppTagFilter.vue'
 import AppViewModeSwitch from '../components/AppViewModeSwitch.vue'
 
 const appsStore = useAppsStore()
-const { apps } = storeToRefs(appsStore)
+const { apps, lastOpenedAppId } = storeToRefs(appsStore)
+const router = useRouter()
+const appListRef = useTemplateRef<HTMLElement>('appListRef')
 
 const { filterTerm, activeTag, searchedApps, filteredApps, setFilterTerm, setActiveTag } =
   useAppFilter(apps)
@@ -135,5 +138,16 @@ const resultCountText = computed(() => {
 const filterTermInput = ref(unref(filterTerm))
 watch(filterTerm, (term) => {
   filterTermInput.value = term
+})
+
+// coming back from a details page, focus the app that was opened instead of leaving focus on the body
+onMounted(() => {
+  const appId = unref(lastOpenedAppId)
+  if (!appId) {
+    return
+  }
+  lastOpenedAppId.value = undefined
+  const { href } = router.resolve(getAppDetailsRoute({ id: appId }))
+  unref(appListRef).querySelector<HTMLElement>(`a[href="${href}"]`)?.focus()
 })
 </script>

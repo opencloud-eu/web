@@ -8,7 +8,7 @@
     <template v-if="errorType">
       <p data-testid="error-message" class="my-0" v-text="errorMessage" />
       <oc-button
-        v-if="isRetryable"
+        v-if="canRetry"
         appearance="filled"
         size="large"
         class="w-full p-2"
@@ -18,7 +18,7 @@
         <span v-text="$gettext('Try again')" />
       </oc-button>
     </template>
-    <form v-else-if="isRenewed" class="flex flex-col gap-4" @submit.prevent="submitPin">
+    <form v-else-if="renewal?.withPin" class="flex flex-col gap-4" @submit.prevent="submitPin">
       <oc-text-input
         v-model="pin"
         :label="$gettext('PIN')"
@@ -31,14 +31,14 @@
         appearance="filled"
         size="large"
         class="w-full p-2"
-        :disabled="!pin || verifyPinTask.isRunning"
+        :disabled="!normalizedPin || verifyPinTask.isRunning"
         submit="submit"
         data-testid="pin-submit"
       >
         <span v-text="$gettext('Continue')" />
       </oc-button>
     </form>
-    <oc-spinner v-else-if="!isTokenMissing" :aria-hidden="true" />
+    <oc-spinner v-else-if="!renewal" :aria-hidden="true" />
   </plain-card>
 </template>
 
@@ -48,12 +48,19 @@ import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { call } from '@opencloud-eu/web-client'
 import { GuestLinkErrorErrorTypeEnum } from '@opencloud-eu/web-client/graph/generated'
-import { queryItemAsString, useRouteParam, useRouteQuery, useRouter } from '@opencloud-eu/web-pkg'
+import {
+  formatRelativeDateFromJSDate,
+  queryItemAsString,
+  useRouteParam,
+  useRouteQuery,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import {
+  getGuestLinkError,
   getGuestLinkErrorType,
   GuestLinkErrorType,
-  GuestLinkTokenMissingError,
+  GuestLinkRenewal,
   GuestSession,
   isGuestSessionInvalidError,
   isRetryableGuestLinkErrorType
@@ -63,21 +70,24 @@ import { useGuestLinkTargetRoute } from '../composables/guestLink'
 import { isGuestContextAllowed, isGuestContextRequired, parsePathQuery } from '../router/helpers'
 
 const router = useRouter()
-const { $gettext } = useGettext()
+const { $gettext, current: currentLanguage } = useGettext()
 const { getGuestLinkTargetRoute } = useGuestLinkTargetRoute()
 const permissionId = useRouteParam('permissionId')
 const redirectUrl = useRouteQuery('redirectUrl')
 // set by the auth guard, the session might still be valid, e.g. after a network error
 const resume = useRouteQuery('resume')
+// set by the resolve page, the newest link is used or expired, so the backend replaces it
+const linkUnusable = useRouteQuery('linkUnusable')
 
-const isRenewed = ref(false)
-// e.g. after a PIN login, only the link from the most recent email can renew the access
-const isTokenMissing = ref(false)
+const renewal = ref<GuestLinkRenewal>()
 const renewErrorType = ref<GuestLinkErrorType>()
+const renewRetryAt = ref<Date>()
 // the session exists, e.g. after a verified PIN, but its context couldn't be loaded
 const resumeErrorType = ref<GuestLinkErrorType>()
 const pin = ref('')
 const pinErrorType = ref<GuestLinkErrorType>()
+// a PIN pasted from the email might contain whitespace
+const normalizedPin = computed(() => unref(pin).replace(/\s/g, ''))
 
 async function openSession(session: GuestSession) {
   const url = queryItemAsString(unref(redirectUrl))
@@ -93,8 +103,7 @@ async function openSession(session: GuestSession) {
 }
 
 const verifyPinTask = useTask(function* () {
-  // a PIN pasted from the email might contain whitespace
-  yield authService.verifyGuestLinkPin(unref(permissionId), unref(pin).replace(/\s/g, ''))
+  yield authService.verifyGuestLinkPin(unref(permissionId), unref(normalizedPin))
 })
 
 const resumeSessionTask = useTask(function* () {
@@ -104,12 +113,18 @@ const resumeSessionTask = useTask(function* () {
 
 const errorType = computed(() => unref(resumeErrorType) || unref(renewErrorType))
 const isRetryable = computed(() => isRetryableGuestLinkErrorType(unref(errorType)))
+const isRateLimited = computed(
+  () => unref(renewErrorType) === GuestLinkErrorErrorTypeEnum.TooManyRequests
+)
+const canRetry = computed(() => unref(isRetryable) || unref(isRateLimited))
 
 function getShareErrorMessage(errorType: GuestLinkErrorType): string | undefined {
   switch (errorType) {
     case GuestLinkErrorErrorTypeEnum.ShareExpired:
       return $gettext('Your access to the shared item has expired.')
     case GuestLinkErrorErrorTypeEnum.ShareNotFound:
+    // the backend deletes the link of a removed or expired share
+    case GuestLinkErrorErrorTypeEnum.TokenNotFound:
       return $gettext('The shared item is no longer available.')
     default:
       return undefined
@@ -129,6 +144,17 @@ const errorMessage = computed(() => {
   if (unref(isRetryable)) {
     return $gettext('A new invitation could not be requested. Please try again later.')
   }
+  if (unref(isRateLimited)) {
+    if (unref(renewRetryAt)) {
+      return $gettext('Too many new invitations were requested. Please try again %{time}.', {
+        // round up, an early retry would be rejected again
+        time: formatRelativeDateFromJSDate(unref(renewRetryAt), currentLanguage, {
+          rounding: 'ceil'
+        })
+      })
+    }
+    return $gettext('Too many new invitations were requested. Please try again later.')
+  }
   return (
     getShareErrorMessage(unref(renewErrorType)) ||
     $gettext(
@@ -145,9 +171,18 @@ const pinErrorMessage = computed(() => {
     case GuestLinkErrorErrorTypeEnum.PinInvalid:
       return $gettext('The PIN is incorrect.')
     case GuestLinkErrorErrorTypeEnum.PinExpired:
+    case GuestLinkErrorErrorTypeEnum.NonceExpired:
+    // the browser drops the nonce cookie once it expired
+    case GuestLinkErrorErrorTypeEnum.InvalidRequest:
       return $gettext(
         'The PIN has expired. Open the invitation link from your most recent email to get a new one.'
       )
+    case GuestLinkErrorErrorTypeEnum.NonceInvalid:
+      return $gettext(
+        'The PIN only works in the browser it was requested in. Open the invitation link from your most recent email instead.'
+      )
+    case GuestLinkErrorErrorTypeEnum.TooManyRequests:
+      return $gettext('Too many attempts. Please try again later.')
     default:
       return (
         getShareErrorMessage(errorType) ||
@@ -166,11 +201,8 @@ const cardTitle = computed(() => {
   if (unref(renewErrorType)) {
     return $gettext('An error occurred while renewing your access')
   }
-  if (unref(isRenewed)) {
+  if (unref(renewal)) {
     return $gettext('Check your inbox')
-  }
-  if (unref(isTokenMissing)) {
-    return $gettext('Your access has expired')
   }
   return $gettext('Renewing your access…')
 })
@@ -181,13 +213,21 @@ const cardDescription = computed(() => {
       ? $gettext('Ask the person who invited you for a new invitation.')
       : undefined
   }
-  if (unref(isRenewed)) {
+  if (unref(renewal)?.withPin) {
     return $gettext(
-      'Your access has expired. We sent you an email with a new invitation link and a PIN. Open the link or enter the PIN to continue.'
+      'We sent you an email with a new invitation link and a PIN. Open the link or enter the PIN to continue.'
     )
   }
-  if (unref(isTokenMissing)) {
-    return $gettext('Open the invitation link from your most recent email to continue.')
+  if (unref(renewal) && queryItemAsString(unref(linkUnusable)) === 'true') {
+    return $gettext(
+      'This invitation link can no longer be used. We sent you an email with a new one, open it to continue.'
+    )
+  }
+  // without a session the backend only sends a new link if the newest one is used or expired
+  if (unref(renewal)) {
+    return $gettext(
+      'Your access has expired. Open the invitation link from your most recent email to continue. If it has expired or has already been used, a new one is on its way.'
+    )
   }
   return undefined
 })
@@ -196,35 +236,32 @@ const cardIcon = computed(() => {
   if (unref(errorType)) {
     return 'error-warning'
   }
-  if (unref(isTokenMissing)) {
-    return 'mail'
-  }
-  return unref(isRenewed) ? 'mail-send' : undefined
+  return unref(renewal) ? 'mail-send' : undefined
 })
 
 async function renew() {
   renewErrorType.value = undefined
+  renewRetryAt.value = undefined
   try {
-    await authService.renewGuestLink(unref(permissionId))
-    isRenewed.value = true
+    renewal.value = await authService.renewGuestLink(unref(permissionId))
   } catch (error) {
     // another tab might have renewed the link meanwhile
-    if (authService.isGuestLinkRenewalPending(unref(permissionId))) {
-      isRenewed.value = true
-      return
-    }
-    if (error instanceof GuestLinkTokenMissingError) {
-      isTokenMissing.value = true
+    renewal.value = authService.getPendingGuestLinkRenewal(unref(permissionId))
+    if (unref(renewal)) {
       return
     }
     renewErrorType.value = getGuestLinkErrorType(error)
+    const retryAfter = getGuestLinkError(error)?.retryAfter
+    if (retryAfter) {
+      renewRetryAt.value = new Date(Date.now() + retryAfter * 1000)
+    }
     console.error('guest link could not be renewed:', unref(renewErrorType))
   }
 }
 
 function startRenewal() {
-  isRenewed.value = authService.isGuestLinkRenewalPending(unref(permissionId))
-  if (unref(isRenewed)) {
+  renewal.value = authService.getPendingGuestLinkRenewal(unref(permissionId))
+  if (unref(renewal)) {
     return
   }
   return renew()
@@ -233,12 +270,12 @@ function startRenewal() {
 async function resumeSession() {
   resumeErrorType.value = undefined
   // a verified PIN is used up, so don't offer the form while loading
-  isRenewed.value = false
+  renewal.value = undefined
   try {
     await resumeSessionTask.perform()
   } catch (error) {
     // opening the session unmounts this page, which cancels the task
-    if (resumeSessionTask.last?.isCanceled) {
+    if (error === 'cancel') {
       return
     }
     if (isGuestSessionInvalidError(error)) {
@@ -267,15 +304,15 @@ async function submitPin() {
 
 // another tab might finish its renewal after this one checked for it
 function onStorage() {
-  if (unref(isRenewed) || resumeSessionTask.isRunning || unref(resumeErrorType)) {
+  if (unref(renewal) || resumeSessionTask.isRunning || unref(resumeErrorType)) {
     return
   }
-  if (!authService.isGuestLinkRenewalPending(unref(permissionId))) {
+  const pendingRenewal = authService.getPendingGuestLinkRenewal(unref(permissionId))
+  if (!pendingRenewal) {
     return
   }
   renewErrorType.value = undefined
-  isTokenMissing.value = false
-  isRenewed.value = true
+  renewal.value = pendingRenewal
 }
 
 onMounted(() => {

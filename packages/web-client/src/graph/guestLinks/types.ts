@@ -6,8 +6,5 @@ export interface GraphGuestLinks {
     data: { pin: string; permissionId: string },
     requestOptions?: GraphRequestOptions
   ) => Promise<string>
-  renewGuestLink: (
-    data: { permissionId: string; token?: string },
-    requestOptions?: GraphRequestOptions
-  ) => Promise<void>
+  renewGuestLink: (permissionId: string, requestOptions?: GraphRequestOptions) => Promise<void>
 }

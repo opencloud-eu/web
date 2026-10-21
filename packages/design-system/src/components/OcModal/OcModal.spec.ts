@@ -1,6 +1,7 @@
 import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-helpers'
 import Modal from './OcModal.vue'
 import OcButton from './../OcButton/OcButton.vue'
+import { registerOpenDrop, unregisterOpenDrop } from '../OcDrop/dropRegistry'
 
 const defaultProps = {
   title: 'Example title',
@@ -140,6 +141,149 @@ describe('OcModal', () => {
       pressEscapeFromBody()
 
       expect(wrapper.emitted('cancel')).toBeFalsy()
+    })
+  })
+
+  describe('focus return after closing', () => {
+    let openDrops: HTMLElement[]
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+      openDrops = []
+    })
+
+    afterEach(() => {
+      openDrops.forEach((dropEl) => unregisterOpenDrop(dropEl))
+      document.body.innerHTML = ''
+      vi.useRealTimers()
+    })
+
+    function createButton(parent: HTMLElement) {
+      const button = document.createElement('button')
+      parent.appendChild(button)
+      return button
+    }
+
+    // drops are teleported to the body, they only know the element they were opened from
+    function openDrop(anchor: HTMLElement) {
+      const dropEl = document.createElement('div')
+      dropEl.classList.add('oc-drop')
+      document.body.appendChild(dropEl)
+      registerOpenDrop(dropEl, { getAnchor: () => anchor, hide: vi.fn() })
+      openDrops.push(dropEl)
+      return dropEl
+    }
+
+    function closeDrop(dropEl: HTMLElement) {
+      unregisterOpenDrop(dropEl)
+      dropEl.remove()
+    }
+
+    // the modal remembers the focused element while being set up, so the opener needs the focus first
+    function openModalFrom(opener: HTMLElement) {
+      opener.focus()
+      return mount(Modal, {
+        global: {
+          renderStubDefaultSlot: true,
+          plugins: [...defaultPlugins()],
+          stubs: { 'focus-trap': true }
+        },
+        props: defaultProps
+      })
+    }
+
+    it('focuses the anchor of the drop the modal was opened from', () => {
+      const anchor = createButton(document.body)
+      const dropEl = openDrop(anchor)
+      const wrapper = openModalFrom(createButton(dropEl))
+      closeDrop(dropEl)
+      expect(document.activeElement).toBe(document.body)
+
+      wrapper.unmount()
+      // focus-trap returns the focus with a delay as well, the modal has to refocus after it
+      expect(document.activeElement).toBe(document.body)
+      vi.runAllTimers()
+
+      expect(document.activeElement).toBe(anchor)
+    })
+
+    it('focuses the toggle of the outermost drop if opened from a nested drop', () => {
+      const toggle = createButton(document.body)
+      const parentDrop = openDrop(toggle)
+      const nestedDrop = openDrop(createButton(parentDrop))
+      const wrapper = openModalFrom(createButton(nestedDrop))
+      closeDrop(nestedDrop)
+      closeDrop(parentDrop)
+
+      wrapper.unmount()
+      vi.runAllTimers()
+
+      expect(document.activeElement).toBe(toggle)
+    })
+
+    it('focuses the drop anchor if the focus stayed on the item of the closed drop', () => {
+      const anchor = createButton(document.body)
+      const dropEl = openDrop(anchor)
+      const item = createButton(dropEl)
+      const wrapper = openModalFrom(item)
+      // the drop is only hidden, so its item keeps the focus
+      unregisterOpenDrop(dropEl)
+      expect(document.activeElement).toBe(item)
+
+      wrapper.unmount()
+      vi.runAllTimers()
+
+      expect(document.activeElement).toBe(anchor)
+    })
+
+    it('keeps the focus on the item if its drop is still open', () => {
+      const dropEl = openDrop(createButton(document.body))
+      const item = createButton(dropEl)
+      const wrapper = openModalFrom(item)
+
+      wrapper.unmount()
+      vi.runAllTimers()
+
+      expect(document.activeElement).toBe(item)
+    })
+
+    it('leaves the focus alone if it already moved to another element', () => {
+      const dropEl = openDrop(createButton(document.body))
+      const wrapper = openModalFrom(createButton(dropEl))
+      closeDrop(dropEl)
+      const other = createButton(document.body)
+
+      wrapper.unmount()
+      other.focus()
+      vi.runAllTimers()
+
+      expect(document.activeElement).toBe(other)
+    })
+
+    it('does nothing if the drop anchor was removed', () => {
+      const anchor = createButton(document.body)
+      const focusSpy = vi.spyOn(anchor, 'focus')
+      const dropEl = openDrop(anchor)
+      const wrapper = openModalFrom(createButton(dropEl))
+      closeDrop(dropEl)
+      anchor.remove()
+
+      wrapper.unmount()
+      expect(() => vi.runAllTimers()).not.toThrow()
+
+      expect(focusSpy).not.toHaveBeenCalled()
+      expect(document.activeElement).toBe(document.body)
+    })
+
+    it('does not move the focus if the modal was not opened from a drop', () => {
+      const opener = createButton(document.body)
+      const wrapper = openModalFrom(opener)
+      opener.blur()
+
+      wrapper.unmount()
+      expect(() => vi.runAllTimers()).not.toThrow()
+
+      expect(document.activeElement).toBe(document.body)
     })
   })
 

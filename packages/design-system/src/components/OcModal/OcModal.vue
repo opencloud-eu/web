@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, useId, useTemplateRef, watch } from 'vue'
+import { computed, onUnmounted, ref, unref, useId, useTemplateRef, watch } from 'vue'
 import { FocusTrap } from 'focus-trap-vue'
 import OcButton, { Props as ButtonProps } from '../OcButton/OcButton.vue'
 import OcTextInput from '../OcTextInput/OcTextInput.vue'
@@ -118,6 +118,7 @@ import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
 import { ContextualHelperData, isComposingEvent } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 import { useEventListener } from '@vueuse/core'
+import { getOutermostDropAnchor, isInOpenDrop } from '../OcDrop/dropRegistry'
 
 export interface Props {
   /**
@@ -334,6 +335,32 @@ watch(
   },
   { immediate: true }
 )
+
+// focus-trap returns the focus to the element that opened the modal. A menu item loses it once its
+// drop closed, so return the focus to the element that opened the menu instead
+const opener = document.activeElement
+const dropAnchor = opener && getOutermostDropAnchor(opener)
+
+function isFocusLost() {
+  const active = document.activeElement
+  if (!active || active === document.body) {
+    return true
+  }
+  return active === opener && !isInOpenDrop(opener)
+}
+
+onUnmounted(() => {
+  if (!dropAnchor) {
+    return
+  }
+  // runs after focus-trap's own (delayed) attempt to return the focus
+  setTimeout(() => {
+    if (!dropAnchor.isConnected || !isFocusLost()) {
+      return
+    }
+    dropAnchor.focus()
+  })
+})
 
 const initialFocusRef = computed<FocusTargetOrFalse>(() => {
   if (focusTrapInitial || focusTrapInitial === false) {

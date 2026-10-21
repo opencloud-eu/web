@@ -2,6 +2,7 @@ import { UserManager } from './userManager'
 import { PublicLinkManager } from './publicLinkManager'
 import {
   getGuestLinkError,
+  GuestLinkRenewal,
   GuestSession,
   GuestSessionManager,
   isGuestSessionInvalidError
@@ -156,7 +157,7 @@ export class AuthService implements AuthServiceInterface {
       // active sessions only, anything else is sent to the login by the guard
       await this.guestSessionManager.restoreContext()
     } else if (this.isGuestContextExcluded(to, isUserSignedIn)) {
-      // a guest might only pass a user route, keep what renews the guest link until a user signs in
+      // a guest might only pass a user route, keep a pending renewal until a user signs in
       if (isUserSignedIn) {
         this.guestSessionManager.clear()
       } else {
@@ -470,7 +471,7 @@ export class AuthService implements AuthServiceInterface {
     return this.guestSessionManager.redeem(token)
   }
 
-  public renewGuestLink(permissionId: string): Promise<void> {
+  public renewGuestLink(permissionId: string): Promise<GuestLinkRenewal> {
     return this.guestSessionManager.renew(permissionId)
   }
 
@@ -478,8 +479,8 @@ export class AuthService implements AuthServiceInterface {
     return this.guestSessionManager.verifyPin(permissionId, pin)
   }
 
-  public isGuestLinkRenewalPending(permissionId: string): boolean {
-    return this.guestSessionManager.isRenewalPending(permissionId)
+  public getPendingGuestLinkRenewal(permissionId: string): GuestLinkRenewal | undefined {
+    return this.guestSessionManager.getPendingRenewal(permissionId)
   }
 
   public hasGuestSession(permissionId: string): boolean {

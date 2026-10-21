@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { Router, RouterHistory } from 'vue-router'
+import { onBeforeRouteLeave, RouteLocationNormalized, Router, RouterHistory } from 'vue-router'
 import { RouterLinkStub } from '@vue/test-utils'
 import { mock } from 'vitest-mock-extended'
 import { useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
@@ -14,6 +14,11 @@ import AppDetailsHeader from '../../../src/components/AppDetailsHeader.vue'
 import { useAppsStore } from '../../../src/piniaStores'
 import { App } from '../../../src/types'
 import { APPID } from '../../../src/appid'
+
+vi.mock('vue-router', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('vue-router')>()),
+  onBeforeRouteLeave: vi.fn()
+}))
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -91,7 +96,27 @@ describe('AppDetails', () => {
       query: { q_tag: 'viewer' }
     })
   })
+  describe('leaving the page', () => {
+    it('remembers the app when going back to the list', () => {
+      getWrapper(app)
+      leaveRouteTo(`${APPID}-list`)
+      expect(useAppsStore().lastOpenedAppId).toBe('com.example.app')
+    })
+    it('forgets the app when going anywhere else', () => {
+      getWrapper(app)
+      useAppsStore().lastOpenedAppId = 'com.example.app'
+      leaveRouteTo('files-spaces-generic')
+      expect(useAppsStore().lastOpenedAppId).toBeUndefined()
+    })
+  })
 })
+
+function leaveRouteTo(name: string) {
+  const guard = vi.mocked(onBeforeRouteLeave).mock.calls.at(-1)[0] as (
+    to: RouteLocationNormalized
+  ) => void
+  guard(mock<RouteLocationNormalized>({ name }))
+}
 
 function getWrapper(
   resolvedApp: App | undefined,

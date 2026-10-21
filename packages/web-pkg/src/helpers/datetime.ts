@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon'
+import { DateTime, ToRelativeOptions } from 'luxon'
 import { getLocaleFromLanguage } from './locale'
 
 export const formatDateFromDateTime = (
@@ -36,11 +36,19 @@ export const formatDateFromRFC = (
 ) => {
   return formatDateFromDateTime(DateTime.fromRFC2822(date), currentLanguage, format)
 }
-export const formatRelativeDateFromDateTime = (date: DateTime, currentLanguage: string) => {
-  return date.setLocale(getLocaleFromLanguage(currentLanguage)).toRelative()
+export const formatRelativeDateFromDateTime = (
+  date: DateTime,
+  currentLanguage: string,
+  options?: ToRelativeOptions
+) => {
+  return date.setLocale(getLocaleFromLanguage(currentLanguage)).toRelative(options)
 }
-export const formatRelativeDateFromJSDate = (date: Date, currentLanguage: string) => {
-  return formatRelativeDateFromDateTime(DateTime.fromJSDate(date), currentLanguage)
+export const formatRelativeDateFromJSDate = (
+  date: Date,
+  currentLanguage: string,
+  options?: ToRelativeOptions
+) => {
+  return formatRelativeDateFromDateTime(DateTime.fromJSDate(date), currentLanguage, options)
 }
 export const formatRelativeDateFromHTTP = (date: string, currentLanguage: string) => {
   return formatRelativeDateFromDateTime(DateTime.fromHTTP(date), currentLanguage)
