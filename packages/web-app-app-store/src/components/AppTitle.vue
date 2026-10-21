@@ -3,7 +3,7 @@
     <h3 class="min-w-0" :class="titleClass">
       <!-- the link covers the whole surrounding item, interactive elements need to be positioned on top -->
       <router-link :to="getAppDetailsRoute(app)" class="block after:absolute after:inset-0">
-        <oc-filter-highlight class="block truncate" :text="app.name" :term="term" />
+        <oc-filter-highlight class="block" :class="nameClass" :text="app.name" :term="term" />
       </router-link>
     </h3>
     <span class="ml-2 shrink-0 text-role-on-surface-variant text-sm">
@@ -20,10 +20,12 @@ import { getAppDetailsRoute } from '../helpers'
 const {
   app,
   term = '',
-  titleClass = ''
+  titleClass = '',
+  nameClass = 'truncate'
 } = defineProps<{
   app: App
   term?: string
   titleClass?: string
+  nameClass?: string
 }>()
 </script>

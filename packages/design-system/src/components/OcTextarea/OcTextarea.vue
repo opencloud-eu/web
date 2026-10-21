@@ -105,7 +105,7 @@ defineExpose({ focus })
   }
 
   .oc-textarea:focus {
-    @apply border border-role-outline outline-1 outline-role-outline -outline-offset-2;
+    @apply border border-role-outline outline-1 outline-role-secondary -outline-offset-2;
   }
 
   .oc-textarea::placeholder {
