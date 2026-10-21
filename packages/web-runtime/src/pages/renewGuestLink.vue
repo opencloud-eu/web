@@ -69,6 +69,8 @@ const permissionId = useRouteParam('permissionId')
 const redirectUrl = useRouteQuery('redirectUrl')
 // set by the auth guard, the session might still be valid, e.g. after a network error
 const resume = useRouteQuery('resume')
+// set by the resolve page, the newest link is used or expired, so the backend replaces it
+const linkUnusable = useRouteQuery('linkUnusable')
 
 const renewal = ref<GuestLinkRenewal>()
 const renewErrorType = ref<GuestLinkErrorType>()
@@ -194,10 +196,15 @@ const cardDescription = computed(() => {
       'We sent you an email with a new invitation link and a PIN. Open the link or enter the PIN to continue.'
     )
   }
-  // without a session the backend only sends a new link if the newest one was already used
+  if (unref(renewal) && queryItemAsString(unref(linkUnusable)) === 'true') {
+    return $gettext(
+      'This invitation link can no longer be used. We sent you an email with a new one, open it to continue.'
+    )
+  }
+  // without a session the backend only sends a new link if the newest one is used or expired
   if (unref(renewal)) {
     return $gettext(
-      'Your access has expired. Open the invitation link from your most recent email to continue. If it has already been used, a new one is on its way.'
+      'Your access has expired. Open the invitation link from your most recent email to continue. If it has expired or has already been used, a new one is on its way.'
     )
   }
   return undefined

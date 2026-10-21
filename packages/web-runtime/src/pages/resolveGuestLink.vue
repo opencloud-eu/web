@@ -59,7 +59,12 @@ function renewLink(error: unknown) {
   if (!permissionId) {
     return false
   }
-  router.replace({ name: 'renewGuestLink', params: { permissionId } })
+  // an older link would be rejected as invalid, so this is the newest one
+  router.replace({
+    name: 'renewGuestLink',
+    params: { permissionId },
+    query: { linkUnusable: 'true' }
+  })
   return true
 }
 

@@ -267,23 +267,21 @@ describe('GuestSessionManager', () => {
       expect(manager.getPendingRenewal('other-permission-id')).toBeUndefined()
     })
 
-    it('returns a renewal without pin when the session expired', async () => {
+    it('does not record a renewal without pin when the session expired', async () => {
       const { manager } = getManager()
       await manager.redeem('magic-token')
       manager.expire()
 
-      await manager.renew('permission-id')
-
-      expect(manager.getPendingRenewal('permission-id')).toEqual({ withPin: false })
+      expect(await manager.renew('permission-id')).toEqual({ withPin: false })
+      expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
     })
 
-    it('returns a renewal without pin when the session belongs to another share', async () => {
+    it('does not record a renewal without pin when the session belongs to another share', async () => {
       const { manager } = getManager()
       await manager.redeem('magic-token')
 
-      await manager.renew('other-permission-id')
-
-      expect(manager.getPendingRenewal('other-permission-id')).toEqual({ withPin: false })
+      expect(await manager.renew('other-permission-id')).toEqual({ withPin: false })
+      expect(manager.getPendingRenewal('other-permission-id')).toBeUndefined()
     })
 
     it('returns nothing without a renewal', () => {
@@ -294,6 +292,7 @@ describe('GuestSessionManager', () => {
     it('returns nothing once the renewal expired', async () => {
       vi.useFakeTimers()
       const { manager } = getManager()
+      await manager.redeem('magic-token')
       await manager.renew('permission-id')
 
       vi.advanceTimersByTime(30 * 60 * 1000)
@@ -310,6 +309,7 @@ describe('GuestSessionManager', () => {
       ['the session is cleared', (manager: GuestSessionManager) => manager.clear()]
     ])('returns nothing once %s', async (_, action) => {
       const { manager } = getManager()
+      await manager.redeem('magic-token')
       await manager.renew('permission-id')
 
       await action(manager)
@@ -319,6 +319,7 @@ describe('GuestSessionManager', () => {
 
     it('keeps the renewal when the session expires', async () => {
       const { manager } = getManager()
+      await manager.redeem('magic-token')
       await manager.renew('permission-id')
 
       manager.expire()

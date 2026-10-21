@@ -61,10 +61,21 @@ describe('renewGuestLink', () => {
 
     expect(wrapper.text()).toContain('Check your inbox')
     expect(wrapper.text()).toContain(
-      'Your access has expired. Open the invitation link from your most recent email to continue. If it has already been used, a new one is on its way.'
+      'Your access has expired. Open the invitation link from your most recent email to continue. If it has expired or has already been used, a new one is on its way.'
     )
     expect(wrapper.find(selectors.pinInput).exists()).toBeFalsy()
     expect(wrapper.find(selectors.spinner).exists()).toBeFalsy()
+  })
+
+  it('announces a new link when the opened link can no longer be used', async () => {
+    const { wrapper } = getWrapper({ withPin: false, query: { linkUnusable: 'true' } })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Check your inbox')
+    expect(wrapper.text()).toContain(
+      'This invitation link can no longer be used. We sent you an email with a new one, open it to continue.'
+    )
+    expect(wrapper.text()).not.toContain('most recent email')
   })
 
   it('shows the pin form after a renewal with pin', async () => {
@@ -76,20 +87,11 @@ describe('renewGuestLink', () => {
     expect(wrapper.find(selectors.pinInput).exists()).toBeTruthy()
   })
 
-  it('does not renew again while a renewal is pending', async () => {
-    const { wrapper } = getWrapper({ pendingRenewal: { withPin: false } })
-    await flushPromises()
-
-    expect(authService.getPendingGuestLinkRenewal).toHaveBeenCalledWith('permission-id')
-    expect(authService.renewGuestLink).not.toHaveBeenCalled()
-    expect(wrapper.text()).toContain('Check your inbox')
-    expect(wrapper.find(selectors.pinInput).exists()).toBeFalsy()
-  })
-
   it('shows the pin form without renewing again while a renewal with pin is pending', async () => {
     const { wrapper } = getWrapper({ pendingRenewal: { withPin: true } })
     await flushPromises()
 
+    expect(authService.getPendingGuestLinkRenewal).toHaveBeenCalledWith('permission-id')
     expect(authService.renewGuestLink).not.toHaveBeenCalled()
     expect(wrapper.text()).toContain('Check your inbox')
     expect(wrapper.find(selectors.pinInput).exists()).toBeTruthy()
@@ -547,7 +549,9 @@ function getWrapper({
     vi.mocked(authService.renewGuestLink).mockRejectedValue(renewError)
   } else {
     vi.mocked(authService.renewGuestLink).mockImplementation(() => {
-      setPendingRenewal({ withPin })
+      if (withPin) {
+        setPendingRenewal({ withPin })
+      }
       return Promise.resolve({ withPin })
     })
   }

@@ -9,7 +9,7 @@ import { resetSSE } from '@opencloud-eu/web-client/sse'
 
 const storageKey = 'oc.guestPermissionId'
 
-// marks a renewal whose link and PIN are still valid, so the renew page doesn't request another one
+// marks a renewal whose PIN is still valid, so the renew page doesn't request another one
 const renewalStorageKey = 'oc.guestLinkRenewal'
 // keep in sync with `guestLinkTokenTTL` and the default `PinAndNonceTTL` in opencloud services/auth-guest
 const renewalLifetime = 30 * 60 * 1000
@@ -194,13 +194,16 @@ export class GuestSessionManager {
     await this.clientService.graphAuthenticated.guestLinks.renewGuestLink(permissionId, {
       withCredentials: true
     })
-    const renewal: StoredGuestLinkRenewal = { permissionId, renewedAt: Date.now(), withPin }
-    localStorage.setItem(renewalStorageKey, JSON.stringify(renewal))
+    // without a PIN the backend might not have sent anything, so a later renewal must still ask it
+    if (withPin) {
+      const renewal: StoredGuestLinkRenewal = { permissionId, renewedAt: Date.now(), withPin }
+      localStorage.setItem(renewalStorageKey, JSON.stringify(renewal))
+    }
     return { withPin }
   }
 
   /**
-   * Returns the renewal of the share if its link and PIN are still valid.
+   * Returns the renewal of the share if its PIN is still valid.
    */
   public getPendingRenewal(permissionId: string): GuestLinkRenewal | undefined {
     try {

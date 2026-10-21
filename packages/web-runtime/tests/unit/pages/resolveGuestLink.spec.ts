@@ -75,7 +75,8 @@ describe('resolveGuestLink', () => {
 
       expect(mocks.$router.replace).toHaveBeenCalledWith({
         name: 'renewGuestLink',
-        params: { permissionId: 'permission-id' }
+        params: { permissionId: 'permission-id' },
+        query: { linkUnusable: 'true' }
       })
       expect(wrapper.find(selectors.errorMessage).exists()).toBeFalsy()
     }
