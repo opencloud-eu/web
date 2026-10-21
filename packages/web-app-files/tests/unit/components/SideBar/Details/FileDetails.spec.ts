@@ -180,6 +180,17 @@ describe('Details SideBar Panel', () => {
       await wrapper.vm.$nextTick()
       expect(wrapper.find(selectors.versionsInfo).exists()).toBeTruthy()
     })
+    it('keeps the visible date and count as the button names', async () => {
+      const resource = getResourceMock()
+      const { wrapper } = createWrapper({ resource, versions: ['1'] })
+      await wrapper.vm.$nextTick()
+      for (const selector of [selectors.timestamp, selectors.versionsInfo]) {
+        const button = wrapper.find(`${selector} button`)
+        expect(button.attributes('aria-label')).toBeUndefined()
+        const hint = wrapper.find(`#${button.attributes('aria-describedby')}`)
+        expect(hint.text()).toBe('See all versions')
+      }
+    })
     it('do not show for folders on a private page', () => {
       const resource = getResourceMock({ type: 'folder' })
       const { wrapper } = createWrapper({ resource, versions: ['1'] })
