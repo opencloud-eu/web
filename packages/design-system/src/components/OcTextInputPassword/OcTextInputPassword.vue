@@ -13,6 +13,8 @@
       ref="passwordInput"
       v-model="password"
       class="grow-2 border-0 focus:border-0 focus:outline-0"
+      :aria-describedby="getAriaDescribedBy()"
+      :aria-invalid="getAriaInvalid()"
       :type="showPassword ? 'text' : 'password'"
       :disabled="disabled"
       @focus="hasFocus = true"
@@ -53,7 +55,7 @@
     </oc-button>
   </div>
   <teleport v-if="showPasswordPolicyInformation" defer :to="`#${teleportId}`">
-    <div class="flex flex-row flex-wrap text-sm pt-2 gap-x-2">
+    <div :id="passwordPolicyId" class="flex flex-row flex-wrap text-sm pt-2 gap-x-2">
       <div
         v-for="(testedRule, index) in testedPasswordPolicy.rules"
         :key="index"
@@ -69,6 +71,12 @@
           :class="[{ 'oc-text-input-danger': !testedRule.verified }]"
           v-text="getPasswordPolicyRuleMessage(testedRule)"
         ></span>
+        <span
+          class="sr-only"
+          v-text="
+            testedRule.verified ? $gettext('Requirement met') : $gettext('Requirement not met')
+          "
+        />
         <oc-contextual-helper
           v-if="testedRule.helperMessage"
           :text="testedRule.helperMessage"
@@ -80,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, useTemplateRef, watch } from 'vue'
+import { computed, ref, unref, useAttrs, useId, useTemplateRef, watch } from 'vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcButton from '../OcButton/OcButton.vue'
 import { useGettext } from 'vue3-gettext'
@@ -125,6 +133,29 @@ const showPasswordPolicyInformation = computed(() => {
 const testedPasswordPolicy = computed(() => {
   return passwordPolicy?.missing(unref(password))
 })
+
+// attrs are not reactive, so these are plain functions evaluated on every render
+const attrs = useAttrs()
+const passwordPolicyId = useId()
+
+function getAriaDescribedBy() {
+  const ids = [attrs['aria-describedby'] as string]
+  if (unref(showPasswordPolicyInformation)) {
+    ids.push(passwordPolicyId)
+  }
+  return ids.filter(Boolean).join(' ') || undefined
+}
+
+function getAriaInvalid() {
+  const policyFailed =
+    unref(showPasswordPolicyInformation) &&
+    !!unref(password) &&
+    unref(testedPasswordPolicy).rules.some((rule) => !rule.verified)
+  if (policyFailed) {
+    return 'true'
+  }
+  return attrs['aria-invalid'] as string
+}
 
 const getPasswordPolicyRuleMessage = (rule: PasswordPolicyRule) => {
   const paramObj: Record<string, string> = {}

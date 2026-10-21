@@ -30,6 +30,54 @@ describe('OcTextInputPassword', () => {
     expect(classes).toContain('border-role-outline')
     expect(classes).not.toContain('border-role-error')
   })
+  describe('password policy', () => {
+    function getPolicyWrapper(value: string, verified: boolean, attrs = {}) {
+      const policy: PasswordPolicy = {
+        rules: [{}],
+        check: () => verified,
+        missing: () => ({
+          rules: [{ code: 'minLength', message: '%{param1}+ letters', format: [8], verified }]
+        })
+      }
+      return mount(OcTextInputPassword, {
+        props: { value, passwordPolicy: policy },
+        attrs,
+        global: { plugins: [...defaultPlugins()], stubs: { Teleport: true } }
+      })
+    }
+
+    it('describes the input with the policy rules and their state', () => {
+      const wrapper = getPolicyWrapper('ab', false, { 'aria-describedby': 'message-id' })
+      const rulesId = wrapper.find('.oc-text-input-password-policy-rule').element.parentElement.id
+      expect(rulesId).toBeTruthy()
+      expect(wrapper.find('input').attributes('aria-describedby')).toBe(`message-id ${rulesId}`)
+      expect(wrapper.find('.oc-text-input-password-policy-rule .sr-only').text()).toBe(
+        'Requirement not met'
+      )
+    })
+    it('keeps the policy rules when the described-by attribute changes', async () => {
+      const wrapper = getPolicyWrapper('ab', false)
+      const rulesId = wrapper.find('.oc-text-input-password-policy-rule').element.parentElement.id
+      expect(wrapper.find('input').attributes('aria-describedby')).toBe(rulesId)
+      await wrapper.setProps({ 'aria-describedby': 'message-id' } as any)
+      expect(wrapper.find('input').attributes('aria-describedby')).toBe(`message-id ${rulesId}`)
+    })
+    it('announces a met rule', () => {
+      const wrapper = getPolicyWrapper('abcdefghij', true)
+      expect(wrapper.find('.oc-text-input-password-policy-rule .sr-only').text()).toBe(
+        'Requirement met'
+      )
+      expect(wrapper.find('input').attributes('aria-invalid')).not.toBe('true')
+    })
+    it('marks the input invalid while a rule fails', () => {
+      const wrapper = getPolicyWrapper('ab', false, { 'aria-invalid': 'false' })
+      expect(wrapper.find('input').attributes('aria-invalid')).toBe('true')
+    })
+    it('does not mark an empty input invalid', () => {
+      const wrapper = getPolicyWrapper('', false, { 'aria-invalid': 'false' })
+      expect(wrapper.find('input').attributes('aria-invalid')).toBe('false')
+    })
+  })
 })
 
 const passwordPolicy: PasswordPolicy = {
