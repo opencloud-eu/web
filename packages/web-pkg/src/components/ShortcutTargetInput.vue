@@ -5,6 +5,7 @@
     role="combobox"
     :aria-controls="listboxId"
     aria-autocomplete="list"
+    aria-required="true"
     :aria-activedescendant="activeOptionId"
     :placeholder="'example.org'"
     :label="$gettext('Webpage or file')"

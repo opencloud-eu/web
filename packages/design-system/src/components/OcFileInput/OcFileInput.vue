@@ -235,6 +235,9 @@ const additionalAttributes = computed(() => {
   if (!!errorMessage || !!descriptionMessage) {
     additionalAttrs['aria-describedby'] = unref(messageId)
   }
+  if (requiredMark) {
+    additionalAttrs['aria-required'] = 'true'
+  }
 
   // note: we spread out the attrs we don't want to be present in the resulting object
   const { change, input, focus, class: classes, ...attrs } = tmpAttrs

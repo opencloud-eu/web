@@ -31,6 +31,17 @@ describe('OcFileInput', () => {
     })
   })
 
+  describe('required mark', () => {
+    it('marks the input as required for assistive technologies', () => {
+      const wrapper = getWrapper({ requiredMark: true })
+      expect(wrapper.find('input').attributes('aria-required')).toBe('true')
+    })
+    it('does not mark the input as required without the mark', () => {
+      const wrapper = getWrapper()
+      expect(wrapper.find('input').attributes('aria-required')).toBeUndefined()
+    })
+  })
+
   describe('description message', () => {
     it('should be displayed below the input if given', () => {
       const wrapper = getWrapper({ descriptionMessage: 'description' })
