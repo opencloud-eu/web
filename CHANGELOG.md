@@ -178,6 +178,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency knip to v6 [[#3944](https://github.com/opencloud-eu/web/pull/3944)]
 - fix(deps): update dependency @casl/ability to v7.0.2 [[#3936](https://github.com/opencloud-eu/web/pull/3936)]
 - chore(deps): update dependency @uppy/core to v6.3.0 [[#3941](https://github.com/opencloud-eu/web/pull/3941)]
 - fix(deps): update dependency qs to v6.16.1 [[#3940](https://github.com/opencloud-eu/web/pull/3940)]
