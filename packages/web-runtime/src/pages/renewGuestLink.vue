@@ -8,7 +8,7 @@
     <template v-if="errorType">
       <p data-testid="error-message" class="my-0" v-text="errorMessage" />
       <oc-button
-        v-if="isRetryable"
+        v-if="canRetry"
         appearance="filled"
         size="large"
         class="w-full p-2"
@@ -48,9 +48,16 @@ import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { call } from '@opencloud-eu/web-client'
 import { GuestLinkErrorErrorTypeEnum } from '@opencloud-eu/web-client/graph/generated'
-import { queryItemAsString, useRouteParam, useRouteQuery, useRouter } from '@opencloud-eu/web-pkg'
+import {
+  formatRelativeDateFromJSDate,
+  queryItemAsString,
+  useRouteParam,
+  useRouteQuery,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import {
+  getGuestLinkError,
   getGuestLinkErrorType,
   GuestLinkErrorType,
   GuestLinkRenewal,
@@ -63,7 +70,7 @@ import { useGuestLinkTargetRoute } from '../composables/guestLink'
 import { isGuestContextAllowed, isGuestContextRequired, parsePathQuery } from '../router/helpers'
 
 const router = useRouter()
-const { $gettext } = useGettext()
+const { $gettext, current: currentLanguage } = useGettext()
 const { getGuestLinkTargetRoute } = useGuestLinkTargetRoute()
 const permissionId = useRouteParam('permissionId')
 const redirectUrl = useRouteQuery('redirectUrl')
@@ -74,6 +81,7 @@ const linkUnusable = useRouteQuery('linkUnusable')
 
 const renewal = ref<GuestLinkRenewal>()
 const renewErrorType = ref<GuestLinkErrorType>()
+const renewRetryAt = ref<Date>()
 // the session exists, e.g. after a verified PIN, but its context couldn't be loaded
 const resumeErrorType = ref<GuestLinkErrorType>()
 const pin = ref('')
@@ -105,12 +113,18 @@ const resumeSessionTask = useTask(function* () {
 
 const errorType = computed(() => unref(resumeErrorType) || unref(renewErrorType))
 const isRetryable = computed(() => isRetryableGuestLinkErrorType(unref(errorType)))
+const isRateLimited = computed(
+  () => unref(renewErrorType) === GuestLinkErrorErrorTypeEnum.TooManyRequests
+)
+const canRetry = computed(() => unref(isRetryable) || unref(isRateLimited))
 
 function getShareErrorMessage(errorType: GuestLinkErrorType): string | undefined {
   switch (errorType) {
     case GuestLinkErrorErrorTypeEnum.ShareExpired:
       return $gettext('Your access to the shared item has expired.')
     case GuestLinkErrorErrorTypeEnum.ShareNotFound:
+    // the backend deletes the link of a removed or expired share
+    case GuestLinkErrorErrorTypeEnum.TokenNotFound:
       return $gettext('The shared item is no longer available.')
     default:
       return undefined
@@ -130,7 +144,12 @@ const errorMessage = computed(() => {
   if (unref(isRetryable)) {
     return $gettext('A new invitation could not be requested. Please try again later.')
   }
-  if (unref(renewErrorType) === GuestLinkErrorErrorTypeEnum.TooManyRequests) {
+  if (unref(isRateLimited)) {
+    if (unref(renewRetryAt)) {
+      return $gettext('Too many new invitations were requested. Please try again %{time}.', {
+        time: formatRelativeDateFromJSDate(unref(renewRetryAt), currentLanguage)
+      })
+    }
     return $gettext('Too many new invitations were requested. Please try again later.')
   }
   return (
@@ -219,6 +238,7 @@ const cardIcon = computed(() => {
 
 async function renew() {
   renewErrorType.value = undefined
+  renewRetryAt.value = undefined
   try {
     renewal.value = await authService.renewGuestLink(unref(permissionId))
   } catch (error) {
@@ -228,6 +248,10 @@ async function renew() {
       return
     }
     renewErrorType.value = getGuestLinkErrorType(error)
+    const retryAfter = getGuestLinkError(error)?.retryAfter
+    if (retryAfter) {
+      renewRetryAt.value = new Date(Date.now() + retryAfter * 1000)
+    }
     console.error('guest link could not be renewed:', unref(renewErrorType))
   }
 }

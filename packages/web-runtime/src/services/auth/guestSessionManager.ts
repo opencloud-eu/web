@@ -119,7 +119,9 @@ export function getGuestLinkErrorType(error: unknown): GuestLinkErrorType {
 const retryableGuestLinkErrorTypes: GuestLinkErrorType[] = [
   'unknown',
   GuestLinkErrorErrorTypeEnum.InternalError,
-  GuestLinkErrorErrorTypeEnum.ServiceUnavailable
+  GuestLinkErrorErrorTypeEnum.ServiceUnavailable,
+  // concurrent updates of the link record, the backend gave up after a few attempts
+  GuestLinkErrorErrorTypeEnum.Conflict
 ]
 
 export function isRetryableGuestLinkErrorType(errorType: GuestLinkErrorType): boolean {

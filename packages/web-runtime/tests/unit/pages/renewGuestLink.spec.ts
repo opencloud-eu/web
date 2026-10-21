@@ -99,7 +99,8 @@ describe('renewGuestLink', () => {
 
   it.each([
     ['shareExpired', 'Your access to the shared item has expired.'],
-    ['shareNotFound', 'The shared item is no longer available.']
+    ['shareNotFound', 'The shared item is no longer available.'],
+    ['tokenNotFound', 'The shared item is no longer available.']
   ])('asks to contact the inviter for %s', async (errorType, message) => {
     const { wrapper } = getWrapper({ renewError: guestLinkError(errorType) })
     await flushPromises()
@@ -110,20 +111,17 @@ describe('renewGuestLink', () => {
     expect(wrapper.find(selectors.pinInput).exists()).toBeFalsy()
   })
 
-  it.each(['tokenInvalid', 'tokenNotFound'])(
-    'points to the most recent email for %s',
-    async (errorType) => {
-      const { wrapper } = getWrapper({ renewError: guestLinkError(errorType) })
-      await flushPromises()
+  it('points to the most recent email for tokenInvalid', async () => {
+    const { wrapper } = getWrapper({ renewError: guestLinkError('tokenInvalid') })
+    await flushPromises()
 
-      expect(wrapper.find(selectors.errorMessage).text()).toEqual(
-        'A new invitation could not be requested. Open the invitation link from your most recent email instead.'
-      )
-      expect(wrapper.text()).not.toContain('Ask the person who invited you')
-      expect(wrapper.find(selectors.retryButton).exists()).toBeFalsy()
-      expect(wrapper.find(selectors.pinInput).exists()).toBeFalsy()
-    }
-  )
+    expect(wrapper.find(selectors.errorMessage).text()).toEqual(
+      'A new invitation could not be requested. Open the invitation link from your most recent email instead.'
+    )
+    expect(wrapper.text()).not.toContain('Ask the person who invited you')
+    expect(wrapper.find(selectors.retryButton).exists()).toBeFalsy()
+    expect(wrapper.find(selectors.pinInput).exists()).toBeFalsy()
+  })
 
   it('asks to try again later when too many renewals were requested', async () => {
     const { wrapper } = getWrapper({ renewError: guestLinkError('tooManyRequests') })
@@ -133,8 +131,32 @@ describe('renewGuestLink', () => {
       'Too many new invitations were requested. Please try again later.'
     )
     expect(wrapper.text()).not.toContain('Ask the person who invited you')
-    expect(wrapper.find(selectors.retryButton).exists()).toBeFalsy()
+    expect(wrapper.find(selectors.retryButton).exists()).toBeTruthy()
     expect(wrapper.find(selectors.pinInput).exists()).toBeFalsy()
+  })
+
+  it('tells how long to wait when too many renewals were requested', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    const { wrapper } = getWrapper({ renewError: guestLinkError('tooManyRequests', 300) })
+    await flushPromises()
+
+    expect(wrapper.find(selectors.errorMessage).text()).toEqual(
+      'Too many new invitations were requested. Please try again in 5 minutes.'
+    )
+    vi.useRealTimers()
+  })
+
+  it('renews again on retry after too many renewals were requested', async () => {
+    const { wrapper } = getWrapper({ renewError: guestLinkError('tooManyRequests', 60) })
+    await flushPromises()
+
+    vi.mocked(authService.renewGuestLink).mockResolvedValue({ withPin: false })
+    await wrapper.find(selectors.retryButton).trigger('click')
+    await flushPromises()
+
+    expect(authService.renewGuestLink).toHaveBeenCalledTimes(2)
+    expect(wrapper.find(selectors.errorMessage).exists()).toBeFalsy()
+    expect(wrapper.text()).toContain('Check your inbox')
   })
 
   it('shows the pin form when another tab renewed the link meanwhile', async () => {
@@ -152,6 +174,7 @@ describe('renewGuestLink', () => {
   it.each([
     ['an internal server error', guestLinkError('internalError')],
     ['an unavailable service', guestLinkError('serviceUnavailable')],
+    ['a conflict', guestLinkError('conflict')],
     ['an unexpected error', new Error('network')]
   ])('offers a retry on %s', async (_, renewError) => {
     const { wrapper, setPendingRenewal } = getWrapper({ renewError })
@@ -509,9 +532,9 @@ function guestSession(): GuestSession {
   }
 }
 
-function guestLinkError(errorType: string) {
+function guestLinkError(errorType: string, retryAfter?: number) {
   return new AxiosError(errorType, undefined, undefined, undefined, {
-    data: { errorType, message: errorType, permissionId: 'permission-id' }
+    data: { errorType, message: errorType, permissionId: 'permission-id', retryAfter }
   } as AxiosResponse)
 }
 
