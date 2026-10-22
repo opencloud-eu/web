@@ -2,16 +2,16 @@
   <div>
     <div class="mb-6">Hidden announcer (please inspect element)</div>
     <oc-button @click="announce">Announce</oc-button>
-    <oc-hidden-announcer level="polite" :announcement="announcement" />
+    <oc-hidden-announcer ref="announcer" level="polite" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { unref, useTemplateRef } from 'vue'
 
-const announcement = ref<string>()
+const announcer = useTemplateRef('announcer')
 
 const announce = () => {
-  announcement.value = 'Announcement complete'
+  unref(announcer)?.announce('Announcement complete')
 }
 </script>

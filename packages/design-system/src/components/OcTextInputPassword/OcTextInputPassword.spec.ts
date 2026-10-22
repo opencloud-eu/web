@@ -1,8 +1,22 @@
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import OcTextInputPassword from './OcTextInputPassword.vue'
 import { PasswordPolicy } from '../../helpers'
+import { defineComponent, h } from 'vue'
+
+const announceMock = vi.fn()
+// exposes a spy as the announce method, so the tests can check what gets announced
+const OcHiddenAnnouncerStub = defineComponent({
+  setup(_, { expose }) {
+    expose({ announce: announceMock })
+    return () => h('span')
+  }
+})
 
 describe('OcTextInputPassword', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    announceMock.mockReset()
+  })
   it('shows the initial value', () => {
     const wrapper = getWrapper('secret')
     expect(wrapper.find('input').element.value).toBe('secret')
@@ -24,6 +38,17 @@ describe('OcTextInputPassword', () => {
       expect(classes).toContain('outline-role-secondary')
     }
   })
+  it('announces each copy of the password to screen readers', async () => {
+    vi.stubGlobal('navigator', { clipboard: { writeText: vi.fn() } })
+    const wrapper = getWrapper('secret')
+
+    await wrapper.find('.oc-text-input-copy-password-button').trigger('click')
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('secret')
+    expect(announceMock).toHaveBeenCalledWith('Copied to clipboard!')
+
+    await wrapper.find('.oc-text-input-copy-password-button').trigger('click')
+    expect(announceMock).toHaveBeenCalledTimes(2)
+  })
   it('uses the regular border when valid', () => {
     const wrapper = getWrapper('secret')
     const classes = wrapper.find('.oc-text-input-password-wrapper').classes()
@@ -41,6 +66,9 @@ const passwordPolicy: PasswordPolicy = {
 function getWrapper(value: string, props: { hasError?: boolean } = {}) {
   return mount(OcTextInputPassword, {
     props: { value, passwordPolicy, ...props },
-    global: { plugins: [...defaultPlugins()] }
+    global: {
+      plugins: [...defaultPlugins()],
+      stubs: { OcHiddenAnnouncer: OcHiddenAnnouncerStub }
+    }
   })
 }

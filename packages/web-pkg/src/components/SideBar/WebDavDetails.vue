@@ -28,23 +28,27 @@
     >
       <oc-icon :name="copyWebDAVUrlIcon" />
     </oc-button>
+    <oc-hidden-announcer ref="copiedAnnouncer" />
   </dd>
 </template>
 
 <script setup lang="ts">
-import { inject, ref, Ref, computed, unref } from 'vue'
+import { inject, ref, Ref, computed, unref, useTemplateRef } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { encodePath } from '../../utils'
+import { useGettext } from 'vue3-gettext'
 
 const { space } = defineProps<{
   space: SpaceResource
 }>()
 
 const resource = inject<Ref<Resource>>('resource')
+const { $gettext } = useGettext()
 const copiedIcon = 'check'
 const copyIcon = 'file-copy'
 const copyWebDAVPathIcon = ref(copyIcon)
 const copyWebDAVUrlIcon = ref(copyIcon)
+const copiedAnnouncer = useTemplateRef('copiedAnnouncer')
 
 const webDavPath = computed(() => {
   return encodePath(unref(resource).webDavPath)
@@ -53,15 +57,21 @@ const webDavUrl = computed(() => {
   return space?.getWebDavUrl({ path: unref(resource).path })
 })
 
+function announceCopied() {
+  unref(copiedAnnouncer)?.announce($gettext('Copied to clipboard!'))
+}
+
 const copyWebDAVPathToClipboard = () => {
   navigator.clipboard.writeText(unref(webDavPath))
   copyWebDAVPathIcon.value = copiedIcon
+  announceCopied()
   setTimeout(() => (copyWebDAVPathIcon.value = copyIcon), 1500)
 }
 
 const copyWebDAVUrlToClipboard = () => {
   navigator.clipboard.writeText(unref(webDavUrl))
   copyWebDAVUrlIcon.value = copiedIcon
+  announceCopied()
   setTimeout(() => (copyWebDAVUrlIcon.value = copyIcon), 1500)
 }
 </script>

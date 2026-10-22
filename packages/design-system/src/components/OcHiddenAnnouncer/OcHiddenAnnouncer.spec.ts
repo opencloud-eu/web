@@ -1,5 +1,6 @@
 import OcHiddenAnnouncer from './OcHiddenAnnouncer.vue'
 import { mount } from '@opencloud-eu/web-test-helpers'
+import { nextTick } from 'vue'
 
 describe('OcHiddenAnnouncer', () => {
   function getWrapper(props = {}) {
@@ -20,9 +21,73 @@ describe('OcHiddenAnnouncer', () => {
     )
   })
   describe('announcement', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
     it('should render the provided announcement text', () => {
       const wrapper = getWrapper()
       expect(wrapper.text()).toBe('Hidden announcer (please inspect element)')
+    })
+    it('should set a new announcement after clearing the text for a short delay', async () => {
+      const wrapper = getWrapper({ announcement: '' })
+      expect(wrapper.text()).toBe('')
+      await wrapper.setProps({ announcement: 'Copied' })
+      expect(wrapper.text()).toBe('')
+      await vi.runAllTimersAsync()
+      expect(wrapper.text()).toBe('Copied')
+    })
+    it('should only render the latest announcement on quick successive changes', async () => {
+      const wrapper = getWrapper({ announcement: '' })
+      await wrapper.setProps({ announcement: 'first' })
+      await vi.advanceTimersByTimeAsync(50)
+      await wrapper.setProps({ announcement: 'second' })
+      await vi.advanceTimersByTimeAsync(50)
+      expect(wrapper.text()).toBe('')
+      await vi.runAllTimersAsync()
+      expect(wrapper.text()).toBe('second')
+    })
+  })
+  describe('announce method', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('should set the message after clearing the text for a short delay', async () => {
+      const wrapper = getWrapper()
+      wrapper.vm.announce('Copied')
+      await nextTick()
+      expect(wrapper.text()).toBe('')
+      await vi.runAllTimersAsync()
+      expect(wrapper.text()).toBe('Copied')
+    })
+    it('should announce the same message again', async () => {
+      const wrapper = mount(OcHiddenAnnouncer)
+      wrapper.vm.announce('Copied')
+      await vi.runAllTimersAsync()
+      expect(wrapper.text()).toBe('Copied')
+
+      wrapper.vm.announce('Copied')
+      await nextTick()
+      expect(wrapper.text()).toBe('')
+      await vi.runAllTimersAsync()
+      expect(wrapper.text()).toBe('Copied')
+    })
+    it('should only render the latest message on quick successive calls', async () => {
+      const wrapper = mount(OcHiddenAnnouncer)
+      wrapper.vm.announce('first')
+      await vi.advanceTimersByTimeAsync(50)
+      wrapper.vm.announce('second')
+      await vi.advanceTimersByTimeAsync(50)
+      expect(wrapper.text()).toBe('')
+      await vi.runAllTimersAsync()
+      expect(wrapper.text()).toBe('second')
     })
   })
 })

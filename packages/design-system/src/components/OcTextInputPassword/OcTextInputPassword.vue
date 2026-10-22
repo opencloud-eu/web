@@ -40,6 +40,7 @@
     >
       <oc-icon size-class="size-4" :name="copyPasswordIcon" />
     </oc-button>
+    <oc-hidden-announcer ref="copyPasswordAnnouncer" />
     <oc-button
       v-if="generatePasswordMethod && !disabled"
       v-oc-tooltip="$gettext('Generate password')"
@@ -83,6 +84,7 @@
 import { computed, ref, unref, useTemplateRef, watch } from 'vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcButton from '../OcButton/OcButton.vue'
+import OcHiddenAnnouncer from '../OcHiddenAnnouncer/OcHiddenAnnouncer.vue'
 import { useGettext } from 'vue3-gettext'
 import { PasswordPolicy, PasswordPolicyRule } from '../../helpers'
 
@@ -111,6 +113,7 @@ const emit = defineEmits([
 ])
 
 const passwordInput = useTemplateRef('passwordInput')
+const copyPasswordAnnouncer = useTemplateRef('copyPasswordAnnouncer')
 const { $gettext } = useGettext()
 const password = ref(value)
 const showPassword = ref(false)
@@ -139,6 +142,7 @@ const getPasswordPolicyRuleMessage = (rule: PasswordPolicyRule) => {
 const copyPasswordToClipboard = () => {
   navigator.clipboard.writeText(unref(password))
   copyPasswordIcon.value = 'check'
+  unref(copyPasswordAnnouncer)?.announce($gettext('Copied to clipboard!'))
   setTimeout(() => (copyPasswordIcon.value = copyPasswordIconInitial), 1500)
 }
 

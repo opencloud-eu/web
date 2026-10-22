@@ -1,5 +1,6 @@
 import CompareSaveDialog from '../../../../src/components/SideBar/CompareSaveDialog.vue'
 import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import { OcHiddenAnnouncer } from '@opencloud-eu/design-system/components'
 
 describe('CompareSaveDialog', () => {
   describe('computed method "unsavedChanges"', () => {
@@ -37,6 +38,32 @@ describe('CompareSaveDialog', () => {
         expect(wrapper.text().includes('Changes saved')).toBe(showsSaved)
       }
     )
+    it.each([
+      { compareObject: { id: '1', displayName: 'jan' }, announcement: 'Changes saved' },
+      { compareObject: { id: '1', displayName: 'janina' }, announcement: '' }
+    ])(
+      'announces "$announcement" after saving (compareObject: $compareObject)',
+      async ({ compareObject, announcement }) => {
+        const { wrapper } = getWrapper({
+          propsData: { originalObject: { id: '1', displayName: 'jan' }, compareObject }
+        })
+        const announcer = wrapper.findComponent(OcHiddenAnnouncer)
+        expect(announcer.props('announcement')).toBe('')
+        await wrapper.setProps({ saved: true })
+        expect(announcer.props('announcement')).toBe(announcement)
+      }
+    )
+    it('clears the announcement when the saved state gets reset', async () => {
+      const { wrapper } = getWrapper({
+        propsData: {
+          originalObject: { id: '1', displayName: 'jan' },
+          compareObject: { id: '1', displayName: 'jan' },
+          saved: true
+        }
+      })
+      await wrapper.setProps({ saved: false })
+      expect(wrapper.findComponent(OcHiddenAnnouncer).props('announcement')).toBe('')
+    })
     it('resets the saved state after a timeout', async () => {
       vi.useFakeTimers()
       const { wrapper } = getWrapper({
