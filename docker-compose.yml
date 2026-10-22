@@ -104,7 +104,7 @@ services:
     environment:
       <<: *opencloud-environment
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
-      OC_ADD_RUN_SERVICES: auth-api,groupware,collaboration
+      OC_ADD_RUN_SERVICES: auth-api,groupware,collaboration,notifications
       OC_CORS_ALLOW_ORIGINS: https://host.docker.internal:9200,https://host.docker.internal:9201
       OCM_WEBAPP_TEMPLATE: https://host.docker.internal:9201/o/{{.Token}}/{relative-path-to-shared-resource}
       # make the registry available to the app provider containers
@@ -122,6 +122,10 @@ services:
       COLLABORATION_APP_ICON: https://host.docker.internal:9980/favicon.ico
       COLLABORATION_APP_INSECURE: '${OC_INSECURE:-true}'
       COLLABORATION_CS3API_DATAGATEWAY_INSECURE: '${OC_INSECURE:-true}'
+      # Mails (e.g. guest links) are caught by inbucket, see http://localhost:9000
+      NOTIFICATIONS_SMTP_HOST: inbucket
+      NOTIFICATIONS_SMTP_PORT: '2500'
+      NOTIFICATIONS_SMTP_SENDER: 'OpenCloud <noreply@example.com>'
     labels:
       traefik.enable: true
       traefik.docker.network: traefik
@@ -148,6 +152,8 @@ services:
     depends_on:
       collabora:
         condition: service_healthy
+      inbucket:
+        condition: service_started
 
   opencloud-federated:
     <<: *opencloud-service
@@ -326,6 +332,15 @@ services:
       timeout: 3s
       retries: 20
       start_period: 5s
+
+  inbucket:
+    image: inbucket/inbucket:3.2.0
+    container_name: web_inbucket
+    ports:
+      - '127.0.0.1:9000:9000' # web UI and REST API
+    networks:
+      - traefik
+    restart: unless-stopped
 
   radicale:
     image: ${RADICALE_DOCKER_IMAGE:-opencloudeu/radicale}:${RADICALE_DOCKER_TAG:-latest}
