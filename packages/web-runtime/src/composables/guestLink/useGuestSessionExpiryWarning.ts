@@ -92,6 +92,7 @@ export function useGuestSessionExpiryWarning() {
     const version = sessionVersion
     const time = formatDateFromISO(expirationDateTime, language.current, DateTime.TIME_SIMPLE)
     const isRequestingPin = ref(false)
+    let isExpiryShown = false
     const pinRetryAt = ref(0)
     // refreshed by the expiry check, so the rate limit ends without further interaction
     const currentTime = ref(Date.now())
@@ -153,6 +154,7 @@ export function useGuestSessionExpiryWarning() {
     }
 
     function showExpired() {
+      isExpiryShown = true
       if (hasPendingPin()) {
         showWarning({
           title: $gettext('Your session has expired'),
@@ -170,6 +172,7 @@ export function useGuestSessionExpiryWarning() {
 
     // without a session the backend only sends a new link if the newest one is used or expired
     function showRenewalRequested() {
+      isExpiryShown = true
       showWarning({
         title: $gettext('Your session has expired'),
         desc: $gettext(
@@ -265,21 +268,30 @@ export function useGuestSessionExpiryWarning() {
     function checkExpiry() {
       currentTime.value = Date.now()
       if (isExpired()) {
-        clearInterval(expiryCheck)
-        showExpired()
+        // the PIN expires without notice, so keep checking until it did
+        if (!hasPendingPin()) {
+          clearInterval(expiryCheck)
+        }
+        if (!isExpiryShown) {
+          showExpired()
+          return
+        }
+        syncPin()
         return
       }
       if (!warningMessage && Date.now() >= expiresAt - guestSessionExpiryWarningThreshold) {
         showExpiryWarning()
+        return
       }
+      syncPin()
     }
 
-    syncPendingPin = () => {
+    // offers to enter the PIN only while it is pending
+    function syncPin() {
       if (
         !warningMessage ||
         unref(isRequestingPin) ||
-        warningMessage.actions?.includes(enterPinAction) ||
-        !hasPendingPin()
+        warningMessage.actions?.includes(enterPinAction) === hasPendingPin()
       ) {
         return
       }
@@ -289,6 +301,8 @@ export function useGuestSessionExpiryWarning() {
       }
       showExpiryWarning()
     }
+
+    syncPendingPin = syncPin
 
     expiryCheck = setInterval(checkExpiry, expiryCheckInterval)
     checkExpiry()

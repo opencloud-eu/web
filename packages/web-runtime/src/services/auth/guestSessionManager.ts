@@ -155,6 +155,15 @@ export function isRetryableGuestLinkErrorType(errorType: GuestLinkErrorType): bo
   return retryableGuestLinkErrorTypes.includes(errorType)
 }
 
+// a PIN rejected with one of these can't be used anymore
+const unusablePinErrorTypes: GuestLinkErrorType[] = [
+  GuestLinkErrorErrorTypeEnum.PinExpired,
+  GuestLinkErrorErrorTypeEnum.NonceExpired,
+  GuestLinkErrorErrorTypeEnum.NonceInvalid,
+  // the browser drops the nonce cookie once it expired
+  GuestLinkErrorErrorTypeEnum.InvalidRequest
+]
+
 // a token rejected with one of these still matches the share, so it can be renewed
 const renewableTokenErrorTypes: GuestLinkErrorErrorTypeEnum[] = [
   GuestLinkErrorErrorTypeEnum.TokenExpired,
@@ -305,12 +314,23 @@ export class GuestSessionManager {
     }
   }
 
-  private exchangePin(permissionId: string, pin: string): Promise<GuestLinkSession> {
-    return this.clientService.graphAuthenticated.guestLinks.verifyGuestLinkPin(
-      { pin, permissionId },
-      // sends the nonce cookie that binds the PIN to this browser
-      { withCredentials: true }
-    )
+  private async exchangePin(permissionId: string, pin: string): Promise<GuestLinkSession> {
+    try {
+      return await this.clientService.graphAuthenticated.guestLinks.verifyGuestLinkPin(
+        { pin, permissionId },
+        // sends the nonce cookie that binds the PIN to this browser
+        { withCredentials: true }
+      )
+    } catch (error) {
+      // the PIN lifetime is configurable in the backend, so it might end before `renewalLifetime`
+      if (
+        unusablePinErrorTypes.includes(getGuestLinkErrorType(error)) &&
+        this.getPendingRenewal(permissionId)
+      ) {
+        localStorage.removeItem(renewalStorageKey)
+      }
+      throw error
+    }
   }
 
   private persistSession(session: GuestLinkSession): string {

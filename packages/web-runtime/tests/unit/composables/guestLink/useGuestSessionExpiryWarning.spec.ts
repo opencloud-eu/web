@@ -170,6 +170,52 @@ describe('useGuestSessionExpiryWarning', () => {
     expect(getWarning().actions.map(({ name }) => name)).toEqual(['enter-guest-session-pin'])
   })
 
+  it('offers to request a new invitation once the PIN expired after the session', async () => {
+    getWrapper({ expirationDateTime: expiresIn(minutes(10)) })
+    await requestPin()
+    await vi.advanceTimersByTimeAsync(minutes(10))
+    expect(getWarning().actions.map(({ name }) => name)).toEqual(['enter-guest-session-pin'])
+    const warningCount = vi.mocked(useMessages().showMessage).mock.calls.length
+
+    // the PIN is still pending, so the warning doesn't change
+    await vi.advanceTimersByTimeAsync(minutes(5))
+    expect(useMessages().showMessage).toHaveBeenCalledTimes(warningCount)
+
+    vi.mocked(authService.getPendingGuestLinkRenewal).mockReturnValue(undefined)
+    await vi.advanceTimersByTimeAsync(30 * 1000)
+
+    expect(getWarning().title).toEqual('Your session has expired')
+    expect(getWarning().actions.map(({ name }) => name)).toEqual(['request-guest-invitation'])
+
+    await vi.advanceTimersByTimeAsync(minutes(10))
+    expect(useMessages().showMessage).toHaveBeenCalledTimes(warningCount + 1)
+  })
+
+  it('offers to request the PIN again once it got unusable before the session expired', async () => {
+    getWrapper({ expirationDateTime: expiresIn(minutes(10)) })
+    await requestPin()
+
+    vi.mocked(authService.getPendingGuestLinkRenewal).mockReturnValue(undefined)
+    await vi.advanceTimersByTimeAsync(30 * 1000)
+
+    expect(getWarning().title).toEqual('Your session expires soon')
+    expect(getWarning().actions.map(({ name }) => name)).toEqual(['request-guest-session-pin'])
+  })
+
+  it('keeps telling to open the newest email once the session expired', async () => {
+    vi.mocked(authService.ensureGuestLinkRenewal).mockResolvedValue({ withPin: false })
+    getWrapper({ expirationDateTime: expiresIn(minutes(10)) })
+    await flushPromises()
+
+    vi.setSystemTime(now + minutes(11))
+    getWarning().actions[0].handler()
+    await flushPromises()
+    await vi.advanceTimersByTimeAsync(minutes(1))
+
+    expect(getWarning().actions).toEqual([])
+    expect(getWarning().desc).toMatch(/^Open the invitation link from your most recent email/)
+  })
+
   it('offers to request the PIN again when the request fails', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     vi.mocked(authService.ensureGuestLinkRenewal).mockRejectedValue(new Error('429'))

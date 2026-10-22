@@ -380,6 +380,42 @@ describe('GuestSessionManager', () => {
       expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
     })
 
+    it.each(['pinExpired', 'nonceExpired', 'nonceInvalid', 'invalidRequest'])(
+      'returns nothing once the pin got rejected with %s',
+      async (errorType) => {
+        const pinError = guestLinkError(401, errorType, 'permission-id')
+        const { manager } = getManager({ pinError })
+        await manager.redeem('magic-token')
+        await manager.renew('permission-id')
+
+        await expect(manager.refresh('permission-id', '123456')).rejects.toBe(pinError)
+
+        expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
+      }
+    )
+
+    it('keeps the renewal when the pin is incorrect', async () => {
+      const pinError = guestLinkError(401, 'pinInvalid', 'permission-id')
+      const { manager } = getManager({ pinError })
+      await manager.redeem('magic-token')
+      await manager.renew('permission-id')
+
+      await expect(manager.refresh('permission-id', '000000')).rejects.toBe(pinError)
+
+      expect(manager.getPendingRenewal('permission-id')).toEqual({ withPin: true })
+    })
+
+    it('keeps the renewal of another share when the pin got rejected', async () => {
+      const pinError = guestLinkError(401, 'pinExpired', 'other-permission-id')
+      const { manager } = getManager({ pinError })
+      await manager.redeem('magic-token')
+      await manager.renew('permission-id')
+
+      await expect(manager.verifyPin('other-permission-id', '123456')).rejects.toBe(pinError)
+
+      expect(manager.getPendingRenewal('permission-id')).toEqual({ withPin: true })
+    })
+
     it('keeps the renewal when the session expires', async () => {
       const { manager } = getManager()
       await manager.redeem('magic-token')
