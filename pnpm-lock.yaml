@@ -1098,7 +1098,7 @@ importers:
         version: 3.4.17
       filesize:
         specifier: ^11.0.14
-        version: 11.0.26
+        version: 11.0.27
       fuse.js:
         specifier: ^7.1.0
         version: 7.5.0
@@ -3580,8 +3580,8 @@ packages:
   file-entry-cache@11.1.5:
     resolution: {integrity: sha512-+PFTHITI08JIGhnNpGNI8T8inUpgZfk3GNEqfT9R2zZV2iFXg3CvqzSl/uEhs7TSGujYRELEANyDvS8Fj7+S7Q==}
 
-  filesize@11.0.26:
-    resolution: {integrity: sha512-CgbdcjFLDJzMUnxQxHZ5uVxREmTVkjoXnppVB0AH8X0N8Uz4CZarWZLFALLv/Ymyf6EEu1AgaLPS6laXiqBEWA==}
+  filesize@11.0.27:
+    resolution: {integrity: sha512-0HrkZi5qztwbmjGQYsAVJn0NJ/GqkPA4+F9tx6KeHSXqIYnJ61MZRLeJK8x0RlJb8DHKIPBrONxOa5J+J9GJzQ==}
     engines: {node: '>= 10.8.0'}
 
   fill-range@7.1.1:
@@ -7806,7 +7806,7 @@ snapshots:
     dependencies:
       flat-cache: 6.1.23
 
-  filesize@11.0.26: {}
+  filesize@11.0.27: {}
 
   fill-range@7.1.1:
     dependencies:
