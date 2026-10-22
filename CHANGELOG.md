@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: revert the share role dropdown when the role change fails [[#3909](https://github.com/opencloud-eu/web/pull/3909)]
 - fix: use the secondary color for markdown links and sync the default primary color [[#3974](https://github.com/opencloud-eu/web/pull/3974)]
 - fix: sort space members and managers by name within a role [[#3927](https://github.com/opencloud-eu/web/pull/3927)]
 - fix: check the matching actions before keyboard copy, cut and paste [[#3925](https://github.com/opencloud-eu/web/pull/3925)]
