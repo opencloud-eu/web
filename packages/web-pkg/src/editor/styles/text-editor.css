@@ -85,14 +85,14 @@
 
 /* Link styles */
 .text-editor-content .ProseMirror a {
-  color: var(--oc-role-primary);
+  color: var(--oc-role-secondary);
   text-decoration: underline;
   cursor: pointer;
 }
 
 /* Mention styles */
 .text-editor-content .ProseMirror .text-editor-mention {
-  color: var(--oc-role-primary);
+  color: var(--oc-role-secondary);
   font-weight: 600;
 }
 
