@@ -53,7 +53,7 @@
   },
   {
     "name": "oc-role-on-primary",
-    "value": "#FFFFFF"
+    "value": "#20434F"
   },
   {
     "name": "oc-role-on-primary-container",
@@ -105,7 +105,7 @@
   },
   {
     "name": "oc-role-primary",
-    "value": "#00677F"
+    "value": "#E2BAFF"
   },
   {
     "name": "oc-role-primary-container",
