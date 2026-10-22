@@ -4,10 +4,20 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @BloomyInDev, @JammingBen, @aduffeck, @dschmidt, @eriktews, @fredrikblau, @jay23606, @kulmann, @tammi-23, @tbsbdr, @v-scharf
+@AlexAndBear, @BloomyInDev, @JammingBen, @LetsDrinkSomeTea, @aduffeck, @dschmidt, @eriktews, @fredrikblau, @jay23606, @kulmann, @tammi-23, @tbsbdr, @v-scharf
+
+### ✅ Tests
+
+- test(e2e): only fail on critical and serious best-practice a11y findings [[#3980](https://github.com/opencloud-eu/web/pull/3980)]
+- test(e2e): extend a11y coverage and add keyboard checks [[#3795](https://github.com/opencloud-eu/web/pull/3795)]
+- test: exclude Claude worktrees from Vitest discovery [[#3815](https://github.com/opencloud-eu/web/pull/3815)]
+- test(e2e): cover sse events for share recipients [[#3799](https://github.com/opencloud-eu/web/pull/3799)]
+- fix(e2e): retry open-with submenu click to fix flaky context menu [[#3757](https://github.com/opencloud-eu/web/pull/3757)]
+- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
 
 ### 🐛 Bug Fixes
 
+- fix: send isMobile information to server for collaboration service [[#3971](https://github.com/opencloud-eu/web/pull/3971)]
 - fix(yjs): renew expired token [[#3966](https://github.com/opencloud-eu/web/pull/3966)]
 - fix: keyboard focus and space handling from accessibility audit [[#3824](https://github.com/opencloud-eu/web/pull/3824)]
 - fix: re-root unlocked vault engines when a vault or its parent folder is renamed [[#3964](https://github.com/opencloud-eu/web/pull/3964)]
@@ -182,16 +192,11 @@
 - feat: add font and app illustrations to the empty states [[#3556](https://github.com/opencloud-eu/web/pull/3556)]
 - feat(rclone-crypt): use the password generator and policy for vault passwords [[#3537](https://github.com/opencloud-eu/web/pull/3537)]
 
-### ✅ Tests
-
-- test(e2e): extend a11y coverage and add keyboard checks [[#3795](https://github.com/opencloud-eu/web/pull/3795)]
-- test: exclude Claude worktrees from Vitest discovery [[#3815](https://github.com/opencloud-eu/web/pull/3815)]
-- test(e2e): cover sse events for share recipients [[#3799](https://github.com/opencloud-eu/web/pull/3799)]
-- fix(e2e): retry open-with submenu click to fix flaky context menu [[#3757](https://github.com/opencloud-eu/web/pull/3757)]
-- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
-
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v11.28.7 [[#3979](https://github.com/opencloud-eu/web/pull/3979)]
+- chore(deps): update dependency filesize to v11.0.27 [[#3978](https://github.com/opencloud-eu/web/pull/3978)]
+- chore(deps): update dependency vite to v8.3.5 [[#3977](https://github.com/opencloud-eu/web/pull/3977)]
 - chore(deps): update traefik docker tag to v3.7.16 [[#3960](https://github.com/opencloud-eu/web/pull/3960)]
 - chore(deps): update node.js to v24.22.1 [[#3968](https://github.com/opencloud-eu/web/pull/3968)]
 - chore(deps): update dependency happy-dom to v21.0.4 [[#3959](https://github.com/opencloud-eu/web/pull/3959)]
