@@ -1,7 +1,7 @@
 import SearchBar from '../../../src/portals/SearchBar.vue'
 import { enableAutoUnmount, flushPromises, RouterLinkStub } from '@vue/test-utils'
 import { mock } from 'vitest-mock-extended'
-import { markRaw, nextTick, ref, shallowRef } from 'vue'
+import { h, markRaw, nextTick, ref, shallowRef } from 'vue'
 import { defineComponent } from 'vue'
 import {
   defaultPlugins,
@@ -56,6 +56,15 @@ const providerContacts = {
     component: markRaw(component)
   }
 }
+
+const announceMock = vi.fn()
+// exposes a spy as the announce method, so the tests can check what gets announced
+const OcHiddenAnnouncerStub = defineComponent({
+  setup(_, { expose }) {
+    expose({ announce: announceMock })
+    return () => h('span')
+  }
+})
 
 const selectors = {
   search: '#files-global-search',
@@ -295,6 +304,113 @@ describe('Search Bar portal component', () => {
     expect(providerFiles.previewSearch.search).toHaveBeenLastCalledWith(
       expect.stringContaining('folder-id')
     )
+  })
+  describe('results announcement', () => {
+    afterEach(() => {
+      announceMock.mockReset()
+    })
+
+    async function typeTerm(
+      wrapper: ReturnType<typeof getMountedWrapper>['wrapper'],
+      term: string
+    ) {
+      const input = wrapper.find<HTMLInputElement>(selectors.searchInput)
+      input.element.focus()
+      await input.setValue(term)
+      await flushPromises()
+    }
+
+    test('announces the total number of results once the search has settled', async () => {
+      const { wrapper } = getMountedWrapper({ providers: [providerFiles], attachTo: document.body })
+      let resolveSearch: (result: SearchResult) => void
+      providerFiles.previewSearch.search.mockImplementationOnce(
+        () => new Promise((resolve) => (resolveSearch = resolve))
+      )
+      await typeTerm(wrapper, 'albert')
+      expect(announceMock).not.toHaveBeenCalledWith(expect.stringMatching(/.+/))
+
+      resolveSearch({ values: [mock<SearchResult['values'][number]>()], totalResults: 12 })
+      await flushPromises()
+      expect(announceMock).toHaveBeenLastCalledWith('12 results')
+    })
+    test('announces the total number of results of all providers', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      providerFiles.previewSearch.search.mockReturnValueOnce({
+        values: [mock<SearchResult['values'][number]>()],
+        totalResults: 12
+      })
+      providerContacts.previewSearch.search.mockReturnValueOnce({
+        values: [mock<SearchResult['values'][number]>()],
+        totalResults: 3
+      })
+      await typeTerm(wrapper, 'albert')
+      expect(announceMock).toHaveBeenLastCalledWith('15 results')
+    })
+    test('announces results without a number if a total is unknown', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      providerFiles.previewSearch.search.mockReturnValueOnce({
+        values: [mock<SearchResult['values'][number]>()],
+        totalResults: 12
+      })
+      await typeTerm(wrapper, 'albert')
+      expect(announceMock).toHaveBeenLastCalledWith('Results found')
+    })
+    test('announces "No results" if nothing was found', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      providerFiles.previewSearch.search.mockReturnValueOnce({ values: [] })
+      providerContacts.previewSearch.search.mockReturnValueOnce({ values: [] })
+      await typeTerm(wrapper, 'nothing found')
+      expect(announceMock).toHaveBeenLastCalledWith('No results')
+    })
+    test.each(['', '   '])('announces nothing for the term "%s"', async (term) => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      await typeTerm(wrapper, term)
+      expect(announceMock).not.toHaveBeenCalledWith(expect.stringMatching(/.+/))
+    })
+    test('re-announces the results when the same term gets searched again', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      await typeTerm(wrapper, 'albert')
+      expect(announceMock).toHaveBeenCalledTimes(1)
+      expect(announceMock).toHaveBeenLastCalledWith('Results found')
+
+      await wrapper.find(selectors.searchInput).trigger('click')
+      await flushPromises()
+      expect(announceMock).toHaveBeenCalledTimes(2)
+      expect(announceMock).toHaveBeenLastCalledWith('Results found')
+    })
+    test('clears the announcement when the term gets cleared', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      await typeTerm(wrapper, 'albert')
+      await typeTerm(wrapper, '')
+      expect(announceMock).toHaveBeenLastCalledWith('')
+    })
+    test('announces nothing if no provider has a preview', async () => {
+      const providerWithoutPreview = {
+        ...providerFiles,
+        previewSearch: { ...providerFiles.previewSearch, available: false }
+      }
+      const { wrapper } = getMountedWrapper({
+        providers: [providerWithoutPreview],
+        attachTo: document.body
+      })
+      await typeTerm(wrapper, 'albert')
+      expect(announceMock).not.toHaveBeenCalledWith(expect.stringMatching(/.+/))
+    })
+    test('announces nothing for a search in the background', async () => {
+      const { wrapper, resourcesStore } = getMountedWrapper({
+        store: { resourcesStore: { currentFolder: { fileId: 'folder-id' } } },
+        attachTo: document.body
+      })
+      await typeTerm(wrapper, 'albert')
+      expect(announceMock).toHaveBeenCalledTimes(1)
+
+      wrapper.find<HTMLInputElement>(selectors.searchInput).element.blur()
+      providerFiles.previewSearch.search.mockClear()
+      resourcesStore.currentFolder = mock<Resource>({ fileId: 'other-folder-id' })
+      await flushPromises()
+      expect(providerFiles.previewSearch.search).toHaveBeenCalled()
+      expect(announceMock).toHaveBeenCalledTimes(1)
+    })
   })
   describe('search location across views', () => {
     test('discards an in-flight preview from the previous scope', async () => {
@@ -651,7 +767,8 @@ function getMountedWrapper({
   route = 'files-spaces-generic',
   store = {},
   term = '',
-  query = {} as Record<string, string>
+  query = {} as Record<string, string>,
+  attachTo = undefined as HTMLElement | undefined
 } = {}) {
   vi.mocked(useAvailableProviders).mockReturnValue(ref(providers))
 
@@ -673,6 +790,7 @@ function getMountedWrapper({
   }
 
   const wrapper = mount(SearchBar, {
+    attachTo,
     global: {
       plugins: [
         ...defaultPlugins({
@@ -684,7 +802,8 @@ function getMountedWrapper({
       provide: { ...localMocks },
       stubs: {
         'router-link': RouterLinkStub,
-        OcDrop: ocDropStub
+        OcDrop: ocDropStub,
+        OcHiddenAnnouncer: OcHiddenAnnouncerStub
       }
     }
   })

@@ -42,6 +42,7 @@
         />
       </template>
     </oc-search-bar>
+    <oc-hidden-announcer ref="resultsAnnouncer" />
     <oc-button
       v-oc-tooltip="$gettext('Display search bar')"
       :aria-label="$gettext('Click to display and focus the search bar')"
@@ -181,6 +182,7 @@ const { currentFolder } = storeToRefs(resourcesStore)
 const locationFilterId = ref(SearchLocationFilterConstants.allFiles)
 const optionsDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('optionsDropRef')
 const searchBarRef = useTemplateRef<HTMLElement>('searchBar')
+const resultsAnnouncer = useTemplateRef('resultsAnnouncer')
 const activePreviewIndex = ref<number | null>(null)
 const term = ref('')
 const restoreSearchFromRoute = ref(false)
@@ -281,6 +283,7 @@ async function search() {
   searchResults.value = []
   if (!unref(term)?.trim()) {
     loading.value = false
+    unref(resultsAnnouncer)?.announce('')
     return
   }
 
@@ -309,6 +312,31 @@ async function search() {
     searchResults.value.push({ providerId: availableProvider.id, result })
   }
   loading.value = false
+  announceResults()
+}
+
+function announceResults() {
+  // only announce the preview the user is looking at, not searches in the background
+  if (!unref(showDrop) || !unref(searchBarRef)?.contains(document.activeElement)) {
+    return
+  }
+  unref(resultsAnnouncer)?.announce(getResultsAnnouncement())
+}
+
+function getResultsAnnouncement() {
+  if (unref(showNoResults)) {
+    return $gettext('No results')
+  }
+
+  const totals = unref(displayProviders).map(
+    (provider) => getSearchResultForProvider(provider).totalResults
+  )
+  if (totals.some((total) => !total)) {
+    return $gettext('Results found')
+  }
+
+  const count = totals.reduce((sum, total) => sum + total, 0)
+  return $ngettext('%{count} result', '%{count} results', count, { count: count.toString() })
 }
 
 function onKeyUpEnter() {
