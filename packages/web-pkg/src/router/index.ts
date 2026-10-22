@@ -9,6 +9,7 @@ import {
   buildRoutes as buildGuestRoutes,
   createLocationGuest,
   isLocationGuestActive,
+  isLocationGuestLinkActive,
   locationGuestLink,
   locationGuestShares
 } from './guest'
@@ -72,6 +73,7 @@ export {
   isLocationSpacesActive,
   isLocationPublicActive,
   isLocationGuestActive,
+  isLocationGuestLinkActive,
   isLocationActive,
   isLocationActiveDirector,
   isLocationTrashActive,

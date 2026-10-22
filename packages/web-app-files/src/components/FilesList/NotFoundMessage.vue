@@ -56,7 +56,7 @@ import {
   createLocationGuest,
   createLocationPublic,
   createLocationSpaces,
-  isLocationGuestActive,
+  isLocationGuestLinkActive,
   isLocationPublicActive,
   isLocationSpacesActive
 } from '@opencloud-eu/web-pkg'
@@ -78,7 +78,7 @@ const isProjectSpace = space
   : !!unref(driveAliasAndItem)?.startsWith('project/')
 
 const showPublicLinkButton = isLocationPublicActive(router, 'files-public-link') && !!space
-const showGuestLinkButton = isLocationGuestActive(router, 'files-guest-link') && !!space
+const showGuestLinkButton = isLocationGuestLinkActive(router) && !!space
 const showHomeButton = isLocationSpacesActive(router, 'files-spaces-generic') && !isProjectSpace
 const showSpacesButton = isLocationSpacesActive(router, 'files-spaces-generic') && isProjectSpace
 const homeRoute = createLocationSpaces('files-spaces-generic', {
