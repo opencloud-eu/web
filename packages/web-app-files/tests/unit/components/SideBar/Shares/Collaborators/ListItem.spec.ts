@@ -16,7 +16,7 @@ import { useMessages, useSharesStore } from '@opencloud-eu/web-pkg'
 import EditDropdown from '../../../../../../src/components/SideBar/Shares/Collaborators/EditDropdown.vue'
 import RoleDropdown from '../../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
 import { mock } from 'vitest-mock-extended'
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationNamedRaw } from 'vue-router'
 
 const selectors = {
@@ -164,6 +164,55 @@ describe('Collaborator ListItem component', () => {
       const messagesStore = useMessages()
       expect(messagesStore.showErrorMessage).toHaveBeenCalled()
     })
+    it('reverts the displayed role to the saved one when saving fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const savedRole = mock<ShareRole>({ id: 'viewer', displayName: 'Can view', description: '' })
+      const newRole = mock<ShareRole>({ id: 'editor', displayName: 'Can edit', description: '' })
+      const share = getShareMock()
+      share.role = savedRole
+      const { wrapper } = createWrapper({
+        share,
+        stubRoleDropdown: false,
+        availableInternalShareRoles: [savedRole, newRole]
+      })
+      const sharesStore = useSharesStore()
+      vi.mocked(sharesStore.updateShare).mockRejectedValue(new Error())
+
+      const label = `${selectors.collaboratorRole} .files-recipient-role-select-btn .truncate`
+      expect(wrapper.find(label).text()).toEqual('Can view')
+
+      await wrapper.find(`#files-recipient-role-drop-btn-${newRole.id}`).trigger('click')
+      await nextTicks(4)
+
+      // the save was actually attempted (and rejected)
+      expect(sharesStore.updateShare).toHaveBeenCalled()
+      // ... so the dropdown must show the previously saved role again, not the new one
+      expect(wrapper.find(label).text()).toEqual('Can view')
+    })
+    it('keeps the new role if the role change succeeds but the space refresh fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const savedRole = mock<ShareRole>({ id: 'viewer', displayName: 'Can view', description: '' })
+      const newRole = mock<ShareRole>({ id: 'editor', displayName: 'Can edit', description: '' })
+      const share = getShareMock()
+      share.role = savedRole
+      const { wrapper, mocks } = createWrapper({
+        share,
+        stubRoleDropdown: false,
+        availableInternalShareRoles: [savedRole, newRole],
+        resource: mock<SpaceResource>({ id: 'space-1', driveType: 'project' })
+      })
+      const sharesStore = useSharesStore()
+      // the role PATCH succeeds, but the subsequent project-space refresh fails
+      mocks.$clientService.graphAuthenticated.drives.getDrive.mockRejectedValue(new Error())
+
+      const label = `${selectors.collaboratorRole} .files-recipient-role-select-btn .truncate`
+      await wrapper.find(`#files-recipient-role-drop-btn-${newRole.id}`).trigger('click')
+      await nextTicks(4)
+
+      expect(sharesStore.updateShare).toHaveBeenCalled()
+      // the role was persisted, so the dropdown must keep the new role
+      expect(wrapper.find(label).text()).toEqual('Can edit')
+    })
   })
   describe('change expiration date', () => {
     it('calls "changeShare" for regular resources', () => {
@@ -217,17 +266,22 @@ function createWrapper({
   share = getShareMock(),
   modifiable = true,
   sharedParentRoute = null,
-  resource = mock<Resource>()
+  resource = mock<Resource>(),
+  stubRoleDropdown = true,
+  availableInternalShareRoles = []
 }: {
   share?: CollaboratorShare
   modifiable?: boolean
   sharedParentRoute?: RouteLocationNamedRaw
   resource?: Resource
+  stubRoleDropdown?: boolean
+  availableInternalShareRoles?: ShareRole[]
 } = {}) {
   const mocks = defaultComponentMocks()
   mocks.$clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(undefined)
 
   return {
+    mocks,
     wrapper: mount(ListItem, {
       props: {
         share,
@@ -237,7 +291,12 @@ function createWrapper({
       global: {
         plugins: [...defaultPlugins()],
         mocks,
-        provide: { ...mocks, resource },
+        provide: {
+          ...mocks,
+          resource,
+          availableInternalShareRoles,
+          availableExternalShareRoles: []
+        },
         renderStubDefaultSlot: true,
         stubs: {
           ...defaultStubs,
@@ -251,7 +310,8 @@ function createWrapper({
           'oc-tag': true,
           'oc-pagination': true,
           'oc-avatar-item': true,
-          'role-dropdown': true,
+          'oc-drop': true,
+          ...(stubRoleDropdown ? { 'role-dropdown': true } : {}),
           'edit-dropdown': true,
           'user-avatar': true,
           translate: false
