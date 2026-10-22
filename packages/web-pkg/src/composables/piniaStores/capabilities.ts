@@ -59,6 +59,7 @@ const defaultValues = {
   spaces: {
     enabled: false,
     max_quota: 0,
+    default_quota: 0,
     projects: false
   }
 } satisfies Partial<Capabilities['capabilities']>
@@ -81,6 +82,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
   const davTrashbin = computed(() => unref(capabilities).dav.trashbin)
 
   const spacesMaxQuota = computed(() => unref(capabilities).spaces.max_quota)
+  const spacesDefaultQuota = computed(() => unref(capabilities).spaces.default_quota)
   const spacesProjects = computed(() => unref(capabilities).spaces.projects)
 
   const graphUsersCreateDisabled = computed(() => unref(capabilities).graph.users.create_disabled)
@@ -152,6 +154,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     davReports,
     davTrashbin,
     spacesMaxQuota,
+    spacesDefaultQuota,
     spacesProjects,
     graphUsersCreateDisabled,
     graphUsersDeleteDisabled,

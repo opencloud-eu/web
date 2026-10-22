@@ -2,6 +2,7 @@
   <quota-select
     :total-quota="selectedQuota"
     :max-quota="spacesMaxQuota"
+    :default-quota="defaultQuota"
     :position-fixed="true"
     @selected-option-change="changeSelectedQuotaOption"
   />
@@ -20,7 +21,7 @@ import { computed, ref, unref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { useGettext } from 'vue3-gettext'
 import QuotaSelect from '../QuotaSelect.vue'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { SpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
 import {
   Modal,
   useClientService,
@@ -58,10 +59,17 @@ const clientService = useClientService()
 const router = useRouter()
 const spacesStore = useSpacesStore()
 const capabilityStore = useCapabilityStore()
-const { spacesMaxQuota } = storeToRefs(capabilityStore)
+const { spacesMaxQuota, spacesDefaultQuota } = storeToRefs(capabilityStore)
 const { updateResourceField } = useResourcesStore()
 
 const selectedQuota = ref(spaces[0]?.spaceQuota?.total || 0)
+
+const defaultQuota = computed(() => {
+  if (!spaces.length || !spaces.every(isProjectSpaceResource)) {
+    return null
+  }
+  return unref(spacesDefaultQuota)
+})
 
 function getSuccessMessage(count: number) {
   if (resourceType === 'space') {

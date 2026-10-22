@@ -38,10 +38,12 @@ import { useGettext } from 'vue3-gettext'
 const {
   totalQuota = 0,
   maxQuota = 0,
+  defaultQuota = null,
   allowDefault = false
 } = defineProps<{
   totalQuota?: number | null
   maxQuota?: number
+  defaultQuota?: number | null
   allowDefault?: boolean
 }>()
 
@@ -54,6 +56,7 @@ type Option = {
   displayValue: string
   selectable?: boolean
   error?: string
+  isDefault?: boolean
 }
 
 const { $gettext, current: currentLanguage } = useGettext()
@@ -63,8 +66,12 @@ const customQuotas = ref<number[]>([])
 const selectedQuota = ref(totalQuota)
 const quotaLimit = computed(() => maxQuota || 1e15)
 const options = computed<Option[]>(() => {
-  const availableOptions: Option[] = [...PRESET_QUOTAS, ...unref(customQuotas)]
-    .filter((value) => !maxQuota || value <= maxQuota)
+  const quotas = [...PRESET_QUOTAS, ...unref(customQuotas)]
+  if (defaultQuota && !quotas.includes(defaultQuota)) {
+    quotas.push(defaultQuota)
+  }
+  const availableOptions: Option[] = quotas
+    .filter((value) => !maxQuota || value <= maxQuota || isSelectableDefault(value))
     .map((value) => ({ value, displayValue: getFormattedFileSize(value) }))
   const currentQuota = unref(selectedQuota)
 
@@ -82,29 +89,58 @@ const options = computed<Option[]>(() => {
 
   availableOptions.sort((a, b) => a.value - b.value)
 
-  if (allowDefault) {
-    availableOptions.unshift({ value: null, displayValue: $gettext('Default') })
-  }
-  if (!maxQuota || currentQuota === 0) {
+  if (!maxQuota || currentQuota === 0 || isSelectableDefault(0)) {
     availableOptions.push({
       value: 0,
       displayValue: $gettext('No restriction'),
-      ...(maxQuota && { selectable: false })
+      ...(maxQuota && !isSelectableDefault(0) && { selectable: false })
     })
   }
-  return availableOptions
+  return availableOptions.map(markDefaultOption)
 })
-const selectedOption = computed(() =>
-  unref(options).find((option) => option.value === unref(selectedQuota))
-)
+const selectedOption = computed(() => unref(options).find(isSelectedOption))
 
-function isValueValidNumber(value: string) {
-  return /^\d+([.,]\d+)?$/.test(value)
+function isSelectedOption(option: Option) {
+  if (unref(selectedQuota) === null) {
+    return allowDefault && option.isDefault
+  }
+  return option.value === unref(selectedQuota)
+}
+
+function isSelectableDefault(value: number) {
+  return allowDefault && value === defaultQuota
+}
+
+function markDefaultOption(option: Option): Option {
+  if (option.value !== defaultQuota) {
+    return option
+  }
+  const displayValue = $gettext('%{quota} (Default)', { quota: option.displayValue })
+  return { ...option, displayValue, isDefault: true }
+}
+
+function normalizeInput(input: string) {
+  return input.replace(',', '.')
+}
+
+function parseInputNumber(input: string) {
+  const normalizedInput = normalizeInput(input)
+  if (!/^\d+(\.\d+)?$/.test(normalizedInput)) {
+    return null
+  }
+  return parseFloat(normalizedInput)
 }
 
 function isZeroInput(input: string) {
-  const normalizedInput = input.replace(',', '.')
-  return isValueValidNumber(normalizedInput) && parseFloat(normalizedInput) === 0
+  return parseInputNumber(input) === 0
+}
+
+function parseQuotaInput(input: string) {
+  const inputNumber = parseInputNumber(input)
+  if (inputNumber === null) {
+    return null
+  }
+  return Math.round(inputNumber * 1e9)
 }
 
 function getFormattedFileSize(value: number) {
@@ -115,10 +151,11 @@ function onUpdate(event: Option) {
   if (!optionSelectable(event)) {
     return
   }
+  const value = allowDefault && event.isDefault ? null : event.value
   rememberCustomQuota(unref(selectedQuota))
-  rememberCustomQuota(event.value)
-  selectedQuota.value = event.value
-  emit('selectedOptionChange', event)
+  rememberCustomQuota(value)
+  selectedQuota.value = value
+  emit('selectedOptionChange', { ...event, value })
 }
 
 function rememberCustomQuota(value: number | null) {
@@ -142,8 +179,16 @@ function filterOptions(items: Option[], search: string) {
   if (isZeroInput(search)) {
     return items.filter((item) => item.value === 0)
   }
+  // the option of a typed number comes first, also when its label differs, e.g. "0.013" for "13 MB"
+  const typedQuota = parseQuotaInput(search)
+  const exactMatches = typedQuota ? items.filter((item) => item.value === typedQuota) : []
   const normalizedSearch = search.toLocaleLowerCase()
-  return items.filter((item) => item.displayValue.toLocaleLowerCase().includes(normalizedSearch))
+  const textMatches = items.filter(
+    (item) =>
+      !exactMatches.includes(item) &&
+      item.displayValue.toLocaleLowerCase().includes(normalizedSearch)
+  )
+  return [...exactMatches, ...textMatches]
 }
 
 function createOption(option: string): Option {
@@ -154,25 +199,32 @@ function createOption(option: string): Option {
     }
   }
 
-  option = option.replace(',', '.')
+  const displayValue = normalizeInput(option)
+  const value = parseQuotaInput(option)
 
-  if (!isValueValidNumber(option)) {
+  if (value === null) {
     return {
-      displayValue: option,
+      displayValue,
       value: null,
       error: $gettext('Please enter only numbers'),
       selectable: false
     }
   }
-  const value = Math.round(parseFloat(option) * 1e9)
 
   if (value < 1) {
     return {
-      displayValue: option,
+      displayValue,
       value: null,
       error: $gettext('Please enter a value greater than 0'),
       selectable: false
     }
+  }
+
+  const existingOption = unref(options).find(
+    (existing) => existing.value === value && optionSelectable(existing)
+  )
+  if (existingOption) {
+    return existingOption
   }
 
   if (value > unref(quotaLimit)) {
@@ -187,12 +239,7 @@ function createOption(option: string): Option {
     }
   }
 
-  return (
-    unref(options).find((existing) => existing.value === value) || {
-      value,
-      displayValue: getFormattedFileSize(value)
-    }
-  )
+  return { value, displayValue: getFormattedFileSize(value) }
 }
 watch(
   () => totalQuota,

@@ -270,7 +270,37 @@ describe('CreateSpaceModal', () => {
         )
         await revealOptions(wrapper)
         await expandAdvanced(wrapper)
-        expect(wrapper.find('.create-space-quota .vs__selected').text()).toBe('Default')
+        expect(wrapper.find('.create-space-quota .vs__selected').text()).toBe('1 GB (Default)')
+      }
+    )
+
+    it.each([
+      [0, 'No restriction', 'No restriction (Default)'],
+      [20e9, '20 GB', '20 GB (Default)']
+    ])(
+      'shows the server default %i once and leaves it to the server',
+      async (defaultQuota, plain, label) => {
+        const { wrapper } = getWrapper({
+          abilities: [{ action: 'set-quota-all', subject: 'Drive' }],
+          defaultQuota
+        })
+        await revealOptions(wrapper)
+        await expandAdvanced(wrapper)
+        expect(wrapper.find('.create-space-quota .vs__selected').text()).toBe(label)
+        const search = wrapper.find('.create-space-quota input.vs__search')
+        await search.trigger('click')
+        await search.trigger('focus')
+        const labels = wrapper
+          .findAll('.create-space-quota .vs__dropdown-option')
+          .map((option) => option.text())
+        expect(labels.filter((text) => text.startsWith(plain))).toEqual([label])
+
+        await wrapper.vm.onConfirm()
+
+        expect(addNewSpace).toHaveBeenCalledWith(
+          'New space',
+          expect.objectContaining({ quota: undefined })
+        )
       }
     )
 
@@ -290,14 +320,14 @@ describe('CreateSpaceModal', () => {
       expect(addNewSpace).toHaveBeenCalledWith('New space', expect.objectContaining({ quota }))
     })
 
-    it('uses the server default again after reselecting Default', async () => {
+    it('uses the server default again after reselecting the default', async () => {
       const { wrapper } = getWrapper({
         abilities: [{ action: 'set-quota-all', subject: 'Drive' }]
       })
       await revealOptions(wrapper)
       await expandAdvanced(wrapper)
       await selectQuota(wrapper, 'No restriction')
-      await selectQuota(wrapper, 'Default')
+      await selectQuota(wrapper, '1 GB (Default)')
 
       await wrapper.vm.onConfirm()
 
@@ -524,7 +554,8 @@ function getWrapper({
   isLoading = false,
   abilities = [] as AbilityRule[],
   spaces = [] as SpaceResource[],
-  maxQuota = 0
+  maxQuota = 0,
+  defaultQuota = 1e9
 } = {}) {
   const mocks = { ...defaultComponentMocks() }
 
@@ -547,7 +578,9 @@ function getWrapper({
             abilities,
             piniaOptions: {
               spacesState: { spaces },
-              capabilityState: { capabilities: { spaces: { max_quota: maxQuota } } }
+              capabilityState: {
+                capabilities: { spaces: { max_quota: maxQuota, default_quota: defaultQuota } }
+              }
             }
           })
         ],

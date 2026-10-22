@@ -46,6 +46,7 @@
         class="create-space-quota"
         :total-quota="quota"
         :max-quota="spacesMaxQuota"
+        :default-quota="spacesDefaultQuota"
         allow-default
         :position-fixed="true"
         @selected-option-change="quota = $event.value"
@@ -93,7 +94,7 @@ const { $gettext } = useGettext()
 const { can } = useAbility()
 const capabilityStore = useCapabilityStore()
 const spacesStore = useSpacesStore()
-const { spacesMaxQuota } = storeToRefs(capabilityStore)
+const { spacesMaxQuota, spacesDefaultQuota } = storeToRefs(capabilityStore)
 const { personalSpace } = storeToRefs(spacesStore)
 
 const expanded = ref({ presentation: true, advanced: false })
