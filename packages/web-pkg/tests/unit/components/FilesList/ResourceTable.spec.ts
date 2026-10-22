@@ -739,6 +739,21 @@ describe('ResourceTable', () => {
       const { wrapper } = getMountedWrapper({ hasRenameAction: false })
       expect(wrapper.find('.resource-table-edit-name').exists()).toBeFalsy()
     })
+    it('is placed next to the name, not after the parent folder line', () => {
+      const { wrapper } = getMountedWrapper({
+        props: {
+          arePathsDisplayed: true,
+          space: mock<SpaceResource>({ name: 'Personal', getDriveAliasAndItem: vi.fn() })
+        }
+      })
+      const editButtons = wrapper.findAll('.resource-table-edit-name')
+      expect(editButtons.length).toBe(resourcesWithAllFields.length)
+      for (const editButton of editButtons) {
+        const container = editButton.element.parentElement
+        expect(container.querySelector('.oc-resource-name')).not.toBeNull()
+        expect(container.querySelector('.parent-folder')).toBeNull()
+      }
+    })
   })
 })
 

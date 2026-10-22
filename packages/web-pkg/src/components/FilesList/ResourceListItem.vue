@@ -46,29 +46,38 @@
         />
       </resource-link>
     </motion-photo-overlay>
-    <div class="oc-resource-details block truncate" :class="{ 'pl-2': isIconDisplayed }">
-      <resource-link
-        :resource="resource"
-        :is-resource-clickable="isResourceClickable"
-        :link="link"
-        class="hover:outline-offset-0 focus:outline-offset-0"
-        :class="{ 'hover:underline': isResourceClickable }"
-        @click="emitClick"
-      >
-        <resource-name
-          :key="resource.name"
-          :name="resource.name"
-          :path-prefix="pathPrefix"
-          :extension="resource.extension"
-          :type="resource.type"
-          :full-path="resource.path"
-          :is-path-displayed="isPathDisplayed"
-          :is-extension-displayed="isExtensionDisplayed"
-          :is-favorite="resource.starred"
-          :is-favorite-displayed="isFavoriteDisplayed"
-          :term="term"
-        />
-      </resource-link>
+    <div
+      class="oc-resource-details block"
+      :class="[
+        { 'pl-2': isIconDisplayed },
+        $slots.nameAppend ? 'min-w-0 whitespace-nowrap' : 'truncate'
+      ]"
+    >
+      <div class="oc-resource-name-line" :class="{ 'flex items-center': $slots.nameAppend }">
+        <resource-link
+          :resource="resource"
+          :is-resource-clickable="isResourceClickable"
+          :link="link"
+          class="min-w-0 hover:outline-offset-0 focus:outline-offset-0"
+          :class="{ 'hover:underline': isResourceClickable, 'overflow-hidden': $slots.nameAppend }"
+          @click="emitClick"
+        >
+          <resource-name
+            :key="resource.name"
+            :name="resource.name"
+            :path-prefix="pathPrefix"
+            :extension="resource.extension"
+            :type="resource.type"
+            :full-path="resource.path"
+            :is-path-displayed="isPathDisplayed"
+            :is-extension-displayed="isExtensionDisplayed"
+            :is-favorite="resource.starred"
+            :is-favorite-displayed="isFavoriteDisplayed"
+            :term="term"
+          />
+        </resource-link>
+        <slot name="nameAppend" />
+      </div>
       <div class="flex">
         <component
           :is="parentFolderComponentType"
@@ -129,6 +138,13 @@ const {
 
 const emit = defineEmits<{
   (e: 'click', event: MouseEvent): void
+}>()
+
+defineSlots<{
+  /**
+   * Content rendered right after the name, e.g. actions. Stays next to the name when the path line is wider.
+   */
+  nameAppend?: () => unknown
 }>()
 
 const { $gettext } = useGettext()

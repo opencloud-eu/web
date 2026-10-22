@@ -94,34 +94,37 @@
           "
           :class="{ 'opacity-60': isResourceCut(item) }"
           @click.stop="fileNameClicked({ resource: item, event: $event })"
-        />
-        <oc-button
-          v-for="action in getResourceTableActions(item)"
-          :key="`resource-table-action-${item.id}-${action.name}`"
-          v-oc-tooltip="getResourceTableLabel(action, item)"
-          class="resource-table-edit-name inline-flex raw-hover-surface p-1 ml-1"
-          :class="{ 'self-start': arePathsDisplayed }"
-          appearance="raw"
-          :aria-label="getResourceTableLabel(action, item)"
-          @click.stop="
-            (e: MouseEvent) => {
-              if (interceptModifierClick(e, item)) {
-                return
-              }
-              action.handler({
-                space: getMatchingSpace(item),
-                resources: [item]
-              })
-            }
-          "
         >
-          <oc-icon
-            :icon="getResourceTableActionIcon(action, item)"
-            fill-type="line"
-            size-class="size-4"
-            color="var(--oc-role-on-surface)"
-          />
-        </oc-button>
+          <!-- next to the name line, so it doesn't drift to the end of a wider path line -->
+          <template v-if="getResourceTableActions(item).length" #nameAppend>
+            <oc-button
+              v-for="action in getResourceTableActions(item)"
+              :key="`resource-table-action-${item.id}-${action.name}`"
+              v-oc-tooltip="getResourceTableLabel(action, item)"
+              class="resource-table-edit-name inline-flex shrink-0 raw-hover-surface p-1 -my-1 ml-1 pointer-events-auto"
+              appearance="raw"
+              :aria-label="getResourceTableLabel(action, item)"
+              @click.stop="
+                (e: MouseEvent) => {
+                  if (interceptModifierClick(e, item)) {
+                    return
+                  }
+                  action.handler({
+                    space: getMatchingSpace(item),
+                    resources: [item]
+                  })
+                }
+              "
+            >
+              <oc-icon
+                :icon="getResourceTableActionIcon(action, item)"
+                fill-type="line"
+                size-class="size-4"
+                color="var(--oc-role-on-surface)"
+              />
+            </oc-button>
+          </template>
+        </resource-list-item>
       </div>
       <!-- aligned with the name, next to the icon -->
       <div v-if="$slots.additionalResourceContent" :class="{ 'pl-8': !$slots['image'] }">
