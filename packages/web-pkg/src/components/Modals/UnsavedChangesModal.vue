@@ -22,11 +22,6 @@ const { modal, closeCallback } = defineProps<{
   closeCallback: () => void
 }>()
 
-defineEmits<{
-  (e: 'cancel'): void
-  (e: 'confirm'): void
-}>()
-
 const { removeModal } = useModals()
 const onClose = () => {
   removeModal(modal.id)
