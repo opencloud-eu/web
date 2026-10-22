@@ -42,6 +42,7 @@ export type PiniaMockOptions = {
     guestPermissionId?: string
     guestSpaceId?: string
     guestEmail?: string
+    guestSessionExpirationDateTime?: string
   }
   themeState?: { availableThemes?: WebThemeType[]; currentTheme?: WebThemeType }
   clipboardState?: { action?: ClipboardActions; resources?: Resource[] }

@@ -39,11 +39,12 @@ import {
   isRetryableGuestLinkErrorType
 } from '../services/auth/guestSessionManager'
 import PlainCard from '../components/PlainCard.vue'
-import { useGuestLinkTargetRoute } from '../composables/guestLink'
+import { useGuestLinkErrorMessages, useGuestLinkTargetRoute } from '../composables/guestLink'
 
 const router = useRouter()
 const { $gettext } = useGettext()
 const { getGuestLinkTargetRoute } = useGuestLinkTargetRoute()
+const { getShareErrorMessage } = useGuestLinkErrorMessages()
 const token = useRouteParam('token')
 const errorType = ref<GuestLinkErrorType>()
 
@@ -81,17 +82,13 @@ const errorMessage = computed(() => {
       return $gettext('This invitation link has expired.')
     case GuestLinkErrorErrorTypeEnum.TokenAlreadyRedeemed:
       return $gettext('This invitation link has already been used.')
-    case GuestLinkErrorErrorTypeEnum.ShareExpired:
-      return $gettext('Your access to the shared item has expired.')
-    case GuestLinkErrorErrorTypeEnum.ShareNotFound:
-    // the backend deletes the link of a removed or expired share
-    case GuestLinkErrorErrorTypeEnum.TokenNotFound:
-      return $gettext('The shared item is no longer available.')
     default:
       if (unref(isRetryable)) {
         return $gettext('The invitation could not be opened. Please try again later.')
       }
-      return $gettext('The invitation could not be opened.')
+      return (
+        getShareErrorMessage(unref(errorType)) || $gettext('The invitation could not be opened.')
+      )
   }
 })
 

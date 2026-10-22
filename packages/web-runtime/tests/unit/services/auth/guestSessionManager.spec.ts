@@ -17,6 +17,10 @@ vi.mock('@opencloud-eu/web-client/sse', async (importOriginal) => ({
 }))
 
 const storageKey = 'oc.guestPermissionId'
+const expiryStorageKey = 'oc.guestSessionExpiry'
+const now = new Date('2026-10-22T12:00:00Z')
+const expirationDateTime = '2026-10-23T12:00:00Z'
+const refreshedExpirationDateTime = '2026-10-24T12:00:00Z'
 
 const sharedDriveItem = {
   name: 'Invited folder',
@@ -64,11 +68,20 @@ describe('isGuestSessionInvalidError', () => {
   })
 })
 
+const managers: GuestSessionManager[] = []
+
 describe('GuestSessionManager', () => {
   beforeEach(() => {
+    // the session expiry decides whether a renewal sends a PIN
+    vi.useFakeTimers({ now, toFake: ['Date'] })
     localStorage.clear()
     vi.mocked(resetSSE).mockClear()
     createTestingPinia({ stubActions: false })
+  })
+
+  afterEach(() => {
+    managers.splice(0).forEach((manager) => manager.dispose())
+    vi.useRealTimers()
   })
 
   describe('redeem', () => {
@@ -95,6 +108,37 @@ describe('GuestSessionManager', () => {
       expect(authStore.guestPermissionId).toEqual('permission-id')
       expect(authStore.guestEmail).toEqual('guest@example.org')
       expect(localStorage.getItem(storageKey)).toEqual('permission-id')
+    })
+
+    it('sets the session expiry on the guest context', async () => {
+      const { manager } = getManager()
+
+      await manager.redeem('magic-token')
+
+      expect(useAuthStore().guestSessionExpirationDateTime).toEqual(expirationDateTime)
+    })
+
+    it('expresses the session expiry in the client clock', async () => {
+      const { manager, verifyGuestLinkToken } = getManager()
+      verifyGuestLinkToken.mockResolvedValue({
+        permissionId: 'permission-id',
+        expirationDateTime,
+        // the server clock is an hour ahead
+        serverDateTime: new Date(now.getTime() + 60 * 60 * 1000).toUTCString()
+      })
+
+      await manager.redeem('magic-token')
+
+      expect(useAuthStore().guestSessionExpirationDateTime).toEqual('2026-10-23T11:00:00.000Z')
+    })
+
+    it('restores the session expiry with the persisted session', async () => {
+      await getManager().manager.redeem('magic-token')
+      useAuthStore().clearGuestContext()
+
+      await getManager().manager.restoreContext()
+
+      expect(useAuthStore().guestSessionExpirationDateTime).toEqual(expirationDateTime)
     })
 
     it('uses the recipient of the matching permission for the guest email', async () => {
@@ -276,6 +320,23 @@ describe('GuestSessionManager', () => {
       expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
     })
 
+    it('does not record a renewal without pin when the session expiry passed', async () => {
+      const { manager } = getManager()
+      await manager.redeem('magic-token')
+      vi.setSystemTime(new Date(expirationDateTime))
+
+      expect(await manager.renew('permission-id')).toEqual({ withPin: false })
+      expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
+    })
+
+    it('lets the backend decide on the pin when the session expiry is unparsable', async () => {
+      const { manager } = getManager()
+      await manager.redeem('magic-token')
+      useAuthStore().setGuestSessionExpirationDateTime('not-a-date')
+
+      expect(await manager.renew('permission-id')).toEqual({ withPin: true })
+    })
+
     it('does not record a renewal without pin when the session belongs to another share', async () => {
       const { manager } = getManager()
       await manager.redeem('magic-token')
@@ -290,7 +351,7 @@ describe('GuestSessionManager', () => {
     })
 
     it('returns nothing once the renewal expired', async () => {
-      vi.useFakeTimers()
+      vi.useFakeTimers({ now })
       const { manager } = getManager()
       await manager.redeem('magic-token')
       await manager.renew('permission-id')
@@ -356,6 +417,139 @@ describe('GuestSessionManager', () => {
     })
   })
 
+  describe('refresh', () => {
+    it('refreshes the session without interrupting the guest context', async () => {
+      const { manager, verifyGuestLinkPin } = getManager()
+      await manager.redeem('magic-token')
+      await manager.renew('permission-id')
+      vi.mocked(resetSSE).mockClear()
+
+      await manager.refresh('permission-id', '123456')
+
+      const authStore = useAuthStore()
+      expect(verifyGuestLinkPin).toHaveBeenCalledWith(
+        { pin: '123456', permissionId: 'permission-id' },
+        { withCredentials: true }
+      )
+      expect(authStore.guestContextReady).toBeTruthy()
+      expect(authStore.guestSessionExpirationDateTime).toEqual(refreshedExpirationDateTime)
+      expect(manager.getPendingRenewal('permission-id')).toBeUndefined()
+      expect(resetSSE).not.toHaveBeenCalled()
+    })
+
+    it('keeps the session expiry when the pin is invalid', async () => {
+      const pinError = guestLinkError(401, 'pinInvalid', 'permission-id')
+      const { manager } = getManager({ pinError })
+      await manager.redeem('magic-token')
+
+      await expect(manager.refresh('permission-id', '000000')).rejects.toBe(pinError)
+
+      expect(useAuthStore().guestSessionExpirationDateTime).toEqual(expirationDateTime)
+    })
+
+    it('expresses the refreshed session expiry in the client clock', async () => {
+      const { manager, verifyGuestLinkPin } = getManager()
+      await manager.redeem('magic-token')
+      verifyGuestLinkPin.mockResolvedValue({
+        permissionId: 'permission-id',
+        expirationDateTime: refreshedExpirationDateTime,
+        // the server clock is an hour behind
+        serverDateTime: new Date(now.getTime() - 60 * 60 * 1000).toUTCString()
+      })
+
+      await manager.refresh('permission-id', '123456')
+
+      expect(useAuthStore().guestSessionExpirationDateTime).toEqual('2026-10-24T13:00:00.000Z')
+    })
+  })
+
+  describe('ensureRenewal', () => {
+    afterEach(() => {
+      delete (navigator as { locks?: unknown }).locks
+    })
+
+    it('requests a renewal', async () => {
+      const { manager, renewGuestLink } = getManager()
+      await manager.redeem('magic-token')
+
+      expect(await manager.ensureRenewal('permission-id')).toEqual({ withPin: true })
+      expect(renewGuestLink).toHaveBeenCalledTimes(1)
+    })
+
+    it('reuses a pending renewal instead of invalidating its pin', async () => {
+      const { manager, renewGuestLink } = getManager()
+      await manager.redeem('magic-token')
+
+      await manager.ensureRenewal('permission-id')
+      expect(await manager.ensureRenewal('permission-id')).toEqual({ withPin: true })
+
+      expect(renewGuestLink).toHaveBeenCalledTimes(1)
+    })
+
+    it('lets concurrent renewals take turns', async () => {
+      let queue: Promise<unknown> = Promise.resolve()
+      Object.defineProperty(navigator, 'locks', {
+        configurable: true,
+        value: {
+          request: (_name: string, callback: () => Promise<unknown>): Promise<unknown> => {
+            const result = queue.then(callback)
+            queue = result
+            return result
+          }
+        }
+      })
+      const { manager, renewGuestLink } = getManager()
+      await manager.redeem('magic-token')
+
+      await Promise.all([
+        manager.ensureRenewal('permission-id'),
+        manager.ensureRenewal('permission-id')
+      ])
+
+      expect(renewGuestLink).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('session refreshed in another tab', () => {
+    function refreshInOtherTab(permissionId: string) {
+      localStorage.setItem(
+        expiryStorageKey,
+        JSON.stringify({ permissionId, expirationDateTime: refreshedExpirationDateTime })
+      )
+      window.dispatchEvent(new StorageEvent('storage', { key: expiryStorageKey }))
+    }
+
+    it('updates the session expiry', async () => {
+      const { manager } = getManager()
+      await manager.redeem('magic-token')
+
+      refreshInOtherTab('permission-id')
+
+      expect(useAuthStore().guestSessionExpirationDateTime).toEqual(refreshedExpirationDateTime)
+    })
+
+    it('ignores a session of another share', async () => {
+      const { manager } = getManager()
+      await manager.redeem('magic-token')
+
+      refreshInOtherTab('other-permission-id')
+
+      expect(useAuthStore().guestSessionExpirationDateTime).toEqual(expirationDateTime)
+    })
+  })
+
+  describe('expire', () => {
+    it('drops the session expiry', async () => {
+      const { manager } = getManager()
+      await manager.redeem('magic-token')
+
+      manager.expire()
+
+      expect(localStorage.getItem(expiryStorageKey)).toBeNull()
+      expect(useAuthStore().guestSessionExpirationDateTime).toBeNull()
+    })
+  })
+
   describe('resume', () => {
     it('establishes the guest context of a verified session', async () => {
       const { manager } = getManager()
@@ -366,6 +560,15 @@ describe('GuestSessionManager', () => {
       expect(permissionId).toEqual('permission-id')
       expect(space.id).toEqual('share-id')
       expect(useAuthStore().guestContextReady).toBeTruthy()
+    })
+
+    it('restores the session expiry of a verified pin', async () => {
+      const { manager } = getManager()
+      await manager.verifyPin('permission-id', '123456')
+
+      await manager.resume('permission-id')
+
+      expect(useAuthStore().guestSessionExpirationDateTime).toEqual(refreshedExpirationDateTime)
     })
 
     it('keeps the session when loading its context fails transiently', async () => {
@@ -387,6 +590,25 @@ describe('GuestSessionManager', () => {
       await expect(manager.resume('permission-id')).rejects.toBeDefined()
 
       expect(manager.hasSession('permission-id')).toBeFalsy()
+    })
+
+    it('drops the session expiry of an invalid session', async () => {
+      const { manager } = getManager({ listError: graphUnauthorizedError(sharedWithMeUrl) })
+      await manager.verifyPin('permission-id', '123456')
+
+      await expect(manager.resume('permission-id')).rejects.toBeDefined()
+
+      expect(localStorage.getItem(expiryStorageKey)).toBeNull()
+    })
+
+    it('keeps the session expiry of another share', async () => {
+      const expiry = JSON.stringify({ permissionId: 'other-permission-id', expirationDateTime })
+      localStorage.setItem(expiryStorageKey, expiry)
+      const { manager } = getManager({ driveItems: [] })
+
+      await expect(manager.resume('permission-id')).rejects.toBeDefined()
+
+      expect(localStorage.getItem(expiryStorageKey)).toEqual(expiry)
     })
 
     it('keeps the persisted session of another share', async () => {
@@ -653,10 +875,13 @@ function getManager({
 } = {}) {
   const verifyGuestLinkToken = redeemError
     ? vi.fn().mockRejectedValue(redeemError)
-    : vi.fn().mockResolvedValue('permission-id')
+    : vi.fn().mockResolvedValue({ permissionId: 'permission-id', expirationDateTime })
   const verifyGuestLinkPin = pinError
     ? vi.fn().mockRejectedValue(pinError)
-    : vi.fn().mockResolvedValue('permission-id')
+    : vi.fn().mockResolvedValue({
+        permissionId: 'permission-id',
+        expirationDateTime: refreshedExpirationDateTime
+      })
   const renewGuestLink = vi.fn().mockResolvedValue(undefined)
   const listSharedWithMe = listError
     ? vi.fn().mockRejectedValue(listError)
@@ -674,6 +899,7 @@ function getManager({
     authStore: useAuthStore(),
     spacesStore: useSpacesStore()
   })
+  managers.push(manager)
 
   return { manager, verifyGuestLinkToken, verifyGuestLinkPin, renewGuestLink, listSharedWithMe }
 }

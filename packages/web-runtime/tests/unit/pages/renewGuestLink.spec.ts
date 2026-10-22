@@ -21,7 +21,8 @@ const { getGuestLinkTargetRoute } = vi.hoisted(() => ({
     })
   )
 }))
-vi.mock('../../../src/composables/guestLink', () => ({
+vi.mock('../../../src/composables/guestLink', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
   useGuestLinkTargetRoute: () => ({ getGuestLinkTargetRoute })
 }))
 
@@ -58,7 +59,7 @@ describe('renewGuestLink', () => {
     getWrapper()
     await flushPromises()
 
-    expect(authService.renewGuestLink).toHaveBeenCalledWith('permission-id')
+    expect(authService.ensureGuestLinkRenewal).toHaveBeenCalledWith('permission-id')
   })
 
   it('asks to open the new link after a renewal without pin', async () => {
@@ -98,7 +99,7 @@ describe('renewGuestLink', () => {
     await flushPromises()
 
     expect(authService.getPendingGuestLinkRenewal).toHaveBeenCalledWith('permission-id')
-    expect(authService.renewGuestLink).not.toHaveBeenCalled()
+    expect(authService.ensureGuestLinkRenewal).not.toHaveBeenCalled()
     expect(wrapper.text()).toContain('Check your inbox')
     expect(wrapper.find(selectors.pinInput).exists()).toBeTruthy()
   })
@@ -156,11 +157,11 @@ describe('renewGuestLink', () => {
     const { wrapper } = getWrapper({ renewError: guestLinkError('tooManyRequests', 60) })
     await flushPromises()
 
-    vi.mocked(authService.renewGuestLink).mockResolvedValue({ withPin: false })
+    vi.mocked(authService.ensureGuestLinkRenewal).mockResolvedValue({ withPin: false })
     await wrapper.find(selectors.retryButton).trigger('click')
     await flushPromises()
 
-    expect(authService.renewGuestLink).toHaveBeenCalledTimes(2)
+    expect(authService.ensureGuestLinkRenewal).toHaveBeenCalledTimes(2)
     expect(wrapper.find(selectors.errorMessage).exists()).toBeFalsy()
     expect(wrapper.text()).toContain('Check your inbox')
   })
@@ -190,14 +191,14 @@ describe('renewGuestLink', () => {
       'A new invitation could not be requested. Please try again later.'
     )
 
-    vi.mocked(authService.renewGuestLink).mockImplementation(() => {
+    vi.mocked(authService.ensureGuestLinkRenewal).mockImplementation(() => {
       setPendingRenewal({ withPin: true })
       return Promise.resolve({ withPin: true })
     })
     await wrapper.find(selectors.retryButton).trigger('click')
     await flushPromises()
 
-    expect(authService.renewGuestLink).toHaveBeenCalledTimes(2)
+    expect(authService.ensureGuestLinkRenewal).toHaveBeenCalledTimes(2)
     expect(wrapper.find(selectors.pinInput).exists()).toBeTruthy()
   })
 
@@ -323,7 +324,7 @@ describe('renewGuestLink', () => {
   it('falls back to the renewal when the session is invalid after verifying the pin', async () => {
     const { wrapper, setPendingRenewal } = getWrapper({ resumeError: sessionExpiredError() })
     await flushPromises()
-    vi.mocked(authService.renewGuestLink).mockImplementation(() => {
+    vi.mocked(authService.ensureGuestLinkRenewal).mockImplementation(() => {
       setPendingRenewal({ withPin: false })
       return Promise.resolve({ withPin: false })
     })
@@ -332,7 +333,7 @@ describe('renewGuestLink', () => {
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
-    expect(authService.renewGuestLink).toHaveBeenCalledTimes(2)
+    expect(authService.ensureGuestLinkRenewal).toHaveBeenCalledTimes(2)
     expect(wrapper.text()).toContain(
       'Open the invitation link from your most recent email to continue.'
     )
@@ -358,7 +359,7 @@ describe('renewGuestLink', () => {
     await flushPromises()
 
     expect(authService.resumeGuestSession).toHaveBeenCalledWith('permission-id')
-    expect(authService.renewGuestLink).not.toHaveBeenCalled()
+    expect(authService.ensureGuestLinkRenewal).not.toHaveBeenCalled()
     expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'files-guest-link',
@@ -478,7 +479,7 @@ describe('renewGuestLink', () => {
     await flushPromises()
 
     expect(authService.resumeGuestSession).toHaveBeenCalledWith('permission-id')
-    expect(authService.renewGuestLink).not.toHaveBeenCalled()
+    expect(authService.ensureGuestLinkRenewal).not.toHaveBeenCalled()
   })
 
   it('renews the link when the session to resume is invalid', async () => {
@@ -489,7 +490,7 @@ describe('renewGuestLink', () => {
     })
     await flushPromises()
 
-    expect(authService.renewGuestLink).toHaveBeenCalledWith('permission-id')
+    expect(authService.ensureGuestLinkRenewal).toHaveBeenCalledWith('permission-id')
     expect(wrapper.text()).toContain('Check your inbox')
     expect(wrapper.find(selectors.pinInput).exists()).toBeFalsy()
   })
@@ -501,7 +502,7 @@ describe('renewGuestLink', () => {
     })
     await flushPromises()
 
-    expect(authService.renewGuestLink).not.toHaveBeenCalled()
+    expect(authService.ensureGuestLinkRenewal).not.toHaveBeenCalled()
     expect(wrapper.find(selectors.retryButton).exists()).toBeTruthy()
   })
 
@@ -513,7 +514,7 @@ describe('renewGuestLink', () => {
     })
     await flushPromises()
 
-    expect(authService.renewGuestLink).toHaveBeenCalledWith('permission-id')
+    expect(authService.ensureGuestLinkRenewal).toHaveBeenCalledWith('permission-id')
     expect(wrapper.text()).toContain('Check your inbox')
     expect(wrapper.find(selectors.pinInput).exists()).toBeFalsy()
   })
@@ -590,9 +591,9 @@ function getWrapper({
   }
 
   if (renewError) {
-    vi.mocked(authService.renewGuestLink).mockRejectedValue(renewError)
+    vi.mocked(authService.ensureGuestLinkRenewal).mockRejectedValue(renewError)
   } else {
-    vi.mocked(authService.renewGuestLink).mockImplementation(() => {
+    vi.mocked(authService.ensureGuestLinkRenewal).mockImplementation(() => {
       if (withPin) {
         setPendingRenewal({ withPin })
       }
