@@ -1,4 +1,4 @@
-import { markRaw, onScopeDispose, ref, unref, watch } from 'vue'
+import { markRaw, onScopeDispose, ref, shallowRef, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { DateTime } from 'luxon'
 import {
@@ -16,7 +16,7 @@ import { authService } from '../../services/auth'
 import {
   getGuestLinkErrorType,
   getGuestLinkRetryAt,
-  GuestLinkRenewal,
+  GuestLinkErrorType,
   isRetryableGuestLinkErrorType,
   renewalStorageKey
 } from '../../services/auth/guestSessionManager'
@@ -28,6 +28,59 @@ import { useGuestLinkErrorMessages } from './useGuestLinkErrorMessages'
 const guestSessionExpiryWarningThreshold = 15 * 60 * 1000
 // timers pause while the device sleeps, so the wall clock is checked periodically
 const expiryCheckInterval = 30 * 1000
+
+interface PinRequestError {
+  errorType: GuestLinkErrorType
+  retryAt?: Date
+}
+
+type WarningState =
+  'expiresSoon' | 'pinSent' | 'pinRequestFailed' | 'renewalRequested' | 'expired' | 'expiredWithPin'
+
+type WarningContent = Partial<Omit<Message, 'id'>>
+
+function isRateLimited(error: PinRequestError | undefined, now: number) {
+  return !!error?.retryAt && error.retryAt.getTime() > now
+}
+
+/**
+ * Decides which warning the guest sees, if any yet.
+ */
+function getWarningState({
+  now,
+  expiresAt,
+  hasPendingPin,
+  isRenewalRequested,
+  requestError
+}: {
+  now: number
+  expiresAt: number
+  hasPendingPin: boolean
+  isRenewalRequested: boolean
+  requestError: PinRequestError | undefined
+}): WarningState | undefined {
+  const isExpired = now >= expiresAt
+  if (!isExpired && now < expiresAt - guestSessionExpiryWarningThreshold) {
+    return undefined
+  }
+  // the PIN still refreshes the session after it expired
+  if (hasPendingPin) {
+    return isExpired ? 'expiredWithPin' : 'pinSent'
+  }
+  // without a session the backend only sends a new link if the newest one is used or expired
+  if (isRenewalRequested) {
+    return 'renewalRequested'
+  }
+  // a retry can't send a PIN anymore
+  if (isExpired) {
+    return 'expired'
+  }
+  // an ended rate limit falls back to the expiry warning
+  if (requestError && (!requestError.retryAt || isRateLimited(requestError, now))) {
+    return 'pinRequestFailed'
+  }
+  return 'expiresSoon'
+}
 
 /**
  * Warns the guest before the session expires and offers to request a PIN to refresh it.
@@ -72,7 +125,7 @@ export function useGuestSessionExpiryWarning() {
     })
   }
 
-  function showWarning(data: Partial<Omit<Message, 'id'>>) {
+  function showWarning(data: WarningContent) {
     if (warningMessage) {
       messageStore.removeMessage(warningMessage)
     }
@@ -92,13 +145,15 @@ export function useGuestSessionExpiryWarning() {
     const version = sessionVersion
     const time = formatDateFromISO(expirationDateTime, language.current, DateTime.TIME_SIMPLE)
     const isRequestingPin = ref(false)
-    let isExpiryShown = false
-    const pinRetryAt = ref(0)
+    const requestError = shallowRef<PinRequestError>()
+    let isRenewalRequested = false
     // refreshed by the expiry check, so the rate limit ends without further interaction
     const currentTime = ref(Date.now())
+    let shownState: WarningState
+    let shownError: PinRequestError
 
     function isRequestPinDisabled() {
-      return unref(isRequestingPin) || unref(pinRetryAt) > unref(currentTime)
+      return unref(isRequestingPin) || isRateLimited(unref(requestError), unref(currentTime))
     }
 
     const requestPinAction: Action = {
@@ -124,84 +179,17 @@ export function useGuestSessionExpiryWarning() {
       handler: requestInvitation
     }
 
-    function isExpired() {
-      return Date.now() >= expiresAt
-    }
-
-    // the PIN still refreshes the session after it expired
-    function hasPendingPin() {
-      return !!authService.getPendingGuestLinkRenewal(permissionId)?.withPin
-    }
-
-    function showExpiryWarning() {
-      if (hasPendingPin()) {
-        showWarning({
-          desc: $gettext(
-            'Your session expires at %{time}. We sent you a PIN by email, enter it to stay signed in.',
-            { time }
-          ),
-          actions: [enterPinAction]
-        })
-        return
-      }
-      showWarning({
-        desc: $gettext(
-          'Your session expires at %{time}. Save your changes, or request a PIN by email to stay signed in.',
-          { time }
-        ),
-        actions: [requestPinAction]
-      })
-    }
-
-    function showExpired() {
-      isExpiryShown = true
-      if (hasPendingPin()) {
-        showWarning({
-          title: $gettext('Your session has expired'),
-          desc: $gettext('Enter the PIN we sent you by email to continue.'),
-          actions: [enterPinAction]
-        })
-        return
-      }
-      showWarning({
-        title: $gettext('Your session has expired'),
-        desc: $gettext('Request a new invitation by email to continue.'),
-        actions: [requestInvitationAction]
-      })
-    }
-
-    // without a session the backend only sends a new link if the newest one is used or expired
-    function showRenewalRequested() {
-      isExpiryShown = true
-      showWarning({
-        title: $gettext('Your session has expired'),
-        desc: $gettext(
-          'Open the invitation link from your most recent email to continue. If it has expired or has already been used, a new one is on its way.'
-        ),
-        actions: []
-      })
-    }
-
-    function showRequestError(error: unknown) {
-      const errorType = getGuestLinkErrorType(error)
+    function getRequestErrorContent({ errorType, retryAt }: PinRequestError): WarningContent {
       if (errorType === GuestLinkErrorErrorTypeEnum.TooManyRequests) {
-        const retryAt = getGuestLinkRetryAt(error)
-        pinRetryAt.value = retryAt?.getTime() ?? 0
-        currentTime.value = Date.now()
-        showWarning({
-          desc: getPinRateLimitMessage(retryAt),
-          actions: [requestPinAction]
-        })
-        return
+        return { desc: getPinRateLimitMessage(retryAt), actions: [requestPinAction] }
       }
       if (isRetryableGuestLinkErrorType(errorType)) {
-        showWarning({
+        return {
           desc: $gettext('A PIN could not be requested. Please try again later.'),
           actions: [requestPinAction]
-        })
-        return
+        }
       }
-      showWarning({
+      return {
         desc:
           getShareErrorMessage(errorType) ||
           $gettext(
@@ -209,7 +197,79 @@ export function useGuestSessionExpiryWarning() {
             { time }
           ),
         actions: []
+      }
+    }
+
+    function getWarningContent(state: WarningState): WarningContent {
+      const expiredTitle = $gettext('Your session has expired')
+      switch (state) {
+        case 'expiresSoon':
+          return {
+            desc: $gettext(
+              'Your session expires at %{time}. Save your changes, or request a PIN by email to stay signed in.',
+              { time }
+            ),
+            actions: [requestPinAction]
+          }
+        case 'pinSent':
+          return {
+            desc: $gettext(
+              'Your session expires at %{time}. We sent you a PIN by email, enter it to stay signed in.',
+              { time }
+            ),
+            actions: [enterPinAction]
+          }
+        case 'pinRequestFailed':
+          return getRequestErrorContent(unref(requestError))
+        case 'renewalRequested':
+          return {
+            title: expiredTitle,
+            desc: $gettext(
+              'Open the invitation link from your most recent email to continue. If it has expired or has already been used, a new one is on its way.'
+            ),
+            actions: []
+          }
+        case 'expired':
+          return {
+            title: expiredTitle,
+            desc: $gettext('Request a new invitation by email to continue.'),
+            actions: [requestInvitationAction]
+          }
+        case 'expiredWithPin':
+          return {
+            title: expiredTitle,
+            desc: $gettext('Enter the PIN we sent you by email to continue.'),
+            actions: [enterPinAction]
+          }
+      }
+    }
+
+    function hasPendingPin() {
+      return !!authService.getPendingGuestLinkRenewal(permissionId)?.withPin
+    }
+
+    function updateWarning() {
+      const now = Date.now()
+      currentTime.value = now
+      const pendingPin = hasPendingPin()
+      // e.g. another tab requested the PIN
+      if (pendingPin) {
+        requestError.value = undefined
+        isRenewalRequested = false
+      }
+      const state = getWarningState({
+        now,
+        expiresAt,
+        hasPendingPin: pendingPin,
+        isRenewalRequested,
+        requestError: unref(requestError)
       })
+      if (!state || (state === shownState && unref(requestError) === shownError)) {
+        return
+      }
+      shownState = state
+      shownError = unref(requestError)
+      showWarning(getWarningContent(state))
     }
 
     // only a request before the session expired sends a PIN
@@ -218,36 +278,24 @@ export function useGuestSessionExpiryWarning() {
         return
       }
       isRequestingPin.value = true
-      let renewal: GuestLinkRenewal
       try {
-        renewal = await authService.ensureGuestLinkRenewal(permissionId)
+        const { withPin } = await authService.ensureGuestLinkRenewal(permissionId)
+        requestError.value = undefined
+        isRenewalRequested = !withPin
       } catch (error) {
-        console.error('guest link could not be renewed:', getGuestLinkErrorType(error))
-        if (version !== sessionVersion) {
-          return
-        }
-        // a retry can't send a PIN anymore
-        if (isExpired()) {
-          showExpired()
-          return
-        }
-        showRequestError(error)
-        return
+        const errorType = getGuestLinkErrorType(error)
+        console.error('guest link could not be renewed:', errorType)
+        const retryAt =
+          errorType === GuestLinkErrorErrorTypeEnum.TooManyRequests
+            ? getGuestLinkRetryAt(error)
+            : undefined
+        requestError.value = { errorType, retryAt }
       } finally {
         isRequestingPin.value = false
       }
-      if (version !== sessionVersion) {
-        return
+      if (version === sessionVersion) {
+        updateWarning()
       }
-      if (!renewal.withPin) {
-        showRenewalRequested()
-        return
-      }
-      if (isExpired()) {
-        showExpired()
-        return
-      }
-      showExpiryWarning()
     }
 
     // the renew page requests the invitation and handles its outcome
@@ -266,43 +314,14 @@ export function useGuestSessionExpiryWarning() {
     }
 
     function checkExpiry() {
-      currentTime.value = Date.now()
-      if (isExpired()) {
-        // the PIN expires without notice, so keep checking until it did
-        if (!hasPendingPin()) {
-          clearInterval(expiryCheck)
-        }
-        if (!isExpiryShown) {
-          showExpired()
-          return
-        }
-        syncPin()
-        return
+      // the PIN expires without notice, so keep checking until it did
+      if (Date.now() >= expiresAt && !hasPendingPin()) {
+        clearInterval(expiryCheck)
       }
-      if (!warningMessage && Date.now() >= expiresAt - guestSessionExpiryWarningThreshold) {
-        showExpiryWarning()
-        return
-      }
-      syncPin()
+      updateWarning()
     }
 
-    // offers to enter the PIN only while it is pending
-    function syncPin() {
-      if (
-        !warningMessage ||
-        unref(isRequestingPin) ||
-        warningMessage.actions?.includes(enterPinAction) === hasPendingPin()
-      ) {
-        return
-      }
-      if (isExpired()) {
-        showExpired()
-        return
-      }
-      showExpiryWarning()
-    }
-
-    syncPendingPin = syncPin
+    syncPendingPin = updateWarning
 
     expiryCheck = setInterval(checkExpiry, expiryCheckInterval)
     checkExpiry()
