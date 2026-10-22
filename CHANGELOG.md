@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: sort space members and managers by name within a role [[#3927](https://github.com/opencloud-eu/web/pull/3927)]
+- fix: check the matching actions before keyboard copy, cut and paste [[#3925](https://github.com/opencloud-eu/web/pull/3925)]
 - fix: handle sse share events for guests [[#3981](https://github.com/opencloud-eu/web/pull/3981)]
 - fix: let collaborator names use the full row width [[#3926](https://github.com/opencloud-eu/web/pull/3926)]
 - fix: send isMobile information to server for collaboration service [[#3971](https://github.com/opencloud-eu/web/pull/3971)]
