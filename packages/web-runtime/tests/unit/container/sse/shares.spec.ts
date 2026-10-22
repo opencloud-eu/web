@@ -212,9 +212,15 @@ describe('shares events', () => {
       ).not.toHaveBeenCalled()
     })
 
-    it.each([{ currentRouteFilesSharesWithMe: true }, { currentRouteFilesGuestShares: true }])(
+    it.each([
+      { route: { currentRouteFilesSharesWithMe: true }, userId: '1' },
+      {
+        route: { currentRouteFilesGuestShares: true, guestEmail: 'guest@example.org' },
+        userId: 'guest@example.org'
+      }
+    ])(
       'calls "upsertResource" when resource has been shared and current route is a shared with me route (%o)',
-      async (route) => {
+      async ({ route, userId }) => {
         const sharedDrive = mockDeep<DriveItem>({
           id: 'sharedDrive',
           name: 'trololo',
@@ -228,7 +234,8 @@ describe('shares events', () => {
           currentFolder: null
         })
         const sseData = mock<EventSchemaType>({
-          itemid: sharedDrive.remoteItem.id
+          itemid: sharedDrive.remoteItem.id,
+          affecteduserids: [userId]
         })
         mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
           sharedDrive
@@ -245,6 +252,18 @@ describe('shares events', () => {
         ).not.toHaveBeenCalled()
       }
     )
+    it('does not load the shared with me list when another user is affected', async () => {
+      const mocks = getMocks({ currentRouteFilesSharesWithMe: true, currentFolder: null })
+      const sseData = mock<EventSchemaType>({
+        itemid: 'sharedResource',
+        affecteduserids: ['2']
+      })
+      await onSSEShareCreatedEvent({ sseData, ...mocks })
+      expect(
+        mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe
+      ).not.toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+    })
     it('calls "upsertResource" when resource has been shared and current route equals "files-shares-with-others"', async () => {
       const sharedDrive = mockDeep<DriveItem>({
         id: 'sharedDrive',
@@ -331,7 +350,8 @@ describe('shares events', () => {
         currentFolder: null
       })
       const sseData = mock<EventSchemaType>({
-        itemid: sharedDrive.remoteItem.id
+        itemid: sharedDrive.remoteItem.id,
+        affecteduserids: ['1']
       })
       mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
         sharedDrive
@@ -341,6 +361,129 @@ describe('shares events', () => {
       expect(mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe).toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).toHaveBeenCalled()
       expect(busStub).not.toHaveBeenCalled()
+    })
+    it('resets the permissions of the share space and reloads the file list', async () => {
+      const shareSpace = mock<SpaceResource>({ id: 'sharedResource', driveType: 'share' })
+      const mocks = getMocks({
+        currentRouteFilesSpacesGeneric: true,
+        spaces: [shareSpace],
+        currentSpace: shareSpace
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: shareSpace.id,
+        spaceid: 'space1',
+        affecteduserids: ['1']
+      })
+      const busStub = vi.spyOn(eventBus, 'publish')
+      await onSSEShareUpdatedEvent({ sseData, ...mocks })
+      expect(mocks.spacesStore.updateSpaceField).toHaveBeenCalledWith({
+        id: shareSpace.id,
+        field: 'graphPermissions',
+        value: undefined
+      })
+      expect(busStub).toHaveBeenCalledWith('app.files.list.load')
+    })
+    it('does not reload the file list when another share of the same space has been updated', async () => {
+      const shareSpace = mock<SpaceResource>({ id: 'otherShare', driveType: 'share' })
+      const mocks = getMocks({
+        currentRouteFilesSpacesGeneric: true,
+        spaces: [shareSpace],
+        currentSpace: shareSpace
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: 'sharedResource',
+        spaceid: 'space1',
+        affecteduserids: ['1']
+      })
+      const busStub = vi.spyOn(eventBus, 'publish')
+      await onSSEShareUpdatedEvent({ sseData, ...mocks })
+      expect(mocks.spacesStore.updateSpaceField).toHaveBeenCalledWith({
+        id: 'sharedResource',
+        field: 'graphPermissions',
+        value: undefined
+      })
+      expect(busStub).not.toHaveBeenCalled()
+    })
+    it('does not trigger any action when another user is affected', async () => {
+      const mocks = getMocks({ currentRouteFilesSpacesGeneric: true })
+      const sseData = mock<EventSchemaType>({
+        itemid: 'sharedResource',
+        spaceid: 'space1',
+        affecteduserids: ['2']
+      })
+      const busStub = vi.spyOn(eventBus, 'publish')
+      await onSSEShareUpdatedEvent({ sseData, ...mocks })
+      expect(busStub).not.toHaveBeenCalled()
+      expect(mocks.spacesStore.updateSpaceField).not.toHaveBeenCalled()
+      expect(
+        mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe
+      ).not.toHaveBeenCalled()
+    })
+    describe('as a guest', () => {
+      it('reloads the file list when the guest is affected and navigated to the share', async () => {
+        const shareSpace = mock<SpaceResource>({ id: 'sharedResource', driveType: 'share' })
+        const mocks = getMocks({
+          currentRouteFilesGuestLink: true,
+          spaces: [shareSpace],
+          currentSpace: shareSpace,
+          guestEmail: 'guest@example.org'
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: shareSpace.id,
+          spaceid: 'space1',
+          affecteduserids: ['guest@example.org']
+        })
+        const busStub = vi.spyOn(eventBus, 'publish')
+        await onSSEShareUpdatedEvent({ sseData, ...mocks })
+        expect(busStub).toHaveBeenCalledWith('app.files.list.load')
+      })
+      it('upserts the share when the guest is affected and the guest shares are listed', async () => {
+        const sharedDrive = mockDeep<DriveItem>({
+          id: 'sharedDrive',
+          name: 'humpa',
+          remoteItem: { id: 'sharedResource', permissions: [] }
+        })
+        const mocks = getMocks({
+          currentRouteFilesGuestShares: true,
+          currentFolder: null,
+          guestEmail: 'guest@example.org'
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: sharedDrive.remoteItem.id,
+          affecteduserids: ['guest@example.org']
+        })
+        mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
+          sharedDrive
+        ])
+        const busStub = vi.spyOn(eventBus, 'publish')
+        await onSSEShareUpdatedEvent({ sseData, ...mocks })
+        expect(mocks.spacesStore.updateSpaceField).toHaveBeenCalledWith({
+          id: sharedDrive.remoteItem.id,
+          field: 'graphPermissions',
+          value: undefined
+        })
+        expect(mocks.resourcesStore.upsertResource).toHaveBeenCalled()
+        expect(busStub).not.toHaveBeenCalled()
+      })
+      it.each([{ currentRouteFilesGuestLink: true }, { currentRouteFilesGuestShares: true }])(
+        'does not trigger any action when another user is affected (%o)',
+        async (route) => {
+          const mocks = getMocks({ ...route, guestEmail: 'guest@example.org' })
+          const sseData = mock<EventSchemaType>({
+            itemid: 'sharedResource',
+            spaceid: 'space1',
+            affecteduserids: ['1']
+          })
+          const busStub = vi.spyOn(eventBus, 'publish')
+          await onSSEShareUpdatedEvent({ sseData, ...mocks })
+          expect(busStub).not.toHaveBeenCalled()
+          expect(mocks.spacesStore.updateSpaceField).not.toHaveBeenCalled()
+          expect(
+            mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe
+          ).not.toHaveBeenCalled()
+          expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+        }
+      )
     })
     it('does not trigger any action when initiator ids are identical', async () => {
       const sharedResource = mock<Resource>({
@@ -421,7 +564,8 @@ describe('shares events', () => {
       const sseData = mock<EventSchemaType>({
         itemid: sharedResource.id,
         spaceid: sharedResource.storageId,
-        parentitemid: sharedResource.parentFolderId
+        parentitemid: sharedResource.parentFolderId,
+        affecteduserids: ['2']
       })
       mocks.clientService.webdav.getFileInfo.mockResolvedValue(
         mock<Resource>({ ...sharedResource })
@@ -448,7 +592,8 @@ describe('shares events', () => {
       const sseData = mock<EventSchemaType>({
         itemid: sharedResource.id,
         spaceid: sharedResource.storageId,
-        parentitemid: sharedResource.parentFolderId
+        parentitemid: sharedResource.parentFolderId,
+        affecteduserids: ['2']
       })
       mocks.clientService.webdav.getFileInfo.mockResolvedValue(
         mock<Resource>({ ...sharedResource })
@@ -475,7 +620,8 @@ describe('shares events', () => {
         })
         const sseData = mock<EventSchemaType>({
           itemid: sharedResource.id,
-          spaceid: sharedResource.storageId
+          spaceid: sharedResource.storageId,
+          affecteduserids: ['1']
         })
         await onSSEShareRemovedEvent({ sseData, ...mocks })
         expect(mocks.resourcesStore.removeResources).toHaveBeenCalled()
@@ -485,6 +631,105 @@ describe('shares events', () => {
         expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
       }
     )
+    it('does not call "removeResources" on a shared with me route when another user is affected', async () => {
+      const sharedResource = mock<Resource>({
+        id: 'sharedResource',
+        fileId: 'sharedResource',
+        storageId: 'space1'
+      })
+      const mocks = getMocks({
+        currentRouteFilesSharesWithMe: true,
+        currentFolder: null,
+        resources: [sharedResource]
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: sharedResource.id,
+        spaceid: sharedResource.storageId,
+        affecteduserids: ['2']
+      })
+      await onSSEShareRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+    })
+    describe('as a guest', () => {
+      it('calls "showMessage" when the guest is affected and navigated to the share', async () => {
+        const shareSpace = mock<SpaceResource>({ id: 'sharedResource', driveType: 'share' })
+        const mocks = getMocks({
+          currentRouteFilesGuestLink: true,
+          spaces: [shareSpace],
+          currentSpace: shareSpace,
+          guestEmail: 'guest@example.org'
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: shareSpace.id,
+          spaceid: 'space1',
+          affecteduserids: ['guest@example.org']
+        })
+        await onSSEShareRemovedEvent({ sseData, ...mocks })
+        expect(mocks.messageStore.showMessage).toHaveBeenCalled()
+      })
+      it('does not call "showMessage" when another share of the same space has been removed', async () => {
+        const shareSpace = mock<SpaceResource>({ id: 'otherShare', driveType: 'share' })
+        const mocks = getMocks({
+          currentRouteFilesGuestLink: true,
+          spaces: [shareSpace],
+          currentSpace: shareSpace,
+          guestEmail: 'guest@example.org'
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: 'sharedResource',
+          spaceid: 'space1',
+          parentitemid: 'otherFolder',
+          affecteduserids: ['guest@example.org']
+        })
+        await onSSEShareRemovedEvent({ sseData, ...mocks })
+        expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+      })
+      it('calls "removeResources" when the guest is affected and the guest shares are listed', async () => {
+        const sharedResource = mock<Resource>({
+          id: 'sharedResource',
+          fileId: 'sharedResource',
+          storageId: 'space1'
+        })
+        const mocks = getMocks({
+          currentRouteFilesGuestShares: true,
+          currentFolder: null,
+          resources: [sharedResource],
+          guestEmail: 'guest@example.org'
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: sharedResource.id,
+          spaceid: sharedResource.storageId,
+          affecteduserids: ['guest@example.org']
+        })
+        await onSSEShareRemovedEvent({ sseData, ...mocks })
+        expect(mocks.resourcesStore.removeResources).toHaveBeenCalled()
+        expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+      })
+      it.each([{ currentRouteFilesGuestLink: true }, { currentRouteFilesGuestShares: true }])(
+        'does not trigger any action when another user is affected (%o)',
+        async (route) => {
+          const sharedResource = mock<Resource>({
+            id: 'sharedResource',
+            fileId: 'sharedResource',
+            storageId: 'space1'
+          })
+          const mocks = getMocks({
+            ...route,
+            resources: [sharedResource],
+            guestEmail: 'guest@example.org'
+          })
+          const sseData = mock<EventSchemaType>({
+            itemid: sharedResource.id,
+            spaceid: sharedResource.storageId,
+            parentitemid: 'otherFolder',
+            affecteduserids: ['1']
+          })
+          await onSSEShareRemovedEvent({ sseData, ...mocks })
+          expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+          expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+        }
+      )
+    })
     it('does not trigger any action when initiator ids are identical', async () => {
       const mocks = getMocks({
         currentRouteFilesSpacesGeneric: true
@@ -690,17 +935,23 @@ const getMocks = ({
   currentRouteFilesSharesViaLink = false,
   currentRouteFilesSharesWithMe = false,
   currentRouteFilesSharesWithOthers = false,
-  currentRouteFilesGuestShares = false
+  currentRouteFilesGuestShares = false,
+  currentRouteFilesGuestLink = false,
+  currentSpace = undefined,
+  guestEmail = undefined
 }: {
   currentFolder?: Resource
   resources?: Resource[]
   spaces?: SpaceResource[]
+  currentSpace?: SpaceResource
+  guestEmail?: string
   currentRouteFilesSpacesGeneric?: boolean
   currentRouteFilesSpacesProjects?: boolean
   currentRouteFilesSharesViaLink?: boolean
   currentRouteFilesSharesWithMe?: boolean
   currentRouteFilesSharesWithOthers?: boolean
   currentRouteFilesGuestShares?: boolean
+  currentRouteFilesGuestLink?: boolean
 } = {}) => {
   createTestingPinia()
   const resourcesStore = useResourcesStore()
@@ -708,11 +959,17 @@ const getMocks = ({
   resourcesStore.resources = resources
   const spacesStore = useSpacesStore()
   spacesStore.spaces = spaces
+  spacesStore.currentSpace = currentSpace
   const messageStore = useMessages()
   const userStore = useUserStore()
   const configStore = useConfigStore()
-  userStore.user = mockDeep<User>({ id: '1' })
   const authStore = useAuthStore()
+  if (guestEmail) {
+    authStore.guestContextReady = true
+    authStore.guestEmail = guestEmail
+  } else {
+    userStore.user = mockDeep<User>({ id: '1' })
+  }
   const sharesStore = useSharesStore()
   const clientService = mockDeep<ClientService>({ initiatorId: 'local1' })
   const previewService = mockDeep<PreviewService>()
@@ -740,6 +997,9 @@ const getMocks = ({
   }
   if (currentRouteFilesGuestShares) {
     routeName = 'files-guest-shares'
+  }
+  if (currentRouteFilesGuestLink) {
+    routeName = 'files-guest-link'
   }
 
   const currentRoute = mock<RouteLocation>({ name: routeName })
