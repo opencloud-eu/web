@@ -95,6 +95,15 @@ describe('Collaborator ListItem component', () => {
       const { wrapper } = createWrapper({ share })
       expect(wrapper.find(selectors.collaboratorName).text()).toEqual(share.sharedWith.displayName)
     })
+    it('shows the full collaborator display name as title', () => {
+      const share = getShareMock({
+        sharedWith: { id: '3', displayName: 'Albert Einstein with a very long display name' }
+      })
+      const { wrapper } = createWrapper({ share })
+      expect(wrapper.find(selectors.collaboratorName).attributes('title')).toEqual(
+        share.sharedWith.displayName
+      )
+    })
     it('shows the share expiration date if given', () => {
       const { wrapper } = createWrapper({
         share: getShareMock({ expirationDateTime: '2000-01-01' })
