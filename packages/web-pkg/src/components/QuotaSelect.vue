@@ -199,12 +199,11 @@ function createOption(option: string): Option {
     }
   }
 
-  const displayValue = normalizeInput(option)
   const value = parseQuotaInput(option)
 
   if (value === null) {
     return {
-      displayValue,
+      displayValue: option,
       value: null,
       error: $gettext('Please enter only numbers'),
       selectable: false
@@ -213,7 +212,7 @@ function createOption(option: string): Option {
 
   if (value < 1) {
     return {
-      displayValue,
+      displayValue: option,
       value: null,
       error: $gettext('Please enter a value greater than 0'),
       selectable: false

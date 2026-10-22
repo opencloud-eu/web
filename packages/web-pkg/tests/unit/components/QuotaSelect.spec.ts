@@ -410,6 +410,16 @@ describe('QuotaSelect', () => {
       }
     )
 
+    it.each(['1,0,0', '1,', '0,0000000001'])(
+      'shows the invalid input "%s" as typed',
+      async (input) => {
+        const wrapper = getWrapper()
+        await typeQuota(wrapper, input)
+        expect(wrapper.find('.vs__dropdown-option span').text()).toBe(input)
+        expect(wrapper.find('.oc-text-input-danger').exists()).toBe(true)
+      }
+    )
+
     it.each(['0', '0.0', '0,0', '5'])('rejects "%s" when a maximum rules it out', async (input) => {
       const wrapper = getWrapper({ totalQuota: 2e9, maxQuota: 4e9 })
       await enterQuota(wrapper, input)
