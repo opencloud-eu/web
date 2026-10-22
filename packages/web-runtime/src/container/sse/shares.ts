@@ -1,11 +1,13 @@
 import {
   buildIncomingShareResource,
   buildOutgoingShareResource,
+  isShareSpaceResource,
   ShareTypes
 } from '@opencloud-eu/web-client'
 import {
   eventBus,
   isLocationGuestActive,
+  isLocationGuestLinkActive,
   isLocationSharesActive,
   isLocationSpacesActive,
   isItemInCurrentFolder
@@ -18,6 +20,34 @@ function isSharedWithMeActive(router: Router) {
     isLocationSharesActive(router, 'files-shares-with-me') ||
     isLocationGuestActive(router, 'files-guest-shares')
   )
+}
+
+function isSpaceFolderActive(router: Router) {
+  return isLocationSpacesActive(router, 'files-spaces-generic') || isLocationGuestLinkActive(router)
+}
+
+// guests have no user, the server addresses them by the user id of their share permission
+function isCurrentUserAffected({
+  sseData,
+  authStore,
+  userStore
+}: Pick<SSEEventOptions, 'sseData' | 'authStore' | 'userStore'>) {
+  const userId = authStore.isGuestContext ? authStore.guestEmail : userStore.user?.id
+  return !!userId && !!sseData.affecteduserids?.includes(userId)
+}
+
+// a share space is identified by its shared item. other spaces may contain multiple shares,
+// so matching the storage id is only an approximation (e.g. members keep access via membership)
+function isCurrentSpaceAffected({
+  sseData,
+  spacesStore,
+  resourcesStore
+}: Pick<SSEEventOptions, 'sseData' | 'spacesStore' | 'resourcesStore'>) {
+  const { currentSpace } = spacesStore
+  if (isShareSpaceResource(currentSpace)) {
+    return currentSpace.id === sseData.itemid
+  }
+  return resourcesStore.currentFolder?.storageId === sseData.spaceid
 }
 
 export const onSSESpaceMemberAddedEvent = async ({
@@ -55,6 +85,7 @@ export const onSSESpaceMemberRemovedEvent = async ({
   clientService,
   language,
   userStore,
+  authStore,
   router
 }: SSEEventOptions) => {
   if (sseData.initiatorid === clientService.initiatorId) {
@@ -62,7 +93,7 @@ export const onSSESpaceMemberRemovedEvent = async ({
     return
   }
 
-  if (!sseData.affecteduserids?.includes(userStore.user.id)) {
+  if (!isCurrentUserAffected({ sseData, authStore, userStore })) {
     const space = await clientService.graphAuthenticated.drives.getDrive(sseData.itemid)
     spacesStore.upsertSpace(space)
     await spacesStore.loadGraphPermissions({
@@ -105,6 +136,7 @@ export const onSSESpaceShareUpdatedEvent = async ({
   spacesStore,
   clientService,
   userStore,
+  authStore,
   router
 }: SSEEventOptions) => {
   if (sseData.initiatorid === clientService.initiatorId) {
@@ -122,7 +154,7 @@ export const onSSESpaceShareUpdatedEvent = async ({
 
   if (
     isLocationSpacesActive(router, 'files-spaces-generic') &&
-    sseData.affecteduserids?.includes(userStore.user.id) &&
+    isCurrentUserAffected({ sseData, authStore, userStore }) &&
     resourcesStore.currentFolder?.storageId === sseData.spaceid
   ) {
     return eventBus.publish('app.files.list.load')
@@ -135,6 +167,7 @@ export const onSSEShareCreatedEvent = async ({
   spacesStore,
   sharesStore,
   userStore,
+  authStore,
   configStore,
   clientService,
   router
@@ -164,7 +197,7 @@ export const onSSEShareCreatedEvent = async ({
     resourcesStore.upsertResource(resource)
   }
 
-  if (isSharedWithMeActive(router)) {
+  if (isSharedWithMeActive(router) && isCurrentUserAffected({ sseData, authStore, userStore })) {
     // FIXME: get drive item by id as soon as server supports it
     const driveItems = await clientService.graphAuthenticated.driveItems.listSharedWithMe({
       expand: new Set(['thumbnails'])
@@ -201,9 +234,11 @@ export const onSSEShareCreatedEvent = async ({
 export const onSSEShareUpdatedEvent = async ({
   sseData,
   resourcesStore,
+  spacesStore,
   sharesStore,
   clientService,
   userStore,
+  authStore,
   configStore,
   router
 }: SSEEventOptions) => {
@@ -212,10 +247,16 @@ export const onSSEShareUpdatedEvent = async ({
     return
   }
 
+  if (!isCurrentUserAffected({ sseData, authStore, userStore })) {
+    return
+  }
+
+  // the space loader only derives the permissions of a share space if they are unset
+  spacesStore.updateSpaceField({ id: sseData.itemid, field: 'graphPermissions', value: undefined })
+
   if (
-    isLocationSpacesActive(router, 'files-spaces-generic') &&
-    sseData.affecteduserids?.includes(userStore.user.id) &&
-    resourcesStore.currentFolder?.storageId === sseData.spaceid
+    isSpaceFolderActive(router) &&
+    isCurrentSpaceAffected({ sseData, spacesStore, resourcesStore })
   ) {
     return eventBus.publish('app.files.list.load')
   }
@@ -243,6 +284,7 @@ export const onSSEShareRemovedEvent = async ({
   resourcesStore,
   spacesStore,
   userStore,
+  authStore,
   clientService,
   messageStore,
   language,
@@ -253,11 +295,12 @@ export const onSSEShareRemovedEvent = async ({
     return
   }
   const { $gettext } = language
+  const isAffected = isCurrentUserAffected({ sseData, authStore, userStore })
 
   if (
-    isLocationSpacesActive(router, 'files-spaces-generic') &&
-    sseData.affecteduserids?.includes(userStore.user.id) &&
-    resourcesStore.currentFolder?.storageId === sseData.spaceid
+    isSpaceFolderActive(router) &&
+    isAffected &&
+    isCurrentSpaceAffected({ sseData, spacesStore, resourcesStore })
   ) {
     // Fixme: Message triggers when user share was revoked, but still is in a group share, which is wrong
     return messageStore.showMessage({
@@ -306,7 +349,7 @@ export const onSSEShareRemovedEvent = async ({
     }
   }
 
-  if (isSharedWithMeActive(router)) {
+  if (isSharedWithMeActive(router) && isAffected) {
     const removedShareResource = resourcesStore.resources.find((r) => r.fileId === sseData.itemid)
     if (!removedShareResource) {
       return

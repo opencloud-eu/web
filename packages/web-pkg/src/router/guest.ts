@@ -1,5 +1,5 @@
 import { RouteComponents } from './router'
-import { RouteLocationNamedRaw, RouteRecordRaw } from 'vue-router'
+import { RouteLocationNamedRaw, RouteRecordRaw, Router } from 'vue-router'
 import { createLocation, isLocationActiveDirector } from './utils'
 import { $gettext } from '../utils/dummyGettext'
 
@@ -15,6 +15,14 @@ export const isLocationGuestActive = isLocationActiveDirector<guestTypes>(
   locationGuestLink,
   locationGuestShares
 )
+
+// the guest link route matches by path prefix and would include the guest shares route
+export function isLocationGuestLinkActive(router: Router) {
+  return (
+    isLocationGuestActive(router, 'files-guest-link') &&
+    !isLocationGuestActive(router, 'files-guest-shares')
+  )
+}
 
 export const buildRoutes = (components: RouteComponents): RouteRecordRaw[] => [
   {
