@@ -169,6 +169,14 @@ export const useFileActionsPaste = () => {
     clipboardStore.clearClipboard()
   }
 
+  function canPasteInto(space: SpaceResource) {
+    // public spaces have no graph permissions, check the current folder instead
+    if (isPublicSpaceResource(space)) {
+      return !!unref(currentFolder)?.canCreate()
+    }
+    return space.canUpload({ user: userStore.user })
+  }
+
   const isMovingIntoSameFolder = computed(() => {
     if (clipboardStore.action === ClipboardActions.Copy) {
       return false
@@ -221,10 +229,10 @@ export const useFileActionsPaste = () => {
         if (clipboardStore.resources.some((r) => r.isInVault)) {
           return true
         }
-        return !space.canUpload({ user: userStore.user }) || unref(isMovingIntoSameFolder)
+        return !canPasteInto(space) || unref(isMovingIntoSameFolder)
       },
       disabledTooltip: ({ space }) => {
-        if (!space || !space.canUpload({ user: userStore.user })) {
+        if (!space || !canPasteInto(space)) {
           return $gettext('You have no permission to paste files here.')
         }
 
@@ -239,6 +247,7 @@ export const useFileActionsPaste = () => {
   ])
 
   return {
-    actions
+    actions,
+    isMovingIntoSameFolder
   }
 }

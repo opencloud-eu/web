@@ -84,15 +84,28 @@ const availableRoles = computed<ShareRole[]>(() => {
     })
 })
 
-// group members by role before paginating, so a role section is not scattered across pages
+// group members by role before paginating, so a role section is not scattered across pages.
+// sort by name within a role, the server returns members in a different order on every request.
 const sortedPermissions = computed(() => {
   const roleIds = unref(availableRoles).map(({ id }) => id)
   function roleIndex(permission: Permission) {
     const index = roleIds.findIndex((id) => permission.roles.includes(id))
     return index === -1 ? roleIds.length : index
   }
+  function displayName({ grantedToV2 }: Permission) {
+    return grantedToV2?.user?.displayName || grantedToV2?.group?.displayName || ''
+  }
 
-  return [...unref(filteredPermissions)].sort((a, b) => roleIndex(a) - roleIndex(b))
+  return [...unref(filteredPermissions)].sort((a, b) => {
+    return (
+      roleIndex(a) - roleIndex(b) ||
+      displayName(a).localeCompare(displayName(b), undefined, {
+        sensitivity: 'base',
+        numeric: true
+      }) ||
+      (a.id || '').localeCompare(b.id || '')
+    )
+  })
 })
 
 const {
