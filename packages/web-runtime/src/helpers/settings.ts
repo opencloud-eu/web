@@ -73,7 +73,7 @@ export interface LanguageOption {
 }
 
 /** IDs of notifications setting bundles */
-export enum SettingsNotificationBundle {
+enum SettingsNotificationBundle {
   ShareCreated = '872d8ef6-6f2a-42ab-af7d-f53cc81d7046',
   ShareRemoved = 'd7484394-8321-4c84-9677-741ba71e1f80',
   ShareExpired = 'e1aa0b7c-1b0f-4072-9325-c643c89fee4e',
@@ -87,7 +87,7 @@ export enum SettingsNotificationBundle {
 }
 
 /** IDs of email notifications setting bundles */
-export enum SettingsEmailNotificationBundle {
+enum SettingsEmailNotificationBundle {
   EmailSendingInterval = '08dec2fe-3f97-42a9-9d1b-500855e92f25'
 }
 

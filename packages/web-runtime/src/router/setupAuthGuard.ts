@@ -143,7 +143,7 @@ export const setupAuthGuard = (router: Router) => {
   })
 }
 
-export const hasContextRouteNameChanged = (to: RouteLocation, from: RouteLocation): boolean => {
+const hasContextRouteNameChanged = (to: RouteLocation, from: RouteLocation): boolean => {
   if (!to.query[contextRouteNameKey] && !from.query[contextRouteNameKey]) {
     return false
   }

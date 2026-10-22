@@ -2,13 +2,13 @@
 
 exports[`Collaborator ListItem component > share inheritance indicators > show when sharedParentRoute is given 1`] = `
 "<div data-testid="collaborator-user-item-einstein" class="p-2 bg-role-surface-container rounded-xl">
-  <div class="w-full grid grid-cols-2 items-center files-collaborators-collaborator-details">
-    <div class="flex items-center">
+  <div class="w-full grid grid-cols-[1fr_auto] items-center files-collaborators-collaborator-details">
+    <div class="flex items-center min-w-0">
       <div>
         <user-avatar-stub userid="3" username="einstein" width="36" class="files-collaborators-collaborator-indicator"></user-avatar-stub>
       </div>
-      <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
-        <div class="truncate"><span aria-hidden="true" class="files-collaborators-collaborator-name"><span class="oc-filter-highlight">einstein</span></span> <span class="sr-only">Share receiver name: einstein</span>
+      <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full min-w-0">
+        <div class="truncate"><span title="einstein" aria-hidden="true" class="files-collaborators-collaborator-name"><span class="oc-filter-highlight">einstein</span></span> <span class="sr-only">Share receiver name: einstein</span>
           <!--v-if-->
         </div>
         <div>

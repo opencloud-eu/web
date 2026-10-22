@@ -7,10 +7,7 @@ export interface RequestLinkPanelOptions {
   linkRange?: Range | null
 }
 
-export function findLinkRange(
-  editor: Editor,
-  position = editor.state.selection.from
-): Range | null {
+function findLinkRange(editor: Editor, position = editor.state.selection.from): Range | null {
   const linkType = editor.schema.marks.link
   if (!linkType) {
     return null

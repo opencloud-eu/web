@@ -8,9 +8,9 @@ type trashTypes = 'files-trash-generic' | 'files-trash-overview'
 export const createLocationTrash = (name: trashTypes, location = {}): RouteLocationNamedRaw =>
   createLocation(name, location)
 
-export const locationTrashGeneric = createLocationTrash('files-trash-generic')
+const locationTrashGeneric = createLocationTrash('files-trash-generic')
 
-export const locationTrashOverview = createLocationTrash('files-trash-overview')
+const locationTrashOverview = createLocationTrash('files-trash-overview')
 
 export const isLocationTrashActive = isLocationActiveDirector<trashTypes>(
   locationTrashGeneric,

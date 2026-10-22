@@ -1,5 +1,5 @@
 export const READY_PATH = '/healthz/ready'
-export const LOCALHOST = '127.0.0.1'
+const LOCALHOST = '127.0.0.1'
 export const TIMEOUT_MS = 5000
 
 export async function checkReadinessEndpoint(port: number): Promise<void> {

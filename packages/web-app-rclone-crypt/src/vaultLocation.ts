@@ -12,7 +12,7 @@ export const VAULT_EXTENSION = 'vault'
  */
 export const VAULT_CONTENT_TYPE = 'application/vnd.opencloud.vault'
 
-export const VAULT_MARKER: ExtensionMarker = {
+const VAULT_MARKER: ExtensionMarker = {
   extension: VAULT_EXTENSION,
   contentType: VAULT_CONTENT_TYPE
 }

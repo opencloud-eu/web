@@ -47,5 +47,3 @@ export const useUserSettingsStore = defineStore('userSettings', () => {
     setSelectedUsers
   }
 })
-
-export type UserSettingsStore = ReturnType<typeof useUserSettingsStore>

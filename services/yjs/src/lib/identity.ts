@@ -6,7 +6,7 @@
  *
  * The prefix has to match `IDENTITY_MESSAGE_PREFIX` in the client.
  */
-export const IDENTITY_MESSAGE_PREFIX = '_oc_identity:'
+const IDENTITY_MESSAGE_PREFIX = '_oc_identity:'
 
 export type IdentityUser = {
   id: string

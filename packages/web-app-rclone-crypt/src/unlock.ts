@@ -31,7 +31,7 @@ function readVaultRoot({ webdav, space, vaultRoot }: VaultTarget): Promise<Resou
  * This gets used when there is no integrity token, or one that doesn't match
  * the passphrase.
  */
-export async function readVaultSamples(
+async function readVaultSamples(
   { webdav, space, vaultRoot }: VaultTarget,
   root?: Resource
 ): Promise<{

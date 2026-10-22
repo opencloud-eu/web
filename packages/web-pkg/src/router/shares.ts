@@ -9,7 +9,7 @@ export type RouteShareTypes =
 export const createLocationShares = (name: RouteShareTypes, location = {}): RouteLocationNamedRaw =>
   createLocation(name, location)
 
-export const locationShares = createLocationShares('files-shares')
+const locationShares = createLocationShares('files-shares')
 export const locationSharesWithMe = createLocationShares('files-shares-with-me')
 export const locationSharesWithOthers = createLocationShares('files-shares-with-others')
 export const locationSharesViaLink = createLocationShares('files-shares-via-link')
