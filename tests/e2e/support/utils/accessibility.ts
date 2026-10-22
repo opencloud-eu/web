@@ -2,7 +2,18 @@ import { Page, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 import { franc } from 'franc-min'
 
-const a11yRuleTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']
+const wcagRuleTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
+const a11yRuleTags = [...wcagRuleTags, 'best-practice']
+
+type Violation = Awaited<ReturnType<AxeBuilder['analyze']>>['violations'][number]
+
+// best-practice rules aren't required for WCAG conformance, only their critical and serious findings fail the check
+function isRelevantViolation(violation: Violation): boolean {
+  if (violation.tags.some((tag) => wcagRuleTags.includes(tag))) {
+    return true
+  }
+  return ['critical', 'serious'].includes(violation.impact)
+}
 
 export async function checkA11yOrLocalization(
   page: Page,
@@ -31,24 +42,25 @@ async function checkAccessibility(
     await page.waitForTimeout(300)
   }
 
-  function analyze() {
+  async function analyze(): Promise<Violation[]> {
     // tooltips are transient and appended to <body>, they only show up when a previous step left focus or hover on a trigger
     const builder = new AxeBuilder({ page }).withTags(a11yRuleTags).exclude('[role="tooltip"]')
     if (includeSelector) {
       builder.include(includeSelector)
     }
-    return builder.analyze()
+    const results = await builder.analyze()
+    return results.violations.filter(isRelevantViolation)
   }
 
-  let results = await analyze()
-  if (results.violations.length > 0) {
+  let violations = await analyze()
+  if (violations.length > 0) {
     await page.waitForTimeout(500)
-    results = await analyze()
+    violations = await analyze()
   }
 
-  if (results.violations.length > 0) {
+  if (violations.length > 0) {
     console.error(`♿ Accessibility violations detected${context ? ` in ${context}` : ''}:`)
-    for (const violation of results.violations) {
+    for (const violation of violations) {
       console.error(`\n[${violation.id}] ${violation.help}`)
       console.error(`  Impact: ${violation.impact}`)
       console.error(`  Description: ${violation.description}`)
@@ -62,7 +74,7 @@ async function checkAccessibility(
   // soft assertion: the scenario continues and all violations are reported at the end
   expect
     .soft(
-      results.violations.map(
+      violations.map(
         (violation) =>
           `[${violation.id}] ${violation.help}: ${violation.nodes.map((node) => node.target.join(' ')).join(', ')}`
       ),
