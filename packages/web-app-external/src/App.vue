@@ -75,6 +75,7 @@ import {
   useSharesStore,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { storeToRefs } from 'pinia'
 import { useCollaboraPostMessages } from './composables'
 
@@ -98,6 +99,7 @@ const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
 const { graphAuthenticated: graphClient } = useClientService()
 const themeStore = useThemeStore()
+const { isMobile } = useIsMobile()
 const { currentTheme } = storeToRefs(themeStore)
 
 const viewModeQuery = useRouteQuery('view_mode')
@@ -182,7 +184,8 @@ const loadAppUrl = useTask(function* (signal, viewMode: string) {
       lang: language.current,
       ...(unref(appName) && { app_name: encodeURIComponent(unref(appName)) }),
       ...(viewMode && { view_mode: viewMode }),
-      ...(unref(templateIdQueryValue) && { template_id: unref(templateIdQueryValue) })
+      ...(unref(templateIdQueryValue) && { template_id: unref(templateIdQueryValue) }),
+      ...(unref(isMobile) && { mobile: true })
     })
 
     const url = `${baseUrl}?${query}`
