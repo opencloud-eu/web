@@ -47,5 +47,3 @@ export const useGroupSettingsStore = defineStore('groupSettings', () => {
     setSelectedGroups
   }
 })
-
-export type GroupSettingsStore = ReturnType<typeof useGroupSettingsStore>

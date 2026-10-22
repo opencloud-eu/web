@@ -75,7 +75,7 @@ type AwarenessPayload = {
  * The handshake's authentication and authorization: who is connecting, and
  * what they may do to this file. Refusals carry a `DeniedReason`.
  */
-export async function authenticate(
+async function authenticate(
   opencloudUrl: string,
   { token, documentName, connectionConfig }: AuthenticatePayload
 ): Promise<YjsContext> {

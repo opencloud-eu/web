@@ -2,13 +2,7 @@ import type { Editor } from '@tiptap/core'
 import type { EditorAction } from '../composables'
 
 /** Actions that stay usable while the editor is in source mode. */
-export const sourceModeEnabledActionIds = [
-  'source-mode',
-  'menu-zoom',
-  'zoom-in',
-  'zoom-out',
-  'zoom-reset'
-]
+const sourceModeEnabledActionIds = ['source-mode', 'menu-zoom', 'zoom-in', 'zoom-out', 'zoom-reset']
 
 export function isEditorActionEnabled(
   action: EditorAction,

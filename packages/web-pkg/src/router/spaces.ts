@@ -8,7 +8,7 @@ type spaceTypes = 'files-spaces-projects' | 'files-spaces-generic'
 export const createLocationSpaces = (name: spaceTypes, location = {}): RouteLocationNamedRaw =>
   createLocation(name, location)
 
-export const locationSpacesProjects = createLocationSpaces('files-spaces-projects')
+const locationSpacesProjects = createLocationSpaces('files-spaces-projects')
 export const locationSpacesGeneric = createLocationSpaces('files-spaces-generic')
 
 // FIXME: `isLocationSpacesActive('files-spaces-generic') returns true for 'files-spaces-projects' as well

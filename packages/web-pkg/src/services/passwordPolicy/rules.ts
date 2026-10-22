@@ -102,7 +102,7 @@ export class MustContainRule implements PasswordPolicyRule {
   }
 }
 
-export class AtLeastBaseRule implements PasswordPolicyRule {
+class AtLeastBaseRule implements PasswordPolicyRule {
   protected $gettext: Language['$gettext']
 
   constructor({ $gettext }: Language) {

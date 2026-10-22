@@ -70,5 +70,3 @@ export const useMailsStore = defineStore('mails', () => {
     reset
   }
 })
-
-export type MailsStore = ReturnType<typeof useMailsStore>

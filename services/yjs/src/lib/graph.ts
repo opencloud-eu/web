@@ -23,7 +23,7 @@ export const MAX_DOCUMENT_NAME_LENGTH = 512
  * Bounds each Graph call so a stalled OpenCloud cannot keep WebSocket
  * handshakes hanging in `onAuthenticate` indefinitely.
  */
-export const GRAPH_TIMEOUT_MS = 10_000
+const GRAPH_TIMEOUT_MS = 10_000
 
 /**
  * The one action that means "may overwrite this file's content": it maps to

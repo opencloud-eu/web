@@ -1,7 +1,7 @@
 import { Mail, MailBodyPart } from '../types'
 import DOMPurify from 'dompurify'
 
-export const getPartIdsFromHtmlBody = (parts?: MailBodyPart[]): string[] => {
+const getPartIdsFromHtmlBody = (parts?: MailBodyPart[]): string[] => {
   if (!parts?.length) {
     return []
   }

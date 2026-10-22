@@ -22,7 +22,7 @@ export const GrantMessage = {
  * no client sends `SeedMessage.Request` anymore. Until then an unsolicited
  * seed grant uses them too, because every client version understands them.
  */
-export const SeedMessage = {
+const SeedMessage = {
   Request: '_oc_seed_request',
   Granted: '_oc_seed_granted',
   Denied: '_oc_seed_denied'
@@ -39,7 +39,7 @@ interface GrantPolicy {
   leaseMs?: number
 }
 
-export const GRANT_POLICIES: Record<GrantKey, GrantPolicy> = {
+const GRANT_POLICIES: Record<GrantKey, GrantPolicy> = {
   // The holder may leave before seeding, and nobody else is allowed to.
   seed: { hasArg: false, passOn: true },
   // Only the requester holds the body to recover from, so the grant cannot be

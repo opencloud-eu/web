@@ -74,5 +74,3 @@ export const useContactsStore = defineStore('contacts', () => {
     reset
   }
 })
-
-export type ContactsStore = ReturnType<typeof useContactsStore>

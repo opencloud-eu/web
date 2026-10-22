@@ -30,9 +30,8 @@ import { createLocation, isLocationActiveDirector, $gettext } from '@opencloud-e
 import AccountExtensionLayout from '../pages/account/accountExtensionLayout.vue'
 
 export * from './helpers'
-export { createRouter } from 'vue-router'
 
-export type RouteAccountTypes =
+type RouteAccountTypes =
   | 'account-information'
   | 'account-preferences'
   | 'account-extensions'
@@ -40,17 +39,15 @@ export type RouteAccountTypes =
   | 'account-gdpr'
   | 'account-extension'
 
-export const createLocationAccount = (
-  name: RouteAccountTypes,
-  location = {}
-): RouteLocationNamedRaw => createLocation(name, location)
+const createLocationAccount = (name: RouteAccountTypes, location = {}): RouteLocationNamedRaw =>
+  createLocation(name, location)
 
-export const locationAccountInformation = createLocationAccount('account-information')
-export const locationAccountPreferences = createLocationAccount('account-preferences')
-export const locationAccountExtensions = createLocationAccount('account-extensions')
-export const locationAccountCalendar = createLocationAccount('account-calendar')
-export const locationAccountGDPR = createLocationAccount('account-gdpr')
-export const locationAccountExtension = createLocationAccount('account-extension')
+const locationAccountInformation = createLocationAccount('account-information')
+const locationAccountPreferences = createLocationAccount('account-preferences')
+const locationAccountExtensions = createLocationAccount('account-extensions')
+const locationAccountCalendar = createLocationAccount('account-calendar')
+const locationAccountGDPR = createLocationAccount('account-gdpr')
+const locationAccountExtension = createLocationAccount('account-extension')
 
 export const isLocationAccountActive = isLocationActiveDirector<RouteAccountTypes>(
   locationAccountInformation,
@@ -60,7 +57,7 @@ export const isLocationAccountActive = isLocationActiveDirector<RouteAccountType
   locationAccountGDPR
 )
 
-export const base = document.querySelector('base')
+const base = document.querySelector('base')
 const routes: readonly RouteRecordRaw[] = [
   {
     path: '/login',

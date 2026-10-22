@@ -74,5 +74,3 @@ export const useAddressBooksStore = defineStore('addressBooks', () => {
     reset
   }
 })
-
-export type AddressBooksStore = ReturnType<typeof useAddressBooksStore>
