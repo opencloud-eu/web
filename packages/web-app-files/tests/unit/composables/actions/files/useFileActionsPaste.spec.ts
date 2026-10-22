@@ -1,6 +1,6 @@
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { buildPublicSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   defaultComponentMocks,
   getComposableWrapper,
@@ -35,6 +35,35 @@ describe('paste', () => {
   })
 })
 
+describe('isDisabled', () => {
+  describe('public link', () => {
+    const space = buildPublicSpaceResource({
+      id: 'link-token',
+      name: 'link',
+      serverUrl: 'https://example.com',
+      publicLinkType: 'public'
+    })
+
+    it('is enabled when the current folder allows creating', () => {
+      const { actions } = getWrapper({ currentFolder: getCurrentFolder(true) })
+      expect(unref(actions)[0].isDisabled({ space })).toBe(false)
+      expect(unref(actions)[0].disabledTooltip({ space })).toBe('')
+    })
+
+    it('is disabled when the current folder does not allow creating', () => {
+      const { actions } = getWrapper({ currentFolder: getCurrentFolder(false) })
+      expect(unref(actions)[0].isDisabled({ space })).toBe(true)
+      expect(unref(actions)[0].disabledTooltip({ space })).toBe(
+        'You have no permission to paste files here.'
+      )
+    })
+  })
+})
+
+function getCurrentFolder(canCreate: boolean) {
+  return mock<Resource>({ id: 'cf-1', path: '/b', isInVault: false, canCreate: () => canCreate })
+}
+
 async function pasteWithTransferType(transferType: TransferType) {
   const space = mock<SpaceResource>({ id: 'space-1' })
   let workerCallback: (result: { successful: Resource[]; failed: unknown[] }) => void
@@ -60,7 +89,9 @@ async function pasteWithTransferType(transferType: TransferType) {
   workerCallback({ successful: [], failed: [] })
 }
 
-function getWrapper() {
+function getWrapper({
+  currentFolder = mock<Resource>({ id: 'cf-1', path: '/b' })
+}: { currentFolder?: Resource } = {}) {
   const mocks = defaultComponentMocks()
   let instance: ReturnType<typeof useFileActionsPaste>
   getComposableWrapper(
@@ -75,9 +106,17 @@ function getWrapper() {
           stubActions: false,
           clipboardState: {
             action: ClipboardActions.Cut,
-            resources: [mock<Resource>({ id: 'r1', storageId: 'space-1', path: '/a/file.txt' })]
+            resources: [
+              mock<Resource>({
+                id: 'r1',
+                storageId: 'space-1',
+                path: '/a/file.txt',
+                parentFolderId: 'a',
+                isInVault: false
+              })
+            ]
           },
-          resourcesStore: { currentFolder: mock<Resource>({ id: 'cf-1', path: '/b' }) }
+          resourcesStore: { currentFolder }
         }
       }
     }
