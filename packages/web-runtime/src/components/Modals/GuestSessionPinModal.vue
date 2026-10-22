@@ -17,14 +17,15 @@
 import { computed, ref, unref, watch } from 'vue'
 import { Modal } from '@opencloud-eu/web-pkg'
 import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
-import { authService } from '../services/auth'
-import { getGuestLinkErrorType, GuestLinkErrorType } from '../services/auth/guestSessionManager'
-import { useGuestLinkErrorMessages } from '../composables/guestLink/useGuestLinkErrorMessages'
+import { authService } from '../../services/auth'
+import { getGuestLinkErrorType, GuestLinkErrorType } from '../../services/auth/guestSessionManager'
+import { useGuestLinkErrorMessages } from '../../composables/guestLink/useGuestLinkErrorMessages'
 
 const { permissionId } = defineProps<{ modal: Modal; permissionId: string }>()
 
 const emit = defineEmits<{
   (e: 'confirm'): void
+  (e: 'cancel'): void
   (e: 'update:confirmDisabled', value: boolean): void
 }>()
 

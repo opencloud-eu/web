@@ -5,7 +5,7 @@ import { mock } from 'vitest-mock-extended'
 import { NavigationFailure, RouteLocationNormalizedLoaded } from 'vue-router'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { useGuestSessionExpiryWarning } from '../../../../src/composables/guestLink'
-import GuestSessionPinModal from '../../../../src/components/GuestSessionPinModal.vue'
+import GuestSessionPinModal from '../../../../src/components/Modals/GuestSessionPinModal.vue'
 import { authService } from '../../../../src/services/auth'
 
 vi.mock('../../../../src/services/auth')

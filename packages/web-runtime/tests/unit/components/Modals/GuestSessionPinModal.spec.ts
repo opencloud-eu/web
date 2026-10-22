@@ -3,10 +3,10 @@ import { mock } from 'vitest-mock-extended'
 import { enableAutoUnmount } from '@vue/test-utils'
 import { Modal } from '@opencloud-eu/web-pkg'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
-import GuestSessionPinModal from '../../../src/components/GuestSessionPinModal.vue'
-import { authService } from '../../../src/services/auth'
+import GuestSessionPinModal from '../../../../src/components/Modals/GuestSessionPinModal.vue'
+import { authService } from '../../../../src/services/auth'
 
-vi.mock('../../../src/services/auth')
+vi.mock('../../../../src/services/auth')
 
 const selectors = {
   pinInput: 'input[data-testid="guest-session-pin-input"]'

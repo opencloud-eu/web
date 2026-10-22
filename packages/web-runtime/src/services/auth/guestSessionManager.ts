@@ -224,8 +224,9 @@ export class GuestSessionManager {
       return this.reuseRedeemedSession(error)
     }
     localStorage.removeItem(storageKey)
-    localStorage.removeItem(renewalStorageKey)
+    // expiry first, other tabs react to the marker removal against the new expiry
     this.persistExpiry(verifiedSession)
+    localStorage.removeItem(renewalStorageKey)
     return this.establish(verifiedSession.permissionId)
   }
 
@@ -251,9 +252,10 @@ export class GuestSessionManager {
     if (!this.authStore.guestContextReady || this.authStore.guestPermissionId !== permissionId) {
       return false
     }
-    const expiresAt = new Date(this.authStore.guestSessionExpirationDateTime).getTime()
+    const expirationDateTime = this.authStore.guestSessionExpirationDateTime
+    const expiresAt = new Date(expirationDateTime).getTime()
     // an unknown expiry can't be checked, the backend decides then
-    if (Number.isNaN(expiresAt)) {
+    if (!expirationDateTime || Number.isNaN(expiresAt)) {
       return true
     }
     return Date.now() < expiresAt
@@ -335,8 +337,10 @@ export class GuestSessionManager {
 
   private persistSession(session: GuestLinkSession): string {
     localStorage.setItem(storageKey, session.permissionId)
+    // expiry first, other tabs react to the marker removal against the new expiry
+    const expirationDateTime = this.persistExpiry(session)
     localStorage.removeItem(renewalStorageKey)
-    return this.persistExpiry(session)
+    return expirationDateTime
   }
 
   private persistExpiry(session: GuestLinkSession): string {

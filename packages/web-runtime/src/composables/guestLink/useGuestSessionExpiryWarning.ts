@@ -20,7 +20,7 @@ import {
   isRetryableGuestLinkErrorType,
   renewalStorageKey
 } from '../../services/auth/guestSessionManager'
-import GuestSessionPinModal from '../../components/GuestSessionPinModal.vue'
+import GuestSessionPinModal from '../../components/Modals/GuestSessionPinModal.vue'
 import { isGuestContextRequired } from '../../router/helpers'
 import { useGuestLinkErrorMessages } from './useGuestLinkErrorMessages'
 
