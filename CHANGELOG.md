@@ -6,17 +6,9 @@
 
 @AlexAndBear, @BloomyInDev, @JammingBen, @LetsDrinkSomeTea, @aduffeck, @dschmidt, @eriktews, @fredrikblau, @jay23606, @kulmann, @tammi-23, @tbsbdr, @v-scharf
 
-### ✅ Tests
-
-- test(e2e): only fail on critical and serious best-practice a11y findings [[#3980](https://github.com/opencloud-eu/web/pull/3980)]
-- test(e2e): extend a11y coverage and add keyboard checks [[#3795](https://github.com/opencloud-eu/web/pull/3795)]
-- test: exclude Claude worktrees from Vitest discovery [[#3815](https://github.com/opencloud-eu/web/pull/3815)]
-- test(e2e): cover sse events for share recipients [[#3799](https://github.com/opencloud-eu/web/pull/3799)]
-- fix(e2e): retry open-with submenu click to fix flaky context menu [[#3757](https://github.com/opencloud-eu/web/pull/3757)]
-- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
-
 ### 🐛 Bug Fixes
 
+- fix: let collaborator names use the full row width [[#3926](https://github.com/opencloud-eu/web/pull/3926)]
 - fix: send isMobile information to server for collaboration service [[#3971](https://github.com/opencloud-eu/web/pull/3971)]
 - fix(yjs): renew expired token [[#3966](https://github.com/opencloud-eu/web/pull/3966)]
 - fix: keyboard focus and space handling from accessibility audit [[#3824](https://github.com/opencloud-eu/web/pull/3824)]
@@ -157,6 +149,15 @@
 - fix(web-pkg): align the rename button with the name when the path is shown [[#3551](https://github.com/opencloud-eu/web/pull/3551)]
 - fix(web-app-files): highlight the search term in the names of the search results [[#3555](https://github.com/opencloud-eu/web/pull/3555)]
 - fix: improve mobile layouts with css-only adjustments [[#3549](https://github.com/opencloud-eu/web/pull/3549)]
+
+### ✅ Tests
+
+- test(e2e): only fail on critical and serious best-practice a11y findings [[#3980](https://github.com/opencloud-eu/web/pull/3980)]
+- test(e2e): extend a11y coverage and add keyboard checks [[#3795](https://github.com/opencloud-eu/web/pull/3795)]
+- test: exclude Claude worktrees from Vitest discovery [[#3815](https://github.com/opencloud-eu/web/pull/3815)]
+- test(e2e): cover sse events for share recipients [[#3799](https://github.com/opencloud-eu/web/pull/3799)]
+- fix(e2e): retry open-with submenu click to fix flaky context menu [[#3757](https://github.com/opencloud-eu/web/pull/3757)]
+- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
 
 ### 📈 Enhancement
 
