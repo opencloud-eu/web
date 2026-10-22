@@ -32,6 +32,58 @@ describe('spaces', () => {
         sortedMembers[0].permissions.includes(GraphSharePermission.updatePermissions)
       ).toBeTruthy()
     })
+    it('sorts space members with the same permissions by name (numeric aware), independent of the input order', () => {
+      const manager = mock<CollaboratorShare>({
+        id: 'share-zoe',
+        permissions: [GraphSharePermission.updatePermissions],
+        sharedWith: { displayName: 'Zoe' }
+      })
+      const members = [
+        manager,
+        mock<CollaboratorShare>({
+          id: 'share-marie',
+          permissions: [],
+          sharedWith: { displayName: 'marie' }
+        }),
+        mock<CollaboratorShare>({
+          id: 'share-admin-2',
+          permissions: [],
+          sharedWith: { displayName: 'Admin' }
+        }),
+        mock<CollaboratorShare>({
+          id: 'share-einstein',
+          permissions: [],
+          sharedWith: { displayName: 'Einstein' }
+        }),
+        mock<CollaboratorShare>({
+          id: 'share-admin-1',
+          permissions: [],
+          sharedWith: { displayName: 'admin' }
+        }),
+        mock<CollaboratorShare>({
+          id: 'share-user-10',
+          permissions: [],
+          sharedWith: { displayName: 'User 10' }
+        }),
+        mock<CollaboratorShare>({
+          id: 'share-user-2',
+          permissions: [],
+          sharedWith: { displayName: 'User 2' }
+        })
+      ]
+      const expectedOrder = [
+        'share-zoe',
+        'share-admin-1',
+        'share-admin-2',
+        'share-einstein',
+        'share-marie',
+        'share-user-2',
+        'share-user-10'
+      ]
+
+      expect(sortSpaceMembers([...members]).map(({ id }) => id)).toEqual(expectedOrder)
+      expect(sortSpaceMembers([...members].reverse()).map(({ id }) => id)).toEqual(expectedOrder)
+    })
   })
 
   describe('computed "personalSpace"', () => {

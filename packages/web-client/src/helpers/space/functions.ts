@@ -16,7 +16,7 @@ import {
 import { DavProperty } from '../../webdav/constants'
 import { buildWebDavPublicPath, buildWebDavOcmPath } from '../publicLink'
 import { urlJoin } from '../../utils'
-import { Drive, DriveItem } from '@opencloud-eu/web-client/graph/generated'
+import { Drive, DriveItem, Permission } from '@opencloud-eu/web-client/graph/generated'
 import { CollaboratorShare, GraphSharePermission, ShareRole } from '../share'
 
 export function buildWebDavSpacesPath(storageId: string, path?: string) {
@@ -51,7 +51,7 @@ export function isManager(share: CollaboratorShare) {
 }
 
 export const getSpaceManagers = (space: SpaceResource, graphRoles: Record<string, ShareRole>) => {
-  return space.root.permissions?.filter((p) => {
+  const managers = space.root.permissions?.filter((p) => {
     let permissionActions: string[] = []
     if (p['@libre.graph.permissions.actions']) {
       permissionActions = p['@libre.graph.permissions.actions']
@@ -65,6 +65,20 @@ export const getSpaceManagers = (space: SpaceResource, graphRoles: Record<string
     }
 
     return permissionActions.includes(GraphSharePermission.deletePermissions)
+  })
+
+  // sort by name, the server returns the permissions in a different order on every request
+  function displayName({ grantedToV2 }: Permission) {
+    return grantedToV2?.user?.displayName || grantedToV2?.group?.displayName || ''
+  }
+
+  return managers?.sort((a, b) => {
+    return (
+      displayName(a).localeCompare(displayName(b), undefined, {
+        sensitivity: 'base',
+        numeric: true
+      }) || (a.id || '').localeCompare(b.id || '')
+    )
   })
 }
 

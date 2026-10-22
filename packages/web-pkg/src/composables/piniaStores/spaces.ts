@@ -19,9 +19,19 @@ import { useExtensionRegistry } from './extensionRegistry'
 import { markSpaceVaultStatus } from '../../helpers/vault'
 import { ListPermissionsSpaceRootSelectEnum } from '@opencloud-eu/web-client/graph/generated'
 
-// sort space members with higher permissions (managers) at the top
+// sort space members with higher permissions (managers) at the top, then by name.
+// the server returns members in a different order on every request, so the order must not depend on it.
 export const sortSpaceMembers = (shares: CollaboratorShare[]) => {
-  return shares.sort((a, b) => b.permissions.length - a.permissions.length)
+  return shares.sort((a, b) => {
+    return (
+      b.permissions.length - a.permissions.length ||
+      (a.sharedWith.displayName || '').localeCompare(b.sharedWith.displayName || '', undefined, {
+        sensitivity: 'base',
+        numeric: true
+      }) ||
+      (a.id || '').localeCompare(b.id || '')
+    )
+  })
 }
 
 export const getSpacesByType = async ({
