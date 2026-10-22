@@ -366,19 +366,18 @@ export const onSSEItemMetadataChangedEvent = async ({
     return
   }
 
+  if (!isItemInCurrentFolder({ resourcesStore, parentFolderId: sseData.parentitemid })) {
+    return false
+  }
+
   const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
   if (!space) {
     return
   }
 
   const resource = await loadEventResource({ clientService, resourcesStore }, space, sseData.itemid)
-
   if (!resource) {
     return
-  }
-
-  if (!isItemInCurrentFolder({ resourcesStore, parentFolderId: resource.parentFolderId })) {
-    return false
   }
 
   resourcesStore.upsertResource(resource)

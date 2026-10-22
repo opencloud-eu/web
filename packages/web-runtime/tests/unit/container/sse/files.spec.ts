@@ -614,15 +614,15 @@ describe('file events', () => {
       expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).toHaveBeenCalled()
     })
-    it('does not touch the store when the resource is not in the current folder', async () => {
+    it('does not even load the resource when it is not in the current folder', async () => {
       const resource = mock<Resource>({
         id: 'file2',
         storageId: 'space1',
         parentFolderId: 'folder2!folder2'
       })
       const mocks = getMocks()
-      mocks.clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>({ ...resource }))
       await onSSEItemMetadataChangedEvent({ sseData: metadataEvent(resource), ...mocks })
+      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
     })
     it('ignores events initiated by this client', async () => {
