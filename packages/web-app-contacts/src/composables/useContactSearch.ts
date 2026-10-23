@@ -3,6 +3,7 @@ import Fuse from 'fuse.js'
 import { defaultFuseOptions } from '@opencloud-eu/web-pkg'
 import { Contact } from '../types'
 import { getContactDisplayName } from '../helpers'
+import { formatContactAddress } from './useContactDetailSections'
 
 const filterContacts = (contacts: Contact[], searchTerm: string) => {
   const term = searchTerm.trim()
@@ -11,12 +12,18 @@ const filterContacts = (contacts: Contact[], searchTerm: string) => {
   const searchableContacts = contacts.map((contact) => ({
     displayName: getContactDisplayName(contact),
     emails: Object.values(contact.emails || {}).map((e) => e.address),
-    phones: Object.values(contact.phones || {}).map((p) => p.number)
+    phones: Object.values(contact.phones || {}).map((p) => p.number),
+    nicknames: Object.values(contact.nicknames || {}).map((n) => n.name),
+    organizations: Object.values(contact.organizations || {}).flatMap((o) => [
+      o.name,
+      ...(o.units || []).map((unit) => unit.name)
+    ]),
+    addresses: Object.values(contact.addresses || {}).map(formatContactAddress)
   }))
 
   const searchEngine = new Fuse(searchableContacts, {
     ...defaultFuseOptions,
-    keys: ['displayName', 'emails', 'phones']
+    keys: ['displayName', 'emails', 'phones', 'nicknames', 'organizations', 'addresses']
   })
 
   const resultIndices = new Set(searchEngine.search(term).map((r) => r.refIndex))
