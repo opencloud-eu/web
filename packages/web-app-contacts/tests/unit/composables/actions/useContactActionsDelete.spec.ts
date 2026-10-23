@@ -88,6 +88,23 @@ describe('useContactActionsDelete', () => {
       })
     })
 
+    it('removes the contact if it was already deleted', async () => {
+      let instance: ReturnType<typeof useContactActionsDelete>
+      const { mocks } = getWrapper({
+        setup: (value) => {
+          instance = value
+        }
+      })
+      mocks.$clientService.httpAuthenticated.delete.mockRejectedValue({
+        response: { status: 404 }
+      })
+
+      await instance.deleteContact(contact)
+
+      expect(useContactsStore().removeContacts).toHaveBeenCalledWith([contact])
+      expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
+    })
+
     it('keeps the contact and shows an error if the request fails', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const error = new Error('request failed')

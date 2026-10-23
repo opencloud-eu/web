@@ -35,9 +35,16 @@ export function useContactActionsDelete() {
         throw new Error('No groupware account selected')
       }
 
-      await clientService.httpAuthenticated.delete(
-        urlJoin(configStore.groupwareUrl, `accounts/${accountId}/contacts/${contact.id}`)
-      )
+      try {
+        await clientService.httpAuthenticated.delete(
+          urlJoin(configStore.groupwareUrl, `accounts/${accountId}/contacts/${contact.id}`)
+        )
+      } catch (error) {
+        // the contact is already gone, e.g. deleted by another client
+        if (error?.response?.status !== 404) {
+          throw error
+        }
+      }
 
       contactsStore.removeContacts([contact])
       showMessage({
