@@ -161,6 +161,15 @@ export const useResourcesStore = defineStore('resources', () => {
     latestSelectedId.value = id
   }
 
+  function deselectResources(ids: string[]) {
+    const deselectedIds = new Set(ids)
+    selectedIds.value = unref(selectedIds).filter((id) => !deselectedIds.has(id))
+    if (deselectedIds.has(unref(latestSelectedId))) {
+      latestSelectedId.value = null
+    }
+    eventBus.publish('app.files.shiftAnchor.reset')
+  }
+
   const areHiddenFilesShown = ref(true)
   const areFileExtensionsShown = ref(true)
   const areWebDavDetailsShown = ref(false)
@@ -178,20 +187,14 @@ export const useResourcesStore = defineStore('resources', () => {
   }
 
   function deselectHiddenResources() {
-    const hiddenIds = new Set(
-      unref(resources)
-        .filter(({ name }) => name.startsWith('.'))
-        .map(({ id }) => id)
-    )
-    if (!hiddenIds.size) {
+    const hiddenIds = unref(resources)
+      .filter(({ name }) => name.startsWith('.'))
+      .map(({ id }) => id)
+    if (!hiddenIds.length) {
       return
     }
 
-    selectedIds.value = unref(selectedIds).filter((id) => !hiddenIds.has(id))
-    if (hiddenIds.has(unref(latestSelectedId))) {
-      latestSelectedId.value = null
-    }
-    eventBus.publish('app.files.shiftAnchor.reset')
+    deselectResources(hiddenIds)
   }
   const setAreFileExtensionsShown = (value: boolean) => {
     areFileExtensionsShown.value = value
@@ -350,6 +353,7 @@ export const useResourcesStore = defineStore('resources', () => {
     toggleSelection,
     resetSelection,
     setLastSelectedId,
+    deselectResources,
 
     areHiddenFilesShown,
     areFileExtensionsShown,

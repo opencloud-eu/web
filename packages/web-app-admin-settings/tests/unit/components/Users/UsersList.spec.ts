@@ -1,4 +1,4 @@
-import { nextTick } from 'vue'
+import { nextTick, reactive } from 'vue'
 import UsersList from '../../../../src/components/Users/UsersList.vue'
 import {
   defaultComponentMocks,
@@ -41,7 +41,7 @@ describe('UsersList', () => {
       })
       expect(getSelectAllCheckbox(wrapper).props('modelValue')).toBeFalsy()
     })
-    it('is not checked if only users of another page are selected', () => {
+    it('is not checked if only users that are not shown are selected', () => {
       const { wrapper } = getWrapper({
         mountType: mount,
         users: getUserMocks(),
@@ -177,6 +177,46 @@ describe('UsersList', () => {
       getUserCheckbox(wrapper, users[0]).vm.$emit('click', checkboxClickEvent())
       const { setSelectedUsers } = useUserSettingsStore()
       expect(setSelectedUsers).toHaveBeenCalledWith([])
+    })
+  })
+
+  describe('users that leave the view', () => {
+    const users = ['a', 'b', 'c'].map((name, i) => ({
+      id: String(i + 1),
+      displayName: name,
+      onPremisesSamAccountName: name
+    })) as User[]
+
+    it('get deselected on page change', async () => {
+      const query = reactive({ page: '1', 'items-per-page': '2' })
+      const { wrapper } = getWrapper({
+        users,
+        selectedUsers: [users[0], users[1]],
+        query,
+        realCheckboxes: true
+      })
+      expect(getTableData(wrapper).map(({ id }) => id)).toEqual(['1', '2'])
+
+      query.page = '2'
+      await nextTick()
+
+      expect(getTableData(wrapper).map(({ id }) => id)).toEqual(['3'])
+      expect(getSelectedIds()).toEqual([])
+    })
+    it('get deselected on sorting, the ones still shown stay selected', async () => {
+      const query = reactive({ 'items-per-page': '2', 'sort-by': 'displayName', 'sort-dir': 'asc' })
+      const { wrapper } = getWrapper({
+        users,
+        selectedUsers: [users[0], users[1]],
+        query,
+        realCheckboxes: true
+      })
+
+      query['sort-dir'] = 'desc'
+      await nextTick()
+
+      expect(getTableData(wrapper).map(({ id }) => id)).toEqual(['3', '2'])
+      expect(getSelectedIds()).toEqual(['2'])
     })
   })
 

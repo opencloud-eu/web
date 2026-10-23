@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
 import ResourceTable from '../../../../src/components/FilesList/ResourceTable.vue'
+import ResourceTableSelectAll from '../../../../src/components/FilesList/ResourceTableSelectAll.vue'
+import { OcCheckbox } from '@opencloud-eu/design-system/components'
 import {
   extractDomSelector,
   IncomingShareResource,
@@ -9,7 +11,11 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
-import { CapabilityStore, useSideBar } from '../../../../src/composables/piniaStores'
+import {
+  CapabilityStore,
+  useResourcesStore,
+  useSideBar
+} from '../../../../src/composables/piniaStores'
 import { useExtensionRegistry, useFileActions } from '../../../../src/composables'
 import {
   useCanBeOpenedWithSecureView,
@@ -368,6 +374,60 @@ describe('ResourceTable', () => {
 
         await wrapper.find('.resource-table-select-all .oc-checkbox').trigger('click')
         expect(wrapper.emitted<string>('update:selectedIds')[0][0].length).toBe(0)
+      })
+    })
+
+    describe('resources that are not shown', () => {
+      it('do not count for the select-all checkbox', () => {
+        const { wrapper } = getMountedWrapper({
+          deleteQueue: [],
+          // as many selected resources as rows, but none of them is shown
+          selectedIds: resourcesWithAllFields.map(({ id }) => `other-page-${id}`)
+        })
+        const selectAll = wrapper.findComponent(ResourceTableSelectAll).findComponent(OcCheckbox)
+        expect(selectAll.props('modelValue')).toBe(false)
+      })
+      it('get deselected when they leave the view, e.g. on page change or sorting', async () => {
+        const [first, second, ...others] = resourcesWithAllFields
+        const { wrapper } = getMountedWrapper({
+          stubActions: false,
+          deleteQueue: [],
+          selectedIds: [first.id, second.id],
+          props: { resources: [first, second] }
+        })
+
+        await wrapper.setProps({ resources: [second, ...others] })
+
+        const resourcesStore = useResourcesStore()
+        expect(resourcesStore.selectedIds).toEqual([second.id])
+      })
+      it('stay selected if they have not been shown yet, e.g. via the "scrollTo" param', async () => {
+        const [first, second, ...others] = resourcesWithAllFields
+        const { wrapper } = getMountedWrapper({
+          stubActions: false,
+          deleteQueue: [],
+          selectedIds: [others[0].id],
+          props: { resources: [first, second] }
+        })
+
+        await wrapper.setProps({ resources: [second, ...others] })
+
+        const resourcesStore = useResourcesStore()
+        expect(resourcesStore.selectedIds).toEqual([others[0].id])
+      })
+      it('are not deselected by a table that can not select resources', async () => {
+        const [first, second] = resourcesWithAllFields
+        const { wrapper } = getMountedWrapper({
+          stubActions: false,
+          deleteQueue: [],
+          selectedIds: [first.id],
+          props: { resources: [first, second], isSelectable: false }
+        })
+
+        await wrapper.setProps({ resources: [second] })
+
+        const resourcesStore = useResourcesStore()
+        expect(resourcesStore.selectedIds).toEqual([first.id])
       })
     })
 
@@ -766,7 +826,8 @@ function getMountedWrapper({
   hasRenameAction = true,
   resources = resourcesWithAllFields,
   deleteQueue = ['in-delete-queue=='],
-  selectedIds = []
+  selectedIds = [],
+  stubActions = true
 }: {
   props?: PartialComponentProps<typeof ResourceTable>
   userContextReady?: boolean
@@ -777,6 +838,7 @@ function getMountedWrapper({
   resources?: Resource[]
   deleteQueue?: string[]
   selectedIds?: string[]
+  stubActions?: boolean
 } = {}) {
   const capabilities = {
     files: { tags: true }
@@ -829,6 +891,7 @@ function getMountedWrapper({
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
+              stubActions,
               authState: { userContextReady, guestContextReady },
               capabilityState: { capabilities },
               resourcesStore: { deleteQueue, selectedIds }
