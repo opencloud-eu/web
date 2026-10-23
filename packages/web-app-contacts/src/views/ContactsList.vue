@@ -3,6 +3,7 @@
   <no-content-message
     v-else-if="error"
     id="contacts-error"
+    role="alert"
     class="px-4 py-8"
     icon="error-warning"
     icon-fill-type="line"

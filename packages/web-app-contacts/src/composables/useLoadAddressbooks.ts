@@ -28,6 +28,7 @@ export const useLoadAddressBooks = () => {
         return addressbooks
       } catch (e) {
         console.error('Failed to load address books:', e)
+        setAddressBooks([])
         error.value = e
         throw e
       }

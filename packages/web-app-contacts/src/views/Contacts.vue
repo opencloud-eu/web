@@ -7,6 +7,7 @@
     <no-content-message
       v-else-if="addressBooksError"
       id="contacts-address-books-error"
+      role="alert"
       class="h-full"
       icon="error-warning"
       icon-fill-type="line"

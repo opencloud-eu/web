@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import { useTask } from 'vue-concurrency'
-import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
+import { useClientService, useConfigStore, useMessages } from '@opencloud-eu/web-pkg'
+import { useGettext } from 'vue3-gettext'
 import { useContactsStore } from './piniaStores/contacts'
 import { parseContactsResponse, type Contact } from '../types'
 import { urlJoin } from '@opencloud-eu/web-client'
@@ -37,11 +38,15 @@ export const useLoadContacts = () => {
   const configStore = useConfigStore()
   const clientService = useClientService()
   const { setContacts } = useContactsStore()
+  const { showMessage } = useMessages()
+  const { $gettext } = useGettext()
 
   if (!loadContactsTask) {
     loadContactsTask = useTask(function* (signal, accountId: string, addressBookId: string) {
       error.value = undefined
-      const contacts: Contact[] = []
+      // contacts by id, pages might overlap
+      const contacts = new Map<string, Contact>()
+      const usedNextTokens = new Set<string>()
       let next: string | undefined
 
       try {
@@ -54,22 +59,41 @@ export const useLoadContacts = () => {
             { params: { limit: CONTACTS_PAGE_SIZE, ...(next && { next }) }, signal }
           )
           const page = parseContactsPage(data)
-          contacts.push(...page.contacts)
+          const previousSize = contacts.size
+          page.contacts.forEach((contact) => contacts.set(contact.id, contact))
 
-          // the API also returns a next token after the last page
+          // the API also returns a next token after the last page, so stop at pages without new
+          // contacts and at tokens that have been used already
           const isComplete =
-            !page.contacts.length || (page.total !== undefined && contacts.length >= page.total)
+            contacts.size === previousSize ||
+            (page.total !== undefined && contacts.size >= page.total)
           next = isComplete ? undefined : headers?.next
+          if (next && usedNextTokens.has(next)) {
+            next = undefined
+          }
+          if (next) {
+            usedNextTokens.add(next)
+          }
         } while (next)
-
-        setContacts(contacts)
-        return contacts
       } catch (e) {
-        console.error('Failed to load contacts:', e)
-        setContacts([])
-        error.value = e
-        throw e
+        if (!contacts.size) {
+          console.error('Failed to load contacts:', e)
+          setContacts([])
+          error.value = e
+          throw e
+        }
+
+        // keep the contacts of the pages that have been loaded already
+        console.error('Failed to load all contacts:', e)
+        showMessage({
+          title: $gettext('Not all contacts could be loaded'),
+          status: 'warning'
+        })
       }
+
+      const result = [...contacts.values()]
+      setContacts(result)
+      return result
     }).restartable()
   }
 
