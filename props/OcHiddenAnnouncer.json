@@ -1,9 +1,9 @@
 [
   {
     "name": "announcement",
-    "required": true,
-    "description": "The announcement to be read by screen readers.",
-    "default": "",
+    "required": false,
+    "description": "The announcement to be read by screen readers. Every change of it gets announced. Use the exposed `announce` method to announce a message on an action, also the same text again.",
+    "default": "''",
     "type": "string"
   },
   {
