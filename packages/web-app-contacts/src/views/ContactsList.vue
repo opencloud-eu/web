@@ -1,5 +1,22 @@
 <template>
   <app-loading-spinner v-if="isLoading" />
+  <no-content-message
+    v-else-if="error"
+    id="contacts-error"
+    role="alert"
+    class="px-4 py-8"
+    icon="error-warning"
+    icon-fill-type="line"
+  >
+    <template #message>
+      <span v-text="$gettext('Contacts could not be loaded')" />
+    </template>
+    <template #callToAction>
+      <oc-button class="mt-4" appearance="outline" @click="onRetry">
+        <span v-text="$gettext('Retry')" />
+      </oc-button>
+    </template>
+  </no-content-message>
   <template v-else>
     <div class="md:hidden flex h-11 items-center px-4">
       <div class="min-w-0 flex-1">
@@ -111,7 +128,7 @@ import { useContactActionsEdit } from '../composables/actions/useContactActionsE
 import { getContactDisplayName } from '../helpers'
 import ContactsListItem from '../components/ContactsListItem.vue'
 
-const { isLoading } = useLoadContacts()
+const { isLoading, error, reloadContacts } = useLoadContacts()
 const { $gettext } = useGettext()
 const contactsStore = useContactsStore()
 const addressBooksStore = useAddressBooksStore()
@@ -132,6 +149,14 @@ const sortedContacts = computed(() => {
 })
 
 const { searchTerm, normalizedSearchTerm, filteredContacts } = useContactSearch(sortedContacts)
+
+const onRetry = async () => {
+  try {
+    await reloadContacts()
+  } catch {
+    // the error state is shown again
+  }
+}
 
 const onSelectContact = (contact: Contact) => {
   runWithDiscardConfirmation(() => {

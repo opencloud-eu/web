@@ -204,7 +204,8 @@ const onSubmit = async () => {
     setCurrentContact(savedContact)
     closeEditor()
   } catch (error) {
-    console.error('Failed to save contact:', error)
+    // the error is not logged as it contains the personal data of the contact
+    console.error('Failed to save contact:', error?.message)
     showSaveError(error)
   }
 }
