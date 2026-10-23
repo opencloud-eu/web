@@ -118,9 +118,19 @@ export const NoteSchema = z
 
 export const OnlineServiceSchema = z.object({
   service: z.string().optional(),
+  uri: z.string().optional(),
   user: z.string().optional(),
   contexts: ContextsSchema.optional()
 })
+
+export const LinkSchema = z
+  .object({
+    uri: z.string(),
+    kind: z.string().optional(),
+    label: z.string().optional(),
+    contexts: ContextsSchema.optional()
+  })
+  .loose()
 
 export const OrganizationUnitSchema = z
   .object({
@@ -185,6 +195,7 @@ export const ContactSchema = z.object({
   addresses: z.record(z.string(), AddressSchema).optional(),
   anniversaries: z.record(z.string(), AnniversarySchema).optional(),
   emails: z.record(z.string(), EmailSchema).optional(),
+  links: z.record(z.string(), LinkSchema).optional(),
   media: z.record(z.string(), MediaSchema).optional(),
   nicknames: z.record(z.string(), NicknameSchema).optional(),
   notes: z.record(z.string(), NoteSchema).optional(),
