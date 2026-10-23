@@ -230,6 +230,16 @@ describe('InviteCollaboratorForm', () => {
         )
       ).toBe(false)
     })
+    it('does not offer a guest suggestion when the resource is a space', async () => {
+      const { wrapper } = getWrapper({ resource: mock<SpaceResource>(spaceMock) })
+      await search(wrapper, 'guest@example.com')
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
     it('does not offer a guest suggestion when the email belongs to a known account', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'guest@example.com' } as User] })
       await search(wrapper, 'guest@example.com')

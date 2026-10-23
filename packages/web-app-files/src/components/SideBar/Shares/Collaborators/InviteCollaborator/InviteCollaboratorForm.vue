@@ -322,7 +322,9 @@ const {
   const isSpace = !unref(resource) || isSpaceResource(unref(resource))
   const contacts = isSpace ? [] : await searchOpenXchangeContacts(query.trim(), signal)
 
-  const guests = unref(isExternalShareRoleType) ? [] : getGuestCandidates(query, collaborators)
+  // guests can't be invited to spaces yet
+  const guests =
+    isSpace || unref(isExternalShareRoleType) ? [] : getGuestCandidates(query, collaborators)
 
   return [...collaborators, ...contacts, ...guests].filter(
     (collaborator: CollaboratorAutoCompleteItem) => {
