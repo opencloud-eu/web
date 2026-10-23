@@ -41,6 +41,11 @@ describe('ModalWrapper', () => {
     expect(openModals[1].props('active')).toBe(true)
     expect(wrapper.findAll('custom-modal-component-stub').length).toBe(2)
   })
+  it('passes "showCancelAction" on to OcModal', () => {
+    const { wrapper } = getShallowWrapper({ modals: [modal({ showCancelAction: true })] })
+
+    expect(wrapper.findComponent({ name: 'OcModal' }).props('showCancelAction')).toBe(true)
+  })
   describe('method "onModalConfirm"', () => {
     it('calls the modal "onConfirm" if given, disables the confirm button and removes the modal', async () => {
       const activeModal = modal({ onConfirm: vi.fn().mockResolvedValue(undefined) })

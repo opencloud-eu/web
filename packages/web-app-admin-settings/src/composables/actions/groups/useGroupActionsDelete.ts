@@ -76,6 +76,7 @@ export function useGroupActionsDelete() {
         }
       ),
       confirmText: $gettext('Delete'),
+      showCancelAction: true,
       message: $ngettext(
         'Are you sure you want to delete this group?',
         'Are you sure you want to delete the %{groupCount} selected groups?',

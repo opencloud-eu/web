@@ -19,6 +19,8 @@ exports[`OcModal > displays input 1`] = `
       </div>
       <div class="oc-modal-body-actions shrink-0 flex justify-end p-4 text-right">
         <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
+          <!--v-if-->
+          <!--v-if-->
           <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-confirm ml-2">Confirm</oc-button-stub>
         </div>
       </div>
@@ -52,7 +54,10 @@ exports[`OcModal > displays loading state 1`] = `
         <!--v-if-->
       </div>
       <div class="oc-modal-body-actions shrink-0 flex justify-end p-4 text-right">
-        <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr"><button type="button" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-modal-body-actions-confirm ml-2"><span class="oc-spinner inline-block after:block after:bg-transparent after:border after:border-current after:rounded-full after:size-full relative after:relative animate-spin after:content-[''] after:border-b-transparent size-4 spinner" aria-hidden="true" tabindex="-1"></span> <!-- @slot Content of the button --> Confirm</button></div>
+        <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
+          <!--v-if-->
+          <!--v-if--> <button type="button" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-modal-body-actions-confirm ml-2"><span class="oc-spinner inline-block after:block after:bg-transparent after:border after:border-current after:rounded-full after:size-full relative after:relative animate-spin after:content-[''] after:border-b-transparent size-4 spinner" aria-hidden="true" tabindex="-1"></span> <!-- @slot Content of the button --> Confirm</button>
+        </div>
       </div>
     </div>
   </focus-trap-stub>
@@ -78,6 +83,8 @@ exports[`OcModal > matches snapshot 1`] = `
       </div>
       <div class="oc-modal-body-actions shrink-0 flex justify-end p-4 text-right">
         <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
+          <!--v-if-->
+          <!--v-if-->
           <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-confirm ml-2">Confirm</oc-button-stub>
         </div>
       </div>
@@ -105,6 +112,8 @@ exports[`OcModal > overrides props message with slot 1`] = `
       </div>
       <div class="oc-modal-body-actions shrink-0 flex justify-end p-4 text-right">
         <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
+          <!--v-if-->
+          <!--v-if-->
           <oc-button-stub appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-body-actions-confirm ml-2">Confirm</oc-button-stub>
         </div>
       </div>

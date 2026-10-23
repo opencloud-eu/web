@@ -19,6 +19,7 @@
     :hide-actions="modal.hideActions"
     :hide-confirm-button="modal.hideConfirmButton"
     :hide-cancel-button="modal.hideCancelButton"
+    :show-cancel-action="modal.showCancelAction"
     :button-confirm-text="modal.confirmText"
     :button-confirm-disabled="modal.confirmDisabled"
     :contextual-helper-label="modal.contextualHelperLabel"

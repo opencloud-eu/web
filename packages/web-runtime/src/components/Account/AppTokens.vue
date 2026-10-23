@@ -176,6 +176,7 @@ const openDeleteAppTokenModal = (appToken: AppToken) => {
   dispatchModal({
     title: $gettext('Delete app token'),
     confirmText: $gettext('Delete'),
+    showCancelAction: true,
     message: $gettext('Are you sure you want to delete this app token?'),
     onConfirm: () => deleteAppToken(appToken)
   })

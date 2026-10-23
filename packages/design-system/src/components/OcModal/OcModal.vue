@@ -28,7 +28,7 @@
               appearance="raw"
               class="oc-modal-title-actions-cancel"
               :disabled="isLoading"
-              :aria-label="cancelAriaLabel"
+              :aria-label="cancelLabel"
               @click="cancelModalAction"
             >
               <oc-icon name="close" />
@@ -87,7 +87,15 @@
           v-if="!hideActions"
           class="oc-modal-body-actions shrink-0 flex justify-end p-4 text-right"
         >
-          <div :id="actionsId" class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
+          <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
+            <oc-button
+              v-if="showCancelAction"
+              class="oc-modal-body-actions-cancel"
+              :disabled="isLoading"
+              @click="cancelModalAction"
+              >{{ cancelLabel }}
+            </oc-button>
+            <div v-if="actionsId" :id="actionsId" class="contents" />
             <oc-button
               v-if="!hideConfirmButton"
               class="oc-modal-body-actions-confirm ml-2"
@@ -154,7 +162,8 @@ export interface Props {
    */
   /**
    * @docs Id of the actions container. A custom component teleports its own buttons in
-   * here, so they sit in the footer instead of scrolling away inside the body.
+   * here, so they sit in the footer instead of scrolling away inside the body. They are
+   * placed between the cancel action and the confirm button.
    */
   actionsId?: string
   elementClass?: string
@@ -224,6 +233,12 @@ export interface Props {
    * @docs Message of the modal.
    */
   message?: string
+  /**
+   * @docs Show a "Cancel" button in front of the confirm button, in addition to the close icon
+   * in the title bar. Meant for confirmations of destructive actions.
+   * @default false
+   */
+  showCancelAction?: boolean
 }
 
 export interface Emits {
@@ -278,7 +293,8 @@ const {
   inputType = 'text',
   inputValue,
   isLoading = false,
-  message
+  message,
+  showCancelAction = false
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -317,7 +333,7 @@ const confirmLabel = computed(() => {
   return buttonConfirmText || $gettext('Confirm')
 })
 
-const cancelAriaLabel = computed(() => {
+const cancelLabel = computed(() => {
   return $gettext('Cancel')
 })
 

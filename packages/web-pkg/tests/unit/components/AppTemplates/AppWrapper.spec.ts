@@ -433,6 +433,20 @@ describe('AppWrapper — changes still pending in the session', () => {
     )
   })
 
+  // the modal's own cancel action and confirm button form Cancel and Save, the
+  // custom component only adds "Don't Save" in between
+  it('asks with the modal cancel action and confirm button', async () => {
+    await openFileWithPendingChange('typed just now')
+    const { dispatchModal } = useModals()
+
+    void leaveRoute()
+    await flushPromises()
+
+    const modal = vi.mocked(dispatchModal).mock.calls.at(-1)[0]
+    expect(modal).toMatchObject({ showCancelAction: true, confirmText: 'Save' })
+    expect(modal.hideConfirmButton).toBeFalsy()
+  })
+
   it('does not guard the tab against unload for a read-only user receiving remote edits', async () => {
     const addEventListenerSpy = vi.spyOn(window, 'addEventListener')
     const s = setup()

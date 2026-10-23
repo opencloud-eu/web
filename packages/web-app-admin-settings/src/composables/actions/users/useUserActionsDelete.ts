@@ -93,6 +93,7 @@ export function useUserActionsDelete() {
         userCount: resources.length.toString()
       }),
       confirmText: $gettext('Delete'),
+      showCancelAction: true,
       message: $ngettext(
         'Are you sure you want to delete this user?',
         'Are you sure you want to delete the %{userCount} selected users?',
