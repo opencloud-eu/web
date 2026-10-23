@@ -32,6 +32,50 @@ describe('QuotaModal', () => {
     )
   })
 
+  describe('default quota', () => {
+    it.each([
+      [1e9, '1 GB', '1 GB (Default)'],
+      [20e9, '20 GB', '20 GB (Default)']
+    ])('labels and saves the default %i for project spaces', async (defaultQuota, plain, label) => {
+      const { wrapper, mocks } = getWrapper({
+        spaces: [makeSpace('space-1', 10e9, 'project')],
+        defaultQuota
+      })
+      await openSelect(wrapper)
+      const labels = wrapper.findAll('.vs__dropdown-option').map((option) => option.text())
+      expect(labels.filter((text) => text.includes('Default'))).toEqual([label])
+      expect(labels.filter((text) => text.startsWith(plain))).toEqual([label])
+
+      await selectQuota(wrapper, label)
+      await wrapper.vm.onConfirm()
+
+      expect(mocks.$clientService.graphAuthenticated.drives.updateDrive).toHaveBeenCalledWith(
+        'space-1',
+        { quota: { total: defaultQuota } }
+      )
+    })
+
+    it('labels the current quota of a project space that equals the default', () => {
+      const { wrapper } = getWrapper({
+        spaces: [makeSpace('space-1', 1e9, 'project')],
+        defaultQuota: 1e9
+      })
+      expect(wrapper.find('.vs__selected').text()).toBe('1 GB (Default)')
+    })
+
+    it('does not label the default for personal spaces', async () => {
+      const { wrapper } = getWrapper({
+        spaces: [makeSpace('space-1', 1e9, 'personal')],
+        resourceType: 'user',
+        defaultQuota: 1e9
+      })
+      expect(wrapper.find('.vs__selected').text()).toBe('1 GB')
+      await openSelect(wrapper)
+      const labels = wrapper.findAll('.vs__dropdown-option').map((option) => option.text())
+      expect(labels.some((text) => text.includes('Default'))).toBe(false)
+    })
+  })
+
   it('ignores a default selection because the backend cannot reset a quota', async () => {
     const { wrapper, mocks } = getWrapper()
     wrapper.findComponent(QuotaSelect).vm.$emit('selectedOptionChange', { value: null })
@@ -189,10 +233,11 @@ async function selectQuota(wrapper: Wrapper, label: string) {
     .trigger('click')
 }
 
-function makeSpace(id: string, total: number) {
+function makeSpace(id: string, total: number, driveType?: string) {
   return mock<SpaceResource>({
     id,
     name: 'Team',
+    driveType,
     spaceQuota: { remaining: total - 164, state: 'normal', total, used: 164 }
   })
 }
@@ -201,7 +246,8 @@ function getWrapper({
   spaces = [makeSpace('space-1', 10e9)],
   resourceType = 'space',
   warningMessage = '',
-  routeName = ''
+  routeName = '',
+  defaultQuota = 0
 } = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocationNormalizedLoaded>({ name: routeName })
@@ -216,7 +262,13 @@ function getWrapper({
       global: {
         mocks,
         provide: mocks,
-        plugins: [...defaultPlugins()]
+        plugins: [
+          ...defaultPlugins({
+            piniaOptions: {
+              capabilityState: { capabilities: { spaces: { default_quota: defaultQuota } } }
+            }
+          })
+        ]
       }
     })
   }
