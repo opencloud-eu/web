@@ -44,7 +44,7 @@
   {
     "name": "actionsId",
     "required": false,
-    "description": "Id of the actions container. A custom component teleports its own buttons in\nhere, so they sit in the footer instead of scrolling away inside the body.",
+    "description": "Id of the actions container. A custom component teleports its own buttons in\nhere, so they sit in the footer instead of scrolling away inside the body. They are\nplaced between the cancel action and the confirm button.",
     "default": "",
     "type": "string"
   },
@@ -159,5 +159,12 @@
     "description": "Message of the modal.",
     "default": "",
     "type": "string"
+  },
+  {
+    "name": "showCancelAction",
+    "required": false,
+    "description": "Show a \"Cancel\" button in front of the confirm button, in addition to the close icon\nin the title bar. Meant for confirmations of destructive actions.",
+    "default": "false",
+    "type": "boolean"
   }
 ]
