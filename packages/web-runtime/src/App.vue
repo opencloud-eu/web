@@ -13,6 +13,7 @@
 import SkipTo from './components/SkipTo.vue'
 import ModalWrapper from './components/ModalWrapper.vue'
 import { useLayout } from './composables/layout'
+import { useGuestSessionExpiryWarning } from './composables/guestLink'
 import { onMounted, ref, unref, watch } from 'vue'
 import { additionalTranslations } from './helpers/additionalTranslations' // eslint-disable-line
 import {
@@ -37,6 +38,8 @@ const { layout, layoutType } = useLayout({ router })
 
 const { onInitialLoad } = useSideBar()
 onInitialLoad()
+
+useGuestSessionExpiryWarning()
 
 const announcement = ref<string>()
 let isRouteDocumentTitle = false

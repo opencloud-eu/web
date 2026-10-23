@@ -12,6 +12,7 @@ import { AxiosError, AxiosResponse } from 'axios'
 import { ErrorResponse, ErrorTimeout } from 'oidc-client-ts'
 import { AuthService } from '../../../../src/services/auth/authService'
 import { UserManager } from '../../../../src/services/auth/userManager'
+import { GuestSessionManager } from '../../../../src/services/auth/guestSessionManager'
 import { RouteLocation, createRouter, createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 const mockUpdateContext = vi.fn()
@@ -692,6 +693,19 @@ describe('AuthService', () => {
         query: { redirectUrl: '/s/token' }
       })
       expect(localStorage.getItem('oc.guestPermissionId')).toEqual('permission-id')
+    })
+  })
+
+  describe('initialize', () => {
+    it('disposes the previous guest session manager', () => {
+      const dispose = vi.spyOn(GuestSessionManager.prototype, 'dispose')
+      const authService = new AuthService()
+
+      initAuthService({ authService })
+      expect(dispose).not.toHaveBeenCalled()
+
+      initAuthService({ authService })
+      expect(dispose).toHaveBeenCalledTimes(1)
     })
   })
 

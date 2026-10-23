@@ -99,6 +99,7 @@ export const useSpaceActionsDelete = () => {
         }
       ),
       confirmText: $gettext('Delete'),
+      showCancelAction: true,
       message: message,
       hasInput: false,
       onConfirm: () => deleteSpaces(allowedResources)

@@ -891,7 +891,8 @@ onBeforeRouteLeave(async () => {
       title: $gettext('Unsaved changes'),
       customComponent: markRaw(UnsavedChangesModal),
       focusTrapInitial: '.oc-modal-body-actions-confirm',
-      hideConfirmButton: true,
+      confirmText: $gettext('Save'),
+      showCancelAction: true,
       hideCancelButton: true,
       customComponentAttrs: () => {
         return {

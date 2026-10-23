@@ -49,6 +49,7 @@ export const useContactEditor = () => {
           'You have unsaved changes. Do you want to discard them and leave this screen?'
         ),
         confirmText: $gettext('Discard'),
+        showCancelAction: true,
         hasInput: false,
         onConfirm: () => resolve(true),
         onCancel: () => resolve(false)

@@ -34,6 +34,8 @@ export const useAuthStore = defineStore('auth', () => {
   const guestPermissionId = ref<string>()
   const guestSpaceId = ref<string>()
   const guestEmail = ref<string>()
+  // the session cookie is http-only, so the expiry is only known from verifying a token or PIN
+  const guestSessionExpirationDateTime = ref<string>()
   const webfingerDiscoveryData = ref<WebfingerDiscoveryData>()
 
   const isGuestContext = computed(() => unref(guestContextReady) && !unref(userContextReady))
@@ -69,11 +71,16 @@ export const useAuthStore = defineStore('auth', () => {
     guestContextReady.value = true
   }
 
+  const setGuestSessionExpirationDateTime = (value: string) => {
+    guestSessionExpirationDateTime.value = value
+  }
+
   const clearGuestContext = () => {
     guestContextReady.value = false
     guestPermissionId.value = null
     guestSpaceId.value = null
     guestEmail.value = null
+    guestSessionExpirationDateTime.value = null
   }
 
   const clearUserContext = () => {
@@ -129,6 +136,7 @@ export const useAuthStore = defineStore('auth', () => {
     guestPermissionId,
     guestSpaceId,
     guestEmail,
+    guestSessionExpirationDateTime,
     isGuestContext,
     webfingerDiscoveryData,
 
@@ -138,6 +146,7 @@ export const useAuthStore = defineStore('auth', () => {
     setUserContextReady,
     setPublicLinkContext,
     setGuestContext,
+    setGuestSessionExpirationDateTime,
     clearGuestContext,
     clearUserContext,
     clearPublicLinkContext,

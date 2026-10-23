@@ -38,6 +38,8 @@ export type Modal = {
   hideActions?: boolean
   hideConfirmButton?: boolean
   hideCancelButton?: boolean
+  /** show a "Cancel" button next to the confirm button, for confirmations of destructive actions */
+  showCancelAction?: boolean
   hasInput?: boolean
   inputValue?: string
   inputType?: 'text' | 'number' | 'email' | 'password' | 'date'

@@ -19,6 +19,7 @@
     :hide-actions="modal.hideActions"
     :hide-confirm-button="modal.hideConfirmButton"
     :hide-cancel-button="modal.hideCancelButton"
+    :show-cancel-action="modal.showCancelAction"
     :button-confirm-text="modal.confirmText"
     :button-confirm-disabled="modal.confirmDisabled"
     :contextual-helper-label="modal.contextualHelperLabel"
@@ -72,8 +73,9 @@ const setCustomComponentRef = (id: Modal['id'], instance: unknown) => {
 }
 
 const onModalConfirm = async (modal: Modal, value?: unknown) => {
-  // custom components can confirm on their own (e.g. on Enter), which must not bypass the disabled button
-  if (modal.confirmDisabled) {
+  // custom components can confirm on their own (e.g. on Enter), which must not bypass the disabled
+  // button or confirm again while the previous confirmation is still running
+  if (modal.confirmDisabled || modal.isLoading) {
     return
   }
 

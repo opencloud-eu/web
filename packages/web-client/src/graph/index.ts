@@ -11,6 +11,8 @@ import { PermissionsFactory, GraphPermissions } from './permissions'
 import { PhotoFactory, GraphPhotos } from './photos'
 import { GuestLinksFactory, GraphGuestLinks } from './guestLinks'
 
+export type { GuestLinkSession } from './guestLinks'
+
 export interface Graph {
   activities: GraphActivities
   applications: GraphApplications

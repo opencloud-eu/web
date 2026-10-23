@@ -1,6 +1,14 @@
-import { GuestLinksApiFactory } from './../generated'
+import type { AxiosResponse } from 'axios'
+import { GuestLinksApiFactory, GuestLinkSessionResponse } from './../generated'
 import type { GraphFactoryOptions } from './../types'
-import type { GraphGuestLinks } from './types'
+import type { GraphGuestLinks, GuestLinkSession } from './types'
+
+function toGuestLinkSession({
+  data,
+  headers
+}: AxiosResponse<GuestLinkSessionResponse>): GuestLinkSession {
+  return { ...data, serverDateTime: headers?.date }
+}
 
 export const GuestLinksFactory = ({
   axiosClient,
@@ -10,17 +18,19 @@ export const GuestLinksFactory = ({
 
   return {
     async verifyGuestLinkToken(token, requestOptions) {
-      const { data } = await guestLinksApiFactory.verifyGuestLinkToken({ token }, requestOptions)
-      return data.permissionId
+      return toGuestLinkSession(
+        await guestLinksApiFactory.verifyGuestLinkToken({ token }, requestOptions)
+      )
     },
     async verifyGuestLinkPin({ pin, permissionId }, requestOptions) {
-      const { data } = await guestLinksApiFactory.verifyGuestLinkPin(
-        // the browser sends the http-only nonce cookie, the generated client ignores this param
-        '',
-        { pin, permissionId },
-        requestOptions
+      return toGuestLinkSession(
+        await guestLinksApiFactory.verifyGuestLinkPin(
+          // the browser sends the http-only nonce cookie, the generated client ignores this param
+          '',
+          { pin, permissionId },
+          requestOptions
+        )
       )
-      return data.permissionId
     },
     async renewGuestLink(permissionId, requestOptions) {
       await guestLinksApiFactory.renewGuestLink({ permissionId }, requestOptions)

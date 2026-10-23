@@ -273,6 +273,7 @@ const deleteLinkConfirmation = ({ link }: { link: LinkShare }) => {
       'Are you sure you want to delete this link? Recreating the same link again is not possible.'
     ),
     confirmText: $gettext('Delete'),
+    showCancelAction: true,
     onConfirm: async () => {
       let lastLinkId = unref(linkShares).length === 1 ? unref(linkShares)[0].id : undefined
 
