@@ -32,7 +32,7 @@
           ({ open, search }: DropDownShouldOpenOptions) =>
             open && search.trim().length >= minSearchLength && !searchInProgress
         "
-        label=""
+        :label="label"
         :label-hidden="true"
         @search:input="onSearch"
         @update:model-value="resetFocusOnInvite"

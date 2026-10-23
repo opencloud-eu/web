@@ -17,6 +17,11 @@ describe('CreateShortcutModal', () => {
     expect(wrapper.emitted('update:confirmDisabled')).toEqual([[true]])
   })
 
+  it('marks the name input as required for assistive technologies', () => {
+    const { filename } = getWrapper()
+    expect(filename.attributes('aria-required')).toBe('true')
+  })
+
   it.each([
     { url: '  example.org  ', name: 'example.org' },
     { url: 'https://example.org/path?q=value#fragment', name: 'example.org' },

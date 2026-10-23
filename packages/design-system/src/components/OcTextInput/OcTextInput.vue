@@ -273,6 +273,9 @@ const additionalAttributes = computed(() => {
   if (defaultValue) {
     additionalAttrs['placeholder'] = defaultValue
   }
+  if (requiredMark) {
+    additionalAttrs['aria-required'] = 'true'
+  }
   if (type === 'password') {
     additionalAttrs['password-policy'] = passwordPolicy
     additionalAttrs['generate-password-method'] = generatePasswordMethod

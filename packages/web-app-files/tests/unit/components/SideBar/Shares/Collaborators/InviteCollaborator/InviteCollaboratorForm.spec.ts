@@ -53,6 +53,14 @@ describe('InviteCollaboratorForm', () => {
     it.todo('renders an expiration datepicker component')
     it.todo('renders an hidden-announcer')
   })
+  describe('invite input', () => {
+    it('is named after the visible label', () => {
+      const { wrapper } = getWrapper({ shallow: false, props: { label: 'Share with people' } })
+      const combobox = wrapper.find('#new-collaborators-form .vs__dropdown-toggle')
+      expect(combobox.attributes('aria-label')).toContain('Share with people')
+      expect(wrapper.findAll('label').length).toBe(1)
+    })
+  })
   describe('share button', () => {
     it('is present', () => {
       const { wrapper } = getWrapper()
@@ -492,7 +500,8 @@ function getWrapper({
   openXchange = false,
   openXchangeContacts = [],
   canInviteGuests = true,
-  shallow = true
+  shallow = true,
+  props = {}
 }: {
   storageId?: string
   resource?: Resource
@@ -506,6 +515,7 @@ function getWrapper({
   openXchangeContacts?: Contact[]
   canInviteGuests?: boolean
   shallow?: boolean
+  props?: Record<string, unknown>
 } = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ params: { storageId } })
@@ -523,6 +533,7 @@ function getWrapper({
     mocks,
     wrapper: mount(InviteCollaboratorForm, {
       shallow,
+      props,
       global: {
         plugins: [
           ...defaultPlugins({

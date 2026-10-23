@@ -41,10 +41,10 @@
       >
         <oc-icon name="link" size-class="size-4" fill-type="line" />
       </oc-button>
-      <p v-text="shareLabel" />
+      <p :id="shareLabelId" v-text="shareLabel" />
       <oc-button
         appearance="raw"
-        :aria-label="openSharesPanelHint"
+        :aria-describedby="shareLabelId"
         size="small"
         no-hover
         @click="openSideBarPanel('space-share')"
@@ -83,7 +83,7 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { computed, inject, Ref, ref, unref, watch } from 'vue'
+import { computed, inject, Ref, ref, unref, useId, watch } from 'vue'
 import {
   buildSpaceImageResource,
   getSpaceManagers,
@@ -196,6 +196,7 @@ const lastModifiedDate = computed(() => {
 const hasShares = computed(() => {
   return unref(hasMemberShares) || unref(hasLinkShares)
 })
+const shareLabelId = useId()
 const shareLabel = computed(() => {
   if (unref(hasMemberShares) && !unref(hasLinkShares)) {
     return unref(memberShareLabel)
@@ -223,9 +224,6 @@ const shareLabel = computed(() => {
         linkShareCount: unref(linkShareCount).toString()
       })
   }
-})
-const openSharesPanelHint = computed(() => {
-  return $gettext('Open share panel')
 })
 const openSharesPanelLinkHint = computed(() => {
   return $gettext('Open link list in share panel')

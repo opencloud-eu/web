@@ -444,9 +444,8 @@ describe('useEditorActions', () => {
   })
 
   describe('horizontalRule', () => {
-    it('isActive always returns false', () => {
-      const editor = createMockEditor()
-      expect(actions.horizontalRule().isActive!(editor)).toBe(false)
+    it('has no on/off state', () => {
+      expect(actions.horizontalRule().isActive).toBeUndefined()
     })
   })
 
@@ -939,9 +938,8 @@ describe('useEditorActions', () => {
       expect(editor._chain.setImage).not.toHaveBeenCalled()
     })
 
-    it('isActive always returns false', () => {
-      const editor = createMockEditor()
-      expect(actions.imageUrl().isActive!(editor)).toBe(false)
+    it('has no on/off state', () => {
+      expect(actions.imageUrl().isActive).toBeUndefined()
     })
   })
 
@@ -1088,9 +1086,8 @@ describe('useEditorActions', () => {
       expect(mockInput.click).toHaveBeenCalled()
     })
 
-    it('isActive always returns false', () => {
-      const editor = createMockEditor()
-      expect(actions.imageUpload().isActive!(editor)).toBe(false)
+    it('has no on/off state', () => {
+      expect(actions.imageUpload().isActive).toBeUndefined()
     })
   })
 

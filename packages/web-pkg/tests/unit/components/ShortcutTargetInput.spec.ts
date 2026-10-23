@@ -186,6 +186,7 @@ describe('ShortcutTargetInput', () => {
     const listbox = wrapper.get('[role="listbox"]')
     expect(textInput.attributes('role')).toBe('combobox')
     expect(textInput.attributes('aria-autocomplete')).toBe('list')
+    expect(textInput.attributes('aria-required')).toBe('true')
     expect(textInput.attributes('aria-controls')).toBe(listbox.attributes('id'))
     expect(drop.attributes('popup-type')).toBe('listbox')
     await input('report')
