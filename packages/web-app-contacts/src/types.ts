@@ -108,13 +108,15 @@ const OrganizationUnitSchema = z.object({
 })
 
 const OrganizationSchema = z.object({
-  name: z.string(),
+  // JSContact allows organizations with units only
+  name: z.string().optional(),
   units: z.array(OrganizationUnitSchema).optional()
 })
 
 const PhoneSchema = z.object({
   number: z.string(),
-  contexts: ContextsSchema.optional()
+  contexts: ContextsSchema.optional(),
+  features: z.record(z.string(), z.boolean()).optional()
 })
 
 const PreferredLanguageSchema = z.object({
