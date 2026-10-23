@@ -67,9 +67,7 @@ const actionOptions = computed<ContactActionOptions>(() => ({
 }))
 
 function getVisibleAction(actions: ContactAction[], name: string) {
-  return actions.find(
-    (action) => action.name === name && action.isVisible(unref(actionOptions))
-  )
+  return actions.find((action) => action.name === name && action.isVisible(unref(actionOptions)))
 }
 
 const editAction = computed(() => getVisibleAction(unref(editActions), 'edit'))

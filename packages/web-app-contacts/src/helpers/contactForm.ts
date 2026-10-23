@@ -443,20 +443,32 @@ export const createContactUpdatePayload = (
       contact.addresses,
       isAddressFilled,
       (address, existing) => {
-        const managedKinds = [...Object.values(addressComponentKinds), ...streetComponentKinds]
-        const otherComponents = (existing.components || []).filter(
-          ({ kind }) => !managedKinds.includes(kind) && kind !== 'separator'
+        // an unchanged street keeps its components (e.g. name, number and their separators),
+        // only a changed street is written as a single "name" component
+        const street = address.street.trim()
+        const isStreetChanged = street !== getAddressComponent(existing, streetComponentKinds)
+        const otherFields = addressFields.filter((field) => field !== 'street')
+        const replacedKinds = [
+          ...otherFields.map((field) => addressComponentKinds[field]),
+          ...(isStreetChanged ? [...streetComponentKinds, 'separator'] : [])
+        ]
+        const keptComponents = (existing.components || []).filter(
+          ({ kind }) => !replacedKinds.includes(kind)
         )
         return {
-          ...omit(existing, ['contexts', 'components']),
+          // the full address is outdated as soon as a component changed
+          ...omit(existing, ['contexts', 'components', 'full']),
           components: [
-            ...addressFields
+            ...(isStreetChanged && street
+              ? [{ kind: addressComponentKinds.street, value: street }]
+              : []),
+            ...keptComponents,
+            ...otherFields
               .map((field) => ({
                 kind: addressComponentKinds[field],
                 value: address[field].trim()
               }))
-              .filter(({ value }) => value),
-            ...otherComponents
+              .filter(({ value }) => value)
           ],
           ...mergeContexts(existing.contexts, address.context)
         }
@@ -485,7 +497,10 @@ export const createContactUpdatePayload = (
     payload.titles = mergeFirstEntry(
       contact.titles,
       't1',
-      jobTitle ? { name: jobTitle, kind: 'title' } : undefined
+      // an existing title keeps its kind (e.g. "role") and organization
+      jobTitle
+        ? { kind: 'title', ...getFirstEntry(contact.titles).value, name: jobTitle }
+        : undefined
     )
   }
 
@@ -495,4 +510,33 @@ export const createContactUpdatePayload = (
   }
 
   return payload
+}
+
+// properties of the update payload that are maps of entries
+const entryProperties = [
+  'nicknames',
+  'emails',
+  'phones',
+  'addresses',
+  'organizations',
+  'titles',
+  'notes'
+] as const
+
+/**
+ * The groupware API can't remove entries via PATCH yet (empty values are omitted, see #3844).
+ * Returns the properties of the update that still have entries after saving which were removed
+ * in the form.
+ */
+export const getNotRemovedProperties = (
+  payload: UpdateContactPayload,
+  savedContact: Contact
+): (typeof entryProperties)[number][] => {
+  return entryProperties.filter((property) => {
+    if (!(property in payload)) {
+      return false
+    }
+    const sentKeys = Object.keys(payload[property] || {})
+    return Object.keys(savedContact[property] || {}).some((key) => !sentKeys.includes(key))
+  })
 }
