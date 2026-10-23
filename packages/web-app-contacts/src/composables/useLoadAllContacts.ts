@@ -10,6 +10,7 @@ const isLoading = computed(() => loadAllContactsTask?.isRunning ?? false)
 const allContacts = ref<Contact[]>([])
 // the account the contacts were loaded for, unset while loading or after a failure
 const loadedAccountId = ref<string>()
+const error = ref<Error>()
 
 /**
  * Loads the contacts of all address books of an account, used to search across address books.
@@ -21,6 +22,7 @@ export const useLoadAllContacts = () => {
   if (!loadAllContactsTask) {
     loadAllContactsTask = useTask(function* (signal, accountId: string) {
       loadedAccountId.value = undefined
+      error.value = undefined
 
       try {
         allContacts.value = yield* requestContactPages(
@@ -32,6 +34,7 @@ export const useLoadAllContacts = () => {
       } catch (e) {
         console.error('Failed to load contacts of all address books:', e)
         allContacts.value = []
+        error.value = e
       }
     }).restartable()
   }
@@ -44,6 +47,7 @@ export const useLoadAllContacts = () => {
     allContacts,
     loadedAccountId,
     loadAllContacts,
-    isLoading
+    isLoading,
+    error
   }
 }

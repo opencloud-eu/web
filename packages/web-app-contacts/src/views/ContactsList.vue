@@ -26,7 +26,10 @@
         />
       </div>
     </div>
-    <div v-if="sortedContacts.length || normalizedSearchTerm" class="px-4 pb-3 pt-2">
+    <div
+      v-if="sortedContacts.length || normalizedSearchTerm || addressBooks.length > 1"
+      class="px-4 pb-3 pt-2"
+    >
       <oc-search-bar
         v-model="searchTerm"
         :label="$gettext('Search contacts')"
@@ -34,6 +37,21 @@
         :button-hidden="true"
         is-filter
       />
+      <div
+        v-if="isSearchingAllAddressBooks && (isLoadingAllContacts || allContactsError)"
+        id="contacts-search-all-status"
+        class="mt-2 flex items-center gap-2 text-sm text-role-on-surface-variant"
+        role="status"
+      >
+        <template v-if="isLoadingAllContacts">
+          <oc-spinner size="small" />
+          <span v-text="$gettext('Searching all address books…')" />
+        </template>
+        <template v-else>
+          <oc-icon name="error-warning" fill-type="line" size="small" />
+          <span v-text="$gettext('Other address books could not be searched')" />
+        </template>
+      </div>
     </div>
     <no-content-message
       v-if="!sortedContacts.length && !normalizedSearchTerm"
@@ -45,7 +63,7 @@
       </template>
     </no-content-message>
     <no-content-message
-      v-else-if="!filteredContacts.length"
+      v-else-if="!filteredContacts.length && !(isSearchingAllAddressBooks && isLoadingAllContacts)"
       id="contacts-search-empty"
       img-src="images/illustrations/contacts.svg"
     >
@@ -119,7 +137,8 @@ import {
   AppLoadingSpinner,
   ContextActionMenu,
   NoContentMessage,
-  MenuSection
+  MenuSection,
+  useGroupwareAccountsStore
 } from '@opencloud-eu/web-pkg'
 import { Contact } from '../types'
 import { useLoadContacts } from '../composables/useLoadContacts'
@@ -132,10 +151,15 @@ import { useContactActionsDelete } from '../composables/actions/useContactAction
 import { useContactActionsEdit } from '../composables/actions/useContactActionsEdit'
 import { getContactDisplayName } from '../helpers'
 import ContactsListItem from '../components/ContactsListItem.vue'
-import { useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
 
 const { isLoading, error, reloadContacts, loadContacts } = useLoadContacts()
-const { allContacts, loadedAccountId, loadAllContacts } = useLoadAllContacts()
+const {
+  allContacts,
+  loadedAccountId,
+  loadAllContacts,
+  isLoading: isLoadingAllContacts,
+  error: allContactsError
+} = useLoadAllContacts()
 const accountsStore = useGroupwareAccountsStore()
 const { $gettext } = useGettext()
 const contactsStore = useContactsStore()
@@ -159,8 +183,10 @@ const sortByName = (values: Contact[]) => {
 
 const sortedContacts = computed(() => sortByName(unref(contacts)))
 
+const currentContactIds = computed(() => new Set(unref(contacts).map(({ id }) => id)))
+
 const isInCurrentAddressBook = (contact: Contact) => {
-  return unref(contacts).some(({ id }) => id === contact.id)
+  return unref(currentContactIds).has(contact.id)
 }
 
 // while searching, the contacts of all address books are searched

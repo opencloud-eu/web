@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { ContextActionMenu, MenuSection } from '@opencloud-eu/web-pkg'
+import { ContextActionMenu, MenuSection, useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import ContactsList from '../../../src/views/ContactsList.vue'
 import { useLoadContacts } from '../../../src/composables/useLoadContacts'
@@ -7,7 +7,6 @@ import { useLoadAllContacts } from '../../../src/composables/useLoadAllContacts'
 import { useContactsStore } from '../../../src/composables/piniaStores/contacts'
 import { useAddressBooksStore } from '../../../src/composables/piniaStores/addressbooks'
 import type { AddressBook, Contact } from '../../../src/types'
-import { useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
 
 vi.mock('../../../src/composables/useLoadContacts')
 vi.mock('../../../src/composables/useLoadAllContacts')
@@ -67,6 +66,28 @@ describe('ContactsList', () => {
     expect(items[1].find('.contacts-list-item-address-book').text()).toBe('Team')
   })
 
+  it('shows the search if only other address books have contacts', () => {
+    const { wrapper } = getWrapper({ contacts: [] })
+    expect(wrapper.find('input').exists()).toBe(true)
+  })
+
+  it('shows that all address books are searched while loading them', async () => {
+    const { wrapper } = getWrapper({ isLoadingAllContacts: true })
+    await wrapper.find('input').setValue('xyz')
+
+    expect(wrapper.find('#contacts-search-all-status').text()).toBe('Searching all address books…')
+    expect(wrapper.find('#contacts-search-empty').exists()).toBe(false)
+  })
+
+  it('shows a notice if other address books could not be searched', async () => {
+    const { wrapper } = getWrapper({ allContactsError: new Error() })
+    await wrapper.find('input').setValue('ad')
+
+    expect(wrapper.find('#contacts-search-all-status').text()).toBe(
+      'Other address books could not be searched'
+    )
+  })
+
   it('shows the error state and retries loading', async () => {
     const { wrapper, reloadContacts } = getWrapper({ error: new Error() })
     expect(wrapper.find('#contacts-error').exists()).toBe(true)
@@ -94,15 +115,24 @@ describe('ContactsList', () => {
 function getWrapper({
   contacts: storeContacts = contacts,
   error = undefined,
-  mayWrite = true
-}: { contacts?: Contact[]; error?: Error; mayWrite?: boolean } = {}) {
+  mayWrite = true,
+  isLoadingAllContacts = false,
+  allContactsError = undefined
+}: {
+  contacts?: Contact[]
+  error?: Error
+  mayWrite?: boolean
+  isLoadingAllContacts?: boolean
+  allContactsError?: Error
+} = {}) {
   const reloadContacts = vi.fn()
   const loadAllContacts = vi.fn()
   vi.mocked(useLoadAllContacts).mockReturnValue({
     allContacts: ref([...contacts, otherContact]),
     loadedAccountId: ref('account'),
     loadAllContacts,
-    isLoading: ref(false)
+    isLoading: ref(isLoadingAllContacts),
+    error: ref(allContactsError)
   } as unknown as ReturnType<typeof useLoadAllContacts>)
   vi.mocked(useLoadContacts).mockReturnValue({
     isLoading: ref(false),
