@@ -37,7 +37,7 @@ export const AccountSchema = z.object({
   isReadOnly: z.boolean(),
   capabilities: AccountCapabilitiesSchema.optional(),
   accountCapabilities: z.record(z.string(), z.object({})).optional(),
-  identities: z.array(IdentitySchema)
+  identities: z.array(IdentitySchema).optional().default([])
 })
 
 export type GroupwareAccount = z.infer<typeof AccountSchema>
