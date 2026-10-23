@@ -12,5 +12,6 @@ export type MediaFile = {
   isMotionOrLivePhoto: boolean
   isLoading: boolean
   isError: boolean
+  isUnsupported: boolean
   resource: Resource
 }

@@ -22,7 +22,8 @@ const activeFiles = [
     mimeType: 'image/png',
     path: 'personal/admin/bear.png',
     hidden: false,
-    canDownload: () => true
+    canDownload: () => true,
+    hasPreview: () => true
   },
   {
     id: '2',
@@ -31,7 +32,8 @@ const activeFiles = [
     mimeType: 'image/png',
     path: 'personal/admin/elephant.png',
     hidden: false,
-    canDownload: () => true
+    canDownload: () => true,
+    hasPreview: () => true
   },
   {
     id: '3',
@@ -40,7 +42,8 @@ const activeFiles = [
     mimeType: 'audio/flac',
     path: 'personal/admin/wale_sounds.flac',
     hidden: true,
-    canDownload: () => true
+    canDownload: () => true,
+    hasPreview: () => true
   },
   {
     id: '4',
@@ -49,7 +52,8 @@ const activeFiles = [
     mimeType: 'image/gif',
     path: 'personal/admin/lonely_sloth_very_sad.gif',
     hidden: false,
-    canDownload: () => true
+    canDownload: () => true,
+    hasPreview: () => true
   },
   {
     id: '5',
@@ -58,7 +62,8 @@ const activeFiles = [
     mimeType: 'video/mp4',
     path: 'personal/admin/tiger_eats_plants.mp4',
     hidden: true,
-    canDownload: () => true
+    canDownload: () => true,
+    hasPreview: () => true
   },
   {
     id: '6',
@@ -67,7 +72,8 @@ const activeFiles = [
     mimeType: 'image/gif',
     path: 'personal/admin/happy_hippo.gif',
     hidden: false,
-    canDownload: () => true
+    canDownload: () => true,
+    hasPreview: () => true
   },
   {
     id: '7',
@@ -76,7 +82,8 @@ const activeFiles = [
     mimeType: 'image/gif',
     path: 'personal/admin/sleeping_dog.gif',
     hidden: false,
-    canDownload: () => true
+    canDownload: () => true,
+    hasPreview: () => true
   },
   {
     id: '8',
@@ -85,7 +92,8 @@ const activeFiles = [
     mimeType: 'image/gif',
     path: 'personal/admin/cat_murr_murr.gif',
     hidden: false,
-    canDownload: () => true
+    canDownload: () => true,
+    hasPreview: () => true
   },
   {
     id: '9',
@@ -94,7 +102,8 @@ const activeFiles = [
     mimeType: 'image/gif',
     path: 'personal/admin/labrador.gif',
     hidden: false,
-    canDownload: () => true
+    canDownload: () => true,
+    hasPreview: () => true
   }
 ]
 
@@ -364,6 +373,7 @@ describe('Preview app', () => {
           path: `personal/admin/${name}`,
           hidden: false,
           canDownload: () => true,
+          hasPreview: () => true,
           ...extra
         }) as unknown as Resource
       const { wrapper } = createShallowMountWrapper({
@@ -375,6 +385,46 @@ describe('Preview app', () => {
       }[]
       expect(mediaFiles.find(({ name }) => name === 'live.jpg').isMotionOrLivePhoto).toBe(true)
       expect(mediaFiles.find(({ name }) => name === 'plain.jpg').isMotionOrLivePhoto).toBe(false)
+    })
+
+    describe('images without a server rendered preview', () => {
+      const file = (name: string, mimeType: string, extra: Partial<Resource> = {}) =>
+        ({
+          id: name,
+          fileId: name,
+          name,
+          mimeType,
+          path: `personal/admin/${name}`,
+          hidden: false,
+          canDownload: () => true,
+          hasPreview: () => false,
+          isInVault: false,
+          ...extra
+        }) as unknown as Resource
+      const namesOf = (files: Resource[]) => {
+        const { wrapper } = createShallowMountWrapper({ files })
+        return ((wrapper.vm as any).mediaFiles as { name: string }[]).map(({ name }) => name)
+      }
+
+      it('leaves them out, the viewer only shows images as previews', () => {
+        const names = namesOf([
+          file('otter.heic', 'image/heic', { hasPreview: () => true }),
+          file('badger.heic', 'image/heic'),
+          file('plain.jpg', 'image/jpeg')
+        ])
+        expect(names).toEqual(['otter.heic'])
+      })
+
+      it('keeps the files that are shown from the original', () => {
+        const names = namesOf([
+          file('logo.svg', 'image/svg+xml'),
+          file('secret.jpg', 'image/jpeg', { isInVault: true }),
+          file('secret.heic', 'image/heic', { isInVault: true }),
+          file('song.mp3', 'audio/mpeg'),
+          file('clip.mp4', 'video/mp4')
+        ])
+        expect(names).toEqual(['clip.mp4', 'logo.svg', 'secret.heic', 'secret.jpg', 'song.mp3'])
+      })
     })
 
     it('should hide hidden shares if the share visibility query is not set to "hidden"', () => {

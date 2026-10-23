@@ -13,7 +13,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { basename, join } from 'path'
 import { existsSync, readdirSync, readFileSync } from 'fs'
 import packageJson from './package.json' with { type: 'json' }
-import { compilerOptions } from './vite.config.common.ts'
+import { assetsInclude, compilerOptions } from './vite.config.common.ts'
 import { getUserAgentRegex } from 'browserslist-useragent-regexp'
 import browserslistToEsbuild from 'browserslist-to-esbuild'
 import fetch from 'node-fetch'
@@ -139,6 +139,7 @@ export default defineConfig(({ mode, command }) => {
     {
       base: '',
       publicDir: 'packages/web-container',
+      assetsInclude,
       build: {
         cssCodeSplit: false,
         chunkSizeWarningLimit: 750,

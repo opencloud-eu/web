@@ -100,6 +100,8 @@ export interface ApplicationFileExtension {
   }
   routeName?: string
   secureView?: boolean
+  /** Narrows the matching resources the app is offered for, e.g. to those with a server preview. */
+  canOpen?: (resource: Resource) => boolean
 }
 
 /** ApplicationInformation describes required information of an application */
