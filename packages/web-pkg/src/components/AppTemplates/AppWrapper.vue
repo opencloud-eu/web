@@ -186,14 +186,10 @@ const contentResourceId = ref<string>()
 let deleteResourceEventToken = ''
 /**
  * The open file was moved to the trash, so it can't be saved anymore: the PUT would fail or even
- * recreate it. An id instead of a flag: apps like the preview stay mounted and move on to the
- * next file.
+ * recreate it. Reset on file change: apps like the preview stay mounted and move on to the next
+ * file, which an undo may bring back.
  */
-const deletedResourceId = ref<string>()
-const isResourceDeleted = computed(() => {
-  const id = unref(deletedResourceId)
-  return Boolean(id) && id === unref(resource)?.id
-})
+let isResourceDeleted = false
 let appOnDeleteResourceCallback: (() => void) | null = null
 let appOnSaveCallback: ((content: unknown) => void | Promise<void>) | null = null
 
@@ -534,6 +530,8 @@ watch(
     return `${ctx.path}::${ctx.itemId ?? ''}`
   },
   async () => {
+    isResourceDeleted = false
+
     if (!unref(noResourceLoading)) {
       // Reset for the new file: `resource` swaps well before the matching
       // body arrives, and the Yjs session must not hydrate the new room from
@@ -692,7 +690,7 @@ async function runSaveCallback(content: unknown): Promise<void> {
 }
 
 const save = async () => {
-  if (unref(isResourceDeleted)) {
+  if (isResourceDeleted) {
     return false
   }
 
@@ -813,8 +811,7 @@ const downloadFileActionInterceptor = async (
         ),
         status: 'warning'
       })
-    } else {
-      await save()
+    } else if (await save()) {
       autosavePopup()
     }
   }
@@ -852,7 +849,7 @@ const onDeleteResourceCallback = (deletedResources: Resource[]) => {
     return
   }
 
-  deletedResourceId.value = currentResourceDeleted.id
+  isResourceDeleted = true
   if (appOnDeleteResourceCallback) {
     return appOnDeleteResourceCallback()
   }
@@ -937,7 +934,7 @@ const dropDownMenuSections = computed(() => {
 // Returns instead of calling `next`: the unsaved changes modal resolves the navigation later.
 onBeforeRouteLeave(() => {
   flushPendingContent()
-  if (!unref(isDirty) || unref(isResourceDeleted)) {
+  if (!unref(isDirty) || isResourceDeleted) {
     unregisterAppBarExtension()
     return true
   }

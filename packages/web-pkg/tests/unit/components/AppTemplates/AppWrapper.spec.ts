@@ -354,6 +354,14 @@ function setup({
   }
 }
 
+async function openFile(options: Parameters<typeof setup>[0] = {}) {
+  const s = setup(options)
+  await nextTick()
+  await s.resolveResource(FILE_A)
+  await s.resolveContent('content of a')
+  return s
+}
+
 describe('AppWrapper — ESC close behavior', () => {
   it('stops Escape propagation while closing the app', async () => {
     const s = setup({ yjsEnabled: false })
@@ -530,17 +538,19 @@ describe('AppWrapper — changes still pending in the session', () => {
 })
 
 describe('AppWrapper — deleting the open file', () => {
-  async function openFile(options: Parameters<typeof setup>[0] = {}) {
-    const s = setup({ yjsEnabled: false, ...options })
-    await nextTick()
-    await s.resolveResource(FILE_A)
-    await s.resolveContent('content of a')
-    return s
-  }
-
   function leaveRoute() {
     const guard = vi.mocked(onBeforeRouteLeave).mock.calls.at(-1)[0]
     return (guard as any)({}, {}) as Promise<boolean>
+  }
+
+  async function switchFile(s: ReturnType<typeof setup>, resource: Resource, content: string) {
+    s.currentFileContext.value = mock<FileContext>({
+      space: mock<any>(),
+      path: `/${resource.name}`
+    })
+    await nextTick()
+    await s.resolveResource(resource)
+    await s.resolveContent(content)
   }
 
   it('saves the unsaved changes before moving the file to the trash', async () => {
@@ -567,7 +577,7 @@ describe('AppWrapper — deleting the open file', () => {
   })
 
   it('saves the keystrokes still pending in the session before moving the file to the trash', async () => {
-    const s = await openFile({ yjsEnabled: true })
+    const s = await openFile()
     s.hasPendingContent.value = true
     s.flushContent.mockImplementation(() => {
       s.hasPendingContent.value = false
@@ -587,15 +597,27 @@ describe('AppWrapper — deleting the open file', () => {
     const s = await openFile()
     await s.edit('edited content')
     const { dispatchModal } = useModals()
+    // Like the router: it runs the leave guard asynchronously, and only then changes the route
+    // and with it the file context, which resets the deletion.
+    async function navigate() {
+      await Promise.resolve()
+      const allowed = await leaveRoute()
+      if (allowed) {
+        s.currentFileContext.value = mock<FileContext>({ space: mock<any>(), path: '/' })
+      }
+      return allowed
+    }
+    let leaving: Promise<boolean>
+    s.closeApp.mockImplementation(() => {
+      leaving = navigate()
+    })
 
     await s.clickTopBarAction('delete')
     // typed while the file is moved to the trash, it can't be saved anymore
     await s.edit('typed after deleting')
     s.resourcesDeleted([FILE_A])
-
-    expect(s.closeApp).toHaveBeenCalled()
-    const leaving = leaveRoute()
     await flushPromises()
+
     expect(dispatchModal).not.toHaveBeenCalled()
     expect(await leaving).toBe(true)
     expect(s.putFileContents).toHaveBeenCalledTimes(1)
@@ -632,7 +654,7 @@ describe('AppWrapper — deleting the open file', () => {
   })
 
   it('keeps the file when it was updated outside this window', async () => {
-    const s = await openFile({ yjsEnabled: true })
+    const s = await openFile()
     await s.edit('edited content')
     s.isConflicted.value = true
 
@@ -643,34 +665,6 @@ describe('AppWrapper — deleting the open file', () => {
     expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
       expect.objectContaining({ title: 'Failed to delete "a.md"' })
     )
-  })
-
-  it('waits for a running save, then saves what was typed meanwhile', async () => {
-    const firstPut = deferred<Resource>()
-    const s = await openFile({
-      putFileContents: vi
-        .fn()
-        .mockReturnValueOnce(firstPut.promise)
-        .mockResolvedValue(mock<Resource>({ etag: 'etag-saved-again' }))
-    })
-    await s.edit('saved by Ctrl+S')
-    void s.pressCtrlS()
-    await vi.waitFor(() => expect(s.putFileContents).toHaveBeenCalledTimes(1))
-    await s.edit('typed while saving')
-
-    const deleting = s.clickTopBarAction('delete')
-    await flushPromises()
-    expect(s.deleteFile).not.toHaveBeenCalled()
-
-    firstPut.resolve(mock<Resource>({ etag: 'etag-saved' }))
-    await deleting
-
-    expect(s.putFileContents).toHaveBeenCalledTimes(2)
-    expect(s.putFileContents).toHaveBeenLastCalledWith(
-      expect.anything(),
-      expect.objectContaining({ content: 'typed while saving' })
-    )
-    expect(s.deleteFile).toHaveBeenCalled()
   })
 
   it('saves before a delete the wrapped app asks for', async () => {
@@ -685,8 +679,7 @@ describe('AppWrapper — deleting the open file', () => {
 
   it('does not save the file anymore once it is in the trash', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
-    // a collaborative app is an editor, so it autosaves
-    const s = await openFile({ yjsEnabled: true })
+    const s = await openFile()
     const { showMessage } = useMessages()
 
     await s.clickTopBarAction('delete')
@@ -714,69 +707,107 @@ describe('AppWrapper — deleting the open file', () => {
   })
 
   // Apps like the preview stay open and move on to the next file.
-  it('saves and guards the next file as usual', async () => {
-    const s = await openFile()
-    const onDeleted = vi.fn()
-    s.registerDeleteCallback(onDeleted)
-    const { dispatchModal } = useModals()
+  describe('in an app that stays open', () => {
+    async function deleteAndMoveOn() {
+      const s = await openFile()
+      const onDeleted = vi.fn()
+      s.registerDeleteCallback(onDeleted)
+      await s.clickTopBarAction('delete')
+      s.resourcesDeleted([FILE_A])
+      expect(onDeleted).toHaveBeenCalled()
+      expect(s.closeApp).not.toHaveBeenCalled()
+      await switchFile(s, FILE_B, 'content of b')
+      return s
+    }
 
-    await s.clickTopBarAction('delete')
-    s.resourcesDeleted([FILE_A])
-    expect(onDeleted).toHaveBeenCalled()
-    expect(s.closeApp).not.toHaveBeenCalled()
+    it('saves and guards the next file as usual', async () => {
+      const s = await deleteAndMoveOn()
+      const { dispatchModal } = useModals()
+      await s.edit('edited b')
 
-    s.currentFileContext.value = mock<FileContext>({ space: mock<any>(), path: '/b.md' })
-    await nextTick()
-    await s.resolveResource(FILE_B)
-    await s.resolveContent('content of b')
-    await s.edit('edited b')
+      void leaveRoute()
+      await flushPromises()
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Unsaved changes' })
+      )
 
-    void leaveRoute()
-    await flushPromises()
-    expect(dispatchModal).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Unsaved changes' })
-    )
+      await s.clickTopBarAction('delete')
+      expect(s.putFileContents).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ content: 'edited b' })
+      )
+      expect(s.deleteFile).toHaveBeenLastCalledWith(
+        expect.objectContaining({ resources: [expect.objectContaining({ id: FILE_B.id })] })
+      )
+    })
 
-    await s.clickTopBarAction('delete')
-    expect(s.putFileContents).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ content: 'edited b' })
-    )
-    expect(s.deleteFile).toHaveBeenLastCalledWith(
-      expect.objectContaining({ resources: [expect.objectContaining({ id: FILE_B.id })] })
-    )
+    // an undo restores the file with the same id
+    it('saves and guards the deleted file again once it is back', async () => {
+      const s = await deleteAndMoveOn()
+      const { dispatchModal } = useModals()
+      await switchFile(s, FILE_A, 'content of a')
+      await s.edit('edited a again')
+
+      void leaveRoute()
+      await flushPromises()
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Unsaved changes' })
+      )
+
+      await s.pressCtrlS()
+      expect(s.putFileContents).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ content: 'edited a again' })
+      )
+    })
   })
 })
 
-describe('AppWrapper — downloading the open file', () => {
-  it('waits for a running save, then saves what was typed meanwhile', async () => {
-    const firstPut = deferred<Resource>()
-    const s = setup({
-      yjsEnabled: false,
-      putFileContents: vi
-        .fn()
-        .mockReturnValueOnce(firstPut.promise)
-        .mockResolvedValue(mock<Resource>({ etag: 'etag-saved-again' }))
+describe('AppWrapper — saving before deleting or downloading the open file', () => {
+  it.each([
+    { action: 'delete', handler: 'deleteFile' },
+    { action: 'download-file', handler: 'downloadFile' }
+  ] as const)(
+    '$action waits for a running save, then saves what was typed meanwhile',
+    async ({ action, handler }) => {
+      const firstPut = deferred<Resource>()
+      const s = await openFile({
+        putFileContents: vi
+          .fn()
+          .mockReturnValueOnce(firstPut.promise)
+          .mockResolvedValue(mock<Resource>({ etag: 'etag-saved-again' }))
+      })
+      await s.edit('saved by Ctrl+S')
+      void s.pressCtrlS()
+      await vi.waitFor(() => expect(s.putFileContents).toHaveBeenCalledTimes(1))
+      await s.edit('typed while saving')
+
+      const running = s.clickTopBarAction(action)
+      await flushPromises()
+      expect(s[handler]).not.toHaveBeenCalled()
+
+      firstPut.resolve(mock<Resource>({ etag: 'etag-saved' }))
+      await running
+
+      expect(s.putFileContents).toHaveBeenCalledTimes(2)
+      expect(s.putFileContents).toHaveBeenLastCalledWith(
+        expect.anything(),
+        expect.objectContaining({ content: 'typed while saving' })
+      )
+      expect(s[handler]).toHaveBeenCalled()
+    }
+  )
+
+  it('does not report a failed save before a download as autosaved', async () => {
+    const s = await openFile({
+      putFileContents: vi.fn().mockRejectedValue({ statusCode: 500, response: {} })
     })
-    await nextTick()
-    await s.resolveResource(FILE_A)
-    await s.resolveContent('content of a')
-    await s.edit('saved by Ctrl+S')
-    void s.pressCtrlS()
-    await vi.waitFor(() => expect(s.putFileContents).toHaveBeenCalledTimes(1))
-    await s.edit('typed while saving')
+    await s.edit('edited content')
 
-    const downloading = s.clickTopBarAction('download-file')
-    await flushPromises()
-    expect(s.downloadFile).not.toHaveBeenCalled()
+    await s.clickTopBarAction('download-file')
 
-    firstPut.resolve(mock<Resource>({ etag: 'etag-saved' }))
-    await downloading
-
-    expect(s.putFileContents).toHaveBeenLastCalledWith(
-      expect.anything(),
-      expect.objectContaining({ content: 'typed while saving' })
-    )
+    expect(useMessages().showErrorMessage).toHaveBeenCalled()
+    expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
     expect(s.downloadFile).toHaveBeenCalled()
   })
 })
@@ -1322,14 +1353,6 @@ describe('AppWrapper — locked session', () => {
 })
 
 describe('AppWrapper — external file updates via SSE', () => {
-  async function openFile(options: Parameters<typeof setup>[0] = {}) {
-    const s = setup(options)
-    await nextTick()
-    await s.resolveResource(FILE_A)
-    await s.resolveContent('content of a')
-    return s
-  }
-
   it('listens for content events once the user has an SSE stream', async () => {
     const s = await openFile()
 
