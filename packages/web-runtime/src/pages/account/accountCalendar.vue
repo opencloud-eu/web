@@ -88,6 +88,7 @@
             </oc-table-td>
           </oc-table-tr>
         </account-table>
+        <oc-hidden-announcer ref="copiedAnnouncer" />
       </template>
     </template>
   </div>
@@ -99,7 +100,7 @@ import AccountHeading from '../../components/Account/AccountHeading.vue'
 import AccountLabel from '../../components/Account/AccountLabel.vue'
 import { useClientService, useConfigStore, useUserStore } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref, unref } from 'vue'
+import { computed, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { useTask } from 'vue-concurrency'
 
@@ -115,20 +116,27 @@ const copyIcon = 'file-copy'
 
 const copyCalDavUrlIcon = ref(copyIcon)
 const copyCalDavUsernameIcon = ref(copyIcon)
+const copiedAnnouncer = useTemplateRef('copiedAnnouncer')
 
 const isCalDavLoading = computed(
   () => unref(loadCalDavTask.isRunning) || !unref(loadCalDavTask.last)
 )
 
+function announceCopied() {
+  unref(copiedAnnouncer)?.announce($gettext('Copied to clipboard!'))
+}
+
 const copyCalDavUrlToClipboard = () => {
   navigator.clipboard.writeText(unref(configStore.serverUrl))
   copyCalDavUrlIcon.value = copiedIcon
+  announceCopied()
   setTimeout(() => (copyCalDavUrlIcon.value = copyIcon), 1500)
 }
 
 const copyCalDavUsernameToClipboard = () => {
   navigator.clipboard.writeText(user.value.onPremisesSamAccountName)
   copyCalDavUsernameIcon.value = copiedIcon
+  announceCopied()
   setTimeout(() => (copyCalDavUsernameIcon.value = copyIcon), 1500)
 }
 

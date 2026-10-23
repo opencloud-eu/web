@@ -1,10 +1,11 @@
 <template>
   <div class="w-full flex flex-row flex-wrap justify-between items-center">
-    <span v-if="showSaved" class="flex items-center">
+    <span v-if="showSaved" class="flex items-center" aria-hidden="true">
       <oc-icon name="check" />
       <span class="ml-2" v-text="$gettext('Changes saved')" />
     </span>
     <span v-else>{{ unsavedChangesText }}</span>
+    <oc-hidden-announcer :announcement="showSaved ? $gettext('Changes saved') : ''" />
     <div>
       <oc-button
         :disabled="!unsavedChanges"

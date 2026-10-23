@@ -28,7 +28,7 @@ exports[`OcTextInput > password input field > password policy > displays error s
 			};
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
-      </button>
+      </button> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
       <!--v-if-->
     </div>
     <teleport-stub defer="" to="#v-0">
@@ -81,7 +81,7 @@ exports[`OcTextInput > password input field > password policy > displays success
 			};
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
-      </button>
+      </button> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
       <!--v-if-->
     </div>
     <teleport-stub defer="" to="#v-0">

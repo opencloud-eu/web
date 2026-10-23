@@ -10,16 +10,31 @@ import { ClientService, Modal, useMessages, useModals } from '@opencloud-eu/web-
 import { OcButton, OcDatepicker, OcTextInput } from '@opencloud-eu/design-system/components'
 import { DateTime } from 'luxon'
 import { VueWrapper, flushPromises } from '@vue/test-utils'
+import { defineComponent, h, ref } from 'vue'
 
 const MODAL_ID = 'modal-id'
 
 const copyMock = vi.fn()
+const copiedMock = ref(false)
+const announceMock = vi.fn()
+// exposes a spy as the announce method, so the tests can check what gets announced
+const OcHiddenAnnouncerStub = defineComponent({
+  setup(_, { expose }) {
+    expose({ announce: announceMock })
+    return () => h('span')
+  }
+})
 vi.mock('@vueuse/core', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useClipboard: vi.fn(() => ({ copy: copyMock, copied: false }))
+  useClipboard: vi.fn(() => ({ copy: copyMock, copied: copiedMock }))
 }))
 
 describe('AppTokenModal component', () => {
+  afterEach(() => {
+    copyMock.mockReset()
+    copiedMock.value = false
+    announceMock.mockReset()
+  })
   it('should display an input for the label', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find('oc-text-input-stub').exists()).toBeTruthy()
@@ -181,6 +196,44 @@ describe('AppTokenModal component', () => {
     await wrapper.find('.copy-app-token-btn').trigger('click')
     expect(copyMock).toHaveBeenCalled()
   })
+  it.each([true, false])(
+    'announces the copied token only if copying succeeded (copied: %s)',
+    async (copied) => {
+      copyMock.mockImplementation(() => {
+        copiedMock.value = copied
+      })
+      const { wrapper } = getWrapper()
+      emitNoteInput(wrapper, 'someNote')
+      emitDateInput(wrapper, DateTime.now())
+      await wrapper.vm.$nextTick()
+      await findConfirmButton(wrapper).trigger('click')
+      await flushPromises()
+      await wrapper.find('.copy-app-token-btn').trigger('click')
+      await flushPromises()
+      expect(copyMock).toHaveBeenCalledWith('token')
+      if (copied) {
+        expect(announceMock).toHaveBeenCalledWith('Copied to clipboard!')
+      } else {
+        expect(announceMock).not.toHaveBeenCalled()
+      }
+    }
+  )
+  it('announces every copy of the token', async () => {
+    copyMock.mockImplementation(() => {
+      copiedMock.value = true
+    })
+    const { wrapper } = getWrapper()
+    emitNoteInput(wrapper, 'someNote')
+    emitDateInput(wrapper, DateTime.now())
+    await wrapper.vm.$nextTick()
+    await findConfirmButton(wrapper).trigger('click')
+    await flushPromises()
+    await wrapper.find('.copy-app-token-btn').trigger('click')
+    await flushPromises()
+    await wrapper.find('.copy-app-token-btn').trigger('click')
+    await flushPromises()
+    expect(announceMock).toHaveBeenCalledTimes(2)
+  })
 })
 
 const findConfirmButton = (wrapper: VueWrapper<typeof AppTokenModal.vm>) =>
@@ -225,7 +278,7 @@ const getWrapper = ({
           })
         ],
         // the actions row only exists inside OcModal, so render them in place
-        stubs: { teleport: true }
+        stubs: { teleport: true, OcHiddenAnnouncer: OcHiddenAnnouncerStub }
       }
     })
   }
