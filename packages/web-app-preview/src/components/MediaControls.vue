@@ -266,8 +266,13 @@ const resourceFavoriteIconDescription = computed(() => {
 
 const enterFullScreenDescription = computed(() => $gettext('Enter full screen mode'))
 const exitFullScreenDescription = computed(() => $gettext('Exit full screen mode'))
-const imageShrinkDescription = computed(() => $gettext('Shrink the image (⇧ + Mouse wheel)'))
-const imageZoomDescription = computed(() => $gettext('Enlarge the image (⇧ + Mouse wheel)'))
+const zoomModifierKey = computed(() => (isMacOs() ? '⌘' : $gettext('Ctrl')))
+const imageShrinkDescription = computed(() =>
+  $gettext('Shrink the image (%{key} + Mouse wheel)', { key: unref(zoomModifierKey) })
+)
+const imageZoomDescription = computed(() =>
+  $gettext('Enlarge the image (%{key} + Mouse wheel)', { key: unref(zoomModifierKey) })
+)
 const imageResetDescription = computed(() => $gettext('Reset'))
 const imageRotateLeftDescription = computed(() =>
   $gettext('Rotate the image 90 degrees to the left')

@@ -76,7 +76,7 @@ function sanitizeSvgElement(svg: SVGElement) {
 
 const onWheelEvent = (e: WheelEvent) => {
   e.preventDefault()
-  if (!e.shiftKey) {
+  if (!e.shiftKey && !e.ctrlKey && !e.metaKey) {
     return false
   }
 
