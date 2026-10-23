@@ -91,6 +91,7 @@ export class AuthService implements AuthServiceInterface {
     this.authStore = authStore
     this.capabilityStore = capabilityStore
     this.webWorkersStore = webWorkersStore
+    this.guestSessionManager?.dispose()
     this.guestSessionManager = new GuestSessionManager({
       clientService,
       authStore,
@@ -471,12 +472,16 @@ export class AuthService implements AuthServiceInterface {
     return this.guestSessionManager.redeem(token)
   }
 
-  public renewGuestLink(permissionId: string): Promise<GuestLinkRenewal> {
-    return this.guestSessionManager.renew(permissionId)
-  }
-
   public verifyGuestLinkPin(permissionId: string, pin: string): Promise<void> {
     return this.guestSessionManager.verifyPin(permissionId, pin)
+  }
+
+  public ensureGuestLinkRenewal(permissionId: string): Promise<GuestLinkRenewal> {
+    return this.guestSessionManager.ensureRenewal(permissionId)
+  }
+
+  public refreshGuestSession(permissionId: string, pin: string): Promise<void> {
+    return this.guestSessionManager.refresh(permissionId, pin)
   }
 
   public getPendingGuestLinkRenewal(permissionId: string): GuestLinkRenewal | undefined {

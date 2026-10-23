@@ -48,17 +48,11 @@ import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { call } from '@opencloud-eu/web-client'
 import { GuestLinkErrorErrorTypeEnum } from '@opencloud-eu/web-client/graph/generated'
-import {
-  formatRelativeDateFromJSDate,
-  queryItemAsString,
-  useRouteParam,
-  useRouteQuery,
-  useRouter
-} from '@opencloud-eu/web-pkg'
+import { queryItemAsString, useRouteParam, useRouteQuery, useRouter } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import {
-  getGuestLinkError,
   getGuestLinkErrorType,
+  getGuestLinkRetryAt,
   GuestLinkErrorType,
   GuestLinkRenewal,
   GuestSession,
@@ -66,12 +60,14 @@ import {
   isRetryableGuestLinkErrorType
 } from '../services/auth/guestSessionManager'
 import PlainCard from '../components/PlainCard.vue'
-import { useGuestLinkTargetRoute } from '../composables/guestLink'
+import { useGuestLinkErrorMessages, useGuestLinkTargetRoute } from '../composables/guestLink'
 import { isGuestContextAllowed, isGuestContextRequired, parsePathQuery } from '../router/helpers'
 
 const router = useRouter()
-const { $gettext, current: currentLanguage } = useGettext()
+const { $gettext } = useGettext()
 const { getGuestLinkTargetRoute } = useGuestLinkTargetRoute()
+const { getShareErrorMessage, getPinErrorMessage, getRateLimitMessage } =
+  useGuestLinkErrorMessages()
 const permissionId = useRouteParam('permissionId')
 const redirectUrl = useRouteQuery('redirectUrl')
 // set by the auth guard, the session might still be valid, e.g. after a network error
@@ -118,19 +114,6 @@ const isRateLimited = computed(
 )
 const canRetry = computed(() => unref(isRetryable) || unref(isRateLimited))
 
-function getShareErrorMessage(errorType: GuestLinkErrorType): string | undefined {
-  switch (errorType) {
-    case GuestLinkErrorErrorTypeEnum.ShareExpired:
-      return $gettext('Your access to the shared item has expired.')
-    case GuestLinkErrorErrorTypeEnum.ShareNotFound:
-    // the backend deletes the link of a removed or expired share
-    case GuestLinkErrorErrorTypeEnum.TokenNotFound:
-      return $gettext('The shared item is no longer available.')
-    default:
-      return undefined
-  }
-}
-
 const errorMessage = computed(() => {
   if (unref(resumeErrorType)) {
     if (unref(isRetryable)) {
@@ -145,15 +128,7 @@ const errorMessage = computed(() => {
     return $gettext('A new invitation could not be requested. Please try again later.')
   }
   if (unref(isRateLimited)) {
-    if (unref(renewRetryAt)) {
-      return $gettext('Too many new invitations were requested. Please try again %{time}.', {
-        // round up, an early retry would be rejected again
-        time: formatRelativeDateFromJSDate(unref(renewRetryAt), currentLanguage, {
-          rounding: 'ceil'
-        })
-      })
-    }
-    return $gettext('Too many new invitations were requested. Please try again later.')
+    return getRateLimitMessage(unref(renewRetryAt))
   }
   return (
     getShareErrorMessage(unref(renewErrorType)) ||
@@ -163,33 +138,7 @@ const errorMessage = computed(() => {
   )
 })
 
-const pinErrorMessage = computed(() => {
-  const errorType = unref(pinErrorType)
-  switch (errorType) {
-    case undefined:
-      return undefined
-    case GuestLinkErrorErrorTypeEnum.PinInvalid:
-      return $gettext('The PIN is incorrect.')
-    case GuestLinkErrorErrorTypeEnum.PinExpired:
-    case GuestLinkErrorErrorTypeEnum.NonceExpired:
-    // the browser drops the nonce cookie once it expired
-    case GuestLinkErrorErrorTypeEnum.InvalidRequest:
-      return $gettext(
-        'The PIN has expired. Open the invitation link from your most recent email to get a new one.'
-      )
-    case GuestLinkErrorErrorTypeEnum.NonceInvalid:
-      return $gettext(
-        'The PIN only works in the browser it was requested in. Open the invitation link from your most recent email instead.'
-      )
-    case GuestLinkErrorErrorTypeEnum.TooManyRequests:
-      return $gettext('Too many attempts. Please try again later.')
-    default:
-      return (
-        getShareErrorMessage(errorType) ||
-        $gettext('The PIN could not be verified. Please try again later.')
-      )
-  }
-})
+const pinErrorMessage = computed(() => getPinErrorMessage(unref(pinErrorType)))
 
 const cardTitle = computed(() => {
   if (resumeSessionTask.isRunning) {
@@ -243,7 +192,7 @@ async function renew() {
   renewErrorType.value = undefined
   renewRetryAt.value = undefined
   try {
-    renewal.value = await authService.renewGuestLink(unref(permissionId))
+    renewal.value = await authService.ensureGuestLinkRenewal(unref(permissionId))
   } catch (error) {
     // another tab might have renewed the link meanwhile
     renewal.value = authService.getPendingGuestLinkRenewal(unref(permissionId))
@@ -251,10 +200,7 @@ async function renew() {
       return
     }
     renewErrorType.value = getGuestLinkErrorType(error)
-    const retryAfter = getGuestLinkError(error)?.retryAfter
-    if (retryAfter) {
-      renewRetryAt.value = new Date(Date.now() + retryAfter * 1000)
-    }
+    renewRetryAt.value = getGuestLinkRetryAt(error)
     console.error('guest link could not be renewed:', unref(renewErrorType))
   }
 }

@@ -22,7 +22,8 @@ const { getGuestLinkTargetRoute } = vi.hoisted(() => ({
     })
   )
 }))
-vi.mock('../../../src/composables/guestLink', () => ({
+vi.mock('../../../src/composables/guestLink', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
   useGuestLinkTargetRoute: () => ({ getGuestLinkTargetRoute })
 }))
 
