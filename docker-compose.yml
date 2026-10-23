@@ -68,6 +68,10 @@ x-opencloud-server: &opencloud-service
     PROXY_ENABLE_BASIC_AUTH: '${PROXY_ENABLE_BASIC_AUTH:-true}'
     PROXY_TLS: 'false'
 
+    # THUMBNAILS
+    WEBDAV_THUMBNAILS_GENERATOR_URL: 'http://imagor:8000'
+    OC_THUMBNAILS_ADDITIONAL_SOURCE_TYPES: 'image/heic,image/heif,image/avif'
+
     # TIKA
     SEARCH_EXTRACTOR_TYPE: 'tika'
     SEARCH_EXTRACTOR_TIKA_TIKA_URL: 'http://host.docker.internal:9998'
@@ -128,7 +132,7 @@ services:
       NOTIFICATIONS_SMTP_SENDER: 'OpenCloud <noreply@example.com>'
     labels:
       traefik.enable: true
-      traefik.docker.network: traefik
+      traefik.docker.network: ${COMPOSE_PROJECT_NAME:-web}_traefik
       traefik.http.routers.opencloud.tls: true
       traefik.http.routers.opencloud.rule: Host(`host.docker.internal`) && PathPrefix(`/`)
       traefik.http.routers.opencloud.entrypoints: opencloud
@@ -136,6 +140,7 @@ services:
       traefik.http.routers.opencloud.middlewares: cors
     networks:
       - traefik
+      - default
     volumes:
       - ./dev/docker/traefik/certificates:/certificates:ro
       - ./dev/docker/opencloud/csp.yaml:/etc/opencloud/csp.yaml
@@ -165,7 +170,7 @@ services:
       OCM_WEBAPP_TEMPLATE: https://oc.opencloud.test:10201/o/{{.Token}}/{relative-path-to-shared-resource}
     labels:
       traefik.enable: true
-      traefik.docker.network: traefik
+      traefik.docker.network: ${COMPOSE_PROJECT_NAME:-web}_traefik
       traefik.http.routers.opencloud-federated.tls: true
       traefik.http.routers.opencloud-federated.rule: Host(`oc.opencloud.test`) && PathPrefix(`/`)
       traefik.http.routers.opencloud-federated.entrypoints: opencloud-federated
@@ -173,6 +178,7 @@ services:
       traefik.http.routers.opencloud-federated.middlewares: cors
     networks:
       - traefik
+      - default
     volumes:
       - ./dev/docker/traefik/certificates:/certificates:ro
       - ./dev/docker/opencloud/password-policy-banned-passwords.txt:/etc/opencloud/password-policy-banned-passwords.txt
@@ -332,6 +338,21 @@ services:
       timeout: 3s
       retries: 20
       start_period: 5s
+
+  imagor:
+    image: shumc/imagor:1.9.11
+    container_name: web_imagor
+    restart: unless-stopped
+    environment:
+      IMAGOR_UNSAFE: 'true'
+      UPLOAD_LOADER_ENABLE: 'true'
+      HTTP_LOADER_DISABLE: 'true'
+      VIPS_MAX_WIDTH: '7680'
+      VIPS_MAX_HEIGHT: '7680'
+      VIPS_MAX_ANIMATION_FRAMES: '100'
+      UPLOAD_LOADER_MAX_ALLOWED_SIZE: '50000000'
+    networks:
+      - default
 
   inbucket:
     image: inbucket/inbucket:3.2.0
