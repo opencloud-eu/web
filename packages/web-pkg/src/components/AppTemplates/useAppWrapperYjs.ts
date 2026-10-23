@@ -172,7 +172,7 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
       // Retry with the merged state, not `newContent`: that snapshot predates
       // the peer save that caused this conflict, so writing it again would
       // drop exactly the edits the peer just committed.
-      const mergedContent = yield* call(session.serializeMerged())
+      const mergedContent = session.serializeMerged()
       const retryContent = mergedContent ?? newContent
       const retry = yield* call(
         putFileContents(currentFileContext, {
@@ -246,8 +246,7 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
 
     // The room's own state is what landed: a peer saved and left before its
     // stamp reached us. Land it like the conflict retry does.
-    const merged = await session.serializeMerged()
-    if (!unref(canHandleExternalEvents)) return
+    const merged = session.serializeMerged()
     if (merged !== null && body === merged) {
       serverContent.value = currentContent.value = body
       applySavedResource(freshEtag)
