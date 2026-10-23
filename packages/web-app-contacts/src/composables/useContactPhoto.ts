@@ -44,7 +44,8 @@ export const useContactPhoto = (contact: MaybeRef<Contact>) => {
 
     try {
       const { data }: { data: Blob } = await clientService.httpAuthenticated.get(
-        urlJoin(configStore.groupwareUrl, `accounts/${accountId}/blobs/${photo.blobId}`),
+        // the blob route without a file name only returns the blob metadata
+        urlJoin(configStore.groupwareUrl, `accounts/${accountId}/blobs/${photo.blobId}/photo`),
         { responseType: 'blob' }
       )
       // the contact might have changed while loading
