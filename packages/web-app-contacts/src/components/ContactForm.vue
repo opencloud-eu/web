@@ -26,7 +26,14 @@
       :title="$gettext('Email addresses')"
       :input-label="$gettext('Email')"
       :add-label="$gettext('Add email address')"
-      :remove-label="$gettext('Remove email address')"
+      :get-row-label="
+        (position: number) =>
+          $gettext('Email address %{position}', { position: position.toString() })
+      "
+      :get-remove-label="
+        (position: number) =>
+          $gettext('Remove email address %{position}', { position: position.toString() })
+      "
       input-type="email"
       :get-error-message="getEmailErrorMessage"
       @update:entries="(value: ContactFormEmail[]) => updateField('emails', value)"
@@ -39,7 +46,14 @@
       :title="$gettext('Phone numbers')"
       :input-label="$gettext('Phone number')"
       :add-label="$gettext('Add phone number')"
-      :remove-label="$gettext('Remove phone number')"
+      :get-row-label="
+        (position: number) =>
+          $gettext('Phone number %{position}', { position: position.toString() })
+      "
+      :get-remove-label="
+        (position: number) =>
+          $gettext('Remove phone number %{position}', { position: position.toString() })
+      "
       @update:entries="(value: ContactFormPhone[]) => updateField('phones', value)"
     />
 

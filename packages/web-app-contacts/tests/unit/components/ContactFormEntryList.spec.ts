@@ -26,7 +26,7 @@ describe('ContactFormEntryList', () => {
 
   it('removes an entry', async () => {
     const { wrapper } = getWrapper()
-    await wrapper.find('[aria-label="Remove email address"]').trigger('click')
+    await wrapper.find('[aria-label="Remove email address 1"]').trigger('click')
 
     expect(wrapper.emitted('update:entries')[0][0]).toEqual([entries[1]])
   })
@@ -39,6 +39,18 @@ describe('ContactFormEntryList', () => {
       entries[0],
       { ...entries[1], value: 'ada@new.example' }
     ])
+  })
+
+  it('names each row and its remove button after their position', () => {
+    const { wrapper } = getWrapper()
+    const rows = wrapper.findAll('[role="group"]')
+    expect(rows.map((row) => row.attributes('aria-label'))).toEqual([
+      'Email address 1',
+      'Email address 2'
+    ])
+    expect(
+      wrapper.findAll('.contact-form-entry-remove').map((b) => b.attributes('aria-label'))
+    ).toEqual(['Remove email address 1', 'Remove email address 2'])
   })
 
   it('passes the error message of each value to its input', () => {
@@ -63,7 +75,8 @@ function getWrapper(props: { getErrorMessage?: (value: string) => string } = {})
         title: 'Email addresses',
         inputLabel: 'Email',
         addLabel: 'Add email address',
-        removeLabel: 'Remove email address',
+        getRowLabel: (position: number) => `Email address ${position}`,
+        getRemoveLabel: (position: number) => `Remove email address ${position}`,
         inputType: 'email',
         ...props
       },

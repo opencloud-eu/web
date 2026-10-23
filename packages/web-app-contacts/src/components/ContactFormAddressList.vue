@@ -5,6 +5,8 @@
       v-for="(address, index) in addresses"
       :key="address.key"
       class="flex items-start gap-2"
+      role="group"
+      :aria-label="$gettext('Address %{position}', { position: (index + 1).toString() })"
       :data-testid="`contact-form-address-${address.key}`"
     >
       <div class="grid min-w-0 flex-1 grid-cols-1 gap-2 md:grid-cols-2">
@@ -22,6 +24,7 @@
           "
         />
         <oc-text-input
+          :ref="(el) => setStreetInputRef(address.key, el)"
           class="md:col-span-2"
           :model-value="address.street"
           :label="$gettext('Street')"
@@ -49,15 +52,15 @@
         />
       </div>
       <oc-button
-        class="mt-2 shrink-0"
+        class="contact-form-address-remove mt-6 shrink-0"
         appearance="raw"
-        :aria-label="$gettext('Remove address')"
+        :aria-label="$gettext('Remove address %{position}', { position: (index + 1).toString() })"
         @click="removeAddress(index)"
       >
         <oc-icon name="close" fill-type="line" />
       </oc-button>
     </div>
-    <div>
+    <div ref="addButtonWrapper">
       <oc-button appearance="raw" size="small" @click="addAddress">
         <oc-icon name="add" fill-type="line" size="small" />
         <span v-text="$gettext('Add address')" />
@@ -67,6 +70,7 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   createEmptyAddress,
@@ -84,6 +88,29 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 
+type FocusableInput = { focus: () => void }
+
+const addButtonWrapper = useTemplateRef<HTMLElement>('addButtonWrapper')
+const streetInputRefs = new Map<string, FocusableInput>()
+
+function setStreetInputRef(key: string, el: unknown) {
+  if (el) {
+    streetInputRefs.set(key, el as FocusableInput)
+    return
+  }
+  streetInputRefs.delete(key)
+}
+
+async function focusAddress(key: string | undefined) {
+  await nextTick()
+  const input = key ? streetInputRefs.get(key) : undefined
+  if (input) {
+    input.focus()
+    return
+  }
+  unref(addButtonWrapper)?.querySelector('button')?.focus()
+}
+
 const contextOptions: { value: ContactFormContext; label: string }[] = [
   { value: 'private', label: $gettext('Private') },
   { value: 'work', label: $gettext('Work') },
@@ -98,13 +125,18 @@ function updateAddress(index: number, changes: Partial<ContactFormAddress>) {
 }
 
 function addAddress() {
-  emit('update:addresses', [...addresses, createEmptyAddress()])
+  const address = createEmptyAddress()
+  emit('update:addresses', [...addresses, address])
+  focusAddress(address.key)
 }
 
 function removeAddress(index: number) {
+  // keep the focus in the list, the removed address' button is gone afterwards
+  const neighbor = addresses[index - 1] || addresses[index + 1]
   emit(
     'update:addresses',
     addresses.filter((_, i) => i !== index)
   )
+  focusAddress(neighbor?.key)
 }
 </script>
