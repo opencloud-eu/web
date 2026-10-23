@@ -96,6 +96,7 @@ import ContactForm from './ContactForm.vue'
 import {
   createContactPayload,
   createContactUpdatePayload,
+  getNotRemovedProperties,
   type ContactFormState,
   hasInvalidContactEmail
 } from '../helpers/contactForm'
@@ -106,7 +107,7 @@ defineProps<{
 }>()
 
 const { $gettext } = useGettext()
-const { showErrorMessage } = useMessages()
+const { showMessage, showErrorMessage } = useMessages()
 // dispatched modals (e.g. discard confirmation) sit on top and must get the Escape
 const { activeModal } = storeToRefs(useModals())
 
@@ -167,17 +168,28 @@ const showSaveError = (error: unknown) => {
   })
 }
 
-const saveContact = (accountId: string, addressBookId: string): Promise<Contact> => {
+const saveContact = async (accountId: string, addressBookId: string): Promise<Contact> => {
   const contact = unref(editedContact)
-  if (contact) {
-    return updateContact(
-      accountId,
-      contact.id,
-      createContactUpdatePayload(unref(formState), unref(contactEditor.initialFormState), contact)
-    )
+  if (!contact) {
+    return createContact(accountId, createContactPayload(unref(formState), addressBookId))
   }
 
-  return createContact(accountId, createContactPayload(unref(formState), addressBookId))
+  const payload = createContactUpdatePayload(
+    unref(formState),
+    unref(contactEditor.initialFormState),
+    contact
+  )
+  const savedContact = await updateContact(accountId, contact.id, payload)
+  if (getNotRemovedProperties(payload, savedContact).length) {
+    showMessage({
+      title: $gettext('Some removed information is still saved'),
+      desc: $gettext(
+        'The contact was saved, but removing information completely is not supported yet. The removed values are still part of the contact.'
+      ),
+      status: 'warning'
+    })
+  }
+  return savedContact
 }
 
 const onSubmit = async () => {
