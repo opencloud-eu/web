@@ -85,7 +85,13 @@ function splitRecipients(value: string) {
 function onInput(value: string) {
   emit('update:modelValue', value)
   isDismissed.value = false
-  searchSuggestions(accountId, splitRecipients(value).current)
+  const { completed, current } = splitRecipients(value)
+  // recipients that have been added already are not suggested again
+  const addedEmails = completed
+    .split(',')
+    .map((email) => email.trim())
+    .filter(Boolean)
+  searchSuggestions(accountId, current, addedEmails)
 }
 
 function selectSuggestion({ email }: RecipientSuggestion) {
