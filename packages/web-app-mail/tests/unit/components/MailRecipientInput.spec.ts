@@ -15,7 +15,7 @@ describe('MailRecipientInput', () => {
     const { wrapper, searchSuggestions } = getWrapper({ suggestions: [] })
     await wrapper.find('input').setValue('grace@example.org, ad')
 
-    expect(searchSuggestions).toHaveBeenCalledWith('account', 'ad')
+    expect(searchSuggestions).toHaveBeenCalledWith('account', 'ad', ['grace@example.org'])
   })
 
   it('renders the suggestions as listbox', () => {

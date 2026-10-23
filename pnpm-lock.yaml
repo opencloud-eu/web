@@ -647,6 +647,10 @@ importers:
       zod:
         specifier: 4.6.7
         version: 4.6.7
+    devDependencies:
+      '@opencloud-eu/web-test-helpers':
+        specifier: workspace:*
+        version: link:../web-test-helpers
 
   packages/web-app-ocm:
     dependencies:

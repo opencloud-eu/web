@@ -54,6 +54,20 @@ describe('filterRecipientSuggestions', () => {
   ])('matches the beginning of names and addresses: %s', (term, emails) => {
     expect(filterRecipientSuggestions(recipients, term).map(({ email }) => email)).toEqual(emails)
   })
+
+  it('ignores diacritics', () => {
+    const [suggestion] = getRecipientSuggestions([
+      { id: '1', name: { full: 'Zoë Müller' }, emails: { a: { address: 'zoe@example.org' } } }
+    ])
+    expect(filterRecipientSuggestions([suggestion], 'mul')).toEqual([suggestion])
+    expect(filterRecipientSuggestions([suggestion], 'zoë')).toEqual([suggestion])
+  })
+
+  it('does not suggest recipients that have been added already', () => {
+    expect(
+      filterRecipientSuggestions(recipients, 'ad', ['ADA@example.org']).map(({ email }) => email)
+    ).toEqual(['countess@analytical.example'])
+  })
 })
 
 describe('useRecipientSuggestions', () => {
@@ -90,15 +104,44 @@ describe('useRecipientSuggestions', () => {
     expect(unref(instance.suggestions)).toEqual([])
   })
 
-  it('shows no suggestions if the contacts cannot be loaded', async () => {
+  it('shows no suggestions and does not retry at once if the contacts cannot be loaded', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const { instance, mocks } = getWrapper()
     mocks.$clientService.httpAuthenticated.get.mockRejectedValue(new Error())
 
     instance.searchSuggestions('account', 'ad')
-
     await vi.waitFor(() => expect(console.error).toHaveBeenCalled())
+    instance.searchSuggestions('account', 'ada')
+    await vi.waitFor(() => expect(console.error).toHaveBeenCalledTimes(1))
+
     expect(unref(instance.suggestions)).toEqual([])
+    expect(mocks.$clientService.httpAuthenticated.get).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not cancel loading the contacts while typing', async () => {
+    const { instance, mocks } = getWrapper()
+    let resolveRequest: (value: unknown) => void
+    mocks.$clientService.httpAuthenticated.get.mockReturnValue(
+      new Promise((resolve) => (resolveRequest = resolve)) as any
+    )
+
+    instance.searchSuggestions('account', 'gr')
+    instance.searchSuggestions('account', 'gra')
+    resolveRequest({ data: { results: contacts } })
+
+    await vi.waitFor(() => expect(unref(instance.suggestions)).toHaveLength(1))
+    expect(mocks.$clientService.httpAuthenticated.get).toHaveBeenCalledTimes(1)
+  })
+
+  it('skips contacts that cannot be parsed', async () => {
+    const { instance, mocks } = getWrapper()
+    mocks.$clientService.httpAuthenticated.get.mockResolvedValue({
+      data: { results: [{ id: 'broken', emails: 'nope' }, ...contacts] }
+    } as any)
+
+    instance.searchSuggestions('account', 'gra')
+
+    await vi.waitFor(() => expect(unref(instance.suggestions)).toHaveLength(1))
   })
 })
 
