@@ -66,6 +66,23 @@ const OcHiddenAnnouncerStub = defineComponent({
   }
 })
 
+// emits the show and hide events like the real drop, so the component knows whether the preview is open
+const OcDropEmittingStub = defineComponent({
+  name: 'OcDropStub',
+  emits: ['showDrop', 'hideDrop'],
+  methods: {
+    show(...args: unknown[]) {
+      ocDropStub.methods.show(...args)
+      this.$emit('showDrop')
+    },
+    hide(...args: unknown[]) {
+      ocDropStub.methods.hide(...args)
+      this.$emit('hideDrop')
+    }
+  },
+  template: '<div><slot /></div>'
+})
+
 const selectors = {
   search: '#files-global-search',
   noResults: '#no-results',
@@ -310,10 +327,9 @@ describe('Search Bar portal component', () => {
       announceMock.mockReset()
     })
 
-    async function typeTerm(
-      wrapper: ReturnType<typeof getMountedWrapper>['wrapper'],
-      term: string
-    ) {
+    type Wrapper = ReturnType<typeof getMountedWrapper>['wrapper']
+
+    async function typeTerm(wrapper: Wrapper, term: string) {
       const input = wrapper.find<HTMLInputElement>(selectors.searchInput)
       input.element.focus()
       await input.setValue(term)
@@ -396,6 +412,39 @@ describe('Search Bar portal component', () => {
       await typeTerm(wrapper, 'albert')
       expect(announceMock).not.toHaveBeenCalledWith(expect.stringMatching(/.+/))
     })
+    test.each([
+      {
+        closedBy: 'opening the results page',
+        close: (wrapper: Wrapper) => wrapper.find(selectors.searchInput).trigger('keyup.enter')
+      },
+      {
+        closedBy: 'tabbing away',
+        close: (wrapper: Wrapper) => wrapper.find(selectors.searchInput).trigger('keydown.tab')
+      },
+      {
+        closedBy: 'a click outside',
+        close: (wrapper: Wrapper) =>
+          wrapper.findComponent({ ref: 'optionsDropRef' }).vm.$emit('hideDrop')
+      }
+    ])(
+      'announces nothing if the preview got closed by $closedBy before the search settled',
+      async ({ close }) => {
+        const { wrapper } = getMountedWrapper({
+          providers: [providerFiles],
+          attachTo: document.body
+        })
+        let resolveSearch: (result: SearchResult) => void
+        providerFiles.previewSearch.search.mockImplementationOnce(
+          () => new Promise((resolve) => (resolveSearch = resolve))
+        )
+        await typeTerm(wrapper, 'albert')
+        await close(wrapper)
+
+        resolveSearch({ values: [mock<SearchResult['values'][number]>()], totalResults: 12 })
+        await flushPromises()
+        expect(announceMock).not.toHaveBeenCalledWith(expect.stringMatching(/.+/))
+      }
+    )
     test('announces nothing for a search in the background', async () => {
       const { wrapper, resourcesStore } = getMountedWrapper({
         store: { resourcesStore: { currentFolder: { fileId: 'folder-id' } } },
@@ -802,7 +851,7 @@ function getMountedWrapper({
       provide: { ...localMocks },
       stubs: {
         'router-link': RouterLinkStub,
-        OcDrop: ocDropStub,
+        OcDrop: OcDropEmittingStub,
         OcHiddenAnnouncer: OcHiddenAnnouncerStub
       }
     }

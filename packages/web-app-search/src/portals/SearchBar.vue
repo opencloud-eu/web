@@ -66,6 +66,8 @@
       close-on-click
       enforce-drop-on-mobile
       :is-menu="false"
+      @show-drop="isPreviewOpen = true"
+      @hide-drop="isPreviewOpen = false"
     >
       <oc-list class="oc-list-divider p-2">
         <li
@@ -184,6 +186,7 @@ const optionsDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('o
 const searchBarRef = useTemplateRef<HTMLElement>('searchBar')
 const resultsAnnouncer = useTemplateRef('resultsAnnouncer')
 const activePreviewIndex = ref<number | null>(null)
+const isPreviewOpen = ref(false)
 const term = ref('')
 const restoreSearchFromRoute = ref(false)
 const searchResults = ref<
@@ -317,7 +320,8 @@ async function search() {
 
 function announceResults() {
   // only announce the preview the user is looking at, not searches in the background
-  if (!unref(showDrop) || !unref(searchBarRef)?.contains(document.activeElement)) {
+  // or searches that settle after the preview got closed (e.g. by opening the results page)
+  if (!unref(isPreviewOpen) || !unref(searchBarRef)?.contains(document.activeElement)) {
     return
   }
   unref(resultsAnnouncer)?.announce(getResultsAnnouncement())
