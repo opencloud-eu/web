@@ -108,7 +108,8 @@ const OrganizationUnitSchema = z.object({
 })
 
 const OrganizationSchema = z.object({
-  name: z.string(),
+  // JSContact allows organizations with units only
+  name: z.string().optional(),
   units: z.array(OrganizationUnitSchema).optional()
 })
 

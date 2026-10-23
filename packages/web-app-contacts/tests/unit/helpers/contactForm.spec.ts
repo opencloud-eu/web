@@ -1,6 +1,7 @@
 import {
   createContactPayload,
   createEmptyContactFormState,
+  createEntryKey,
   hasContactFormValue,
   hasInvalidContactEmail,
   type ContactFormState
@@ -129,8 +130,34 @@ describe('contactForm helpers', () => {
           }
         },
         organizations: { o1: { name: 'Analytical Engine Ltd', units: [{ name: 'Research' }] } },
-        titles: { t1: { name: 'Mathematician', kind: 'title' } },
+        titles: { t1: { name: 'Mathematician', kind: 'title', organizationId: 'o1' } },
         notes: { n1: { note: 'First programmer.' } }
+      })
+    })
+  })
+  describe('createEntryKey', () => {
+    it('creates unique keys that differ from the simple keys of saved contacts', () => {
+      const keys = Array.from({ length: 20 }, () => createEntryKey('e'))
+      expect(new Set(keys).size).toBe(keys.length)
+      for (const key of keys) {
+        expect(key).toMatch(/^e-/)
+        expect(['e1', 'e2', 'e3']).not.toContain(key)
+      }
+    })
+  })
+
+  describe('createContactPayload organization', () => {
+    it('omits the organization name if only a department is set', () => {
+      expect(
+        createContactPayload(getState({ department: 'Research' }), 'ab-1').organizations
+      ).toEqual({
+        o1: { units: [{ name: 'Research' }] }
+      })
+    })
+
+    it('does not link a job title without organization', () => {
+      expect(createContactPayload(getState({ jobTitle: 'Mathematician' }), 'ab-1').titles).toEqual({
+        t1: { name: 'Mathematician', kind: 'title' }
       })
     })
   })

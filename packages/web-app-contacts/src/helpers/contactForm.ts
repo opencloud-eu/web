@@ -52,14 +52,17 @@ export const addressComponentKinds: Record<AddressField, string> = {
 const addressFields = Object.keys(addressComponentKinds) as AddressField[]
 
 let entryKeyCounter = 0
+const entryKeySession = Date.now().toString(36)
 
 /**
  * JSContact stores emails, phones and addresses as maps. New form entries need a key that is
- * unique within the form, the server keeps it as the map key.
+ * unique within the contact, the server keeps it as the map key. A plain counter would restart
+ * with every page load and could hit a key a saved contact already uses, so the key also
+ * contains the time of the page load.
  */
 export const createEntryKey = (prefix: string) => {
   entryKeyCounter += 1
-  return `${prefix}${entryKeyCounter}`
+  return `${prefix}-${entryKeySession}-${entryKeyCounter.toString(36)}`
 }
 
 export const createEmptyEmail = (): ContactFormEmail => ({
@@ -207,13 +210,24 @@ export const createContactPayload = (
       ? {
           organizations: {
             o1: {
-              name: organization,
+              ...(organization ? { name: organization } : {}),
               ...(department ? { units: [{ name: department }] } : {})
             }
           }
         }
       : {}),
-    ...(jobTitle ? { titles: { t1: { name: jobTitle, kind: 'title' } } } : {}),
+    ...(jobTitle
+      ? {
+          titles: {
+            t1: {
+              name: jobTitle,
+              kind: 'title',
+              // links the job title to the organization, like "job title at organization"
+              ...(organization || department ? { organizationId: 'o1' } : {})
+            }
+          }
+        }
+      : {}),
     ...(note ? { notes: { n1: { note } } } : {})
   }
 }
