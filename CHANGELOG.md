@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(yjs): keep debounced keystrokes when a peer's recovery lands [[#3582](https://github.com/opencloud-eu/web/pull/3582)]
 - fix: show a cancel button in confirmations of destructive actions [[#3958](https://github.com/opencloud-eu/web/pull/3958)]
 - fix: revert the share role dropdown when the role change fails [[#3909](https://github.com/opencloud-eu/web/pull/3909)]
 - fix: use the secondary color for markdown links and sync the default primary color [[#3974](https://github.com/opencloud-eu/web/pull/3974)]
