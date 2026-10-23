@@ -78,6 +78,7 @@ const collapsed = reactive<Record<string, boolean>>({
   emails: false,
   phones: false,
   addresses: false,
+  links: false,
   onlineServices: false,
   organization: true
 })

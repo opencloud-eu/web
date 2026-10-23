@@ -15,6 +15,8 @@ export type ContactDetailSection = {
   rows: ContactDetailRow[]
 }
 
+const addressLines = [['name', 'number'], ['postcode', 'locality'], ['region'], ['country']]
+
 const getAddressComponents = (address: ContactAddress, kinds: string[]) => {
   return (address.components || [])
     .filter(({ kind }) => kinds.includes(kind))
@@ -25,25 +27,27 @@ const getAddressComponents = (address: ContactAddress, kinds: string[]) => {
 
 /**
  * Formats an address in multiple lines: street, postal code and city, region, country.
- * Addresses without known components fall back to all component values.
+ * Components of other kinds (e.g. post office box, district) are added in an extra line, so no
+ * information is hidden. Addresses without components fall back to the full address.
  */
 export const formatContactAddress = (address: ContactAddress) => {
+  const knownKinds = ['separator', ...addressLines.flat()]
+  const otherComponents = (address.components || [])
+    .filter(({ kind }) => !knownKinds.includes(kind))
+    .map(({ value }) => value?.trim())
+    .filter(Boolean)
+    .join(', ')
+
   const lines = [
-    getAddressComponents(address, ['name', 'number']),
-    getAddressComponents(address, ['postcode', 'locality']),
-    getAddressComponents(address, ['region']),
-    getAddressComponents(address, ['country'])
+    ...addressLines.map((kinds) => getAddressComponents(address, kinds)),
+    otherComponents
   ].filter(Boolean)
 
   if (lines.length) {
     return lines.join('\n')
   }
 
-  return (address.components || [])
-    .filter(({ kind }) => kind !== 'separator')
-    .map(({ value }) => value)
-    .filter(Boolean)
-    .join(', ')
+  return typeof address.full === 'string' ? address.full : ''
 }
 
 export const useContactDetailSections = (contact: MaybeRef<Contact>) => {
@@ -64,7 +68,7 @@ export const useContactDetailSections = (contact: MaybeRef<Contact>) => {
   }
 
   const sections = computed<ContactDetailSection[]>(() => {
-    const { anniversaries, nicknames, notes, emails, phones, addresses, onlineServices } =
+    const { anniversaries, nicknames, notes, emails, phones, addresses, links, onlineServices } =
       unref(contact)
 
     const birth = Object.values(anniversaries || {}).find((entry) => entry.kind === 'birth')
@@ -113,6 +117,15 @@ export const useContactDetailSections = (contact: MaybeRef<Contact>) => {
           label: getContextLabel(entry.contexts, $gettext('Address')),
           value: formatContactAddress(entry),
           secondary: entry.countryCode
+        }))
+      },
+      {
+        key: 'links',
+        icon: 'global',
+        title: $gettext('Websites'),
+        rows: Object.values(links || {}).map((entry) => ({
+          label: entry.label || getContextLabel(entry.contexts, $gettext('Website')),
+          value: entry.uri
         }))
       },
       {

@@ -34,7 +34,7 @@ describe('useContactPhoto', () => {
     })
     await vi.waitFor(() => expect(unref(photoUrl)).toBe('blob:photo'))
     expect(mocks.$clientService.httpAuthenticated.get).toHaveBeenCalledWith(
-      expect.stringMatching(/\/groupware\/accounts\/account-1\/blobs\/blob-1$/),
+      expect.stringMatching(/\/groupware\/accounts\/account-1\/blobs\/blob-1\/photo$/),
       { responseType: 'blob' }
     )
   })

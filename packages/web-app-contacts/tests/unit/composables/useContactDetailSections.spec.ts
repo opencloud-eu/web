@@ -31,6 +31,10 @@ const contact: Contact = {
       countryCode: 'GB'
     }
   },
+  links: {
+    l1: { uri: 'https://example.org/ada', contexts: { private: true } },
+    l2: { uri: 'https://blog.example.org', label: 'Blog' }
+  },
   onlineServices: {
     s1: { service: 'Website', uri: 'https://example.org/ada' },
     s2: { user: '@ada' }
@@ -73,6 +77,13 @@ describe('useContactDetailSections', () => {
     ])
   })
 
+  it('shows websites', () => {
+    expect(getSection('links').rows).toEqual([
+      { label: 'Private', value: 'https://example.org/ada' },
+      { label: 'Blog', value: 'https://blog.example.org' }
+    ])
+  })
+
   it('shows online services', () => {
     expect(getSection('onlineServices').rows).toEqual([
       { label: 'Website', value: 'https://example.org/ada' },
@@ -96,7 +107,26 @@ describe('useContactDetailSections', () => {
 })
 
 describe('formatContactAddress', () => {
-  it('falls back to all components for unknown address formats', () => {
+  it('shows components of other kinds in an extra line', () => {
+    expect(
+      formatContactAddress({
+        components: [
+          { kind: 'name', value: 'Baker Street' },
+          { kind: 'number', value: '221b' },
+          { kind: 'district', value: 'Marylebone' },
+          { kind: 'locality', value: 'London' }
+        ]
+      })
+    ).toBe('Baker Street 221b\nLondon\nMarylebone')
+  })
+
+  it('falls back to the full address without components', () => {
+    expect(formatContactAddress({ full: '221b Baker Street, London' })).toBe(
+      '221b Baker Street, London'
+    )
+  })
+
+  it('shows unknown address formats', () => {
     expect(
       formatContactAddress({
         components: [
