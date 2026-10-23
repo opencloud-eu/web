@@ -4,6 +4,7 @@
       <span class="text-sm text-role-on-surface-variant" data-testid="editor-search-result-counter">
         {{ resultPositionLabel }}
       </span>
+      <oc-hidden-announcer ref="resultAnnouncer" />
       <div class="flex items-center gap-1">
         <oc-button
           v-oc-tooltip="$gettext('Previous result')"
@@ -133,7 +134,14 @@ import {
 } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import type { Editor } from '@tiptap/core'
-import { OcButton, OcIcon, OcSwitch, OcTextInput } from '@opencloud-eu/design-system/components'
+import { debounce } from 'lodash-es'
+import {
+  OcButton,
+  OcHiddenAnnouncer,
+  OcIcon,
+  OcSwitch,
+  OcTextInput
+} from '@opencloud-eu/design-system/components'
 
 const {
   editor,
@@ -183,6 +191,7 @@ const { $gettext } = useGettext()
 const resultCount = ref(0)
 const currentResultPosition = ref(0)
 const searchInputRef = useTemplateRef<ComponentPublicInstance<typeof OcTextInput>>('searchInputRef')
+const resultAnnouncer = useTemplateRef('resultAnnouncer')
 const scrollToCurrentResult = () => {
   const storage = editor.storage.findAndReplace
   const currentIndex = storage?.currentIndex
@@ -230,12 +239,38 @@ const hasResults = computed(() => unref(resultCount) > 0)
 const resultPositionLabel = computed(
   () => `${unref(currentResultPosition)} / ${unref(resultCount)}`
 )
+
+function getResultAnnouncement() {
+  if (!unref(searchTerm)) {
+    return ''
+  }
+  if (!unref(hasResults)) {
+    return $gettext('No results')
+  }
+  return $gettext('Result %{current} of %{total}', {
+    current: unref(currentResultPosition).toString(),
+    total: unref(resultCount).toString()
+  })
+}
+
+function announceResult() {
+  unref(resultAnnouncer)?.announce(getResultAnnouncement())
+}
+
+// announce the settled result while typing or navigating, not every intermediate state
+const announceResultDebounced = debounce(announceResult, 500)
+
+watch([searchTerm, resultCount, currentResultPosition], announceResultDebounced, {
+  immediate: true
+})
+
 const canReplace = computed(() => unref(hasResults) && unref(searchTerm).length > 0)
 const canReplaceAll = computed(() => unref(hasResults) && unref(searchTerm).length > 0)
 const showReplace = computed(() => true)
 
 const goToNextResult = () => {
   editor.commands.goToNextResult()
+  announceResultDebounced()
 }
 
 const setCaseSensitive = (value: boolean) => {
@@ -248,14 +283,17 @@ const setWholeWord = (value: boolean) => {
 
 const goToPreviousResult = () => {
   editor.commands.goToPreviousResult()
+  announceResultDebounced()
 }
 
 const replaceCurrent = () => {
   editor.commands.replace()
+  announceResultDebounced()
 }
 
 const replaceAll = () => {
   editor.commands.replaceAll()
+  announceResultDebounced()
 }
 
 const clearActiveSearch = () => {
@@ -298,6 +336,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  announceResultDebounced.cancel()
   if (editor?.isDestroyed === false) {
     clearActiveSearch()
     editor.off('transaction', updateResultState)

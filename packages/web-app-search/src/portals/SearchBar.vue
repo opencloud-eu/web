@@ -42,6 +42,7 @@
         />
       </template>
     </oc-search-bar>
+    <oc-hidden-announcer ref="resultsAnnouncer" />
     <oc-button
       v-oc-tooltip="$gettext('Display search bar')"
       :aria-label="$gettext('Click to display and focus the search bar')"
@@ -65,6 +66,8 @@
       close-on-click
       enforce-drop-on-mobile
       :is-menu="false"
+      @show-drop="isPreviewOpen = true"
+      @hide-drop="isPreviewOpen = false"
     >
       <oc-list class="oc-list-divider p-2">
         <li
@@ -181,7 +184,9 @@ const { currentFolder } = storeToRefs(resourcesStore)
 const locationFilterId = ref(SearchLocationFilterConstants.allFiles)
 const optionsDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('optionsDropRef')
 const searchBarRef = useTemplateRef<HTMLElement>('searchBar')
+const resultsAnnouncer = useTemplateRef('resultsAnnouncer')
 const activePreviewIndex = ref<number | null>(null)
+const isPreviewOpen = ref(false)
 const term = ref('')
 const restoreSearchFromRoute = ref(false)
 const searchResults = ref<
@@ -281,6 +286,7 @@ async function search() {
   searchResults.value = []
   if (!unref(term)?.trim()) {
     loading.value = false
+    unref(resultsAnnouncer)?.announce('')
     return
   }
 
@@ -309,6 +315,32 @@ async function search() {
     searchResults.value.push({ providerId: availableProvider.id, result })
   }
   loading.value = false
+  announceResults()
+}
+
+function announceResults() {
+  // only announce the preview the user is looking at, not searches in the background
+  // or searches that settle after the preview got closed (e.g. by opening the results page)
+  if (!unref(isPreviewOpen) || !unref(searchBarRef)?.contains(document.activeElement)) {
+    return
+  }
+  unref(resultsAnnouncer)?.announce(getResultsAnnouncement())
+}
+
+function getResultsAnnouncement() {
+  if (unref(showNoResults)) {
+    return $gettext('No results')
+  }
+
+  const totals = unref(displayProviders).map(
+    (provider) => getSearchResultForProvider(provider).totalResults
+  )
+  if (totals.some((total) => !total)) {
+    return $gettext('Results found')
+  }
+
+  const count = totals.reduce((sum, total) => sum + total, 0)
+  return $ngettext('%{count} result', '%{count} results', count, { count: count.toString() })
 }
 
 function onKeyUpEnter() {
