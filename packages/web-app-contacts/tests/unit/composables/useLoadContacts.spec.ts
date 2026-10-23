@@ -1,4 +1,5 @@
 import { unref } from 'vue'
+import { useMessages } from '@opencloud-eu/web-pkg'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { CONTACTS_PAGE_SIZE } from '../../../src/composables/useLoadContacts'
 import { useContactsStore } from '../../../src/composables/piniaStores/contacts'
@@ -62,6 +63,45 @@ describe('useLoadContacts', () => {
     await instance.loadContacts('account', 'book')
 
     expect(mocks.$clientService.httpAuthenticated.get).toHaveBeenCalledTimes(1)
+  })
+
+  it('stops when the API repeats a next token', async () => {
+    const { mocks, instance } = await getWrapper()
+    mocks.$clientService.httpAuthenticated.get
+      .mockResolvedValueOnce(page(['1'], 'token') as any)
+      .mockResolvedValueOnce(page(['2'], 'token') as any)
+
+    await instance.loadContacts('account', 'book')
+
+    expect(mocks.$clientService.httpAuthenticated.get).toHaveBeenCalledTimes(2)
+    expect(useContactsStore().setContacts).toHaveBeenCalledWith([{ id: '1' }, { id: '2' }])
+  })
+
+  it('stops at a page without new contacts', async () => {
+    const { mocks, instance } = await getWrapper()
+    mocks.$clientService.httpAuthenticated.get
+      .mockResolvedValueOnce(page(['1', '2'], 'token-1') as any)
+      .mockResolvedValueOnce(page(['1', '2'], 'token-2') as any)
+
+    await instance.loadContacts('account', 'book')
+
+    expect(mocks.$clientService.httpAuthenticated.get).toHaveBeenCalledTimes(2)
+    expect(useContactsStore().setContacts).toHaveBeenCalledWith([{ id: '1' }, { id: '2' }])
+  })
+
+  it('keeps the loaded contacts if a later page fails', async () => {
+    const { mocks, instance } = await getWrapper()
+    mocks.$clientService.httpAuthenticated.get
+      .mockResolvedValueOnce(page(['1'], 'token') as any)
+      .mockRejectedValueOnce(new Error('failed'))
+
+    await expect(instance.loadContacts('account', 'book')).resolves.toEqual([{ id: '1' }])
+
+    expect(useContactsStore().setContacts).toHaveBeenCalledWith([{ id: '1' }])
+    expect(unref(instance.error)).toBeUndefined()
+    expect(useMessages().showMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'warning' })
+    )
   })
 
   it('sets the error state and clears the contacts if loading fails', async () => {

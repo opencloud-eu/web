@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { ContextActionMenu, MenuSection } from '@opencloud-eu/web-pkg'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import ContactsList from '../../../src/views/ContactsList.vue'
 import { useLoadContacts } from '../../../src/composables/useLoadContacts'
@@ -39,12 +40,27 @@ describe('ContactsList', () => {
     await wrapper.find('#contacts-error button').trigger('click')
     expect(reloadContacts).toHaveBeenCalled()
   })
+
+  it.each([
+    { mayWrite: true, items: [['details', 'edit'], ['delete']] },
+    { mayWrite: false, items: [['details']] }
+  ])(
+    'shows the contact actions if the address book is writable: $mayWrite',
+    ({ mayWrite, items }) => {
+      const { wrapper } = getWrapper({ mayWrite })
+      const menuSections: MenuSection[] = wrapper
+        .findAllComponents(ContextActionMenu)[0]
+        .props('menuSections')
+      expect(menuSections.map((section) => section.items.map(({ name }) => name))).toEqual(items)
+    }
+  )
 })
 
 function getWrapper({
   contacts: storeContacts = contacts,
-  error = undefined
-}: { contacts?: Contact[]; error?: Error } = {}) {
+  error = undefined,
+  mayWrite = true
+}: { contacts?: Contact[]; error?: Error; mayWrite?: boolean } = {}) {
   const reloadContacts = vi.fn()
   vi.mocked(useLoadContacts).mockReturnValue({
     isLoading: ref(false),
@@ -57,11 +73,18 @@ function getWrapper({
   useContactsStore().contacts = storeContacts
   // @ts-expect-error getters are writable in the testing pinia
   useAddressBooksStore().currentAddressBook = addressBook
+  // @ts-expect-error getters are writable in the testing pinia
+  useAddressBooksStore().canWriteCurrentAddressBook = mayWrite
 
   return {
     reloadContacts,
     wrapper: mount(ContactsList, {
-      global: { plugins, mocks, provide: mocks, stubs: { OcDrop: true, ContextActionMenu: true } }
+      global: {
+        plugins,
+        mocks,
+        provide: mocks,
+        stubs: { OcDrop: { template: '<div><slot /></div>' }, ContextActionMenu: true }
+      }
     })
   }
 }
