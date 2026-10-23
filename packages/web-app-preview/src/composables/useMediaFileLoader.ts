@@ -6,6 +6,7 @@ import {
   usePreviewService
 } from '@opencloud-eu/web-pkg'
 import { MediaFile } from '../helpers/types'
+import { useBrowserImageSupport } from './useBrowserImageSupport'
 import { usePreviewDimensions } from './usePreviewDimensions'
 
 type UseMediaFileLoaderOptions = {
@@ -25,6 +26,7 @@ export const useMediaFileLoader = ({
   const previewService = usePreviewService()
   const { dimensions } = usePreviewDimensions()
   const { getMatchingSpace } = useGetMatchingSpace()
+  const { canRender } = useBrowserImageSupport()
 
   // keyed by MediaFile instance and not by resource id: `buildMediaFiles` creates new
   // instances, an id-keyed registry would hand a fresh instance the request of a
@@ -143,11 +145,21 @@ export const useMediaFileLoader = ({
 
   const performLoad = async (mediaFile: MediaFile, controller: AbortController) => {
     try {
+      if (!canRender(mediaFile.resource)) {
+        mediaFile.isUnsupported = true
+        mediaFile.isError = true
+        mediaFile.isLoading = false
+        return
+      }
+
       for (let attempt = 1; attempt <= maxLoadAttempts; attempt++) {
         mediaFile.url = await resolveUrl(mediaFile, controller.signal)
         mediaFile.isLoading = false
         // a file that recovered from an error must not keep rendering the error state
-        mediaFile.isError = false
+        mediaFile.isError = !mediaFile.url
+        if (mediaFile.isError) {
+          return
+        }
 
         const isUsable = await warmImageCache(mediaFile, controller.signal)
         // the warm-up is an optimization, the resolved url still renders the file

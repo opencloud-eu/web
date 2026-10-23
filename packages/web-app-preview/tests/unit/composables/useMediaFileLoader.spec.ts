@@ -16,6 +16,11 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useGetMatchingSpace: vi.fn()
 }))
 
+const canRender = vi.fn()
+vi.mock('../../../src/composables/useBrowserImageSupport', () => ({
+  useBrowserImageSupport: () => ({ probed: Promise.resolve(), canRender })
+}))
+
 /**
  * Records every instance so warm-ups can be settled by hand. `autoLoad` mirrors a
  * browser that fetches and decodes an image without further interaction.
@@ -111,6 +116,7 @@ describe('useMediaFileLoader', () => {
     MockImage.instances = []
     MockImage.autoLoad = true
     vi.stubGlobal('Image', MockImage)
+    canRender.mockReturnValue(true)
     vi.mocked(useGetMatchingSpace).mockReturnValue(
       useGetMatchingSpaceMock({ getMatchingSpace: () => space })
     )
@@ -174,6 +180,19 @@ describe('useMediaFileLoader', () => {
       wrapper.unmount()
     })
 
+    it('marks the file as errored when no url could be resolved', async () => {
+      const { wrapper, loader, mocks, mediaFiles } = createWrapper()
+      const mediaFile = unref(mediaFiles)[0]
+      mocks.$previewService.loadPreview.mockResolvedValueOnce(undefined)
+
+      await loader.loadPreviewImage(mediaFile)
+
+      expect(mediaFile.isError).toBe(true)
+      expect(mediaFile.isLoading).toBe(false)
+      expect(MockImage.instances).toHaveLength(0)
+      wrapper.unmount()
+    })
+
     it('leaves an aborted request loading so it retries when navigated to', async () => {
       const { wrapper, loader, mocks, mediaFiles } = createWrapper()
       const mediaFile = unref(mediaFiles)[0]
@@ -211,6 +230,25 @@ describe('useMediaFileLoader', () => {
         expect.anything(),
         expect.anything()
       )
+      wrapper.unmount()
+    })
+
+    it('does not fetch a vault image the browser cannot render', async () => {
+      const { wrapper, loader, mocks, getUrlForResource } = createWrapper()
+      canRender.mockReturnValueOnce(false)
+      const mediaFile = createFile({
+        name: 'secret.heic',
+        mimeType: 'image/heic',
+        resource: mock<Resource>({ isInVault: true })
+      })
+
+      await loader.loadPreviewImage(mediaFile)
+
+      expect(getUrlForResource).not.toHaveBeenCalled()
+      expect(mocks.$previewService.loadPreview).not.toHaveBeenCalled()
+      expect(mediaFile.isUnsupported).toBe(true)
+      expect(mediaFile.isError).toBe(true)
+      expect(mediaFile.isLoading).toBe(false)
       wrapper.unmount()
     })
 
