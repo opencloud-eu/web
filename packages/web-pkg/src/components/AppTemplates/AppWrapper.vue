@@ -184,8 +184,16 @@ const currentContent = ref<unknown>()
  */
 const contentResourceId = ref<string>()
 let deleteResourceEventToken = ''
-// Unsaved changes of a deleted file can't be saved anymore, so they don't hold the app open.
-let isResourceDeleted = false
+/**
+ * The open file was moved to the trash, so it can't be saved anymore: the PUT would fail or even
+ * recreate it. An id instead of a flag: apps like the preview stay mounted and move on to the
+ * next file.
+ */
+const deletedResourceId = ref<string>()
+const isResourceDeleted = computed(() => {
+  const id = unref(deletedResourceId)
+  return Boolean(id) && id === unref(resource)?.id
+})
 let appOnDeleteResourceCallback: (() => void) | null = null
 let appOnSaveCallback: ((content: unknown) => void | Promise<void>) | null = null
 
@@ -684,6 +692,10 @@ async function runSaveCallback(content: unknown): Promise<void> {
 }
 
 const save = async () => {
+  if (unref(isResourceDeleted)) {
+    return false
+  }
+
   flushPendingContent()
   const saved = await saveFileTask.perform()
   if (!saved) {
@@ -727,11 +739,12 @@ onMounted(() => {
     autosaveIntervalId = setInterval(
       async () => {
         flushPendingContent()
-        if (isResourceDeleted || !unref(isDirty) || unref(isConflicted)) {
+        if (!unref(isDirty) || unref(isConflicted)) {
           return
         }
-        await save()
-        autosavePopup()
+        if (await save()) {
+          autosavePopup()
+        }
       },
       (editorOptions.autosaveInterval || 120) * 1000
     )
@@ -772,6 +785,18 @@ const actionOptions = computed<FileActionOptions>(() => ({
 }))
 
 /**
+ * Whether there are changes to save, once a running save finished and the session flushed. A save
+ * started while another one runs is dropped, and the running one may miss the latest changes.
+ */
+async function hasChangesToSave() {
+  while (saveFileTask.isRunning) {
+    await saveFileTask.last
+  }
+  flushPendingContent()
+  return unref(isDirty)
+}
+
+/**
  * The interceptor is used to save the file automatically when in dirty state,
  * so the downloaded file equals the current state
  */
@@ -779,8 +804,7 @@ const downloadFileActionInterceptor = async (
   args: FileActionOptions,
   originalAction: Action<FileActionOptions>['handler']
 ) => {
-  flushPendingContent()
-  if (unref(isDirty)) {
+  if (await hasChangesToSave()) {
     if (unref(isConflicted)) {
       showMessage({
         title: $gettext('Unsaved changes are not included'),
@@ -797,6 +821,28 @@ const downloadFileActionInterceptor = async (
   originalAction(args)
 }
 
+/**
+ * Saves unsaved changes before the file is moved to the trash, so the trashed file has them.
+ * The file stays when they can't be saved.
+ */
+async function deleteFileActionInterceptor(
+  args: FileActionOptions,
+  originalAction: Action<FileActionOptions>['handler']
+) {
+  if (await hasChangesToSave()) {
+    // a conflicted session can't save without overwriting the update from outside this window
+    const saved = !unref(isConflicted) && (await save())
+    if (!saved) {
+      showErrorMessage({
+        title: $gettext('Failed to delete "%{resource}"', { resource: unref(resource).name }),
+        desc: $gettext('Your unsaved changes could not be saved.')
+      })
+      return
+    }
+  }
+  originalAction(args)
+}
+
 const onDeleteResourceCallback = (deletedResources: Resource[]) => {
   const currentResourceDeleted = deletedResources.find(
     (deletedResource) => deletedResource.id === unref(resource).id
@@ -806,10 +852,7 @@ const onDeleteResourceCallback = (deletedResources: Resource[]) => {
     return
   }
 
-  isResourceDeleted = true
-  clearInterval(autosaveIntervalId)
-  autosaveIntervalId = null
-
+  deletedResourceId.value = currentResourceDeleted.id
   if (appOnDeleteResourceCallback) {
     return appOnDeleteResourceCallback()
   }
@@ -829,20 +872,28 @@ const extensionContextActions = computed(() =>
   )
 )
 
-const deleteAction = computed(() => {
-  return unref(extensionContextActions).find((action) => action.name === 'delete')
-})
-const downloadAction = computed(() => {
-  const action = unref(extensionContextActions).find((action) => action.name === 'download-file')
+function interceptContextAction(
+  name: string,
+  interceptor: (
+    args: FileActionOptions,
+    originalAction: Action<FileActionOptions>['handler']
+  ) => Promise<void>
+) {
+  const action = unref(extensionContextActions).find((action) => action.name === name)
   if (!action) {
     return undefined
   }
 
   return {
     ...action,
-    handler: (args: FileActionOptions) => downloadFileActionInterceptor(args, action.handler)
+    handler: (args: FileActionOptions) => interceptor(args, action.handler)
   }
-})
+}
+
+const deleteAction = computed(() => interceptContextAction('delete', deleteFileActionInterceptor))
+const downloadAction = computed(() =>
+  interceptContextAction('download-file', downloadFileActionInterceptor)
+)
 const menuItemsSecondary = computed(() =>
   unref(extensionContextActions).filter((action) => action.category === 'secondary')
 )
@@ -885,13 +936,8 @@ const dropDownMenuSections = computed(() => {
 
 // Returns instead of calling `next`: the unsaved changes modal resolves the navigation later.
 onBeforeRouteLeave(() => {
-  if (isResourceDeleted) {
-    unregisterAppBarExtension()
-    return true
-  }
-
   flushPendingContent()
-  if (!unref(isDirty)) {
+  if (!unref(isDirty) || unref(isResourceDeleted)) {
     unregisterAppBarExtension()
     return true
   }
