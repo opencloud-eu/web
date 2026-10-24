@@ -1,6 +1,6 @@
 # Changelog
 
-## [8.2.0](https://github.com/opencloud-eu/web/releases/tag/v8.2.0) - 2026-10-23
+## [8.2.0](https://github.com/opencloud-eu/web/releases/tag/v8.2.0) - 2026-10-24
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: announce search results to screen readers [[#3990](https://github.com/opencloud-eu/web/pull/3990)]
 - fix(yjs): keep debounced keystrokes when a peer's recovery lands [[#3582](https://github.com/opencloud-eu/web/pull/3582)]
 - fix: show a cancel button in confirmations of destructive actions [[#3958](https://github.com/opencloud-eu/web/pull/3958)]
 - fix: revert the share role dropdown when the role change fails [[#3909](https://github.com/opencloud-eu/web/pull/3909)]
@@ -159,6 +160,7 @@
 
 ### 📈 Enhancement
 
+- feat: disable guest sharing on spaces [[#3994](https://github.com/opencloud-eu/web/pull/3994)]
 - fix: improve readability of the archive and vault icons [[#3991](https://github.com/opencloud-eu/web/pull/3991)]
 - set folder color to blue 587DAB [[#3972](https://github.com/opencloud-eu/web/pull/3972)]
 - feat: open permanent links as a guest [[#3908](https://github.com/opencloud-eu/web/pull/3908)]
@@ -203,6 +205,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency prettier to v3.9.10 [[#3982](https://github.com/opencloud-eu/web/pull/3982)]
+- chore(deps): update dependency filesize to v11.0.28 [[#3984](https://github.com/opencloud-eu/web/pull/3984)]
 - chore(deps): update pnpm to v11.28.7 [[#3979](https://github.com/opencloud-eu/web/pull/3979)]
 - chore(deps): update dependency filesize to v11.0.27 [[#3978](https://github.com/opencloud-eu/web/pull/3978)]
 - chore(deps): update dependency vite to v8.3.5 [[#3977](https://github.com/opencloud-eu/web/pull/3977)]
