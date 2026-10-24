@@ -101,18 +101,24 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      grepInvert: /@heic-decoder/,
       use: { ...devices['Desktop Chrome'], permissions: ['clipboard-read', 'clipboard-write'] }
     },
 
     {
       name: 'firefox',
-      grepInvert: /@firefox-skip/,
+      grepInvert: /@firefox-skip|@heic-decoder/,
       use: { ...devices['Desktop Firefox'] }
     },
 
     {
       name: 'webkit',
-      grepInvert: /@webkit-skip/,
+      // WebKit decodes heic through the macOS image frameworks only, so on macOS it
+      // runs the @heic-decoder scenarios and skips @no-heic-decoder, elsewhere the reverse
+      grepInvert:
+        process.platform === 'darwin'
+          ? /@webkit-skip|@no-heic-decoder/
+          : /@webkit-skip|@heic-decoder/,
       use: { ...devices['Desktop Safari'] }
     },
 

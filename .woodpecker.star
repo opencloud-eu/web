@@ -6,6 +6,9 @@ ALPINE_GIT = "alpine/git:latest"
 # renovate: datasource=docker depName=apache/tika
 APACHE_TIKA = "apache/tika:4.2.0-SNAPSHOT"
 
+# renovate: datasource=docker depName=shumc/imagor
+IMAGOR = "shumc/imagor:1.9.11"
+
 # renovate: datasource=docker depName=collabora/code
 COLLABORA_CODE = "collabora/code:26.04.5.1.1"
 
@@ -116,6 +119,18 @@ config = {
                 "app-store/",
                 "embed/",
             ],
+        },
+        "preview": {
+            "earlyFail": True,
+            "skip": False,
+            "imagorNeeded": True,
+            "suites": [
+                "preview/",
+            ],
+            "extraServerEnvironment": {
+                "WEBDAV_THUMBNAILS_GENERATOR_URL": "http://imagor:8000",
+                "OC_THUMBNAILS_ADDITIONAL_SOURCE_TYPES": "image/heic,image/heif,image/avif,image/heic-sequence,image/heif-sequence",
+            },
         },
         "a11y": {
             "earlyFail": True,
@@ -695,6 +710,7 @@ def e2eTests(ctx):
         "suites": [],
         "features": [],
         "tikaNeeded": False,
+        "imagorNeeded": False,
         "federationServer": False,
         "failOnUncaughtConsoleError": False,
         "extraServerEnvironment": {},
@@ -774,6 +790,7 @@ def e2eTests(ctx):
             else:
                 # OpenCloud specific steps
                 steps += (tikaService() if params["tikaNeeded"] else []) + \
+                         (imagorService() if params["imagorNeeded"] else []) + \
                          openCloudService(params["extraServerEnvironment"])
 
             if browser_name == "firefox" or browser_name == "webkit":
@@ -1609,6 +1626,23 @@ def tikaService():
         "image": APACHE_TIKA,
         "detach": True,
     }] + waitForService("tika", "9998")
+
+def imagorService():
+    # renders the previews the server can't, heic and avif among them
+    return [{
+        "name": "imagor",
+        "image": IMAGOR,
+        "detach": True,
+        "environment": {
+            "IMAGOR_UNSAFE": True,
+            "UPLOAD_LOADER_ENABLE": True,
+            "HTTP_LOADER_DISABLE": True,
+            "VIPS_MAX_WIDTH": "7680",
+            "VIPS_MAX_HEIGHT": "7680",
+            "VIPS_MAX_ANIMATION_FRAMES": "100",
+            "UPLOAD_LOADER_MAX_ALLOWED_SIZE": "50000000",
+        },
+    }] + waitForService("imagor", "8000")
 
 def collaboraService():
     # the image has no shell, so it has to run its own entrypoint without any commands.
