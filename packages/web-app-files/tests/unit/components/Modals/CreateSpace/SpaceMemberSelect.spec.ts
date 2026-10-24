@@ -128,70 +128,12 @@ describe('SpaceMemberSelect', () => {
 })
 
 describe('SpaceMemberSelect guest invites', () => {
-  it('offers a valid email address as a guest', async () => {
-    const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'someone@else.com' } as User] })
-
-    await search(wrapper, 'guest@example.com')
-
-    expect(autocompleteResults(wrapper)).toContainEqual({
-      id: 'guest@example.com',
-      displayName: 'guest@example.com',
-      shareType: ShareTypes.guest.value
-    })
-  })
-
-  it('does not offer a guest without the guest invite permission', async () => {
-    const { wrapper } = getWrapper({ canInviteGuests: false })
-
-    await search(wrapper, 'guest@example.com')
-
-    expect(guestOptions(wrapper)).toEqual([])
-  })
-
-  it('does not offer a guest for an email that belongs to a known account', async () => {
-    const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'guest@example.com' } as User] })
-
-    await search(wrapper, 'guest@example.com')
-
-    expect(guestOptions(wrapper)).toEqual([])
-  })
-
-  it('does not offer a guest that is already selected', async () => {
-    const { wrapper } = getWrapper()
-    await selectCollaborators(wrapper, [
-      mock<CollaboratorAutoCompleteItem>({
-        id: 'guest@example.com',
-        displayName: 'guest@example.com',
-        shareType: ShareTypes.guest.value
-      })
-    ])
-
-    await search(wrapper, 'guest@example.com')
-
-    expect(guestOptions(wrapper)).toEqual([])
-  })
-
-  it('adds a selected guest as a member', async () => {
+  it('does not offer a valid email address as a guest', async () => {
     const { wrapper } = getWrapper()
 
-    await selectCollaborators(wrapper, [
-      mock<CollaboratorAutoCompleteItem>({
-        id: 'guest@example.com',
-        displayName: 'guest@example.com',
-        shareType: ShareTypes.guest.value
-      })
-    ])
+    await search(wrapper, 'guest@example.com')
 
-    expect(wrapper.emitted('update:modelValue').at(-1)).toEqual([
-      [
-        {
-          id: 'guest@example.com',
-          displayName: 'guest@example.com',
-          shareType: ShareTypes.guest.value,
-          roleId: 'space-viewer'
-        }
-      ]
-    ])
+    expect(guestOptions(wrapper)).toEqual([])
   })
 })
 
@@ -237,8 +179,7 @@ function getWrapper({
   },
   modelValue = [] as SpaceMemberInvite[],
   roleId = '',
-  users = [] as User[],
-  canInviteGuests = true
+  users = [] as User[]
 } = {}) {
   const mocks = defaultComponentMocks()
   mocks.$clientService.graphAuthenticated.users.listUsers.mockResolvedValue(users)
@@ -253,7 +194,7 @@ function getWrapper({
     global: {
       plugins: [
         ...defaultPlugins({
-          abilities: canInviteGuests ? [{ action: 'create-all', subject: 'GuestInvite' }] : [],
+          abilities: [{ action: 'create-all', subject: 'GuestInvite' }],
           piniaOptions: {
             sharesState: { graphRoles },
             userState: { user: mock<User>({ id: 'me' }) }

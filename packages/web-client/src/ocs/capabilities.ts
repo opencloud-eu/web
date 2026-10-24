@@ -162,6 +162,7 @@ export interface Capabilities {
     spaces?: {
       enabled?: boolean
       max_quota?: number
+      default_quota?: number
       projects?: boolean
       version?: string
     }

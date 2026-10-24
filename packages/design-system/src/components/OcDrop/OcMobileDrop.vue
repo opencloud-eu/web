@@ -5,12 +5,13 @@
       :aria-label="title || $gettext('Menu')"
       :is-drawer-active="isCurrentlyOnTop"
       :is-focus-trap-active="isCurrentlyOnTop"
-      class="oc-mobile-drop z-[calc(var(--z-index-modal)+2)]"
+      class="oc-mobile-drop z-[calc(var(--z-index-modal)+2)] [&>div]:scroll-pt-12"
       @clicked="onBackgroundClicked"
     >
       <oc-card
-        class="bg-role-surface-container-high overflow-x-hidden rounded-b-none"
-        header-class="flex flex-row justify-between items-center"
+        class="bg-role-surface-container-high overflow-x-clip rounded-b-none"
+        header-class="flex flex-row justify-between items-center sticky top-0 z-10 pb-2 bg-role-surface-container-high"
+        body-class="pt-2"
       >
         <template #header>
           <oc-button

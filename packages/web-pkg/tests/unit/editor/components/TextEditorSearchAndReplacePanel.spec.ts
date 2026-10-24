@@ -1,8 +1,17 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { defineComponent, h, nextTick } from 'vue'
 import { vi } from 'vitest'
 import TextEditorSearchAndReplacePanel from '../../../../src/editor/components/TextEditorSearchAndReplacePanel.vue'
 import { defaultPlugins } from '@opencloud-eu/web-test-helpers'
+
+const announceMock = vi.fn()
+// exposes a spy as the announce method, so the tests can check what gets announced
+const OcHiddenAnnouncerStub = defineComponent({
+  setup(_, { expose }) {
+    expose({ announce: announceMock })
+    return () => h('span')
+  }
+})
 
 function createEditorMock() {
   const storage = {
@@ -160,5 +169,128 @@ describe('TextEditorSearchAndReplacePanel', () => {
     await nextTick()
 
     expect(wrapper.find('[data-testid="editor-search-result-counter"]').text()).toBe('2 / 2')
+  })
+
+  describe('result announcement', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+      announceMock.mockReset()
+    })
+
+    function getWrapper(searchSearchTerm = 'needle') {
+      const { editor, triggerTransaction } = createEditorMock()
+      const wrapper = mount(TextEditorSearchAndReplacePanel, {
+        props: {
+          editor,
+          closeMenu: vi.fn(),
+          ...createSearchProps(),
+          searchSearchTerm
+        },
+        global: {
+          plugins: [...defaultPlugins()],
+          stubs: { OcIcon: true, OcHiddenAnnouncer: OcHiddenAnnouncerStub }
+        }
+      })
+      function setResults(results: Array<{ from: number; to: number }>, currentIndex = 0) {
+        editor.storage.findAndReplace.results = results
+        editor.storage.findAndReplace.currentIndex = results.length ? currentIndex : null
+        triggerTransaction()
+      }
+      return { wrapper, editor, setResults }
+    }
+
+    const twoResults = [
+      { from: 1, to: 3 },
+      { from: 10, to: 12 }
+    ]
+
+    it('announces the current result once the search has settled', async () => {
+      const { setResults } = getWrapper()
+      setResults(twoResults)
+      await nextTick()
+      expect(announceMock).not.toHaveBeenCalled()
+
+      await vi.runAllTimersAsync()
+      expect(announceMock).toHaveBeenCalledTimes(1)
+      expect(announceMock).toHaveBeenLastCalledWith('Result 1 of 2')
+    })
+
+    it('announces "No results" if the search term has no matches', async () => {
+      const { setResults } = getWrapper('nothing')
+      setResults([])
+      await vi.runAllTimersAsync()
+      expect(announceMock).toHaveBeenLastCalledWith('No results')
+    })
+
+    it('only announces the latest result while typing', async () => {
+      const { wrapper, setResults } = getWrapper('n')
+      setResults(twoResults)
+      await vi.advanceTimersByTimeAsync(300)
+      await wrapper.setProps({ searchSearchTerm: 'ne' })
+      setResults([twoResults[0]])
+      await vi.advanceTimersByTimeAsync(300)
+      expect(announceMock).not.toHaveBeenCalled()
+
+      await vi.runAllTimersAsync()
+      expect(announceMock).toHaveBeenCalledTimes(1)
+      expect(announceMock).toHaveBeenLastCalledWith('Result 1 of 1')
+    })
+
+    const navigationCommands: Record<string, string> = {
+      next: 'goToNextResult',
+      prev: 'goToPreviousResult'
+    }
+
+    it.each(['next', 'prev'])(
+      'announces the current result after navigating to the %s result',
+      async (button) => {
+        const { wrapper, editor, setResults } = getWrapper()
+        setResults(twoResults)
+        await vi.runAllTimersAsync()
+        expect(announceMock).toHaveBeenLastCalledWith('Result 1 of 2')
+
+        editor.commands[navigationCommands[button]].mockImplementation(() => {
+          setResults(twoResults, 1)
+          return true
+        })
+        await wrapper.find(`[data-testid="editor-search-${button}"]`).trigger('click')
+        await vi.runAllTimersAsync()
+        expect(announceMock).toHaveBeenCalledTimes(2)
+        expect(announceMock).toHaveBeenLastCalledWith('Result 2 of 2')
+      }
+    )
+
+    it('announces the result again when navigating with a single match', async () => {
+      const { wrapper, setResults } = getWrapper()
+      setResults([twoResults[0]])
+      await vi.runAllTimersAsync()
+      expect(announceMock).toHaveBeenCalledTimes(1)
+
+      await wrapper.find('[data-testid="editor-search-next"]').trigger('click')
+      await vi.runAllTimersAsync()
+      expect(announceMock).toHaveBeenCalledTimes(2)
+      expect(announceMock).toHaveBeenLastCalledWith('Result 1 of 1')
+    })
+
+    it('announces nothing for an empty search term', async () => {
+      const { setResults } = getWrapper('')
+      setResults([])
+      await vi.runAllTimersAsync()
+      expect(announceMock).not.toHaveBeenCalledWith(expect.stringMatching(/.+/))
+    })
+
+    it('clears the announcement when the search term gets cleared', async () => {
+      const { wrapper, setResults } = getWrapper()
+      setResults(twoResults)
+      await vi.runAllTimersAsync()
+      expect(announceMock).toHaveBeenLastCalledWith('Result 1 of 2')
+
+      await wrapper.setProps({ searchSearchTerm: '' })
+      await vi.runAllTimersAsync()
+      expect(announceMock).toHaveBeenLastCalledWith('')
+    })
   })
 })

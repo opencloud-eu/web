@@ -198,8 +198,8 @@ importers:
         specifier: ^1.61.1
         version: 1.64.1
       prettier:
-        specifier: 3.9.6
-        version: 3.9.6
+        specifier: 3.9.10
+        version: 3.9.10
       tailwindcss:
         specifier: ^4.2.2
         version: 4.3.3
@@ -354,7 +354,7 @@ importers:
     dependencies:
       prettier:
         specifier: ^3.0.0
-        version: 3.9.6
+        version: 3.9.10
 
   packages/tsconfig: {}
 
@@ -1044,7 +1044,7 @@ importers:
         version: 3.4.17
       filesize:
         specifier: ^11.0.14
-        version: 11.0.27
+        version: 11.0.28
       fuse.js:
         specifier: ^7.1.0
         version: 7.5.0
@@ -3447,8 +3447,8 @@ packages:
   file-entry-cache@11.1.5:
     resolution: {integrity: sha512-+PFTHITI08JIGhnNpGNI8T8inUpgZfk3GNEqfT9R2zZV2iFXg3CvqzSl/uEhs7TSGujYRELEANyDvS8Fj7+S7Q==}
 
-  filesize@11.0.27:
-    resolution: {integrity: sha512-0HrkZi5qztwbmjGQYsAVJn0NJ/GqkPA4+F9tx6KeHSXqIYnJ61MZRLeJK8x0RlJb8DHKIPBrONxOa5J+J9GJzQ==}
+  filesize@11.0.28:
+    resolution: {integrity: sha512-tsZcwUmhL0WQpsxe9Oua6FBjb0aBTRkXobZBhQdkoII0pYgy9h+cXm5tp13Fsr8dSwp1+UVDxNwAFULDpxkXaw==}
     engines: {node: '>= 10.8.0'}
 
   fill-range@7.1.1:
@@ -4495,8 +4495,8 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier@3.9.6:
-    resolution: {integrity: sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g==}
+  prettier@3.9.10:
+    resolution: {integrity: sha512-skGHTH1Yb9QvaTC4hWnRTzEYtCpApF0UMBPz+t/0ZPzP8ihefo/btKd+QA7pUE0fEwA1SbS/NmhyEcstdXOIdA==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -7541,7 +7541,7 @@ snapshots:
     dependencies:
       flat-cache: 6.1.23
 
-  filesize@11.0.27: {}
+  filesize@11.0.28: {}
 
   fill-range@7.1.1:
     dependencies:
@@ -8602,7 +8602,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier@3.9.6: {}
+  prettier@3.9.10: {}
 
   process-nextick-args@2.0.1: {}
 

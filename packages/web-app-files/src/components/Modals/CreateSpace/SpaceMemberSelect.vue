@@ -60,7 +60,7 @@ const roleId = defineModel<string>('roleId', { default: '' })
 const { $gettext } = useGettext()
 const sharesStore = useSharesStore()
 const userStore = useUserStore()
-const { searchCollaborators, getGuestCandidates } = useCollaboratorSearch()
+const { searchCollaborators } = useCollaboratorSearch()
 
 // Unmounted on every step change, while the model keeps the members.
 const selectedCollaborators = ref<CollaboratorAutoCompleteItem[]>(
@@ -78,10 +78,10 @@ const {
   searchInProgress,
   searchQuery
 } = useCollaboratorAutocomplete(async (query, signal) => {
+  // guests can't be invited to spaces yet
   const collaborators = await searchCollaborators(query, { signal })
-  const guests = getGuestCandidates(query, collaborators)
 
-  return [...collaborators, ...guests].filter(({ id }) => {
+  return collaborators.filter(({ id }) => {
     // the creator becomes the manager of the space anyway
     if (id === userStore.user.id) {
       return false
