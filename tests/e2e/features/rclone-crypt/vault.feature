@@ -51,6 +51,65 @@ Feature: Work with an rclone-crypt encrypted vault
 
 
   @rclone-crypt
+  Scenario: An image in a vault opens from the original when the browser reads the format
+    When "Alice" logs in
+    And "Alice" creates the following resource
+      | resource | type  | password       |
+      | my.vault | vault | Vault-Pa55word |
+    And "Alice" uploads the following resource
+      | resource         | to       | password       |
+      | samplePhoto.avif | my.vault | Vault-Pa55word |
+    And "Alice" enters the vault "my.vault" with passphrase "Vault-Pa55word"
+    Then following resource should be displayed in the files list for user "Alice"
+      | resource         |
+      | samplePhoto.avif |
+    When "Alice" opens the following file in mediaviewer
+      | resource         |
+      | samplePhoto.avif |
+    Then "Alice" is in a media-viewer
+    And "Alice" closes the file viewer
+    And "Alice" logs out
+
+  @rclone-crypt @heic-decoder
+  Scenario: A heic in a vault opens from the original in a browser that decodes heic
+    When "Alice" logs in
+    And "Alice" creates the following resource
+      | resource | type  | password       |
+      | my.vault | vault | Vault-Pa55word |
+    And "Alice" uploads the following resource
+      | resource         | to       | password       |
+      | samplePhoto.heic | my.vault | Vault-Pa55word |
+    And "Alice" enters the vault "my.vault" with passphrase "Vault-Pa55word"
+    Then following resource should be displayed in the files list for user "Alice"
+      | resource         |
+      | samplePhoto.heic |
+    When "Alice" opens the following file in mediaviewer
+      | resource         |
+      | samplePhoto.heic |
+    Then "Alice" is in a media-viewer
+    And "Alice" closes the file viewer
+    And "Alice" logs out
+
+  @rclone-crypt @no-heic-decoder
+  Scenario: A heic in a vault is listed but not fetched in a browser that does not decode heic
+    When "Alice" logs in
+    And "Alice" creates the following resource
+      | resource | type  | password       |
+      | my.vault | vault | Vault-Pa55word |
+    And "Alice" uploads the following resource
+      | resource         | to       | password       |
+      | samplePhoto.heic | my.vault | Vault-Pa55word |
+    And "Alice" enters the vault "my.vault" with passphrase "Vault-Pa55word"
+    Then following resource should be displayed in the files list for user "Alice"
+      | resource         |
+      | samplePhoto.heic |
+    When "Alice" opens the following file in mediaviewer which this browser cannot display
+      | resource         |
+      | samplePhoto.heic |
+    And "Alice" closes the file viewer
+    And "Alice" logs out
+
+  @rclone-crypt
   Scenario: Drag-drop a directory tree into a vault
     When "Alice" logs in
     And "Alice" creates the following resource

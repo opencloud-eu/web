@@ -285,6 +285,10 @@ export class Resource {
     await po.openFileInViewer({ ...args, page: this.#page })
   }
 
+  async openUndisplayableFileInViewer({ name }: { name: string }): Promise<void> {
+    await po.openUndisplayableFileInViewer({ page: this.#page, name })
+  }
+
   async checkMediaViewerCount({
     currentIndex,
     totalCount

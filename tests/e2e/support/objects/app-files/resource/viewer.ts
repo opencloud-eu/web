@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from '@playwright/test'
+import { Locator, Page, Request, expect } from '@playwright/test'
 import util from 'util'
 import path from 'path'
 import { editor, sidebar } from '../utils'
@@ -28,6 +28,7 @@ const previewImage = '//main[@id="preview"]//div[contains(@class,"stage_media")]
 const previewAudio = '//main[@id="preview"]//div[contains(@class,"stage_media")]//audio//source'
 const previewVideo = '//main[@id="preview"]//div[contains(@class,"stage_media")]//video//source'
 const previewControlsCount = '.preview-controls-action-count > :first-child'
+const previewUnsupportedMessage = '#preview [data-testid="media-unsupported-message"]'
 const resourceLockIcon =
   '//*[@data-test-resource-name="%s"]/ancestor::*[self::li or self::tr]//span[@data-test-indicator-type="resource-locked"]'
 const resourceMotionPhotoBadge =
@@ -315,6 +316,33 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
       break
     }
   }
+}
+
+/** The viewer takes the file but this browser can't render it, so nothing is downloaded. */
+export const openUndisplayableFileInViewer = async ({
+  page,
+  name
+}: {
+  page: Page
+  name: string
+}): Promise<void> => {
+  await waitProcessingToFinish(page, name)
+
+  const downloads: string[] = []
+  const onRequest = (request: Request) => {
+    if (request.method() === 'GET' && request.url().includes('/dav/spaces/')) {
+      downloads.push(request.url())
+    }
+  }
+  page.on('request', onRequest)
+
+  await page.locator(util.format(resourceNameSelector, name)).click()
+  await expect(page.locator(previewUnsupportedMessage)).toContainText(
+    `"${name}" cannot be displayed in this browser`
+  )
+
+  page.off('request', onRequest)
+  expect(downloads).toEqual([])
 }
 
 export const checkMediaViewerCount = async ({
