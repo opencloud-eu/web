@@ -124,6 +124,7 @@ import {
   queryItemAsString,
   sortHelper,
   useAppNavigation,
+  useFullScreenMode,
   useGetMatchingSpace,
   useKeyboardActions,
   useRoute,
@@ -137,12 +138,7 @@ import MediaMotionPhoto from './components/Sources/MediaMotionPhoto.vue'
 import MediaVideo from './components/Sources/MediaVideo.vue'
 import PhotoRoll from './components/PhotoRoll.vue'
 import { MediaFile } from './helpers/types'
-import {
-  useFileTypes,
-  useFullScreenMode,
-  useImageControls,
-  useMediaFileLoader
-} from './composables'
+import { useFileTypes, useImageControls, useMediaFileLoader } from './composables'
 import { mimeTypes } from './mimeTypes'
 import { RouteLocationRaw } from 'vue-router'
 import { SortDir } from '@opencloud-eu/design-system/helpers'

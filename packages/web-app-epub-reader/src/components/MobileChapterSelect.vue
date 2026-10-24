@@ -24,7 +24,7 @@
       class="w-full"
       @show-drop="scrollSelectedChapterIntoView"
     >
-      <oc-list>
+      <oc-list class="max-h-[60vh] overflow-y-auto">
         <li v-for="chapter in chapters" :key="chapter.id">
           <oc-button
             class="epub-reader-chapter-option w-full justify-start"
@@ -47,27 +47,26 @@
 <script setup lang="ts">
 import { nextTick, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import type { NavItem } from 'epubjs'
+import type { Chapter } from '../types'
 
-type ChapterOption = NavItem
 const chapterSelectRoot = useTemplateRef<HTMLElement>('chapterSelectRoot')
 
 defineProps<{
-  chapters: ChapterOption[]
-  selectedChapter?: ChapterOption
+  chapters: Chapter[]
+  selectedChapter?: Chapter
 }>()
 
 const { $gettext } = useGettext()
 
 const emit = defineEmits<{
-  (e: 'update:selectedChapter', value: ChapterOption): void
+  (e: 'update:selectedChapter', value: Chapter): void
 }>()
 
-function onChapterClick(chapter: ChapterOption) {
+function onChapterClick(chapter: Chapter) {
   emit('update:selectedChapter', chapter)
 }
 
-function findSelectedChapterOption() {
+function findSelectedChapter() {
   return (
     unref(chapterSelectRoot)?.querySelector<HTMLElement>('.epub-reader-chapter-option-selected') ||
     document.querySelector<HTMLElement>('.epub-reader-chapter-option-selected')
@@ -76,6 +75,6 @@ function findSelectedChapterOption() {
 
 async function scrollSelectedChapterIntoView() {
   await nextTick()
-  findSelectedChapterOption()?.scrollIntoView({ block: 'nearest' })
+  findSelectedChapter()?.scrollIntoView({ block: 'nearest' })
 }
 </script>
