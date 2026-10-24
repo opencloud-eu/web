@@ -70,7 +70,7 @@ x-opencloud-server: &opencloud-service
 
     # THUMBNAILS
     WEBDAV_THUMBNAILS_GENERATOR_URL: 'http://imagor:8000'
-    OC_THUMBNAILS_ADDITIONAL_SOURCE_TYPES: 'image/heic,image/heif,image/avif'
+    OC_THUMBNAILS_ADDITIONAL_SOURCE_TYPES: 'image/heic,image/heif,image/avif,image/heic-sequence,image/heif-sequence'
 
     # TIKA
     SEARCH_EXTRACTOR_TYPE: 'tika'
