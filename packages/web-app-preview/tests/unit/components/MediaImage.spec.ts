@@ -49,6 +49,14 @@ describe('MediaImage component', () => {
     const img = wrapper.find('img')
     expect(img.classes()).toEqual(expect.arrayContaining(['max-w-full', 'max-h-full']))
   })
+
+  it('reports an image the browser cannot decode', async () => {
+    const { wrapper } = getWrapper('image/heic')
+
+    await wrapper.find('img').trigger('error')
+
+    expect(wrapper.emitted('error')).toHaveLength(1)
+  })
 })
 
 function getWrapper(mimeType: string) {

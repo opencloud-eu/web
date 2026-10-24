@@ -43,7 +43,14 @@
           class="w-full flex flex-col items-center justify-center"
         >
           <oc-icon name="file-damage" size-class="size-12" color="var(--oc-role-error)" />
-          <p>
+          <p v-if="activeMediaFile.isUnsupported" data-testid="media-unsupported-message">
+            {{
+              $gettext('"%{filename}" cannot be displayed in this browser', {
+                filename: activeMediaFile.name
+              })
+            }}
+          </p>
+          <p v-else>
             {{ $gettext('Failed to load "%{filename}"', { filename: activeMediaFile.name }) }}
           </p>
         </div>
@@ -53,12 +60,14 @@
           :key="activeMediaFile.id"
           :file="activeMediaFile"
           :current-image-rotation="currentImageRotation"
+          @error="onMediaError(activeMediaFile)"
         />
         <media-image
           v-else-if="activeMediaFile.isImage"
           ref="imageViewer"
           :file="activeMediaFile"
           :current-image-rotation="currentImageRotation"
+          @error="onMediaError(activeMediaFile)"
         />
         <media-video
           v-else-if="activeMediaFile.isVideo"
@@ -137,13 +146,13 @@ import MediaMotionPhoto from './components/Sources/MediaMotionPhoto.vue'
 import MediaVideo from './components/Sources/MediaVideo.vue'
 import PhotoRoll from './components/PhotoRoll.vue'
 import { MediaFile } from './helpers/types'
+import { canOpen } from './helpers/canOpen'
 import {
   useFileTypes,
   useFullScreenMode,
   useImageControls,
   useMediaFileLoader
 } from './composables'
-import { mimeTypes } from './mimeTypes'
 import { RouteLocationRaw } from 'vue-router'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { useSwipe } from '@vueuse/core'
@@ -251,7 +260,7 @@ const buildMediaFiles = () => {
       return false
     }
 
-    return mimeTypes.includes(file.mimeType?.toLowerCase()) && file.canDownload()
+    return canOpen(file) && file.canDownload()
   })
 
   const sortFields = determineResourceTableSortFields(filteredFiles[0])
@@ -269,6 +278,7 @@ const buildMediaFiles = () => {
       isMotionOrLivePhoto: isMotionOrLivePhoto(file),
       isLoading: true,
       isError: false,
+      isUnsupported: false,
       resource: file
     }
   })
@@ -322,6 +332,10 @@ async function reloadMediaFileUrl(mediaFile: MediaFile) {
       reloadUrlController = null
     }
   }
+}
+
+function onMediaError(mediaFile: MediaFile) {
+  mediaFile.isError = true
 }
 
 const goToNext = () => {

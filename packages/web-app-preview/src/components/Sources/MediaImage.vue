@@ -19,7 +19,7 @@
     class="relative grid size-full grid-cols-[100%] grid-rows-[100%] place-items-center pt-4 [&>*]:[grid-area:1/1]"
     :data-id="file.id"
   >
-    <img :src="file.url" :alt="file.name" class="max-w-full max-h-full" />
+    <img :src="file.url" :alt="file.name" class="max-w-full max-h-full" @error="emit('error')" />
     <slot name="overlay" />
   </div>
   <img
@@ -30,6 +30,7 @@
     :alt="file.name"
     :data-id="file.id"
     class="max-w-full max-h-full pt-4"
+    @error="emit('error')"
   />
 </template>
 <script setup lang="ts">
@@ -55,6 +56,10 @@ InlineSvg.name = 'inline-svg'
 const { file, currentImageRotation } = defineProps<{
   file: MediaFile
   currentImageRotation: number
+}>()
+
+const emit = defineEmits<{
+  (e: 'error'): void
 }>()
 
 const eventBus = useEventBus()

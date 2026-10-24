@@ -84,6 +84,14 @@ describe('MediaMotionPhoto component', () => {
     expect(wrapper.find('[data-testid="motion-photo-video"]').exists()).toBe(false)
     expect(wrapper.find('img').isVisible()).toBe(true)
   })
+
+  it('passes on a still the browser cannot decode', async () => {
+    const { wrapper } = getWrapper()
+
+    await wrapper.find('img').trigger('error')
+
+    expect(wrapper.emitted('error')).toHaveLength(1)
+  })
 })
 
 function getWrapper({
@@ -105,8 +113,9 @@ function getWrapper({
           // MediaImage renders the still, keep only that and the overlay slot
           MediaImage: {
             template:
-              '<div class="media-image"><img :src="file.url" /><slot name="overlay" /></div>',
-            props: ['file', 'currentImageRotation']
+              '<div class="media-image"><img :src="file.url" @error="$emit(\'error\')" /><slot name="overlay" /></div>',
+            props: ['file', 'currentImageRotation'],
+            emits: ['error']
           }
         }
       }

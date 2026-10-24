@@ -341,4 +341,19 @@ describe('decryptResourceInPlace', () => {
     // share-gating is markVaultStatus' job now, not decryptResourceInPlace's
     expect(resource.permissions).toBe('RDNVWZP')
   })
+
+  it('derives the mime type of a heic photo from its cleartext name', async () => {
+    const engine = mock<VaultEngine>({ vaultRoot: '/my.vault' })
+    engine.decryptPath.mockResolvedValue('IMG_0001.HEIC')
+    const resource = {
+      path: '/my.vault/CIPHERTEXTBLOB',
+      name: 'CIPHERTEXTBLOB',
+      type: 'file',
+      mimeType: 'application/octet-stream'
+    } as Resource
+
+    await decryptResourceInPlace(engine, resource)
+
+    expect(resource.mimeType).toBe('image/heic')
+  })
 })
