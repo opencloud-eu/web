@@ -86,6 +86,13 @@ describe('ReaderToolbar component', () => {
     expect(wrapper.find('.epub-reader-controls-font-size-reset').text()).toBe('100%')
   })
 
+  it('names the reset font size button by its purpose, starting with the visible percentage', () => {
+    const wrapper = getWrapper()
+    expect(wrapper.find('.epub-reader-controls-font-size-reset').attributes('aria-label')).toBe(
+      '100%, reset font size'
+    )
+  })
+
   it('renders disabled states for control buttons', () => {
     const wrapper = mount(ReaderToolbar, {
       props: {

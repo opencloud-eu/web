@@ -45,6 +45,7 @@
       </oc-button>
       <oc-button
         v-oc-tooltip="$gettext('Reset font size')"
+        :aria-label="resetFontSizeLabel"
         class="epub-reader-controls-font-size-reset min-w-[64px] px-2 text-sm font-medium"
         appearance="raw"
         no-hover
@@ -186,6 +187,11 @@ const chapterListLabel = computed(() =>
 )
 const fullscreenLabel = computed(() =>
   isFullScreenModeActivated ? $gettext('Exit fullscreen') : $gettext('Enter fullscreen')
+)
+
+// starts with the visible percentage, so voice control users can still say what they see
+const resetFontSizeLabel = computed(() =>
+  $gettext('%{percentage}%, reset font size', { percentage: currentFontSizePercentage })
 )
 
 const decreaseFontSizeTooltip = computed(() => {
