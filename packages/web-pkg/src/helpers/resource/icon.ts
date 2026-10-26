@@ -167,6 +167,7 @@ const fileIcon = {
       'gif',
       'heic',
       'heif',
+      'hif',
       'jpeg',
       'jpg',
       'otf',
