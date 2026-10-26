@@ -5,6 +5,7 @@
   --vp-font-family-base: 'OpenCloud', 'Inter', sans-serif;
   --oc-font-family: 'OpenCloud', 'Inter', sans-serif;
   --vp-c-brand-1: var(--oc-role-secondary);
+  font-size: 12px;
 }
 
 .vp-doc tr:nth-child(2n) {
@@ -34,10 +35,6 @@ li::marker {
 #VPSidebarNav .VPLink p {
   padding: 0;
   margin: 4px 0;
-}
-
-.vp-doc :where(p, li, div):not(.live-code-block :where(p, li, div)) {
-  font-size: 16px;
 }
 
 html * {
