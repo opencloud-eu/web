@@ -60,6 +60,20 @@ describe('ReaderTextSearch component', () => {
     expect(wrapper.find('.epub-reader-search-result-count').text()).toBe('2/3')
   })
 
+  it('announces the search status in words through a live region that stays polite', async () => {
+    const wrapper = getWrapper()
+    const liveRegion = wrapper.find('.epub-reader-search-result-announcement')
+
+    await wrapper.find('.oc-search-input').setValue('whale')
+    expect(liveRegion.text()).toBe('Searching...')
+
+    vi.runOnlyPendingTimers()
+    await nextTick()
+
+    expect(liveRegion.attributes('aria-live')).toBe('polite')
+    expect(liveRegion.text()).toBe('Result 2 of 3')
+  })
+
   it('renders search result status and emits next/previous events', async () => {
     const wrapper = getWrapper()
     await wrapper.find('.oc-search-input').setValue('whale')
@@ -99,6 +113,7 @@ describe('ReaderTextSearch component', () => {
     await nextTick()
 
     expect(wrapper.find('.epub-reader-search-result-count').text()).toBe('0/0')
+    expect(wrapper.find('.epub-reader-search-result-announcement').text()).toBe('No results')
   })
 
   it('clears search and emits close event', async () => {

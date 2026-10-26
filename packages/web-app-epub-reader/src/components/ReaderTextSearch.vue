@@ -23,8 +23,13 @@
       <div class="mt-2 flex items-center justify-between gap-2">
         <span
           class="epub-reader-search-result-count text-sm text-role-on-surface-variant"
-          :aria-live="searching ? 'polite' : 'off'"
-          v-text="searchResultStatusLabel"
+          aria-hidden="true"
+          v-text="searchResultStatus.label"
+        />
+        <span
+          class="epub-reader-search-result-announcement sr-only"
+          aria-live="polite"
+          v-text="searchResultStatus.announcement"
         />
         <div class="flex items-center gap-1">
           <oc-button
@@ -118,18 +123,24 @@ const emitSearchTermChangedDebounced = debounce((value: string) => {
   emit('searchTermChanged', value.trim())
 }, SEARCH_TERM_DEBOUNCE_MS)
 
-const searchResultStatusLabel = computed(() => {
+// the visible label is terse ("2/3"), screen readers get the status in words
+const searchResultStatus = computed(() => {
   if (unref(searchTerm).trim() === '') {
-    return ''
+    return { label: '', announcement: '' }
   }
   if (searching || unref(isSearchPending)) {
-    return $gettext('Searching...')
+    const searchingLabel = $gettext('Searching...')
+    return { label: searchingLabel, announcement: searchingLabel }
   }
   if (resultCount <= 0 || currentResultIndex < 0) {
-    return '0/0'
+    return { label: '0/0', announcement: $gettext('No results') }
   }
-  const countLabel = hasMoreResults ? `${resultCount}+` : `${resultCount}`
-  return `${currentResultIndex + 1}/${countLabel}`
+  const current = currentResultIndex + 1
+  const total = hasMoreResults ? `${resultCount}+` : `${resultCount}`
+  return {
+    label: `${current}/${total}`,
+    announcement: $gettext('Result %{current} of %{total}', { current, total })
+  }
 })
 
 watch(searchTerm, (value) => {
