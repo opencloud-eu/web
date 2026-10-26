@@ -36,7 +36,6 @@
           </component>
         </dl>
         <oc-list v-else-if="listItems.length" class="info-list mt-2 mb-1 first:mt-0 last:mb-0">
-          <!-- mb-0 drops the item gap of the drop's li style, so the items sit like dd items -->
           <li v-for="(item, index) in listItems" :key="index" class="mb-0">
             {{ $gettext(item.text) }}
           </li>

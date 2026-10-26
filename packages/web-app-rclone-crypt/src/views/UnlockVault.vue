@@ -74,7 +74,6 @@
             :aria-busy="verifying"
           >
             <oc-spinner v-if="verifying" :aria-hidden="true" size="small" />
-            <!-- the label stays for screen readers while the spinner replaces it visually -->
             <span :class="{ 'sr-only': verifying }" v-text="submitLabel" />
           </oc-button>
         </div>
