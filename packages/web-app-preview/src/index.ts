@@ -7,6 +7,7 @@ import translations from 'virtual:l10n/web-app-preview'
 import * as app from './App.vue'
 import { useGettext } from 'vue3-gettext'
 import { mimeTypes } from './mimeTypes'
+import { canOpen } from './helpers/canOpen'
 import { appId } from './utils'
 import { extensionPoints } from './extensionPoints'
 
@@ -43,7 +44,8 @@ export default defineWebApplication({
       extensions: mimeTypes.map((mimeType) => ({
         mimeType,
         routeName,
-        label: () => $gettext('Preview')
+        label: () => $gettext('Preview'),
+        canOpen
       }))
     }
 

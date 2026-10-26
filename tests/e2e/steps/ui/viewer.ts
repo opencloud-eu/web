@@ -42,6 +42,17 @@ When(
   }
 )
 
+When(
+  '{string} opens the following file in mediaviewer which this browser cannot display',
+  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable) => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+
+    for (const { resource } of stepTable.hashes()) {
+      await resourceObject.openUndisplayableFileInViewer({ name: resource })
+    }
+  }
+)
+
 Then(
   '{string} should see resource {string} of {string} in the mediaviewer controls',
   async (

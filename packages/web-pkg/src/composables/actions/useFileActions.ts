@@ -123,6 +123,10 @@ export const useFileActions = () => {
               return false
             }
 
+            if (fileExtension.canOpen?.(resource) === false) {
+              return false
+            }
+
             // An app may register a file/folder extension purely to
             // contribute icon mapping or a new-file menu entry without
             // owning a route. Default folder navigation takes over.

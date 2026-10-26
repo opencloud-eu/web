@@ -1,5 +1,10 @@
 <template>
-  <media-image ref="image" :file="file" :current-image-rotation="currentImageRotation">
+  <media-image
+    ref="image"
+    :file="file"
+    :current-image-rotation="currentImageRotation"
+    @error="emit('error')"
+  >
     <template #overlay>
       <video
         v-if="isPlaying"
@@ -36,6 +41,10 @@ import MediaImage from './MediaImage.vue'
 const { file, currentImageRotation } = defineProps<{
   file: MediaFile
   currentImageRotation: number
+}>()
+
+const emit = defineEmits<{
+  (e: 'error'): void
 }>()
 
 const { $gettext } = useGettext()
