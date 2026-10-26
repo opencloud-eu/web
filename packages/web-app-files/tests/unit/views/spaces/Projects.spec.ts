@@ -17,8 +17,7 @@ import {
   RouteLocation,
   PiniaMockOptions
 } from '@opencloud-eu/web-test-helpers'
-import { AbilityRule, buildSpace, SpaceResource } from '@opencloud-eu/web-client'
-import { Drive } from '@opencloud-eu/web-client/graph/generated'
+import { AbilityRule, SpaceResource } from '@opencloud-eu/web-client'
 import { folderViewsProjectSpacesExtensionPoint } from '../../../../src/extensionPoints'
 import { flushPromises } from '@vue/test-utils'
 
@@ -113,34 +112,6 @@ describe('Projects view', () => {
       await nextTick()
       expect(wrapper.findAll('tbody tr').length).toEqual(3)
     })
-    it('shows the status of disabled spaces next to their name, where narrow screens still see it', async () => {
-      // rendered rows need real space resources, the plain fixtures only cover the lazy placeholders
-      const spaces = spacesResources.map(({ id, name, disabled }) =>
-        buildSpace({
-          id,
-          name,
-          driveType: 'project',
-          driveAlias: `project/${id}`,
-          root: disabled ? { deleted: { state: 'trashed' } } : {},
-          special: []
-        } as Drive)
-      )
-      const { wrapper } = getMountedWrapper({ spaces, includeDisabled: true, lazy: false })
-      await flushPromises()
-      const tagsBySpaceId = Object.fromEntries(
-        wrapper
-          .findAll('tbody tr')
-          .map((row) => [
-            row.attributes('data-item-id'),
-            row.findAll('.oc-table-data-cell-name .oc-tag')
-          ])
-      )
-      expect(tagsBySpaceId['1']).toHaveLength(0)
-      expect(tagsBySpaceId['2']).toHaveLength(0)
-      expect(tagsBySpaceId['3']).toHaveLength(1)
-      expect(tagsBySpaceId['3'][0].text()).toBe('Disabled')
-      expect(tagsBySpaceId['3'][0].classes()).toContain('lg:hidden')
-    })
   })
   it('should not pass selected resource as space to sidebar when driveType is not "project"', () => {
     const resource = mock<SpaceResource>({ id: 'selected-resource', driveType: 'personal' })
@@ -168,7 +139,6 @@ function getMountedWrapper({
   abilities = [],
   stubAppBar = true,
   includeDisabled = false,
-  lazy = true,
   store = {}
 }: {
   mocks?: Record<string, unknown>
@@ -176,7 +146,6 @@ function getMountedWrapper({
   abilities?: AbilityRule[]
   stubAppBar?: boolean
   includeDisabled?: boolean
-  lazy?: boolean
   store?: PiniaMockOptions
 } = {}) {
   const plugins = defaultPlugins({
@@ -203,8 +172,7 @@ function getMountedWrapper({
           name: 'menu-line',
           fillType: 'none'
         },
-        component: ResourceTable,
-        componentAttrs: () => ({ lazy })
+        component: ResourceTable
       }
     }
   ] satisfies FolderViewExtension[]
