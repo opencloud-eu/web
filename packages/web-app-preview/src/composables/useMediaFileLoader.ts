@@ -26,7 +26,7 @@ export const useMediaFileLoader = ({
   const previewService = usePreviewService()
   const { dimensions } = usePreviewDimensions()
   const { getMatchingSpace } = useGetMatchingSpace()
-  const { canRender } = useBrowserImageSupport()
+  const { probed, canRender } = useBrowserImageSupport()
 
   // keyed by MediaFile instance and not by resource id: `buildMediaFiles` creates new
   // instances, an id-keyed registry would hand a fresh instance the request of a
@@ -145,8 +145,9 @@ export const useMediaFileLoader = ({
 
   const performLoad = async (mediaFile: MediaFile, controller: AbortController) => {
     try {
-      if (!canRender(mediaFile.resource)) {
-        mediaFile.isUnsupported = true
+      await probed
+      mediaFile.isUnsupported = !canRender(mediaFile.resource)
+      if (mediaFile.isUnsupported) {
         mediaFile.isError = true
         mediaFile.isLoading = false
         return

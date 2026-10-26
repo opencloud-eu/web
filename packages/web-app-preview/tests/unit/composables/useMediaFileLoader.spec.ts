@@ -17,8 +17,9 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 const canRender = vi.fn()
+const browserImageSupport = { probed: Promise.resolve(), canRender }
 vi.mock('../../../src/composables/useBrowserImageSupport', () => ({
-  useBrowserImageSupport: () => ({ probed: Promise.resolve(), canRender })
+  useBrowserImageSupport: () => browserImageSupport
 }))
 
 /**
@@ -67,6 +68,7 @@ const createFile = (overrides: Partial<MediaFile> = {}): MediaFile => {
     isMotionPhoto: false,
     isLoading: true,
     isError: false,
+    isUnsupported: false,
     resource: mock<Resource>({ id: name, name, etag: `etag-${name}`, isInVault: false }),
     ...overrides
   } as MediaFile
@@ -117,6 +119,7 @@ describe('useMediaFileLoader', () => {
     MockImage.autoLoad = true
     vi.stubGlobal('Image', MockImage)
     canRender.mockReturnValue(true)
+    browserImageSupport.probed = Promise.resolve()
     vi.mocked(useGetMatchingSpace).mockReturnValue(
       useGetMatchingSpaceMock({ getMatchingSpace: () => space })
     )
@@ -158,6 +161,7 @@ describe('useMediaFileLoader', () => {
 
       const first = loader.loadPreviewImage(mediaFile)
       const second = loader.loadPreviewImage(mediaFile)
+      await flushPromises()
       resolvePreview('preview-url')
       await Promise.all([first, second])
 
@@ -249,6 +253,47 @@ describe('useMediaFileLoader', () => {
       expect(mediaFile.isUnsupported).toBe(true)
       expect(mediaFile.isError).toBe(true)
       expect(mediaFile.isLoading).toBe(false)
+      wrapper.unmount()
+    })
+
+    it('waits for the browser probes before deciding whether a vault image renders', async () => {
+      let finishProbes: () => void
+      browserImageSupport.probed = new Promise<void>((resolve) => {
+        finishProbes = resolve
+      })
+      canRender.mockReturnValue(false)
+      const { wrapper, loader, getUrlForResource } = createWrapper()
+      const mediaFile = createFile({
+        name: 'secret.heic',
+        mimeType: 'image/heic',
+        resource: mock<Resource>({ isInVault: true })
+      })
+
+      const load = loader.loadPreviewImage(mediaFile)
+      await flushPromises()
+
+      expect(canRender).not.toHaveBeenCalled()
+      expect(mediaFile.isUnsupported).toBe(false)
+      expect(mediaFile.isLoading).toBe(true)
+
+      canRender.mockReturnValue(true)
+      finishProbes()
+      await load
+
+      expect(getUrlForResource).toHaveBeenCalledTimes(1)
+      expect(mediaFile.isUnsupported).toBe(false)
+      expect(mediaFile.url).toBe('full-url')
+      wrapper.unmount()
+    })
+
+    it('clears a stale unsupported state once the file loads successfully', async () => {
+      const { wrapper, loader } = createWrapper()
+      const mediaFile = createFile({ isUnsupported: true, isError: true })
+
+      await loader.loadPreviewImage(mediaFile)
+
+      expect(mediaFile.isUnsupported).toBe(false)
+      expect(mediaFile.isError).toBe(false)
       wrapper.unmount()
     })
 
