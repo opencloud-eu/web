@@ -1,0 +1,1 @@
+import{At as e,Pt as t,_t as n,in as r,lt as i}from"./framework.Can3YLJB.js";var a=n({__name:`default`,setup(n){let a=r(1);return(n,r)=>{let o=t(`oc-pagination-inline`);return e(),i(o,{"current-page":a.value,"onUpdate:currentPage":r[0]||=e=>a.value=e,pages:3},null,8,[`current-page`])}}});export{a as default};

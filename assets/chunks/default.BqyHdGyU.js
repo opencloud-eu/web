@@ -1,0 +1,1 @@
+import{At as e,Pt as t,_t as n,in as r,lt as i}from"./framework.Can3YLJB.js";var a=n({__name:`default`,setup(n){let a=r(10),o=e=>{a.value=e};return(n,r)=>{let s=t(`oc-page-size`);return e(),i(s,{label:`Items per page`,options:[10,20,50],selected:a.value,onChange:o},null,8,[`selected`])}}});export{a as default};

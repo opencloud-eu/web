@@ -1,1 +1,0 @@
-import{Nt as e,_t as t,ct as n,dt as r,hn as i,ht as a,it as o,kt as s,rn as c}from"./framework.CkCltKs4.js";var l=t({__name:`default`,setup(t){let l=c(),u=e=>{l.value=e};return(t,c)=>{let d=e(`oc-emoji-picker`);return s(),r(o,null,[a(d,{onEmojiSelect:u}),n(`p`,null,`Selected emoji: `+i(l.value),1)],64)}}});export{l as default};
