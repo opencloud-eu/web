@@ -20,6 +20,13 @@ describe('ListHeader', () => {
     await flushPromises()
     expect(wrapper.find('.markdown-container').exists()).toBeTruthy()
   })
+  it('gives the README viewer an accessible name', async () => {
+    const wrapper = getWrapper()
+    await flushPromises()
+    expect(wrapper.findComponent({ name: 'TextEditorViewer' }).attributes('aria-label')).toBe(
+      'README'
+    )
+  })
 })
 
 function getWrapper() {

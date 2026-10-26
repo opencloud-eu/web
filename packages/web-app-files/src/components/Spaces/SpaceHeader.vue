@@ -84,7 +84,11 @@
           'mask-linear-[180deg,black,80%,transparent]': showMarkdownCollapse && markdownCollapsed
         }"
       >
-        <TextEditorViewer class="markdown-container-content w-full" :content="markdownContent" />
+        <TextEditorViewer
+          class="markdown-container-content w-full"
+          :content="markdownContent"
+          :aria-label="$gettext('Space description')"
+        />
       </div>
       <div
         v-if="showMarkdownCollapse && markdownContent"

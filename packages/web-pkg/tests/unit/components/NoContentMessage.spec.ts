@@ -12,6 +12,21 @@ describe('NoContentMessage', () => {
     })
   })
 
+  describe('image', () => {
+    it('hides a decorative svg illustration from assistive technologies', () => {
+      const { wrapper } = getWrapper({}, { imgSrc: 'empty.svg' })
+      const image = wrapper.find('.no-content-message-image')
+      expect(image.attributes('aria-hidden')).toBe('true')
+      expect(image.attributes('alt')).toBeUndefined()
+    })
+    it('hides a decorative image illustration from assistive technologies', () => {
+      const { wrapper } = getWrapper({}, { imgSrc: 'empty.png' })
+      const image = wrapper.find('.no-content-message-image')
+      expect(image.attributes('aria-hidden')).toBe('true')
+      expect(image.attributes('alt')).toBe('')
+    })
+  })
+
   describe('named slots', () => {
     it('should render slot html for message', () => {
       const { wrapper } = getWrapper({
@@ -44,11 +59,11 @@ describe('NoContentMessage', () => {
   })
 })
 
-function getWrapper(slots = {}) {
+function getWrapper(slots = {}, props = {}) {
   return {
     wrapper: shallowMount(NoContentMessage, {
       slots: slots,
-      props: { icon: 'mdi-test-icon' },
+      props: { icon: 'mdi-test-icon', ...props },
       global: {
         plugins: [...defaultPlugins()]
       }

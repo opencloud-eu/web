@@ -15,6 +15,7 @@
         :appearance="activeOption === option.name ? 'filled' : 'raw-inverse'"
         :color-role="activeOption === option.name ? 'secondaryContainer' : 'surface'"
         :no-hover="activeOption === option.name"
+        :aria-pressed="(activeOption === option.name).toString()"
         @click="toggleFilter(option)"
       >
         <span class="truncate item-inline-filter-option-label" v-text="option.label" />

@@ -17,6 +17,9 @@
         id="image-cropper-selection"
         ref="cropperSelectionRef"
         tabindex="0"
+        role="group"
+        :aria-label="$gettext('Crop area')"
+        :aria-describedby="hintId"
         data-custom-key-bindings-disabled="true"
         initial-coverage="0.8"
         :aspect-ratio="aspectRatio"
@@ -29,7 +32,7 @@
         ]"
         @change="onCropperSelectionChange"
       >
-        <cropper-grid role="grid" bordered covered />
+        <cropper-grid aria-hidden="true" bordered covered />
         <cropper-crosshair centered />
         <cropper-handle action="move" theme-color="rgba(255, 255, 255, 0.35)" />
         <cropper-handle theme-color="var(--color-role-outline)" action="n-resize" />
@@ -42,7 +45,7 @@
         <cropper-handle theme-color="var(--color-role-outline)" action="sw-resize" />
       </cropper-selection>
     </cropper-canvas>
-    <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
+    <div :id="hintId" class="text-sm text-role-on-surface-variant flex items-center mt-1">
       <oc-icon class="mr-1" name="information" size-class="size-4" fill-type="line" />
       <span v-if="isMobile" v-text="$gettext('Pinch to zoom, drag to move')" />
       <span
@@ -59,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, unref, watch } from 'vue'
+import { ref, unref, useId, watch } from 'vue'
 import { useCropperKeyboardActions } from '../composables'
 import 'cropperjs'
 import type {
@@ -91,6 +94,7 @@ const {
 
 const { $gettext } = useGettext()
 const { isMobile } = useIsMobile()
+const hintId = useId()
 const { setCropperInstance } = useCropperKeyboardActions()
 
 const cropperCanvasRef = ref<CropperCanvasType | null>(null)

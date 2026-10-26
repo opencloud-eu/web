@@ -15,6 +15,8 @@
       :color-role="buttonColorRole"
       :no-hover="filterActive || !hasActiveState"
       :size="size"
+      :aria-pressed="isToggle ? isToggleActive.toString() : undefined"
+      :aria-label="selectionLabel"
       @click="isToggle ? emit('toggleFilter') : false"
     >
       <oc-icon
@@ -59,7 +61,7 @@
       class="oc-filter-chip-clear px-1 rounded-l-none rounded-r-md h-[32px] not-[.oc-filter-chip-toggle_.oc-filter-chip-clear]:ml-[1px] focus:z-90"
       appearance="filled"
       color-role="secondaryContainer"
-      :aria-label="$gettext('Clear filter')"
+      :aria-label="$gettext('Clear filter %{filterLabel}', { filterLabel })"
       :no-hover="filterActive"
       @click="emit('clearFilter')"
     >
@@ -70,6 +72,7 @@
 
 <script setup lang="ts">
 import { computed, unref, useTemplateRef } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import { uniqueId } from '../../helpers'
 import OcDrop from '../OcDrop/OcDrop.vue'
 
@@ -159,6 +162,8 @@ const {
 const emit = defineEmits<Emits>()
 defineSlots<Slot>()
 
+const { $gettext } = useGettext()
+
 const dropRef = useTemplateRef<typeof OcDrop>('dropRef')
 
 const filterActive = computed(() => {
@@ -169,6 +174,18 @@ const filterActive = computed(() => {
     return isToggleActive
   }
   return !!selectedItemNames.length
+})
+
+// names the chip after the filter as well, because the visible label is replaced by the selection
+const selectionLabel = computed(() => {
+  if (!selectedItemNames.length) {
+    return undefined
+  }
+  const selection =
+    selectedItemNames.length > 1
+      ? `${selectedItemNames[0]} +${selectedItemNames.length - 1}`
+      : selectedItemNames[0]
+  return $gettext('%{filter}: %{selection}', { filter: filterLabel, selection })
 })
 
 const hideDrop = () => {

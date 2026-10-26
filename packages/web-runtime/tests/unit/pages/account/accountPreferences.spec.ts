@@ -19,6 +19,14 @@ import { User } from '@opencloud-eu/web-client/graph/generated'
 import { VueWrapper } from '@vue/test-utils'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
+import { computed } from 'vue'
+import { useNotificationsSettings } from '../../../../src/composables/notificationsSettings'
+
+vi.mock('../../../../src/composables/notificationsSettings', async (importOriginal) => {
+  const original =
+    await importOriginal<typeof import('../../../../src/composables/notificationsSettings')>()
+  return { ...original, useNotificationsSettings: vi.fn(original.useNotificationsSettings) }
+})
 
 const $route = {
   meta: {
@@ -51,6 +59,42 @@ describe('account preferences page', () => {
         const editPasswordButton = wrapper.find(selectors.editPasswordButton)
         expect(editPasswordButton.exists()).toBeFalsy()
       })
+    })
+  })
+
+  describe('Notifications section', () => {
+    it('names the checkboxes and the interval select after the event of their row', async () => {
+      vi.mocked(useNotificationsSettings).mockReturnValueOnce({
+        options: computed(() => [
+          mock<SettingsBundle['settings'][0]>({
+            id: 'share-created',
+            name: 'share-created',
+            displayName: 'Share Received',
+            multiChoiceCollectionValue: {
+              options: [{ key: 'in-app', displayValue: 'In-App', value: { boolValue: {} } }]
+            }
+          })
+        ]),
+        values: computed(() => ({ 'share-created': { 'in-app': true } })),
+        emailOptions: computed(() => [
+          mock<SettingsBundle['settings'][0]>({
+            id: 'interval',
+            name: 'interval',
+            displayName: 'Email sending interval',
+            singleChoiceValue: { options: [{ value: 'daily', displayValue: 'Daily' }] }
+          })
+        ]),
+        emailValues: computed(() => ({}))
+      })
+      const { wrapper } = getWrapper({
+        capabilities: { notifications: { configurable: true } } as any
+      })
+      await blockLoadingState(wrapper)
+
+      const checkbox = wrapper.find('.checkbox-cell-wrapper input')
+      expect(checkbox.attributes('aria-label')).toBe('Share Received: In-App')
+      const select = wrapper.findAll('.vs__dropdown-toggle').at(-1)
+      expect(select.attributes('aria-label')).toContain('Email sending interval')
     })
   })
 

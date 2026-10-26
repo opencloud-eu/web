@@ -172,6 +172,16 @@ describe('SpacesList', () => {
       expect(getColumn(wrapper, 'usedQuota')).toEqual(['-'])
       expect(getColumn(wrapper, 'remainingQuota')).toEqual(['Unrestricted'])
     })
+    it('renders the modified date without a tab stop and the absolute date for screen readers', () => {
+      const space = mock<SpaceResource>({
+        ...spaceMocks[0],
+        mdate: 'Wed, 21 Oct 2015 07:28:00 GMT'
+      })
+      const { wrapper } = getWrapper({ spaces: [space] })
+      const cell = wrapper.find('.oc-table-data-cell-mdate')
+      expect(cell.find('[tabindex]').exists()).toBeFalsy()
+      expect(cell.find('.sr-only').text()).toContain('2015')
+    })
     it('renders the status indicators of each space', () => {
       const { wrapper } = getWrapper({ spaces: spaceMocks })
       expect(wrapper.findAllComponents(OcStatusIndicators)).toHaveLength(spaceMocks.length)

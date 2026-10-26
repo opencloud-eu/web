@@ -121,7 +121,7 @@
                     (notificationsValues[option.id] as Record<string, boolean>)[choice.key]
                   "
                   size="large"
-                  :label="choice.displayValue"
+                  :label="getNotificationChoiceLabel(option.displayName, choice.displayValue)"
                   :label-hidden="!isTablet"
                   :disabled="choice.attribute === 'disabled'"
                   @update:model-value="
@@ -142,7 +142,7 @@
             <oc-table-td>{{ option.displayName }}</oc-table-td>
             <oc-table-td v-if="option.singleChoiceValue">
               <oc-select
-                :label="$gettext('Mail notification options')"
+                :label="option.displayName"
                 label-hidden
                 :model-value="emailNotificationsValues[option.id]"
                 :options="option.singleChoiceValue.options"
@@ -245,6 +245,14 @@ const emailNotificationsOptionsFields = computed(() => [
   { label: $gettext('Options') },
   { label: $gettext('Option value'), hidden: true }
 ])
+
+// the visible label on tablets is just the choice, the hidden one also names the event of its row
+function getNotificationChoiceLabel(event: string, choice: string) {
+  if (unref(isTablet)) {
+    return choice
+  }
+  return $gettext('%{event}: %{choice}', { event, choice })
+}
 
 const showEditPasswordModal = () => {
   dispatchModal({

@@ -78,7 +78,7 @@
                 v-if="showVersions"
                 v-oc-tooltip="seeVersionsLabel"
                 appearance="raw"
-                :aria-label="seeVersionsLabel"
+                :aria-describedby="seeVersionsHintId"
                 no-hover
                 @click="openSideBarPanel('versions')"
               >
@@ -128,7 +128,7 @@
                 v-else
                 v-oc-tooltip="seeVersionsLabel"
                 appearance="raw"
-                :aria-label="seeVersionsLabel"
+                :aria-describedby="seeVersionsHintId"
                 no-hover
                 @click="openSideBarPanel('versions')"
               >
@@ -138,6 +138,7 @@
           </template>
           <custom-component-target :extension-point="fileSideBarFileDetailsTableExtensionPoint" />
         </dl>
+        <span :id="seeVersionsHintId" hidden v-text="seeVersionsLabel" />
       </div>
       <div v-if="hasTags" class="mt-2">
         <div class="inline-flex items-center text-sm mb-0.5">
@@ -158,7 +159,7 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { computed, inject, Ref, ref, unref, watch } from 'vue'
+import { computed, inject, Ref, ref, unref, useId, watch } from 'vue'
 import {
   ImageDimension,
   ProcessorType,
@@ -356,6 +357,7 @@ const versionsPlaceholder = computed(() => unref(versionsLoading) && unref(stick
 const versionsRowVisible = computed(() =>
   unref(versionsLoading) ? unref(stickyShowVersions) : !!unref(showVersions)
 )
+const seeVersionsHintId = useId()
 const seeVersionsLabel = computed(() => {
   return $gettext('See all versions')
 })

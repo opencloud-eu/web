@@ -10,8 +10,8 @@ exports[`Details SideBar Panel > displays the details side panel 1`] = `
   <div class="flex items-center oc-space-details-sidebar-members mb-2 text-sm gap-2">
     <oc-button-stub arialabel="Open member list in share panel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true"></oc-button-stub>
     <!--v-if-->
-    <p>This space has 1 member.</p>
-    <oc-button-stub arialabel="Open share panel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="small" submit="button" type="button" nohover="true"></oc-button-stub>
+    <p id="v-0">This space has 1 member.</p>
+    <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="small" submit="button" type="button" nohover="true" aria-describedby="v-0"></oc-button-stub>
   </div>
   <dl class="details-list" aria-label="Overview of the information about the selected space">
     <dt>Last activity</dt>

@@ -104,10 +104,17 @@ describe('OcSearchBar', () => {
     })
   })
   describe('button hidden prop', () => {
-    it('should add invisible class to search button if enabled', () => {
+    it('should not render the search button if enabled', () => {
       const wrapper = getWrapper({ buttonHidden: true })
-      const searchButtonWrapper = wrapper.find(selectors.searchButtonWrapper)
-      expect(searchButtonWrapper.attributes('class')).toContain('sr-only')
+      expect(wrapper.find(selectors.searchButtonWrapper).exists()).toBeFalsy()
+      expect(wrapper.find(selectors.searchButton).exists()).toBeFalsy()
+    })
+    it('should still search on enter if enabled', async () => {
+      const wrapper = getWrapper({ buttonHidden: true })
+      const input = wrapper.find(selectors.searchInput)
+      await input.setValue('query')
+      await input.trigger('keydown.enter')
+      expect(wrapper.emitted('search')).toEqual([['query']])
     })
     it('should add button class to input if disabled', () => {
       const wrapper = getWrapper({ buttonHidden: false })

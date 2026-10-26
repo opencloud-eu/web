@@ -100,6 +100,16 @@ describe('OcSelect', () => {
       expect(wrapper.find(selectors.deselectLockIcon).exists()).toBeTruthy()
     })
   })
+  describe('required mark', () => {
+    it('marks the search input as required for assistive technologies', () => {
+      const wrapper = getWrapper({ requiredMark: true })
+      expect(wrapper.find(selectors.searchInput).attributes('aria-required')).toBe('true')
+    })
+    it('does not mark the search input as required without the mark', () => {
+      const wrapper = getWrapper()
+      expect(wrapper.find(selectors.searchInput).attributes('aria-required')).toBeUndefined()
+    })
+  })
   describe('message', () => {
     it('displays an error message', () => {
       const wrapper = getWrapper({ errorMessage: 'foo' })

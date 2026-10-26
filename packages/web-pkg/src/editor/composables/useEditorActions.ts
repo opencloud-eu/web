@@ -39,6 +39,7 @@ export interface EditorAction {
   slashCommandAction?: (ctx: { editor: Editor; range: Range }) => void
 
   // State management
+  // only set for actions with an on/off state, toolbar buttons expose it as aria-pressed
   isActive?: (editor: Editor) => boolean
   isEnabled?: (editor: Editor) => boolean
 
@@ -715,8 +716,7 @@ export function useEditorActions(state: TextEditorState) {
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).run()
       dispatchImageModal(editor)
-    },
-    isActive: () => false
+    }
   })
 
   const imageUpload = (): EditorAction => ({
@@ -731,8 +731,7 @@ export function useEditorActions(state: TextEditorState) {
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).run()
       insertImageFromFile(editor)
-    },
-    isActive: () => false
+    }
   })
 
   const imageCloud = (): EditorAction => ({
@@ -747,8 +746,7 @@ export function useEditorActions(state: TextEditorState) {
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).run()
       openCloudImagePicker(editor)
-    },
-    isActive: () => false
+    }
   })
 
   const image = (): EditorAction => ({
@@ -757,12 +755,7 @@ export function useEditorActions(state: TextEditorState) {
     icon: 'image-line',
     keywords: ['image', 'picture', 'upload', 'url', 'cloud'],
     showInSlashCommands: false,
-    childActions: [
-      imageUpload(),
-      imageUrl(),
-      ...(unref(isPublicLinkContext) ? [] : [imageCloud()])
-    ],
-    isActive: () => false
+    childActions: [imageUpload(), imageUrl(), ...(unref(isPublicLinkContext) ? [] : [imageCloud()])]
   })
 
   const menuEmoji = (): EditorAction => ({
@@ -793,8 +786,7 @@ export function useEditorActions(state: TextEditorState) {
         editor.chain().focus().insertContent(selectedEmoji).run()
         closeMenu()
       }
-    }),
-    isActive: () => false
+    })
   })
 
   const menuSearchAndReplace = (): EditorAction => ({
@@ -855,8 +847,7 @@ export function useEditorActions(state: TextEditorState) {
     toolbarAction: (editor) => editor.chain().focus().setHorizontalRule().run(),
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setHorizontalRule().run()
-    },
-    isActive: () => false
+    }
   })
 
   // Frontmatter actions
@@ -915,8 +906,7 @@ export function useEditorActions(state: TextEditorState) {
         description: $gettext('3×3 table with header row'),
         icon: 'table-line',
         toolbarAction: (editor) =>
-          editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
-        isActive: () => false
+          editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
       },
       {
         id: 'table-custom',
@@ -929,8 +919,7 @@ export function useEditorActions(state: TextEditorState) {
         menuComponentAttrs: (editor, closeMenu) => ({
           editor,
           closeMenu
-        }),
-        isActive: () => false
+        })
       }
     ],
     slashCommandAction: ({ editor, range }) => {
@@ -940,8 +929,7 @@ export function useEditorActions(state: TextEditorState) {
         .deleteRange(range)
         .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
         .run()
-    },
-    isActive: () => false
+    }
   })
 
   const addRowBefore = (): EditorAction => ({
@@ -955,7 +943,6 @@ export function useEditorActions(state: TextEditorState) {
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).addRowBefore().run()
     },
-    isActive: () => false,
     isEnabled: (editor) => editor.isActive('table')
   })
 
@@ -970,7 +957,6 @@ export function useEditorActions(state: TextEditorState) {
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).addRowAfter().run()
     },
-    isActive: () => false,
     isEnabled: (editor) => editor.isActive('table')
   })
 
@@ -993,7 +979,6 @@ export function useEditorActions(state: TextEditorState) {
         editor.chain().focus().deleteTable().run()
       }
     },
-    isActive: () => false,
     isEnabled: (editor) => editor.isActive('table')
   })
 
@@ -1008,7 +993,6 @@ export function useEditorActions(state: TextEditorState) {
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).addColumnBefore().run()
     },
-    isActive: () => false,
     isEnabled: (editor) => editor.isActive('table')
   })
 
@@ -1023,7 +1007,6 @@ export function useEditorActions(state: TextEditorState) {
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).addColumnAfter().run()
     },
-    isActive: () => false,
     isEnabled: (editor) => editor.isActive('table')
   })
 
@@ -1046,7 +1029,6 @@ export function useEditorActions(state: TextEditorState) {
         editor.chain().focus().deleteTable().run()
       }
     },
-    isActive: () => false,
     isEnabled: (editor) => editor.isActive('table')
   })
 
@@ -1061,7 +1043,6 @@ export function useEditorActions(state: TextEditorState) {
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleHeaderRow().run()
     },
-    isActive: () => false,
     isEnabled: (editor) => editor.isActive('table')
   })
 
@@ -1076,7 +1057,6 @@ export function useEditorActions(state: TextEditorState) {
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).deleteTable().run()
     },
-    isActive: () => false,
     isEnabled: (editor) => editor.isActive('table')
   })
 
