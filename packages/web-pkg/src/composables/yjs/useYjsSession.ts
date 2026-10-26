@@ -714,9 +714,11 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     if (current.hasContent(doc)) return
 
     // Read-only client in an empty room: hydrate a private copy so the file
-    // is not shown blank. It never reaches the room (the server rejects
-    // read-only writes); `hasLocalOnlyContent` lets the meta observer drop it
-    // again the moment a peer starts seeding for real.
+    // is not shown blank. `hasLocalOnlyContent` lets the meta observer drop it
+    // again the moment a peer starts seeding for real. The server only rejects
+    // writes from users without write permission, so a client that is
+    // read-only for another reason (e.g. a non-UTF-8 file) does send this
+    // copy to the room.
     if (unref(effectiveReadOnly)) {
       // A peer already announced its seeding; its content is on the way.
       if (meta.get('hydrated') === true) return
