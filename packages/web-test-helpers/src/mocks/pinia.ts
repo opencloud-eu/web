@@ -87,6 +87,7 @@ export type PiniaMockOptions = {
   }
   spacesState?: {
     spaces?: SpaceResource[]
+    currentSpace?: SpaceResource
     allProjectSpaces?: SpaceResource[]
     spacesInitialized?: boolean
     imagesLoading?: string[]
