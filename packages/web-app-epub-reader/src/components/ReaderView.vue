@@ -11,10 +11,7 @@
       <oc-icon name="arrow-left-s" fill-type="line" size-class="size-10" />
     </oc-button>
     <div class="flex h-full min-w-0 flex-1 justify-center overflow-hidden">
-      <div
-        ref="bookContainer"
-        class="epub-reader-book h-full min-h-[420px] w-[650px] max-w-full scheme-light"
-      />
+      <div ref="bookContainer" class="epub-reader-book h-full w-[650px] max-w-full scheme-light" />
     </div>
     <oc-button
       v-oc-tooltip="$gettext('Navigate to next page')"
