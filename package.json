@@ -57,7 +57,7 @@
     "eslint": "10.13.0",
     "franc-min": "^6.2.0",
     "happy-dom": "21.0.4",
-    "knip": "6.42.1",
+    "knip": "6.43.0",
     "license-checker-rseidelsohn": "4.4.2",
     "node-fetch": "3.3.2",
     "playwright": "^1.61.1",
