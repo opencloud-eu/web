@@ -7,16 +7,22 @@
     :data-test-resource-type="type"
     :title="htmlTitle"
   >
-    <span v-if="truncateName" class="truncate leading-4"
-      ><span class="oc-resource-basename whitespace-pre text-role-on-surface"
-        ><oc-filter-highlight :text="displayName" :term="term" /></span></span
-    ><span v-else class="oc-resource-basename break-normal text-role-on-surface leading-4"
-      ><oc-filter-highlight :text="displayName" :term="term" /></span
-    ><span
-      v-if="showExtension"
-      class="oc-resource-extension shrink-0 whitespace-pre text-role-on-surface leading-4"
-      ><oc-filter-highlight :text="displayExtension" :term="term"
-    /></span>
+    <template v-if="truncateName">
+      <span class="truncate leading-4"
+        ><span class="oc-resource-basename whitespace-pre text-role-on-surface"
+          ><oc-filter-highlight :text="displayName" :term="term" /></span></span
+      ><span
+        v-if="showExtension"
+        class="oc-resource-extension shrink-0 whitespace-pre text-role-on-surface leading-4"
+        ><oc-filter-highlight :text="displayExtension" :term="term"
+      /></span>
+    </template>
+    <span v-else class="min-w-0 leading-4"
+      ><span class="oc-resource-basename break-normal text-role-on-surface"
+        ><oc-filter-highlight :text="displayName" :term="term" /></span
+      ><span v-if="showExtension" class="oc-resource-extension whitespace-pre text-role-on-surface"
+        ><oc-filter-highlight :text="displayExtension" :term="term" /></span
+    ></span>
     <oc-icon
       v-if="isFavoriteDisplayed && isFavorite"
       name="star"

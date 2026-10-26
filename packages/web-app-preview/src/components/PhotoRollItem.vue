@@ -38,9 +38,8 @@
           :full-path="item.resource.webDavPath"
           :is-extension-displayed="areFileExtensionsShown"
           :is-path-displayed="false"
-          :truncate-name="false"
           :is-favorite="item.resource.starred"
-          class="[&_span]:break-all justify-center"
+          class="justify-center"
         />
       </span>
     </oc-button>
