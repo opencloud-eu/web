@@ -159,6 +159,8 @@ services:
         condition: service_healthy
       inbucket:
         condition: service_started
+      imagor:
+        condition: service_started
 
   opencloud-federated:
     <<: *opencloud-service
@@ -225,6 +227,8 @@ services:
       collabora-proof-key:
         condition: service_completed_successfully
       traefik:
+        condition: service_started
+      imagor:
         condition: service_started
 
   # generates the WOPI proof key on first start and keeps it in a named volume
