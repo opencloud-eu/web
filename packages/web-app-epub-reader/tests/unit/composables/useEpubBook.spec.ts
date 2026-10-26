@@ -83,6 +83,16 @@ describe('useEpubBook', () => {
     expect(unref(result.atEnd)).toBe(false)
   })
 
+  it('names every rendered book frame for screen readers', async () => {
+    const { result } = mountComposable(() => useEpubBook())
+    await result.open('content', { container: document.createElement('div') })
+    const iframe = document.createElement('iframe')
+
+    books[0].rendition.emit('rendered', {}, { iframe })
+
+    expect(iframe.title).toBe('Book content')
+  })
+
   it('destroys the previous book when another one is opened', async () => {
     const { result } = mountComposable(() => useEpubBook())
     await result.open('one', { container: document.createElement('div') })

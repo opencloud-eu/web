@@ -1,5 +1,6 @@
 import ePub, { Book, EpubCFI, Location, Rendition } from 'epubjs'
 import { computed, onBeforeUnmount, ref, shallowRef, unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
 
 export type OpenBookOptions = {
   container: HTMLElement
@@ -12,12 +13,15 @@ const RENDERABLE_TYPES = ['application/xhtml+xml', 'text/html']
 
 /** epub.js types don't declare the spine items. */
 type SpineItem = { href?: string; idref?: string; linear?: boolean }
+/** epub.js types don't declare the iframe of a rendered view. */
+type RenderedView = { iframe?: HTMLIFrameElement }
 
 /**
  * Owns the epub.js book and its rendition. Everything else in the reader derives from the
  * `location` that epub.js reports whenever the displayed position changes.
  */
 export function useEpubBook() {
+  const { $gettext } = useGettext()
   const book = shallowRef<Book>()
   const rendition = shallowRef<Rendition>()
   const location = shallowRef<Location>()
@@ -78,6 +82,10 @@ export function useEpubBook() {
     nextRendition.on('relocated', (relocated: Location) => {
       location.value = relocated
       isLoading.value = false
+    })
+    // epub.js renders every section into a new iframe, which needs a name for screen readers
+    nextRendition.on('rendered', (_section: unknown, view: RenderedView) => {
+      view.iframe?.setAttribute('title', $gettext('Book content'))
     })
     rendition.value = nextRendition
 
