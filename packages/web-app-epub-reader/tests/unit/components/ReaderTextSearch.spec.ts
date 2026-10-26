@@ -33,6 +33,11 @@ describe('ReaderTextSearch component', () => {
     vi.useRealTimers()
   })
 
+  it('renders the search as a non-menu drop, so Tab moves through its fields', () => {
+    const wrapper = getWrapper()
+    expect(wrapper.find('oc-drop-stub').attributes('is-menu')).toBe('false')
+  })
+
   it('shows empty status when query is empty', () => {
     const wrapper = getWrapper()
     expect(wrapper.find('.epub-reader-search-result-count').text()).toBe('')

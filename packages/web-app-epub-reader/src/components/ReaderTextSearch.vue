@@ -7,6 +7,7 @@
       mode="click"
       :offset="20"
       :close-on-click="false"
+      :is-menu="false"
       enforce-drop-on-mobile
       padding-size="small"
       @show-drop="focusSearchInput"
