@@ -18,17 +18,23 @@ import {
   createTableOfContentsExtension,
   createMarkdownClipboardExtension,
   Frontmatter,
+  HtmlBlock,
+  HtmlInline,
   imageFileHandlerExtension,
   MarkdownListItem,
   MarkdownOrderedList,
   MarkdownParagraph,
   MarkdownTaskList,
   registerFrontmatterTokenizer,
+  registerMarkdownHtmlTokenizer,
   registerMarkdownListTokenizer
 } from '../../extensions'
-import { ContentTypeStrategy, ExtensionsOptions } from './types'
+import { ContentTypeStrategy, ContentTypeStrategyOptions, ExtensionsOptions } from './types'
 
-export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeStrategy => {
+export const useStrategyMarkdown = (
+  editorState: TextEditorState,
+  { renderHtml = false }: ContentTypeStrategyOptions = {}
+): ContentTypeStrategy => {
   const { $gettext } = useGettext()
 
   // Every `MarkdownManager` appends its extensions' tokenizers to the marked
@@ -39,6 +45,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
   const instance = new Marked()
   registerFrontmatterTokenizer(instance)
   registerMarkdownListTokenizer(instance)
+  registerMarkdownHtmlTokenizer(instance, { keepSource: !renderHtml })
   // Cast because tiptap types the option as the default export, which carries a
   // `getDefaults` helper a plain instance lacks. The manager never calls it: it
   // only touches `use`, `setOptions`, `Lexer`, `lexer` and `defaults`.
@@ -116,6 +123,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       // alternative, and that must be a paragraph rather than a metadata block.
       Document.extend({ content: 'block+ | (frontmatter block*)' }),
       Frontmatter,
+      ...(renderHtml ? [] : [HtmlBlock, HtmlInline]),
       createCodeBlockLowlight(),
       Markdown.configure({ marked }),
       createMarkdownClipboardExtension(),

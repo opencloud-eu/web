@@ -190,6 +190,21 @@
   font-size: inherit;
 }
 
+/* Raw HTML styles */
+.text-editor-content .ProseMirror .text-editor-html-block {
+  position: relative;
+}
+
+/* reserve a row for the label so it never covers the html */
+.text-editor-content .ProseMirror .text-editor-html-block pre {
+  padding-top: 28px;
+}
+
+.text-editor-content .ProseMirror .text-editor-html-inline {
+  font-size: 13px;
+  color: var(--oc-role-on-surface-variant);
+}
+
 /* Table styles */
 .text-editor-content .ProseMirror .tableWrapper {
   overflow-x: auto;

@@ -23,6 +23,7 @@ const editor = useTextEditor({
   modelValue: toRef(() => content),
   ariaLabel,
   readonly: true,
-  slashCommands: false
+  slashCommands: false,
+  renderHtml: true
 })
 </script>
