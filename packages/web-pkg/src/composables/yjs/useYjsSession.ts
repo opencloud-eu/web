@@ -56,6 +56,11 @@ export interface YjsSessionOptions {
    * `runInitialHydration`.
    */
   isReadOnly: MaybeRefOrGetter<boolean>
+  /**
+   * Runs the session in local mode even with a Yjs server configured, for
+   * content that must not reach the shared room.
+   */
+  forceLocal?: MaybeRefOrGetter<boolean>
   /** Translates between the native file format and the doc's shared types. */
   adapter: MaybeRefOrGetter<YjsAdapter>
   /**
@@ -306,6 +311,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     currentContent,
     enabled,
     isReadOnly,
+    forceLocal = false,
     adapter,
     documentPrefix,
     onContentChange,
@@ -342,6 +348,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   // with a configured server URL, encrypted files must never go collaborative.
   const yjsServerUrl = computed<string | null>(() => {
     if (!configStore.options.yjsServerUrl) return null
+    if (toValue(forceLocal)) return null
     if (!authStore.accessToken) return null
     if (authStore.publicLinkContextReady) return null
     if (toValue(resource)?.isInVault) return null
@@ -714,11 +721,9 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     if (current.hasContent(doc)) return
 
     // Read-only client in an empty room: hydrate a private copy so the file
-    // is not shown blank. `hasLocalOnlyContent` lets the meta observer drop it
-    // again the moment a peer starts seeding for real. The server only rejects
-    // writes from users without write permission, so a client that is
-    // read-only for another reason (e.g. a non-UTF-8 file) does send this
-    // copy to the room.
+    // is not shown blank. It never reaches the room (the server rejects
+    // read-only writes); `hasLocalOnlyContent` lets the meta observer drop it
+    // again the moment a peer starts seeding for real.
     if (unref(effectiveReadOnly)) {
       // A peer already announced its seeding; its content is on the way.
       if (meta.get('hydrated') === true) return

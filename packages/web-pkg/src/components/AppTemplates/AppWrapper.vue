@@ -177,6 +177,8 @@ const loadingError: Ref<Error> = ref()
 const error = computed(() => unref(loadingError) || unref(folderLoadingError))
 const isNotFoundError = computed(() => (unref(error) as HttpError)?.statusCode === 404)
 const isReadOnly = ref(false)
+/** The loaded text is not valid UTF-8, see `getFileContentsAsText`. */
+const isLossyContent = ref(false)
 const serverContent = ref<unknown>()
 const currentContent = ref<unknown>()
 /**
@@ -290,6 +292,7 @@ const {
   applicationId,
   resource,
   isReadOnly,
+  isLossyContent,
   isDirty,
   loading,
   loadingError,
@@ -522,7 +525,8 @@ const loadFileTask = useTask(function* (signal) {
       const fileContentsResponse = yield* call(
         getFileContentsAsText(unref(currentFileContext), { ...fileContentOptions, signal })
       )
-      if (fileContentsResponse.isLossless === false && !unref(isReadOnly)) {
+      isLossyContent.value = fileContentsResponse.isLossless === false
+      if (unref(isLossyContent) && !unref(isReadOnly)) {
         isReadOnly.value = true
         if (unref(isEditor)) {
           showMessage({

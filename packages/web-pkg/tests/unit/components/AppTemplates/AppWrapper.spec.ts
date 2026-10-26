@@ -1,5 +1,5 @@
 import { mock } from 'vitest-mock-extended'
-import { defineComponent, h, nextTick, ref, unref } from 'vue'
+import { defineComponent, h, nextTick, ref, toValue, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import type { Resource, ShareSpaceResource } from '@opencloud-eu/web-client'
 import { HttpError } from '@opencloud-eu/web-client'
@@ -522,6 +522,18 @@ describe('AppWrapper — files that are not valid UTF-8', () => {
 
     expect(s.isReadOnly()).toBe(false)
     expect(useMessages().showMessage).not.toHaveBeenCalled()
+  })
+
+  it('keeps the file out of the shared Yjs room', async () => {
+    const s = await openLatin1File()
+
+    expect(toValue(s.session().forceLocal)).toBe(true)
+  })
+
+  it('opens a valid UTF-8 file in the shared Yjs room', async () => {
+    const s = await openFile()
+
+    expect(toValue(s.session().forceLocal)).toBe(false)
   })
 })
 
