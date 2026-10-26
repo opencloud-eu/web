@@ -106,7 +106,10 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
 
 exports[`SpaceHeader > space image > should show the set image 1`] = `
 "<div class="space-header py-4 flex">
-  <div class="space-header-image mr-6 aspect-[16/9] w-[180px] max-h-[100px] shrink-0"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image" decoding="async"></div>
+  <div class="space-header-image mr-6 aspect-[16/9] w-[180px] max-h-[100px] shrink-0"><button type="button" aria-label="Enlarge space image" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default size-full rounded-lg">
+      <!--v-if-->
+      <!-- @slot Content of the button --> <img class="rounded-lg size-full max-h-full object-cover" alt="" src="blob:image" decoding="async">
+    </button></div>
   <div class="flex-1 min-w-0">
     <div class="flex flex-wrap items-center justify-between gap-x-4 max-w-full">
       <div class="flex items-center min-w-0 max-w-full">

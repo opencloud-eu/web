@@ -207,7 +207,7 @@ defineExpose({ onUpdate, onKeyDown })
 }
 
 .text-editor-slash-menu__item-description {
-  @apply text-xs opacity-70;
+  @apply text-xs text-role-on-surface-variant;
 }
 
 .text-editor-slash-menu__item--selected {

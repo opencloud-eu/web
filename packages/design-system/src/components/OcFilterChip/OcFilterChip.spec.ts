@@ -1,4 +1,5 @@
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import { flushPromises } from '@vue/test-utils'
 import OcFilterChip from './OcFilterChip.vue'
 import { useGettext } from 'vue3-gettext'
 
@@ -30,6 +31,18 @@ describe('OcFilterChip', () => {
     const { wrapper } = getWrapper({ props: { selectedItemNames: ['Einstein', 'Marie'] } })
     await wrapper.find(selectors.clearBtn).trigger('click')
     expect(wrapper.emitted('clearFilter')).toBeTruthy()
+  })
+  it('moves the focus to the chip when the filter is cleared', async () => {
+    const { wrapper } = getWrapper({
+      props: { selectedItemNames: ['Einstein'] },
+      attachTo: document.body
+    })
+    await wrapper.find(selectors.clearBtn).trigger('click')
+    await wrapper.setProps({ selectedItemNames: [] })
+    await flushPromises()
+
+    expect(document.activeElement).toBe(wrapper.find(selectors.filterChipBtn).element)
+    wrapper.unmount()
   })
   describe('accessible names', () => {
     it('names the chip after the filter and its selection', () => {
@@ -79,9 +92,13 @@ describe('OcFilterChip', () => {
   })
 })
 
-const getWrapper = ({ props = {} } = {}) => {
+const getWrapper = ({
+  props = {},
+  attachTo = undefined
+}: { props?: Record<string, unknown>; attachTo?: HTMLElement } = {}) => {
   return {
     wrapper: mount(OcFilterChip, {
+      attachTo,
       props: { filterLabel: 'Users', selectedItemNames: [], ...props },
       global: { plugins: [...defaultPlugins()] }
     })

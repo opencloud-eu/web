@@ -5,6 +5,7 @@
   >
     <oc-button
       :id="id"
+      ref="chipButtonRef"
       :gap-size="filterActive ? 'small' : 'none'"
       class="oc-filter-chip-button oc-pill py-1 rounded-md h-[32px] max-w-40 focus:z-90 transition-[gap]"
       :class="{
@@ -63,7 +64,7 @@
       color-role="secondaryContainer"
       :aria-label="$gettext('Clear filter %{filterLabel}', { filterLabel })"
       :no-hover="filterActive"
-      @click="emit('clearFilter')"
+      @click="clearFilter"
     >
       <oc-icon name="close" size-class="size-4" />
     </oc-button>
@@ -71,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref, useTemplateRef } from 'vue'
+import { ComponentPublicInstance, computed, nextTick, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { uniqueId } from '../../helpers'
 import OcDrop from '../OcDrop/OcDrop.vue'
@@ -190,6 +191,14 @@ const selectionLabel = computed(() => {
 
 const hideDrop = () => {
   unref(dropRef)?.hide()
+}
+
+const chipButtonRef = useTemplateRef<ComponentPublicInstance>('chipButtonRef')
+async function clearFilter() {
+  emit('clearFilter')
+  // the clear button is removed, so hand the focus to the chip instead of losing it to the body
+  await nextTick()
+  unref(chipButtonRef)?.$el.focus()
 }
 
 const buttonAppearance = computed(() => {

@@ -44,6 +44,15 @@ describe('FrontmatterComponent', () => {
     expect(wrapper.find('.text-editor-frontmatter-label').text()).toBe('Frontmatter')
   })
 
+  it('names the block textbox by its visible label', () => {
+    const wrapper = mountComponent()
+    const label = wrapper.find('.text-editor-frontmatter-label')
+    const content = wrapper.find('.text-editor-frontmatter-content')
+
+    expect(label.attributes('id')).toBeTruthy()
+    expect(content.attributes('aria-labelledby')).toBe(label.attributes('id'))
+  })
+
   it('keeps the label out of the editable text', () => {
     const wrapper = mountComponent()
     expect(wrapper.find('.text-editor-frontmatter-label').attributes('contenteditable')).toBe(

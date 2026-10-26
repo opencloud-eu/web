@@ -201,11 +201,13 @@ const shareDisplayName = computed(() => {
   return share.sharedWith.displayName
 })
 const screenreaderShareDisplayName = computed(() => {
+  // the avatar showing the type is hidden from screen readers, so name the type here
   const context = {
-    displayName: share.sharedWith.displayName
+    displayName: share.sharedWith.displayName,
+    type: unref(shareTypeText)
   }
 
-  return $gettext('Share receiver name: %{ displayName }', context)
+  return $gettext('Share receiver name: %{ displayName }, %{ type }', context)
 })
 const hasExpirationDate = computed(() => !!share.expirationDateTime)
 const expirationDate = computed(() => {

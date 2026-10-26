@@ -296,6 +296,35 @@ describe('Preview app', () => {
     )
   })
 
+  describe('Arrow keys', () => {
+    const getPreview = async () => {
+      const { wrapper } = createShallowMountWrapper()
+      await wrapper.setProps({ isFolderLoading: false })
+      await flushPromises()
+      return { wrapper, preview: wrapper.find('.stage').element.parentElement }
+    }
+
+    it('go to the next and the previous file', async () => {
+      const { wrapper, preview } = await getPreview()
+      preview.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
+      expect((wrapper.vm as any).activeIndex).toBe(1)
+      preview.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }))
+      expect((wrapper.vm as any).activeIndex).toBe(0)
+    })
+
+    it.each(['<audio controls></audio>', '<video controls></video>', '<input type="range">'])(
+      'are left to the focused %s',
+      async (html) => {
+        const { wrapper, preview } = await getPreview()
+        preview.insertAdjacentHTML('beforeend', html)
+        preview.lastElementChild.dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })
+        )
+        expect((wrapper.vm as any).activeIndex).toBe(0)
+      }
+    )
+  })
+
   describe('Deleting the active file', () => {
     it('points the URL to the file that is shown next', async () => {
       const { wrapper, mocks } = createShallowMountWrapper()

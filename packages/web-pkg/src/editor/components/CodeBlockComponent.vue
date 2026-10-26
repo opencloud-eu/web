@@ -20,6 +20,7 @@
     </span>
     <pre
       role="textbox"
+      :aria-label="$gettext('Code block')"
       :aria-describedby="hintId"
       aria-multiline="true"
     ><code><node-view-content /></code></pre>
@@ -92,7 +93,7 @@ const isReadonly = computed(() => props.editor.isEditable === false)
   color: var(--oc-role-on-surface-variant);
 }
 
-.text-editor-code-block-select:focus {
+.text-editor-code-block-select:focus:not(:focus-visible) {
   box-shadow: none;
   outline: none;
 }

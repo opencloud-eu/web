@@ -64,6 +64,7 @@
           id="files-links-list"
           class="oc-list overflow-hidden"
           :aria-label="$gettext('Public links')"
+          :inert="indirectLinkListCollapsed"
         >
           <li v-for="link in indirectLinks" :key="link.id">
             <list-item
@@ -78,6 +79,7 @@
         <oc-button
           class="indirect-link-list-toggle"
           appearance="raw"
+          :aria-expanded="!indirectLinkListCollapsed"
           @click="toggleIndirectLinkListCollapsed"
         >
           <span v-text="indirectCollapseButtonTitle" />

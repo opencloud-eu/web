@@ -80,4 +80,11 @@ describe('CodeBlockComponent', () => {
 
     expect(select.element.value).toBe('js')
   })
+
+  it('gives the code block textbox an accessible name', () => {
+    const { wrapper } = mountCodeBlock(true)
+    const textbox = wrapper.find('pre[role="textbox"]')
+
+    expect(textbox.attributes('aria-label')).toBe('Code block')
+  })
 })

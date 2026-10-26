@@ -1,5 +1,5 @@
 import { Ref, unref } from 'vue'
-import { Key, useKeyboardActions } from './useKeyboardActions'
+import { Key, Modifier, useKeyboardActions } from './useKeyboardActions'
 import type { CropperSelection, CropperImage } from 'cropperjs'
 
 export const useCropperKeyboardActions = () => {
@@ -69,7 +69,7 @@ export const useCropperKeyboardActions = () => {
       }
     })
 
-    keyboardActions.bindKeyAction({ primary: Key.Plus }, () => {
+    function zoomIn() {
       const instance = unref(cropper)
       if (instance && isCropperFocused(instance)) {
         const imageInstance = image ? unref(image) : null
@@ -77,7 +77,10 @@ export const useCropperKeyboardActions = () => {
           imageInstance.$scale(1 + zoomStep)
         }
       }
-    })
+    }
+    // '+' needs Shift on many keyboard layouts (e.g. US, UK)
+    keyboardActions.bindKeyAction({ primary: Key.Plus }, zoomIn)
+    keyboardActions.bindKeyAction({ primary: Key.Plus, modifier: Modifier.Shift }, zoomIn)
     keyboardActions.bindKeyAction({ primary: Key.Minus }, () => {
       const instance = unref(cropper)
       if (instance && isCropperFocused(instance)) {

@@ -4,6 +4,14 @@ import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-
 import { mock } from 'vitest-mock-extended'
 
 describe('EditPasswordModal', () => {
+  it('identifies the purpose of the password fields', () => {
+    const { wrapper } = getWrapper()
+    const autocomplete = wrapper
+      .findAllComponents({ name: 'OcTextInput' })
+      .map((input) => input.attributes('autocomplete'))
+    expect(autocomplete).toEqual(['current-password', 'new-password', 'new-password'])
+  })
+
   describe('computed method "confirmButtonDisabled"', () => {
     it('should be true if any data set is invalid', () => {
       const { wrapper } = getWrapper()

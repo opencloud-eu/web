@@ -59,6 +59,19 @@ describe('FileLinks', () => {
         expect(linkListItems.at(1).props('linkShare')).toMatchObject(defaultLinksList[1])
       })
 
+      it('keeps the collapsed indirect links out of the tab order and the accessibility tree', async () => {
+        const { wrapper } = getWrapper()
+        const indirectList = wrapper.findAll('ul').at(-1)
+        const toggle = wrapper.findAll(selectors.indirectToggle).at(-1)
+        expect(indirectList.element.inert).toBe(true)
+        expect(toggle.attributes('aria-expanded')).toBe('false')
+
+        await toggle.trigger('click')
+
+        expect(indirectList.element.inert).toBe(false)
+        expect(toggle.attributes('aria-expanded')).toBe('true')
+      })
+
       it('should not show the "no results" message', () => {
         const { wrapper } = getWrapper()
 

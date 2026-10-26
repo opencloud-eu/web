@@ -12,6 +12,7 @@
           :class="{ 'border-b border-role-secondary rounded-none font-bold': navItem.active }"
           appearance="raw"
           :to="navItem.active ? undefined : navItem.to"
+          :aria-current="navItem.active ? 'page' : undefined"
           no-hover
           @click="reloadList"
         >
@@ -37,6 +38,7 @@
               :type="navItem.active ? 'button' : 'router-link'"
               justify-content="left"
               :to="navItem.active ? undefined : navItem.to"
+              :aria-current="navItem.active ? 'page' : undefined"
               :class="{ 'bg-role-secondary-container': navItem.active }"
               appearance="raw"
               @click="reloadList"

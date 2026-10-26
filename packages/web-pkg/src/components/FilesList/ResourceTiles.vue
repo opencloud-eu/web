@@ -325,7 +325,10 @@ const maxTilesAll = computed<number[]>(() => {
     ...new Set<number>(
       viewSizes.map((viewSize) => {
         const pixels = calculateTileSizePixels(viewSize)
-        return pixels ? Math.round(unref(viewWidth) / (pixels + unref(gapSizePixels))) : 0
+        // at least one tile per row, even if the view is narrower than half a tile
+        return pixels
+          ? Math.max(1, Math.round(unref(viewWidth) / (pixels + unref(gapSizePixels))))
+          : 0
       })
     )
   ]
@@ -351,7 +354,7 @@ const tileSizePixels = computed(() => {
 watch(
   tileSizePixels,
   (px: number | undefined) => {
-    if (px && !isNaN(px)) {
+    if (px > 0 && Number.isFinite(px)) {
       setRenderedTileSize(px)
       document.documentElement.style.setProperty(`--oc-size-tiles-actual`, `${px}px`)
     }

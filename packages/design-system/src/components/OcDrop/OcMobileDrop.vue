@@ -18,7 +18,7 @@
             v-if="drawers.length > 1"
             appearance="raw"
             class="raw-hover-surface oc-bottom-drawer-back-button"
-            :aria-label="$gettext('Open the parent context menu')"
+            :aria-label="$gettext('Back')"
             @click="hide()"
           >
             <oc-icon name="arrow-left" fill-type="line" />
@@ -27,7 +27,7 @@
           <oc-button
             appearance="raw"
             class="raw-hover-surface oc-bottom-drawer-close-button"
-            :aria-label="$gettext('Close the context menu')"
+            :aria-label="title ? $gettext('Close %{title}', { title }) : $gettext('Close')"
             @click="onClose"
           >
             <oc-icon name="close" fill-type="line" />

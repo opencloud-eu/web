@@ -54,6 +54,8 @@ function makeYjsCursorExtension(awareness: Awareness): Extension {
           cursorBuilder: (user: { name?: string; color?: string }) => {
             const cursor = document.createElement('span')
             cursor.classList.add('collaboration-cursor__caret')
+            // presence is announced by the collaborator list, the inline name would be read as document text
+            cursor.setAttribute('aria-hidden', 'true')
             cursor.setAttribute('style', `border-color: ${user.color ?? '#ffa500'}`)
             const label = document.createElement('div')
             label.classList.add('collaboration-cursor__label')
@@ -206,7 +208,10 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   }
 
   editorOptions.editorProps = {
-    attributes: editorAttributes,
+    // a function, so ProseMirror re-reads it when the readonly state flips. Tiptap always renders
+    // a textbox, so a read-only one has to say so or screen readers announce an editable field.
+    attributes: () =>
+      unref(readonly) ? { ...editorAttributes, 'aria-readonly': 'true' } : editorAttributes,
     handleDOMEvents: {
       auxclick(view: Editor['view'], event: Event) {
         const target = event.target

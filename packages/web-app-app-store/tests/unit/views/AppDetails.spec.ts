@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { onBeforeRouteLeave, RouteLocationNormalized, Router, RouterHistory } from 'vue-router'
 import { RouterLinkStub } from '@vue/test-utils'
 import { mock } from 'vitest-mock-extended'
-import { useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
+import { eventBus, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   defaultPlugins,
@@ -65,6 +65,17 @@ describe('AppDetails', () => {
     const { wrapper, getById } = getWrapper(app)
     expect(getById).toHaveBeenCalledWith('com.example.app')
     expect(wrapper.find(selectors.title).text()).toBe('Example')
+  })
+  it.each([
+    ['the app name', app, 'Example - App Store'],
+    ['the app id for an unknown app', undefined, 'com.example.app - App Store']
+  ])('titles the page with %s', (_, resolvedApp, title) => {
+    const publishSpy = vi.spyOn(eventBus, 'publish')
+    getWrapper(resolvedApp)
+    expect(publishSpy).toHaveBeenCalledWith(
+      'runtime.documentTitle.changed',
+      expect.objectContaining({ shortDocumentTitle: title })
+    )
   })
   it('falls back to the subtitle if the app has no description', () => {
     const { wrapper } = getWrapper(app)

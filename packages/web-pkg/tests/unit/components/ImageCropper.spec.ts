@@ -12,6 +12,10 @@ describe('ImageCropper', () => {
     const hint = wrapper.find(`#${selection.attributes('aria-describedby')}`)
     expect(hint.text()).toContain('Zoom via')
   })
+  it('gives the image to crop a text alternative', () => {
+    const wrapper = getWrapper()
+    expect(wrapper.find('cropper-image').attributes('alt')).toBe('Selected image')
+  })
   it('hides the decorative grid from assistive technologies', () => {
     const wrapper = getWrapper()
     const grid = wrapper.find('cropper-grid')

@@ -11,7 +11,13 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { preferencesPanelExtensionPoint } from '../../extensionPoints'
-import { NoContentMessage, useExtensionRegistry, useRouteQuery } from '@opencloud-eu/web-pkg'
+import {
+  NoContentMessage,
+  useDocumentTitle,
+  useExtensionRegistry,
+  useRouteQuery
+} from '@opencloud-eu/web-pkg'
+import { useGettext } from 'vue3-gettext'
 
 const extensionRegistry = useExtensionRegistry()
 
@@ -22,4 +28,8 @@ const extension = computed(() => {
     .requestExtensions(preferencesPanelExtensionPoint)
     .find((ext) => ext.id === unref(extensionId))
 })
+
+const { $gettext } = useGettext()
+const titleSegments = computed(() => [unref(extension)?.label() || $gettext('App preferences')])
+useDocumentTitle({ titleSegments })
 </script>

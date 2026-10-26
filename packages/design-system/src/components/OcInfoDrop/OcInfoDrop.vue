@@ -21,9 +21,13 @@
           </oc-button>
         </div>
         <p v-if="text" class="info-text first:mt-0 last:mb-0" v-text="$gettext(text)" />
-        <dl v-if="listItems.length" class="info-list mt-2 mb-1 first:mt-0 last:mb-0">
+        <component
+          :is="isDefinitionList ? 'dl' : 'ul'"
+          v-if="listItems.length"
+          class="info-list mt-2 mb-1 pl-0 first:mt-0 last:mb-0"
+        >
           <component
-            :is="item.headline ? 'dt' : 'dd'"
+            :is="item.headline ? 'dt' : isDefinitionList ? 'dd' : 'li'"
             v-for="(item, index) in listItems"
             :key="index"
             :class="{
@@ -34,7 +38,7 @@
           >
             {{ $gettext(item.text) }}
           </component>
-        </dl>
+        </component>
         <p v-if="endText" class="info-text-end" v-text="$gettext(endText)" />
         <oc-button
           v-if="readMoreLink"
@@ -52,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { FocusTrap } from 'focus-trap-vue'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
@@ -117,4 +121,6 @@ const dropOpen = ref(false)
 const listItems = computed(() => {
   return (list || []).filter((item) => !!item.text)
 })
+// a definition list needs terms, plain items without a headline make a regular list
+const isDefinitionList = computed(() => unref(listItems).some((item) => item.headline))
 </script>

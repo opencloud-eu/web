@@ -40,6 +40,21 @@ describe('OcInfoDrop', () => {
         expect(result).toContain(value.text)
       })
     })
+    it('renders items without headlines as a plain list', () => {
+      const wrapper = getWrapperWithProps({ list: [{ text: 'a' }, { text: 'b' }] })
+      const list = wrapper.find('.info-list')
+      expect(list.element.tagName).toBe('UL')
+      expect(list.findAll('li').length).toBe(2)
+    })
+    it('renders headlines and their items as a definition list', () => {
+      const wrapper = getWrapperWithProps({
+        list: [{ text: 'term', headline: true }, { text: 'definition' }]
+      })
+      const list = wrapper.find('.info-list')
+      expect(list.element.tagName).toBe('DL')
+      expect(list.find('dt').text()).toBe('term')
+      expect(list.find('dd').text()).toBe('definition')
+    })
     it('should set a readMore link', () => {
       const wrapper = getWrapperWithProps({ readMoreLink: 'opencloud.design' })
       const attributes = wrapper.find('.info-more-link').attributes()

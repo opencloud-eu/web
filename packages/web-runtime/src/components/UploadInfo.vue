@@ -20,6 +20,7 @@
               ? $gettext('Expand upload info body')
               : $gettext('Collapse upload info body')
           "
+          class="p-1"
           appearance="raw"
           @click="toggleBodyCollapsed"
         >
@@ -29,6 +30,7 @@
           v-if="!itemsInProgressCount"
           id="close-upload-info-btn"
           :aria-label="$gettext('Close')"
+          class="p-1"
           appearance="raw"
           @click="closeInfo"
         >

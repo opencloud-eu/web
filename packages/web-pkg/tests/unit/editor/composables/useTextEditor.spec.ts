@@ -4,8 +4,13 @@ import { withSetup } from './helpers'
 import { nextTick, ref, toRef, unref } from 'vue'
 import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
-import { yUndoPluginKey } from '@tiptap/y-tiptap'
+import { yCursorPlugin, yUndoPluginKey } from '@tiptap/y-tiptap'
 import { createMockStore, createTestingPinia } from '@opencloud-eu/web-test-helpers'
+
+vi.mock('@tiptap/y-tiptap', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tiptap/y-tiptap')>()
+  return { ...actual, yCursorPlugin: vi.fn(actual.yCursorPlugin) }
+})
 
 function createEditor(options = {}) {
   const defaults = { contentType: 'html' as const, modelValue: toRef('<p>hello</p>') }
@@ -186,6 +191,29 @@ describe('useTextEditor', () => {
         redoAction.toolbarAction!(editor)
 
         expect(editor.getText()).toBe('hello')
+      } finally {
+        result.destroy()
+        ydoc.destroy()
+      }
+    })
+  })
+
+  describe('remote cursors', () => {
+    it('hides the remote caret and its name label from assistive technology', () => {
+      const ydoc = new Y.Doc()
+      const { result } = createEditor({
+        contentType: 'plain-text',
+        modelValue: toRef(''),
+        ydoc,
+        awareness: new Awareness(ydoc)
+      })
+
+      try {
+        const { cursorBuilder } = vi.mocked(yCursorPlugin).mock.lastCall[1]
+        const caret = cursorBuilder({ name: 'Mary Kenneth Keller', color: '#ff0000' }, 1)
+
+        expect(caret.getAttribute('aria-hidden')).toBe('true')
+        expect(caret.textContent).toBe('Mary Kenneth Keller')
       } finally {
         result.destroy()
         ydoc.destroy()
@@ -453,17 +481,30 @@ describe('useTextEditor', () => {
   describe('ariaLabel', () => {
     it('sets an aria-label on the editor textbox element', () => {
       const { result } = createEditor({ ariaLabel: 'Info text' })
-      const attributes = (result.editor.value?.options.editorProps as any)?.attributes
-      expect(attributes?.['aria-label']).toBe('Info text')
-      expect(attributes?.role).toBe('textbox')
-      expect(attributes?.['aria-multiline']).toBe('true')
+      const dom = result.editor.value!.view.dom
+      expect(dom.getAttribute('aria-label')).toBe('Info text')
+      expect(dom.getAttribute('role')).toBe('textbox')
+      expect(dom.getAttribute('aria-multiline')).toBe('true')
+      expect(dom.hasAttribute('aria-readonly')).toBe(false)
     })
 
     it('does not add aria attributes when no aria-label or placeholder is given', () => {
       const { result } = createEditor()
-      const attributes = (result.editor.value?.options.editorProps as any)?.attributes
-      expect(attributes?.['aria-label']).toBeUndefined()
-      expect(attributes?.role).toBeUndefined()
+      const dom = result.editor.value!.view.dom
+      expect(dom.hasAttribute('aria-label')).toBe(false)
+      expect(dom.hasAttribute('aria-multiline')).toBe(false)
+    })
+
+    it('marks the textbox as read-only while the editor is read-only', async () => {
+      const readonly = ref(true)
+      const { result } = createEditor({ readonly })
+      const dom = result.editor.value!.view.dom
+      expect(dom.getAttribute('aria-readonly')).toBe('true')
+
+      readonly.value = false
+      await nextTick()
+
+      expect(dom.hasAttribute('aria-readonly')).toBe(false)
     })
   })
 })

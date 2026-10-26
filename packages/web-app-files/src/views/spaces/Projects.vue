@@ -115,6 +115,17 @@
               </template>
               <space-image v-else :space="resource" class="mr-2" />
             </template>
+            <!-- the indicators column with the status is hidden below lg, tiles show their own tag -->
+            <template #additionalResourceContent="{ resource }">
+              <oc-tag
+                v-if="resource.disabled && viewMode !== FolderViewModeConstants.name.tiles"
+                class="lg:hidden mt-1"
+                type="span"
+                size="small"
+              >
+                <span v-text="$gettext('Disabled')" />
+              </oc-tag>
+            </template>
             <template #actions="{ resource }">
               <oc-button
                 v-if="!resource.disabled"
