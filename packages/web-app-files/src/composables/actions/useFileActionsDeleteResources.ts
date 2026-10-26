@@ -279,29 +279,30 @@ export const useFileActionsDeleteResources = () => {
       startWorker(
         { topic: 'fileListDelete', space: spaceForDeletion, resources: workerResources },
         async ({ successful, failed }) => {
-          if (successful.length) {
+          // successful holds the worker clones with encrypted vault paths, consumers need cleartext
+          const deletedIds = new Set(successful.map(({ id }) => id))
+          const deletedResources = resourcesForDeletion.filter(({ id }) => deletedIds.has(id))
+
+          if (deletedResources.length) {
             showSuccessMessage({
               space: spaceForDeletion,
               filesToDelete: resourcesForDeletion,
-              deletedFiles: successful,
+              deletedFiles: deletedResources,
               deletionId
             })
-            eventBus.publish('runtime.resource.deleted', successful)
+            eventBus.publish('runtime.resource.deleted', deletedResources)
 
             // A deleted (sub)tree may be, or contain, a vault root whose
             // passphrase is now cached for a path that no longer exists.
             // Evict it so a different vault re-created at the same path later
-            // isn't silently auto-unlocked with the old key. successful holds
-            // the encrypted worker clones, so match back to the cleartext
-            // source resources by id - the store is keyed by cleartext path.
-            const deletedIds = new Set(successful.map(({ id }) => id))
-            resourcesForDeletion
-              .filter((r) => deletedIds.has(r.id))
-              .forEach((r) => vaultStore.clearEnginesUnder(spaceForDeletion.id, r.path))
+            // isn't silently auto-unlocked with the old key.
+            deletedResources.forEach((r) =>
+              vaultStore.clearEnginesUnder(spaceForDeletion.id, r.path)
+            )
           }
 
           resourcesStore.removeResourcesFromDeleteQueue(failed.map(({ resource }) => resource.id))
-          resourcesStore.removeResourcesFromDeleteQueue(successful.map(({ id }) => id))
+          resourcesStore.removeResourcesFromDeleteQueue([...deletedIds])
 
           failed.forEach(({ error, resource }) => {
             let title = $gettext('Failed to delete "%{resource}"', { resource: resource.name })
@@ -316,7 +317,7 @@ export const useFileActionsDeleteResources = () => {
 
           // user hasn't navigated to another location meanwhile
           if (originalCurrentFolderId === unref(currentFolder)?.id) {
-            resourcesStore.removeResources(successful)
+            resourcesStore.removeResources(deletedResources)
 
             const activeFilesCount = resourcesStore.activeResources.length
             const pageCount = Math.ceil(unref(activeFilesCount) / unref(itemsPerPage))
