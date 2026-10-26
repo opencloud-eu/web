@@ -124,6 +124,7 @@
     class="text-editor-toolbar-btn min-w-[38px] inline-flex items-center justify-center p-2"
     :class="rootClasses"
     :aria-label="item.title"
+    :aria-pressed="item.isActive ? isItemActive(item).toString() : undefined"
     :aria-hidden="measureOnly"
     :tabindex="measureOnly ? -1 : undefined"
     :data-item-id="item.id"

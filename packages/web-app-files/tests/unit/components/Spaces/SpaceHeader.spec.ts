@@ -104,6 +104,15 @@ describe('SpaceHeader', () => {
       expect(wrapper.find('.markdown-container').exists()).toBeTruthy()
       expect(wrapper.html()).toMatchSnapshot()
     })
+    it('gives the description viewer an accessible name', async () => {
+      const space = getSpaceMock()
+      space.spaceReadmeData = {}
+      const wrapper = getWrapper({ space })
+      await flushPromises()
+      expect(wrapper.findComponent({ name: 'TextEditorViewer' }).attributes('aria-label')).toBe(
+        'Space description'
+      )
+    })
     it('shows a loading spinner when the description is loading', () => {
       const space = getSpaceMock()
       space.spaceReadmeData = {}

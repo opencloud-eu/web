@@ -13,6 +13,8 @@
       ref="passwordInput"
       v-model="password"
       class="grow-2 border-0 focus:border-0 focus:outline-0"
+      :aria-describedby="getAriaDescribedBy()"
+      :aria-invalid="getAriaInvalid()"
       :type="showPassword ? 'text' : 'password'"
       :disabled="disabled"
       @focus="hasFocus = true"
@@ -70,6 +72,12 @@
           :class="[{ 'oc-text-input-danger': !testedRule.verified }]"
           v-text="getPasswordPolicyRuleMessage(testedRule)"
         ></span>
+        <span
+          class="sr-only"
+          v-text="
+            testedRule.verified ? $gettext('Requirement met') : $gettext('Requirement not met')
+          "
+        />
         <oc-contextual-helper
           v-if="testedRule.helperMessage"
           :text="testedRule.helperMessage"
@@ -81,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, useTemplateRef, watch } from 'vue'
+import { computed, HTMLAttributes, ref, unref, useAttrs, useTemplateRef, watch } from 'vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcButton from '../OcButton/OcButton.vue'
 import OcHiddenAnnouncer from '../OcHiddenAnnouncer/OcHiddenAnnouncer.vue'
@@ -128,6 +136,29 @@ const showPasswordPolicyInformation = computed(() => {
 const testedPasswordPolicy = computed(() => {
   return passwordPolicy?.missing(unref(password))
 })
+
+// attrs are not reactive, so these are plain functions evaluated on every render
+const attrs = useAttrs()
+
+function getAriaDescribedBy() {
+  const ids = [attrs['aria-describedby'] as string]
+  // the teleport target only holds the policy rules
+  if (unref(showPasswordPolicyInformation) && teleportId) {
+    ids.push(teleportId)
+  }
+  return ids.filter(Boolean).join(' ') || undefined
+}
+
+function getAriaInvalid(): HTMLAttributes['aria-invalid'] {
+  const policyFailed =
+    unref(showPasswordPolicyInformation) &&
+    !!unref(password) &&
+    unref(testedPasswordPolicy).rules.some((rule) => !rule.verified)
+  if (policyFailed) {
+    return 'true'
+  }
+  return attrs['aria-invalid'] as HTMLAttributes['aria-invalid']
+}
 
 const getPasswordPolicyRuleMessage = (rule: PasswordPolicyRule) => {
   const paramObj: Record<string, string> = {}

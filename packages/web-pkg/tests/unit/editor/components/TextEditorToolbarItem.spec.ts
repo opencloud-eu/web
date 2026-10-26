@@ -43,6 +43,17 @@ function mountItem(item: EditorAction) {
 }
 
 describe('TextEditorToolbarItem', () => {
+  describe('active state', () => {
+    it.each([true, false])('exposes the state of a toggle button (active: %s)', (active) => {
+      const wrapper = mountItem({ id: 'bold', title: 'Bold', icon: 'bold', isActive: () => active })
+      expect(wrapper.find('button').attributes('aria-pressed')).toBe(active.toString())
+    })
+    it('does not expose a state for a plain button', () => {
+      const wrapper = mountItem({ id: 'undo', title: 'Undo', icon: 'undo' })
+      expect(wrapper.find('button').attributes('aria-pressed')).toBeUndefined()
+    })
+  })
+
   it('titles the drop of a menu action, so the mobile bottom drawer has a header', () => {
     const wrapper = mountItem({
       id: 'image',

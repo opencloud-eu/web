@@ -359,5 +359,13 @@ describe('OcTextInput', () => {
       const wrapper = getShallowWrapper({ requiredMark: true })
       expect(wrapper.find('label span').text()).toContain('*')
     })
+    it('marks the input as required for assistive technologies', () => {
+      const wrapper = getShallowWrapper({ requiredMark: true })
+      expect(wrapper.find('input').attributes('aria-required')).toBe('true')
+    })
+    it('does not mark the input as required without the mark', () => {
+      const wrapper = getShallowWrapper()
+      expect(wrapper.find('input').attributes('aria-required')).toBeUndefined()
+    })
   })
 })

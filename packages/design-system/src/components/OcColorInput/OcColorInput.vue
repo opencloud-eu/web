@@ -175,6 +175,9 @@ const additionalAttributes = computed(() => {
   if (!!errorMessage || !!descriptionMessage) {
     additionalAttrs['aria-describedby'] = messageId.value
   }
+  if (requiredMark) {
+    additionalAttrs['aria-required'] = 'true'
+  }
   // note: we spread out the attrs we don't want to be present in the resulting object
   const { change, input, class: classes, ...attrs } = tmpAttrs
   return { ...attrs, ...additionalAttrs }

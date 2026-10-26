@@ -9,6 +9,7 @@
       id="create-shortcut-modal-filename-input"
       :model-value="inputFilename"
       :label="$gettext('Shortcut name')"
+      aria-required="true"
       class="w-full"
       :error-message="inputFileNameErrorMessage"
       :fix-message-line="true"

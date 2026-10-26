@@ -62,6 +62,13 @@ describe('Details SideBar Panel', () => {
     })
     expect(wrapper.find(selectors.spaceMembers).exists()).toBeFalsy()
   })
+  it('names the share panel button by its visible text and describes it with the share summary', () => {
+    const { wrapper } = createWrapper()
+    const showButton = wrapper.find(selectors.spaceMembers).findAll('oc-button-stub').at(-1)
+    expect(showButton.attributes('arialabel')).toBeUndefined()
+    const description = wrapper.find(`[id="${showButton.attributes('aria-describedby')}"]`)
+    expect(description.text()).toBe('This space has 1 member.')
+  })
   it('renders the size if the space is the current folder', () => {
     const { wrapper } = createWrapper()
     expect(wrapper.findAll('dt').map((dt) => dt.text())).toContain('Size')

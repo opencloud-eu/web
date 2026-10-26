@@ -15,7 +15,11 @@
         'mask-linear-[180deg,black,80%,transparent]': markdownCollapsed && showMarkdownCollapse
       }"
     >
-      <TextEditorViewer class="w-full" :content="markdownContent" />
+      <TextEditorViewer
+        class="w-full"
+        :content="markdownContent"
+        :aria-label="$gettext('README')"
+      />
     </div>
     <div v-if="showMarkdownCollapse && markdownContent" class="markdown-collapse text-center mt-2">
       <oc-button appearance="raw" no-hover @click="toggleMarkdownCollapsed">

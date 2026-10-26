@@ -45,6 +45,7 @@
         <input
           class="vs__search"
           v-bind="attributes"
+          :aria-required="requiredMark ? 'true' : undefined"
           @input="emit('search:input', ($event.target as HTMLInputElement).value)"
           v-on="events"
         />

@@ -1,5 +1,11 @@
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import OcFilterChip from './OcFilterChip.vue'
+import { useGettext } from 'vue3-gettext'
+
+vi.mock('vue3-gettext', async (importOriginal) => {
+  const original = await importOriginal<typeof import('vue3-gettext')>()
+  return { ...original, useGettext: vi.fn(original.useGettext) }
+})
 
 const selectors = {
   filterChipBtn: '.oc-filter-chip-button',
@@ -25,10 +31,41 @@ describe('OcFilterChip', () => {
     await wrapper.find(selectors.clearBtn).trigger('click')
     expect(wrapper.emitted('clearFilter')).toBeTruthy()
   })
+  describe('accessible names', () => {
+    it('names the chip after the filter and its selection', () => {
+      const { wrapper } = getWrapper({ props: { selectedItemNames: ['Einstein', 'Marie'] } })
+      expect(wrapper.find(selectors.filterChipBtn).attributes('aria-label')).toBe(
+        'Users: Einstein +1'
+      )
+    })
+    it('translates the chip name', () => {
+      const $gettext = vi.fn((msg: string) => msg)
+      vi.mocked(useGettext).mockReturnValueOnce({ $gettext } as any)
+      getWrapper({ props: { selectedItemNames: ['Einstein'] } })
+      expect($gettext).toHaveBeenCalledWith('%{filter}: %{selection}', {
+        filter: 'Users',
+        selection: 'Einstein'
+      })
+    })
+    it('keeps the visible label as name without a selection', () => {
+      const { wrapper } = getWrapper()
+      expect(wrapper.find(selectors.filterChipBtn).attributes('aria-label')).toBeUndefined()
+    })
+    it('names the clear button after the filter', () => {
+      const { wrapper } = getWrapper({ props: { selectedItemNames: ['Einstein'] } })
+      expect(wrapper.find(selectors.clearBtn).attributes('aria-label')).toBe('Clear filter Users')
+    })
+  })
   describe('isToggle is true', () => {
     it('does not render a dropdown', () => {
       const { wrapper } = getWrapper({ props: { isToggle: true } })
       expect(wrapper.find(selectors.filterChipDrop).exists()).toBeFalsy()
+    })
+    it.each([true, false])('exposes the toggle state as pressed (%s)', (isToggleActive) => {
+      const { wrapper } = getWrapper({ props: { isToggle: true, isToggleActive } })
+      expect(wrapper.find(selectors.filterChipBtn).attributes('aria-pressed')).toBe(
+        isToggleActive.toString()
+      )
     })
     it('marks filter as active when isToggleActive is true', () => {
       const { wrapper } = getWrapper({ props: { isToggle: true, isToggleActive: true } })

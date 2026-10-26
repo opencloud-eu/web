@@ -33,7 +33,7 @@
         />
       </oc-button>
     </div>
-    <div class="oc-search-button-wrapper" :class="{ 'sr-only': buttonHidden }">
+    <div v-if="!buttonHidden" class="oc-search-button-wrapper">
       <oc-button
         class="oc-search-button z-0 ml-4 rounded-l-none transform-[translateX(-1px)]"
         appearance="filled"
