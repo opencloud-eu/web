@@ -91,6 +91,14 @@ describe('MediaImage component', () => {
       expect(panzoom.zoomOut).not.toHaveBeenCalled()
     })
   })
+
+  it('reports an image the browser cannot decode', async () => {
+    const { wrapper } = getWrapper('image/heic')
+
+    await wrapper.find('img').trigger('error')
+
+    expect(wrapper.emitted('error')).toHaveLength(1)
+  })
 })
 
 function getWrapper(mimeType: string) {
