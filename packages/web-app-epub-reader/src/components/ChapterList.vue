@@ -28,6 +28,7 @@
             'font-semibold': currentChapter?.id === chapter.id
           }"
           :style="{ '--depth': chapter.depth }"
+          :aria-current="currentChapter?.id === chapter.id ? 'true' : undefined"
           appearance="raw"
           no-hover
           @click="onChapterClick(chapter)"

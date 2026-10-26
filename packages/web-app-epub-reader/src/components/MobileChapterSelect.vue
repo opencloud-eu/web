@@ -33,6 +33,7 @@
               'bg-role-secondary-container text-role-on-secondary-container':
                 selectedChapter?.id === chapter.id
             }"
+            :aria-current="selectedChapter?.id === chapter.id ? 'true' : undefined"
             appearance="raw"
             @click="onChapterClick(chapter)"
           >

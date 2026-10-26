@@ -37,6 +37,14 @@ describe('ChapterList component', () => {
     expect(items[1].classes()).not.toContain('bg-role-secondary-container')
   })
 
+  it('marks only the current chapter as current for screen readers', () => {
+    const wrapper = getWrapper()
+
+    const buttons = wrapper.findAll('.epub-reader-chapters-list-item .oc-button')
+    expect(buttons[0].attributes('aria-current')).toBe('true')
+    expect(buttons[1].attributes('aria-current')).toBeUndefined()
+  })
+
   it('emits selected chapter on click', async () => {
     const wrapper = getWrapper()
 

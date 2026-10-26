@@ -34,6 +34,14 @@ describe('MobileChapterSelect component', () => {
     expect(wrapper.find('#epub_reader_chapter_toggle').text()).toContain('Chapter 1')
   })
 
+  it('marks only the selected chapter option as current for screen readers', () => {
+    const wrapper = getWrapper()
+
+    const options = wrapper.findAll('.epub-reader-chapter-option')
+    expect(options[0].attributes('aria-current')).toBe('true')
+    expect(options[1].attributes('aria-current')).toBeUndefined()
+  })
+
   it('emits selected chapter when option is clicked', async () => {
     const wrapper = getWrapper()
     const options = wrapper.findAll('.epub-reader-chapter-option')
