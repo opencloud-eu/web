@@ -1,0 +1,1 @@
+import{At as e,Pt as t,in as n,ut as r,vt as i}from"./framework.DdZLsZVF.js";var a=i({__name:`default`,setup(i){let a=n(10),o=e=>{a.value=e};return(n,i)=>{let s=t(`oc-page-size`);return e(),r(s,{label:`Items per page`,options:[10,20,50],selected:a.value,onChange:o},null,8,[`selected`])}}});export{a as default};

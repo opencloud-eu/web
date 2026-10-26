@@ -1,1 +1,0 @@
-import{At as e,Pt as t,_t as n,fn as r,in as i,lt as a}from"./framework.Can3YLJB.js";var o=n({__name:`toggle`,setup(n){let o=i(!1),s=()=>{o.value=!r(o)};return(n,r)=>{let i=t(`oc-filter-chip`);return e(),a(i,{"filter-label":`Toggle filter`,"is-toggle":!0,"is-toggle-active":o.value,onToggleFilter:s,onClearFilter:s},null,8,[`is-toggle-active`])}}});export{o as default};
