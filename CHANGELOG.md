@@ -205,6 +205,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v11.28.8 [[#3995](https://github.com/opencloud-eu/web/pull/3995)]
+- chore(deps): update dependency filesize to v11.0.29 [[#4015](https://github.com/opencloud-eu/web/pull/4015)]
+- chore(deps): update apache/tika docker tag to v4.2.1 [[#4012](https://github.com/opencloud-eu/web/pull/4012)]
 - chore(deps): update dependency prettier to v3.9.10 [[#3982](https://github.com/opencloud-eu/web/pull/3982)]
 - chore(deps): update dependency filesize to v11.0.28 [[#3984](https://github.com/opencloud-eu/web/pull/3984)]
 - chore(deps): update pnpm to v11.28.7 [[#3979](https://github.com/opencloud-eu/web/pull/3979)]
