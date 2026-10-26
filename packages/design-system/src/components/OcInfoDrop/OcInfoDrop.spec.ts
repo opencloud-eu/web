@@ -14,7 +14,8 @@ describe('OcInfoDrop', () => {
         plugins: [...defaultPlugins()],
         renderStubDefaultSlot: true,
         stubs: {
-          OcDrop: true
+          OcDrop: true,
+          OcList: false
         }
       }
     })
@@ -44,7 +45,10 @@ describe('OcInfoDrop', () => {
       const wrapper = getWrapperWithProps({ list: [{ text: 'a' }, { text: 'b' }] })
       const list = wrapper.find('.info-list')
       expect(list.element.tagName).toBe('UL')
+      expect(list.classes()).toContain('oc-list')
       expect(list.findAll('li').length).toBe(2)
+      expect(list.find('dt').exists()).toBe(false)
+      expect(list.find('dd').exists()).toBe(false)
     })
     it('renders headlines and their items as a definition list', () => {
       const wrapper = getWrapperWithProps({
@@ -54,6 +58,7 @@ describe('OcInfoDrop', () => {
       expect(list.element.tagName).toBe('DL')
       expect(list.find('dt').text()).toBe('term')
       expect(list.find('dd').text()).toBe('definition')
+      expect(list.find('li').exists()).toBe(false)
     })
     it('should set a readMore link', () => {
       const wrapper = getWrapperWithProps({ readMoreLink: 'opencloud.design' })
