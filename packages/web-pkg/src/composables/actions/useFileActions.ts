@@ -123,7 +123,7 @@ export const useFileActions = () => {
               return false
             }
 
-            if (fileExtension.canOpen && !fileExtension.canOpen(resource)) {
+            if (fileExtension.canOpen?.(resource) === false) {
               return false
             }
 
