@@ -104,7 +104,7 @@ describe('markdown raw html roundtrip', () => {
         type: 'text',
         text: ' <b>'
       })
-      expect(strategy.serialize(editor.state.doc)).toBe('Para <kbd>K</kbd> &lt;b&gt;')
+      expect(strategy.serialize(editor.state.doc)).toBe('Para <kbd>K</kbd> &lt;b>')
     })
 
     it('saves text typed into an html block as html', () => {
@@ -119,7 +119,7 @@ describe('markdown raw html roundtrip', () => {
 
     it.each([
       ['the start of an html block', 'para\n\n<div align="center">x</div>\n\nend'],
-      ['the start of a paragraph after an html block', '<div>x</div>\n\na &lt; b **bold**\n\nend']
+      ['the start of a paragraph after an html block', '<div>x</div>\n\na &lt;b **bold**\n\nend']
     ])('keeps blocks apart on Backspace at %s', (_name, markdown) => {
       const strategy = createStrategy()
       const editor = createEditor(strategy, markdown)

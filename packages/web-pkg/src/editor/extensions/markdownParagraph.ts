@@ -4,8 +4,8 @@ import Paragraph from '@tiptap/extension-paragraph'
 /**
  * Line starts that markdown reads as block syntax. Tiptap only escapes inline
  * syntax, so paragraph text like "1. Mai" or "- foo" would come back as a list.
- * `*`, `_`, `` ` ``, `~` and `[` are escaped by tiptap already, `<` and `>` are
- * encoded as entities.
+ * `_`, `` ` ``, `~` and `[` are escaped as text wherever they could start a
+ * block, `*` only where it can be inline syntax (see `escapeMarkdownText`), `>` never.
  *
  * FIXME: See https://github.com/ueberdosis/tiptap/issues/8134. These patterns
  * can go once PR #8140 is merged. Trimming leading whitespace in
@@ -13,8 +13,9 @@ import Paragraph from '@tiptap/extension-paragraph'
  */
 const setextOrThematicBreak: [RegExp, string] = [/^(?=-[- \t]*$|=+[ \t]*$)/, '\\']
 // `\s` like tiptap's tokenizers, which also match non-breaking spaces
-const bulletItem: [RegExp, string] = [/^([-+])(?=\s|$)/, '\\$1']
+const bulletItem: [RegExp, string] = [/^([-+*])(?=\s|$)/, '\\$1']
 const atxHeading: [RegExp, string] = [/^(#{1,6})(?=\s|$)/, '\\$1']
+const blockquote: [RegExp, string] = [/^>/, '\\>']
 
 const firstLinePatterns: [RegExp, string][] = [
   setextOrThematicBreak,
@@ -23,7 +24,8 @@ const firstLinePatterns: [RegExp, string][] = [
   [/^(\d+)([.)])(?=\s|$)/, '$1\\$2'],
   // letter or roman ordered list item, as matched by tiptap's tokenizer
   [/^([ivxlcdmIVXLCDM]+|[a-zA-Z]{1,2})([.)])(?=\s)/, '$1\\$2'],
-  atxHeading
+  atxHeading,
+  blockquote
 ]
 
 // Only these interrupt a paragraph, e.g. "2. Liga" or "Mr. Smith" further down are text
@@ -31,7 +33,8 @@ const continuationLinePatterns: [RegExp, string][] = [
   setextOrThematicBreak,
   bulletItem,
   [/^(1)([.)])(?=\s|$)/, '$1\\$2'],
-  atxHeading
+  atxHeading,
+  blockquote
 ]
 
 // GitHub style alert marker, e.g. `> [!NOTE]`, alone on its line
