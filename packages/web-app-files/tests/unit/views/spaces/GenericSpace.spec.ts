@@ -58,28 +58,9 @@ describe('GenericSpace view', () => {
     const { wrapper } = getMountedWrapper()
     expect(wrapper.find('file-side-bar-stub').exists()).toBeTruthy()
   })
-  describe('space header', () => {
-    it('does not render the space header in the personal space', () => {
-      const { wrapper } = getMountedWrapper()
-      expect(wrapper.find('space-header-stub').exists()).toBeFalsy()
-    })
-    it('does not render the space header in a nested project space', () => {
-      const { wrapper } = getMountedWrapper({
-        props: {
-          item: '/someFolder',
-          space: mock<SpaceResource>({ driveType: 'project' })
-        }
-      })
-      expect(wrapper.find('space-header-stub').exists()).toBeFalsy()
-    })
-    it('renders the space header on a space frontpage', () => {
-      const { wrapper } = getMountedWrapper({
-        props: {
-          space: mock<SpaceResource>({ driveType: 'project' })
-        }
-      })
-      expect(wrapper.find('space-header-stub').exists()).toBeTruthy()
-    })
+  it('renders the generic space header extension point', () => {
+    const { wrapper } = getMountedWrapper({ stubs: { 'custom-component-target': true } })
+    expect(wrapper.find('custom-component-target-stub').exists()).toBeTruthy()
   })
   describe('different files view states', () => {
     it('shows the loading spinner during loading', () => {

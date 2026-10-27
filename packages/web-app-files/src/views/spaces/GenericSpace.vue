@@ -21,7 +21,7 @@
           :class="{ 'h-[40vh]': isSpaceFrontpage }"
         />
         <template v-else>
-          <space-header v-if="isSpaceFrontpage" :space="space" class="px-4" />
+          <custom-component-target :extension-point="genericSpaceHeaderExtensionPoint" />
           <no-content-message
             v-if="isCurrentFolderEmpty"
             id="files-space-empty"
@@ -126,6 +126,7 @@ import {
   AppBar,
   AppLoadingSpinner,
   ContextActions,
+  CustomComponentTarget,
   FileSideBar,
   NoContentMessage,
   Pagination,
@@ -149,7 +150,6 @@ import ListInfo from '../../components/FilesList/ListInfo.vue'
 import NotFoundMessage from '../../components/FilesList/NotFoundMessage.vue'
 import QuickActions from '../../components/FilesList/QuickActions.vue'
 import ResourceDetails from '../../components/FilesList/ResourceDetails.vue'
-import SpaceHeader from '../../components/Spaces/SpaceHeader.vue'
 import WhitespaceContextMenu from '../../components/Spaces/WhitespaceContextMenu.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { useFileUpload, useResourcesViewDefaults } from '../../composables'
@@ -161,7 +161,10 @@ import {
   useKeyboardFileSpaceActions
 } from '../../composables/keyboardActions'
 import { storeToRefs } from 'pinia'
-import { folderViewsFolderExtensionPoint } from '../../extensionPoints'
+import {
+  folderViewsFolderExtensionPoint,
+  genericSpaceHeaderExtensionPoint
+} from '../../extensionPoints'
 import ListHeader from '../../components/FilesList/ListHeader.vue'
 import { useEventListener } from '@vueuse/core'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
