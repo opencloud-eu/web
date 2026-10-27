@@ -1,5 +1,5 @@
 import { mock } from 'vitest-mock-extended'
-import { defineComponent, h, nextTick, ref, unref } from 'vue'
+import { defineComponent, h, nextTick, ref, toValue, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import type { Resource, ShareSpaceResource } from '@opencloud-eu/web-client'
 import { HttpError } from '@opencloud-eu/web-client'
@@ -15,7 +15,7 @@ import {
 
 import AppWrapper from '../../../../src/components/AppTemplates/AppWrapper.vue'
 import type { YjsSession, YjsStatus } from '../../../../src/composables/yjs'
-import type { FileContext } from '../../../../src/composables/appDefaults'
+import type { FileContentOptions, FileContext } from '../../../../src/composables/appDefaults'
 import type { FileAction } from '../../../../src/composables/actions'
 import { eventBus } from '../../../../src/services'
 import {
@@ -76,6 +76,16 @@ const FILE_A = mock<Resource>({
 })
 const FILE_B = mock<Resource>({ id: 'storage$space!file-b', name: 'b.md', permissions: 'RDNVW' })
 
+// The wrapper loads text as raw bytes to detect files that are not valid UTF-8. No `mock()`: it
+// empties the ArrayBuffer.
+function contentsResponse(body: string | Uint8Array, etag: string): GetFileContentsResponse {
+  const bytes = typeof body === 'string' ? new TextEncoder().encode(body) : body
+  return { body: bytes.buffer, headers: { 'OC-ETag': etag } }
+}
+
+// "Grüße" in Latin-1
+const LATIN1_BYTES = new Uint8Array([0x47, 0x72, 0xfc, 0xdf, 0x65])
+
 function deferred<T>() {
   let resolve: (value: T) => void
   const promise = new Promise<T>((r) => (resolve = r))
@@ -111,7 +121,8 @@ function setup({
     query: {},
     params: { driveAliasAndItem: 'personal/alan/a.md' }
   }),
-  isGuestContext = false
+  isGuestContext = false,
+  fileContentOptions = undefined as FileContentOptions
 } = {}) {
   const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
   const beginSave = vi.fn()
@@ -243,7 +254,8 @@ function setup({
     props: {
       applicationId: 'test-app',
       wrappedComponent,
-      ...(yjsEnabled ? { yjs: { makeAdapter: () => mock<any>() } } : {})
+      ...(yjsEnabled ? { yjs: { makeAdapter: () => mock<any>() } } : {}),
+      ...(fileContentOptions ? { fileContentOptions } : {})
     },
     global: {
       plugins: [...piniaPlugins, router],
@@ -292,6 +304,7 @@ function setup({
       await flushPromises()
     },
     currentContent: () => slotProps?.currentContent,
+    isReadOnly: () => slotProps?.isReadOnly,
     yjsStatus: () => slotProps?.yjsStatus,
     statusRef,
     registerSaveCallback(callback: (content: unknown) => void | Promise<void>) {
@@ -339,14 +352,12 @@ function setup({
       rejectInfo(error)
       await flushPromises()
     },
-    async resolveContent(body: string) {
-      resolveContents(
-        mock<GetFileContentsResponse>({ body, headers: { 'OC-ETag': 'etag' } as any })
-      )
+    async resolveContent(body: string | Uint8Array) {
+      resolveContents(contentsResponse(body, 'etag'))
       await flushPromises()
     },
-    resolveContentWith(body: string, etag: string) {
-      resolveContents(mock<GetFileContentsResponse>({ body, headers: { 'OC-ETag': etag } as any }))
+    resolveContentWith(body: string | Uint8Array, etag: string) {
+      resolveContents(contentsResponse(body, etag))
     },
     rejectContent(error: Error) {
       rejectContents(error)
@@ -437,6 +448,92 @@ describe('AppWrapper — loading a file that does not exist', () => {
 
     expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(true)
     expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
+  })
+})
+
+describe('AppWrapper — loading the file content', () => {
+  it('loads text as raw bytes', async () => {
+    const s = await openFile()
+
+    expect(s.getFileContents).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ responseType: 'arraybuffer' })
+    )
+    expect(s.currentContent()).toBe('content of a')
+  })
+
+  it('passes other response types through without decoding', async () => {
+    const s = await openFile({ yjsEnabled: false, fileContentOptions: { responseType: 'blob' } })
+
+    expect(s.getFileContents).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ responseType: 'blob' })
+    )
+    expect(s.currentContent()).toBeInstanceOf(ArrayBuffer)
+  })
+})
+
+describe('AppWrapper — files that are not valid UTF-8', () => {
+  async function openLatin1File({
+    resource = FILE_A,
+    ...options
+  }: Parameters<typeof setup>[0] & { resource?: Resource } = {}) {
+    const s = setup(options)
+    await nextTick()
+    await s.resolveResource(resource)
+    await s.resolveContent(LATIN1_BYTES)
+    return s
+  }
+
+  it('opens the file read-only with a warning', async () => {
+    const s = await openLatin1File()
+
+    expect(s.isReadOnly()).toBe(true)
+    expect(s.currentContent()).toBe('Grüße')
+    const { showMessage } = useMessages()
+    expect(showMessage).toHaveBeenCalledWith(expect.objectContaining({ status: 'warning' }))
+  })
+
+  it('does not save over the original bytes', async () => {
+    const s = await openLatin1File()
+
+    await s.edit('Grüße!')
+    await s.pressCtrlS()
+
+    expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+
+  it('shows no warning when the file is read-only anyway', async () => {
+    const s = await openLatin1File({ resource: { ...FILE_A, permissions: 'R' } as Resource })
+
+    expect(s.isReadOnly()).toBe(true)
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
+  })
+
+  it('shows no warning in apps that do not edit', async () => {
+    const s = await openLatin1File({ yjsEnabled: false })
+
+    expect(s.isReadOnly()).toBe(true)
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
+  })
+
+  it('keeps a valid UTF-8 file writable', async () => {
+    const s = await openFile()
+
+    expect(s.isReadOnly()).toBe(false)
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
+  })
+
+  it('keeps the file out of the shared Yjs room', async () => {
+    const s = await openLatin1File()
+
+    expect(toValue(s.session().forceLocal)).toBe(true)
+  })
+
+  it('opens a valid UTF-8 file in the shared Yjs room', async () => {
+    const s = await openFile()
+
+    expect(toValue(s.session().forceLocal)).toBe(false)
   })
 })
 
@@ -1107,6 +1204,7 @@ describe('AppWrapper — save conflict handling', () => {
     await flushPromises()
     s.rejectContent(new Error('network down'))
     await pressed
+    await flushPromises()
 
     expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
     expect(s.markConflicted).not.toHaveBeenCalled()

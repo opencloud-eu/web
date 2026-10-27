@@ -241,6 +241,7 @@ function setupSession({
   adapter = testAdapter as YjsAdapter,
   enabled = true,
   isReadOnly = false,
+  forceLocal = false,
   hasUnsavedChanges = false,
   // Mirrors what AppWrapper does with a reported etag: it writes it back into
   // the resource it passes in. Off by default so most tests can assert on the
@@ -273,6 +274,7 @@ function setupSession({
         currentContent: contentRef,
         enabled: enabledRef,
         isReadOnly: isReadOnlyRef,
+        forceLocal,
         adapter: adapterRef,
         documentPrefix: 'test-app',
         onContentChange,
@@ -496,6 +498,23 @@ describe('useYjsSession — vault resources', () => {
     expect(providerInstances).toHaveLength(0)
     expect(unref(s.session.status)).toBe('local')
     expect(unref(s.session.provider)).toBeNull()
+  })
+})
+
+describe('useYjsSession — forced local mode', () => {
+  it('does not construct a HocuspocusProvider even when yjsServerUrl is set', async () => {
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/yjs',
+      forceLocal: true,
+      isReadOnly: true,
+      currentContent: 'Grüße'
+    })
+    await flushPromises()
+
+    expect(providerInstances).toHaveLength(0)
+    expect(unref(s.session.status)).toBe('local')
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('Grüße')
+    expect(unref(s.session.isReady)).toBe(true)
   })
 })
 

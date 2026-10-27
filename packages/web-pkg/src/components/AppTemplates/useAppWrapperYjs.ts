@@ -24,6 +24,8 @@ export interface AppWrapperYjsOptions {
   applicationId: string
   resource: Ref<Resource>
   isReadOnly: Ref<boolean>
+  /** The content could not be decoded without loss and must stay out of the shared room. */
+  isLossyContent: Ref<boolean>
   /** Whether the wrapper holds edits that are not on disk yet. */
   isDirty: Ref<boolean>
   loading: Ref<boolean>
@@ -59,6 +61,7 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
     applicationId,
     resource,
     isReadOnly,
+    isLossyContent,
     isDirty,
     loading,
     loadingError,
@@ -91,6 +94,9 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
           !unref(loadingError) &&
           unref(contentResourceId) === unref(resource)?.id,
         isReadOnly,
+        // Every client decodes it the same way and opens it read-only, so
+        // there is nobody to collaborate with.
+        forceLocal: isLossyContent,
         adapter: yjs.makeAdapter({ resource }),
         documentPrefix: yjs.documentPrefix ?? applicationId,
         onContentChange: (value) => {

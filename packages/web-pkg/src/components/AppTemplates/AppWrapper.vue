@@ -105,6 +105,7 @@ import { dirname } from 'path'
 import { useFileActionsOpenWithApp } from '../../composables'
 import { UnsavedChangesModal } from '../Modals'
 import {
+  decodeTextContent,
   formatFileSize,
   getSharedDriveItem,
   setCurrentUserShareSpacePermissions
@@ -176,6 +177,8 @@ const loadingError: Ref<Error> = ref()
 const error = computed(() => unref(loadingError) || unref(folderLoadingError))
 const isNotFoundError = computed(() => (unref(error) as HttpError)?.statusCode === 404)
 const isReadOnly = ref(false)
+/** The loaded text is not valid UTF-8, see `getFileContentsAsText`. */
+const isLossyContent = ref(false)
 const serverContent = ref<unknown>()
 const currentContent = ref<unknown>()
 /**
@@ -255,6 +258,22 @@ const {
   applicationId
 })
 
+/**
+ * Loads text as raw bytes and decodes it here: the browser would replace bytes that are not valid
+ * UTF-8 (e.g. in a Latin-1 file) with U+FFFD, and a save would write those back.
+ */
+async function getFileContentsAsText(
+  fileContext: Parameters<typeof getFileContents>[0],
+  options: FileContentOptions = {}
+) {
+  if (options.responseType && options.responseType !== 'text') {
+    return getFileContents(fileContext, options)
+  }
+  const response = await getFileContents(fileContext, { ...options, responseType: 'arraybuffer' })
+  const { text, isLossless } = decodeTextContent(response.body)
+  return { ...response, body: text, isLossless }
+}
+
 const isDirty = computed(() => {
   if (unref(isReadOnly)) {
     return false
@@ -273,6 +292,7 @@ const {
   applicationId,
   resource,
   isReadOnly,
+  isLossyContent,
   isDirty,
   loading,
   loadingError,
@@ -282,7 +302,7 @@ const {
   currentETag,
   currentFileContext,
   fileContentOptions,
-  getFileContents,
+  getFileContents: getFileContentsAsText,
   putFileContents,
   applySavedResource,
   runSaveCallback,
@@ -503,8 +523,21 @@ const loadFileTask = useTask(function* (signal) {
 
     if (unref(hasProp('currentContent'))) {
       const fileContentsResponse = yield* call(
-        getFileContents(unref(currentFileContext), { ...fileContentOptions, signal })
+        getFileContentsAsText(unref(currentFileContext), { ...fileContentOptions, signal })
       )
+      isLossyContent.value = fileContentsResponse.isLossless === false
+      if (unref(isLossyContent) && !unref(isReadOnly)) {
+        isReadOnly.value = true
+        if (unref(isEditor)) {
+          showMessage({
+            title: $gettext('File opened read-only'),
+            desc: $gettext(
+              'This file is not UTF-8 encoded. Saving it here would lose characters, so it can only be viewed. Use »Save As...« to keep a UTF-8 copy.'
+            ),
+            status: 'warning'
+          })
+        }
+      }
       serverContent.value = currentContent.value = fileContentsResponse.body
       currentETag.value = fileContentsResponse.headers['OC-ETag']
       contentResourceId.value = unref(resource).id
