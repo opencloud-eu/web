@@ -7,7 +7,8 @@ import {
 import { computed, unref } from 'vue'
 import { useClientService } from '../clientService'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { useSpacesStore } from '../piniaStores'
+import { useSharesStore, useSpacesStore } from '../piniaStores'
+import { setCurrentUserShareSpacePermissions } from '../../helpers/spaces'
 import { DavProperty, DavPropertyValue } from '@opencloud-eu/web-client/webdav'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { useTask } from 'vue-concurrency'
@@ -15,6 +16,7 @@ import { useTask } from 'vue-concurrency'
 export const useGetResourceContext = () => {
   const clientService = useClientService()
   const spacesStore = useSpacesStore()
+  const sharesStore = useSharesStore()
 
   const spaces = computed(() => spacesStore.spaces)
 
@@ -76,7 +78,14 @@ export const useGetResourceContext = () => {
         id: driveItem.remoteItem.id,
         shareName: driveItem.name
       })
-    return { space: shareSpace, resource, path: urlJoin(...sharePathSegments) }
+    // saves consumers from fetching the drive item again for the permissions
+    setCurrentUserShareSpacePermissions({
+      sharesStore,
+      spacesStore,
+      space: shareSpace,
+      sharedDriveItem: driveItem
+    })
+    return { space: shareSpace, resource, path: urlJoin(...sharePathSegments), driveItem }
   }).restartable()
 
   // get context for a resource when only having its id. be careful, this might be very expensive!

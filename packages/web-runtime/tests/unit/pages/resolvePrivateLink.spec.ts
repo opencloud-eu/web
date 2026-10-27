@@ -1,7 +1,7 @@
 import resolvePrivateLink from '../../../src/pages/resolvePrivateLink.vue'
 import { defaultPlugins, defaultComponentMocks, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { getSharedDriveItem, queryItemAsString, useGetResourceContext } from '@opencloud-eu/web-pkg'
+import { queryItemAsString, useGetResourceContext } from '@opencloud-eu/web-pkg'
 import { HttpError, Resource, SHARE_JAIL_ID, SpaceResource } from '@opencloud-eu/web-client'
 import { flushPromises } from '@vue/test-utils'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
@@ -19,8 +19,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useRouteQuery: vi.fn((str) => str),
   useRouteParam: vi.fn((str) => str),
   queryItemAsString: vi.fn(),
-  useGetResourceContext: vi.fn(),
-  getSharedDriveItem: vi.fn()
+  useGetResourceContext: vi.fn()
 }))
 
 const selectors = {
@@ -119,11 +118,22 @@ describe('resolvePrivateLink', () => {
       getDriveAliasAndItem: () => 'share/Invited folder'
     })
     const resource = buildResource({ fileId, isFolder: true, type: 'folder' })
-    const { mocks } = getWrapper({ space, resource, fileId, path: '/', isGuest: true })
+    const { mocks } = getWrapper({
+      space,
+      resource,
+      fileId,
+      path: '/',
+      isGuest: true,
+      hiddenShare: true
+    })
     await flushPromises()
-    expect(getSharedDriveItem).not.toHaveBeenCalled()
     expect(mocks.$router.push).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'files-guest-link' })
+    )
+    expect(mocks.$router.push).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({ 'q_share-visibility': 'hidden' })
+      })
     )
   })
   describe('in a guest context', () => {
@@ -239,10 +249,10 @@ function getWrapper({
   vi.mocked(useGetResourceContext).mockReturnValue({
     getResourceContext: resolveError
       ? vi.fn().mockRejectedValue(resolveError)
-      : vi.fn().mockResolvedValue({ space, resource, path })
+      : vi
+          .fn()
+          .mockResolvedValue({ space, resource, path, driveItem: { '@UI.Hidden': hiddenShare } })
   })
-
-  vi.mocked(getSharedDriveItem).mockResolvedValue({ '@UI.Hidden': hiddenShare })
 
   const mocks = {
     ...defaultComponentMocks({

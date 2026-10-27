@@ -16,7 +16,7 @@ export const getSharedDriveItem = async ({
   space: SpaceResource
   signal?: AbortSignal
 }) => {
-  const findInSharedWithMe = async () => {
+  async function findInSharedWithMe() {
     const driveItems = await graphClient.driveItems.listSharedWithMe({}, { signal })
     return driveItems.find(({ remoteItem }) => remoteItem?.id === space.id) || null
   }

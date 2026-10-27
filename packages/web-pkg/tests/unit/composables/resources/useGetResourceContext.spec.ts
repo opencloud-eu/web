@@ -36,7 +36,7 @@ describe('useGetResourceContext', () => {
 
       const context = await getResourceContext('share-id')
 
-      expect(context).toEqual({ space: shareSpace, resource, path: '/' })
+      expect(context).toEqual({ space: shareSpace, resource, path: '/', driveItem: driveItems[0] })
       expect(getFileInfo).toHaveBeenCalledTimes(1)
       expect(loadMountPoints).not.toHaveBeenCalled()
     })
@@ -51,7 +51,7 @@ describe('useGetResourceContext', () => {
 
       const context = await getResourceContext('share-id')
 
-      expect(context).toEqual({ space: shareSpace, resource, path: '/' })
+      expect(context).toEqual({ space: shareSpace, resource, path: '/', driveItem: driveItems[0] })
       expect(getPathForFileId).not.toHaveBeenCalled()
     })
 
@@ -68,7 +68,12 @@ describe('useGetResourceContext', () => {
 
       const context = await getResourceContext('file-id')
 
-      expect(context).toEqual({ space: shareSpace, resource, path: '/sub/file.txt' })
+      expect(context).toEqual({
+        space: shareSpace,
+        resource,
+        path: '/sub/file.txt',
+        driveItem: driveItems[0]
+      })
       expect(loadMountPoints).not.toHaveBeenCalled()
     })
 
@@ -85,26 +90,57 @@ describe('useGetResourceContext', () => {
 
       const context = await getResourceContext('file-id')
 
-      expect(context).toEqual({ space: otherSpace, resource, path: '/file.txt' })
+      expect(context).toEqual({
+        space: otherSpace,
+        resource,
+        path: '/file.txt',
+        driveItem: driveItems[1]
+      })
     })
 
     it('creates the share space if it is not loaded', async () => {
       const resource = buildResource({ id: 'file-id', name: 'file.txt', parentFolderId: 'new-id' })
       const newSpace = mock<ShareSpaceResource>({ id: 'new-id' })
+      const driveItem = mock<DriveItem>({ name: 'New folder', remoteItem: { id: 'new-id' } })
       const { getResourceContext, createShareSpace } = getWrapper({
         isGuest,
         resources: [resource, buildResource({ id: 'new-id', name: 'New folder' })],
-        driveItems: [mock<DriveItem>({ name: 'New folder', remoteItem: { id: 'new-id' } })]
+        driveItems: [driveItem]
       })
       createShareSpace.mockReturnValue(newSpace)
 
       const context = await getResourceContext('file-id')
 
-      expect(context).toEqual({ space: newSpace, resource, path: '/file.txt' })
+      expect(context).toEqual({ space: newSpace, resource, path: '/file.txt', driveItem })
       expect(createShareSpace).toHaveBeenCalledWith({
         driveAliasPrefix: 'share',
         id: 'new-id',
         shareName: 'New folder'
+      })
+    })
+
+    it('sets the share space permissions from the drive item', async () => {
+      const resource = buildResource({ id: 'share-id', name: 'Shared folder' })
+      const { getResourceContext, updateSpaceField } = getWrapper({
+        isGuest,
+        resources: [resource],
+        driveItems: [
+          mock<DriveItem>({
+            name: 'Shared folder',
+            remoteItem: {
+              id: 'share-id',
+              permissions: [{ '@libre.graph.permissions.actions': ['libre.graph/driveItem/read'] }]
+            }
+          })
+        ]
+      })
+
+      await getResourceContext('share-id')
+
+      expect(updateSpaceField).toHaveBeenCalledWith({
+        id: 'share-id',
+        field: 'graphPermissions',
+        value: ['libre.graph/driveItem/read']
       })
     })
 
@@ -137,7 +173,7 @@ describe('useGetResourceContext', () => {
     })
   })
 
-  describe('in a user context', () => {
+  describe('in a user context, own spaces and ocm', () => {
     it('resolves resources in own spaces', async () => {
       const personalSpace = mock<PersonalSpaceResource>({ id: 'storage$personal' })
       const resource = buildResource({ id: 'storage$personal!file-id', name: 'file.txt' })
@@ -230,6 +266,7 @@ function getWrapper({
     getPathForFileId: vi.mocked(mocks.$clientService.webdav.getPathForFileId),
     listSharedWithMe,
     loadMountPoints: spacesStore.loadMountPoints,
-    createShareSpace: vi.mocked(spacesStore.createShareSpace)
+    createShareSpace: vi.mocked(spacesStore.createShareSpace),
+    updateSpaceField: vi.mocked(spacesStore.updateSpaceField)
   }
 }
