@@ -13,31 +13,25 @@
         @update:model-value="(value) => updateField('from', value as FromOption)"
       />
     </div>
-    <oc-text-input
+    <MailRecipientInput
       :model-value="modelValue.to"
-      type="email"
       class="mail-new-message-to-input mb-2 pb-2 border-b border-role-outline-variant"
       :label="`${$gettext('To')}:`"
-      :inline-label="true"
-      :has-border="false"
+      :account-id="modelValue.from?.accountId"
       @update:model-value="(value: string) => updateField('to', value)"
     />
-    <oc-text-input
+    <MailRecipientInput
       :model-value="modelValue.cc"
-      type="email"
       class="mail-new-message-cc-input mb-2 pb-2 border-b border-role-outline-variant"
       :label="`${$gettext('CC')}:`"
-      :inline-label="true"
-      :has-border="false"
+      :account-id="modelValue.from?.accountId"
       @update:model-value="(value: string) => updateField('cc', value)"
     />
-    <oc-text-input
+    <MailRecipientInput
       :model-value="modelValue.bcc"
-      type="email"
       class="mail-new-message-bcc-input mb-2 pb-2 border-b border-role-outline-variant"
       :label="`${$gettext('BCC')}:`"
-      :inline-label="true"
-      :has-border="false"
+      :account-id="modelValue.from?.accountId"
       @update:model-value="(value: string) => updateField('bcc', value)"
     />
     <oc-text-input
@@ -78,6 +72,7 @@ import {
 } from '@opencloud-eu/web-pkg/editor'
 import { storeToRefs } from 'pinia'
 import MailAttachmentList from './MailAttachmentList.vue'
+import MailRecipientInput from './MailRecipientInput.vue'
 
 type FromOption = {
   value: string
