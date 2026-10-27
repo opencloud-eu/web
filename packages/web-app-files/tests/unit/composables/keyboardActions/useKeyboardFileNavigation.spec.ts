@@ -160,6 +160,25 @@ describe('useKeyboardFileNavigation', () => {
       expect(store.selectedIds).toEqual(['1'])
     })
 
+    it('does not toggle the latest selected resource if it is not shown', () => {
+      const resources = [createResource('1'), createResource('2'), createResource('3')]
+      createMockStore({ stubActions: false, resourcesStore: { resources } })
+      const store = useResourcesStore()
+      store.setLastSelectedId('1')
+
+      const keyActions = createKeyActions()
+      // another page is shown, without the latest selected resource
+      useKeyboardFileNavigation(
+        keyActions,
+        ref(resources.slice(1)),
+        ref(FolderViewModeConstants.name.table)
+      )
+
+      triggerAction(keyActions, ' ')
+
+      expect(store.selectedIds).toEqual([])
+    })
+
     it('leaves a focused checkbox to toggle its own resource', () => {
       const { store } = setup()
 

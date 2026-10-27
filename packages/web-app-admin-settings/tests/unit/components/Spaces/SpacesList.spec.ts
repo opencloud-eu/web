@@ -1,4 +1,5 @@
 import { RouteLocationNormalizedLoaded } from 'vue-router'
+import { reactive } from 'vue'
 import SpacesList from '../../../../src/components/Spaces/SpacesList.vue'
 import {
   defaultComponentMocks,
@@ -251,13 +252,43 @@ describe('SpacesList', () => {
       expect(newSelection).toEqual([spaceMocks[0]])
     }
   )
+  describe('spaces that leave the view', () => {
+    it('get deselected on page change', async () => {
+      const { wrapper, query } = getWrapper({
+        spaces: spaceMocks,
+        selectedSpaces: [spaceMocks[0]],
+        stubActions: false,
+        page: '1',
+        perPage: '1'
+      })
+      expect(getColumn(wrapper, 'name')).toEqual(['1 Some space'])
+
+      query.page = '2'
+      await flushPromises()
+
+      expect(getColumn(wrapper, 'name')).toEqual(['2 Another space'])
+      expect(useSpaceSettingsStore().selectedSpaces).toEqual([])
+    })
+    it('get deselected when they are filtered out, the ones still shown stay selected', async () => {
+      const { wrapper } = getWrapper({
+        spaces: spaceMocks,
+        selectedSpaces: spaceMocks,
+        stubActions: false
+      })
+
+      await wrapper.setProps({ filterTerm: 'Another' })
+
+      expect(getColumn(wrapper, 'name')).toEqual(['2 Another space'])
+      expect(useSpaceSettingsStore().selectedSpaces).toEqual([spaceMocks[1]])
+    })
+  })
   describe('toggle selection', () => {
     const spaces = [
       mock<SpaceResource>({ id: '1', name: 'Some Space' }),
       mock<SpaceResource>({ id: '2', name: 'Some other Space' })
     ]
 
-    it('does not check the header checkbox if only spaces of another page are selected', () => {
+    it('does not check the header checkbox if only spaces that are not shown are selected', () => {
       const { wrapper } = getWrapper({
         spaces: [spaces[0]],
         selectedSpaces: [mock<SpaceResource>({ id: 'other-page' })]
@@ -382,10 +413,10 @@ function getWrapper({
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
-  const query: Record<string, string> = {
+  const query = reactive<Record<string, string>>({
     ...(page && { page }),
     ...(perPage && { 'items-per-page': perPage })
-  }
+  })
   const mocks = defaultComponentMocks({
     currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
   })
@@ -396,6 +427,7 @@ function getWrapper({
 
   return {
     mocks,
+    query,
     loadPreview,
     wrapper: mountType(SpacesList, {
       ...(realCheckboxes && { attachTo: document.body }),

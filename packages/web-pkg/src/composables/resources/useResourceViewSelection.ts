@@ -33,12 +33,16 @@ export const useResourceViewSelection = ({
     }
   }
 
+  // compares ids instead of counts, so selected resources that aren't shown here don't count
   const areAllResourcesSelected = computed(() => {
-    const allResourcesDisabled = unref(disabledResources).length === unref(resources).length
-    const allSelected =
-      unref(selectedIds).length === unref(resources).length - unref(disabledResources).length
+    const disabledIds = new Set(unref(disabledResources))
+    const selectableResources = unref(resources).filter(({ id }) => !disabledIds.has(id))
+    if (!selectableResources.length) {
+      return false
+    }
 
-    return !allResourcesDisabled && allSelected
+    const selected = new Set(unref(selectedIds))
+    return selectableResources.every(({ id }) => selected.has(id))
   })
 
   const selectAllCheckboxLabel = computed(() => {
