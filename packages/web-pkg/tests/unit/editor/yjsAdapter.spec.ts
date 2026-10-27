@@ -125,6 +125,25 @@ describe('makeTiptapYjsAdapter', () => {
       ydoc.destroy()
     })
 
+    it('picks up typing into a heading created by an input rule in tiptap json', () => {
+      const strategy = useStrategyTiptapJson(createState())
+      const adapter = makeTiptapYjsAdapter(strategy)
+      const ydoc = new Y.Doc()
+
+      const editor = boundEditor(strategy, ydoc)
+      editor.commands.focus('end')
+      typeText(editor, '# Title')
+
+      expect(JSON.parse(adapter.serialize(ydoc)).content[0]).toMatchObject({
+        type: 'heading',
+        attrs: { level: 1 },
+        content: [{ type: 'text', text: 'Title' }]
+      })
+
+      editor.destroy()
+      ydoc.destroy()
+    })
+
     it('does not write to the Y.Doc', () => {
       const strategy = useStrategyMarkdown(createState())
       const adapter = makeTiptapYjsAdapter(strategy)
