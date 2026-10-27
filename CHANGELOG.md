@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(editor): patch y-tiptap crash when typing into a new heading [[#4032](https://github.com/opencloud-eu/web/pull/4032)]
 - fix(editor): open non-UTF-8 text files read-only in editors [[#4022](https://github.com/opencloud-eu/web/pull/4022)]
 
 ### 📦️ Dependencies
