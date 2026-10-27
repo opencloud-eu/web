@@ -124,7 +124,10 @@
           mode="click"
           padding-size="small"
         >
-          <oc-list class="collaborator-edit-dropdown-options-list" :aria-label="'shareEditOptions'">
+          <oc-list
+            class="collaborator-edit-dropdown-options-list"
+            :aria-label="$gettext('Share options')"
+          >
             <li>
               <expiration-datepicker
                 v-if="!saving"

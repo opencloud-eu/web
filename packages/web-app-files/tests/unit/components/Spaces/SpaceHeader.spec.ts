@@ -58,6 +58,28 @@ describe('SpaceHeader', () => {
       expect(wrapper.find('.space-header-image img').exists()).toBeTruthy()
       expect(wrapper.html()).toMatchSnapshot()
     })
+    it('enlarges and shrinks the image via a named button', async () => {
+      const wrapper = getWrapper({ space: getSpaceMock({ webDavUrl: '/' }), imgBlob: 'blob:image' })
+      await flushPromises()
+      const toggle = wrapper.find('.space-header-image button')
+      expect(toggle.attributes('aria-label')).toBe('Enlarge space image')
+
+      await toggle.trigger('click')
+
+      expect(wrapper.find('.space-header-image-expanded').exists()).toBe(true)
+      expect(toggle.attributes('aria-label')).toBe('Shrink space image')
+    })
+    it('shows the image without a toggle on mobile, where it is always expanded', async () => {
+      const wrapper = getWrapper({
+        space: getSpaceMock({ webDavUrl: '/' }),
+        imgBlob: 'blob:image',
+        isMobile: true
+      })
+      await flushPromises()
+      expect(wrapper.find('.space-header-image img').exists()).toBe(true)
+      expect(wrapper.find('.space-header-image button').exists()).toBe(false)
+      expect(wrapper.find('.space-header-image [aria-label]').exists()).toBe(false)
+    })
     it('should take full width in mobile view', () => {
       const wrapper = getWrapper({
         space: getSpaceMock({ webDavUrl: '/' }),

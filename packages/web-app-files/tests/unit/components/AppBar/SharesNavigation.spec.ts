@@ -1,5 +1,5 @@
 import SharesNavigation from '../../../../src/components/AppBar/SharesNavigation.vue'
-import { eventBus, locationSharesWithMe } from '@opencloud-eu/web-pkg'
+import { eventBus, locationSharesWithMe, locationSharesWithOthers } from '@opencloud-eu/web-pkg'
 import { OcButton } from '@opencloud-eu/design-system/components'
 import { mock } from 'vitest-mock-extended'
 import { RouteRecordNormalized } from 'vue-router'
@@ -46,6 +46,22 @@ describe('SharesNavigation component', () => {
       const inactiveItem = wrapper.findAllComponents(OcButton).at(1)
       expect(inactiveItem.props('type')).toBe('router-link')
       expect(inactiveItem.props('to')).toBe('/files/shares/with-others/')
+    })
+    it('marks only the current page with aria-current in both lists', () => {
+      const { wrapper } = getWrapper({ currentRouteName: locationSharesWithOthers.name })
+      const currentStates = wrapper
+        .findAllComponents(OcButton)
+        .map((button) => button.attributes('aria-current'))
+      // the desktop items come first, then the mobile drop toggle and the mobile items
+      expect(currentStates).toEqual([
+        undefined,
+        'page',
+        undefined,
+        undefined,
+        undefined,
+        'page',
+        undefined
+      ])
     })
   })
 })

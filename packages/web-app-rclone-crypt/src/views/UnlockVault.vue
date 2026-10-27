@@ -71,9 +71,10 @@
             appearance="filled"
             submit="submit"
             :disabled="submitDisabled"
+            :aria-busy="verifying"
           >
             <oc-spinner v-if="verifying" :aria-hidden="true" size="small" />
-            <span v-else v-text="submitLabel" />
+            <span :class="{ 'sr-only': verifying }" v-text="submitLabel" />
           </oc-button>
         </div>
       </form>

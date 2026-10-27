@@ -59,7 +59,7 @@ function mountUnlockVault({
       ],
       mocks,
       provide: mocks,
-      stubs: { OcCard: false }
+      stubs: { OcCard: false, OcButton: false }
     }
   })
 
@@ -197,6 +197,19 @@ describe('UnlockVault', () => {
       vm.password = passphrase
       await flushPromises()
       expect(vm.submitDisabled).toBe(false)
+    })
+
+    it('keeps the submit button name and marks it busy while the password is checked', async () => {
+      const { wrapper } = await mountProbed()
+      vi.mocked(unlockVault).mockReturnValue(new Promise(() => undefined))
+      const vm = wrapper.vm as any
+      vm.password = passphrase
+      vm.onSubmit()
+      await flushPromises()
+
+      const button = wrapper.find('#vault-unlock-submit')
+      expect(button.attributes('aria-busy')).toBe('true')
+      expect(button.find('span').text()).toBe('Unlock')
     })
   })
 

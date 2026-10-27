@@ -16,6 +16,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import {
   AppBar,
+  eventBus,
   ResourceTable,
   useBreadcrumbsFromPath,
   useMessages,
@@ -24,6 +25,7 @@ import {
 import { useBreadcrumbsFromPathMock } from '../../../mocks/useBreadcrumbsFromPathMock'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { flushPromises } from '@vue/test-utils'
+import type { MockInstance } from 'vitest'
 
 const mockCreateFolder = vi.fn()
 const mockUseEmbedMode = vi.fn().mockReturnValue({ isEnabled: computed(() => false) })
@@ -95,6 +97,23 @@ describe('GenericSpace view', () => {
       const { wrapper } = getMountedWrapper({ files: [mock<Resource>({ name: 'file.txt' })] })
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
       expect(wrapper.find('resource-table-stub').exists()).toBeTruthy()
+    })
+  })
+  describe('document title', () => {
+    const publishedTitles = (publishSpy: MockInstance) =>
+      publishSpy.mock.calls
+        .filter(([topic]) => topic === 'runtime.documentTitle.changed')
+        .map(([, payload]) => payload.shortDocumentTitle)
+
+    it('names a folder that was not found as not found', () => {
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+      getMountedWrapper({ currentFolder: null, props: { item: '/removed' } })
+      expect(publishedTitles(publishSpy)).toEqual(['Resource not found'])
+    })
+    it('keeps the folder name while the folder is loading', () => {
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+      getMountedWrapper({ currentFolder: null, loading: true, props: { item: '/removed' } })
+      expect(publishedTitles(publishSpy)).toEqual(['removed - Personal space'])
     })
   })
   describe('breadcrumbs', () => {

@@ -14,14 +14,19 @@
       <div v-if="imagesLoading.includes(space.id)" class="h-full flex items-center justify-center">
         <oc-spinner :aria-label="$gettext('Space image is loading')" />
       </div>
-      <img
+      <component
+        :is="isMobile ? 'div' : 'oc-button'"
         v-else-if="imageContent"
-        class="cursor-pointer rounded-lg size-full max-h-full object-cover"
-        alt=""
-        :src="imageContent"
-        decoding="async"
-        @click="toggleImageExpanded"
-      />
+        class="size-full rounded-lg"
+        v-bind="imageToggleAttributes"
+      >
+        <img
+          class="rounded-lg size-full max-h-full object-cover"
+          alt=""
+          :src="imageContent"
+          decoding="async"
+        />
+      </component>
       <resource-icon v-else :resource="space" size-class="size-full" class="rounded-lg" />
     </div>
     <div class="flex-1 min-w-0">
@@ -282,6 +287,16 @@ const imageExpanded = ref(false)
 const toggleImageExpanded = () => {
   imageExpanded.value = !unref(imageExpanded)
 }
+// on mobile the image is always expanded, so it needs no toggle there
+const imageToggleAttributes = computed(() => {
+  if (unref(isMobile)) {
+    return {}
+  }
+  const label = unref(imageExpanded)
+    ? $gettext('Shrink space image')
+    : $gettext('Enlarge space image')
+  return { appearance: 'raw', ariaLabel: label, onClick: toggleImageExpanded }
+})
 
 watch(
   computed(() => space.spaceImageData),

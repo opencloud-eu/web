@@ -50,13 +50,13 @@ const icon = computed(() => (status === YjsStatus.Disconnected ? 'wifi-off' : 'w
 
 const statusClasses = computed(() => {
   if (status === YjsStatus.Connected) {
-    return 'border-green-700/20 bg-green-500/15 text-green-700'
+    return 'border-green-700/20 bg-green-500/15 text-green-700 dark:text-green-400'
   }
   if (status === YjsStatus.Disconnected) {
-    return 'border-red-700/20 bg-red-500/15 text-red-700'
+    return 'border-red-700/20 bg-red-500/15 text-red-700 dark:text-red-400'
   }
   if (status === YjsStatus.Connecting) {
-    return 'border-gray-700/20 bg-gray-500/15 text-gray-700'
+    return 'border-gray-700/20 bg-gray-500/15 text-gray-700 dark:text-gray-400'
   }
   return ''
 })

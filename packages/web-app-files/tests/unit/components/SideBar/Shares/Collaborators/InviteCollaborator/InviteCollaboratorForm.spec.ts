@@ -61,6 +61,14 @@ describe('InviteCollaboratorForm', () => {
       expect(wrapper.findAll('label').length).toBe(1)
     })
   })
+  describe('share options menu', () => {
+    it('has a translated name', async () => {
+      const { wrapper } = getWrapper({ shallow: false })
+      await wrapper.findComponent({ name: 'OcDrop' }).vm.show()
+      const list = wrapper.find('.collaborator-edit-dropdown-options-list')
+      expect(list.attributes('aria-label')).toBe('Share options')
+    })
+  })
   describe('share button', () => {
     it('is present', () => {
       const { wrapper } = getWrapper()

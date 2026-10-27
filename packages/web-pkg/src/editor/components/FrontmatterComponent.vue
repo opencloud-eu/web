@@ -1,6 +1,6 @@
 <template>
   <node-view-wrapper class="text-editor-frontmatter">
-    <span class="text-editor-frontmatter-label" contenteditable="false">
+    <span :id="labelId" class="text-editor-frontmatter-label" contenteditable="false">
       <oc-icon name="file-list-2" size="xsmall" fill-type="line" />
       {{ $gettext('Frontmatter') }}
     </span>
@@ -14,6 +14,7 @@
     <pre
       class="text-editor-frontmatter-content font-mono"
       role="textbox"
+      :aria-labelledby="labelId"
       :aria-describedby="hintId"
       aria-multiline="true"
     ><node-view-content /></pre>
@@ -28,6 +29,7 @@ import { v4 as uuidV4 } from 'uuid'
 defineProps(nodeViewProps)
 const { $gettext } = useGettext()
 const hintId = `frontmatter-hint-${uuidV4()}`
+const labelId = `frontmatter-label-${uuidV4()}`
 </script>
 
 <style scoped>

@@ -205,6 +205,10 @@ const folderNotFound = computed(() => unref(currentFolder) === null)
 const isCurrentFolderEmpty = computed(() => unref(paginatedResources).length < 1)
 
 const titleSegments = computed(() => {
+  // a missing folder or a removed share must not be titled like an existing folder
+  if (unref(folderNotFound) && !unref(areResourcesLoading)) {
+    return [$gettext('Resource not found')]
+  }
   const spaceResource = unref(space)
   let title = spaceResource.name
   if (isPublicSpaceResource(spaceResource)) {
@@ -219,7 +223,6 @@ const titleSegments = computed(() => {
 
   return segments
 })
-useDocumentTitle({ titleSegments })
 
 const route = useRoute()
 
@@ -356,7 +359,10 @@ const focusAndAnnounceBreadcrumb = (sameRoute: boolean) => {
     { amount: itemCount.toString() }
   )
 
-  const translatedHint = itemCount > 0 ? announcement : $gettext('This folder has no content.')
+  let translatedHint = itemCount > 0 ? announcement : $gettext('This folder has no content.')
+  if (unref(folderNotFound)) {
+    translatedHint = $gettext('Resource not found')
+  }
 
   document.querySelectorAll('.oc-breadcrumb-sr').forEach((el) => el.remove())
 
@@ -394,6 +400,7 @@ const {
 } = useResourcesViewDefaults<Resource, any, any[]>({
   folderViewExtensionPoint: folderViewsFolderExtensionPoint
 })
+useDocumentTitle({ titleSegments })
 
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 

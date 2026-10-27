@@ -39,6 +39,14 @@ describe('OcMobileDrop', () => {
     wrapper.unmount()
   })
 
+  it('names the close button after the drawer title', async () => {
+    const { wrapper } = getWrapper()
+    await wrapper.find(selectors.toggle).trigger('click')
+    const label = wrapper.find(selectors.closeButton).attributes('aria-label')
+    wrapper.unmount()
+    expect(label).toBe('Close Bottom Drawer')
+  })
+
   it('does not render when toggle is not clicked', async () => {
     const { wrapper } = getWrapper()
     await nextTick()

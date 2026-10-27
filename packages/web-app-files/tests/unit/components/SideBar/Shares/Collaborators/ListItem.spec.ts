@@ -104,6 +104,16 @@ describe('Collaborator ListItem component', () => {
         share.sharedWith.displayName
       )
     })
+    it.each([
+      ['User', ShareTypes.user],
+      ['Group', ShareTypes.group]
+    ])('tells screen readers that the receiver is a %s', (typeText, shareType) => {
+      const share = getShareMock({ shareType: shareType.value })
+      const { wrapper } = createWrapper({ share })
+      expect(wrapper.find('.files-collaborators-collaborator-name + .sr-only').text()).toBe(
+        `Share receiver name: ${share.sharedWith.displayName}, ${typeText}`
+      )
+    })
     it('shows the share expiration date if given', () => {
       const { wrapper } = createWrapper({
         share: getShareMock({ expirationDateTime: '2000-01-01' })

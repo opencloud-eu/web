@@ -4,6 +4,7 @@
       <cropper-image
         ref="cropperImageRef"
         :src="imageUrl"
+        :alt="$gettext('Selected image')"
         rotatable
         scalable
         skewable
@@ -28,6 +29,7 @@
         outlined
         :class="[
           'focus:!ring-0 focus:!outline outline-role-outline focus:!outline-role-outline',
+          'focus-visible:!outline-2 focus-visible:!outline-role-on-secondary focus-visible:!ring-4 focus-visible:!ring-role-secondary',
           { 'rounded-full': roundedSelection }
         ]"
         @change="onCropperSelectionChange"

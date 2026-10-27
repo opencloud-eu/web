@@ -3,6 +3,7 @@
     v-model="currentPassword"
     :label="$gettext('Current password')"
     type="password"
+    autocomplete="current-password"
     :fix-message-line="true"
     required-mark
   />
@@ -10,6 +11,7 @@
     v-model="newPassword"
     :label="$gettext('New password')"
     type="password"
+    autocomplete="new-password"
     :fix-message-line="true"
     :error-message="newPasswordErrorMessage"
     required-mark
@@ -19,6 +21,7 @@
     v-model="newPasswordConfirm"
     :label="$gettext('Repeat new password')"
     type="password"
+    autocomplete="new-password"
     :fix-message-line="true"
     :error-message="passwordConfirmErrorMessage"
     required-mark

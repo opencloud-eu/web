@@ -49,7 +49,14 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { onBeforeRouteLeave, RouteLocationRaw } from 'vue-router'
-import { NoContentMessage, TextEditorViewer, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
+import {
+  NoContentMessage,
+  TextEditorViewer,
+  useDocumentTitle,
+  useRouteParam,
+  useRouter
+} from '@opencloud-eu/web-pkg'
+import { useGettext } from 'vue3-gettext'
 import { App } from '../types'
 import { APPID } from '../appid'
 import { getAppListRoute } from '../helpers'
@@ -64,6 +71,10 @@ const appsStore = useAppsStore()
 const router = useRouter()
 
 const app = computed<App>(() => appsStore.getById(unref(appId)))
+
+const { $gettext } = useGettext()
+const titleSegments = computed(() => [unref(app)?.name || unref(appId), $gettext('App Store')])
+useDocumentTitle({ titleSegments })
 
 // lets the list focus this app again when going back to it
 onBeforeRouteLeave((to) => {

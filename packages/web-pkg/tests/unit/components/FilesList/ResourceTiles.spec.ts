@@ -254,6 +254,24 @@ describe('ResourceTiles component', () => {
       expect(Object.keys(checkbox.attributes())).toContain('disabled')
     })
   })
+  describe('tile size', () => {
+    afterEach(() => {
+      document.documentElement.style.removeProperty('--oc-size-tiles-actual')
+      document.documentElement.style.removeProperty('font-size')
+    })
+
+    it('fits one tile into a view narrower than half a tile', async () => {
+      document.documentElement.style.setProperty('font-size', '16px')
+      const narrowView = document.createElement('div')
+      Object.defineProperty(narrowView, 'clientWidth', { value: 40, configurable: true })
+      vi.mocked(document.getElementById).mockReturnValue(narrowView)
+
+      getWrapper({ props: { resources } })
+      await nextTick()
+
+      expect(document.documentElement.style.getPropertyValue('--oc-size-tiles-actual')).toBe('24px')
+    })
+  })
   describe('delete queue', () => {
     it('sets resources that are in the delete queue in a loading state', () => {
       const { wrapper } = getWrapper({ props: { resources }, deleteQueue: [resources[0].id] })

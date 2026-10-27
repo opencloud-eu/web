@@ -13,10 +13,10 @@
     ref="preview"
     class="!flex size-full"
     tabindex="-1"
-    @keydown.left="goToPrev"
-    @keydown.right="goToNext"
-    @keydown.down="goToNext"
-    @keydown.up="goToPrev"
+    @keydown.left="onArrowKey($event, goToPrev)"
+    @keydown.right="onArrowKey($event, goToNext)"
+    @keydown.down="onArrowKey($event, goToNext)"
+    @keydown.up="onArrowKey($event, goToPrev)"
   >
     <photo-roll
       v-if="photoRollEnabled"
@@ -356,6 +356,14 @@ const goToPrev = () => {
   }
   activeIndex.value = unref(activeIndex) - 1
   updateLocalHistory()
+}
+
+// the native video and audio controls and form fields need the arrow keys to seek or change values
+function onArrowKey(event: KeyboardEvent, navigate: () => void) {
+  if ((event.target as Element).closest('video[controls], audio, input, select, textarea')) {
+    return
+  }
+  navigate()
 }
 
 // a swipe goes to the next or previous file. it is ignored on the native video and audio
