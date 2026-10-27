@@ -10,7 +10,7 @@
       <div
         :id="id"
         tabindex="-1"
-        class="fixed inset-x-0 rounded-t-xl w-full overflow-y-auto transition-all duration-200 -bottom-full overflow-x-hidden"
+        class="fixed inset-x-0 rounded-t-xl w-full overflow-y-auto transition-all motion-reduce:transition-none duration-200 -bottom-full overflow-x-hidden"
         :class="[
           {
             '[&.active]:bottom-0': isDrawerActive,

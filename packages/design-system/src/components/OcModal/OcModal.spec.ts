@@ -2,6 +2,8 @@ import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-help
 import Modal from './OcModal.vue'
 import OcButton from './../OcButton/OcButton.vue'
 import { registerOpenDrop, unregisterOpenDrop } from '../OcDrop/dropRegistry'
+import { flushPromises } from '@vue/test-utils'
+import { defineComponent } from 'vue'
 
 const defaultProps = {
   title: 'Example title',
@@ -181,6 +183,94 @@ describe('OcModal', () => {
         expect(wrapper.find('.oc-modal-body-actions-cancel').attributes('disabled')).toBeDefined()
       })
     })
+  })
+
+  describe('focus with the real focus trap', () => {
+    let wrapper: ReturnType<typeof mount>
+    beforeEach(() => {
+      // jsdom has no layout, so focus-trap would consider every element hidden
+      vi.spyOn(HTMLElement.prototype, 'getClientRects').mockReturnValue([
+        new DOMRect(0, 0, 10, 10)
+      ] as unknown as DOMRectList)
+    })
+    afterEach(async () => {
+      wrapper.unmount()
+      // lets the trap return the focus before the next test starts
+      await new Promise((resolve) => setTimeout(resolve))
+      vi.restoreAllMocks()
+    })
+
+    async function settle() {
+      await flushPromises()
+      await new Promise((resolve) => setTimeout(resolve))
+      await new Promise((resolve) => setTimeout(resolve))
+    }
+
+    async function mountModal({
+      props = {
+        ...inputProps,
+        contextualHelperLabel: 'Help',
+        contextualHelperData: { title: 'Info', readMoreLink: 'https://example.org' }
+      },
+      slots = {}
+    }: {
+      props?: InstanceType<typeof Modal>['$props']
+      slots?: { content?: ReturnType<typeof defineComponent> }
+    } = {}) {
+      document.body.innerHTML = ''
+      wrapper = mount(Modal, {
+        props,
+        slots,
+        global: { plugins: [...defaultPlugins()], stubs: { transition: false } },
+        attachTo: document.body
+      })
+      await settle()
+    }
+
+    it('focuses the input when opened', async () => {
+      await mountModal()
+      expect(document.activeElement).toBe(wrapper.find('.oc-modal-body-input input').element)
+    })
+
+    it('focuses the body when opened, also if the content focused an element on mount', async () => {
+      const FocusingContent = defineComponent({
+        mounted() {
+          ;(this.$el as HTMLElement).focus()
+        },
+        template: '<button class="focusing-content">Option</button>'
+      })
+      await mountModal({ props: defaultProps, slots: { content: FocusingContent } })
+      expect(document.activeElement).toBe(wrapper.find('.oc-modal-body').element)
+    })
+
+    it.each([
+      [
+        'Escape',
+        (el: HTMLElement) =>
+          el.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true })
+          )
+      ],
+      ['the close button', () => document.querySelector<HTMLElement>('.info-header button').click()]
+    ])(
+      'returns the focus to the info drop toggle after tabbing and closing it with %s',
+      async (_, close) => {
+        await mountModal()
+        const toggle = document.querySelector<HTMLElement>('.oc-contextual-helper button')
+        toggle.focus()
+        toggle.click()
+        await settle()
+
+        const link = document.querySelector<HTMLElement>('.info-more-link')
+        link.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }))
+        link.focus()
+        close(link)
+        await settle()
+
+        expect(document.querySelector('.info-drop-content')).toBeNull()
+        expect(document.activeElement).toBe(toggle)
+      }
+    )
   })
 
   describe('focus return after closing', () => {

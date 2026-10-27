@@ -150,7 +150,7 @@ watch(isTablet, () => {
 
 .mobile-nav-enter-active #sidebar-nav-mobile-panel,
 .mobile-nav-leave-active #sidebar-nav-mobile-panel {
-  @apply transition-transform duration-200;
+  @apply transition-transform duration-200 motion-reduce:transition-none;
 }
 
 .mobile-nav-enter-from,

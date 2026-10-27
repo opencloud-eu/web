@@ -49,7 +49,7 @@ exports[`OcTextInput > password input field > password policy > displays error s
     <!--v-if-->
   </div>
   <!--v-if-->
-  <div id="v-0"></div>
+  <div id="v-0"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
 </div>"
 `;
 
@@ -102,6 +102,6 @@ exports[`OcTextInput > password input field > password policy > displays success
     <!--v-if-->
   </div>
   <!--v-if-->
-  <div id="v-0"></div>
+  <div id="v-0"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
 </div>"
 `;

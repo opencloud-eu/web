@@ -46,6 +46,8 @@
           class="vs__search"
           v-bind="attributes"
           :aria-required="requiredMark ? 'true' : undefined"
+          :aria-describedby="selectedOptionId"
+          :aria-label="accessibleLabel"
           @input="emit('search:input', ($event.target as HTMLInputElement).value)"
           v-on="events"
         />
@@ -60,7 +62,11 @@
         <oc-spinner v-if="isLoading" />
       </template>
       <template #selected-option-container="{ option, deselect }">
-        <span class="vs__selected" :class="{ 'vs__selected-readonly': option.readonly }">
+        <span
+          :id="multiple ? undefined : `${id}-selected`"
+          class="vs__selected"
+          :class="{ 'vs__selected-readonly': option.readonly }"
+        >
           <slot name="selected-option" v-bind="option">
             <oc-icon v-if="readOnly && !multiple" name="lock" class="mr-1" size-class="size-4" />
             {{ resolveOptionLabel(option) }}
@@ -299,6 +305,14 @@ function resolveOptionLabel(option: string | Record<string, unknown>): string {
   return typeof option === 'object' ? ((option[optionLabel] as string) ?? '') : option
 }
 
+// the input of a single select doesn't contain the value, so screen readers get it from the selected option
+const selectedOptionId = computed(() =>
+  !multiple && unref(selectRef)?.selectedValue.length ? `${id}-selected` : undefined
+)
+// the name comes from aria-labelledby, the same aria-label on the input keeps checkers like axe
+// from treating the description as its only label while the select is out of view
+const accessibleLabel = computed(() => `${label} - ${$gettext('Search for option')}`)
+
 // the dropdown only opens on explicit user interaction, not when the select gets focused
 const dropdownEnabled = ref(false)
 const dropdownOpen = computed<boolean>(() => unref(selectRef)?.dropdownOpen)
@@ -312,6 +326,7 @@ const keyboardNavigation = ref(false)
 
 // vue-select still maps keydown handlers by the deprecated keyCode
 const enterKeyCode = 13
+const escapeKeyCode = 27
 
 function mapKeydown(map: Record<number, (e: KeyboardEvent) => void>) {
   return {
@@ -323,6 +338,15 @@ function mapKeydown(map: Record<number, (e: KeyboardEvent) => void>) {
       }
       map[enterKeyCode](e)
       unref(selectRef).searchEl.focus()
+    },
+    // vue-select blurs the input on escape, here it only closes the list and keeps the focus
+    [escapeKeyCode]: (e: KeyboardEvent) => {
+      if (unref(dropdownOpen)) {
+        // keeps a surrounding modal open
+        e.stopPropagation()
+        dropdownEnabled.value = false
+      }
+      unref(selectRef).search = ''
     }
   }
 }
@@ -331,7 +355,7 @@ function onKeydown(e: KeyboardEvent) {
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
     keyboardNavigation.value = true
   }
-  if (e.key !== 'Enter' && e.key !== 'Tab') {
+  if (!['Enter', 'Tab', 'Escape'].includes(e.key)) {
     dropdownEnabled.value = true
   }
 }
@@ -368,7 +392,7 @@ if (positionFixed) {
 
 onMounted(() => {
   const toggle = unref(selectRef).$el.querySelector('.vs__dropdown-toggle')
-  toggle?.setAttribute('aria-label', `${label} - ${$gettext('Search for option')}`)
+  toggle?.setAttribute('aria-label', unref(accessibleLabel))
   toggle?.setAttribute('aria-controls', toggle.getAttribute('aria-owns'))
 })
 </script>

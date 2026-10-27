@@ -152,7 +152,7 @@
         </oc-button>
       </div>
     </div>
-    <oc-hidden-announcer level="assertive" :announcement="announcement" />
+    <oc-hidden-announcer ref="announcer" />
   </div>
 </template>
 
@@ -186,7 +186,7 @@ import {
 import { computed, inject, ref, unref, watch, onMounted, nextTick, Ref, useTemplateRef } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { DateTime } from 'luxon'
-import { OcDrop } from '@opencloud-eu/design-system/components'
+import { OcDrop, OcHiddenAnnouncer } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { DriveRecipient } from '@opencloud-eu/web-client/graph/generated'
@@ -231,12 +231,12 @@ const { searchContacts: searchOpenXchangeContacts } = useOpenXchangeContacts()
 const { inviteContact } = useInviteContactViaEmail()
 
 const showMoreShareOptionsDropRef = useTemplateRef<typeof OcDrop>('showMoreShareOptionsDropRef')
+const announcer = useTemplateRef<typeof OcHiddenAnnouncer>('announcer')
 
 const saving = ref(false)
 const savingDelayed = ref(false)
 const expirationDate = ref<string | null>(null)
 const selectedCollaborators = ref<CollaboratorAutoCompleteItem[]>([])
-const announcement = ref<string>('')
 const selectedRole = ref<ShareRole>()
 
 const resource = inject<Resource>('resource')
@@ -339,13 +339,7 @@ const {
       const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
       const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
 
-      if (selected || exists) {
-        return false
-      }
-
-      announcement.value = $gettext('Person was added')
-
-      return true
+      return !selected && !exists
     }
   )
 })
@@ -493,6 +487,18 @@ const noOptionsLabel = computed(() => {
   return $gettext('No users or groups found.')
 })
 
+watch(searchInProgress, (inProgress) => {
+  if (inProgress || unref(searchQuery).trim().length < unref(minSearchLength)) {
+    return
+  }
+  const count = filterRecipients(unref(autocompleteResults), unref(searchQuery)).length
+  unref(announcer)?.announce(
+    count
+      ? $ngettext('%{count} result', '%{count} results', count, { count: count.toString() })
+      : unref(noOptionsLabel)
+  )
+})
+
 const showShareTypeFilter = computed(
   () => unref(shareRoleTypes).length > 1 && !isProjectSpaceResource(unref(resource))
 )
@@ -513,6 +519,9 @@ const collaboratorExpiryChanged = (date: string | null) => {
 }
 
 const resetFocusOnInvite = (event: CollaboratorAutoCompleteItem[]) => {
+  if (event.length > unref(selectedCollaborators).length) {
+    unref(announcer)?.announce($gettext('Person was added'))
+  }
   selectedCollaborators.value = event
   autocompleteResults.value = []
   searchQuery.value = ''

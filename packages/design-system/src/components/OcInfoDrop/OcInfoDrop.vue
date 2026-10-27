@@ -12,8 +12,8 @@
     @hide-drop="() => (dropOpen = false)"
     @show-drop="() => (dropOpen = true)"
   >
-    <focus-trap :active="dropOpen">
-      <div class="info-drop-content">
+    <focus-trap ref="focusTrapRef" :active="dropOpen" :return-focus-on-deactivate="false">
+      <div class="info-drop-content" @click="releaseFocus" @keydown.esc="releaseFocus">
         <div class="flex justify-between items-center info-header border-b pb-2">
           <p class="m-0 info-title text-lg font-normal" v-text="$gettext(title)" />
           <oc-button appearance="raw" :aria-label="$gettext('Close')" class="align-middle">
@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref } from 'vue'
+import { computed, ref, unref, useTemplateRef } from 'vue'
 import { FocusTrap } from 'focus-trap-vue'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
@@ -119,6 +119,13 @@ const {
 } = defineProps<Props>()
 
 const dropOpen = ref(false)
+const focusTrapRef = useTemplateRef<InstanceType<typeof FocusTrap>>('focusTrapRef')
+
+// the closing drop returns the focus to the toggle itself, the trap must neither pull it back
+// nor move it into the drop that is still fading out
+function releaseFocus() {
+  unref(focusTrapRef)?.deactivate()
+}
 
 const listItems = computed(() => {
   return (list || []).filter((item) => !!item.text)

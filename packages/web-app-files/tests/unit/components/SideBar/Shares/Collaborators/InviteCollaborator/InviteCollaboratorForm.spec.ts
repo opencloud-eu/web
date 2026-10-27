@@ -21,11 +21,20 @@ import { OcButton, OcSelect } from '@opencloud-eu/design-system/components'
 import RoleDropdown from '../../../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
 import { ShareRoleType } from '../../../../../../../src/components/SideBar/Shares/Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
 import { flushPromises } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
 
 vi.mock('lodash-es', async (importOriginal) => ({
   ...(await importOriginal<typeof import('lodash-es')>()),
   debounce: (fn: any) => fn
 }))
+
+const announceMock = vi.fn()
+const OcHiddenAnnouncerStub = defineComponent({
+  setup(_, { expose }) {
+    expose({ announce: announceMock })
+    return () => h('span')
+  }
+})
 
 const folderMock = {
   id: '1',
@@ -46,6 +55,9 @@ const spaceMock = {
 }
 
 describe('InviteCollaboratorForm', () => {
+  afterEach(() => {
+    announceMock.mockReset()
+  })
   describe('renders correctly', () => {
     it.todo('renders a select field for share receivers')
     it.todo('renders an inviteDescriptionMessage')
@@ -265,6 +277,39 @@ describe('InviteCollaboratorForm', () => {
           (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
         )
       ).toBe(false)
+    })
+  })
+  describe('screen reader announcements', () => {
+    it('announces the result count once the search has finished', async () => {
+      const { wrapper } = getWrapper({
+        users: [{ id: '2', displayName: 'Marie' } as User],
+        groups: [{ id: '3', displayName: 'Marketing' }]
+      })
+      ;(wrapper.vm as any).onSearch('mar')
+      await flushPromises()
+
+      expect(announceMock).toHaveBeenCalledTimes(1)
+      expect(announceMock).toHaveBeenCalledWith('2 results')
+    })
+    it('announces when no users or groups are found', async () => {
+      const { wrapper } = getWrapper()
+      ;(wrapper.vm as any).onSearch('unknown')
+      await flushPromises()
+
+      expect(announceMock).toHaveBeenCalledWith('No users or groups found.')
+    })
+    it('announces a person being added on selection only', async () => {
+      const { wrapper } = getWrapper()
+      const select = wrapper.findComponent(OcSelect)
+      const person = mock<CollaboratorAutoCompleteItem>({ id: '2' })
+
+      select.vm.$emit('update:model-value', [person])
+      await wrapper.vm.$nextTick()
+      expect(announceMock).toHaveBeenCalledWith('Person was added')
+
+      select.vm.$emit('update:model-value', [])
+      await wrapper.vm.$nextTick()
+      expect(announceMock).toHaveBeenCalledTimes(1)
     })
   })
   describe('share action', () => {
@@ -581,7 +626,7 @@ function getWrapper({
           availableInternalShareRoles: internalShareRoles
         },
         mocks,
-        stubs: { OcSelect: false, RoleDropdown: true }
+        stubs: { OcSelect: false, RoleDropdown: true, OcHiddenAnnouncer: OcHiddenAnnouncerStub }
       }
     })
   }

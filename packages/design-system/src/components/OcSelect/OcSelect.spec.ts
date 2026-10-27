@@ -1,5 +1,6 @@
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
 import OcSelect from './OcSelect.vue'
+import { nextTick } from 'vue'
 
 const selectors = {
   ocSelect: '.oc-select',
@@ -77,6 +78,31 @@ describe('OcSelect', () => {
         options[0].nested.customLabel
       )
     })
+    it('describes the input of a single select with its value', async () => {
+      const options = [{ label: 'label1' }, { label: 'label2' }]
+      const wrapper = getWrapper({ options, modelValue: options[1] })
+      await nextTick()
+      const describedBy = wrapper.find(selectors.searchInput).attributes('aria-describedby')
+      expect(wrapper.find(`#${describedBy}`).text()).toBe('label2')
+    })
+    it('labels the input like its combobox', () => {
+      const wrapper = getWrapper({ options: [{ label: 'label1' }] })
+      expect(wrapper.find(selectors.searchInput).attributes('aria-label')).toBe(
+        'Select label - Search for option'
+      )
+      expect(wrapper.find('.vs__dropdown-toggle').attributes('aria-label')).toBe(
+        'Select label - Search for option'
+      )
+    })
+    it('does not describe the input of a single select without a value', () => {
+      const wrapper = getWrapper({ options: [{ label: 'label1' }] })
+      expect(wrapper.find(selectors.searchInput).attributes('aria-describedby')).toBeUndefined()
+    })
+    it('does not describe the input of a multi select with its values', () => {
+      const options = [{ label: 'label1' }, { label: 'label2' }]
+      const wrapper = getWrapper({ options, modelValue: options[0], multiple: true })
+      expect(wrapper.find(selectors.searchInput).attributes('aria-describedby')).toBeUndefined()
+    })
     it('can be cleared if multi-select is allowed', () => {
       const options = [{ label: 'label1' }, { label: 'label2' }]
       const wrapper = getWrapper({ options, modelValue: options[0], multiple: true })
@@ -98,6 +124,45 @@ describe('OcSelect', () => {
       const wrapper = getWrapper({ options, modelValue: options[0], multiple: true })
       expect(wrapper.find(selectors.deselectBtn).exists()).toBeFalsy()
       expect(wrapper.find(selectors.deselectLockIcon).exists()).toBeTruthy()
+    })
+  })
+  describe('escape key', () => {
+    const options = [{ label: 'label1' }, { label: 'label2' }]
+
+    async function pressEscape(input: ReturnType<ReturnType<typeof getWrapper>['find']>) {
+      await input.trigger('keydown', { key: 'Escape', keyCode: 27 })
+    }
+
+    it('closes an open list, keeps the focus and does not close a surrounding modal', async () => {
+      const onParentKeydown = vi.fn()
+      document.body.addEventListener('keydown', onParentKeydown)
+      const wrapper = getWrapper({ options }, { attachTo: document.body })
+      const input = wrapper.find(selectors.searchInput)
+      ;(input.element as HTMLInputElement).focus()
+      await input.trigger('keydown', { key: 'ArrowDown', keyCode: 40 })
+      expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(true)
+
+      await pressEscape(input)
+
+      expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(false)
+      expect(document.activeElement).toBe(input.element)
+      expect(onParentKeydown).not.toHaveBeenCalledWith(expect.objectContaining({ key: 'Escape' }))
+      document.body.removeEventListener('keydown', onParentKeydown)
+      wrapper.unmount()
+    })
+    it('clears the search of a closed list and keeps the focus', async () => {
+      const wrapper = getWrapper({ options }, { attachTo: document.body })
+      const input = wrapper.find(selectors.searchInput)
+      ;(input.element as HTMLInputElement).focus()
+      await input.setValue('label')
+
+      await pressEscape(input)
+      expect((input.element as HTMLInputElement).value).toBe('')
+
+      await pressEscape(input)
+      expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(false)
+      expect(document.activeElement).toBe(input.element)
+      wrapper.unmount()
     })
   })
   describe('required mark', () => {
@@ -127,7 +192,8 @@ function getWrapper<T>(
     options?: T[]
     getOptionLabel?: (o: T) => string
     modelValue?: T
-  } = {}
+  } = {},
+  { attachTo }: { attachTo?: HTMLElement } = {}
 ) {
   return mount(OcSelect, {
     props: {
@@ -136,6 +202,7 @@ function getWrapper<T>(
     },
     global: {
       plugins: [...defaultPlugins()]
-    }
+    },
+    attachTo
   })
 }

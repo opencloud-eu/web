@@ -85,6 +85,8 @@ describe('resolvePublicLink', () => {
 
         await expect((wrapper.vm as any).submitPassword()).resolves.toBeUndefined()
         expect(mocks.$router.push).not.toHaveBeenCalled()
+        await flushPromises()
+        expect(wrapper.find('input').attributes('error-message')).toBe('Incorrect password')
       })
     })
   })

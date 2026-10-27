@@ -104,6 +104,17 @@ describe('TextEditorTableOfContents', () => {
     expect(wrapper.find('.text-editor-table-of-contents-item').exists()).toBe(false)
   })
 
+  it('names the toggle by its visible text when expanded', async () => {
+    const { wrapper } = await getWrapper({ items: headings(), expanded: false })
+    const toggle = wrapper.find('.text-editor-table-of-contents-toggle')
+
+    expect(toggle.attributes('aria-label')).toBe('Show table of contents')
+
+    await toggle.trigger('click')
+    expect(toggle.attributes('aria-label')).toBeUndefined()
+    expect(toggle.text()).toBe('Outlines')
+  })
+
   it('scrolls to a heading on click and marks it active', async () => {
     const items = headings()
     const { wrapper } = await getWrapper({ items })

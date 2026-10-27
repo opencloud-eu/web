@@ -16,6 +16,7 @@ import {
   SearchBarFilter,
   SearchLocationFilterConstants,
   SearchResult,
+  useAuthStore,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
@@ -459,6 +460,54 @@ describe('Search Bar portal component', () => {
       await flushPromises()
       expect(providerFiles.previewSearch.search).toHaveBeenCalled()
       expect(announceMock).toHaveBeenCalledTimes(1)
+    })
+  })
+  describe('mobile search overlay', () => {
+    function mountInTopBar() {
+      document.body.innerHTML =
+        '<header id="oc-topbar"><div id="left"><button>Menu</button></div><div id="center"></div><div id="right"><button>Account</button></div></header>'
+      const { wrapper } = getMountedWrapper({ attachTo: document.getElementById('center') })
+      const isInert = (selector: string) => document.querySelector(selector).hasAttribute('inert')
+      const toggle = () => wrapper.find('[aria-label="Click to display and focus the search bar"]')
+      return { wrapper, isInert, toggle }
+    }
+
+    test('takes the covered top bar controls out of the tab order while it is open', async () => {
+      const { wrapper, isInert, toggle } = mountInTopBar()
+      await toggle().trigger('click')
+
+      expect(isInert('#left')).toBe(true)
+      expect(isInert('#right')).toBe(true)
+      expect(isInert('#center')).toBe(false)
+      expect(toggle().attributes('inert')).toBeDefined()
+
+      ;(wrapper.vm as any).cancelSearch()
+      await nextTick()
+
+      expect(isInert('#left')).toBe(false)
+      expect(isInert('#right')).toBe(false)
+      expect(toggle().attributes('inert')).toBeUndefined()
+    })
+    test('gives the top bar controls back when the open search bar gets removed', async () => {
+      const { isInert, toggle } = mountInTopBar()
+      await toggle().trigger('click')
+      expect(isInert('#right')).toBe(true)
+
+      useAuthStore().userContextReady = false
+      await nextTick()
+
+      expect(isInert('#left')).toBe(false)
+      expect(isInert('#right')).toBe(false)
+    })
+    test('gives the top bar controls back when it gets unmounted while open', async () => {
+      const { wrapper, isInert, toggle } = mountInTopBar()
+      await toggle().trigger('click')
+      expect(isInert('#right')).toBe(true)
+
+      wrapper.unmount()
+
+      expect(isInert('#left')).toBe(false)
+      expect(isInert('#right')).toBe(false)
     })
   })
   describe('search location across views', () => {
