@@ -1,0 +1,26 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index d5fd6a2ed2..66f9b91768 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -1777,6 +1777,8 @@ const mapCharacterPosition = (position, transaction, docs, indexes) => {
+ const mapPositionMigration = (transaction, binding, previous) => {
+ 	const pending = (previous === null || previous === void 0 ? void 0 : previous.doc) === transaction.before && previous.doc !== binding.syncedDoc ? previous : null;
+ 	if (!transaction.docChanged || !binding.prosemirrorView || !pending && transaction.steps.every((step, index) => isTextReplacement(step, transaction.docs[index]))) return pending;
++	const rootTransaction = transaction.getMeta("appendedTransaction");
++	if (!pending && rootTransaction && rootTransaction.before !== transaction.before) return null;
+ 	const source = pending !== null && pending !== void 0 ? pending : getPositionContent(binding.type, transaction.before);
+ 	const docs = [...transaction.docs, transaction.doc];
+ 	const indexes = docs.map(indexNodes);
+diff --git a/dist/index.js b/dist/index.js
+index 50bcfe723a..91f75b97cc 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1744,6 +1744,8 @@ const mapCharacterPosition = (position, transaction, docs, indexes) => {
+ const mapPositionMigration = (transaction, binding, previous) => {
+ 	const pending = (previous === null || previous === void 0 ? void 0 : previous.doc) === transaction.before && previous.doc !== binding.syncedDoc ? previous : null;
+ 	if (!transaction.docChanged || !binding.prosemirrorView || !pending && transaction.steps.every((step, index) => isTextReplacement(step, transaction.docs[index]))) return pending;
++	const rootTransaction = transaction.getMeta("appendedTransaction");
++	if (!pending && rootTransaction && rootTransaction.before !== transaction.before) return null;
+ 	const source = pending !== null && pending !== void 0 ? pending : getPositionContent(binding.type, transaction.before);
+ 	const docs = [...transaction.docs, transaction.doc];
+ 	const indexes = docs.map(indexNodes);

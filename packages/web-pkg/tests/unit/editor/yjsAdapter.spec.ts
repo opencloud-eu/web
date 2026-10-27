@@ -36,6 +36,19 @@ function boundEditor(strategy: ContentTypeStrategy, ydoc: Y.Doc): Editor {
   })
 }
 
+/** Types character by character, so input rules fire as they do for a user. */
+function typeText(editor: Editor, text: string): void {
+  for (const char of text) {
+    const { view } = editor
+    const { from, to } = view.state.selection
+    const insert = () => view.state.tr.insertText(char, from, to)
+    const handled = view.someProp('handleTextInput', (f) => f(view, from, to, char, insert))
+    if (!handled) {
+      view.dispatch(insert())
+    }
+  }
+}
+
 const MARKDOWN = [
   '# Title',
   '',
@@ -92,6 +105,21 @@ describe('makeTiptapYjsAdapter', () => {
       })
 
       expect(adapter.serialize(ydoc)).toBe(`${MARKDOWN}\n\nAppended.`)
+
+      editor.destroy()
+      ydoc.destroy()
+    })
+
+    it('picks up typing into a heading created by an input rule', () => {
+      const strategy = useStrategyMarkdown(createState())
+      const adapter = makeTiptapYjsAdapter(strategy)
+      const ydoc = new Y.Doc()
+
+      const editor = boundEditor(strategy, ydoc)
+      editor.commands.focus('end')
+      typeText(editor, '# Title')
+
+      expect(adapter.serialize(ydoc).trimEnd()).toBe('# Title')
 
       editor.destroy()
       ydoc.destroy()

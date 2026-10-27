@@ -68,6 +68,7 @@ allowBuilds:
   esbuild: true
 
 patchedDependencies:
+  '@tiptap/y-tiptap@3.0.10': patches/@tiptap__y-tiptap@3.0.10.patch
   caf@15.0.1: patches/caf@15.0.1.patch
   vite-plugin-static-copy@4.1.1: patches/vite-plugin-static-copy@4.1.1.patch
   vue-inline-svg@4.0.1: patches/vue-inline-svg@4.0.1.patch
