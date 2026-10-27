@@ -1,5 +1,21 @@
 # Changelog
 
+## [8.2.1](https://github.com/opencloud-eu/web/releases/tag/v8.2.1) - 2026-10-27
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen
+
+### 🐛 Bug Fixes
+
+- fix(editor): patch y-tiptap crash when typing into a new heading [[#4032](https://github.com/opencloud-eu/web/pull/4032)]
+- fix(editor): open non-UTF-8 text files read-only in editors [[#4022](https://github.com/opencloud-eu/web/pull/4022)]
+
+### 📦️ Dependencies
+
+- chore(deps): update shumc/imagor docker tag to v1.9.14 [[#4016](https://github.com/opencloud-eu/web/pull/4016)]
+- chore(deps): update typescript-eslint monorepo to v8.72.1 [[#4028](https://github.com/opencloud-eu/web/pull/4028)]
+
 ## [8.2.0](https://github.com/opencloud-eu/web/releases/tag/v8.2.0) - 2026-10-26
 
 ### ❤️ Thanks to all contributors! ❤️
