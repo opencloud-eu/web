@@ -71,6 +71,7 @@ import {
   onSSEItemTrashedEvent,
   onSSEFolderCreatedEvent,
   onSSEFileTouchedEvent,
+  onSSEItemMetadataChangedEvent,
   onSSEItemMovedEvent,
   onSSEItemFavoriteAddedEvent,
   onSSEItemFavoriteRemovedEvent,
@@ -985,6 +986,15 @@ export const registerSSEEventListeners = ({
       msg,
       ...sseEventWrapperOptions,
       method: onSSEFileTouchedEvent
+    })
+  )
+
+  clientService.sseAuthenticated.addEventListener(MESSAGE_TYPE.ITEM_METADATA_CHANGED, (msg) =>
+    sseEventWrapper({
+      topic: MESSAGE_TYPE.ITEM_METADATA_CHANGED,
+      msg,
+      ...sseEventWrapperOptions,
+      method: onSSEItemMetadataChangedEvent
     })
   )
 

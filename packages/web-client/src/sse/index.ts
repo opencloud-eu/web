@@ -20,6 +20,7 @@ export enum MESSAGE_TYPE {
   FILE_LOCKED = 'file-locked',
   FILE_UNLOCKED = 'file-unlocked',
   FILE_TOUCHED = 'file-touched',
+  ITEM_METADATA_CHANGED = 'item-metadata-changed',
   ITEM_RENAMED = 'item-renamed',
   ITEM_TRASHED = 'item-trashed',
   ITEM_RESTORED = 'item-restored',
