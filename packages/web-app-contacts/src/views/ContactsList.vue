@@ -79,7 +79,7 @@
               >
                 <ContextActionMenu
                   :menu-sections="getContactMenuSections(contact)"
-                  :action-options="actionOptions"
+                  :action-options="{ resources: [contact] }"
                 />
               </oc-drop>
             </div>
@@ -91,15 +91,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, nextTick } from 'vue'
+import { computed, watch, nextTick, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import {
   AppLoadingSpinner,
   ContextActionMenu,
   NoContentMessage,
-  MenuSection,
-  ActionOptions
+  MenuSection
 } from '@opencloud-eu/web-pkg'
 import { Contact } from '../types'
 import { useLoadContacts } from '../composables/useLoadContacts'
@@ -107,6 +106,7 @@ import { useContactsStore } from '../composables/piniaStores/contacts'
 import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { useContactEditor } from '../composables/useContactEditor'
 import { useContactSearch } from '../composables/useContactSearch'
+import { useContactActionsDelete } from '../composables/actions/useContactActionsDelete'
 import { getContactDisplayName } from '../helpers'
 import ContactsListItem from '../components/ContactsListItem.vue'
 
@@ -115,11 +115,10 @@ const { $gettext } = useGettext()
 const contactsStore = useContactsStore()
 const addressBooksStore = useAddressBooksStore()
 const { runWithDiscardConfirmation } = useContactEditor()
+const { actions: deleteActions } = useContactActionsDelete()
 const { contacts, currentContact } = storeToRefs(contactsStore)
 const { currentAddressBook } = storeToRefs(addressBooksStore)
 const { setCurrentContact } = contactsStore
-
-const actionOptions = {} as ActionOptions
 
 const sortedContacts = computed(() => {
   return [...contacts.value].sort((a, b) => {
@@ -153,6 +152,10 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
           }
         }
       ]
+    },
+    {
+      name: 'secondary',
+      items: unref(deleteActions)
     }
   ]
 }
