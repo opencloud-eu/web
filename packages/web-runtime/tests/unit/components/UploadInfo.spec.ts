@@ -9,6 +9,8 @@ const selectors = {
   title: '.upload-info-title p',
   body: '.upload-info-body',
   collapseButton: '#collapse-upload-info-btn',
+  closeButton: '#close-upload-info-btn',
+  retryButton: '#retry-upload-info-btn',
   progress: '.upload-info-progress',
   success: '.upload-info-success',
   error: '.upload-info-danger',
@@ -287,6 +289,123 @@ describe('UploadInfo component', () => {
       expect(resourceStub.props().isResourceClickable).toBeTruthy()
     })
   })
+  describe('retry', () => {
+    const rootFile = {
+      id: 'file',
+      name: 'file.txt',
+      meta: { uploadId: 'file', relativeFolder: '', currentFolder: '/A' }
+    } as OcUppyFile
+    const rootFolder = {
+      id: 'folder',
+      name: 'folder',
+      meta: { uploadId: 'folder', relativeFolder: '', currentFolder: '/A', isFolder: true }
+    } as OcUppyFile
+    const nestedFile = (id: string) =>
+      ({
+        id,
+        name: `${id}.txt`,
+        meta: {
+          uploadId: id,
+          relativeFolder: '/folder',
+          topLevelFolderId: 'folder',
+          currentFolder: '/A'
+        }
+      }) as OcUppyFile
+    const error = { statusCode: 409 } as HttpError
+
+    it('keeps the close button visible when a folder failed to be created', async () => {
+      const { wrapper, handlers } = getWrapperWithHandlers()
+      handlers.uploadStarted()
+      handlers.addedForUpload([rootFolder])
+      handlers.uploadError({ file: rootFolder, error })
+      await nextTick()
+
+      expect((wrapper.vm as any).itemsInProgressCount).toBe(0)
+      expect(wrapper.find(selectors.closeButton).exists()).toBeTruthy()
+    })
+    it('keeps the close button visible when a subfolder failed to be created', async () => {
+      const subFolder = {
+        id: 'sub',
+        name: 'sub',
+        meta: { uploadId: 'sub', relativeFolder: '/folder', currentFolder: '/A', isFolder: true }
+      } as OcUppyFile
+      const { wrapper, handlers } = getWrapperWithHandlers()
+      handlers.uploadStarted()
+      handlers.addedForUpload([rootFolder])
+      handlers.uploadSuccess(rootFolder)
+      handlers.addedForUpload([subFolder])
+      handlers.uploadError({ file: subFolder, error })
+      handlers.uploadCompleted()
+      await nextTick()
+
+      expect(wrapper.find(selectors.closeButton).exists()).toBeTruthy()
+    })
+    it('hides the retry button after the uploads were cancelled', async () => {
+      const { wrapper, handlers } = getWrapperWithHandlers()
+      handlers.uploadStarted()
+      handlers.addedForUpload([rootFile])
+      handlers.uploadError({ file: rootFile, error })
+      ;(wrapper.vm as any).cancelAllUploads()
+      await nextTick()
+
+      expect(wrapper.find(selectors.retryButton).exists()).toBeFalsy()
+    })
+    it('hides the retry button when only folders failed', async () => {
+      const { wrapper, handlers } = getWrapperWithHandlers()
+      handlers.uploadStarted()
+      handlers.addedForUpload([rootFolder])
+      handlers.uploadError({ file: rootFolder, error })
+      handlers.uploadCompleted()
+      await nextTick()
+
+      expect(wrapper.find(selectors.retryButton).exists()).toBeFalsy()
+    })
+    it('retries failed files only and finishes afterwards', async () => {
+      const { wrapper, mocks, handlers } = getWrapperWithHandlers()
+      handlers.uploadStarted()
+      handlers.addedForUpload([rootFolder])
+      handlers.uploadError({ file: rootFolder, error })
+      handlers.addedForUpload([rootFile])
+      handlers.uploadError({ file: rootFile, error })
+      handlers.uploadCompleted()
+      await nextTick()
+
+      await wrapper.find(selectors.retryButton).trigger('click')
+      expect(mocks.$uppyService.retryAllUploads).toHaveBeenCalled()
+
+      handlers.uploadSuccess(rootFile)
+      handlers.uploadCompleted()
+      await nextTick()
+
+      const vm = wrapper.vm as any
+      expect(wrapper.find(selectors.closeButton).exists()).toBeTruthy()
+      expect(Object.keys(vm.errors)).toEqual(['folder'])
+      expect(vm.uploads.folder.status).toBe('error')
+    })
+    it('counts a top level folder only once when retrying several of its files', async () => {
+      const { wrapper, handlers } = getWrapperWithHandlers()
+      handlers.uploadStarted()
+      handlers.addedForUpload([rootFolder])
+      handlers.uploadSuccess(rootFolder)
+      handlers.addedForUpload([nestedFile('a'), nestedFile('b')])
+      handlers.uploadError({ file: nestedFile('a'), error })
+      handlers.uploadError({ file: nestedFile('b'), error })
+      handlers.uploadCompleted()
+      await nextTick()
+
+      await wrapper.find(selectors.retryButton).trigger('click')
+      const vm = wrapper.vm as any
+      expect(vm.itemsInProgressCount).toBe(1)
+
+      handlers.uploadSuccess(nestedFile('a'))
+      handlers.uploadSuccess(nestedFile('b'))
+      await nextTick()
+
+      expect(vm.itemsInProgressCount).toBe(0)
+      expect(wrapper.find(selectors.closeButton).exists()).toBeTruthy()
+      expect(vm.uploads.folder.status).toBe('success')
+    })
+  })
   describe('pause and resume', () => {
     it('does not count the paused duration as upload time', () => {
       vi.useFakeTimers()
@@ -316,6 +435,15 @@ describe('UploadInfo component', () => {
     })
   })
 })
+
+function getWrapperWithHandlers() {
+  const { wrapper, mocks } = getShallowWrapper()
+  const handlers: Record<string, (...args: unknown[]) => void> = {}
+  for (const [event, handler] of mocks.$uppyService.subscribe.mock.calls) {
+    handlers[event] = handler
+  }
+  return { wrapper, mocks, handlers }
+}
 
 function getShallowWrapper() {
   const mocks = {
