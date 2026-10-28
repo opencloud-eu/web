@@ -354,6 +354,18 @@ describe('InviteCollaboratorForm', () => {
 
       expect(resultAnnouncements()).toEqual([])
     })
+    it('announces nothing for a refetch below the minimum search length', async () => {
+      const { wrapper, input } = getTypingWrapper({
+        users: [{ id: '2', displayName: 'Marie' } as User],
+        externalShareRoles: [mock<ShareRole>()],
+        searchMinLength: 3
+      })
+      await input.setValue('ma')
+      await (wrapper.vm as any).selectShareRoleType({ id: '2', label: 'External' })
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual([])
+    })
     it('announces only the result of the newest query', async () => {
       debounceMode.real = true
       vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] })
@@ -640,6 +652,7 @@ function getWrapper({
   openXchange = false,
   openXchangeContacts = [],
   canInviteGuests = true,
+  searchMinLength = 2,
   shallow = true,
   props = {},
   attachTo = undefined
@@ -655,6 +668,7 @@ function getWrapper({
   openXchange?: boolean
   openXchangeContacts?: Contact[]
   canInviteGuests?: boolean
+  searchMinLength?: number
   shallow?: boolean
   props?: Record<string, unknown>
   attachTo?: HTMLElement
@@ -668,7 +682,10 @@ function getWrapper({
   mocks.$clientService.ox.autocompleteContacts.mockResolvedValue(openXchangeContacts)
 
   const capabilities = {
-    files_sharing: { federation: { incoming: true, outgoing: true } }
+    files_sharing: {
+      federation: { incoming: true, outgoing: true },
+      search_min_length: searchMinLength
+    }
   }
 
   return {

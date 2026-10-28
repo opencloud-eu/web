@@ -498,7 +498,11 @@ const noOptionsLabel = computed(() => {
 function announceResults(query: string, results: CollaboratorAutoCompleteItem[]) {
   // only announce what the list shows: not after the input got cleared, changed or left
   const input = document.getElementById('files-share-invite-input') as HTMLInputElement
-  if (document.activeElement !== input || input.value.trim() !== query.trim()) {
+  if (
+    document.activeElement !== input ||
+    input.value.trim() !== query.trim() ||
+    query.trim().length < unref(minSearchLength)
+  ) {
     return
   }
   const count = filterRecipients(results, query).length
