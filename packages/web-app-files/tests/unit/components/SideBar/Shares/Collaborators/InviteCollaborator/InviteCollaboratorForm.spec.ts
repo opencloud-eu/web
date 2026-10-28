@@ -287,9 +287,18 @@ describe('InviteCollaboratorForm', () => {
     const resultAnnouncements = () =>
       announceMock.mock.calls.map(([message]) => message).filter((message) => !!message)
 
+    let typingWrapper: ReturnType<typeof getWrapper>['wrapper'] | undefined
+    afterEach(() => {
+      typingWrapper?.unmount()
+      typingWrapper = undefined
+      vi.useRealTimers()
+      debounceMode.real = false
+    })
+
     function getTypingWrapper(options: Parameters<typeof getWrapper>[0] = {}) {
       document.body.innerHTML = ''
       const { wrapper, mocks } = getWrapper({ ...options, shallow: false, attachTo: document.body })
+      typingWrapper = wrapper
       const input = wrapper.find<HTMLInputElement>('#files-share-invite-input')
       input.element.focus()
       return { wrapper, mocks, input }
@@ -304,7 +313,7 @@ describe('InviteCollaboratorForm', () => {
     }
 
     it('announces the result count once the search has finished', async () => {
-      const { wrapper, input } = getTypingWrapper({
+      const { input } = getTypingWrapper({
         users: [{ id: '2', displayName: 'Marie' } as User],
         groups: [{ id: '3', displayName: 'Marketing' }]
       })
@@ -312,15 +321,13 @@ describe('InviteCollaboratorForm', () => {
       await flushPromises()
 
       expect(resultAnnouncements()).toEqual(['2 results'])
-      wrapper.unmount()
     })
     it('announces when no users or groups are found', async () => {
-      const { wrapper, input } = getTypingWrapper()
+      const { input } = getTypingWrapper()
       await input.setValue('unknown')
       await flushPromises()
 
       expect(resultAnnouncements()).toEqual(['No users or groups found.'])
-      wrapper.unmount()
     })
     it.each([
       {
@@ -337,7 +344,7 @@ describe('InviteCollaboratorForm', () => {
         cancel: (input: DOMWrapper<HTMLInputElement>) => input.element.blur()
       }
     ])('announces nothing for a search cancelled by $cancelledBy', async ({ cancel }) => {
-      const { wrapper, mocks, input } = getTypingWrapper()
+      const { mocks, input } = getTypingWrapper()
       const settle = delaySearch(mocks, [{ id: '2', displayName: 'Marie' } as User])
       await input.setValue('mar')
       await cancel(input)
@@ -346,12 +353,11 @@ describe('InviteCollaboratorForm', () => {
       await flushPromises()
 
       expect(resultAnnouncements()).toEqual([])
-      wrapper.unmount()
     })
     it('announces only the result of the newest query', async () => {
       debounceMode.real = true
       vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] })
-      const { wrapper, mocks, input } = getTypingWrapper({
+      const { mocks, input } = getTypingWrapper({
         users: [{ id: '3', displayName: 'Marie' } as User]
       })
       const settleFirst = delaySearch(mocks, [
@@ -368,9 +374,6 @@ describe('InviteCollaboratorForm', () => {
       await flushPromises()
 
       expect(resultAnnouncements()).toEqual(['1 result'])
-      wrapper.unmount()
-      vi.useRealTimers()
-      debounceMode.real = false
     })
     it('announces a person being added on selection only', async () => {
       const { wrapper } = getWrapper()
