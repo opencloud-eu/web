@@ -97,7 +97,9 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const contentType = ref(options.contentType)
   const yjsStatus = computed(() => toValue(options.yjsStatus) ?? null)
   const collaborators = useYjsCollaborators(options.awareness)
-  const strategy = resolveStrategy(options.contentType, state)
+  const strategy = resolveStrategy(options.contentType, state, {
+    renderHtml: options.renderHtml
+  })
   const yjsFragment = options.ydocFragment ?? DEFAULT_YDOC_FRAGMENT
 
   // Filter out excluded actions (by id) from toolbar and slash commands, including

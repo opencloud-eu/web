@@ -12,6 +12,11 @@ export interface ExtensionsOptions {
   yjs?: boolean
 }
 
+export interface ContentTypeStrategyOptions {
+  /** See `TextEditorOptions.renderHtml`. */
+  renderHtml?: boolean
+}
+
 export interface ContentTypeStrategy {
   editorContentType?(): string
   /**

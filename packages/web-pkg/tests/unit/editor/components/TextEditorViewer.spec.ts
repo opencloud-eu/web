@@ -17,7 +17,7 @@ vi.mock('../../../../src/editor/components/TextEditorContent.vue', () => ({
 }))
 
 describe('TextEditorViewer', () => {
-  it('creates a read-only editor without slash commands', () => {
+  it('creates a read-only editor without slash commands that renders html', () => {
     mount(TextEditorViewer, {
       props: { content: '# Details', ariaLabel: 'Details' },
       global: { plugins: [...defaultPlugins()] }
@@ -28,6 +28,7 @@ describe('TextEditorViewer', () => {
         contentType: 'markdown',
         readonly: true,
         slashCommands: false,
+        renderHtml: true,
         ariaLabel: 'Details'
       })
     )

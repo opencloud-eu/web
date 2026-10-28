@@ -51,18 +51,49 @@ function escapeBlockStart(line: string, patterns: [RegExp, string][]): string {
 
 /**
  * Lines after the first one in a list item are written unindented, any marker
- * there starts a new item.
+ * there starts a new item. `rawLines` continue an inline html tag and stay as they are.
  */
-export function escapeMarkdownBlockStarts(markdown: string, inListItem = false): string {
+export function escapeMarkdownBlockStarts(
+  markdown: string,
+  inListItem = false,
+  rawLines: Set<number> = new Set()
+): string {
   return markdown
     .split('\n')
-    .map((line, index) =>
-      escapeBlockStart(
+    .map((line, index) => {
+      if (rawLines.has(index)) {
+        return line
+      }
+      return escapeBlockStart(
         line,
         index === 0 || inListItem ? firstLinePatterns : continuationLinePatterns
       )
-    )
+    })
     .join('\n')
+}
+
+/**
+ * Indices of the rendered lines that start inside inline html.
+ */
+function htmlInlineLines(content: JSONContent[]): Set<number> {
+  const lines = new Set<number>()
+  let line = 0
+
+  for (const node of content) {
+    if (node.type === 'hardBreak') {
+      line++
+      continue
+    }
+    const breaks = node.text?.split('\n').length - 1 || 0
+    if (node.marks?.some(({ type }) => type === 'htmlInline')) {
+      for (let i = 1; i <= breaks; i++) {
+        lines.add(line + i)
+      }
+    }
+    line += breaks
+  }
+
+  return lines
 }
 
 /**
@@ -76,7 +107,11 @@ function stripLineIndentation(content: JSONContent[]): JSONContent[] {
       lineStart = true
       return [node]
     }
-    if (node.type !== 'text' || !node.text || node.marks?.some(({ type }) => type === 'code')) {
+    if (
+      node.type !== 'text' ||
+      !node.text ||
+      node.marks?.some(({ type }) => type === 'code' || type === 'htmlInline')
+    ) {
       lineStart = false
       return [node]
     }
@@ -117,7 +152,8 @@ export const MarkdownParagraph = Paragraph.extend({
 
     const escaped = escapeMarkdownBlockStarts(
       rendered,
-      ctx.parentType === 'listItem' || ctx.parentType === 'taskItem'
+      ctx.parentType === 'listItem' || ctx.parentType === 'taskItem',
+      htmlInlineLines(node.content)
     )
 
     if (ctx.parentType === 'blockquote' && ctx.index === 0) {

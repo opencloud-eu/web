@@ -44,6 +44,12 @@ export interface TextEditorOptions {
    */
   autofocus?: boolean
   slashCommands?: boolean
+  /**
+   * Render raw HTML in markdown through the editor schema instead of keeping its
+   * source. Only for viewers that never save: whatever the schema does not know
+   * is lost.
+   */
+  renderHtml?: boolean
   placeholder?: string
   /** Accessible name for the editor's role="textbox" element (aria-label). */
   ariaLabel?: string

@@ -4,15 +4,18 @@ import { Editor } from '@tiptap/vue-3'
 import type { JSONContent } from '@tiptap/core'
 import { useStrategyMarkdown } from '../../../../src/editor/composables/strategies/markdown'
 import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
-import type { ContentTypeStrategy } from '../../../../src/editor/composables/strategies/types'
+import type {
+  ContentTypeStrategy,
+  ContentTypeStrategyOptions
+} from '../../../../src/editor/composables/strategies/types'
 
-export function createStrategy(): ContentTypeStrategy {
+export function createStrategy(options?: ContentTypeStrategyOptions): ContentTypeStrategy {
   const state: TextEditorState = {
     sourceMode: ref(false),
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
     editorZoom: ref(100)
   }
-  return useStrategyMarkdown(state)
+  return useStrategyMarkdown(state, options)
 }
 
 const editors: Editor[] = []
