@@ -351,6 +351,63 @@ describe('Preview app', () => {
       )
       expect(mocks.$router.replace).toHaveBeenCalled()
     })
+
+    it('closes the app when no media file is left', async () => {
+      const { wrapper, mocks } = createShallowMountWrapper()
+      await flushPromises()
+
+      await wrapper.setProps({ activeFiles: [] })
+
+      expect(mocks.$router.push).toHaveBeenCalled()
+    })
+  })
+
+  describe('Folder changes', () => {
+    // sorted: bear.png, cat_murr_murr.gif, elephant.png, happy_hippo.gif, ...
+    const getElephantPreview = async () => {
+      vi.mocked(queryItemAsString).mockReturnValue('2')
+      const result = createShallowMountWrapper()
+      await flushPromises()
+      return result
+    }
+    const activeName = (wrapper: VueWrapper) => (wrapper.vm as any).activeMediaFile.name
+
+    it('keeps the active file when a file is added before it', async () => {
+      const { wrapper, mocks } = await getElephantPreview()
+      const aardvark = { ...activeFiles[0], id: '10', fileId: '10', name: 'aardvark.png' }
+
+      await wrapper.setProps({ activeFiles: [...activeFiles, aardvark] })
+
+      expect((wrapper.vm as any).activeIndex).toBe(3)
+      expect(activeName(wrapper)).toBe('elephant.png')
+      expect(wrapper.emitted('update:resource').at(-1)).toEqual([
+        expect.objectContaining({ name: 'elephant.png' })
+      ])
+      expect(mocks.$router.replace).not.toHaveBeenCalled()
+    })
+
+    it('keeps the active file when a file before it is removed', async () => {
+      const { wrapper, mocks } = await getElephantPreview()
+
+      await wrapper.setProps({ activeFiles: activeFiles.filter(({ id }) => id !== '1') })
+
+      expect((wrapper.vm as any).activeIndex).toBe(1)
+      expect(activeName(wrapper)).toBe('elephant.png')
+      expect(mocks.$router.replace).not.toHaveBeenCalled()
+    })
+
+    it('shows the next file and points the URL to it when the active file is removed', async () => {
+      const { wrapper, mocks } = await getElephantPreview()
+
+      await wrapper.setProps({ activeFiles: activeFiles.filter(({ id }) => id !== '2') })
+
+      expect(activeName(wrapper)).toBe('happy_hippo.gif')
+      expect(vi.mocked(createFileRouteOptions)).toHaveBeenLastCalledWith(
+        undefined,
+        expect.objectContaining({ name: 'happy_hippo.gif' })
+      )
+      expect(mocks.$router.replace).toHaveBeenCalled()
+    })
   })
 
   describe('Deep link to a file that is no media file', () => {
