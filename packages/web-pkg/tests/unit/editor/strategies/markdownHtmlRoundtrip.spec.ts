@@ -1,4 +1,5 @@
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
+import type { Editor } from '@tiptap/vue-3'
 import {
   createEditor,
   createStrategy,
@@ -125,6 +126,45 @@ describe('markdown raw html roundtrip', () => {
       editor.commands.setTextSelection(editor.state.doc.firstChild.nodeSize + 1)
       editor.commands.keyboardShortcut('Backspace')
       expect(strategy.serialize(editor.state.doc)).toBe(markdown)
+    })
+
+    describe('exiting an html block', () => {
+      function editorAtEndOfHtmlBlock() {
+        const editor = createEditor(createStrategy(), '<div>a</div>\n\n# Heading')
+        editor.commands.setTextSelection(editor.state.doc.firstChild.nodeSize - 1)
+        return editor
+      }
+
+      // `keyboardShortcut()` drops the selection change, dispatch a real keydown instead
+      function pressEnter(editor: Editor, shiftKey = false) {
+        const event = new KeyboardEvent('keydown', { key: 'Enter', shiftKey, cancelable: true })
+        editor.view.someProp('handleKeyDown', (handler) => handler(editor.view, event))
+      }
+
+      function typesOf(editor: Editor) {
+        return toJSON(editor).content?.map(({ type }) => type)
+      }
+
+      it('exits on Shift+Enter', () => {
+        const editor = editorAtEndOfHtmlBlock()
+        pressEnter(editor, true)
+        expect(editor.state.doc.firstChild.textContent).toBe('<div>a</div>')
+        expect(editor.state.selection.$from.parent.type.name).toBe('paragraph')
+        expect(typesOf(editor).slice(0, 3)).toEqual(['htmlBlock', 'paragraph', 'heading'])
+      })
+
+      it('drops the two typed blank lines and exits on the third Enter', () => {
+        const editor = editorAtEndOfHtmlBlock()
+        pressEnter(editor)
+        pressEnter(editor)
+        expect(editor.state.doc.firstChild.textContent).toBe('<div>a</div>\n\n')
+        expect(editor.state.selection.$from.parent.type.name).toBe('htmlBlock')
+
+        pressEnter(editor)
+        expect(editor.state.doc.firstChild.textContent).toBe('<div>a</div>')
+        expect(editor.state.selection.$from.parent.type.name).toBe('paragraph')
+        expect(typesOf(editor).slice(0, 3)).toEqual(['htmlBlock', 'paragraph', 'heading'])
+      })
     })
   })
 

@@ -44,4 +44,11 @@ describe('HtmlBlockComponent', () => {
     expect(label.text()).toBe('HTML')
     expect(label.attributes('contenteditable')).toBe('false')
   })
+
+  it('describes how to exit the block for screen readers', () => {
+    const wrapper = mountComponent()
+    const content = wrapper.find('.text-editor-html-block-content')
+    const hint = wrapper.find(`#${content.attributes('aria-describedby')}`)
+    expect(hint.text()).toContain('Shift+Enter')
+  })
 })
