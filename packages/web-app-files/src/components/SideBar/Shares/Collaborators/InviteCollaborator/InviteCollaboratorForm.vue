@@ -342,7 +342,10 @@ const {
       return !selected && !exists
     }
   )
-  announceResults(query, results)
+  // a newer search replaced this one, even if a source swallowed the abort
+  if (!signal.aborted) {
+    announceResults(query, results)
+  }
   return results
 })
 

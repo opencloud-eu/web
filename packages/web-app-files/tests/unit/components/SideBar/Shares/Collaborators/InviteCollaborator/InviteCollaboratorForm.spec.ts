@@ -366,6 +366,29 @@ describe('InviteCollaboratorForm', () => {
 
       expect(resultAnnouncements()).toEqual([])
     })
+    it('announces only the newest search when an older one settles later', async () => {
+      const { wrapper, mocks, input } = getTypingWrapper({
+        users: [{ id: '2', displayName: 'Marie' } as User],
+        externalShareRoles: [mock<ShareRole>()],
+        openXchange: true
+      })
+      let settleContacts: () => void
+      mocks.$clientService.ox.autocompleteContacts.mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            settleContacts = () => resolve([{ id: '10', displayName: 'Mara', email: 'm@x.org' }])
+          })
+      )
+      await input.setValue('mar')
+      await flushPromises()
+      await (wrapper.vm as any).selectShareRoleType({ id: '2', label: 'External' })
+      await flushPromises()
+
+      settleContacts()
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual(['1 result'])
+    })
     it('announces only the result of the newest query', async () => {
       debounceMode.real = true
       vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] })
