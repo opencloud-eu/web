@@ -34,7 +34,7 @@
         "
         :label="label"
         :label-hidden="true"
-        @search:input="onSearch"
+        @search:input="onSearchInput"
         @update:model-value="resetFocusOnInvite"
         @open="onOpen"
         @close="onClose"
@@ -329,7 +329,7 @@ const {
   const guests =
     isSpace || unref(isExternalShareRoleType) ? [] : getGuestCandidates(query, collaborators)
 
-  return [...collaborators, ...contacts, ...guests].filter(
+  const results = [...collaborators, ...contacts, ...guests].filter(
     (collaborator: CollaboratorAutoCompleteItem) => {
       if (collaborator.id === userStore.user.id) {
         return false
@@ -342,7 +342,15 @@ const {
       return !selected && !exists
     }
   )
+  announceResults(query, results)
+  return results
 })
+
+function onSearchInput(query: string) {
+  // a pending announcement belongs to a search that is outdated now
+  unref(announcer)?.announce('')
+  onSearch(query)
+}
 
 const share = async () => {
   saving.value = true
@@ -487,17 +495,19 @@ const noOptionsLabel = computed(() => {
   return $gettext('No users or groups found.')
 })
 
-watch(searchInProgress, (inProgress) => {
-  if (inProgress || unref(searchQuery).trim().length < unref(minSearchLength)) {
+function announceResults(query: string, results: CollaboratorAutoCompleteItem[]) {
+  // only announce what the list shows: not after the input got cleared, changed or left
+  const input = document.getElementById('files-share-invite-input') as HTMLInputElement
+  if (document.activeElement !== input || input.value.trim() !== query.trim()) {
     return
   }
-  const count = filterRecipients(unref(autocompleteResults), unref(searchQuery)).length
+  const count = filterRecipients(results, query).length
   unref(announcer)?.announce(
     count
       ? $ngettext('%{count} result', '%{count} results', count, { count: count.toString() })
       : unref(noOptionsLabel)
   )
-})
+}
 
 const showShareTypeFilter = computed(
   () => unref(shareRoleTypes).length > 1 && !isProjectSpaceResource(unref(resource))

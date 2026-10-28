@@ -20,13 +20,17 @@ import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { OcButton, OcSelect } from '@opencloud-eu/design-system/components'
 import RoleDropdown from '../../../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
 import { ShareRoleType } from '../../../../../../../src/components/SideBar/Shares/Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
-import { flushPromises } from '@vue/test-utils'
+import { DOMWrapper, flushPromises } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 
-vi.mock('lodash-es', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('lodash-es')>()),
-  debounce: (fn: any) => fn
-}))
+const debounceMode = vi.hoisted(() => ({ real: false }))
+vi.mock('lodash-es', async (importOriginal) => {
+  const lodash = await importOriginal<typeof import('lodash-es')>()
+  return {
+    ...lodash,
+    debounce: (fn: any, wait: number) => (debounceMode.real ? lodash.debounce(fn, wait) : fn)
+  }
+})
 
 const announceMock = vi.fn()
 const OcHiddenAnnouncerStub = defineComponent({
@@ -280,23 +284,93 @@ describe('InviteCollaboratorForm', () => {
     })
   })
   describe('screen reader announcements', () => {
+    const resultAnnouncements = () =>
+      announceMock.mock.calls.map(([message]) => message).filter((message) => !!message)
+
+    function getTypingWrapper(options: Parameters<typeof getWrapper>[0] = {}) {
+      document.body.innerHTML = ''
+      const { wrapper, mocks } = getWrapper({ ...options, shallow: false, attachTo: document.body })
+      const input = wrapper.find<HTMLInputElement>('#files-share-invite-input')
+      input.element.focus()
+      return { wrapper, mocks, input }
+    }
+
+    function delaySearch(mocks: ReturnType<typeof getWrapper>['mocks'], users: User[]) {
+      let settle: () => void
+      mocks.$clientService.graphAuthenticated.users.listUsers.mockImplementationOnce(
+        () => new Promise((resolve) => (settle = () => resolve(users)))
+      )
+      return () => settle()
+    }
+
     it('announces the result count once the search has finished', async () => {
-      const { wrapper } = getWrapper({
+      const { wrapper, input } = getTypingWrapper({
         users: [{ id: '2', displayName: 'Marie' } as User],
         groups: [{ id: '3', displayName: 'Marketing' }]
       })
-      ;(wrapper.vm as any).onSearch('mar')
+      await input.setValue('mar')
       await flushPromises()
 
-      expect(announceMock).toHaveBeenCalledTimes(1)
-      expect(announceMock).toHaveBeenCalledWith('2 results')
+      expect(resultAnnouncements()).toEqual(['2 results'])
+      wrapper.unmount()
     })
     it('announces when no users or groups are found', async () => {
-      const { wrapper } = getWrapper()
-      ;(wrapper.vm as any).onSearch('unknown')
+      const { wrapper, input } = getTypingWrapper()
+      await input.setValue('unknown')
       await flushPromises()
 
-      expect(announceMock).toHaveBeenCalledWith('No users or groups found.')
+      expect(resultAnnouncements()).toEqual(['No users or groups found.'])
+      wrapper.unmount()
+    })
+    it.each([
+      {
+        cancelledBy: 'clearing the input',
+        cancel: (input: DOMWrapper<HTMLInputElement>) => input.setValue('')
+      },
+      {
+        cancelledBy: 'closing the list',
+        cancel: (input: DOMWrapper<HTMLInputElement>) =>
+          input.trigger('keydown', { key: 'Escape', keyCode: 27 })
+      },
+      {
+        cancelledBy: 'leaving the input',
+        cancel: (input: DOMWrapper<HTMLInputElement>) => input.element.blur()
+      }
+    ])('announces nothing for a search cancelled by $cancelledBy', async ({ cancel }) => {
+      const { wrapper, mocks, input } = getTypingWrapper()
+      const settle = delaySearch(mocks, [{ id: '2', displayName: 'Marie' } as User])
+      await input.setValue('mar')
+      await cancel(input)
+
+      settle()
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual([])
+      wrapper.unmount()
+    })
+    it('announces only the result of the newest query', async () => {
+      debounceMode.real = true
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] })
+      const { wrapper, mocks, input } = getTypingWrapper({
+        users: [{ id: '3', displayName: 'Marie' } as User]
+      })
+      const settleFirst = delaySearch(mocks, [
+        { id: '2', displayName: 'Maria' } as User,
+        { id: '4', displayName: 'Mario' } as User
+      ])
+      await input.setValue('ma')
+      await vi.advanceTimersByTimeAsync(500)
+      // the first search settles while the newer query still waits for its search
+      await input.setValue('mar')
+      settleFirst()
+      await flushPromises()
+      await vi.advanceTimersByTimeAsync(500)
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual(['1 result'])
+      wrapper.unmount()
+      vi.useRealTimers()
+      debounceMode.real = false
     })
     it('announces a person being added on selection only', async () => {
       const { wrapper } = getWrapper()
@@ -564,7 +638,8 @@ function getWrapper({
   openXchangeContacts = [],
   canInviteGuests = true,
   shallow = true,
-  props = {}
+  props = {},
+  attachTo = undefined
 }: {
   storageId?: string
   resource?: Resource
@@ -579,6 +654,7 @@ function getWrapper({
   canInviteGuests?: boolean
   shallow?: boolean
   props?: Record<string, unknown>
+  attachTo?: HTMLElement
 } = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ params: { storageId } })
@@ -597,6 +673,7 @@ function getWrapper({
     wrapper: mount(InviteCollaboratorForm, {
       shallow,
       props,
+      attachTo,
       global: {
         plugins: [
           ...defaultPlugins({
