@@ -1,4 +1,11 @@
-import { RESOURCE_NAME_MAX_BYTES, useIsResourceNameValid, useResourcesStore } from '../../../../src'
+import { ref } from 'vue'
+import {
+  RESOURCE_NAME_MAX_BYTES,
+  useExtensionRegistry,
+  useIsResourceNameValid,
+  useResourcesStore,
+  VaultExtension
+} from '../../../../src'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
@@ -152,6 +159,91 @@ describe('useIsResourceNameValid', () => {
           expect(isValid).toBe(false)
           expect(error).toEqual(inputData.message)
         }
+      })
+    })
+
+    describe('in a vault', () => {
+      const maxNameBytes = 10
+      const vaultName = 'long-vault-name.vault'
+      const space = mock<SpaceResource>()
+
+      function registerVault() {
+        const extensionRegistry = useExtensionRegistry()
+        extensionRegistry.extensions = [
+          ref([
+            mock<VaultExtension>({
+              type: 'vault',
+              claimsPath: (_space, path) =>
+                path.startsWith(`/${vaultName}`)
+                  ? { vaultRoot: `/${vaultName}`, encryptsNames: true, maxNameBytes }
+                  : null
+            })
+          ])
+        ]
+      }
+
+      it.each(['x'.repeat(maxNameBytes + 1), 'ä'.repeat(6)])(
+        'should reject a name exceeding the vault limit: %s',
+        (newName) => {
+          getWrapper({
+            setup: ({ isFileNameValid }) => {
+              registerVault()
+              const { isValid, error } = isFileNameValid(
+                { name: 'currentName', path: `/${vaultName}/currentName` } as Resource,
+                newName,
+                [],
+                space
+              )
+              expect(isValid).toBe(false)
+              expect(error).toEqual('The name is too long for an encrypted folder')
+            }
+          })
+        }
+      )
+
+      it('should accept a name within the vault limit', () => {
+        getWrapper({
+          setup: ({ isFileNameValid }) => {
+            registerVault()
+            const { isValid } = isFileNameValid(
+              { name: 'currentName', path: `/${vaultName}/currentName` } as Resource,
+              'x'.repeat(maxNameBytes),
+              [],
+              space
+            )
+            expect(isValid).toBe(true)
+          }
+        })
+      })
+
+      it('should not apply the vault limit to the vault root itself', () => {
+        getWrapper({
+          setup: ({ isFileNameValid }) => {
+            registerVault()
+            const { isValid } = isFileNameValid(
+              { name: 'currentName', path: '/currentName' } as Resource,
+              vaultName,
+              [],
+              space
+            )
+            expect(isValid).toBe(true)
+          }
+        })
+      })
+
+      it('should not apply the vault limit outside of a vault', () => {
+        getWrapper({
+          setup: ({ isFileNameValid }) => {
+            registerVault()
+            const { isValid } = isFileNameValid(
+              { name: 'currentName', path: '/folder/currentName' } as Resource,
+              'x'.repeat(maxNameBytes + 1),
+              [],
+              space
+            )
+            expect(isValid).toBe(true)
+          }
+        })
       })
     })
   })

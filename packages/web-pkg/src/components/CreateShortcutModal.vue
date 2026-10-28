@@ -74,7 +74,7 @@ const inputFilenameValidation = computed(() => {
     name,
     extension: 'url'
   } as Resource
-  return isFileNameValid(resource, name, unref(resources))
+  return isFileNameValid(resource, name, unref(resources), space)
 })
 const inputFileNameErrorMessage = computed(() => unref(inputFilenameValidation).error || '')
 const confirmButtonDisabled = computed(

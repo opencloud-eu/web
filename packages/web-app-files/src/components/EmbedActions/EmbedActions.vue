@@ -142,7 +142,7 @@ const fileNameErrorMessage = computed(() => {
   const name = unref(fullFileName)
   const resource = { path: join(unref(currentFolder).path, name), name } as Resource
   // no existing resources to check against, name conflicts get resolved on save
-  const { isValid, error } = isFileNameValid(resource, name, [])
+  const { isValid, error } = isFileNameValid(resource, name, [], unref(space))
   return isValid ? undefined : error
 })
 

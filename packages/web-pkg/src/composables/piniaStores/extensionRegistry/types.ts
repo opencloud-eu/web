@@ -194,6 +194,12 @@ export interface VaultClaim {
    */
   encryptsNames: boolean
   /**
+   * Max clear-text byte length of a single name below the vault root, for schemes
+   * whose encrypted names grow past the server's name limit sooner. Omitted when
+   * the server's limit applies as is.
+   */
+  maxNameBytes?: number
+  /**
    * Optional route the UI should navigate to in order to unlock the vault
    * (passphrase prompt, hardware-token flow, …). The route handler is
    * expected to populate the vault store and redirect back to

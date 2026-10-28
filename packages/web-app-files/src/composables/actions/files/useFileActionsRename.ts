@@ -131,7 +131,7 @@ export const useFileActionsRename = () => {
     }
     const checkName = (newName: string, setError: (error: string) => void) => {
       newName = withExtension(newName)
-      const { isValid, error } = isFileNameValid(resources[0], newName, parentResources)
+      const { isValid, error } = isFileNameValid(resources[0], newName, parentResources, space)
       setError(isValid ? null : error)
     }
     const nameWithoutExtension = extractNameWithoutExtension(resources[0])
