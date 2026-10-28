@@ -333,12 +333,9 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     const namesTooLong = new Set<string>()
     const filesTooLong = new Set<OcUppyFile>()
     for (const file of filesToUpload) {
-      // folder files already carry their own name in relativeFolder
-      const path =
-        file.type === 'directory'
-          ? file.meta.relativeFolder
-          : urlJoin(file.meta.relativeFolder || '', file.name)
-      const segments = path.split('/').filter(Boolean)
+      const segments = urlJoin(file.meta.relativeFolder || '', file.name)
+        .split('/')
+        .filter(Boolean)
       const tooLong = segments.filter((segment) => getTextByteSize(segment) > maxNameBytes)
       if (tooLong.length) {
         tooLong.forEach((segment) => namesTooLong.add(segment))
@@ -350,30 +347,23 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     }
 
     this.removeFilesFromUpload([...filesTooLong])
-    const { $ngettext } = this.language
-    const maxNamesShown = 3
-    const shownNames = [...namesTooLong].slice(0, maxNamesShown).join('«, »')
-    const hiddenCount = namesTooLong.size - maxNamesShown
+    const { $gettext, $ngettext } = this.language
+    const [shownName] = namesTooLong
+    const hiddenCount = namesTooLong.size - 1
     this.messageStore.showErrorMessage({
       title: $ngettext(
         'Name too long for an encrypted folder',
         'Names too long for an encrypted folder',
         namesTooLong.size
       ),
-      desc:
-        hiddenCount > 0
-          ? $ngettext(
-              '»%{names}« and %{count} more could not be uploaded.',
-              '»%{names}« and %{count} more could not be uploaded.',
-              hiddenCount,
-              { names: shownNames, count: hiddenCount.toString() }
-            )
-          : $ngettext(
-              '»%{names}« could not be uploaded.',
-              '»%{names}« could not be uploaded.',
-              namesTooLong.size,
-              { names: shownNames }
-            )
+      desc: hiddenCount
+        ? $ngettext(
+            '»%{name}« and %{count} more could not be uploaded.',
+            '»%{name}« and %{count} more could not be uploaded.',
+            hiddenCount,
+            { name: shownName, count: hiddenCount.toString() }
+          )
+        : $gettext('»%{name}« could not be uploaded.', { name: shownName })
     })
     return filesToUpload.filter((file) => !filesTooLong.has(file))
   }

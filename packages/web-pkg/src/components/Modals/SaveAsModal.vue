@@ -19,6 +19,7 @@ import {
   embedModeLocationPickMessageData,
   Modal,
   useClientService,
+  useExtensionRegistry,
   useFileActions,
   useGetMatchingSpace,
   useMessages,
@@ -35,7 +36,12 @@ import {
   SpaceResource,
   urlJoin
 } from '@opencloud-eu/web-client'
-import { buildUrl, resolveFileNameDuplicate } from '../../helpers'
+import {
+  buildUrl,
+  getTextByteSize,
+  getVaultNameMaxBytes,
+  resolveFileNameDuplicate
+} from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 
@@ -56,6 +62,7 @@ const { removeModal } = useModals()
 const { showMessage, showErrorMessage } = useMessages()
 const { getMatchingSpace } = useGetMatchingSpace()
 const { getEditorRouteOpts } = useFileActions()
+const extensionRegistry = useExtensionRegistry()
 
 const iframeTitle = themeStore.currentTheme.name
 const iframeUrl = new URL(buildUrl(router, parentFolderLink))
@@ -83,10 +90,12 @@ const onLocationPick = async ({ data }: MessageEvent) => {
 
   try {
     const resource = await saveFile({ destinationFolder, fileName, space })
-    showMessage({
-      title: $gettext('»%{fileName}« was saved successfully', { fileName: resource.name })
-    })
-    openFile({ resource, space, locationQuery })
+    if (resource) {
+      showMessage({
+        title: $gettext('»%{fileName}« was saved successfully', { fileName: resource.name })
+      })
+      openFile({ resource, space, locationQuery })
+    }
   } catch (e) {
     console.error(e)
     showErrorMessage({
@@ -119,7 +128,18 @@ const saveFile = async ({
   if (resourceAlreadyExists) {
     // the chosen name may have a different extension than the original file
     const extension = extractExtensionFromFile({ name: fileName } as Resource)
-    fileName = resolveFileNameDuplicate(fileName, extension, existingResources)
+    const resolvedName = resolveFileNameDuplicate(fileName, extension, existingResources)
+    const maxNameBytes = getVaultNameMaxBytes(extensionRegistry, space, destinationFolder.path)
+    if (maxNameBytes && getTextByteSize(resolvedName) > maxNameBytes) {
+      showErrorMessage({
+        title: $gettext('Unable to save »%{fileName}«', { fileName }),
+        desc: $gettext(
+          'The name is already taken and the name for a copy is too long for an encrypted folder.'
+        )
+      })
+      return null
+    }
+    fileName = resolvedName
   }
 
   return clientService.webdav.putFileContents(space, {

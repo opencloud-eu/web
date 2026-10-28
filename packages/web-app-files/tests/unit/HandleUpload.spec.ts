@@ -659,7 +659,7 @@ describe('HandleUpload', () => {
         expect(mocks.opts.uppyService.clearInputs).toHaveBeenCalled()
         expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
       })
-      it('caps the names listed in the error message', async () => {
+      it('lists only the first name in the error message', async () => {
         const { instance, mocks } = getWrapper()
         vi.mocked(getVaultNameMaxBytes).mockReturnValueOnce(maxNameBytes)
         const files = ['a', 'b', 'c', 'd', 'e'].map((char) =>
@@ -674,13 +674,10 @@ describe('HandleUpload', () => {
         await instance.handleUpload(files)
 
         expect(mocks.opts.language.$ngettext).toHaveBeenCalledWith(
-          '»%{names}« and %{count} more could not be uploaded.',
+          '»%{name}« and %{count} more could not be uploaded.',
           expect.any(String),
-          2,
-          {
-            names: ['a', 'b', 'c'].map((char) => char.repeat(maxNameBytes + 1)).join('«, »'),
-            count: '2'
-          }
+          4,
+          { name: 'a'.repeat(maxNameBytes + 1), count: '4' }
         )
       })
       it('does not check names outside of vaults', async () => {

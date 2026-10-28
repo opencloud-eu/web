@@ -8,10 +8,13 @@ import {
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ListFilesResult } from '@opencloud-eu/web-client/webdav'
+import { ref } from 'vue'
 import {
   Modal,
+  useExtensionRegistry,
   useMessages,
   useModals,
+  VaultExtension,
   WebThemeType
 } from '../../../../src/composables/piniaStores'
 import { ClientService } from '../../../../src'
@@ -82,6 +85,40 @@ describe('SaveAsModal', () => {
       )
 
       await nextTicks(4)
+      expect(messageStore.showErrorMessage).toHaveBeenCalled()
+      expect(modalStore.removeModal).toHaveBeenCalled()
+      expect(window.open).not.toHaveBeenCalled()
+    })
+    it('does not save a copy whose name is too long for a vault', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const modalStore = useModals()
+      const messageStore = useMessages()
+      const fileName = 'x'.repeat(10)
+      useExtensionRegistry().extensions = [
+        ref([
+          mock<VaultExtension>({
+            type: 'vault',
+            claimsPath: () => ({ vaultRoot: '/v.vault', encryptsNames: true, maxNameBytes: 10 })
+          })
+        ])
+      ]
+      mocks.$clientService.webdav.listFiles.mockResolvedValue(
+        mock<ListFilesResult>({ children: [mock<Resource>({ name: fileName })] })
+      )
+      ;(wrapper.vm as any).onLocationPick(
+        mock<MessageEvent>({
+          data: {
+            name: 'opencloud-embed:select',
+            data: {
+              resources: [mock<Resource>({ storageId: '1', path: '/v.vault' })],
+              fileName
+            }
+          }
+        })
+      )
+
+      await nextTicks(4)
+      expect(mocks.$clientService.webdav.putFileContents).not.toHaveBeenCalled()
       expect(messageStore.showErrorMessage).toHaveBeenCalled()
       expect(modalStore.removeModal).toHaveBeenCalled()
       expect(window.open).not.toHaveBeenCalled()
