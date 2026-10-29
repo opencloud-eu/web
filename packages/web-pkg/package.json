@@ -55,6 +55,7 @@
     "@opencloud-eu/web-client": "workspace:^",
     "@tiptap/core": "catalog:tiptap",
     "@tiptap/extension-bubble-menu": "catalog:tiptap",
+    "@tiptap/extension-code": "catalog:tiptap",
     "@tiptap/extension-code-block-lowlight": "catalog:tiptap",
     "@tiptap/extension-collaboration": "catalog:tiptap",
     "@tiptap/extension-document": "catalog:tiptap",

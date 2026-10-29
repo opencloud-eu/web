@@ -202,6 +202,17 @@ describe('makeTiptapYjsAdapter', () => {
       expect(adapter.hasContent(ydoc)).toBe(false)
       ydoc.destroy()
     })
+
+    it('hydrates inline code inside other marks', () => {
+      const adapter = makeTiptapYjsAdapter(useStrategyMarkdown(createState()))
+      const ydoc = new Y.Doc()
+      const content = '**`Sharing`** and [`link`](https://example.com)'
+
+      adapter.hydrate(ydoc, content)
+
+      expect(adapter.serialize(ydoc)).toBe(content)
+      ydoc.destroy()
+    })
   })
 
   describe('hasContent', () => {
