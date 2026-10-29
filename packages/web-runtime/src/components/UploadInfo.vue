@@ -140,6 +140,7 @@
               <oc-icon v-else-if="item.status === 'cancelled'" name="close" size-class="size-4" />
               <oc-icon v-else-if="uploadsPaused" name="pause" size-class="size-4" />
               <div v-else class="flex"><oc-spinner size="small" /></div>
+              <span class="upload-info-item-status sr-only" v-text="getUploadItemStatus(item)" />
               <resource-list-item
                 v-if="displayFileAsResource(item)"
                 :key="item.path"
@@ -581,6 +582,18 @@ function retryUploads() {
   itemsInProgressCount.value += rootFileCount + topLevelFolderIds.size
   runningUploads.value += 1
   uppyService.retryAllUploads()
+}
+
+function getUploadItemStatus(item: UploadResult) {
+  switch (item.status) {
+    case 'error':
+      return $gettext('Failed')
+    case 'success':
+      return $gettext('Uploaded')
+    case 'cancelled':
+      return $gettext('Cancelled')
+  }
+  return unref(uploadsPaused) ? $gettext('Paused') : $gettext('Uploading')
 }
 
 function getUploadItemMessage(item: UploadResult) {

@@ -1,5 +1,6 @@
 import OcNotificationMessage from './OcNotificationMessage.vue'
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import { nextTick } from 'vue'
 
 describe('OcNotificationMessage', () => {
   beforeEach(() => {
@@ -91,6 +92,59 @@ describe('OcNotificationMessage', () => {
     expect(wrapper.emitted('close')).toBeTruthy()
   })
 
+  it('does not close if the timeout is 0', () => {
+    const wrapper = getWrapper({ timeout: 0 })
+
+    vi.advanceTimersByTime(60000)
+    expect(wrapper.emitted('close')).toBeFalsy()
+  })
+
+  describe('timeout while the user interacts with the message', () => {
+    let wrapper: ReturnType<typeof getWrapper>
+
+    beforeEach(async () => {
+      wrapper = getWrapper({ timeout: 1 }, document.body)
+      await nextTick()
+    })
+
+    afterEach(() => {
+      wrapper.unmount()
+    })
+
+    it('does not close while the pointer is over the message', async () => {
+      await wrapper.trigger('mouseenter')
+      vi.advanceTimersByTime(5000)
+      expect(wrapper.emitted('close')).toBeFalsy()
+
+      await wrapper.trigger('mouseleave')
+      vi.advanceTimersByTime(1000)
+      expect(wrapper.emitted('close')).toBeTruthy()
+    })
+
+    it('does not close while focus is inside the message', async () => {
+      const outside = document.body.appendChild(document.createElement('button'))
+
+      wrapper.find('button').element.focus()
+      await nextTick()
+      vi.advanceTimersByTime(5000)
+      expect(wrapper.emitted('close')).toBeFalsy()
+
+      outside.focus()
+      await nextTick()
+      vi.advanceTimersByTime(1000)
+      expect(wrapper.emitted('close')).toBeTruthy()
+      outside.remove()
+    })
+
+    it('does not close when the pointer leaves while focus is still inside', async () => {
+      wrapper.find('button').element.focus()
+      await wrapper.trigger('mouseenter')
+      await wrapper.trigger('mouseleave')
+      vi.advanceTimersByTime(5000)
+      expect(wrapper.emitted('close')).toBeFalsy()
+    })
+  })
+
   const selectors = {
     messageTitle: '.oc-notification-message-title',
     messageContent: '.oc-notification-message-content',
@@ -99,8 +153,9 @@ describe('OcNotificationMessage', () => {
     errorLogToggleButton: '.oc-notification-message-error-log-toggle-button'
   }
 
-  function getWrapper(props = {}) {
+  function getWrapper(props = {}, attachTo?: HTMLElement) {
     return mount(OcNotificationMessage, {
+      attachTo,
       props: {
         ...props,
         title: 'Test passed'

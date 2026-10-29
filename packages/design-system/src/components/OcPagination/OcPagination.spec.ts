@@ -1,9 +1,12 @@
 import {
+  createRouter,
   defaultPlugins,
+  mount,
   PartialComponentProps,
   RouteLocation,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
+import { nextTick } from 'vue'
 
 import Pagination from './OcPagination.vue'
 import OcPagination from './OcPagination.vue'
@@ -113,7 +116,68 @@ describe('OcPagination', () => {
     expect((prevItem as RouteLocationPathRaw).query?.page).toBe(2)
     expect((nextItem as RouteLocationPathRaw).query?.page).toBe(4)
   })
+
+  describe('accessibility', () => {
+    it('marks only the current page as current, not the links to other pages', async () => {
+      const wrapper = await getRoutedWrapper()
+
+      const current = wrapper.findAll('[aria-current]')
+      expect(current.length).toBe(1)
+      expect(current[0].text()).toBe('3')
+      wrapper.unmount()
+    })
+
+    it('moves focus to the new current page when the activated link is replaced by it', async () => {
+      const wrapper = await getRoutedWrapper()
+      const link = wrapper.findAll(selectors.listItemLink).find((l) => l.text() === '4')
+      ;(link.element as HTMLElement).focus()
+      const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus')
+
+      await wrapper.setProps({ currentPage: 4 })
+      await nextTick()
+
+      expect(document.activeElement).toBe(wrapper.find(selectors.listItemCurrent).element)
+      expect(focusSpy).toHaveBeenCalledWith({ preventScroll: true })
+      focusSpy.mockRestore()
+      wrapper.unmount()
+    })
+
+    it('keeps focus on the activated link if it is still there', async () => {
+      const wrapper = await getRoutedWrapper()
+      const next = wrapper.find(selectors.listItemNext).element as HTMLElement
+      next.focus()
+
+      await wrapper.setProps({ currentPage: 4 })
+      await nextTick()
+
+      expect(document.activeElement).toBe(next)
+      wrapper.unmount()
+    })
+
+    it('does not take focus when the page changes from outside the pagination', async () => {
+      const wrapper = await getRoutedWrapper()
+
+      await wrapper.setProps({ currentPage: 4 })
+      await nextTick()
+
+      expect(document.activeElement).toBe(document.body)
+      wrapper.unmount()
+    })
+  })
 })
+
+async function getRoutedWrapper() {
+  const router = createRouter({
+    routes: [{ path: '/files', name: 'files', component: { template: '<div />' } }]
+  })
+  await router.push({ name: 'files', query: { page: 3 } })
+
+  return mount(Pagination, {
+    props: { ...defaultProps, currentRoute: router.currentRoute.value },
+    attachTo: document.body,
+    global: { plugins: [...defaultPlugins(), router], stubs: { 'oc-icon': true } }
+  })
+}
 
 function getWrapper(props: PartialComponentProps<typeof OcPagination> = {}) {
   return shallowMount(Pagination, {
