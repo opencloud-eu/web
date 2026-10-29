@@ -2,6 +2,11 @@ import { VaultClaim, VaultEngine, useVaultStore } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { vaultRootForSpace } from './vaultLocation'
 
+// EME pads a name to the next 16-byte block (PKCS#7, always at least one byte)
+// and base32 encodes it, so 143 bytes -> 144 -> 231 chars, while 144 bytes ->
+// 160 -> 256 chars would exceed the server's 255-byte name limit.
+const MAX_NAME_BYTES = 143
+
 /**
  * Returns the vault root + the route the runtime should push to in order
  * to unlock this vault. Used by the UI to detect "locked vault, please
@@ -20,6 +25,7 @@ export function claimsVaultPath(space: SpaceResource, path: string): VaultClaim 
     vaultRoot,
     // rclone-crypt encrypts all path segment names (EME), not just content.
     encryptsNames: true,
+    maxNameBytes: MAX_NAME_BYTES,
     unlockRoute: {
       name: 'rclone-crypt-unlock',
       query: {

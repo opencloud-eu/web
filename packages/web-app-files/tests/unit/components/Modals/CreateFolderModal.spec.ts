@@ -3,7 +3,7 @@ import { defineComponent, h } from 'vue'
 import CreateFolderModal from '../../../../src/components/Modals/CreateFolderModal.vue'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { Modal } from '@opencloud-eu/web-pkg'
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 const finalize = vi.fn()
 
@@ -367,6 +367,7 @@ function getWrapper({
     wrapper: mount(CreateFolderModal, {
       props: {
         modal: mock<Modal>({ isLoading }),
+        space: mock<SpaceResource>(),
         vaultCreation: canEncrypt
           ? {
               vaultExtension,

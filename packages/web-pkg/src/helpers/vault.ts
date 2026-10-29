@@ -130,6 +130,20 @@ export function getVaultClaim(
 }
 
 /**
+ * Max clear-text byte length for names of resources inside `folderPath`, or
+ * `undefined` when no vault limit applies. Looked up via the parent folder on
+ * purpose: a vault root keeps its clear-text name and sits in a folder outside
+ * the vault, so it is exempt, while everything below the root gets encrypted.
+ */
+export function getVaultNameMaxBytes(
+  extensionRegistry: ExtensionRegistry,
+  space: SpaceResource,
+  folderPath: string | undefined
+): number | undefined {
+  return getVaultClaim(extensionRegistry, space, folderPath)?.maxNameBytes
+}
+
+/**
  * Space-level counterpart of a folder vault: a space that *is* an end-to-end
  * encrypted space is a vault rooted at the space root.
  */

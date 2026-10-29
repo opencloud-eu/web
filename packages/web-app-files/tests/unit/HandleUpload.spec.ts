@@ -14,6 +14,7 @@ import {
   useExtensionRegistry,
   useResourcesStore,
   resolveVaultEngine,
+  getVaultNameMaxBytes,
   VaultEngine,
   OcUppyFile,
   OcUppyMeta,
@@ -37,7 +38,8 @@ vi.mock('../../src/helpers/resource/actions', () => {
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  resolveVaultEngine: vi.fn()
+  resolveVaultEngine: vi.fn(),
+  getVaultNameMaxBytes: vi.fn()
 }))
 
 type UppyPlugin = UnknownPlugin<OcUppyMeta, OcUppyBody, Record<string, unknown>>
@@ -574,6 +576,120 @@ describe('HandleUpload', () => {
         expect(mocks.uppy.setState).toHaveBeenCalledWith({
           files: { [conflictHandlerResult[0].id]: conflictHandlerResult[0] }
         })
+      })
+    })
+    describe('vault name length check', () => {
+      const maxNameBytes = 10
+
+      it('removes files whose name or folder names are too long and uploads the rest', async () => {
+        const { instance, mocks } = getWrapper()
+        vi.mocked(getVaultNameMaxBytes).mockReturnValueOnce(maxNameBytes)
+        const fine = mock<OcUppyFile>({ id: 'fine', name: 'ok.txt', meta: { relativeFolder: '' } })
+        const longName = mock<OcUppyFile>({
+          id: 'longName',
+          name: 'x'.repeat(maxNameBytes + 1),
+          meta: { relativeFolder: '' }
+        })
+        const longFolder = mock<OcUppyFile>({
+          id: 'longFolder',
+          name: 'ok.txt',
+          meta: { relativeFolder: `/${'y'.repeat(maxNameBytes + 1)}` }
+        })
+        vi.spyOn(instance, 'prepareFiles').mockReturnValue([fine, longName, longFolder])
+
+        await instance.handleUpload([fine, longName, longFolder])
+
+        expect(mocks.uppy.removeFile).toHaveBeenCalledWith('longName')
+        expect(mocks.uppy.removeFile).toHaveBeenCalledWith('longFolder')
+        expect(mocks.uppy.removeFile).not.toHaveBeenCalledWith('fine')
+        expect(mocks.opts.messageStore.showErrorMessage).toHaveBeenCalled()
+        expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
+      })
+      it('re-checks names after conflict handling renamed them', async () => {
+        const original = mock<OcUppyFile>({
+          id: 'conflict',
+          name: 'x'.repeat(maxNameBytes),
+          meta: { relativeFolder: '' }
+        })
+        const keptBoth = mock<OcUppyFile>({
+          id: 'conflict',
+          name: `${'x'.repeat(maxNameBytes)} (1)`,
+          meta: { relativeFolder: '' }
+        })
+        const { instance, mocks } = getWrapper({
+          conflicts: [{}],
+          conflictHandlerResult: [keptBoth]
+        })
+        vi.mocked(getVaultNameMaxBytes)
+          .mockReturnValueOnce(maxNameBytes)
+          .mockReturnValueOnce(maxNameBytes)
+        vi.spyOn(instance, 'prepareFiles').mockReturnValue([original])
+        vi.spyOn(instance, 'isCurrentFolder').mockReturnValue(true)
+
+        await instance.handleUpload([original])
+
+        expect(mocks.uppy.removeFile).toHaveBeenCalledWith('conflict')
+        expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
+      })
+      it('counts bytes, not characters', async () => {
+        const { instance, mocks } = getWrapper()
+        vi.mocked(getVaultNameMaxBytes).mockReturnValueOnce(maxNameBytes)
+        const file = mock<OcUppyFile>({
+          id: 'umlauts',
+          name: 'ä'.repeat(6),
+          meta: { relativeFolder: '' }
+        })
+        vi.spyOn(instance, 'prepareFiles').mockReturnValue([file])
+
+        await instance.handleUpload([file])
+
+        expect(mocks.uppy.removeFile).toHaveBeenCalledWith('umlauts')
+      })
+      it('does not start the upload if all files were removed', async () => {
+        const { instance, mocks } = getWrapper()
+        vi.mocked(getVaultNameMaxBytes).mockReturnValueOnce(maxNameBytes)
+        const file = mock<OcUppyFile>({
+          name: 'x'.repeat(maxNameBytes + 1),
+          meta: { relativeFolder: '' }
+        })
+        vi.spyOn(instance, 'prepareFiles').mockReturnValue([file])
+
+        await instance.handleUpload([file])
+
+        expect(mocks.opts.uppyService.clearInputs).toHaveBeenCalled()
+        expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
+      })
+      it('lists only the first name in the error message', async () => {
+        const { instance, mocks } = getWrapper()
+        vi.mocked(getVaultNameMaxBytes).mockReturnValueOnce(maxNameBytes)
+        const files = ['a', 'b', 'c', 'd', 'e'].map((char) =>
+          mock<OcUppyFile>({
+            id: char,
+            name: char.repeat(maxNameBytes + 1),
+            meta: { relativeFolder: '' }
+          })
+        )
+        vi.spyOn(instance, 'prepareFiles').mockReturnValue(files)
+
+        await instance.handleUpload(files)
+
+        expect(mocks.opts.language.$ngettext).toHaveBeenCalledWith(
+          '»%{name}« and %{count} more could not be uploaded.',
+          expect.any(String),
+          4,
+          { name: 'a'.repeat(maxNameBytes + 1), count: '4' }
+        )
+      })
+      it('does not check names outside of vaults', async () => {
+        const { instance, mocks } = getWrapper()
+        vi.mocked(getVaultNameMaxBytes).mockReturnValueOnce(undefined)
+        const file = mock<OcUppyFile>({ name: 'x'.repeat(200), meta: { relativeFolder: '' } })
+        vi.spyOn(instance, 'prepareFiles').mockReturnValue([file])
+
+        await instance.handleUpload([file])
+
+        expect(mocks.uppy.removeFile).not.toHaveBeenCalled()
+        expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
       })
     })
     describe('create directory tree', () => {

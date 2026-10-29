@@ -21,6 +21,8 @@ import {
   OcUppyBody,
   resolveVaultEngine,
   encryptVaultPath,
+  getVaultNameMaxBytes,
+  getTextByteSize,
   streamToBlob
 } from '@opencloud-eu/web-pkg'
 import { locationSpacesGeneric, UppyService } from '@opencloud-eu/web-pkg'
@@ -314,6 +316,59 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
   }
 
   /**
+   * Removes files from the upload queue whose name or folder names are too long
+   * for the vault they get uploaded into, since their encrypted names would be
+   * rejected by the server.
+   */
+  removeVaultNamesTooLong(filesToUpload: OcUppyFile[], uploadFolder: Resource): OcUppyFile[] {
+    const maxNameBytes = getVaultNameMaxBytes(
+      this.extensionRegistry,
+      unref(this.space),
+      uploadFolder?.path
+    )
+    if (!maxNameBytes) {
+      return filesToUpload
+    }
+
+    const namesTooLong = new Set<string>()
+    const filesTooLong = new Set<OcUppyFile>()
+    for (const file of filesToUpload) {
+      const segments = urlJoin(file.meta.relativeFolder || '', file.name)
+        .split('/')
+        .filter(Boolean)
+      const tooLong = segments.filter((segment) => getTextByteSize(segment) > maxNameBytes)
+      if (tooLong.length) {
+        tooLong.forEach((segment) => namesTooLong.add(segment))
+        filesTooLong.add(file)
+      }
+    }
+    if (!filesTooLong.size) {
+      return filesToUpload
+    }
+
+    this.removeFilesFromUpload([...filesTooLong])
+    const { $gettext, $ngettext } = this.language
+    const [shownName] = namesTooLong
+    const hiddenCount = namesTooLong.size - 1
+    this.messageStore.showErrorMessage({
+      title: $ngettext(
+        'Name too long for an encrypted folder',
+        'Names too long for an encrypted folder',
+        namesTooLong.size
+      ),
+      desc: hiddenCount
+        ? $ngettext(
+            '»%{name}« and %{count} more could not be uploaded.',
+            '»%{name}« and %{count} more could not be uploaded.',
+            hiddenCount,
+            { name: shownName, count: hiddenCount.toString() }
+          )
+        : $gettext('»%{name}« could not be uploaded.', { name: shownName })
+    })
+    return filesToUpload.filter((file) => !filesTooLong.has(file))
+  }
+
+  /**
    * Creates the directory tree and removes files of failed directories from the upload queue.
    */
   async createDirectoryTree(
@@ -464,6 +519,11 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       }
     }
 
+    filesToUpload = this.removeVaultNamesTooLong(filesToUpload, uploadFolder)
+    if (!filesToUpload.length) {
+      return this.uppyService.clearInputs()
+    }
+
     // name conflict handling. skipped when uploads target a folder other than the
     // user's current one (caller used setUploadFolder, e.g. unzip extracting into a
     // fresh folder). getConflicts only checks the current folder and would fire
@@ -493,6 +553,12 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
           return acc
         }, {})
         this.uppy.setState({ files: { ...this.uppy.getState().files, ...conflictMap } })
+
+        // "keep both" appends a suffix, which can push a name past the vault limit
+        filesToUpload = this.removeVaultNamesTooLong(filesToUpload, uploadFolder)
+        if (!filesToUpload.length) {
+          return this.uppyService.clearInputs()
+        }
       }
     }
 

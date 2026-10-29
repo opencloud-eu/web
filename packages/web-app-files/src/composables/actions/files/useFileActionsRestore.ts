@@ -19,6 +19,8 @@ import {
   useExtensionRegistry,
   encryptFolderPathsForServer,
   encryptResourcePathsForServer,
+  getTextByteSize,
+  getVaultNameMaxBytes,
   useRestoreWorker,
   useRouter,
   useClientService,
@@ -211,6 +213,7 @@ export const useFileActionsRestore = ({
       .filter((e) => e.strategy === ResolveStrategy.KEEP_BOTH)
       .map((e) => e.resource)
 
+    const namesTooLong: string[] = []
     for (let resource of filesToKeepBoth) {
       resource = { ...resource }
       const parentPath = dirname(resource.path)
@@ -221,9 +224,34 @@ export const useFileActionsRestore = ({
         ...resolvedConflicts.map((e) => e.resource),
         ...resolvedResources
       ])
+      // the duplicate suffix can push a name past the vault limit
+      const maxNameBytes = getVaultNameMaxBytes(extensionRegistry, space, parentPath)
+      if (maxNameBytes && getTextByteSize(resolvedName) > maxNameBytes) {
+        namesTooLong.push(resource.name)
+        continue
+      }
       resource.name = resolvedName
       resource.path = urlJoin(parentPath, resolvedName)
       resolvedResources.push(resource)
+    }
+
+    if (namesTooLong.length) {
+      showErrorMessage({
+        title: $ngettext(
+          'Name too long for an encrypted folder',
+          'Names too long for an encrypted folder',
+          namesTooLong.length
+        ),
+        desc: $ngettext(
+          '»%{name}« could not be restored as a copy, its new name is too long.',
+          '%{count} files could not be restored as a copy, their new names are too long.',
+          namesTooLong.length,
+          { name: namesTooLong[0], count: namesTooLong.length.toString() }
+        )
+      })
+    }
+    if (!resolvedResources.length) {
+      return
     }
 
     // The restore worker runs a vanilla webdav client, so for an unlocked vault

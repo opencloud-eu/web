@@ -1,17 +1,19 @@
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { RESOURCE_NAME_MAX_BYTES } from '../../constants'
-import { useResourcesStore } from '../piniaStores'
-import { getTextByteSize } from '../../helpers'
+import { useExtensionRegistry, useResourcesStore } from '../piniaStores'
+import { getTextByteSize, getVaultNameMaxBytes } from '../../helpers'
 
 export const useIsResourceNameValid = () => {
   const { $gettext } = useGettext()
   const resourcesStore = useResourcesStore()
+  const extensionRegistry = useExtensionRegistry()
 
   const isFileNameValid = (
     resource: Resource,
     newName: string,
-    parentResources: Resource[] = undefined
+    parentResources: Resource[] = undefined,
+    space: SpaceResource = undefined
   ): { isValid: boolean; error?: string } => {
     if (!newName) {
       return { isValid: false, error: $gettext('The name cannot be empty') }
@@ -44,8 +46,17 @@ export const useIsResourceNameValid = () => {
       }
     }
 
-    const newPath =
-      resource.path.substring(0, resource.path.length - resource.name.length) + newName
+    const parentPath = resource.path.substring(0, resource.path.length - resource.name.length)
+    const newPath = parentPath + newName
+
+    const vaultNameMaxBytes = getVaultNameMaxBytes(extensionRegistry, space, parentPath)
+    if (vaultNameMaxBytes && getTextByteSize(newName) > vaultNameMaxBytes) {
+      return {
+        isValid: false,
+        error: $gettext('The name is too long for an encrypted folder')
+      }
+    }
+
     const exists = (parentResources || resourcesStore.resources).some(
       (file) => file.path === newPath && file.name === newName
     )

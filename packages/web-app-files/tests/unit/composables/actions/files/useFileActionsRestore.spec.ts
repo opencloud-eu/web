@@ -5,7 +5,15 @@ import {
   getComposableWrapper,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { useMessages, useModals, useResourcesStore, useRestoreWorker } from '@opencloud-eu/web-pkg'
+import {
+  ConflictDialog,
+  getVaultNameMaxBytes,
+  ResolveStrategy,
+  useMessages,
+  useModals,
+  useResourcesStore,
+  useRestoreWorker
+} from '@opencloud-eu/web-pkg'
 import { flushPromises } from '@vue/test-utils'
 import { unref } from 'vue'
 import { HttpError, Resource, TrashResource } from '@opencloud-eu/web-client'
@@ -13,7 +21,8 @@ import { ProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useRestoreWorker: vi.fn()
+  useRestoreWorker: vi.fn(),
+  getVaultNameMaxBytes: vi.fn()
 }))
 
 describe('restore', () => {
@@ -162,6 +171,36 @@ describe('restore', () => {
     expect(dispatchModal).toHaveBeenCalledWith(
       expect.objectContaining({ title: 'Folder already exists' })
     )
+  })
+
+  it('should not restore a copy whose name is too long for a vault', async () => {
+    let instance: ReturnType<typeof useFileActionsRestore>
+    let space: SpaceResource
+    const { mocks } = getWrapper({
+      setup: (i, { space: s }) => {
+        instance = i
+        space = s
+      }
+    })
+    mocks.$clientService.webdav.listFiles.mockResolvedValue({
+      resource: mock<Resource>(),
+      children: [mock<Resource>({ name: 'dup' })]
+    })
+    vi.spyOn(ConflictDialog.prototype, 'resolveFileExists').mockResolvedValueOnce({
+      strategy: ResolveStrategy.KEEP_BOTH,
+      doForAllConflicts: false
+    })
+    vi.mocked(getVaultNameMaxBytes).mockReturnValueOnce('dup'.length)
+    const resource = { id: '1', path: '/dup', name: 'dup', type: 'file' } as TrashResource
+
+    unref(instance.actions)[0].handler({ space, resources: [resource] })
+    await flushPromises()
+
+    const { showErrorMessage } = useMessages()
+    expect(showErrorMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Name too long for an encrypted folder' })
+    )
+    expect(useRestoreWorker().startWorker).not.toHaveBeenCalled()
   })
 
   it('should add files without conflict to resolved resources', () => {

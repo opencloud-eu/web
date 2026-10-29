@@ -84,7 +84,12 @@ const buildFileNameTask = useTask(function* () {
 buildFileNameTask.perform()
 
 const errorMessage = computed(() => {
-  const { isValid, error } = isFileNameValid(resource, unref(newFileName), unref(parentResources))
+  const { isValid, error } = isFileNameValid(
+    resource,
+    unref(newFileName),
+    unref(parentResources),
+    space
+  )
   if (!isValid) {
     return error
   }

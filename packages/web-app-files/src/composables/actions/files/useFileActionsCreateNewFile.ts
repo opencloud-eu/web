@@ -141,7 +141,7 @@ export const useFileActionsCreateNewFile = () => {
           name: newFileName,
           extension
         } as Resource
-        const { isValid, error } = isFileNameValid(resource, newFileName)
+        const { isValid, error } = isFileNameValid(resource, newFileName, undefined, space)
         setError(isValid ? null : error)
       }
     })

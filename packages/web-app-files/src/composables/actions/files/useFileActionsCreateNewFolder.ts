@@ -112,6 +112,7 @@ export const useFileActionsCreateNewFolder = () => {
       customComponent: markRaw(CreateFolderModal),
       hideConfirmButton: true,
       customComponentAttrs: () => ({
+        space,
         vaultCreation: unref(vaultCreator)?.creation,
         callbackFn: (
           folderName: string,

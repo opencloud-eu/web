@@ -66,7 +66,7 @@ import { computed, ref, unref, useId, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { join } from 'path'
 import { storeToRefs } from 'pinia'
-import type { Resource } from '@opencloud-eu/web-client'
+import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   modalActionsTarget,
   resolveFileNameDuplicate,
@@ -79,10 +79,12 @@ import type { VaultCreation, VaultFinalize, Modal } from '@opencloud-eu/web-pkg'
 
 const {
   modal,
+  space,
   vaultCreation = undefined,
   callbackFn
 } = defineProps<{
   modal: Modal
+  space: SpaceResource
   /**
    * Creation bits of the vault extension that would claim the new folder:
    * its setup UI and the folder extension it marks vault roots with. Absent when
@@ -170,7 +172,7 @@ function validate(name: string) {
     name,
     isFolder: true
   } as Resource
-  return isFileNameValid(resource, name, unref(resources))
+  return isFileNameValid(resource, name, unref(resources), space)
 }
 
 const errorMessage = computed(() => {
