@@ -106,7 +106,13 @@ export const useFileActionsCopy = () => {
     })
   }
 
-  const onLocationPicked = async (targetResources: Resource[]) => {
+  const onLocationPicked = async ({
+    sourceResources,
+    targetResources
+  }: {
+    sourceResources: Resource[]
+    targetResources: Resource[]
+  }) => {
     const targetFolder = targetResources[0]
 
     if (!targetFolder) {
@@ -117,9 +123,7 @@ export const useFileActionsCopy = () => {
       ? targetFolder
       : getMatchingSpace(targetFolder)
 
-    const resourcesToCopy = unref(resourcesStore.selectedResources)
-
-    const resourceSpaceMapping = resourcesToCopy.reduce<
+    const resourceSpaceMapping = sourceResources.reduce<
       Record<string, { space: SpaceResource; resources: Resource[] }>
     >((acc, resource) => {
       if (resource.storageId in acc) {
@@ -157,7 +161,8 @@ export const useFileActionsCopy = () => {
       customComponentAttrs: () => ({
         submitButtonTitle: $gettext('Copy here'),
         parentFolderLink,
-        callbackFn: onLocationPicked
+        callbackFn: (targetResources: Resource[]) =>
+          onLocationPicked({ sourceResources: resources, targetResources })
       }),
       focusTrapInitial: false
     })
