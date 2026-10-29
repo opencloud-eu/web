@@ -281,9 +281,10 @@ describe('FileSideBar', () => {
         canListVersionsMock.mockReturnValue(true)
       })
 
-      it('is called when resource is selected and sidebar is opened', () => {
+      it('is called with the file id when resource is selected and sidebar is opened', () => {
         const resource = mock<Resource>({
-          id: 'some-image',
+          id: 'share-jail-id',
+          fileId: 'some-image',
           path: '/someImage.jpg',
           isInVault: false
         })

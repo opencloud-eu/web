@@ -149,7 +149,7 @@ const loadGraphPermissionsTask = useTask(function* (signal) {
 
 const loadVersionsTask = useTask(function* (signal, resource: Resource) {
   try {
-    versions.value = yield clientService.webdav.listFileVersions(resource.id, { signal })
+    versions.value = yield clientService.webdav.listFileVersions(resource.fileId, { signal })
     versionsError.value = false
   } catch (e) {
     versionsError.value = true
