@@ -9,16 +9,16 @@ export const RestoreFileVersionFactory = (dav: DAV, options: WebDavOptions) => {
     restoreFileVersion(
       space: SpaceResource,
       {
-        id,
+        fileId,
         parentFolderId,
         name,
         path
-      }: { id?: string; parentFolderId?: string; name?: string; path?: string },
+      }: { fileId?: string; parentFolderId?: string; name?: string; path?: string },
       versionId: string,
       opts: DAVRequestOptions = {}
     ) {
       const webDavPath = getWebDavPath(space, { path, fileId: parentFolderId, name })
-      const source = urlJoin('meta', id, 'v', versionId, { leadingSlash: true })
+      const source = urlJoin('meta', fileId, 'v', versionId, { leadingSlash: true })
       const target = urlJoin('files', webDavPath, { leadingSlash: true })
       return dav.copy(source, target, opts)
     }

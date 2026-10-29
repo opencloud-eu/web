@@ -98,12 +98,7 @@ const isRevertible = computed(() => {
 })
 
 const revertToVersion = async (version: Resource) => {
-  // incoming shares carry their share jail mount point as id, versions need the actual file id
-  await clientService.webdav.restoreFileVersion(
-    unref(space),
-    { ...unref(resource), id: unref(resource).fileId },
-    version.name
-  )
+  await clientService.webdav.restoreFileVersion(unref(space), unref(resource), version.name)
   const restoredResource = await clientService.webdav.getFileInfo(unref(space), unref(resource))
 
   const fieldsToUpdate = ['size', 'mdate'] as const

@@ -157,7 +157,7 @@ describe('FileVersions', () => {
 
             expect(mocks.$clientService.webdav.restoreFileVersion).toHaveBeenCalledWith(
               undefined,
-              expect.objectContaining({ id: 'file-id' }),
+              expect.objectContaining({ fileId: 'file-id' }),
               defaultVersions[0].name
             )
           })
