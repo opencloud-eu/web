@@ -157,21 +157,23 @@ describe('deleteResources', () => {
         return { undoCallbacks, showMessage }
       }
 
-      it('restores the cleartext resources when the worker reports encrypted vault paths', async () => {
+      it('publishes the cleartext resources but undoes with the encrypted vault paths of the worker', async () => {
         const encryptedFileA = { ...fileA, path: '/folder/l8pb6a0kl5f3c3h0u9hntntjso' } as Resource
         const spyBus = vi.spyOn(eventBus, 'publish')
         const { showMessage } = await deleteResources([fileA], { result: [encryptedFileA] })
 
         expect(showMessage).toHaveBeenCalledWith(
           expect.objectContaining({
-            actionOptions: expect.objectContaining({ resources: [fileA] })
+            actionOptions: expect.objectContaining({ resources: [encryptedFileA] })
           })
         )
         expect(spyBus).toHaveBeenCalledWith('runtime.resource.deleted', [fileA])
 
         pressCtrlZ()
 
-        expect(undoHandler).toHaveBeenCalledWith(expect.objectContaining({ resources: [fileA] }))
+        expect(undoHandler).toHaveBeenCalledWith(
+          expect.objectContaining({ resources: [encryptedFileA] })
+        )
       })
 
       it('only restores the latest deletion', async () => {

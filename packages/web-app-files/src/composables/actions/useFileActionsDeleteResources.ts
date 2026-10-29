@@ -89,11 +89,13 @@ export const useFileActionsDeleteResources = () => {
     space,
     filesToDelete,
     deletedFiles,
+    deletedServerFiles,
     deletionId
   }: {
     space: SpaceResource
     filesToDelete: Resource[]
     deletedFiles: Resource[]
+    deletedServerFiles: Resource[]
     deletionId: number
   }) => {
     const title =
@@ -108,7 +110,7 @@ export const useFileActionsDeleteResources = () => {
 
     const messageTimeout = 7 // in seconds
     const undoAction = unref(undoActions)[0]
-    const undoAvailable = undoAction.isVisible({ space, resources: deletedFiles })
+    const undoAvailable = undoAction.isVisible({ space, resources: deletedServerFiles })
 
     // only the latest deletion can be undone via Ctrl+Z (one deletion in several spaces has one undo per space),
     // an earlier deletion that finishes late only keeps the undo button of its message
@@ -125,7 +127,7 @@ export const useFileActionsDeleteResources = () => {
       actions: [undoAction],
       actionOptions: {
         space,
-        resources: deletedFiles,
+        resources: deletedServerFiles,
         callback: () => {
           removeMessage(message)
           if (keyActionId) {
@@ -140,7 +142,7 @@ export const useFileActionsDeleteResources = () => {
         removeUndoKeyActions(({ id }) => id === keyActionId)
         return undoAction.handler({
           space,
-          resources: deletedFiles,
+          resources: deletedServerFiles,
           callback: () => {
             removeMessage(message)
           }
@@ -279,7 +281,7 @@ export const useFileActionsDeleteResources = () => {
       startWorker(
         { topic: 'fileListDelete', space: spaceForDeletion, resources: workerResources },
         async ({ successful, failed }) => {
-          // successful holds the worker clones with encrypted vault paths, consumers need cleartext
+          // successful holds the worker clones with encrypted vault paths, only undo needs those
           const deletedIds = new Set(successful.map(({ id }) => id))
           const deletedResources = resourcesForDeletion.filter(({ id }) => deletedIds.has(id))
 
@@ -288,6 +290,7 @@ export const useFileActionsDeleteResources = () => {
               space: spaceForDeletion,
               filesToDelete: resourcesForDeletion,
               deletedFiles: deletedResources,
+              deletedServerFiles: successful,
               deletionId
             })
             eventBus.publish('runtime.resource.deleted', deletedResources)

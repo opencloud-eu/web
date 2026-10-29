@@ -9,11 +9,14 @@ import {
   isLocationCommonActive,
   isItemInCurrentFolder,
   isMacOs,
-  useRouter
+  useRouter,
+  useExtensionRegistry,
+  resolveVaultEngine,
+  decryptVaultPath
 } from '@opencloud-eu/web-pkg'
 import { useFileActionsRestore } from './useFileActionsRestore'
 import { storeToRefs } from 'pinia'
-import { isPersonalSpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
+import { isPersonalSpaceResource, isProjectSpaceResource, Resource } from '@opencloud-eu/web-client'
 
 type UndoActionOptions = FileActionOptions & { callback?: () => void }
 
@@ -25,6 +28,7 @@ export const useFileActionsUndoDelete = () => {
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
   const router = useRouter()
+  const extensionRegistry = useExtensionRegistry()
 
   const { actions: restoreActions } = useFileActionsRestore({
     showSuccessMessage: false,
@@ -58,12 +62,20 @@ export const useFileActionsUndoDelete = () => {
   }
 
   const undoDeleteHandler = async ({ space, resources, callback }: UndoActionOptions) => {
-    const resourcesToRestore = resources.map((res) => ({
-      ...res,
-      id: transformToTrashId(res.id)
-    }))
-
     try {
+      // resources carry server (encrypted) vault paths. restore expects cleartext for unlocked
+      // vaults and re-encrypts them, so only decrypt if the vault is unlocked by now.
+      const resourcesToRestore = await Promise.all(
+        resources.map(async (res) => {
+          const resource = { ...res, id: transformToTrashId(res.id) } as Resource
+          const engine = await resolveVaultEngine(extensionRegistry, space, resource.path)
+          if (engine) {
+            resource.path = await decryptVaultPath(engine, resource.path)
+          }
+          return resource
+        })
+      )
+
       const restoreAction = unref(restoreActions)[0]
       await restoreAction.handler({ space, resources: resourcesToRestore })
       callback()

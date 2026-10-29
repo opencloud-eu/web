@@ -73,6 +73,16 @@ describe('ResourceConflictModal', () => {
         })
       })
     })
+    describe('confirm', () => {
+      it('renders by default', () => {
+        const { wrapper } = getWrapper()
+        expect(wrapper.find('.oc-modal-body-actions-confirm').exists()).toBeTruthy()
+      })
+      it('does not render if "hideKeepBoth" is set', () => {
+        const { wrapper } = getWrapper({ props: { hideKeepBoth: true } })
+        expect(wrapper.find('.oc-modal-body-actions-confirm').exists()).toBeFalsy()
+      })
+    })
   })
   describe('onConfirm', () => {
     it('should call the callback', async () => {

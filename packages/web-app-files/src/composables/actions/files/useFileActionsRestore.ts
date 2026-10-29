@@ -1,4 +1,4 @@
-import { dirname } from 'path'
+import { basename, dirname } from 'path'
 
 import {
   Resource,
@@ -21,6 +21,8 @@ import {
   encryptResourcePathsForServer,
   getTextByteSize,
   getVaultNameMaxBytes,
+  getVaultClaim,
+  resolveVaultEngine,
   useRestoreWorker,
   useRouter,
   useClientService,
@@ -71,9 +73,10 @@ export const useFileActionsRestore = ({
         }
         existingResourcesCache[parentPath] = existingResources
       }
-      // Check for naming conflict in parent folder and between resources batch
+      // Check for naming conflict in parent folder and between resources batch. Compare by path
+      // segment, it matches the listing for locked vaults where the name stays cleartext.
       const hasConflict =
-        existingResources.some((r) => r.name === resource.name) ||
+        existingResources.some((r) => r.name === basename(resource.path)) ||
         resolvedResources.filter((r) => r.id !== resource.id).some((r) => r.path === resource.path)
       if (hasConflict) {
         conflicts.push(resource)
@@ -89,28 +92,40 @@ export const useFileActionsRestore = ({
     }
   }
 
+  // Keeping both would write a cleartext name into a locked vault
+  const canKeepBoth = async (space: SpaceResource, resource: Resource) => {
+    const claim = getVaultClaim(extensionRegistry, space, resource.path)
+    if (!claim?.encryptsNames || claim.vaultRoot === resource.path) {
+      return true
+    }
+    return !!(await resolveVaultEngine(extensionRegistry, space, resource.path))
+  }
+
   // FIXME: use ConflictDialog class for this
   const collectResolveStrategies = async (
+    space: SpaceResource,
     conflicts: Resource[],
     existingResourcesByPath: Record<string, Resource[]>
   ) => {
-    let count = 0
     const resolvedConflicts = []
-    const allConflictsCount = conflicts.length
     let doForAllConflicts = false
     let allConflictsStrategy: ResolveStrategy
-    for (const conflict of conflicts) {
+    for (const [index, conflict] of conflicts.entries()) {
       const isFolder = conflict.type === 'folder'
-      if (doForAllConflicts) {
+      const keepBothAllowed = await canKeepBoth(space, conflict)
+      if (
+        doForAllConflicts &&
+        (keepBothAllowed || allConflictsStrategy !== ResolveStrategy.KEEP_BOTH)
+      ) {
         resolvedConflicts.push({
           resource: conflict,
           strategy: allConflictsStrategy
         })
         continue
       }
-      const remainingConflictCount = allConflictsCount - count
+      const remainingConflictCount = conflicts.length - index
       const existingResource = existingResourcesByPath[dirname(conflict.path)]?.find(
-        (r) => r.name === conflict.name
+        (r) => r.name === basename(conflict.path)
       )
       const conflictDialog = new ConflictDialog($gettext, $ngettext)
       const resolvedConflict: ResolveConflict = await conflictDialog.resolveFileExists(
@@ -118,9 +133,9 @@ export const useFileActionsRestore = ({
         remainingConflictCount,
         false,
         false,
-        existingResource ? existingResource.isFolder : isFolder
+        existingResource ? existingResource.isFolder : isFolder,
+        !keepBothAllowed
       )
-      count++
       if (resolvedConflict.doForAllConflicts) {
         doForAllConflicts = true
         allConflictsStrategy = resolvedConflict.strategy
@@ -202,7 +217,11 @@ export const useFileActionsRestore = ({
       await collectConflicts(space, sortedResources)
 
     // iterate through conflicts and collect resolve strategies
-    const resolvedConflicts = await collectResolveStrategies(conflicts, existingResourcesByPath)
+    const resolvedConflicts = await collectResolveStrategies(
+      space,
+      conflicts,
+      existingResourcesByPath
+    )
 
     // iterate through conflicts and behave according to strategy
     const filesToOverwrite = resolvedConflicts
