@@ -395,15 +395,8 @@ const onAudioEnded = () => {
   goToNext()
 }
 
-const onDeleteResourceCallback = async () => {
-  await nextTick()
-
-  if (!unref(mediaFiles).length) {
-    return closeApp()
-  }
-  // point the URL to the file that is shown now instead of the deleted one
-  updateLocalHistory()
-}
+// the activeFiles watcher handles deletes, registering keeps AppWrapper from closing the app
+const onDeleteResourceCallback = async () => {}
 
 const updateLocalHistory = () => {
   // this is a rare edge case when browsing quickly through a lot of files
@@ -472,12 +465,29 @@ watch(
 watch(
   () => activeFiles,
   () => {
+    const activeFileId = unref(activeMediaFile)?.id
     buildMediaFiles()
 
-    if (unref(mediaFiles).length && unref(activeIndex) >= unref(mediaFiles).length) {
-      activeIndex.value = 0
-      updateLocalHistory()
+    if (activeFileId === undefined) {
+      return
     }
+
+    if (!unref(mediaFiles).length) {
+      return closeApp()
+    }
+
+    // files may have been added, removed or re-sorted, keep showing the same file
+    const index = unref(mediaFiles).findIndex(({ id }) => id === activeFileId)
+    if (index !== -1) {
+      activeIndex.value = index
+      return
+    }
+
+    // the active file is gone, show the file now at its index or wrap to the first one
+    if (unref(activeIndex) >= unref(mediaFiles).length) {
+      activeIndex.value = 0
+    }
+    updateLocalHistory()
   },
   { immediate: true }
 )
