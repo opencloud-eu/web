@@ -95,6 +95,64 @@ describe('delete worker', () => {
     await workerPromise
   })
 
+  it('restores parent folders before their children', async () => {
+    const calls: string[] = []
+    webDavMock.restoreFile.mockImplementation(async (_, { id }) => {
+      calls.push(`start ${id}`)
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      calls.push(`end ${id}`)
+      return { status: 200, result: undefined, body: undefined }
+    })
+
+    unref(worker.worker).onmessage = () => {
+      expect(calls).toEqual([
+        'start folderId',
+        'end folderId',
+        'start resourceId',
+        'end resourceId'
+      ])
+
+      resolveTest(true)
+    }
+
+    worker.post(
+      JSON.stringify({
+        topic: 'startProcess',
+        data: {
+          ...dataMock,
+          resources: [resourceMock, { id: 'folderId', name: 'folder', path: '/folder' }]
+        }
+      })
+    )
+
+    await workerPromise
+  })
+
+  it.each([
+    { overwriteIds: ['resourceId'], overwrite: true },
+    { overwriteIds: [], overwrite: false }
+  ])(
+    'restores with overwrite $overwrite for overwriteIds $overwriteIds',
+    async ({ overwriteIds, overwrite }) => {
+      webDavMock.restoreFile.mockResolvedValue({ status: 200, result: undefined, body: undefined })
+
+      unref(worker.worker).onmessage = () => {
+        expect(webDavMock.restoreFile).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({ id: 'resourceId' }),
+          expect.anything(),
+          { overwrite }
+        )
+
+        resolveTest(true)
+      }
+
+      worker.post(JSON.stringify({ topic: 'startProcess', data: { ...dataMock, overwriteIds } }))
+
+      await workerPromise
+    }
+  )
+
   it('returns failed files', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     webDavMock.restoreFile.mockRejectedValue({ response: {} })
