@@ -197,7 +197,10 @@ describe('Notification component', () => {
       wrapper
         .find(`${selectors.notificationItem} router-link-stub`)
         .element.addEventListener('click', navigate)
-      await wrapper.find(`${selectors.notificationLink} a`).trigger('click')
+      const link = wrapper.find(`${selectors.notificationLink} a`)
+      // happy-dom would otherwise load the link
+      link.element.addEventListener('click', (event) => event.preventDefault())
+      await link.trigger('click')
       expect(navigate).not.toHaveBeenCalled()
     })
     describe('if given via messageRichParameters', () => {

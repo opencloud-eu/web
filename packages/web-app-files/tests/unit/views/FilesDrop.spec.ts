@@ -28,6 +28,7 @@ describe('FilesDrop view', () => {
 
   describe('error handling', () => {
     it('shows the "could not be located" message when the link was deleted (404)', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper } = getMountedWrapper({ listFilesError: { statusCode: 404 } })
       await flushPromises()
       expect(wrapper.text()).toContain(
@@ -35,6 +36,7 @@ describe('FilesDrop view', () => {
       )
     })
     it('shows a generic message for other errors instead of the raw error', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper } = getMountedWrapper({ listFilesError: new Error('Unknown error') })
       await flushPromises()
       expect(wrapper.text()).toContain('An unknown error occurred while loading the public link.')

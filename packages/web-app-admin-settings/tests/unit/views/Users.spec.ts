@@ -289,7 +289,7 @@ describe('Users view', () => {
     it('display when one user selected', async () => {
       const { wrapper } = getMountedWrapper({
         mountType: mount,
-        selectedUsers: [{ id: '1' } as User]
+        selectedUsers: [{ id: '1', displayName: 'Admin' } as User]
       })
       await flushPromises()
       expect(wrapper.find('batch-actions-stub').exists()).toBeTruthy()
@@ -298,7 +298,7 @@ describe('Users view', () => {
       // not the logged in user (id 1), who can't delete their own account
       const { wrapper } = getMountedWrapper({
         mountType: mount,
-        selectedUsers: [{ id: '2' }] as User[]
+        selectedUsers: [{ id: '2', displayName: 'User' }] as User[]
       })
       await flushPromises()
       const batchActions = wrapper.findComponent(AppTemplate).props('batchActions') as Action[]
@@ -522,7 +522,7 @@ describe('Users view', () => {
         const { mocks } = getMountedWrapper({
           mountType: mount,
           displayNameFilterQuery: 'Albert',
-          selectedUsers: [{ id: '2' }] as User[]
+          selectedUsers: [{ id: '2', displayName: 'User' }] as User[]
         })
         await flushPromises()
         const userSettingsStore = useUserSettingsStore()

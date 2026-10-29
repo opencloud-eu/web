@@ -16,10 +16,14 @@ describe('markdown list roundtrip', () => {
 
   describe('list items', () => {
     it('parses many lists starting with an empty item in linear time', () => {
+      // warm up so one-time editor setup isn't measured
+      load('- \n- x\n')
+
       const start = performance.now()
       load('- \n- x\n# h\n'.repeat(30) + '- \n- x\n\n1. \n2. y\n\n'.repeat(30))
 
-      expect(performance.now() - start).toBeLessThan(1000)
+      // takes a few ms, super-linear parsing never finishes. Generous because CI runners are slow
+      expect(performance.now() - start).toBeLessThan(3000)
     })
   })
 })

@@ -913,7 +913,7 @@ importers:
         version: 7.0.3
       '@casl/vue':
         specifier: ^3.0.0
-        version: 3.0.1(@casl/ability@7.0.3)(vue@3.5.44(typescript@6.0.3))
+        version: 3.1.0(@casl/ability@7.0.3)(vue@3.5.44(typescript@6.0.3))
       '@hocuspocus/provider':
         specifier: ^4.0.0
         version: 4.7.1(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)
@@ -1124,7 +1124,7 @@ importers:
         version: 7.0.3
       '@casl/vue':
         specifier: ^3.0.0
-        version: 3.0.1(@casl/ability@7.0.3)(vue@3.5.44(typescript@6.0.3))
+        version: 3.1.0(@casl/ability@7.0.3)(vue@3.5.44(typescript@6.0.3))
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
@@ -1197,7 +1197,7 @@ importers:
         version: 7.0.3
       '@casl/vue':
         specifier: ^3.0.0
-        version: 3.0.1(@casl/ability@7.0.3)(vue@3.5.44(typescript@6.0.3))
+        version: 3.1.0(@casl/ability@7.0.3)(vue@3.5.44(typescript@6.0.3))
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
@@ -1334,8 +1334,8 @@ packages:
   '@casl/ability@7.0.3':
     resolution: {integrity: sha512-ko9aKHiUqDPoDpOIkgzrAeHeYMI9fw8mHcQF/L9S3lBJDOzesvmVLjekR1nFo6fdYuvsZNMEPieDqDFkDuCEaw==}
 
-  '@casl/vue@3.0.1':
-    resolution: {integrity: sha512-iCNvKqQMAUmhmwkrhReVoshTyfDSWZS7Vda4HzyGadplG0tQK3WrYulkrdEeWlR7g5r2aAdez/0Fs30oLL4roA==}
+  '@casl/vue@3.1.0':
+    resolution: {integrity: sha512-vX7VHeanuQfH9hLHnOzFVETFILGbkQaVHh5xAg41EyDItSTGssREpsbdVQ4SVZ1V+0CpL/YPLTMbJj9nW6fGjw==}
     peerDependencies:
       '@casl/ability': ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.1.0 || ^6.0.0 || ^7.0.0
       vue: ^3.0.0
@@ -5419,7 +5419,7 @@ snapshots:
     dependencies:
       '@ucast/mongo2js': 2.0.0
 
-  '@casl/vue@3.0.1(@casl/ability@7.0.3)(vue@3.5.44(typescript@6.0.3))':
+  '@casl/vue@3.1.0(@casl/ability@7.0.3)(vue@3.5.44(typescript@6.0.3))':
     dependencies:
       '@casl/ability': 7.0.3
       vue: 3.5.44(typescript@6.0.3)

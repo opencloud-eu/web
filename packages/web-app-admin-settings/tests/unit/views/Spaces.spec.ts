@@ -250,6 +250,12 @@ function getWrapper({
 }: { spaces?: SpaceResource[]; selectedSpaces?: SpaceResource[]; stubActions?: boolean } = {}) {
   const $clientService = mockDeep<ClientService>()
   $clientService.graphAuthenticated.drives.listAllDrives.mockResolvedValue(spaces)
+  $clientService.graphAuthenticated.permissions.listPermissions.mockResolvedValue({
+    shares: [],
+    allowedActions: [],
+    allowedRoles: [],
+    count: 0
+  })
   const mocks = {
     ...defaultComponentMocks(),
     $clientService

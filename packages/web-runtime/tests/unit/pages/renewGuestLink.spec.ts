@@ -50,6 +50,11 @@ afterEach(() => {
 })
 
 describe('renewGuestLink', () => {
+  beforeEach(() => {
+    // failed renewals are logged
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+  })
+
   it('shows a spinner while renewing', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find(selectors.spinner).exists()).toBeTruthy()
