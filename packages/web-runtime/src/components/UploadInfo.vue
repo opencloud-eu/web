@@ -70,7 +70,10 @@
             {{ infoExpanded ? $gettext('Hide details') : $gettext('Show details') }}
           </oc-button>
           <oc-button
-            v-if="!runningUploads && Object.keys(errors).length && !disableActions"
+            v-if="
+              !runningUploads && !uploadsCancelled && retryableErrorIds.length && !disableActions
+            "
+            id="retry-upload-info-btn"
             v-oc-tooltip="$gettext('Retry all failed uploads')"
             class="ml-1 p-1"
             appearance="raw"
@@ -363,6 +366,11 @@ const uploadErrorLogContent = computed(() => {
   return requestIds.map((item) => `X-Request-Id: ${item}`).join('\r\n')
 })
 
+// folders are created outside of uppy, hence uppy can't retry them
+const retryableErrorIds = computed(() =>
+  Object.keys(unref(errors)).filter((id) => !unref(uploads)[id]?.meta.isFolder)
+)
+
 const uploadsPausable = computed(() => uppyService.tusActive())
 const showErrorLog = computed(() => unref(infoExpanded) && unref(uploadErrorLogContent))
 
@@ -551,18 +559,27 @@ function cancelAllUploads() {
 }
 
 function retryUploads() {
-  itemsInProgressCount.value += Object.keys(unref(errors)).length
-  runningUploads.value += 1
-  for (const fileID of Object.keys(unref(errors))) {
+  let rootFileCount = 0
+  const topLevelFolderIds = new Set<string>()
+
+  for (const fileID of unref(retryableErrorIds)) {
     uploads.value[fileID].status = undefined
+    delete errors.value[fileID]
 
     const topLevelFolderId = uploads.value[fileID].meta.topLevelFolderId
-    if (topLevelFolderId) {
-      uploads.value[topLevelFolderId].status = undefined
-      uploads.value[topLevelFolderId].errorCount = 0
+    if (!topLevelFolderId) {
+      rootFileCount += 1
+      continue
     }
+
+    topLevelFolderIds.add(topLevelFolderId)
+    uploads.value[topLevelFolderId].status = undefined
+    uploads.value[topLevelFolderId].errorCount = 0
   }
-  errors.value = {}
+
+  // a top level folder only counts once, see handleTopLevelFolderUpdate
+  itemsInProgressCount.value += rootFileCount + topLevelFolderIds.size
+  runningUploads.value += 1
   uppyService.retryAllUploads()
 }
 
@@ -664,6 +681,8 @@ uppyService.subscribe('uploadCompleted', () => {
   runningUploads.value -= 1
 
   if (!unref(runningUploads)) {
+    // top level folders without files to upload (e.g. a failed subfolder) never settle otherwise
+    itemsInProgressCount.value = 0
     resetProgress()
   }
 })
@@ -727,15 +746,13 @@ uppyService.subscribe('uploadError', ({ file, error }: { file: OcUppyFile; error
   uploads.value[file.meta.uploadId].status = 'error'
   errors.value[file.meta.uploadId] = error as HttpError
 
-  if (!file.meta.isFolder) {
-    if (!file.meta.relativeFolder && unref(itemsInProgressCount) > 0) {
-      // reduce count for failed root level files. count for folders is handled in handleTopLevelFolderUpdate
-      itemsInProgressCount.value -= 1
-    }
+  // root level item failed. files of a failed folder never reach uppy, so the folder is done as well
+  if (!file.meta.relativeFolder && unref(itemsInProgressCount) > 0) {
+    itemsInProgressCount.value -= 1
+  }
 
-    if (file.meta.topLevelFolderId) {
-      handleTopLevelFolderUpdate(file, 'error')
-    }
+  if (!file.meta.isFolder && file.meta.topLevelFolderId) {
+    handleTopLevelFolderUpdate(file, 'error')
   }
 })
 uppyService.subscribe('uploadSuccess', (file: OcUppyFile) => {
