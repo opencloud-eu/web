@@ -80,6 +80,7 @@
       />
     </div>
     <div :id="teleportId" />
+    <oc-hidden-announcer :announcement="errorAnnouncement" />
   </div>
 </template>
 
@@ -87,6 +88,7 @@
 import { computed, nextTick, ref, unref, useAttrs, useId, useTemplateRef, watch } from 'vue'
 import { PasswordPolicy, uniqueId } from '../../helpers'
 import OcButton from '../OcButton/OcButton.vue'
+import OcHiddenAnnouncer from '../OcHiddenAnnouncer/OcHiddenAnnouncer.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcTextInputPassword from '../OcTextInputPassword/OcTextInputPassword.vue'
 import { debounce } from 'lodash-es'
@@ -251,6 +253,8 @@ const showDescriptionMessage = computed(() => {
 const showMessageLine = computed(() => {
   return fixMessageLine || unref(showErrorMessage) || unref(showDescriptionMessage)
 })
+// the message appears while typing, without a focus change that would make screen readers read it
+const errorAnnouncement = computed(() => (unref(showErrorMessage) ? errorMessage : ''))
 const ariaInvalid = computed(() => {
   return unref(showErrorMessage).toString()
 })

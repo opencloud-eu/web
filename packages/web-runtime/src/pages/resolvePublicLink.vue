@@ -20,7 +20,6 @@
         :label="passwordFieldLabel"
         type="password"
       />
-      <oc-hidden-announcer :announcement="wrongPasswordMessage || ''" level="assertive" />
       <oc-button
         appearance="filled"
         size="large"

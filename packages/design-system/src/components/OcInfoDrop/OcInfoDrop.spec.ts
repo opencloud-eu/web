@@ -1,7 +1,13 @@
 import { FocusTrap } from 'focus-trap-vue'
 import OcDrop from '../OcDrop/OcDrop.vue'
 import OcInfoDrop from './OcInfoDrop.vue'
-import { PartialComponentProps, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import {
+  PartialComponentProps,
+  defaultPlugins,
+  mount,
+  shallowMount
+} from '@opencloud-eu/web-test-helpers'
+import { flushPromises } from '@vue/test-utils'
 
 describe('OcInfoDrop', () => {
   function getWrapperWithProps(props: PartialComponentProps<typeof OcInfoDrop>) {
@@ -87,6 +93,64 @@ describe('OcInfoDrop', () => {
         const focusTrap = wrapper.findComponent<typeof FocusTrap>('focus-trap-stub')
         expect(focusTrap.props('active')).toBeFalsy()
       })
+    })
+  })
+  describe('focus return', () => {
+    beforeEach(() => {
+      // jsdom has no layout, so focus-trap would consider every element hidden
+      vi.spyOn(HTMLElement.prototype, 'getClientRects').mockReturnValue([
+        new DOMRect(0, 0, 10, 10)
+      ] as unknown as DOMRectList)
+    })
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    async function openAndMoveFocus() {
+      document.body.innerHTML = ''
+      const wrapper = mount(
+        {
+          template:
+            '<div><button id="toggle">?</button><oc-info-drop toggle="#toggle" title="Info" read-more-link="https://example.org" /></div>',
+          components: { OcInfoDrop }
+        },
+        // a real transition keeps the closing drop in the DOM for a moment, like in the browser
+        {
+          global: { plugins: defaultPlugins(), stubs: { transition: false } },
+          attachTo: document.body
+        }
+      )
+      const toggle = document.querySelector<HTMLElement>('#toggle')
+      toggle.focus()
+      toggle.click()
+      await flushPromises()
+      await new Promise((resolve) => setTimeout(resolve))
+
+      const link = document.querySelector<HTMLElement>('.info-more-link')
+      link.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }))
+      link.focus()
+      return { wrapper, toggle, link }
+    }
+
+    it.each([
+      [
+        'Escape',
+        (el: HTMLElement) =>
+          el.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true })
+          )
+      ],
+      ['the close button', () => document.querySelector<HTMLElement>('.info-header button').click()]
+    ])('returns focus to the toggle after tabbing and closing with %s', async (_, close) => {
+      const { wrapper, toggle, link } = await openAndMoveFocus()
+
+      close(link)
+      await flushPromises()
+      await new Promise((resolve) => setTimeout(resolve, 100))
+
+      expect(document.querySelector('.info-drop-content')).toBeNull()
+      expect(document.activeElement).toBe(toggle)
+      wrapper.unmount()
     })
   })
 })

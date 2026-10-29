@@ -17,7 +17,7 @@
   >
     <div
       v-if="isHidden"
-      class="oc-tile-card-lazy-shimmer overflow-hidden relative after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-20 after:animate-shimmer"
+      class="oc-tile-card-lazy-shimmer overflow-hidden relative after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-20 after:motion-safe:animate-shimmer"
     >
       <div class="w-full aspect-[16/9]" />
       <div class="p-2">

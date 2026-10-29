@@ -179,10 +179,12 @@
       />
     </div>
   </section>
+  <oc-hidden-announcer ref="statusAnnouncer" />
+  <oc-hidden-announcer ref="failureAnnouncer" level="assertive" />
 </template>
 
 <script setup lang="ts">
-import { ref, watch, unref, computed } from 'vue'
+import { ref, watch, unref, computed, useTemplateRef } from 'vue'
 import { isUndefined } from 'lodash-es'
 import { getSpeed } from '@uppy/utils'
 import { HttpError, Resource, urlJoin, extractParentFolderName } from '@opencloud-eu/web-client'
@@ -198,6 +200,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
+import { OcHiddenAnnouncer } from '@opencloud-eu/design-system/components'
 
 type UploadResult = OcUppyFile & {
   path?: string
@@ -328,6 +331,21 @@ const uploadingLabel = computed(() => {
   }
 
   return $gettext('%{ items } uploaded', { items: parts.join(', ') })
+})
+
+const statusAnnouncer = useTemplateRef<typeof OcHiddenAnnouncer>('statusAnnouncer')
+const failureAnnouncer = useTemplateRef<typeof OcHiddenAnnouncer>('failureAnnouncer')
+
+watch(runningUploads, (running, wasRunning) => {
+  if (running && !wasRunning) {
+    unref(statusAnnouncer)?.announce(unref(uploadInfoTitle))
+    return
+  }
+  if (!running && wasRunning) {
+    const failed = Object.keys(unref(errors)).length && !unref(uploadsCancelled)
+    const announcer = failed ? unref(failureAnnouncer) : unref(statusAnnouncer)
+    announcer?.announce(`${unref(uploadInfoTitle)}. ${unref(uploadingLabel)}`)
+  }
 })
 
 const uploadErrorLogContent = computed(() => {

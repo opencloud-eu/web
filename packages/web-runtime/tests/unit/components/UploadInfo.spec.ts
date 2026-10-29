@@ -1,7 +1,7 @@
 import UploadInfo from '../../../src/components/UploadInfo.vue'
 import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ResourceListItem, OcUppyFile } from '@opencloud-eu/web-pkg'
-import { nextTick } from 'vue'
+import { defineComponent, h, nextTick } from 'vue'
 import { HttpError } from '@opencloud-eu/web-client'
 
 const selectors = {
@@ -19,7 +19,19 @@ const selectors = {
   }
 }
 
+const announceMock = vi.fn()
+const OcHiddenAnnouncerStub = defineComponent({
+  props: { level: { type: String, default: 'polite' } },
+  setup(props, { expose }) {
+    expose({ announce: (message: string) => announceMock(message, props.level) })
+    return () => h('span')
+  }
+})
+
 describe('UploadInfo component', () => {
+  afterEach(() => {
+    announceMock.mockReset()
+  })
   it('should render the component in a hidden state per default', () => {
     const { wrapper } = getShallowWrapper()
     const overlay = wrapper.find(selectors.overlay)
@@ -303,6 +315,38 @@ describe('UploadInfo component', () => {
       vi.useRealTimers()
     })
   })
+  describe('screen reader announcements', () => {
+    it('announces the start of an upload', async () => {
+      const { wrapper } = getShallowWrapper()
+      ;(wrapper.vm as any).runningUploads = 1
+      await nextTick()
+
+      expect(announceMock).toHaveBeenCalledWith('Preparing upload...', 'polite')
+    })
+    it('announces a completed upload', async () => {
+      const { wrapper } = getShallowWrapper()
+      ;(wrapper.vm as any).runningUploads = 1
+      await nextTick()
+      ;(wrapper.vm as any).successful = ['1']
+      ;(wrapper.vm as any).runningUploads = 0
+      await nextTick()
+
+      expect(announceMock).toHaveBeenLastCalledWith('Upload completed. 1 file uploaded', 'polite')
+    })
+    it('announces a failed upload assertively', async () => {
+      const { wrapper } = getShallowWrapper()
+      ;(wrapper.vm as any).runningUploads = 1
+      await nextTick()
+      ;(wrapper.vm as any).errors = { '1': new HttpError('', undefined) }
+      ;(wrapper.vm as any).runningUploads = 0
+      await nextTick()
+
+      expect(announceMock).toHaveBeenLastCalledWith(
+        'Upload failed. 1 of 1 item failed',
+        'assertive'
+      )
+    })
+  })
   describe('getRemainingTime method', () => {
     it.each([
       { ms: 1000, expected: 'Few seconds left' },
@@ -328,7 +372,8 @@ function getShallowWrapper() {
       global: {
         plugins: [...defaultPlugins()],
         mocks,
-        provide: mocks
+        provide: mocks,
+        stubs: { OcHiddenAnnouncer: OcHiddenAnnouncerStub }
       }
     })
   }

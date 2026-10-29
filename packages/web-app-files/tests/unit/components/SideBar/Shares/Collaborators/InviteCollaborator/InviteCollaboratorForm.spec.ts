@@ -20,12 +20,25 @@ import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { OcButton, OcSelect } from '@opencloud-eu/design-system/components'
 import RoleDropdown from '../../../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
 import { ShareRoleType } from '../../../../../../../src/components/SideBar/Shares/Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
-import { flushPromises } from '@vue/test-utils'
+import { DOMWrapper, flushPromises } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
 
-vi.mock('lodash-es', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('lodash-es')>()),
-  debounce: (fn: any) => fn
-}))
+const debounceMode = vi.hoisted(() => ({ real: false }))
+vi.mock('lodash-es', async (importOriginal) => {
+  const lodash = await importOriginal<typeof import('lodash-es')>()
+  return {
+    ...lodash,
+    debounce: (fn: any, wait: number) => (debounceMode.real ? lodash.debounce(fn, wait) : fn)
+  }
+})
+
+const announceMock = vi.fn()
+const OcHiddenAnnouncerStub = defineComponent({
+  setup(_, { expose }) {
+    expose({ announce: announceMock })
+    return () => h('span')
+  }
+})
 
 const folderMock = {
   id: '1',
@@ -46,6 +59,9 @@ const spaceMock = {
 }
 
 describe('InviteCollaboratorForm', () => {
+  afterEach(() => {
+    announceMock.mockReset()
+  })
   describe('renders correctly', () => {
     it.todo('renders a select field for share receivers')
     it.todo('renders an inviteDescriptionMessage')
@@ -265,6 +281,173 @@ describe('InviteCollaboratorForm', () => {
           (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
         )
       ).toBe(false)
+    })
+  })
+  describe('screen reader announcements', () => {
+    const resultAnnouncements = () =>
+      announceMock.mock.calls.map(([message]) => message).filter((message) => !!message)
+
+    let typingWrapper: ReturnType<typeof getWrapper>['wrapper'] | undefined
+    afterEach(() => {
+      typingWrapper?.unmount()
+      typingWrapper = undefined
+      vi.useRealTimers()
+      debounceMode.real = false
+    })
+
+    function getTypingWrapper(options: Parameters<typeof getWrapper>[0] = {}) {
+      document.body.innerHTML = ''
+      const { wrapper, mocks } = getWrapper({ ...options, shallow: false, attachTo: document.body })
+      typingWrapper = wrapper
+      const input = wrapper.find<HTMLInputElement>('#files-share-invite-input')
+      input.element.focus()
+      return { wrapper, mocks, input }
+    }
+
+    function delaySearch(mocks: ReturnType<typeof getWrapper>['mocks'], users: User[]) {
+      let settle: () => void
+      mocks.$clientService.graphAuthenticated.users.listUsers.mockImplementationOnce(
+        () => new Promise((resolve) => (settle = () => resolve(users)))
+      )
+      return () => settle()
+    }
+
+    it('announces the result count once the search has finished', async () => {
+      const { input } = getTypingWrapper({
+        users: [{ id: '2', displayName: 'Marie' } as User],
+        groups: [{ id: '3', displayName: 'Marketing' }]
+      })
+      await input.setValue('mar')
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual(['2 results'])
+    })
+    it('announces when no users or groups are found', async () => {
+      const { input } = getTypingWrapper()
+      await input.setValue('unknown')
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual(['No users or groups found.'])
+    })
+    it.each([
+      {
+        cancelledBy: 'clearing the input',
+        cancel: (input: DOMWrapper<HTMLInputElement>) => input.setValue('')
+      },
+      {
+        cancelledBy: 'closing the list',
+        cancel: (input: DOMWrapper<HTMLInputElement>) =>
+          input.trigger('keydown', { key: 'Escape', keyCode: 27 })
+      },
+      {
+        cancelledBy: 'leaving the input',
+        cancel: (input: DOMWrapper<HTMLInputElement>) => input.element.blur()
+      }
+    ])('announces nothing for a search cancelled by $cancelledBy', async ({ cancel }) => {
+      const { mocks, input } = getTypingWrapper()
+      const settle = delaySearch(mocks, [{ id: '2', displayName: 'Marie' } as User])
+      await input.setValue('mar')
+      await cancel(input)
+
+      settle()
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual([])
+    })
+    it('announces nothing for a refetch below the minimum search length', async () => {
+      const { wrapper, input } = getTypingWrapper({
+        users: [{ id: '2', displayName: 'Marie' } as User],
+        externalShareRoles: [mock<ShareRole>()],
+        searchMinLength: 3
+      })
+      await input.setValue('ma')
+      await (wrapper.vm as any).selectShareRoleType({ id: '2', label: 'External' })
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual([])
+    })
+    it('announces only the newest search when an older one settles later', async () => {
+      const { wrapper, mocks, input } = getTypingWrapper({
+        users: [{ id: '2', displayName: 'Marie' } as User],
+        externalShareRoles: [mock<ShareRole>()],
+        openXchange: true
+      })
+      let settleContacts: () => void
+      mocks.$clientService.ox.autocompleteContacts.mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            settleContacts = () => resolve([{ id: '10', displayName: 'Mara', email: 'm@x.org' }])
+          })
+      )
+      await input.setValue('mar')
+      await flushPromises()
+      await (wrapper.vm as any).selectShareRoleType({ id: '2', label: 'External' })
+      await flushPromises()
+
+      settleContacts()
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual(['1 result'])
+    })
+    it('announces the empty list after a failed search', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const { mocks, input } = getTypingWrapper()
+      mocks.$clientService.graphAuthenticated.users.listUsers.mockRejectedValueOnce(
+        new Error('search term too short')
+      )
+      await input.setValue('mar')
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual(['No users or groups found.'])
+    })
+    it('announces nothing for a failed search after the list got closed', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const { mocks, input } = getTypingWrapper()
+      let fail: () => void
+      mocks.$clientService.graphAuthenticated.users.listUsers.mockImplementationOnce(
+        () => new Promise((_, reject) => (fail = () => reject(new Error('search failed'))))
+      )
+      await input.setValue('mar')
+      await input.trigger('keydown', { key: 'Escape', keyCode: 27 })
+
+      fail()
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual([])
+    })
+    it('announces only the result of the newest query', async () => {
+      debounceMode.real = true
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] })
+      const { mocks, input } = getTypingWrapper({
+        users: [{ id: '3', displayName: 'Marie' } as User]
+      })
+      const settleFirst = delaySearch(mocks, [
+        { id: '2', displayName: 'Maria' } as User,
+        { id: '4', displayName: 'Mario' } as User
+      ])
+      await input.setValue('ma')
+      await vi.advanceTimersByTimeAsync(500)
+      // the first search settles while the newer query still waits for its search
+      await input.setValue('mar')
+      settleFirst()
+      await flushPromises()
+      await vi.advanceTimersByTimeAsync(500)
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual(['1 result'])
+    })
+    it('announces a person being added on selection only', async () => {
+      const { wrapper } = getWrapper()
+      const select = wrapper.findComponent(OcSelect)
+      const person = mock<CollaboratorAutoCompleteItem>({ id: '2' })
+
+      select.vm.$emit('update:model-value', [person])
+      await wrapper.vm.$nextTick()
+      expect(announceMock).toHaveBeenCalledWith('Person was added')
+
+      select.vm.$emit('update:model-value', [])
+      await wrapper.vm.$nextTick()
+      expect(announceMock).toHaveBeenCalledTimes(1)
     })
   })
   describe('share action', () => {
@@ -518,8 +701,10 @@ function getWrapper({
   openXchange = false,
   openXchangeContacts = [],
   canInviteGuests = true,
+  searchMinLength = 2,
   shallow = true,
-  props = {}
+  props = {},
+  attachTo = undefined
 }: {
   storageId?: string
   resource?: Resource
@@ -532,8 +717,10 @@ function getWrapper({
   openXchange?: boolean
   openXchangeContacts?: Contact[]
   canInviteGuests?: boolean
+  searchMinLength?: number
   shallow?: boolean
   props?: Record<string, unknown>
+  attachTo?: HTMLElement
 } = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ params: { storageId } })
@@ -544,7 +731,10 @@ function getWrapper({
   mocks.$clientService.ox.autocompleteContacts.mockResolvedValue(openXchangeContacts)
 
   const capabilities = {
-    files_sharing: { federation: { incoming: true, outgoing: true } }
+    files_sharing: {
+      federation: { incoming: true, outgoing: true },
+      search_min_length: searchMinLength
+    }
   }
 
   return {
@@ -552,6 +742,7 @@ function getWrapper({
     wrapper: mount(InviteCollaboratorForm, {
       shallow,
       props,
+      attachTo,
       global: {
         plugins: [
           ...defaultPlugins({
@@ -581,7 +772,7 @@ function getWrapper({
           availableInternalShareRoles: internalShareRoles
         },
         mocks,
-        stubs: { OcSelect: false, RoleDropdown: true }
+        stubs: { OcSelect: false, RoleDropdown: true, OcHiddenAnnouncer: OcHiddenAnnouncerStub }
       }
     })
   }

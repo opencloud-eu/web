@@ -50,6 +50,7 @@
       appearance="raw-inverse"
       color-role="chrome"
       no-hover
+      :inert="showCancelButton"
       @click="showSearchBar"
     >
       <oc-icon name="search" fill-type="line"></oc-icon>
@@ -453,6 +454,7 @@ watch([locationFilterId, locationFilterAvailable], updateLocationFilterInputPadd
 })
 onBeforeUnmount(() => {
   eventBus.unsubscribe('app.search.term.clear', clearTermEvent)
+  setTopBarInert(false)
 })
 
 function getFocusableElements() {
@@ -575,6 +577,21 @@ function cancelSearch() {
 function hideOptionsDrop() {
   unref(optionsDrop)?.hide()
 }
+
+// on phones the open search bar covers the whole top bar, so the controls behind it must not be focusable
+function setTopBarInert(inert: boolean) {
+  Array.from(document.getElementById('oc-topbar')?.children || [])
+    .filter((column) => !column.contains(unref(searchBarRef)))
+    .forEach((column) => column.toggleAttribute('inert', inert))
+}
+
+// a search bar that gets removed while open comes back closed
+watch([showCancelButton, searchBarRef], ([overlayOpen, searchBar]) => {
+  if (!searchBar) {
+    showCancelButton.value = false
+  }
+  setTopBarInert(overlayOpen && !!searchBar)
+})
 
 parseRouteQuery(unref(router.currentRoute), true)
 

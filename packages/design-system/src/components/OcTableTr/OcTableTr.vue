@@ -12,7 +12,7 @@
   >
     <oc-td v-if="isHidden" :colspan="lazyColspan">
       <span
-        class="shimmer inline-block bg-role-shadow overflow-hidden absolute inset-x-2 inset-y-3 after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-10 after:animate-shimmer"
+        class="shimmer inline-block bg-role-shadow overflow-hidden absolute inset-x-2 inset-y-3 after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-10 after:motion-safe:animate-shimmer"
       />
     </oc-td>
     <slot v-else />

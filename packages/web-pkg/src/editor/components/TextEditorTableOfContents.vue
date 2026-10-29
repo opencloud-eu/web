@@ -11,9 +11,7 @@
         no-hover
         class="text-editor-table-of-contents-toggle shrink-0 gap-2 p-2"
         :aria-expanded="!collapsed"
-        :aria-label="
-          collapsed ? $gettext('Show table of contents') : $gettext('Hide table of contents')
-        "
+        :aria-label="collapsed ? $gettext('Show table of contents') : undefined"
         @click="collapsed = !collapsed"
       >
         <span class="flex items-center gap-2">

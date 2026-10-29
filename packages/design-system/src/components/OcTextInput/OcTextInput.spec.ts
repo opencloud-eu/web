@@ -5,6 +5,7 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import OcTextInput from './OcTextInput.vue'
+import OcHiddenAnnouncer from '../OcHiddenAnnouncer/OcHiddenAnnouncer.vue'
 import { PasswordPolicy } from '../../helpers'
 import { mock } from 'vitest-mock-extended'
 
@@ -256,6 +257,18 @@ describe('OcTextInput', () => {
       await wrapper.setProps({ modelValue: 'invalid input' })
       await wrapper.setProps({ errorMessage: 'You shall not pass.' })
       expect(wrapper.find('input').attributes('aria-invalid')).toBe('true')
+    })
+    it('should announce the error message once it is shown', async () => {
+      const wrapper = getShallowWrapper()
+      const announcer = wrapper.findComponent(OcHiddenAnnouncer)
+      expect(announcer.props('announcement')).toBe('')
+
+      await wrapper.setProps({ modelValue: 'invalid input' })
+      await wrapper.setProps({ errorMessage: 'You shall not pass.' })
+      expect(announcer.props('announcement')).toBe('You shall not pass.')
+
+      await wrapper.setProps({ errorMessage: '' })
+      expect(announcer.props('announcement')).toBe('')
     })
   })
 

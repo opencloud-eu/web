@@ -12,5 +12,6 @@ exports[`OcDatePicker > renders 1`] = `
     <!--v-if-->
   </div>
   <div id="v-0"></div>
+  <oc-hidden-announcer-stub announcement="" level="polite"></oc-hidden-announcer-stub>
 </div>"
 `;

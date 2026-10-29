@@ -98,7 +98,7 @@ const {
 const { $gettext } = useGettext()
 
 const shimmerClasses =
-  'compatibility-loading shimmer relative inline-block h-3 w-12 overflow-hidden rounded-sm bg-role-shadow opacity-10 align-middle after:absolute after:inset-0 after:transform-[translateX(-100%)] after:animate-shimmer'
+  'compatibility-loading shimmer relative inline-block h-3 w-12 overflow-hidden rounded-sm bg-role-shadow opacity-10 align-middle after:absolute after:inset-0 after:transform-[translateX(-100%)] after:motion-safe:animate-shimmer'
 
 const filteredExtensions = computed(() => {
   const term = unref(filterTerm).toLowerCase()
