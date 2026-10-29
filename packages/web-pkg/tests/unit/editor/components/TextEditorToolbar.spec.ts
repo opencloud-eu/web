@@ -7,7 +7,7 @@ import { useTextEditor } from '../../../../src/editor/composables/useTextEditor'
 import type { TextEditorInstance } from '../../../../src/editor/types'
 import type { EditorAction } from '../../../../src/editor/composables'
 import type { YjsCollaborator } from '../../../../src/composables/yjs'
-import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
+import { createTestingPinia, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { Awareness } from 'y-protocols/awareness'
 import * as Y from 'yjs'
 import { withSetup } from '../composables/helpers'
@@ -83,7 +83,7 @@ function mountToolbar(
   const wrapper = mount(TextEditorToolbar, {
     attachTo: document.body,
     global: {
-      provide: { textEditor },
+      provide: { textEditor, textEditorTeleport: ref<string>() },
       directives: { 'oc-tooltip': () => {}, ocTooltip: () => {} },
       stubs: {
         'oc-drop': defineComponent({
@@ -256,13 +256,15 @@ describe('TextEditorToolbar', () => {
   it('enables redo after an undo in a collaborative editor', async () => {
     createTestingPinia()
     const ydoc = new Y.Doc()
-    const { result: textEditor } = withSetup(() =>
-      useTextEditor({
-        contentType: 'plain-text',
-        modelValue: toRef(''),
-        ydoc,
-        awareness: new Awareness(ydoc)
-      })
+    const { result: textEditor } = withSetup(
+      () =>
+        useTextEditor({
+          contentType: 'plain-text',
+          modelValue: toRef(''),
+          ydoc,
+          awareness: new Awareness(ydoc)
+        }),
+      { provide: defaultComponentMocks() }
     )
     const editor = textEditor.editor.value!
     const historyActions =

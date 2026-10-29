@@ -7,12 +7,12 @@
     :details="noSelectionDetails"
   />
   <side-bar-multiple-selection
-    v-if="multipleUsers"
+    v-else-if="multipleUsers"
     id="oc-users-details-multiple-sidebar"
     img-src="images/illustrations/users.svg"
     :message="multipleUsersSelectedText"
   />
-  <div v-if="user" id="oc-user-details-sidebar" class="p-2">
+  <div v-else-if="user" id="oc-user-details-sidebar" class="p-2">
     <div
       class="flex justify-center items-center h-[192px] p-4 mb-4 bg-role-surface-container rounded-xl"
     >

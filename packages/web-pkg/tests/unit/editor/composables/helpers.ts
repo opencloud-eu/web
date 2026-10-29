@@ -3,7 +3,10 @@ import { createApp, defineComponent, h } from 'vue'
 import { createGettext } from 'vue3-gettext'
 import type { Editor } from '@tiptap/vue-3'
 
-export function withSetup<T>(composable: () => T): { result: T } {
+export function withSetup<T>(
+  composable: () => T,
+  { provide = {} }: { provide?: Record<string, unknown> } = {}
+): { result: T } {
   let result!: T
   const app = createApp(
     defineComponent({
@@ -13,6 +16,9 @@ export function withSetup<T>(composable: () => T): { result: T } {
       }
     })
   )
+  for (const [key, value] of Object.entries(provide)) {
+    app.provide(key, value)
+  }
   app.use(createGettext({ translations: {}, silent: true }))
   app.mount(document.createElement('div'))
   return { result }

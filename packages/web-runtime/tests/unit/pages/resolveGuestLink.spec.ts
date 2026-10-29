@@ -39,6 +39,11 @@ const selectors = {
 }
 
 describe('resolveGuestLink', () => {
+  beforeEach(() => {
+    // failed resolutions are logged
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+  })
+
   it('shows a spinner while resolving', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find(selectors.spinner).exists()).toBeTruthy()

@@ -1,10 +1,9 @@
 import { computed, ComputedRef, onBeforeUnmount, unref, MaybeRef } from 'vue'
 import { queryItemAsString } from '../appDefaults'
-import { useRouteQuery, useRouteQueryPersisted } from '../router'
+import { useRouteQuery, useRouteQueryPersisted, useRouter } from '../router'
 import { PaginationConstants } from './constants'
 import { eventBus } from '../../services'
 import { findIndex } from 'lodash-es'
-import { useRoute, useRouter } from 'vue-router'
 import { Item } from '@opencloud-eu/web-client'
 
 interface PaginationOptions<T> {
@@ -25,7 +24,6 @@ interface PaginationResult<T> {
 
 export function usePagination<T>(options: PaginationOptions<T>): PaginationResult<T> {
   const router = useRouter()
-  const route = useRoute()
   const requestedPage = createPageRef<T>(options)
   const perPage = createPerPageRef<T>(options)
   const total = computed(() => {
@@ -60,7 +58,8 @@ export function usePagination<T>(options: PaginationOptions<T>): PaginationResul
       const index = findIndex(unref(options.items), (item: Item) => item.id === resourceId)
       if (index >= 0) {
         const page = Math.ceil((index + 1) / Number(unref(perPage)))
-        router.push({ ...unref(route), query: { ...unref(route).query, page } }).then(() => {
+        const route = unref(router.currentRoute)
+        router.push({ ...route, query: { ...route.query, page } }).then(() => {
           eventBus.publish('app.files.navigate.scrollTo', {
             resourceId,
             forceScroll,

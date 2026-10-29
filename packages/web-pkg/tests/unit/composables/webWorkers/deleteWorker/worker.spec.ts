@@ -3,6 +3,8 @@ import { useWebWorker } from '@vueuse/core'
 import DeleteWorker from '../../../../../src/composables/webWorkers/deleteWorker/worker?worker'
 import { mock } from 'vitest-mock-extended'
 import { type WebDAV } from '@opencloud-eu/web-client/webdav'
+// loaded upfront, otherwise the worker's first import of it counts against the test timeout
+import '@opencloud-eu/web-client'
 
 const resourceMock = {
   id: 'resourceId',

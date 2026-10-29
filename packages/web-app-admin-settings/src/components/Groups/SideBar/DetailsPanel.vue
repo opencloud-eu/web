@@ -6,12 +6,12 @@
     :details="noSelectionDetails"
   />
   <side-bar-multiple-selection
-    v-if="multipleGroups"
+    v-else-if="multipleGroups"
     id="oc-groups-details-multiple-sidebar"
     img-src="images/illustrations/groups.svg"
     :message="multipleGroupsSelectedText"
   />
-  <div v-if="group" id="oc-group-details-sidebar" class="p-2">
+  <div v-else-if="group" id="oc-group-details-sidebar" class="p-2">
     <div
       class="flex justify-center items-center h-[192px] p-4 mb-4 bg-role-surface-container rounded-xl"
     >

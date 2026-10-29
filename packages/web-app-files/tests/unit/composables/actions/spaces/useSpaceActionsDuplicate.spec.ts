@@ -162,6 +162,8 @@ describe('restore', () => {
             name: 'Moon',
             disabled: false,
             driveType: 'project',
+            spaceImageData: null,
+            spaceReadmeData: null,
             spaceQuota: { total: 1 }
           })
           await unref(actions)[0].handler({ resources: [otherSpace, memberSpace] })

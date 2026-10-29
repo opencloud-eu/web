@@ -690,6 +690,11 @@ describe('GuestSessionManager', () => {
   })
 
   describe('restoreContext', () => {
+    beforeEach(() => {
+      // failed restores are logged
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    })
+
     it('does nothing without a persisted permission id', async () => {
       const { manager, listSharedWithMe } = getManager()
 
