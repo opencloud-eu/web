@@ -31,9 +31,6 @@ import {
   queryItemAsString,
   useRouteQuery,
   createLocationShares,
-  useClientService,
-  getSharedDriveItem,
-  useSpacesStore,
   useGetResourceContext,
   useLinkTargetRoute,
   useAuthStore,
@@ -50,6 +47,7 @@ import {
   SHARE_JAIL_ID,
   SpaceResource
 } from '@opencloud-eu/web-client'
+import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 import { authService } from '../services/auth'
@@ -58,8 +56,6 @@ import { isGuestSessionInvalidError } from '../services/auth/guestSessionManager
 const router = useRouter()
 const id = useRouteParam('fileId')
 const { $gettext } = useGettext()
-const clientService = useClientService()
-const spacesStore = useSpacesStore()
 const authStore = useAuthStore()
 const configStore = useConfigStore()
 
@@ -91,13 +87,13 @@ const resolvePrivateLinkTask = useTask(function* (signal, id) {
   }
 
   try {
-    const { space, resource, path } = yield* call(getResourceContext(id))
+    const { space, resource, path, driveItem } = yield* call(getResourceContext(id))
     if (!path) {
       // empty path means the user has no access to the resource or it doesn't exist
       throw new Error('The file or folder does not exist')
     }
 
-    const targetRoute = yield* call(getTargetRoute({ resource, space, path }))
+    const targetRoute = getTargetRoute({ resource, space, path, driveItem })
     router.push(targetRoute)
   } catch (e) {
     console.error('Error resolving private link', e)
@@ -132,35 +128,24 @@ const loginButtonAttrs = computed(() => {
   return { onClick: () => router.replace({ path: '/login', query: { redirectUrl } }) }
 })
 
-const getTargetRoute = async ({
+function getTargetRoute({
   resource,
   space,
-  path
+  path,
+  driveItem
 }: {
   resource: Resource
   space: SpaceResource
   path: string
-}): Promise<RouteLocationNamedRaw> => {
-  let isHiddenShare = false
-  // a guest lists its share in the regular file list, which has no visibility filter
-  if (isShareSpaceResource(space) && path === '/' && !authStore.isGuestContext) {
-    // if the resource is a share, we need to check if it is hidden to add the correct
-    // filter query param to the url so the filter gets populated correctly in the file list.
-    try {
-      const driveItem = await getSharedDriveItem({
-        graphClient: clientService.graphAuthenticated,
-        spacesStore,
-        space
-      })
-
-      isHiddenShare = driveItem?.['@UI.Hidden']
-    } catch (e) {
-      // failure to get the drive item is not critical, we can just ignore it and continue.
-      // worst thing that can happen is that the filter query param is not set correctly
-      // and the user needs to apply the filter manually in the UI.
-      console.error(e)
-    }
-  }
+  driveItem?: DriveItem
+}): RouteLocationNamedRaw {
+  // the hidden filter needs to be set in the url so the file list shows the share.
+  // a guest lists its share in the regular file list, which has no visibility filter.
+  const isHiddenShare =
+    isShareSpaceResource(space) &&
+    path === '/' &&
+    !authStore.isGuestContext &&
+    !!driveItem?.['@UI.Hidden']
 
   return getLinkTargetRoute({
     space,

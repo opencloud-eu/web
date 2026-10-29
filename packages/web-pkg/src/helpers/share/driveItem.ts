@@ -16,10 +16,14 @@ export const getSharedDriveItem = async ({
   space: SpaceResource
   signal?: AbortSignal
 }) => {
-  if (useAuthStore().isGuestContext) {
-    // guests can't access their mount points, but `sharedWithMe` lists the shared drive item
+  async function findInSharedWithMe() {
     const driveItems = await graphClient.driveItems.listSharedWithMe({}, { signal })
     return driveItems.find(({ remoteItem }) => remoteItem?.id === space.id) || null
+  }
+
+  // guests can't access their mount points
+  if (useAuthStore().isGuestContext) {
+    return findInSharedWithMe()
   }
 
   const matchingMountPoint = await spacesStore.getMountPointForSpace({
@@ -28,7 +32,8 @@ export const getSharedDriveItem = async ({
     signal
   })
   if (!matchingMountPoint) {
-    return null
+    // unsynced shares have no mount point
+    return findInSharedWithMe()
   }
   const { id } = matchingMountPoint
   return graphClient.driveItems.getDriveItem(id.split('!')[0], id)

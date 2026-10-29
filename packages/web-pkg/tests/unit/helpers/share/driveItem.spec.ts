@@ -25,13 +25,28 @@ describe('getSharedDriveItem', () => {
     expect(sharedDriveItem).toBe(driveItem)
   })
 
-  it('does not return the shared drive item if no matching mount point found', async () => {
+  it('returns the shared drive item via sharedWithMe if no matching mount point found', async () => {
     const { graphAuthenticated: graphClient } = mockDeep<ClientService>()
     const spacesStore = useSpacesStore()
-    const space = mock<SpaceResource>()
+    const space = mock<SpaceResource>({ id: 'share-id' })
 
-    const driveItem = mock<DriveItem>({ id: '1' })
-    graphClient.driveItems.getDriveItem.mockResolvedValue(driveItem)
+    const driveItem = mock<DriveItem>({ remoteItem: { id: 'share-id' } })
+    graphClient.driveItems.listSharedWithMe.mockResolvedValue([driveItem])
+    vi.mocked(spacesStore.getMountPointForSpace).mockResolvedValue(null)
+
+    const sharedDriveItem = await getSharedDriveItem({ graphClient, spacesStore, space })
+    expect(sharedDriveItem).toBe(driveItem)
+    expect(graphClient.driveItems.getDriveItem).not.toHaveBeenCalled()
+  })
+
+  it('does not return a drive item if neither a mount point nor a shared drive item matches', async () => {
+    const { graphAuthenticated: graphClient } = mockDeep<ClientService>()
+    const spacesStore = useSpacesStore()
+    const space = mock<SpaceResource>({ id: 'share-id' })
+
+    graphClient.driveItems.listSharedWithMe.mockResolvedValue([
+      mock<DriveItem>({ remoteItem: { id: 'other-share-id' } })
+    ])
     vi.mocked(spacesStore.getMountPointForSpace).mockResolvedValue(null)
 
     const sharedDriveItem = await getSharedDriveItem({ graphClient, spacesStore, space })
