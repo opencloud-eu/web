@@ -2,7 +2,7 @@ import type { Extension, JSONContent } from '@tiptap/core'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
 import Document from '@tiptap/extension-document'
-import { Markdown, MarkdownManager } from '@tiptap/markdown'
+import { MarkdownManager } from '@tiptap/markdown'
 import { Marked } from 'marked'
 import type { marked as markedDefault } from 'marked'
 import Image from '@tiptap/extension-image'
@@ -25,9 +25,11 @@ import {
   MarkdownOrderedList,
   MarkdownParagraph,
   MarkdownTaskList,
+  MarkdownWithMinimalTextEscaping,
   registerFrontmatterTokenizer,
   registerMarkdownHtmlTokenizer,
-  registerMarkdownListTokenizer
+  registerMarkdownListTokenizer,
+  withMinimalTextEscaping
 } from '../../extensions'
 import { ContentTypeStrategy, ContentTypeStrategyOptions, ExtensionsOptions } from './types'
 
@@ -61,7 +63,9 @@ export const useStrategyMarkdown = (
   // never change for a given strategy.
   let markdownManager: MarkdownManager | null = null
   const serialize = (doc: ProseMirrorNode): string => {
-    markdownManager ??= new MarkdownManager({ marked, extensions: extensions() })
+    markdownManager ??= withMinimalTextEscaping(
+      new MarkdownManager({ marked, extensions: extensions() })
+    )
     return markdownManager.serialize(doc.toJSON())
   }
 
@@ -125,7 +129,7 @@ export const useStrategyMarkdown = (
       Frontmatter,
       ...(renderHtml ? [] : [HtmlBlock, HtmlInline]),
       createCodeBlockLowlight(),
-      Markdown.configure({ marked }),
+      MarkdownWithMinimalTextEscaping.configure({ marked }),
       createMarkdownClipboardExtension(),
       createLinkExtension(),
       Table.configure({ resizable: false }),

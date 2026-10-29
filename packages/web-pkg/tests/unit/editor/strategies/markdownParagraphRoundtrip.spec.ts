@@ -44,15 +44,18 @@ describe('markdown paragraph roundtrip', () => {
       ['i. e. something', 'i\\. e. something'],
       ['z) last', 'z\\) last'],
       ['---', '\\---'],
+      ['* not a list', '\\* not a list'],
+      ['> not a quote', '\\> not a quote'],
+      ['>not a quote', '\\>not a quote'],
       ['    not code', 'not code']
     ])('escapes block syntax in %j', (text, expected) => {
       expect(serializeParagraph(text)).toBe(expected)
     })
 
-    it.each(['#hashtag', '+1', '-5 degrees', '1.5 liters', '> quote'])(
+    it.each(['#hashtag', '+1', '-5 degrees', '1.5 liters', 'a > b'])(
       'leaves %j as it is',
       (text) => {
-        expect(serializeParagraph(text)).toBe(text.replace('>', '&gt;'))
+        expect(serializeParagraph(text)).toBe(text)
       }
     )
 
@@ -74,7 +77,9 @@ describe('markdown paragraph roundtrip', () => {
     })
 
     it('escapes block syntax after a soft line break', () => {
-      expect(serializeParagraph('Title\n===\n- item')).toBe('Title\n\\===\n\\- item')
+      expect(serializeParagraph('Title\n===\n- item\n * item\n> quote')).toBe(
+        'Title\n\\===\n\\- item\n\\* item\n\\> quote'
+      )
     })
 
     it('leaves ordered list markers after a soft line break as they are', () => {
