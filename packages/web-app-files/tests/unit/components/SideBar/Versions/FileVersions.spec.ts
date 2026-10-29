@@ -143,6 +143,24 @@ describe('FileVersions', () => {
 
             expect(updateResourceField).toHaveBeenCalledTimes(2)
           })
+          it('restores the version via the file id', async () => {
+            const resource = mock<Resource>({
+              id: 'share-jail-id',
+              fileId: 'file-id',
+              size: 0,
+              mdate: ''
+            })
+            const { wrapper, mocks } = getMountedWrapper({ resource })
+            const revertVersionButton = wrapper.findAll(selectors.revertVersionButton)
+
+            await revertVersionButton.at(0).trigger('click')
+
+            expect(mocks.$clientService.webdav.restoreFileVersion).toHaveBeenCalledWith(
+              undefined,
+              expect.objectContaining({ fileId: 'file-id' }),
+              defaultVersions[0].name
+            )
+          })
         })
 
         it('should call downloadFile method when download version button is clicked', async () => {

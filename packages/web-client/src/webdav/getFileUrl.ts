@@ -21,11 +21,14 @@ export const GetFileUrlFactory = (
         disposition = 'attachment',
         version = null,
         username = '',
+        signUrl = true,
         ...opts
       }: {
         disposition?: 'inline' | 'attachment'
         version?: string
         username?: string
+        // disable for clients authenticated via cookie, e.g. guests
+        signUrl?: boolean
       } & DAVRequestOptions
     ): Promise<string> {
       // FIXME: re-introduce query parameters
@@ -46,11 +49,14 @@ export const GetFileUrlFactory = (
       }
 
       if (version) {
+        const downloadURL = dav.getFileUrl(urlJoin('meta', resource.fileId, 'v', version))
+        if (!signUrl) {
+          return downloadURL
+        }
         if (!username) {
           throw new Error('username is required for URL signing')
         }
         // FIXME: remove as soon as we remove client side url signing https://github.com/opencloud-eu/opencloud/issues/1197
-        const downloadURL = dav.getFileUrl(urlJoin('meta', resource.fileId, 'v', version))
         const ocsClient = ocs(baseUrl, axiosClient)
         return await ocsClient.signUrl(downloadURL, username)
       }
