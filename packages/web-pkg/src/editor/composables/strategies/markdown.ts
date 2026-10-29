@@ -21,6 +21,7 @@ import {
   HtmlBlock,
   HtmlInline,
   imageFileHandlerExtension,
+  MarkdownCode,
   MarkdownListItem,
   MarkdownOrderedList,
   MarkdownParagraph,
@@ -110,6 +111,7 @@ export const useStrategyMarkdown = (
     return [
       StarterKit.configure({
         link: false,
+        code: false,
         codeBlock: false,
         document: false,
         paragraph: false,
@@ -117,6 +119,7 @@ export const useStrategyMarkdown = (
         orderedList: false,
         undoRedo: options?.yjs ? false : undefined
       }),
+      MarkdownCode,
       MarkdownParagraph,
       MarkdownListItem,
       MarkdownOrderedList,

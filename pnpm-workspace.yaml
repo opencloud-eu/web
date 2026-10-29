@@ -8,6 +8,7 @@ catalogs:
   tiptap:
     '@tiptap/core': ^3.30.3
     '@tiptap/extension-bubble-menu': ^3.30.3
+    '@tiptap/extension-code': ^3.30.3
     '@tiptap/extension-code-block-lowlight': ^3.30.3
     '@tiptap/extension-collaboration': ^3.30.3
     '@tiptap/extension-document': ^3.30.3
