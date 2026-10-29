@@ -126,9 +126,9 @@ services:
       COLLABORATION_APP_ICON: https://host.docker.internal:9980/favicon.ico
       COLLABORATION_APP_INSECURE: '${OC_INSECURE:-true}'
       COLLABORATION_CS3API_DATAGATEWAY_INSECURE: '${OC_INSECURE:-true}'
-      # Mails (e.g. guest links) are caught by inbucket, see http://localhost:9000
-      NOTIFICATIONS_SMTP_HOST: inbucket
-      NOTIFICATIONS_SMTP_PORT: '2500'
+      # Mails (e.g. guest links) are caught by mailpit, see http://localhost:8025
+      NOTIFICATIONS_SMTP_HOST: mailpit
+      NOTIFICATIONS_SMTP_PORT: '1025'
       NOTIFICATIONS_SMTP_SENDER: 'OpenCloud <noreply@example.com>'
     labels:
       traefik.enable: true
@@ -157,7 +157,7 @@ services:
     depends_on:
       collabora:
         condition: service_healthy
-      inbucket:
+      mailpit:
         condition: service_started
       imagor:
         condition: service_started
@@ -358,11 +358,11 @@ services:
     networks:
       - default
 
-  inbucket:
-    image: inbucket/inbucket:3.2.0
-    container_name: web_inbucket
+  mailpit:
+    image: axllent/mailpit:v1.32.0
+    container_name: web_mailpit
     ports:
-      - '127.0.0.1:9000:9000' # web UI and REST API
+      - '127.0.0.1:8025:8025' # web UI and REST API
     networks:
       - traefik
     restart: unless-stopped
