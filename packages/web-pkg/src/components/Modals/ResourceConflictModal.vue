@@ -20,7 +20,12 @@
     >
       {{ confirmSecondaryText }}
     </oc-button>
-    <oc-button class="oc-modal-body-actions-confirm ml-2" appearance="filled" @click="onConfirm">
+    <oc-button
+      v-if="!hideKeepBoth"
+      class="oc-modal-body-actions-confirm ml-2"
+      appearance="filled"
+      @click="onConfirm"
+    >
       {{ $gettext('Keep both') }}
     </oc-button>
   </teleport>
@@ -41,6 +46,7 @@ const {
   suggestMerge = true,
   separateSkipHandling = false,
   hideSecondaryAction = false,
+  hideKeepBoth = false,
   confirmSecondaryTextOverwrite = undefined,
   existingIsFolder = undefined
 } = defineProps<{
@@ -51,6 +57,7 @@ const {
   suggestMerge?: boolean
   separateSkipHandling?: boolean
   hideSecondaryAction?: boolean
+  hideKeepBoth?: boolean
   confirmSecondaryTextOverwrite?: string
   existingIsFolder?: boolean
 }>()

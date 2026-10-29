@@ -1,4 +1,4 @@
-import { FileAction, CapabilityStore } from '@opencloud-eu/web-pkg'
+import { FileAction, CapabilityStore, VaultEngine, resolveVaultEngine } from '@opencloud-eu/web-pkg'
 import {
   useFileActionsRestore,
   useFileActionsUndoDelete
@@ -9,8 +9,16 @@ import { computed, unref } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 vi.mock('../../../../../src/composables/actions/files/useFileActionsRestore')
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  resolveVaultEngine: vi.fn()
+}))
 
 describe('undoDelete', () => {
+  beforeEach(() => {
+    vi.mocked(resolveVaultEngine).mockResolvedValue(null)
+  })
+
   describe('isVisible', () => {
     it.each(['project', 'personal'])(
       'is true for %s spaces if trash bins are enabled via capabilities',
@@ -61,6 +69,40 @@ describe('undoDelete', () => {
 
           expect(restoreHandlerMock).toHaveBeenCalledWith({ space, resources: [{ id: '3' }] })
           expect(callback).toHaveBeenCalled()
+        }
+      })
+    })
+    it('decrypts the vault paths if the vault is unlocked', () => {
+      getWrapper({
+        setup: async ({ actions }, { restoreHandlerMock }) => {
+          vi.mocked(resolveVaultEngine).mockResolvedValue(
+            mock<VaultEngine>({
+              vaultRoot: '/my.vault',
+              decryptPath: (path) => Promise.resolve(path === 'enc' ? 'file.txt' : path)
+            })
+          )
+          const space = mock<SpaceResource>()
+          const resources = [{ id: '1$2!3', name: 'file.txt', path: '/my.vault/enc' } as Resource]
+          await unref(actions)[0].handler({ space, resources, callback: vi.fn() })
+
+          expect(restoreHandlerMock).toHaveBeenCalledWith({
+            space,
+            resources: [{ id: '3', name: 'file.txt', path: '/my.vault/file.txt' }]
+          })
+        }
+      })
+    })
+    it('keeps the encrypted vault paths if the vault is locked', () => {
+      getWrapper({
+        setup: async ({ actions }, { restoreHandlerMock }) => {
+          const space = mock<SpaceResource>()
+          const resources = [{ id: '1$2!3', name: 'file.txt', path: '/my.vault/enc' } as Resource]
+          await unref(actions)[0].handler({ space, resources, callback: vi.fn() })
+
+          expect(restoreHandlerMock).toHaveBeenCalledWith({
+            space,
+            resources: [{ id: '3', name: 'file.txt', path: '/my.vault/enc' }]
+          })
         }
       })
     })

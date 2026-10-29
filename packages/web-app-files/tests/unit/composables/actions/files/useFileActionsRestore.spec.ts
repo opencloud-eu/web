@@ -7,12 +7,17 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import {
   ConflictDialog,
+  getVaultClaim,
   getVaultNameMaxBytes,
+  resolveVaultEngine,
+  ResolveConflict,
   ResolveStrategy,
   useMessages,
   useModals,
   useResourcesStore,
-  useRestoreWorker
+  useRestoreWorker,
+  VaultClaim,
+  VaultEngine
 } from '@opencloud-eu/web-pkg'
 import { flushPromises } from '@vue/test-utils'
 import { unref } from 'vue'
@@ -22,10 +27,17 @@ import { ProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useRestoreWorker: vi.fn(),
-  getVaultNameMaxBytes: vi.fn()
+  getVaultNameMaxBytes: vi.fn(),
+  getVaultClaim: vi.fn(),
+  resolveVaultEngine: vi.fn()
 }))
 
 describe('restore', () => {
+  beforeEach(() => {
+    vi.mocked(getVaultClaim).mockReturnValue(null)
+    vi.mocked(resolveVaultEngine).mockResolvedValue(null)
+  })
+
   describe('isVisible property', () => {
     it('should be false when no resource is given', () => {
       getWrapper({
@@ -201,6 +213,149 @@ describe('restore', () => {
       expect.objectContaining({ title: 'Name too long for an encrypted folder' })
     )
     expect(useRestoreWorker().startWorker).not.toHaveBeenCalled()
+  })
+
+  it('should find conflict by the encrypted path of a locked vault resource', () => {
+    getWrapper({
+      setup: async ({ collectConflicts }, { space, clientService }) => {
+        clientService.webdav.listFiles.mockResolvedValue({
+          resource: mock<Resource>(),
+          children: [mock<Resource>({ name: 'enc' })]
+        })
+        const resource = { id: '1', path: '/my.vault/enc', name: 'file.txt' } as TrashResource
+        const { conflicts } = await collectConflicts(space, [resource])
+
+        expect(conflicts).toContain(resource)
+      }
+    })
+  })
+
+  describe('vault conflicts', () => {
+    const vaultClaim = { vaultRoot: '/my.vault', encryptsNames: true } as VaultClaim
+    const fileA = { id: 'a', path: '/a.txt', name: 'a.txt', type: 'file' } as TrashResource
+    const fileB = { id: 'b', path: '/b.txt', name: 'b.txt', type: 'file' } as TrashResource
+    const vaultFile = {
+      id: 'v',
+      path: '/my.vault/enc',
+      name: 'file.txt',
+      type: 'file'
+    } as TrashResource
+
+    async function restore(
+      resources: TrashResource[],
+      { locked = true, claim = vaultClaim }: { locked?: boolean; claim?: VaultClaim } = {}
+    ) {
+      vi.mocked(getVaultClaim).mockImplementation((_registry, _space, path) =>
+        path.startsWith(claim.vaultRoot) ? claim : null
+      )
+      vi.mocked(resolveVaultEngine).mockResolvedValue(locked ? null : mock<VaultEngine>())
+      let instance: ReturnType<typeof useFileActionsRestore>
+      let space: SpaceResource
+      const { mocks } = getWrapper({
+        setup: (i, { space: s }) => {
+          instance = i
+          space = s
+        }
+      })
+      const childrenByPath: Record<string, Resource[]> = {
+        '/': [
+          mock<Resource>({ name: 'a.txt', isFolder: false }),
+          mock<Resource>({ name: 'b.txt', isFolder: false }),
+          mock<Resource>({ name: 'my.vault', isFolder: true })
+        ],
+        '/my.vault': [mock<Resource>({ name: 'enc', isFolder: true })]
+      }
+      mocks.$clientService.webdav.listFiles.mockImplementation((_space, { path }) =>
+        Promise.resolve({ resource: mock<Resource>(), children: childrenByPath[path] })
+      )
+
+      void unref(instance.actions)[0].handler({ space, resources })
+      await flushPromises()
+    }
+
+    function dialogAttrs(index: number) {
+      const { dispatchModal } = useModals()
+      return vi.mocked(dispatchModal).mock.calls[index][0].customComponentAttrs()
+    }
+
+    async function resolveDialog(index: number, resolveConflict: ResolveConflict) {
+      const { callbackFn } = dialogAttrs(index) as {
+        callbackFn: (resolveConflict: ResolveConflict) => void
+      }
+      callbackFn(resolveConflict)
+      await flushPromises()
+    }
+
+    function restoredPaths() {
+      const { startWorker } = useRestoreWorker()
+      return vi.mocked(startWorker).mock.calls[0][0].resources.map(({ path }) => path)
+    }
+
+    it.each([
+      { locked: true, hideKeepBoth: true },
+      { locked: false, hideKeepBoth: false }
+    ])(
+      'sets "hideKeepBoth" to $hideKeepBoth if the vault is locked: $locked',
+      async ({ locked, hideKeepBoth }) => {
+        await restore([vaultFile], { locked })
+
+        expect(dialogAttrs(0)).toEqual(expect.objectContaining({ hideKeepBoth }))
+      }
+    )
+
+    it.each([
+      {
+        description: 'the vault root',
+        resource: { ...vaultFile, path: '/my.vault' },
+        claim: vaultClaim
+      },
+      {
+        description: 'a vault without name encryption',
+        resource: vaultFile,
+        claim: { ...vaultClaim, encryptsNames: false }
+      }
+    ])('allows "Keep both" for $description', async ({ resource, claim }) => {
+      await restore([resource as TrashResource], { claim })
+
+      expect(dialogAttrs(0)).toEqual(expect.objectContaining({ hideKeepBoth: false }))
+    })
+
+    it('names the type of the existing resource in a locked vault', async () => {
+      await restore([vaultFile])
+
+      const { dispatchModal } = useModals()
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Folder already exists' })
+      )
+    })
+
+    it('asks again without "Keep both" for a locked vault conflict after "Keep both" for all', async () => {
+      await restore([fileA, fileB, vaultFile])
+      await resolveDialog(0, { strategy: ResolveStrategy.KEEP_BOTH, doForAllConflicts: true })
+
+      const { dispatchModal } = useModals()
+      expect(dispatchModal).toHaveBeenCalledTimes(2)
+      expect(dialogAttrs(1)).toEqual(
+        expect.objectContaining({ hideKeepBoth: true, conflictCount: 1 })
+      )
+
+      await resolveDialog(1, { strategy: ResolveStrategy.REPLACE, doForAllConflicts: false })
+
+      const paths = restoredPaths()
+      expect(paths).toHaveLength(3)
+      expect(paths).toContain('/my.vault/enc')
+      expect(paths).not.toContain('/a.txt')
+      expect(paths).not.toContain('/b.txt')
+    })
+
+    it('applies "Replace" for all to a locked vault conflict without asking again', async () => {
+      await restore([fileA, vaultFile])
+      await resolveDialog(0, { strategy: ResolveStrategy.REPLACE, doForAllConflicts: true })
+
+      const { dispatchModal } = useModals()
+      expect(dispatchModal).toHaveBeenCalledTimes(1)
+      expect(restoredPaths()).toEqual(['/a.txt', '/my.vault/enc'])
+    })
   })
 
   it('should add files without conflict to resolved resources', () => {

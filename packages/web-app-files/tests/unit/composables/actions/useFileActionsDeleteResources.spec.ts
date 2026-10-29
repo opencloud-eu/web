@@ -132,8 +132,9 @@ describe('deleteResources', () => {
         resources: Resource[],
         {
           undoAvailable = true,
-          finishedWorkers
-        }: { undoAvailable?: boolean; finishedWorkers?: (() => void)[] } = {}
+          finishedWorkers,
+          result = resources
+        }: { undoAvailable?: boolean; finishedWorkers?: (() => void)[]; result?: Resource[] } = {}
       ) {
         let pending: ReturnType<
           ReturnType<typeof useFileActionsDeleteResources>['filesList_delete']
@@ -141,7 +142,7 @@ describe('deleteResources', () => {
         let showMessage: ReturnType<typeof useMessages>['showMessage']
         getWrapper({
           currentFolder,
-          result: resources,
+          result,
           undoAvailable,
           finishedWorkers,
           setup: ({ filesList_delete }) => {
@@ -153,8 +154,27 @@ describe('deleteResources', () => {
         const undoCallbacks = vi
           .mocked(showMessage)
           .mock.calls.map(([{ actionOptions }]) => actionOptions.callback as () => void)
-        return { undoCallbacks }
+        return { undoCallbacks, showMessage }
       }
+
+      it('publishes the cleartext resources but undoes with the encrypted vault paths of the worker', async () => {
+        const encryptedFileA = { ...fileA, path: '/folder/l8pb6a0kl5f3c3h0u9hntntjso' } as Resource
+        const spyBus = vi.spyOn(eventBus, 'publish')
+        const { showMessage } = await deleteResources([fileA], { result: [encryptedFileA] })
+
+        expect(showMessage).toHaveBeenCalledWith(
+          expect.objectContaining({
+            actionOptions: expect.objectContaining({ resources: [encryptedFileA] })
+          })
+        )
+        expect(spyBus).toHaveBeenCalledWith('runtime.resource.deleted', [fileA])
+
+        pressCtrlZ()
+
+        expect(undoHandler).toHaveBeenCalledWith(
+          expect.objectContaining({ resources: [encryptedFileA] })
+        )
+      })
 
       it('only restores the latest deletion', async () => {
         await deleteResources([fileA])

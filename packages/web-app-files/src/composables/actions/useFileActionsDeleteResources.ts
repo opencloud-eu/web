@@ -89,11 +89,13 @@ export const useFileActionsDeleteResources = () => {
     space,
     filesToDelete,
     deletedFiles,
+    deletedServerFiles,
     deletionId
   }: {
     space: SpaceResource
     filesToDelete: Resource[]
     deletedFiles: Resource[]
+    deletedServerFiles: Resource[]
     deletionId: number
   }) => {
     const title =
@@ -108,7 +110,7 @@ export const useFileActionsDeleteResources = () => {
 
     const messageTimeout = 7 // in seconds
     const undoAction = unref(undoActions)[0]
-    const undoAvailable = undoAction.isVisible({ space, resources: deletedFiles })
+    const undoAvailable = undoAction.isVisible({ space, resources: deletedServerFiles })
 
     // only the latest deletion can be undone via Ctrl+Z (one deletion in several spaces has one undo per space),
     // an earlier deletion that finishes late only keeps the undo button of its message
@@ -125,7 +127,7 @@ export const useFileActionsDeleteResources = () => {
       actions: [undoAction],
       actionOptions: {
         space,
-        resources: deletedFiles,
+        resources: deletedServerFiles,
         callback: () => {
           removeMessage(message)
           if (keyActionId) {
@@ -140,7 +142,7 @@ export const useFileActionsDeleteResources = () => {
         removeUndoKeyActions(({ id }) => id === keyActionId)
         return undoAction.handler({
           space,
-          resources: deletedFiles,
+          resources: deletedServerFiles,
           callback: () => {
             removeMessage(message)
           }
@@ -279,29 +281,31 @@ export const useFileActionsDeleteResources = () => {
       startWorker(
         { topic: 'fileListDelete', space: spaceForDeletion, resources: workerResources },
         async ({ successful, failed }) => {
-          if (successful.length) {
+          // successful holds the worker clones with encrypted vault paths, only undo needs those
+          const deletedIds = new Set(successful.map(({ id }) => id))
+          const deletedResources = resourcesForDeletion.filter(({ id }) => deletedIds.has(id))
+
+          if (deletedResources.length) {
             showSuccessMessage({
               space: spaceForDeletion,
               filesToDelete: resourcesForDeletion,
-              deletedFiles: successful,
+              deletedFiles: deletedResources,
+              deletedServerFiles: successful,
               deletionId
             })
-            eventBus.publish('runtime.resource.deleted', successful)
+            eventBus.publish('runtime.resource.deleted', deletedResources)
 
             // A deleted (sub)tree may be, or contain, a vault root whose
             // passphrase is now cached for a path that no longer exists.
             // Evict it so a different vault re-created at the same path later
-            // isn't silently auto-unlocked with the old key. successful holds
-            // the encrypted worker clones, so match back to the cleartext
-            // source resources by id - the store is keyed by cleartext path.
-            const deletedIds = new Set(successful.map(({ id }) => id))
-            resourcesForDeletion
-              .filter((r) => deletedIds.has(r.id))
-              .forEach((r) => vaultStore.clearEnginesUnder(spaceForDeletion.id, r.path))
+            // isn't silently auto-unlocked with the old key.
+            deletedResources.forEach((r) =>
+              vaultStore.clearEnginesUnder(spaceForDeletion.id, r.path)
+            )
           }
 
           resourcesStore.removeResourcesFromDeleteQueue(failed.map(({ resource }) => resource.id))
-          resourcesStore.removeResourcesFromDeleteQueue(successful.map(({ id }) => id))
+          resourcesStore.removeResourcesFromDeleteQueue([...deletedIds])
 
           failed.forEach(({ error, resource }) => {
             let title = $gettext('Failed to delete "%{resource}"', { resource: resource.name })
@@ -316,7 +320,7 @@ export const useFileActionsDeleteResources = () => {
 
           // user hasn't navigated to another location meanwhile
           if (originalCurrentFolderId === unref(currentFolder)?.id) {
-            resourcesStore.removeResources(successful)
+            resourcesStore.removeResources(deletedResources)
 
             const activeFilesCount = resourcesStore.activeResources.length
             const pageCount = Math.ceil(unref(activeFilesCount) / unref(itemsPerPage))
