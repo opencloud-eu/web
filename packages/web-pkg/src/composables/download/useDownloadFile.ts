@@ -2,7 +2,7 @@ import { useClientService } from '../clientService'
 import { resolveVaultEngine, streamToBlob, triggerDownloadWithFilename } from '../../../src/helpers'
 import { useGettext } from 'vue3-gettext'
 import { ClientService } from '../../services'
-import { useExtensionRegistry, useMessages, useUserStore } from '../piniaStores'
+import { useAuthStore, useExtensionRegistry, useMessages, useUserStore } from '../piniaStores'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGetMatchingSpace } from '../spaces'
 
@@ -16,6 +16,7 @@ export const useDownloadFile = (options?: DownloadFileOptions) => {
   const clientService = options?.clientService || useClientService()
   const { $gettext } = useGettext()
   const userStore = useUserStore()
+  const authStore = useAuthStore()
   const extensionRegistry = useExtensionRegistry()
 
   const downloadFile = async (
@@ -40,12 +41,13 @@ export const useDownloadFile = (options?: DownloadFileOptions) => {
       if (vaultEngine) {
         let blob: Blob
         if (version) {
-          // A version lives at a signed meta URL (getFileUrl), which serves the
+          // A version lives at a meta URL (getFileUrl), which serves the
           // ciphertext blob. getFileUrl returns a URL, not bytes, so the
           // vault-aware client can't help - fetch and decrypt it ourselves.
           const versionUrl = await clientService.webdav.getFileUrl(space, file, {
             version,
-            username: userStore.user?.onPremisesSamAccountName
+            username: userStore.user?.onPremisesSamAccountName,
+            signUrl: !authStore.isGuestContext
           })
           const encryptedBytes = await (await fetch(versionUrl)).arrayBuffer()
           blob = await streamToBlob(
@@ -73,7 +75,8 @@ export const useDownloadFile = (options?: DownloadFileOptions) => {
 
       const url = await clientService.webdav.getFileUrl(space, file, {
         version,
-        username: userStore.user?.onPremisesSamAccountName
+        username: userStore.user?.onPremisesSamAccountName,
+        signUrl: !authStore.isGuestContext
       })
       triggerDownloadWithFilename(url, file.name)
     } catch (e) {
