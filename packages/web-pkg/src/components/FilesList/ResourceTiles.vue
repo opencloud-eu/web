@@ -82,7 +82,7 @@
               :label="getResourceCheckboxLabel(resource)"
               :label-hidden="true"
               size="large"
-              class="size-11 justify-center rounded-tl-sm rounded-br-lg hover:bg-role-on-surface/10"
+              class="size-11 justify-center rounded-tl-sm rounded-br-lg hover:bg-role-on-surface/10 cursor-pointer has-disabled:cursor-default"
               :disabled="isResourceDisabled(resource)"
               :model-value="selected"
               :data-test-selection-resource-name="resource.name"

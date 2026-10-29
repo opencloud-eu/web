@@ -15,9 +15,11 @@
         :appearance="activeOption === option.name ? 'filled' : 'raw-inverse'"
         :color-role="activeOption === option.name ? 'secondaryContainer' : 'surface'"
         :no-hover="activeOption === option.name"
+        gap-size="small"
         :aria-pressed="(activeOption === option.name).toString()"
         @click="toggleFilter(option)"
       >
+        <oc-icon v-if="activeOption === option.name" name="check" size-class="size-4" />
         <span class="truncate item-inline-filter-option-label" v-text="option.label" />
       </oc-button>
     </div>

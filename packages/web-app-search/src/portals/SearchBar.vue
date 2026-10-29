@@ -46,7 +46,7 @@
     <oc-button
       v-oc-tooltip="$gettext('Display search bar')"
       :aria-label="$gettext('Click to display and focus the search bar')"
-      class="inline-flex sm:hidden mr-6"
+      class="inline-flex sm:hidden p-0.5 -m-0.5 mr-5.5"
       appearance="raw-inverse"
       color-role="chrome"
       no-hover
@@ -233,7 +233,7 @@ function updateLocationFilterInputPadding() {
     return
   }
 
-  inputElement.style.paddingRight = `${Math.ceil(locationFilterElement.offsetWidth) + 32}px`
+  inputElement.style.paddingRight = `${Math.ceil(locationFilterElement.offsetWidth) + 36}px`
 }
 
 watch(isMobile, () => {

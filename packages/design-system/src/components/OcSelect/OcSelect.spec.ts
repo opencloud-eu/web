@@ -165,6 +165,25 @@ describe('OcSelect', () => {
       wrapper.unmount()
     })
   })
+  describe('keyboard highlight', () => {
+    const options = [{ label: 'label1' }, { label: 'label2' }]
+
+    it('outlines the highlighted option while typing, not only after arrow keys', async () => {
+      const wrapper = getWrapper({ options })
+      await wrapper.find(selectors.ocSelect).trigger('mousemove')
+      await wrapper.find(selectors.searchInput).trigger('keydown', { key: 'l' })
+      expect(wrapper.find(selectors.ocSelect).classes()).toContain('oc-select-keyboard-navigation')
+    })
+    it('drops the outline when the mouse is used', async () => {
+      const wrapper = getWrapper({ options })
+      await wrapper.find(selectors.searchInput).trigger('keydown', { key: 'l' })
+      expect(wrapper.find(selectors.ocSelect).classes()).toContain('oc-select-keyboard-navigation')
+      await wrapper.find(selectors.ocSelect).trigger('mousemove')
+      expect(wrapper.find(selectors.ocSelect).classes()).not.toContain(
+        'oc-select-keyboard-navigation'
+      )
+    })
+  })
   describe('required mark', () => {
     it('marks the search input as required for assistive technologies', () => {
       const wrapper = getWrapper({ requiredMark: true })

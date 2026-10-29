@@ -3,7 +3,7 @@
     <resource-icon :resource="currentSpace" size-class="size-4" class="mr-2 shrink-0 rounded-xs" />
     <h2
       data-testid="space-info-name"
-      class="font-semibold m-0 text-base min-w-0 flex-1 truncate"
+      class="font-semibold m-0 text-base min-w-0 flex-1 wrap-anywhere"
       v-text="currentSpace.name"
     />
   </div>

@@ -50,7 +50,7 @@
     <template #name="{ item }">
       <div class="flex items-center">
         <space-image class="shrink-0" :space="item" />
-        <span class="pl-2 truncate" :data-test-space-name="item.name">
+        <span class="pl-2 wrap-anywhere" :data-test-space-name="item.name">
           <oc-filter-highlight :text="item.name" :term="filterTerm" />
         </span>
       </div>

@@ -3,6 +3,6 @@
 exports[`SpaceInfo > shows space info 1`] = `
 "<div class="flex items-center min-w-0 ml-2">
   <resource-icon-stub resource="[object Object]" sizeclass="size-4" class="mr-2 shrink-0 rounded-xs"></resource-icon-stub>
-  <h2 data-testid="space-info-name" class="font-semibold m-0 text-base min-w-0 flex-1 truncate"> space</h2>
+  <h2 data-testid="space-info-name" class="font-semibold m-0 text-base min-w-0 flex-1 wrap-anywhere"> space</h2>
 </div>"
 `;

@@ -7,6 +7,7 @@
       target="_blank"
       appearance="raw-inverse"
       color-role="chrome"
+      class="p-0.5 -m-0.5"
       :aria-label="ariaLabelOrFallback"
       aria-describedby="oc-feedback-link-description"
       no-hover
