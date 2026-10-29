@@ -389,6 +389,32 @@ describe('InviteCollaboratorForm', () => {
 
       expect(resultAnnouncements()).toEqual(['1 result'])
     })
+    it('announces the empty list after a failed search', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const { mocks, input } = getTypingWrapper()
+      mocks.$clientService.graphAuthenticated.users.listUsers.mockRejectedValueOnce(
+        new Error('search term too short')
+      )
+      await input.setValue('mar')
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual(['No users or groups found.'])
+    })
+    it('announces nothing for a failed search after the list got closed', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const { mocks, input } = getTypingWrapper()
+      let fail: () => void
+      mocks.$clientService.graphAuthenticated.users.listUsers.mockImplementationOnce(
+        () => new Promise((_, reject) => (fail = () => reject(new Error('search failed'))))
+      )
+      await input.setValue('mar')
+      await input.trigger('keydown', { key: 'Escape', keyCode: 27 })
+
+      fail()
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual([])
+    })
     it('announces only the result of the newest query', async () => {
       debounceMode.real = true
       vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] })

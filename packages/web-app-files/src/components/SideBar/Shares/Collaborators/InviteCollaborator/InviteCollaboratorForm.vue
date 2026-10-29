@@ -320,6 +320,12 @@ const {
   const collaborators = await searchCollaborators(query, {
     signal,
     external: unref(isExternalShareRoleType)
+  }).catch((error) => {
+    // the list shows its no results label after a failed search, too
+    if (!signal.aborted) {
+      announceResults(query, [])
+    }
+    throw error
   })
 
   const isSpace = !unref(resource) || isSpaceResource(unref(resource))
