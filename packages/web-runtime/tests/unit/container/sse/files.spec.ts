@@ -841,6 +841,55 @@ describe('file events', () => {
       expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
     })
   })
+  describe('during a running folder load', () => {
+    it.each(
+      [
+        onSSEItemRenamedEvent,
+        onSSEFileLockingEvent,
+        onSSEProcessingFinishedEvent,
+        onSSEItemTrashedEvent,
+        onSSEItemRestoredEvent,
+        onSSEItemMovedEvent,
+        onSSEFileTouchedEvent,
+        onSSEFolderCreatedEvent,
+        onSSEItemFavoriteAddedEvent,
+        onSSEItemFavoriteRemovedEvent
+      ].map((handler) => ({ name: handler.name, handler }))
+    )('$name waits for the load to finish', async ({ handler }) => {
+      const currentFolderId = 'currenFolder!currentFolder'
+      const resource = mock<Resource>({
+        id: 'file1',
+        storageId: 'space1',
+        parentFolderId: currentFolderId
+      })
+      const mocks = getMocks({ resources: [resource] })
+      vi.mocked(mocks.resourcesStore).resourcesLoading = true
+      mocks.clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>({ ...resource }))
+      const sseData = mock<EventSchemaType>({
+        itemid: resource.id,
+        spaceid: resource.storageId,
+        parentitemid: currentFolderId,
+        etag: 'newEtag'
+      })
+      const { upsertResource, removeResources, updateResourceField } = mocks.resourcesStore
+
+      const handled = handler({ sseData, ...mocks })
+      await nextTick()
+      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+      for (const action of [upsertResource, removeResources, updateResourceField]) {
+        expect(action).not.toHaveBeenCalled()
+      }
+
+      vi.mocked(mocks.resourcesStore).resourcesLoading = false
+      await handled
+
+      expect(
+        [upsertResource, removeResources, updateResourceField].some(
+          (action) => vi.mocked(action).mock.calls.length
+        )
+      ).toBe(true)
+    })
+  })
 })
 const getMocks = ({
   currentFolder = mockDeep<Resource>({
