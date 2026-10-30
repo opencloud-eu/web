@@ -12,7 +12,11 @@
           <oc-icon name="arrow-drop-left" fill-type="line" color="var(--oc-role-on-surface)" />
         </component>
       </li>
-      <li v-for="(page, index) in displayedPages" :key="index" class="oc-pagination-list-item">
+      <li
+        v-for="(page, index) in displayedPages"
+        :key="typeof page === 'number' ? page : `ellipsis-${index}`"
+        class="oc-pagination-list-item"
+      >
         <component
           :is="pageComponent(page)"
           class="oc-pagination-list-item-page py-1 px-2 rounded-sm hover:bg-role-secondary hover:text-role-on-secondary transition-colors duration-200 ease-in-out"

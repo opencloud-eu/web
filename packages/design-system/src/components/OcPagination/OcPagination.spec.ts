@@ -142,6 +142,20 @@ describe('OcPagination', () => {
       wrapper.unmount()
     })
 
+    it('moves focus to the new current page when the displayed pages shift', async () => {
+      const wrapper = await getRoutedWrapper({ pages: 10, currentPage: 5, maxDisplayed: 3 })
+      const link = wrapper.findAll(selectors.listItemLink).find((l) => l.text() === '4')
+      ;(link.element as HTMLElement).focus()
+
+      await wrapper.setProps({ currentPage: 4 })
+      await nextTick()
+
+      const current = wrapper.find(selectors.listItemCurrent)
+      expect(current.text()).toBe('4')
+      expect(document.activeElement).toBe(current.element)
+      wrapper.unmount()
+    })
+
     it('keeps focus on the activated link if it is still there', async () => {
       const wrapper = await getRoutedWrapper()
       const next = wrapper.find(selectors.listItemNext).element as HTMLElement
@@ -166,14 +180,14 @@ describe('OcPagination', () => {
   })
 })
 
-async function getRoutedWrapper() {
+async function getRoutedWrapper(props: PartialComponentProps<typeof OcPagination> = {}) {
   const router = createRouter({
     routes: [{ path: '/files', name: 'files', component: { template: '<div />' } }]
   })
   await router.push({ name: 'files', query: { page: 3 } })
 
   return mount(Pagination, {
-    props: { ...defaultProps, currentRoute: router.currentRoute.value },
+    props: { ...defaultProps, ...props, currentRoute: router.currentRoute.value },
     attachTo: document.body,
     global: { plugins: [...defaultPlugins(), router], stubs: { 'oc-icon': true } }
   })
