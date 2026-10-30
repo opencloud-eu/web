@@ -72,8 +72,8 @@
           </item-filter>
         </div>
         <oc-search-bar
-          is-filter
           v-model="searchTerm"
+          is-filter
           class="w-full sm:w-3xs"
           :label="$gettext('Search')"
           :placeholder="$gettext('Search for users')"

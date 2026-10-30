@@ -21,8 +21,8 @@
         <template v-else>
           <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
             <oc-search-bar
-              is-filter
               v-model="filterTerm"
+              is-filter
               class="w-full sm:w-3xs"
               :label="$gettext('Search')"
               :placeholder="$gettext('Search for trash bins')"

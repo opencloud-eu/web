@@ -19,7 +19,7 @@
     "vite": "vite",
     "check:types": "vue-tsc --noEmit && pnpm -r --parallel check:types",
     "check:deadcode": "knip",
-    "check:all": "pnpm check:types && pnpm lint --fix && pnpm format:write && pnpm test:unit",
+    "check:all": "pnpm check:types && pnpm lint --fix && pnpm format:write && pnpm test:unit --run",
     "test:e2e": "cd tests/e2e && pnpm bddgen && pnpm playwright test"
   },
   "browserslist": [

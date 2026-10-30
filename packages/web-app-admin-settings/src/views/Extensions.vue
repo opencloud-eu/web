@@ -3,8 +3,8 @@
     <template #actions>
       <div class="flex justify-end w-full my-2 items-center">
         <oc-search-bar
-          is-filter
           v-model="filterTerm"
+          is-filter
           class="w-full sm:w-3xs"
           :label="$gettext('Search')"
           :placeholder="$gettext('Search for apps')"
