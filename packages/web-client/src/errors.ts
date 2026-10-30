@@ -1,10 +1,11 @@
+import type { AxiosResponse } from 'axios'
 import { DavErrorCode } from './webdav'
 
 export class HttpError extends Error {
-  public response: Response
+  public response: Response | AxiosResponse
   public statusCode: number
 
-  constructor(message: string, response: Response, statusCode: number = null) {
+  constructor(message: string, response: Response | AxiosResponse, statusCode: number = null) {
     super(message)
     this.response = response
     this.statusCode = statusCode
@@ -12,6 +13,7 @@ export class HttpError extends Error {
 }
 
 export class DavHttpError extends HttpError {
+  declare public response: Response
   public errorCode: DavErrorCode
   public errorType: string | undefined
 
