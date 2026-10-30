@@ -17,6 +17,10 @@ describe('CreateGroupModal', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([true])
   })
+  it('renders the display name input as the first field', () => {
+    const { wrapper } = getWrapper()
+    expect(getDisplayNameInput(wrapper).attributes('id')).toBe('create-group-input-display-name')
+  })
 
   describe('display name validation', () => {
     it('ignores the result of a name check that finished after the name changed', async () => {

@@ -41,6 +41,17 @@ describe('createNewShortcut', () => {
           }
         })
       })
+      it('focuses the target input initially', () => {
+        getWrapper({
+          setup: ({ actions }) => {
+            const { dispatchModal } = useModals()
+            unref(actions)[0].handler()
+            expect(dispatchModal).toHaveBeenCalledWith(
+              expect.objectContaining({ focusTrapInitial: '#create-shortcut-modal-url-input' })
+            )
+          }
+        })
+      })
     })
   })
 })

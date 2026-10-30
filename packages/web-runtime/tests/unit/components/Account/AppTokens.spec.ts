@@ -139,6 +139,16 @@ describe('AppTokens component', () => {
 
       expect(dispatchModal).toHaveBeenCalled()
     })
+    it('focuses the note input initially', async () => {
+      const { wrapper } = getWrapper()
+      await flushPromises()
+      await wrapper.find(selectors.createAppTokenBtn).trigger('click')
+      const { dispatchModal } = useModals()
+
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({ focusTrapInitial: '#app-token-note-input' })
+      )
+    })
     it('reloads the app tokens when a token has been created', async () => {
       const { wrapper, mocks } = getWrapper()
       await flushPromises()

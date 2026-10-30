@@ -17,7 +17,8 @@ export function useGroupActionsCreateGroup() {
       handler: () => {
         dispatchModal({
           title: $gettext('Create group'),
-          customComponent: markRaw(CreateGroupModal)
+          customComponent: markRaw(CreateGroupModal),
+          focusTrapInitial: '#create-group-input-display-name'
         })
       }
     }

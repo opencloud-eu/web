@@ -27,7 +27,8 @@ export const useFileActionsCreateNewShortcut = () => {
           title: $gettext('Create a Shortcut'),
           confirmText: $gettext('Create'),
           customComponent: markRaw(CreateShortcutModal),
-          customComponentAttrs: () => ({ space: unref(currentSpace) })
+          customComponentAttrs: () => ({ space: unref(currentSpace) }),
+          focusTrapInitial: '#create-shortcut-modal-url-input'
         })
       },
       label: () => {

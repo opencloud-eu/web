@@ -75,6 +75,7 @@ const showDatePickerModal = () => {
     title: language.$gettext('Set expiration date'),
     hideConfirmButton: true,
     customComponent: markRaw(DatePickerModal),
+    focusTrapInitial: '#date-picker-modal-input',
     customComponentAttrs: () => ({
       currentDate: unref(dateCurrent),
       minDate: DateTime.now()

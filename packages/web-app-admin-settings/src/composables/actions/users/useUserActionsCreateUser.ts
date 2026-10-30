@@ -19,7 +19,8 @@ export function useUserActionsCreateUser() {
       handler: () => {
         dispatchModal({
           title: $gettext('Create user'),
-          customComponent: markRaw(CreateUserModal)
+          customComponent: markRaw(CreateUserModal),
+          focusTrapInitial: '#create-user-input-user-name'
         })
       }
     }

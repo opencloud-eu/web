@@ -257,7 +257,8 @@ function getNotificationChoiceLabel(event: string, choice: string) {
 const showEditPasswordModal = () => {
   dispatchModal({
     title: $gettext('Change password'),
-    customComponent: markRaw(EditPasswordModal)
+    customComponent: markRaw(EditPasswordModal),
+    focusTrapInitial: '#edit-password-current-input'
   })
 }
 

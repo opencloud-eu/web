@@ -3,7 +3,7 @@ import Modal from './OcModal.vue'
 import OcButton from './../OcButton/OcButton.vue'
 import { registerOpenDrop, unregisterOpenDrop } from '../OcDrop/dropRegistry'
 import { flushPromises } from '@vue/test-utils'
-import { defineComponent } from 'vue'
+import { defineComponent, nextTick, ref } from 'vue'
 
 const defaultProps = {
   title: 'Example title',
@@ -212,12 +212,17 @@ describe('OcModal', () => {
         contextualHelperLabel: 'Help',
         contextualHelperData: { title: 'Info', readMoreLink: 'https://example.org' }
       },
-      slots = {}
+      slots = {},
+      elementBefore
     }: {
       props?: InstanceType<typeof Modal>['$props']
       slots?: { content?: ReturnType<typeof defineComponent> }
+      elementBefore?: HTMLElement
     } = {}) {
       document.body.innerHTML = ''
+      if (elementBefore) {
+        document.body.appendChild(elementBefore)
+      }
       wrapper = mount(Modal, {
         props,
         slots,
@@ -230,6 +235,40 @@ describe('OcModal', () => {
     it('focuses the input when opened', async () => {
       await mountModal()
       expect(document.activeElement).toBe(wrapper.find('.oc-modal-body-input input').element)
+    })
+
+    it('focuses the element matching the initial focus selector inside the own modal', async () => {
+      const elementBefore = document.createElement('input')
+      elementBefore.classList.add('initial-target')
+      const Content = defineComponent({
+        template: '<div><input class="first" /><input class="initial-target" /></div>'
+      })
+      await mountModal({
+        props: { ...defaultProps, focusTrapInitial: '.initial-target' },
+        slots: { content: Content },
+        elementBefore
+      })
+      expect(document.activeElement).toBe(wrapper.find('.oc-modal .initial-target').element)
+    })
+
+    it('focuses the body if the focused element and the initial focus target get removed', async () => {
+      const show = ref(true)
+      const Content = defineComponent({
+        setup: () => ({ show }),
+        template:
+          '<div><template v-if="show"><input id="initial-target" /><button class="action">Go</button></template></div>'
+      })
+      await mountModal({
+        props: { ...defaultProps, focusTrapInitial: '#initial-target' },
+        slots: { content: Content }
+      })
+      document.querySelector<HTMLElement>('.action').focus()
+
+      show.value = false
+      await nextTick()
+      await settle()
+
+      expect(document.activeElement).toBe(wrapper.find('.oc-modal-body').element)
     })
 
     it('focuses the body when opened, also if the content focused an element on mount', async () => {
@@ -256,21 +295,39 @@ describe('OcModal', () => {
       'returns the focus to the info drop toggle after tabbing and closing it with %s',
       async (_, close) => {
         await mountModal()
-        const toggle = document.querySelector<HTMLElement>('.oc-contextual-helper button')
-        toggle.focus()
-        toggle.click()
-        await settle()
-
-        const link = document.querySelector<HTMLElement>('.info-more-link')
-        link.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }))
-        link.focus()
-        close(link)
-        await settle()
-
-        expect(document.querySelector('.info-drop-content')).toBeNull()
-        expect(document.activeElement).toBe(toggle)
+        await expectFocusReturnToInfoDropToggle(close)
       }
     )
+
+    it('returns the focus to the info drop toggle after closing it with an initial focus selector', async () => {
+      await mountModal({
+        props: {
+          ...inputProps,
+          focusTrapInitial: '.oc-modal-body-input input',
+          contextualHelperLabel: 'Help',
+          contextualHelperData: { title: 'Info', readMoreLink: 'https://example.org' }
+        }
+      })
+      await expectFocusReturnToInfoDropToggle(() =>
+        document.querySelector<HTMLElement>('.info-header button').click()
+      )
+    })
+
+    async function expectFocusReturnToInfoDropToggle(close: (el: HTMLElement) => void) {
+      const toggle = document.querySelector<HTMLElement>('.oc-contextual-helper button')
+      toggle.focus()
+      toggle.click()
+      await settle()
+
+      const link = document.querySelector<HTMLElement>('.info-more-link')
+      link.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }))
+      link.focus()
+      close(link)
+      await settle()
+
+      expect(document.querySelector('.info-drop-content')).toBeNull()
+      expect(document.activeElement).toBe(toggle)
+    }
   })
 
   describe('focus return after closing', () => {
