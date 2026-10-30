@@ -1,11 +1,11 @@
 import { mount, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 import ChapterList from '../../../src/components/ChapterList.vue'
-import { NavItem } from 'epubjs'
+import { Chapter } from '../../../src/types'
 import { nextTick } from 'vue'
 
-const chapters: NavItem[] = [
-  { id: '1', label: 'Chapter 1', href: 'c1' } as NavItem,
-  { id: '2', label: 'Chapter 2', href: 'c2' } as NavItem
+const chapters: Chapter[] = [
+  { id: '1', label: 'Chapter 1', href: 'c1', depth: 0 },
+  { id: '2', label: 'Chapter 2', href: 'c2', depth: 1 }
 ]
 
 describe('ChapterList component', () => {
@@ -35,6 +35,14 @@ describe('ChapterList component', () => {
     expect(items).toHaveLength(2)
     expect(items[0].classes()).toContain('bg-role-secondary-container')
     expect(items[1].classes()).not.toContain('bg-role-secondary-container')
+  })
+
+  it('marks only the current chapter as current for screen readers', () => {
+    const wrapper = getWrapper()
+
+    const buttons = wrapper.findAll('.epub-reader-chapters-list-item .oc-button')
+    expect(buttons[0].attributes('aria-current')).toBe('true')
+    expect(buttons[1].attributes('aria-current')).toBeUndefined()
   })
 
   it('emits selected chapter on click', async () => {

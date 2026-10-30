@@ -1,11 +1,11 @@
 import { mount, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 import MobileChapterSelect from '../../../src/components/MobileChapterSelect.vue'
-import { NavItem } from 'epubjs'
+import { Chapter } from '../../../src/types'
 import { defineComponent, nextTick } from 'vue'
 
-const chapters: NavItem[] = [
-  { id: '1', label: 'Chapter 1', href: 'c1' } as NavItem,
-  { id: '2', label: 'Chapter 2', href: 'c2' } as NavItem
+const chapters: Chapter[] = [
+  { id: '1', label: 'Chapter 1', href: 'c1', depth: 0 },
+  { id: '2', label: 'Chapter 2', href: 'c2', depth: 1 }
 ]
 
 function getWrapper() {
@@ -32,6 +32,14 @@ describe('MobileChapterSelect component', () => {
   it('shows selected chapter label in toggle button', () => {
     const wrapper = getWrapper()
     expect(wrapper.find('#epub_reader_chapter_toggle').text()).toContain('Chapter 1')
+  })
+
+  it('marks only the selected chapter option as current for screen readers', () => {
+    const wrapper = getWrapper()
+
+    const options = wrapper.findAll('.epub-reader-chapter-option')
+    expect(options[0].attributes('aria-current')).toBe('true')
+    expect(options[1].attributes('aria-current')).toBeUndefined()
   })
 
   it('emits selected chapter when option is clicked', async () => {

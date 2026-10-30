@@ -45,6 +45,7 @@
       </oc-button>
       <oc-button
         v-oc-tooltip="$gettext('Reset font size')"
+        :aria-label="resetFontSizeLabel"
         class="epub-reader-controls-font-size-reset min-w-[64px] px-2 text-sm font-medium"
         appearance="raw"
         no-hover
@@ -91,6 +92,21 @@
       />
       <span class="mx-1 hidden h-5 w-px bg-role-outline-variant sm:inline" />
       <oc-button
+        v-oc-tooltip="chapterListLabel"
+        :aria-label="chapterListLabel"
+        class="epub-reader-controls-chapter-list hidden p-2 lg:inline-flex"
+        appearance="raw"
+        no-hover
+        size="small"
+        @click="$emit('toggleChapterList')"
+      >
+        <oc-icon
+          name="side-bar"
+          :fill-type="isChapterListVisible ? 'fill' : 'line'"
+          size-class="size-4"
+        />
+      </oc-button>
+      <oc-button
         v-oc-tooltip="fullscreenLabel"
         :aria-label="fullscreenLabel"
         class="epub-reader-controls-fullscreen hidden p-2 sm:inline-flex"
@@ -111,12 +127,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { NavItem } from 'epubjs'
+import type { Chapter } from '../types'
 import { useGettext } from 'vue3-gettext'
 import MobileChapterSelect from './MobileChapterSelect.vue'
 import ReaderTextSearch from './ReaderTextSearch.vue'
 
-type ChapterOption = NavItem
 const {
   chapters,
   selectedChapter,
@@ -131,10 +146,11 @@ const {
   navigateRightDisabled,
   decreaseFontSizeDisabled,
   increaseFontSizeDisabled,
-  isFullScreenModeActivated
+  isFullScreenModeActivated,
+  isChapterListVisible
 } = defineProps<{
-  chapters: ChapterOption[]
-  selectedChapter?: ChapterOption
+  chapters: Chapter[]
+  selectedChapter?: Chapter
   searchResultCount: number
   hasMoreSearchResults: boolean
   currentSearchResultIndex: number
@@ -147,10 +163,11 @@ const {
   decreaseFontSizeDisabled: boolean
   increaseFontSizeDisabled: boolean
   isFullScreenModeActivated: boolean
+  isChapterListVisible: boolean
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:selectedChapter', value: ChapterOption): void
+  (e: 'update:selectedChapter', value: Chapter): void
   (e: 'searchTermChanged', value: string): void
   (e: 'goToPreviousSearchResult'): void
   (e: 'goToNextSearchResult'): void
@@ -161,11 +178,20 @@ const emit = defineEmits<{
   (e: 'resetFontSize'): void
   (e: 'increaseFontSize'): void
   (e: 'toggleFullscreen'): void
+  (e: 'toggleChapterList'): void
 }>()
 const { $gettext } = useGettext()
 
+const chapterListLabel = computed(() =>
+  isChapterListVisible ? $gettext('Hide chapters') : $gettext('Show chapters')
+)
 const fullscreenLabel = computed(() =>
   isFullScreenModeActivated ? $gettext('Exit fullscreen') : $gettext('Enter fullscreen')
+)
+
+// starts with the visible percentage, so voice control users can still say what they see
+const resetFontSizeLabel = computed(() =>
+  $gettext('%{percentage}%, reset font size', { percentage: currentFontSizePercentage })
 )
 
 const decreaseFontSizeTooltip = computed(() => {
@@ -175,7 +201,7 @@ const increaseFontSizeTooltip = computed(() => {
   return `${currentFontSizePercentage + fontSizeStep}%`
 })
 
-function onChapterUpdate(value: ChapterOption) {
+function onChapterUpdate(value: Chapter) {
   emit('update:selectedChapter', value)
 }
 </script>

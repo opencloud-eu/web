@@ -1,10 +1,10 @@
 import { mount, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 import ReaderToolbar from '../../../src/components/ReaderToolbar.vue'
-import { NavItem } from 'epubjs'
+import { Chapter } from '../../../src/types'
 
-const chapters: NavItem[] = [
-  { id: '1', label: 'Chapter 1', href: 'c1' } as NavItem,
-  { id: '2', label: 'Chapter 2', href: 'c2' } as NavItem
+const chapters: Chapter[] = [
+  { id: '1', label: 'Chapter 1', href: 'c1', depth: 0 },
+  { id: '2', label: 'Chapter 2', href: 'c2', depth: 1 }
 ]
 
 function getWrapper() {
@@ -23,7 +23,8 @@ function getWrapper() {
       navigateRightDisabled: false,
       decreaseFontSizeDisabled: false,
       increaseFontSizeDisabled: false,
-      isFullScreenModeActivated: false
+      isFullScreenModeActivated: false,
+      isChapterListVisible: true
     },
     global: {
       plugins: [...defaultPlugins()],
@@ -45,6 +46,7 @@ describe('ReaderToolbar component', () => {
     await wrapper.find('.epub-reader-controls-font-size-reset').trigger('click')
     await wrapper.find('.epub-reader-controls-font-size-increase').trigger('click')
     await wrapper.find('.epub-reader-controls-fullscreen').trigger('click')
+    await wrapper.find('.epub-reader-controls-chapter-list').trigger('click')
 
     expect(wrapper.emitted('navigateLeft')).toHaveLength(1)
     expect(wrapper.emitted('navigateRight')).toHaveLength(1)
@@ -52,6 +54,7 @@ describe('ReaderToolbar component', () => {
     expect(wrapper.emitted('resetFontSize')).toHaveLength(1)
     expect(wrapper.emitted('increaseFontSize')).toHaveLength(1)
     expect(wrapper.emitted('toggleFullscreen')).toHaveLength(1)
+    expect(wrapper.emitted('toggleChapterList')).toHaveLength(1)
   })
 
   it('forwards chapter updates from mobile chapter select', () => {
@@ -83,6 +86,13 @@ describe('ReaderToolbar component', () => {
     expect(wrapper.find('.epub-reader-controls-font-size-reset').text()).toBe('100%')
   })
 
+  it('names the reset font size button by its purpose, starting with the visible percentage', () => {
+    const wrapper = getWrapper()
+    expect(wrapper.find('.epub-reader-controls-font-size-reset').attributes('aria-label')).toBe(
+      '100%, reset font size'
+    )
+  })
+
   it('renders disabled states for control buttons', () => {
     const wrapper = mount(ReaderToolbar, {
       props: {
@@ -99,7 +109,8 @@ describe('ReaderToolbar component', () => {
         navigateRightDisabled: true,
         decreaseFontSizeDisabled: false,
         increaseFontSizeDisabled: true,
-        isFullScreenModeActivated: false
+        isFullScreenModeActivated: false,
+        isChapterListVisible: true
       },
       global: {
         plugins: [...defaultPlugins()],
