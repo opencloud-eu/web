@@ -13,6 +13,7 @@ import {
   urlJoin
 } from '@opencloud-eu/web-client'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
+import { until } from '@vueuse/core'
 import { dirname } from 'path'
 import { SSEEventOptions } from './types'
 
@@ -126,6 +127,9 @@ export const onSSEFileLockingEvent = async ({
   spacesStore,
   clientService
 }: SSEEventOptions) => {
+  // a running folder load might still respond with the lock state from before this event
+  await until(() => resourcesStore.resourcesLoading).toBe(false)
+
   const resource = resourcesStore.resources.find((f) => f.id === sseData.itemid)
   const space = getEventSpace({ spacesStore, resourcesStore }, resource?.storageId)
 

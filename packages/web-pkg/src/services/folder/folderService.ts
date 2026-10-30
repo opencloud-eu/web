@@ -86,6 +86,7 @@ export class FolderService {
     }
 
     return useTask(function* (...args) {
+      const [signal] = args
       const context = {
         clientService,
         configStore,
@@ -98,10 +99,17 @@ export class FolderService {
         authService,
         extensionRegistry
       }
+      resourcesStore.startResourcesLoading()
       try {
-        yield loader.getTask(context).perform(...args)
+        // cancel inner load with outer one so the loading state matches store writes
+        yield loader
+          .getTask(context)
+          .perform(...args)
+          .canceledOn(signal)
       } catch (e) {
         console.error(e)
+      } finally {
+        resourcesStore.finishResourcesLoading()
       }
     })
   }

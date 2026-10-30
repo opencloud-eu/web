@@ -29,6 +29,7 @@ import { User } from '@opencloud-eu/web-client/graph/generated'
 import { createTestingPinia, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { Language } from 'vue3-gettext'
 import PQueue from 'p-queue'
+import { nextTick } from 'vue'
 
 describe('file events', () => {
   describe('in an incoming share', () => {
@@ -392,6 +393,37 @@ describe('file events', () => {
       await onSSEFileLockingEvent({ sseData, ...mocks })
       expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).toHaveBeenCalled()
+    })
+    it('waits for a running folder load before updating the resource', async () => {
+      const resourceToUnlock = mock<Resource>({
+        id: 'file1',
+        storageId: 'space1',
+        parentFolderId: 'currenFolder!currentFolder'
+      })
+      const mocks = getMocks()
+      vi.mocked(mocks.resourcesStore).resourcesLoading = true
+      mocks.clientService.webdav.getFileInfo.mockResolvedValue(
+        mock<Resource>({ ...resourceToUnlock, locked: false })
+      )
+      const sseData = mock<EventSchemaType>({
+        itemid: resourceToUnlock.id,
+        spaceid: resourceToUnlock.storageId,
+        parentitemid: resourceToUnlock.parentFolderId
+      })
+
+      const handled = onSSEFileLockingEvent({ sseData, ...mocks })
+      await nextTick()
+      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+
+      // the folder load finishes with the resource still being locked
+      mocks.resourcesStore.resources = [mock<Resource>({ ...resourceToUnlock, locked: true })]
+      vi.mocked(mocks.resourcesStore).resourcesLoading = false
+      await handled
+
+      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(
+        expect.objectContaining({ locked: false })
+      )
     })
     it('does not trigger any action when resource is not in store', async () => {
       const mocks = getMocks()
