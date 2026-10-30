@@ -121,6 +121,10 @@ export const isGuestContextAllowed = (to: RouteLocation): boolean => {
   return to.name === routeNames.resolvePrivateLink
 }
 
+export const isGuestContextExcluded = (router: Router, to: RouteLocation): boolean => {
+  return isUserContextRequired(router, to) || isIdpContextRequired(router, to)
+}
+
 /**
  * Extracts the public link token from the various possible route params.
  *

@@ -200,6 +200,117 @@ describe('setupAuthGuard', () => {
     })
   })
 
+  describe('route that needs a user', () => {
+    const userContextRoutePath = '/app?contextRouteName=user'
+
+    it.each(['/user', '/idp', '/app', userContextRoutePath])(
+      'redirects %s to the guest shares with a guest context',
+      async (path) => {
+        const router = getRouter()
+        useAuthStore().setGuestContext('permission-id', 'share-id')
+
+        await router.push(path)
+
+        expect(router.currentRoute.value.name).toEqual('files-guest-shares')
+        expect(router.currentRoute.value.query.permissionId).toEqual('permission-id')
+      }
+    )
+
+    it.each(['/user', '/idp', '/app'])(
+      'renews an expired guest session on %s into the guest shares',
+      async (path) => {
+        const router = getRouter()
+        vi.mocked(authService.consumeExpiredGuestPermissionId).mockReturnValueOnce('permission-id')
+
+        await router.push(path)
+
+        expect(router.currentRoute.value.name).toEqual('renewGuestLink')
+        expect(router.currentRoute.value.params.permissionId).toEqual('permission-id')
+        expect(router.currentRoute.value.query.resume).toBeUndefined()
+        expect(router.currentRoute.value.query.redirectUrl).toEqual('/guest-shares')
+      }
+    )
+
+    it.each(['/user', '/idp', '/app'])(
+      'resumes a guest session on %s that could not be restored into the guest shares',
+      async (path) => {
+        const router = getRouter()
+        vi.mocked(authService.consumeUnavailableGuestPermissionId).mockReturnValueOnce(
+          'permission-id'
+        )
+
+        await router.push(path)
+
+        expect(router.currentRoute.value.name).toEqual('renewGuestLink')
+        expect(router.currentRoute.value.params.permissionId).toEqual('permission-id')
+        expect(router.currentRoute.value.query.resume).toEqual('true')
+        expect(router.currentRoute.value.query.redirectUrl).toEqual('/guest-shares')
+      }
+    )
+
+    it('redirects to the login page without a guest session', async () => {
+      const router = getRouter()
+
+      await router.push('/user')
+
+      expect(router.currentRoute.value.name).toEqual('login')
+    })
+
+    describe('without the guest shares route', () => {
+      it('redirects to the login page with a guest context', async () => {
+        const router = getRouter()
+        router.removeRoute('files-guest-shares')
+        useAuthStore().setGuestContext('permission-id', 'share-id')
+
+        await router.push('/user')
+
+        expect(router.currentRoute.value.name).toEqual('login')
+      })
+
+      it('redirects to the login page if the guest session expired', async () => {
+        const router = getRouter()
+        router.removeRoute('files-guest-shares')
+        vi.mocked(authService.consumeExpiredGuestPermissionId).mockReturnValueOnce('permission-id')
+
+        await router.push('/user')
+
+        expect(router.currentRoute.value.name).toEqual('login')
+      })
+
+      it('redirects to the login page if the guest session could not be restored', async () => {
+        const router = getRouter()
+        router.removeRoute('files-guest-shares')
+        vi.mocked(authService.consumeUnavailableGuestPermissionId).mockReturnValueOnce(
+          'permission-id'
+        )
+
+        await router.push('/user')
+
+        expect(router.currentRoute.value.name).toEqual('login')
+      })
+    })
+
+    it('allows a user context', async () => {
+      const router = getRouter()
+      useAuthStore().setUserContextReady(true)
+
+      await router.push('/user')
+
+      expect(router.currentRoute.value.name).toEqual('user')
+    })
+
+    it('prefers the user context over a guest context', async () => {
+      const router = getRouter()
+      const authStore = useAuthStore()
+      authStore.setGuestContext('permission-id', 'share-id')
+      authStore.setUserContextReady(true)
+
+      await router.push('/user')
+
+      expect(router.currentRoute.value.name).toEqual('user')
+    })
+  })
+
   describe('guest permission id', () => {
     it('is appended to the query while a guest context is active', async () => {
       const router = getRouter()
@@ -277,7 +388,15 @@ function getRouter() {
         component,
         meta: { authContext: 'guest' }
       },
+      {
+        path: '/guest-shares',
+        name: 'files-guest-shares',
+        component,
+        meta: { authContext: 'guest' }
+      },
       { path: '/app', name: 'app', component, meta: { authContext: 'hybrid' } },
+      { path: '/user', name: 'user', component, meta: { authContext: 'user' } },
+      { path: '/idp', name: 'idp', component, meta: { authContext: 'idp' } },
       {
         path: '/f/:fileId',
         name: 'resolvePrivateLink',
