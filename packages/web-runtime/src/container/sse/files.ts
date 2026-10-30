@@ -13,6 +13,7 @@ import {
   urlJoin
 } from '@opencloud-eu/web-client'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
+import { until } from '@vueuse/core'
 import { dirname } from 'path'
 import { SSEEventOptions } from './types'
 
@@ -74,6 +75,14 @@ const loadEventResource = async (
   return clientService.webdav.getFileInfo(space, { path: urlJoin(parentPath, resource.name) })
 }
 
+/**
+ * A running folder load replaces the resource list, possibly with a state from before the event.
+ * Hence events need to be applied after it has finished.
+ */
+function waitForResourcesLoad(resourcesStore: SSEEventOptions['resourcesStore']) {
+  return until(() => resourcesStore.resourcesLoading).toBe(false)
+}
+
 export const onSSEItemRenamedEvent = async ({
   sseData,
   resourcesStore,
@@ -85,6 +94,8 @@ export const onSSEItemRenamedEvent = async ({
     // If initiated by current client (browser tab), action unnecessary. Web manages its own logic, return early.
     return
   }
+
+  await waitForResourcesLoad(resourcesStore)
 
   const currentFolder = resourcesStore.currentFolder
   const resourceIsCurrentFolder = currentFolder?.id === sseData.itemid
@@ -126,6 +137,8 @@ export const onSSEFileLockingEvent = async ({
   spacesStore,
   clientService
 }: SSEEventOptions) => {
+  await waitForResourcesLoad(resourcesStore)
+
   const resource = resourcesStore.resources.find((f) => f.id === sseData.itemid)
   const space = getEventSpace({ spacesStore, resourcesStore }, resource?.storageId)
 
@@ -150,6 +163,8 @@ export const onSSEProcessingFinishedEvent = async ({
   resourceQueue,
   previewService
 }: SSEEventOptions) => {
+  await waitForResourcesLoad(resourcesStore)
+
   if (!isItemInCurrentFolder({ resourcesStore, parentFolderId: sseData.parentitemid })) {
     return false
   }
@@ -219,7 +234,7 @@ export const onSSEProcessingFinishedEvent = async ({
   }
 }
 
-export const onSSEItemTrashedEvent = ({
+export const onSSEItemTrashedEvent = async ({
   sseData,
   language,
   messageStore,
@@ -230,6 +245,9 @@ export const onSSEItemTrashedEvent = ({
     // If initiated by current client (browser tab), action unnecessary. Web manages its own logic, return early.
     return
   }
+
+  await waitForResourcesLoad(resourcesStore)
+
   const { $gettext } = language
 
   const currentFolder = resourcesStore.currentFolder
@@ -263,6 +281,8 @@ export const onSSEItemRestoredEvent = async ({
     return
   }
 
+  await waitForResourcesLoad(resourcesStore)
+
   const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
   if (!space) {
     return
@@ -291,6 +311,8 @@ export const onSSEItemMovedEvent = async ({
     // If initiated by current client (browser tab), action unnecessary. Web manages its own logic, return early.
     return
   }
+
+  await waitForResourcesLoad(resourcesStore)
 
   // the new location might not be accessible anymore (e.g. moved out of a share), hence don't load the resource
   if (!isItemInCurrentFolder({ resourcesStore, parentFolderId: sseData.parentitemid })) {
@@ -337,6 +359,8 @@ export const onSSEFileTouchedEvent = async ({
     return
   }
 
+  await waitForResourcesLoad(resourcesStore)
+
   const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
   if (!space) {
     return
@@ -365,6 +389,8 @@ export const onSSEFolderCreatedEvent = async ({
     // If initiated by current client (browser tab), action unnecessary. Web manages its own logic, return early.
     return
   }
+
+  await waitForResourcesLoad(resourcesStore)
 
   const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
   if (!space) {
@@ -397,6 +423,8 @@ async function applyFavoriteState(
     // If initiated by current client (browser tab), action unnecessary. Web manages its own logic, return early.
     return
   }
+
+  await waitForResourcesLoad(resourcesStore)
 
   if (isLocationCommonActive(router, 'files-common-favorites')) {
     if (!starred) {
