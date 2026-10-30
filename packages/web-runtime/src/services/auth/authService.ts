@@ -23,6 +23,7 @@ import {
   extractPublicLinkToken,
   isAnonymousContext,
   isGuestContextAllowed,
+  isGuestContextExcluded,
   isGuestContextRequired,
   isIdpContextRequired,
   isPublicLinkContextRequired,
@@ -157,12 +158,12 @@ export class AuthService implements AuthServiceInterface {
     if (isGuestContextAllowed(to) && !isUserSignedIn) {
       // active sessions only, anything else is sent to the login by the guard
       await this.guestSessionManager.restoreContext()
-    } else if (this.isGuestContextExcluded(to, isUserSignedIn)) {
-      // a guest might only pass a user route, keep a pending renewal until a user signs in
+    } else if (this.prefersUserContext(to, isUserSignedIn)) {
+      // the guard sends a guest to the guest's shares
       if (isUserSignedIn) {
         this.guestSessionManager.clear()
       } else {
-        this.guestSessionManager.expire()
+        await this.guestSessionManager.restoreContext()
       }
     } else if (isGuestContextRequired(this.router, to)) {
       await this.guestSessionManager.restoreContext(queryItemAsString(to.query.permissionId))
@@ -288,8 +289,8 @@ export class AuthService implements AuthServiceInterface {
     }
   }
 
-  private isGuestContextExcluded(to: RouteLocation, isUserSignedIn: boolean): boolean {
-    if (isUserContextRequired(this.router, to) || isIdpContextRequired(this.router, to)) {
+  private prefersUserContext(to: RouteLocation, isUserSignedIn: boolean): boolean {
+    if (isGuestContextExcluded(this.router, to)) {
       return true
     }
     if (isAnonymousContext(this.router, to) || isGuestContextRequired(this.router, to)) {

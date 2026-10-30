@@ -817,7 +817,7 @@ describe('AuthService', () => {
     })
 
     it.each(['user', 'idp'])(
-      'drops a persisted guest session instead of restoring it on a %s route',
+      'restores a persisted guest session on a %s route',
       async (authContext) => {
         const storedRenewal = JSON.stringify({
           permissionId: 'permission-id',
@@ -825,7 +825,7 @@ describe('AuthService', () => {
         })
         localStorage.setItem('oc.guestPermissionId', 'permission-id')
         localStorage.setItem('oc.guestLinkRenewal', storedRenewal)
-        const { clientService, listSharedWithMe } = getClientService([
+        const { clientService } = getClientService([
           {
             name: 'Invited folder',
             remoteItem: { id: 'share-id', permissions: [{ id: 'permission-id' }] }
@@ -848,11 +848,116 @@ describe('AuthService', () => {
           query: {}
         } as unknown as RouteLocation)
 
-        expect(listSharedWithMe).not.toHaveBeenCalled()
+        expect(authStore.guestContextReady).toBeTruthy()
+        expect(authStore.guestPermissionId).toEqual('permission-id')
+        expect(localStorage.getItem('oc.guestPermissionId')).toEqual('permission-id')
+        expect(localStorage.getItem('oc.guestLinkRenewal')).toEqual(storedRenewal)
+      }
+    )
+
+    it.each(['user', 'idp'])(
+      'drops a persisted guest session whose share is gone on a %s route',
+      async (authContext) => {
+        localStorage.setItem('oc.guestPermissionId', 'permission-id')
+        const { clientService } = getClientService([])
+
+        const authService = new AuthService()
+        Object.defineProperty(authService, 'userManager', {
+          value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null) })
+        })
+
+        const { authStore } = initAuthService({
+          authService,
+          clientService,
+          router: createRouter()
+        })
+        await authService.initializeContext({
+          meta: { authContext },
+          params: {},
+          query: {}
+        } as unknown as RouteLocation)
+
         expect(authStore.guestContextReady).toBeFalsy()
         expect(localStorage.getItem('oc.guestPermissionId')).toBeNull()
-        // nobody signed in, so the pending renewal is kept
+      }
+    )
+
+    it.each(['user', 'idp'])(
+      'flags an expired guest session on a %s route but keeps a pending renewal',
+      async (authContext) => {
+        const storedRenewal = JSON.stringify({
+          permissionId: 'permission-id',
+          renewedAt: Date.now()
+        })
+        localStorage.setItem('oc.guestPermissionId', 'permission-id')
+        localStorage.setItem('oc.guestSessionExpiry', 'expiry')
+        localStorage.setItem('oc.guestLinkRenewal', storedRenewal)
+        const listSharedWithMe = vi
+          .fn()
+          .mockRejectedValue(
+            new DavHttpError(
+              '',
+              undefined,
+              { url: 'https://cloud.test/graph/v1beta1/me/drive/sharedWithMe' } as Response,
+              401
+            )
+          )
+        const clientService = mock<ClientService>({
+          graphAuthenticated: { driveItems: { listSharedWithMe } }
+        } as any)
+
+        const authService = new AuthService()
+        Object.defineProperty(authService, 'userManager', {
+          value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null) })
+        })
+
+        const { authStore } = initAuthService({
+          authService,
+          clientService,
+          router: createRouter()
+        })
+        await authService.initializeContext({
+          meta: { authContext },
+          params: {},
+          query: {}
+        } as unknown as RouteLocation)
+
+        expect(authStore.guestContextReady).toBeFalsy()
+        expect(authService.consumeExpiredGuestPermissionId()).toEqual('permission-id')
+        expect(localStorage.getItem('oc.guestPermissionId')).toBeNull()
+        expect(localStorage.getItem('oc.guestSessionExpiry')).toBeNull()
         expect(localStorage.getItem('oc.guestLinkRenewal')).toEqual(storedRenewal)
+      }
+    )
+
+    it.each(['user', 'idp'])(
+      'keeps a persisted guest session that could not be restored on a %s route',
+      async (authContext) => {
+        localStorage.setItem('oc.guestPermissionId', 'permission-id')
+        const listSharedWithMe = vi.fn().mockRejectedValue(new Error('network error'))
+        const clientService = mock<ClientService>({
+          graphAuthenticated: { driveItems: { listSharedWithMe } }
+        } as any)
+
+        const authService = new AuthService()
+        Object.defineProperty(authService, 'userManager', {
+          value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null) })
+        })
+
+        const { authStore } = initAuthService({
+          authService,
+          clientService,
+          router: createRouter()
+        })
+        await authService.initializeContext({
+          meta: { authContext },
+          params: {},
+          query: {}
+        } as unknown as RouteLocation)
+
+        expect(authStore.guestContextReady).toBeFalsy()
+        expect(authService.consumeUnavailableGuestPermissionId()).toEqual('permission-id')
+        expect(localStorage.getItem('oc.guestPermissionId')).toEqual('permission-id')
       }
     )
 
