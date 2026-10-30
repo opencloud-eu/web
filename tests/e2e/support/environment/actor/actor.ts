@@ -21,6 +21,13 @@ export class ActorEnvironment extends EventEmitter implements Actor {
 
     await this.context.addInitScript(() => {
       ;(window as any).__E2E__ = true
+
+      // skip the Collabora onboarding tour, it blocks interactions with the document
+      if (window.location.pathname.endsWith('/cool.html')) {
+        for (const docType of ['text', 'spreadsheet', 'presentation', 'drawing']) {
+          window.localStorage.setItem(`${docType}.onboardingTourSeen`, 'true')
+        }
+      }
     })
 
     this.page = await this.context.newPage()
