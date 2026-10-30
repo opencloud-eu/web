@@ -149,16 +149,106 @@ describe('restore', () => {
     })
   })
 
-  it('should find conflict within resources', () => {
+  it('should collect duplicates within resources apart from conflicts', () => {
     getWrapper({
       setup: async ({ collectConflicts }, { space }) => {
         const resourceOne = { id: '1', path: '1', name: '1' } as TrashResource
         const resourceTwo = { id: '2', path: '1', name: '1' } as TrashResource
-        const { conflicts } = await collectConflicts(space, [resourceOne, resourceTwo])
+        const { conflicts, batchDuplicates } = await collectConflicts(space, [
+          resourceOne,
+          resourceTwo
+        ])
 
-        expect(conflicts).toContain(resourceTwo)
+        expect(conflicts).toEqual([])
+        expect(batchDuplicates).toEqual([resourceTwo])
       }
     })
+  })
+
+  it.each([
+    {
+      description: 'without existing resource',
+      existing: [],
+      strategy: undefined,
+      expected: ['/file.txt', '/file (1).txt'],
+      overwriteIds: []
+    },
+    {
+      description: 'after "Replace"',
+      existing: ['file.txt'],
+      strategy: ResolveStrategy.REPLACE,
+      expected: ['/file.txt', '/file (1).txt'],
+      overwriteIds: ['1']
+    },
+    {
+      description: 'after "Keep both"',
+      existing: ['file.txt'],
+      strategy: ResolveStrategy.KEEP_BOTH,
+      expected: ['/file (1).txt', '/file (2).txt'],
+      overwriteIds: []
+    }
+  ])(
+    'should restore a duplicate within resources as copy $description',
+    async ({ existing, strategy, expected, overwriteIds: expectedOverwriteIds }) => {
+      let instance: ReturnType<typeof useFileActionsRestore>
+      let space: SpaceResource
+      const { mocks } = getWrapper({
+        setup: (i, { space: s }) => {
+          instance = i
+          space = s
+        }
+      })
+      mocks.$clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>(),
+        children: existing.map((name) => mock<Resource>({ name }))
+      })
+      const resolveFileExists = vi
+        .spyOn(ConflictDialog.prototype, 'resolveFileExists')
+        .mockResolvedValue({ strategy, doForAllConflicts: false })
+      onTestFinished(() => resolveFileExists.mockRestore())
+      const resources = [
+        { id: '1', path: '/file.txt', name: 'file.txt' },
+        { id: '2', path: '/file.txt', name: 'file.txt' }
+      ] as TrashResource[]
+
+      unref(instance.actions)[0].handler({ space, resources })
+      await flushPromises()
+
+      expect(resolveFileExists).toHaveBeenCalledTimes(strategy === undefined ? 0 : 1)
+      const { startWorker } = useRestoreWorker()
+      const [{ resources: restored, overwriteIds }] = vi.mocked(startWorker).mock.calls[0]
+      expect(restored.map(({ path }) => path)).toEqual(expected)
+      expect(overwriteIds).toEqual(expectedOverwriteIds)
+    }
+  )
+
+  it('should skip a duplicate within resources when its original is skipped', async () => {
+    let instance: ReturnType<typeof useFileActionsRestore>
+    let space: SpaceResource
+    const { mocks } = getWrapper({
+      setup: (i, { space: s }) => {
+        instance = i
+        space = s
+      }
+    })
+    mocks.$clientService.webdav.listFiles.mockResolvedValue({
+      resource: mock<Resource>(),
+      children: [mock<Resource>({ name: 'file.txt' })]
+    })
+    const resolveFileExists = vi
+      .spyOn(ConflictDialog.prototype, 'resolveFileExists')
+      .mockResolvedValue({ strategy: ResolveStrategy.SKIP, doForAllConflicts: false })
+    onTestFinished(() => resolveFileExists.mockRestore())
+    const resources = [
+      { id: '1', path: '/file.txt', name: 'file.txt' },
+      { id: '2', path: '/file.txt', name: 'file.txt' }
+    ] as TrashResource[]
+
+    unref(instance.actions)[0].handler({ space, resources })
+    await flushPromises()
+
+    expect(useRestoreWorker().startWorker).not.toHaveBeenCalled()
+    expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
   })
 
   it('should name the type of the existing resource in the conflict dialog', async () => {
@@ -348,6 +438,19 @@ describe('restore', () => {
       expect(paths).not.toContain('/b.txt')
     })
 
+    it('does not restore a duplicate within resources in a locked vault', async () => {
+      await restore([vaultFile, { ...vaultFile, id: 'v2' } as TrashResource])
+      await resolveDialog(0, { strategy: ResolveStrategy.REPLACE, doForAllConflicts: false })
+
+      const { dispatchModal } = useModals()
+      expect(dispatchModal).toHaveBeenCalledTimes(1)
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Duplicate name in an encrypted folder' })
+      )
+      expect(restoredPaths()).toEqual(['/my.vault/enc'])
+    })
+
     it('applies "Replace" for all to a locked vault conflict without asking again', async () => {
       await restore([fileA, vaultFile])
       await resolveDialog(0, { strategy: ResolveStrategy.REPLACE, doForAllConflicts: true })
@@ -356,6 +459,104 @@ describe('restore', () => {
       expect(dispatchModal).toHaveBeenCalledTimes(1)
       expect(restoredPaths()).toEqual(['/a.txt', '/my.vault/enc'])
     })
+  })
+
+  it.each([
+    {
+      description: 'a parent folder restored by the same batch',
+      resources: [
+        { id: '1', path: '/folder', name: 'folder', isFolder: true },
+        { id: '2', path: '/folder/file.txt', name: 'file.txt' }
+      ],
+      expected: []
+    },
+    {
+      description: 'a parent the batch only restores a file at',
+      resources: [
+        { id: '1', path: '/folder', name: 'folder' },
+        { id: '2', path: '/folder/file.txt', name: 'file.txt' }
+      ],
+      expected: ['/folder']
+    },
+    {
+      description: 'a parent outside of the batch',
+      resources: [{ id: '1', path: '/folder/file.txt', name: 'file.txt' }],
+      expected: ['/folder']
+    }
+  ])('should return missing folders for $description', async ({ resources, expected }) => {
+    let instance: ReturnType<typeof useFileActionsRestore>
+    let space: SpaceResource
+    const { mocks } = getWrapper({
+      setup: (i, { space: s }) => {
+        instance = i
+        space = s
+      }
+    })
+    mocks.$clientService.webdav.listFiles.mockImplementation((_, { path }) =>
+      path === '/folder'
+        ? Promise.reject(new Error('not found'))
+        : Promise.resolve({ resource: mock<Resource>(), children: [] })
+    )
+
+    const { missingFolderPaths } = await instance.collectConflicts(
+      space,
+      resources as TrashResource[]
+    )
+
+    expect(missingFolderPaths).toEqual(expected)
+  })
+
+  it.each([
+    {
+      description: 'no resources without conflicts',
+      strategy: undefined,
+      existing: {},
+      resources: [
+        { id: '1', path: '/folder', name: 'folder', isFolder: true },
+        { id: '2', path: '/folder/file.txt', name: 'file.txt' }
+      ],
+      expected: []
+    },
+    {
+      description: 'only a replaced folder, not its children in the batch',
+      strategy: ResolveStrategy.REPLACE,
+      existing: { '/': ['folder'], '/folder': [] },
+      resources: [
+        { id: '1', path: '/folder', name: 'folder', isFolder: true },
+        { id: '2', path: '/folder/file.txt', name: 'file.txt' }
+      ],
+      expected: ['1']
+    }
+  ])('should overwrite $description', async ({ strategy, existing, resources, expected }) => {
+    let instance: ReturnType<typeof useFileActionsRestore>
+    let space: SpaceResource
+    const { mocks } = getWrapper({
+      setup: (i, { space: s }) => {
+        instance = i
+        space = s
+      }
+    })
+    const existingByPath: Record<string, string[]> = { '/': [], ...existing }
+    mocks.$clientService.webdav.listFiles.mockImplementation((_, { path }) =>
+      path in existingByPath
+        ? Promise.resolve({
+            resource: mock<Resource>(),
+            children: existingByPath[path].map((name) => mock<Resource>({ name }))
+          })
+        : Promise.reject(new Error('not found'))
+    )
+    if (strategy) {
+      vi.spyOn(ConflictDialog.prototype, 'resolveFileExists').mockResolvedValueOnce({
+        strategy,
+        doForAllConflicts: false
+      })
+    }
+
+    unref(instance.actions)[0].handler({ space, resources: resources as TrashResource[] })
+    await flushPromises()
+
+    const { startWorker } = useRestoreWorker()
+    expect(vi.mocked(startWorker).mock.calls[0][0].overwriteIds).toEqual(expected)
   })
 
   it('should add files without conflict to resolved resources', () => {

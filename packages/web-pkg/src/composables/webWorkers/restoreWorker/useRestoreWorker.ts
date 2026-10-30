@@ -35,8 +35,14 @@ export const useRestoreWorker = () => {
     {
       space,
       resources,
-      missingFolderPaths
-    }: { space: SpaceResource; resources: Resource[]; missingFolderPaths: string[] },
+      missingFolderPaths,
+      overwriteIds = []
+    }: {
+      space: SpaceResource
+      resources: Resource[]
+      missingFolderPaths: string[]
+      overwriteIds?: string[]
+    },
     callback: (result: CallbackOptions) => void
   ) => {
     const worker = createWorker<RestoreWorkerReturnData>(RestoreWorker as unknown as string, {
@@ -66,17 +72,19 @@ export const useRestoreWorker = () => {
         })
     )
 
-    worker.post(getWorkerData({ space, resources, missingFolderPaths }))
+    worker.post(getWorkerData({ space, resources, missingFolderPaths, overwriteIds }))
   }
 
   const getWorkerData = ({
     space,
     resources,
-    missingFolderPaths
+    missingFolderPaths,
+    overwriteIds
   }: {
     space: SpaceResource
     resources: Resource[]
     missingFolderPaths: string[]
+    overwriteIds: string[]
   }) => {
     return JSON.stringify({
       topic: 'startProcess',
@@ -84,6 +92,7 @@ export const useRestoreWorker = () => {
         space,
         resources,
         missingFolderPaths,
+        overwriteIds,
         baseUrl: configStore.serverUrl,
         withCredentials: authStore.guestContextReady,
         headers: {

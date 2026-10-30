@@ -14,6 +14,7 @@ type MessageData = {
   space?: SpaceResource
   resources?: Resource[]
   missingFolderPaths?: string[]
+  overwriteIds?: string[]
 }
 
 type Message = {
@@ -57,6 +58,10 @@ const createFolderStructure = async ({
   }
 }
 
+function getDepth(path: string) {
+  return path.split('/').filter(Boolean).length
+}
+
 self.onmessage = async (e: MessageEvent) => {
   const { topic, data } = JSON.parse(e.data) as Message
 
@@ -71,7 +76,15 @@ self.onmessage = async (e: MessageEvent) => {
     return
   }
 
-  const { baseUrl, headers, withCredentials, space, resources, missingFolderPaths } = data
+  const {
+    baseUrl,
+    headers,
+    withCredentials,
+    space,
+    resources,
+    missingFolderPaths,
+    overwriteIds = []
+  } = data
 
   storedHeaders = headers
   const webdav = _webdav(
@@ -85,35 +98,38 @@ self.onmessage = async (e: MessageEvent) => {
   const queue = new PQueue({ concurrency: 4 })
 
   let createdFolderPaths: string[] = []
-  const promises = resources.map((r) => {
-    return queue.add(async () => {
-      const parentPath = dirname(r.path)
-      if (missingFolderPaths.includes(parentPath)) {
-        const { existingPaths } = await createFolderStructure({
-          client: webdav,
-          space,
-          path: parentPath,
-          existingPaths: createdFolderPaths
-        })
-        createdFolderPaths = existingPaths
-      }
+  async function restoreResource(r: Resource) {
+    const parentPath = dirname(r.path)
+    if (missingFolderPaths.includes(parentPath)) {
+      const { existingPaths } = await createFolderStructure({
+        client: webdav,
+        space,
+        path: parentPath,
+        existingPaths: createdFolderPaths
+      })
+      createdFolderPaths = existingPaths
+    }
 
-      try {
-        await webdav.restoreFile(space, r, r, { overwrite: true })
-        successful.push(r)
-      } catch (e) {
-        console.error(e)
-        failed.push({
-          resource: r,
-          message: e.message,
-          statusCode: e.statusCode,
-          xReqId: e.response.headers?.get('x-request-id')
-        })
-      }
-    })
-  })
+    try {
+      await webdav.restoreFile(space, r, r, { overwrite: overwriteIds.includes(r.id) })
+      successful.push(r)
+    } catch (e) {
+      console.error(e)
+      failed.push({
+        resource: r,
+        message: e.message,
+        statusCode: e.statusCode,
+        xReqId: e.response.headers?.get('x-request-id')
+      })
+    }
+  }
 
-  await Promise.allSettled(promises)
+  // restore level by level so parent folders in the batch exist before their children
+  const depths = [...new Set(resources.map(({ path }) => getDepth(path)))].sort((a, b) => a - b)
+  for (const depth of depths) {
+    const resourcesAtDepth = resources.filter(({ path }) => getDepth(path) === depth)
+    await Promise.allSettled(resourcesAtDepth.map((r) => queue.add(() => restoreResource(r))))
+  }
 
   postMessage(JSON.stringify({ successful, failed }))
 }

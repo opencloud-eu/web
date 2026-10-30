@@ -53,8 +53,14 @@ export const useFileActionsRestore = ({
   const collectConflicts = async (space: SpaceResource, sortedResources: Resource[]) => {
     const existingResourcesCache: Record<string, Resource[]> = {}
     const conflicts: Resource[] = []
+    // same path as an earlier resource of the batch, the user wants both restored
+    const batchDuplicates: Resource[] = []
+    const collectedPaths = new Set<string>()
     const resolvedResources: Resource[] = []
     const missingFolderPaths: string[] = []
+    const batchFolderPaths = new Set(
+      sortedResources.filter(({ isFolder }) => isFolder).map(({ path }) => path)
+    )
     for (const resource of sortedResources) {
       const parentPath = dirname(resource.path)
 
@@ -73,11 +79,13 @@ export const useFileActionsRestore = ({
         }
         existingResourcesCache[parentPath] = existingResources
       }
-      // Check for naming conflict in parent folder and between resources batch. Compare by path
-      // segment, it matches the listing for locked vaults where the name stays cleartext.
-      const hasConflict =
-        existingResources.some((r) => r.name === basename(resource.path)) ||
-        resolvedResources.filter((r) => r.id !== resource.id).some((r) => r.path === resource.path)
+      if (collectedPaths.has(resource.path)) {
+        batchDuplicates.push(resource)
+        continue
+      }
+      collectedPaths.add(resource.path)
+      // Compare by path segment, it matches the listing for locked vaults where the name stays cleartext
+      const hasConflict = existingResources.some((r) => r.name === basename(resource.path))
       if (hasConflict) {
         conflicts.push(resource)
       } else {
@@ -87,8 +95,10 @@ export const useFileActionsRestore = ({
     return {
       existingResourcesByPath: existingResourcesCache,
       conflicts,
+      batchDuplicates,
       resolvedResources,
-      missingFolderPaths: missingFolderPaths.filter((path) => !existingResourcesCache[path]?.length)
+      // a folder restored by the same batch must not be created as a new empty one
+      missingFolderPaths: missingFolderPaths.filter((path) => !batchFolderPaths.has(path))
     }
   }
 
@@ -151,11 +161,13 @@ export const useFileActionsRestore = ({
   const restoreResources = (
     space: SpaceResource,
     resources: Resource[],
-    missingFolderPaths: string[]
+    missingFolderPaths: string[],
+    overwriteIds: string[] = []
   ) => {
     const originalRoute = unref(router.currentRoute)
 
-    startWorker({ space, resources, missingFolderPaths }, async ({ successful, failed }) => {
+    const workerData = { space, resources, missingFolderPaths, overwriteIds }
+    startWorker(workerData, async ({ successful, failed }) => {
       if (successful.length) {
         let title: string
         if (successful.length === 1) {
@@ -209,12 +221,17 @@ export const useFileActionsRestore = ({
   }
 
   const handler = async ({ space, resources }: FileActionOptions) => {
-    // resources need to be sorted by path ASC to recover the parents first in case of deep nested folder structure
+    // parents first, so conflicts are asked top-down
     const sortedResources = resources.sort((a, b) => a.path.length - b.path.length)
 
     // collect and request existing files in associated parent folders of each resource
-    const { existingResourcesByPath, conflicts, resolvedResources, missingFolderPaths } =
-      await collectConflicts(space, sortedResources)
+    const {
+      existingResourcesByPath,
+      conflicts,
+      batchDuplicates,
+      resolvedResources,
+      missingFolderPaths
+    } = await collectConflicts(space, sortedResources)
 
     // iterate through conflicts and collect resolve strategies
     const resolvedConflicts = await collectResolveStrategies(
@@ -228,9 +245,26 @@ export const useFileActionsRestore = ({
       .filter((e) => e.strategy === ResolveStrategy.REPLACE)
       .map((e) => e.resource)
     resolvedResources.push(...filesToOverwrite)
+    // only explicit replaces may overwrite, anything else fails instead of silently replacing
+    const overwriteIds = filesToOverwrite.map(({ id }) => id)
     const filesToKeepBoth = resolvedConflicts
       .filter((e) => e.strategy === ResolveStrategy.KEEP_BOTH)
       .map((e) => e.resource)
+    // a duplicate follows the choice made for the first item at its path
+    const restoredPaths = new Set(
+      [...resolvedResources, ...filesToKeepBoth].map(({ path }) => path)
+    )
+    const duplicatesNotRestorable: string[] = []
+    for (const resource of batchDuplicates) {
+      if (!restoredPaths.has(resource.path)) {
+        continue
+      }
+      if (await canKeepBoth(space, resource)) {
+        filesToKeepBoth.push(resource)
+      } else {
+        duplicatesNotRestorable.push(resource.name)
+      }
+    }
 
     const namesTooLong: string[] = []
     for (let resource of filesToKeepBoth) {
@@ -269,6 +303,21 @@ export const useFileActionsRestore = ({
         )
       })
     }
+    if (duplicatesNotRestorable.length) {
+      showErrorMessage({
+        title: $ngettext(
+          'Duplicate name in an encrypted folder',
+          'Duplicate names in an encrypted folder',
+          duplicatesNotRestorable.length
+        ),
+        desc: $ngettext(
+          '»%{name}« could not be restored, another restored item has the same name.',
+          '%{count} items could not be restored, other restored items have the same names.',
+          duplicatesNotRestorable.length,
+          { name: duplicatesNotRestorable[0], count: duplicatesNotRestorable.length.toString() }
+        )
+      })
+    }
     if (!resolvedResources.length) {
       return
     }
@@ -289,7 +338,7 @@ export const useFileActionsRestore = ({
       missingFolderPaths
     )
 
-    return restoreResources(space, resourcesForServer, foldersForServer)
+    return restoreResources(space, resourcesForServer, foldersForServer, overwriteIds)
   }
 
   const actions = computed((): FileAction[] => [
