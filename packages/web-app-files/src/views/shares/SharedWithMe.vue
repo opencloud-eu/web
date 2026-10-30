@@ -63,8 +63,8 @@
               </item-filter>
             </div>
             <oc-search-bar
-              is-filter
               v-model="filterTerm"
+              is-filter
               class="search-filter w-full sm:w-3xs"
               :label="$gettext('Search')"
               :placeholder="$gettext('Search for shares')"

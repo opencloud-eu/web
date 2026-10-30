@@ -1,8 +1,8 @@
 <template>
   <div class="ml-2">
     <oc-search-bar
-      is-filter
       v-model="filterTerm"
+      is-filter
       class="mr-2 mt-4"
       :label="$gettext('Filter members')"
       :placeholder="$gettext('Search for members')"
