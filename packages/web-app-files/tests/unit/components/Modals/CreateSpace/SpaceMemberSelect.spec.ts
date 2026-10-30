@@ -219,7 +219,11 @@ function getWrapper({
         ...defaultPlugins({
           abilities: [{ action: 'create-all', subject: 'GuestInvite' }],
           piniaOptions: {
-            capabilityState: { capabilities: { files_sharing: { search_min_length: 2 } } },
+            capabilityState: {
+              capabilities: {
+                files_sharing: { search_min_length: 2, guest_links: { enabled: true } }
+              }
+            },
             sharesState: { graphRoles },
             userState: { user: mock<User>({ id: 'me' }) }
           }

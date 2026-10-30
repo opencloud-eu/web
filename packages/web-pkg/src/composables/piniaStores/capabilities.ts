@@ -107,6 +107,9 @@ export const useCapabilityStore = defineStore('capabilities', () => {
   const sharingApiEnabled = computed(() => unref(capabilities).files_sharing.api_enabled)
   const sharingCanRename = computed(() => unref(capabilities).files_sharing.can_rename)
   const sharingAllowCustom = computed(() => unref(capabilities).files_sharing.allow_custom)
+  const sharingGuestLinksEnabled = computed(
+    () => unref(capabilities).files_sharing.guest_links?.enabled
+  )
   const sharingPublicEnabled = computed(() => unref(capabilities).files_sharing.public?.enabled)
   const sharingPublicCanEdit = computed(() => unref(capabilities).files_sharing.public?.can_edit)
   const sharingPublicCanContribute = computed(
@@ -170,6 +173,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     sharingApiEnabled,
     sharingCanRename,
     sharingAllowCustom,
+    sharingGuestLinksEnabled,
     sharingPublicEnabled,
     sharingPublicCanEdit,
     sharingPublicCanContribute,

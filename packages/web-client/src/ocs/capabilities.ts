@@ -131,6 +131,9 @@ export interface Capabilities {
         outgoing?: boolean
       }
       group_sharing?: boolean
+      guest_links?: {
+        enabled?: boolean
+      }
       public?: {
         alias?: boolean
         can_contribute?: boolean

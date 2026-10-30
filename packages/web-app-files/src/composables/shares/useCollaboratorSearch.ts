@@ -7,6 +7,7 @@ import { useAbility, useCapabilityStore, useClientService } from '@opencloud-eu/
 
 export const useCollaboratorSearch = () => {
   const clientService = useClientService()
+  const capabilityStore = useCapabilityStore()
   const { can } = useAbility()
 
   /**
@@ -52,6 +53,7 @@ export const useCollaboratorSearch = () => {
   ): CollaboratorAutoCompleteItem[] {
     const trimmedQuery = (query || '').trim()
     if (
+      !capabilityStore.sharingGuestLinksEnabled ||
       !can('create-all', 'GuestInvite') ||
       !EmailValidator.validate(trimmedQuery) ||
       emailBelongsToAccount(trimmedQuery, collaborators)

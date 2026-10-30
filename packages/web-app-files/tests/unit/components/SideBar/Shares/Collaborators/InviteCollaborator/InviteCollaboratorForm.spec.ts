@@ -232,6 +232,16 @@ describe('InviteCollaboratorForm', () => {
         )
       ).toBe(false)
     })
+    it('does not offer a guest suggestion when guest links are disabled on the server', async () => {
+      const { wrapper } = getWrapper({ guestLinksEnabled: false })
+      await search(wrapper, 'guest@example.com')
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
     it('does not offer a guest suggestion for an address with a display name', async () => {
       const { wrapper } = getWrapper()
       await search(wrapper, 'Test User <guest@example.com>')
@@ -717,6 +727,7 @@ function getWrapper({
   openXchange = false,
   openXchangeContacts = [],
   canInviteGuests = true,
+  guestLinksEnabled = true,
   searchMinLength = 2,
   shallow = true,
   props = {},
@@ -733,6 +744,7 @@ function getWrapper({
   openXchange?: boolean
   openXchangeContacts?: Contact[]
   canInviteGuests?: boolean
+  guestLinksEnabled?: boolean
   searchMinLength?: number
   shallow?: boolean
   props?: Record<string, unknown>
@@ -749,6 +761,7 @@ function getWrapper({
   const capabilities = {
     files_sharing: {
       federation: { incoming: true, outgoing: true },
+      guest_links: { enabled: guestLinksEnabled },
       search_min_length: searchMinLength
     }
   }
