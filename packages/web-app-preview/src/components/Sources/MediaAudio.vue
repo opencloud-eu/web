@@ -7,7 +7,7 @@
       :autoplay="isAutoPlayEnabled"
       @ended="$emit('ended')"
     >
-      <source :src="file.url" :type="file.mimeType" />
+      <source :src="file.url" :type="sourceType" />
     </audio>
     <p v-if="audioText" class="text-role-on-surface-variant text-sm" v-text="audioText"></p>
   </div>
@@ -24,6 +24,14 @@ const { file, isAutoPlayEnabled = true } = defineProps<{
 defineEmits<{
   (e: 'ended'): void
 }>()
+
+// Chromium skips sources with the non-standard 'audio/x-flac' type
+const sourceType = computed(() => {
+  if (file.mimeType?.toLowerCase() === 'audio/x-flac') {
+    return 'audio/flac'
+  }
+  return file.mimeType
+})
 
 const audioText = computed(() => {
   if (file.resource.audio?.artist && file.resource.audio?.title) {
