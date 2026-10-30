@@ -28,7 +28,8 @@ vi.mock('lodash-es', async (importOriginal) => {
   const lodash = await importOriginal<typeof import('lodash-es')>()
   return {
     ...lodash,
-    debounce: (fn: any, wait: number) => (debounceMode.real ? lodash.debounce(fn, wait) : fn)
+    debounce: (fn: any, wait: number) =>
+      debounceMode.real ? lodash.debounce(fn, wait) : Object.assign(fn, { cancel: vi.fn() })
   }
 })
 
@@ -321,6 +322,21 @@ describe('InviteCollaboratorForm', () => {
       await flushPromises()
 
       expect(resultAnnouncements()).toEqual(['2 results'])
+    })
+    it('shows users the server matched by a field it does not return', async () => {
+      const { wrapper, input } = getTypingWrapper({
+        users: [
+          {
+            id: '2',
+            displayName: 'Share Test User'
+          } as User
+        ]
+      })
+      await input.setValue('sharetest@example.com')
+      await flushPromises()
+
+      expect(wrapper.findAll('.vs__dropdown-option').length).toBe(1)
+      expect(resultAnnouncements()).toEqual(['1 result'])
     })
     it('announces when no users or groups are found', async () => {
       const { input } = getTypingWrapper()
@@ -684,8 +700,8 @@ describe('InviteCollaboratorForm', () => {
   })
 })
 
-async function search(wrapper: ReturnType<typeof getWrapper>['wrapper'], query = '') {
-  ;(wrapper.vm as any).fetchRecipients(query)
+async function search(wrapper: ReturnType<typeof getWrapper>['wrapper'], query = 'test') {
+  ;(wrapper.vm as any).onSearch(query)
   await flushPromises()
 }
 

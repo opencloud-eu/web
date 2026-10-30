@@ -1,4 +1,4 @@
-import { computed, ref, unref } from 'vue'
+import { computed, onScopeDispose, ref, unref } from 'vue'
 import { debounce } from 'lodash-es'
 import * as EmailValidator from 'email-validator'
 import { useTask } from 'vue-concurrency'
@@ -103,7 +103,11 @@ export const useCollaboratorAutocomplete = (
     fetchRecipientsTask.perform(query)
   }, 500)
 
+  onScopeDispose(() => fetchRecipients.cancel())
+
   function onSearch(query: string) {
+    fetchRecipients.cancel()
+    fetchRecipientsTask.cancelAll()
     autocompleteResults.value = []
     searchQuery.value = query
 
@@ -116,32 +120,8 @@ export const useCollaboratorAutocomplete = (
     fetchRecipients(query)
   }
 
-  /**
-   * Narrows what the server returned to what the query actually matches.
-   * Federated recipients stay in regardless - they are resolved by the server,
-   * not by the text typed here.
-   */
-  function filterRecipients(recipients: CollaboratorAutoCompleteItem[], query: string) {
-    query = (query || '').trim()
-    if (!query) {
-      return recipients
-    }
-
-    // Allow advanced queries
-    query = query.split(':')[1]?.trim() || query
-
-    return recipients.filter(
-      (recipient) =>
-        recipient.shareType === ShareTypes.remote.value ||
-        recipient.displayName.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) > -1 ||
-        recipient.mail?.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) > -1
-    )
-  }
-
   return {
     autocompleteResults,
-    fetchRecipients,
-    filterRecipients,
     minSearchLength,
     onSearch,
     searchInProgress,
