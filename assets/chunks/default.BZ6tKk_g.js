@@ -1,0 +1,1 @@
+import{Lt as e,Nt as t,pt as n,sn as r,xt as i}from"./framework.iwWwZCiv.js";var a=i({__name:`default`,setup(i){let a=r(1);return(r,i)=>{let o=e(`oc-pagination-inline`);return t(),n(o,{"current-page":a.value,"onUpdate:currentPage":i[0]||=e=>a.value=e,pages:3},null,8,[`current-page`])}}});export{a as default};

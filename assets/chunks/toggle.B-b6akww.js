@@ -1,1 +1,0 @@
-import{At as e,Pt as t,fn as n,in as r,ut as i,vt as a}from"./framework.DdZLsZVF.js";var o=a({__name:`toggle`,setup(a){let o=r(!1),s=()=>{o.value=!n(o)};return(n,r)=>{let a=t(`oc-filter-chip`);return e(),i(a,{"filter-label":`Toggle filter`,"is-toggle":!0,"is-toggle-active":o.value,onToggleFilter:s,onClearFilter:s},null,8,[`is-toggle-active`])}}});export{o as default};

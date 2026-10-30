@@ -1,1 +1,0 @@
-import{At as e,Pt as t,in as n,ut as r,vt as i}from"./framework.DdZLsZVF.js";var a=i({__name:`default`,setup(i){let a=n(1);return(n,i)=>{let o=t(`oc-pagination-inline`);return e(),r(o,{"current-page":a.value,"onUpdate:currentPage":i[0]||=e=>a.value=e,pages:3},null,8,[`current-page`])}}});export{a as default};

@@ -1,0 +1,1 @@
+import{Lt as e,Nt as t,ct as n,ft as r,ht as i,sn as a,xt as o,yn as s,yt as c}from"./framework.iwWwZCiv.js";var l=o({__name:`default`,setup(o){let l=a(),u=e=>{l.value=e};return(a,o)=>{let d=e(`oc-emoji-picker`);return t(),i(n,null,[c(d,{onEmojiSelect:u}),r(`p`,null,`Selected emoji: `+s(l.value),1)],64)}}});export{l as default};

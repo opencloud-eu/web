@@ -1,0 +1,1 @@
+import{Lt as e,Nt as t,pt as n,sn as r,xt as i}from"./framework.iwWwZCiv.js";var a=i({__name:`default`,setup(i){let a=r(10),o=e=>{a.value=e};return(r,i)=>{let s=e(`oc-page-size`);return t(),n(s,{label:`Items per page`,options:[10,20,50],selected:a.value,onChange:o},null,8,[`selected`])}}});export{a as default};

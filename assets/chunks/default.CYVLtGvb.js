@@ -1,1 +1,0 @@
-import{At as e,Pt as t,at as n,ft as r,gn as i,gt as a,in as o,lt as s,vt as c}from"./framework.DdZLsZVF.js";var l=c({__name:`default`,setup(c){let l=o(),u=e=>{l.value=e};return(o,c)=>{let d=t(`oc-emoji-picker`);return e(),r(n,null,[a(d,{onEmojiSelect:u}),s(`p`,null,`Selected emoji: `+i(l.value),1)],64)}}});export{l as default};

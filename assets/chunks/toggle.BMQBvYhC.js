@@ -1,0 +1,1 @@
+import{Lt as e,Nt as t,hn as n,pt as r,sn as i,xt as a}from"./framework.iwWwZCiv.js";var o=a({__name:`toggle`,setup(a){let o=i(!1),s=()=>{o.value=!n(o)};return(n,i)=>{let a=e(`oc-filter-chip`);return t(),r(a,{"filter-label":`Toggle filter`,"is-toggle":!0,"is-toggle-active":o.value,onToggleFilter:s,onClearFilter:s},null,8,[`is-toggle-active`])}}});export{o as default};
