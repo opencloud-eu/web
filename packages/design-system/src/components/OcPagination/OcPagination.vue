@@ -101,13 +101,13 @@ const displayedPages = computed(() => {
       currentPageIndex + indentation + 1
     )
 
-    if (unref($_currentPage) > 2) {
+    if (Number(pagesCollection[0]) > 1) {
       Number(pagesCollection[0]) > 2
         ? pagesCollection.unshift(1, '...')
         : pagesCollection.unshift(1)
     }
 
-    if (unref($_currentPage) < pages - 1) {
+    if (Number(pagesCollection[pagesCollection.length - 1]) < pages) {
       Number(pagesCollection[pagesCollection.length - 1]) < pages - 1
         ? pagesCollection.push('...', pages)
         : pagesCollection.push(pages)

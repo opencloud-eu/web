@@ -97,6 +97,34 @@ describe('OcPagination', () => {
     expect(wrapper.find(selectors.listItemEllipsis).exists()).toBeTruthy()
   })
 
+  it('does not repeat the first and last page if they are already in the displayed range', async () => {
+    const wrapper = await getRoutedWrapper({ pages: 6, currentPage: 3, maxDisplayed: 4 })
+
+    expect(getDisplayedPages(wrapper)).toEqual(['1', '2', '3', '4', '5', '6'])
+    wrapper.unmount()
+  })
+
+  it.each([
+    { pages: 6, maxDisplayed: 3 },
+    { pages: 6, maxDisplayed: 4 },
+    { pages: 10, maxDisplayed: 4 },
+    { pages: 10, maxDisplayed: 5 }
+  ])(
+    'shows every page once, including the first and last one ($pages pages, maxDisplayed $maxDisplayed)',
+    async ({ pages, maxDisplayed }) => {
+      for (let currentPage = 1; currentPage <= pages; currentPage++) {
+        const wrapper = await getRoutedWrapper({ pages, currentPage, maxDisplayed })
+        const displayedPages = getDisplayedPages(wrapper).filter((page) => page !== '...')
+
+        expect(new Set(displayedPages).size).toBe(displayedPages.length)
+        expect(displayedPages).toContain('1')
+        expect(displayedPages).toContain(pages.toString())
+        expect(displayedPages).toContain(currentPage.toString())
+        wrapper.unmount()
+      }
+    }
+  )
+
   it("doesn't show ellipsis if maxDisplayed prop is set but no pages are removed", () => {
     const wrapper = getWrapper({ maxDisplayed: 3 })
 
@@ -191,6 +219,10 @@ async function getRoutedWrapper(props: PartialComponentProps<typeof OcPagination
     attachTo: document.body,
     global: { plugins: [...defaultPlugins(), router], stubs: { 'oc-icon': true } }
   })
+}
+
+function getDisplayedPages(wrapper: Awaited<ReturnType<typeof getRoutedWrapper>>) {
+  return wrapper.findAll(selectors.listItemPage).map((page) => page.text())
 }
 
 function getWrapper(props: PartialComponentProps<typeof OcPagination> = {}) {
