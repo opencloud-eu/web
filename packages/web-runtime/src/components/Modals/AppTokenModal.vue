@@ -1,6 +1,7 @@
 <template>
   <div v-if="!createdToken">
     <oc-text-input
+      id="app-token-note-input"
       v-model="tokenLabel"
       :label="$gettext('Note')"
       :error-message="tokenLabelErrorMessage"

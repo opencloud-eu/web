@@ -45,6 +45,19 @@ describe('ListItem component', () => {
       expect(wrapper.emitted('updateLink')).toBeUndefined()
       expect(drop.props('modelValue')).toEqual(SharingLinkType.View)
     })
+    it('focuses the password input of the password dialog initially', async () => {
+      const linkShare = mock<LinkShare>({ type: SharingLinkType.View, hasPassword: false })
+      const { wrapper } = getWrapper({ linkShare, isPasswordEnforced: true })
+      const drop = wrapper.findComponent<typeof LinkRoleDropdown>('link-role-dropdown-stub')
+
+      drop.vm.$emit('update:modelValue', SharingLinkType.Edit)
+      await wrapper.vm.$nextTick()
+
+      const { dispatchModal } = useModals()
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({ focusTrapInitial: '#set-link-password-input' })
+      )
+    })
   })
   describe('additional information icons', () => {
     it('renders an icon if the link has a password', () => {

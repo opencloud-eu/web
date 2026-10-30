@@ -39,6 +39,10 @@ describe('AppTokenModal component', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find('oc-text-input-stub').exists()).toBeTruthy()
   })
+  it('renders the note input as the first field', () => {
+    const { wrapper } = getWrapper()
+    expect(wrapper.find('oc-text-input-stub').attributes('id')).toBe('app-token-note-input')
+  })
   it('should display an input for the expiration date', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find('oc-datepicker-stub').exists()).toBeTruthy()

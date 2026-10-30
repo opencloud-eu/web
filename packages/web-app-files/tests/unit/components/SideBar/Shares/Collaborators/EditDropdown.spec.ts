@@ -3,6 +3,7 @@ import { defaultPlugins, PartialComponentProps, shallowMount } from '@opencloud-
 import { mock } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
 import { OcButton } from '@opencloud-eu/design-system/components'
+import { useModals } from '@opencloud-eu/web-pkg'
 
 const selectors = {
   editBtn: '.collaborator-edit-dropdown-options-btn',
@@ -45,6 +46,14 @@ describe('EditDropdown', () => {
     it('is not being rendered when canEdit is false', () => {
       const { wrapper } = getWrapper({ canEdit: false })
       expect(wrapper.find(selectors.expireDateMenuAction).exists()).toBeFalsy()
+    })
+    it('focuses the date input of the modal initially', async () => {
+      const { wrapper } = getWrapper({ canEdit: true })
+      await wrapper.find(selectors.expireDateMenuAction).trigger('click')
+      const { dispatchModal } = useModals()
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({ focusTrapInitial: '#date-picker-modal-input' })
+      )
     })
   })
   describe('navigate to parent action', () => {

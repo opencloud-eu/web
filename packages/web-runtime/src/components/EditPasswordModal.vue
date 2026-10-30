@@ -1,5 +1,6 @@
 <template>
   <oc-text-input
+    id="edit-password-current-input"
     v-model="currentPassword"
     :label="$gettext('Current password')"
     type="password"

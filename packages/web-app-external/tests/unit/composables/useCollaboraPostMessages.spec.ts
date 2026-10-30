@@ -225,6 +225,22 @@ describe('useCollaboraPostMessages', () => {
       const { dispatchModal } = useModals()
       expect(dispatchModal).toHaveBeenCalled()
     })
+
+    it.each([{ format: 'docx' }, {}])(
+      'focuses the file name input initially (values: %o)',
+      async (values) => {
+        const { instance } = getWrapper()
+
+        await instance.handlePostMessagesCollabora(
+          createMessageEvent({ MessageId: 'UI_SaveAs', Values: values })
+        )
+
+        const { dispatchModal } = useModals()
+        expect(dispatchModal).toHaveBeenCalledWith(
+          expect.objectContaining({ focusTrapInitial: '#file-name-input' })
+        )
+      }
+    )
   })
 
   describe('Action_Save_Resp message', () => {

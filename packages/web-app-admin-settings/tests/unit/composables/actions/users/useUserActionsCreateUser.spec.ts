@@ -28,6 +28,17 @@ describe('useUserActionsCreateUser', () => {
         }
       })
     })
+    it('focuses the user name input initially', () => {
+      getWrapper({
+        setup: ({ actions }) => {
+          const { dispatchModal } = useModals()
+          unref(actions)[0].handler()
+          expect(dispatchModal).toHaveBeenCalledWith(
+            expect.objectContaining({ focusTrapInitial: '#create-user-input-user-name' })
+          )
+        }
+      })
+    })
   })
 })
 

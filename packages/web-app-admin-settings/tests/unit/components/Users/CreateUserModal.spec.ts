@@ -19,6 +19,10 @@ describe('CreateUserModal', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([true])
   })
+  it('renders the user name input as the first field', () => {
+    const { wrapper } = getWrapper()
+    expect(wrapper.findAllComponents(OcTextInput)[0].attributes('id')).toBe(selectors.userName)
+  })
 
   describe('user name validation', () => {
     it('ignores the result of a name check that finished after the name changed', async () => {

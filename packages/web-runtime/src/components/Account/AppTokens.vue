@@ -168,7 +168,8 @@ const openCreateAppTokenModal = () => {
     hideConfirmButton: true,
     customComponentAttrs: () => ({
       onCreated: () => loadTokensTask.perform()
-    })
+    }),
+    focusTrapInitial: '#app-token-note-input'
   })
 }
 

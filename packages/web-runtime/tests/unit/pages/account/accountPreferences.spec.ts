@@ -12,6 +12,7 @@ import {
   ExtensionPoint,
   useExtensionRegistry,
   useMessages,
+  useModals,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { LanguageOption, SettingsBundle, SettingsValue } from '../../../../src/helpers/settings'
@@ -58,6 +59,18 @@ describe('account preferences page', () => {
 
         const editPasswordButton = wrapper.find(selectors.editPasswordButton)
         expect(editPasswordButton.exists()).toBeFalsy()
+      })
+      it('opens the modal with the current password input focused', async () => {
+        const { wrapper } = getWrapper({
+          capabilities: { graph: { users: { change_password_self_disabled: false } } }
+        })
+        await blockLoadingState(wrapper)
+
+        await wrapper.find(selectors.editPasswordButton).trigger('click')
+        const { dispatchModal } = useModals()
+        expect(dispatchModal).toHaveBeenCalledWith(
+          expect.objectContaining({ focusTrapInitial: '#edit-password-current-input' })
+        )
       })
     })
   })
