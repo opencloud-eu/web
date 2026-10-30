@@ -1,7 +1,6 @@
 import { unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
-import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
 import {
   useCollaboratorAutocomplete,
   useCollaboratorSearch
@@ -52,6 +51,56 @@ describe('useCollaboratorAutocomplete', () => {
     expect(unref(autocomplete.searchInProgress)).toBe(false)
   })
 
+  it('drops results of a previous search that resolves after the term changed', async () => {
+    vi.useFakeTimers()
+    let resolveFirst: (results: unknown[]) => void
+    const fetchResults = vi
+      .fn()
+      .mockImplementationOnce(() => new Promise((resolve) => (resolveFirst = resolve)))
+    let autocomplete: ReturnType<typeof useCollaboratorAutocomplete>
+    getComposableWrapper(() => {
+      autocomplete = useCollaboratorAutocomplete(fetchResults)
+    })
+
+    autocomplete.onSearch('mar')
+    vi.runAllTimers()
+    autocomplete.onSearch('mary')
+    resolveFirst([{ id: '1', displayName: 'Mark' }])
+    vi.useRealTimers()
+    await flushPromises()
+
+    expect(unref(autocomplete.autocompleteResults)).toEqual([])
+    expect(unref(autocomplete.searchInProgress)).toBe(true)
+  })
+
+  it('drops a pending search when the term falls below the minimum search length', async () => {
+    vi.useFakeTimers()
+    const fetchResults = vi.fn().mockResolvedValue([{ id: '1', displayName: 'Mark' }])
+    const wrapper = createAutocompleteWrapper({ minSearchLength: 2, fetchResults })
+
+    wrapper.vm.onSearch('mar')
+    wrapper.vm.onSearch('m')
+    vi.runAllTimers()
+    vi.useRealTimers()
+    await flushPromises()
+
+    expect(fetchResults).not.toHaveBeenCalled()
+    expect(wrapper.vm.autocompleteResults).toEqual([])
+  })
+
+  it('drops a pending search on unmount', () => {
+    vi.useFakeTimers()
+    const fetchResults = vi.fn().mockResolvedValue([])
+    const wrapper = createAutocompleteWrapper({ fetchResults })
+
+    wrapper.vm.onSearch('mary')
+    wrapper.unmount()
+    vi.runAllTimers()
+    vi.useRealTimers()
+
+    expect(fetchResults).not.toHaveBeenCalled()
+  })
+
   describe('method "onSearch"', () => {
     it('does not count surrounding spaces towards the minimum search length', () => {
       const wrapper = createAutocompleteWrapper({ minSearchLength: 3 })
@@ -64,22 +113,14 @@ describe('useCollaboratorAutocomplete', () => {
       expect(wrapper.vm.searchInProgress).toBe(true)
     })
   })
-  describe('method "filterRecipients"', () => {
-    it('matches recipients for a term with surrounding spaces', () => {
-      const wrapper = createAutocompleteWrapper()
-      const recipients = [
-        { displayName: 'Mary', mail: 'mary@example.org', shareType: ShareTypes.user.value },
-        { displayName: 'Paul', mail: 'paul@example.org', shareType: ShareTypes.user.value }
-      ] as CollaboratorAutoCompleteItem[]
-
-      expect(wrapper.vm.filterRecipients(recipients, ' mary ')).toEqual([recipients[0]])
-    })
-  })
 })
 
-function createAutocompleteWrapper({ minSearchLength = 1 } = {}) {
+function createAutocompleteWrapper({
+  minSearchLength = 1,
+  fetchResults = vi.fn().mockResolvedValue([])
+} = {}) {
   const mocks = defaultComponentMocks()
-  return getComposableWrapper(() => useCollaboratorAutocomplete(vi.fn().mockResolvedValue([])), {
+  return getComposableWrapper(() => useCollaboratorAutocomplete(fetchResults), {
     mocks,
     provide: mocks,
     pluginOptions: {

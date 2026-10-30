@@ -10,7 +10,7 @@ import RecipientContainer from '../../../../../src/components/SideBar/Shares/Col
 
 vi.mock('lodash-es', async (importOriginal) => ({
   ...(await importOriginal<typeof import('lodash-es')>()),
-  debounce: (fn: unknown) => fn
+  debounce: (fn: object) => Object.assign(fn, { cancel: vi.fn() })
 }))
 
 const spaceRole = mock<ShareRole>({
@@ -127,6 +127,27 @@ describe('SpaceMemberSelect', () => {
   })
 })
 
+describe('SpaceMemberSelect search', () => {
+  it('shows users the server matched by a field it does not return', async () => {
+    const { wrapper } = getWrapper({
+      users: [
+        {
+          id: '2',
+          displayName: 'Share Test User'
+        } as User
+      ],
+      attachTo: document.body
+    })
+    const input = wrapper.find<HTMLInputElement>('#create-space-members-input')
+    input.element.focus()
+    await input.setValue('sharetest')
+    await flushPromises()
+
+    expect(document.querySelectorAll('.vs__dropdown-option').length).toBe(1)
+    wrapper.unmount()
+  })
+})
+
 describe('SpaceMemberSelect guest invites', () => {
   it('does not offer a valid email address as a guest', async () => {
     const { wrapper } = getWrapper()
@@ -179,13 +200,15 @@ function getWrapper({
   },
   modelValue = [] as SpaceMemberInvite[],
   roleId = '',
-  users = [] as User[]
+  users = [] as User[],
+  attachTo = undefined as HTMLElement
 } = {}) {
   const mocks = defaultComponentMocks()
   mocks.$clientService.graphAuthenticated.users.listUsers.mockResolvedValue(users)
   mocks.$clientService.graphAuthenticated.groups.listGroups.mockResolvedValue([])
 
   const wrapper = mount(SpaceMemberSelect, {
+    attachTo,
     props: {
       modelValue,
       roleId,
@@ -196,6 +219,7 @@ function getWrapper({
         ...defaultPlugins({
           abilities: [{ action: 'create-all', subject: 'GuestInvite' }],
           piniaOptions: {
+            capabilityState: { capabilities: { files_sharing: { search_min_length: 2 } } },
             sharesState: { graphRoles },
             userState: { user: mock<User>({ id: 'me' }) }
           }

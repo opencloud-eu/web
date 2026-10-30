@@ -27,7 +27,7 @@
         :options="autocompleteResults"
         :loading="searchInProgress"
         :multiple="true"
-        :filter="filterRecipients"
+        :filterable="false"
         :dropdown-should-open="
           ({ open, search }: DropDownShouldOpenOptions) =>
             open && search.trim().length >= minSearchLength && !searchInProgress
@@ -308,52 +308,45 @@ const createSharesConcurrentRequests = computed(() => {
   return configStore.options.concurrentRequests.shares.create
 })
 
-const {
-  autocompleteResults,
-  fetchRecipients,
-  filterRecipients,
-  minSearchLength,
-  onSearch,
-  searchInProgress,
-  searchQuery
-} = useCollaboratorAutocomplete(async (query, signal) => {
-  const collaborators = await searchCollaborators(query, {
-    signal,
-    external: unref(isExternalShareRoleType)
-  }).catch((error) => {
-    // the list shows its no results label after a failed search, too
-    if (!signal.aborted) {
-      announceResults(query, [])
-    }
-    throw error
-  })
-
-  const isSpace = !unref(resource) || isSpaceResource(unref(resource))
-  const contacts = isSpace ? [] : await searchOpenXchangeContacts(query.trim(), signal)
-
-  // guests can't be invited to spaces yet
-  const guests =
-    isSpace || unref(isExternalShareRoleType) ? [] : getGuestCandidates(query, collaborators)
-
-  const results = [...collaborators, ...contacts, ...guests].filter(
-    (collaborator: CollaboratorAutoCompleteItem) => {
-      if (collaborator.id === userStore.user.id) {
-        return false
+const { autocompleteResults, minSearchLength, onSearch, searchInProgress, searchQuery } =
+  useCollaboratorAutocomplete(async (query, signal) => {
+    const collaborators = await searchCollaborators(query, {
+      signal,
+      external: unref(isExternalShareRoleType)
+    }).catch((error) => {
+      // the list shows its no results label after a failed search, too
+      if (!signal.aborted) {
+        announceResults(query, [])
       }
+      throw error
+    })
 
-      const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
-      const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
-      const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
+    const isSpace = !unref(resource) || isSpaceResource(unref(resource))
+    const contacts = isSpace ? [] : await searchOpenXchangeContacts(query.trim(), signal)
 
-      return !selected && !exists
+    // guests can't be invited to spaces yet
+    const guests =
+      isSpace || unref(isExternalShareRoleType) ? [] : getGuestCandidates(query, collaborators)
+
+    const results = [...collaborators, ...contacts, ...guests].filter(
+      (collaborator: CollaboratorAutoCompleteItem) => {
+        if (collaborator.id === userStore.user.id) {
+          return false
+        }
+
+        const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
+        const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
+        const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
+
+        return !selected && !exists
+      }
+    )
+    // a newer search replaced this one, even if a source swallowed the abort
+    if (!signal.aborted) {
+      announceResults(query, results)
     }
-  )
-  // a newer search replaced this one, even if a source swallowed the abort
-  if (!signal.aborted) {
-    announceResults(query, results)
-  }
-  return results
-})
+    return results
+  })
 
 function onSearchInput(query: string) {
   // a pending announcement belongs to a search that is outdated now
@@ -477,13 +470,13 @@ const share = async () => {
   saving.value = false
 }
 
-const selectShareRoleType = async (shareRoleType: ShareRoleType) => {
+const selectShareRoleType = (shareRoleType: ShareRoleType) => {
   if (unref(currentShareRoleType).id !== shareRoleType.id) {
     currentShareRoleType.value = shareRoleType
     selectedCollaborators.value = []
 
     if (unref(searchQuery)) {
-      await fetchRecipients(unref(searchQuery))
+      onSearch(unref(searchQuery))
     }
   }
   focusShareInput()
@@ -514,7 +507,7 @@ function announceResults(query: string, results: CollaboratorAutoCompleteItem[])
   ) {
     return
   }
-  const count = filterRecipients(results, query).length
+  const count = results.length
   unref(announcer)?.announce(
     count
       ? $ngettext('%{count} result', '%{count} results', count, { count: count.toString() })
