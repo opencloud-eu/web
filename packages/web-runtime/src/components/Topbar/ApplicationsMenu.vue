@@ -5,7 +5,7 @@
       v-oc-tooltip="applicationSwitcherLabel"
       appearance="raw-inverse"
       color-role="chrome"
-      class="oc-topbar-menu-burger"
+      class="oc-topbar-menu-burger p-0.5 -m-0.5"
       :aria-label="applicationSwitcherLabel"
       no-hover
     >

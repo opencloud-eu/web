@@ -26,7 +26,7 @@
           />
         </div>
         <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full min-w-0">
-          <div class="truncate">
+          <div class="wrap-anywhere">
             <span
               :title="shareDisplayName"
               aria-hidden="true"

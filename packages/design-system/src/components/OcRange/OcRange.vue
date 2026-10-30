@@ -17,7 +17,7 @@
       :max="max"
       :step="step"
       :disabled="disabled"
-      class="oc-range h-1.5 appearance-none rounded-sm bg-role-surface-container-high outline-0 outline-role-secondary hover:opacity-100 focus-visible:outline not-disabled:cursor-pointer disabled:cursor-not-allowed"
+      class="oc-range h-1.5 appearance-none rounded-sm bg-role-outline outline-0 outline-role-secondary hover:opacity-100 focus-visible:outline not-disabled:cursor-pointer disabled:cursor-not-allowed"
       :class="[inlineLabel ? 'grow basis-0' : 'w-full', inputClass]"
       @input="onInput"
       @change="onChange"

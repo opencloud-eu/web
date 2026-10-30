@@ -47,7 +47,7 @@
         </div>
       </div>
       <div
-        class="sidebar-panel__body flex flex-col px-2 pb-2 pt-0 overflow-y-auto overflow-x-hidden"
+        class="sidebar-panel__body flex flex-col px-2 pb-(--oc-floating-action-button-space,--spacing(2)) pt-0 overflow-y-auto overflow-x-hidden"
         :class="[`sidebar-panel__body-${panel.name}`]"
       >
         <div

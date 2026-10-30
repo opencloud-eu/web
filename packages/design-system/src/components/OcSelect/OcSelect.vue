@@ -321,7 +321,7 @@ function dropdownShouldOpen({ noDrop, open, mutableLoading }: Record<string, boo
   return !noDrop && open && !mutableLoading && unref(dropdownEnabled)
 }
 
-// highlights the active option with an outline while navigating via arrow keys
+// outlines the option that Enter picks while the keyboard is in use, mouse hover only tints it
 const keyboardNavigation = ref(false)
 
 // vue-select still maps keydown handlers by the deprecated keyCode
@@ -352,9 +352,7 @@ function mapKeydown(map: Record<number, (e: KeyboardEvent) => void>) {
 }
 
 function onKeydown(e: KeyboardEvent) {
-  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-    keyboardNavigation.value = true
-  }
+  keyboardNavigation.value = true
   if (!['Enter', 'Tab', 'Escape'].includes(e.key)) {
     dropdownEnabled.value = true
   }

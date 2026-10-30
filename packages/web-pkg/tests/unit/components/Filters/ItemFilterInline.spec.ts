@@ -38,6 +38,13 @@ describe('ItemFilterInline', () => {
     await wrapper.find(selectors.filterOption).trigger('click')
     expect(wrapper.emitted('toggleFilter').length).toBeGreaterThan(0)
   })
+  it('marks only the active option with a check icon', async () => {
+    const { wrapper } = getWrapper({ props: { filterOptions } })
+    await wrapper.findAll(selectors.filterOption).at(1).trigger('click')
+    const options = wrapper.findAll(selectors.filterOption)
+    expect(options.at(0).find('.oc-icon').exists()).toBe(false)
+    expect(options.at(1).find('.oc-icon').exists()).toBe(true)
+  })
   describe('route query', () => {
     it('sets the active option as query param', async () => {
       const { wrapper, mocks } = getWrapper({ props: { filterOptions } })

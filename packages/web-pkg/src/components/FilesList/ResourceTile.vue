@@ -28,7 +28,7 @@
       <div class="relative flex w-full" @mouseenter="onMediaEnter" @mouseleave="onMediaLeave">
         <!-- a sibling of the link, interactive elements must not be nested inside it -->
         <div
-          class="z-10 absolute top-0 left-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface-container"
+          class="z-10 absolute top-0 left-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface"
         >
           <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
             <oc-spinner :aria-label="$gettext('File is being processed')" />
