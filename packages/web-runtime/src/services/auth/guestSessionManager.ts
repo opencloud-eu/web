@@ -1,11 +1,11 @@
 import { AuthStore, ClientService, SpacesStore } from '@opencloud-eu/web-pkg'
-import { DavHttpError, ShareSpaceResource } from '@opencloud-eu/web-client'
+import { DavHttpError, HttpError, ShareSpaceResource } from '@opencloud-eu/web-client'
 import type { GuestLinkSession } from '@opencloud-eu/web-client/graph'
 import {
   GuestLinkError,
   GuestLinkErrorErrorTypeEnum
 } from '@opencloud-eu/web-client/graph/generated'
-import { isAxiosError } from 'axios'
+import { AxiosRequestConfig, isAxiosError } from 'axios'
 import { resetSSE } from '@opencloud-eu/web-client/sse'
 
 const storageKey = 'oc.guestPermissionId'
@@ -97,13 +97,21 @@ function isGuestPath(url: string | undefined): boolean {
   }
 }
 
+function getAxiosRequestUrl(config: AxiosRequestConfig | undefined): string | undefined {
+  const { url, baseURL } = config || {}
+  return baseURL && url && !/^https?:\/\//.test(url) ? `${baseURL}${url}` : url
+}
+
 function getUnauthorizedRequestUrl(error: unknown): string | undefined {
-  if (error instanceof DavHttpError && error.statusCode === 401) {
-    return error.response?.url
-  }
   if (isAxiosError(error) && error.response?.status === 401) {
-    const { url, baseURL } = error.config || {}
-    return baseURL && url && !/^https?:\/\//.test(url) ? `${baseURL}${url}` : url
+    return getAxiosRequestUrl(error.config)
+  }
+  if (error instanceof HttpError && error.statusCode === 401) {
+    const { response } = error
+    if (!response) {
+      return undefined
+    }
+    return 'config' in response ? getAxiosRequestUrl(response.config) : response.url
   }
   return undefined
 }

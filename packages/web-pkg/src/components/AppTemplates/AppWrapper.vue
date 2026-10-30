@@ -44,7 +44,7 @@ import {
   markRaw
 } from 'vue'
 import { DateTime } from 'luxon'
-import { useTask } from 'vue-concurrency'
+import { type Task, useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
@@ -80,6 +80,7 @@ import {
   Key,
   useAppMeta,
   useGetResourceContext,
+  useAuthService,
   useAuthStore,
   useKeyboardActions,
   useExtensionRegistry,
@@ -149,6 +150,7 @@ const { selectedResources } = useSelectedResources()
 const { dispatchModal } = useModals()
 const spacesStore = useSpacesStore()
 const authStore = useAuthStore()
+const authService = useAuthService()
 const configStore = useConfigStore()
 const resourcesStore = useResourcesStore()
 const sharesStore = useSharesStore()
@@ -417,7 +419,7 @@ const addMissingDriveAliasAndItem = async () => {
   })
 }
 
-const loadResourceTask = useTask(function* (signal) {
+const loadResourceTask = useTask(function* (signal, isRetry = false) {
   try {
     if (!unref(driveAliasAndItem)) {
       yield addMissingDriveAliasAndItem()
@@ -483,14 +485,44 @@ const loadResourceTask = useTask(function* (signal) {
     }
     resourcesStore.initResourceList({ currentFolder: null, resources: [unref(resource)] })
     selectedResources.value = [unref(resource)]
+    return true
   } catch (e) {
-    console.error(e)
-    loadingError.value = e
-    loading.value = false
+    const result = yield* handleLoadingError(e, isRetry)
+    if (result !== 'renewed') {
+      loading.value = false
+    }
+    return result
   }
 }).restartable()
 
-const loadFileTask = useTask(function* (signal) {
+type LoadResult = boolean | 'renewed'
+
+function isUnauthorizedError(error: unknown) {
+  const { statusCode, response } = (error ?? {}) as {
+    statusCode?: number
+    response?: { status?: number }
+  }
+  return statusCode === 401 || response?.status === 401
+}
+
+function* handleLoadingError(error: unknown, isRetry: boolean): Generator<unknown, LoadResult> {
+  console.error(error)
+  if (isUnauthorizedError(error)) {
+    try {
+      yield authService.handleAuthError(unref(currentRoute), error)
+    } catch (e) {
+      console.error(e)
+    }
+    if (!isRetry && authStore.userContextReady) {
+      return 'renewed'
+    }
+  }
+  loadingError.value = error as Error
+  return false
+}
+
+const loadFileTask = useTask(function* (signal, isRetry = false) {
+  let result: LoadResult = true
   try {
     const newExtension = importResourceWithExtension(unref(resource))
     if (newExtension) {
@@ -514,7 +546,7 @@ const loadFileTask = useTask(function* (signal) {
     }
 
     if (replaceInvalidFileRoute(currentFileContext, unref(resource))) {
-      return
+      return result
     }
 
     isReadOnly.value = ![DavPermission.Updateable, DavPermission.FileUpdateable].some(
@@ -550,12 +582,29 @@ const loadFileTask = useTask(function* (signal) {
       })
     }
   } catch (e) {
-    console.error(e)
-    loadingError.value = e
+    result = yield* handleLoadingError(e, isRetry)
   } finally {
-    loading.value = false
+    if (result !== 'renewed' && !signal.aborted) {
+      loading.value = false
+    }
   }
+  return result
 }).restartable()
+
+async function performWithRetry(task: Task<LoadResult, [isRetry?: boolean]>) {
+  try {
+    let result = await task.perform()
+    if (result === 'renewed') {
+      result = await task.perform(true)
+    }
+    return result === true
+  } catch (e) {
+    if (e === 'cancel') {
+      return false
+    }
+    throw e
+  }
+}
 
 watch(
   () => {
@@ -571,9 +620,9 @@ watch(
       // the previous file's content.
       loading.value = true
       loadingError.value = undefined
+      loadFileTask.cancelAll()
 
-      await loadResourceTask.perform()
-      if (unref(loadingError)) {
+      if (!(await performWithRetry(loadResourceTask))) {
         return
       }
 
@@ -594,11 +643,11 @@ watch(
             closeApp()
           },
           onConfirm: () => {
-            loadFileTask.perform()
+            performWithRetry(loadFileTask)
           }
         })
       } else {
-        loadFileTask.perform()
+        performWithRetry(loadFileTask)
       }
     } else {
       space.value = unref(unref(currentFileContext).space)
@@ -677,6 +726,18 @@ const saveFileTask = useTask(function* () {
     }
     switch (e.statusCode) {
       case 401:
+        if (!authStore.userContextReady && !authStore.publicLinkContextReady) {
+          errorPopup(
+            new HttpError(
+              $gettext(
+                'Your access to this file has ended, so it cannot be saved. Copy your changes before you leave this page.'
+              ),
+              e.response
+            )
+          )
+          break
+        }
+      // falls through
       case 403:
         errorPopup(new HttpError($gettext("You're not authorized to save this file"), e.response))
         break

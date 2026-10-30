@@ -17,9 +17,11 @@ import AppWrapper from '../../../../src/components/AppTemplates/AppWrapper.vue'
 import type { YjsSession, YjsStatus } from '../../../../src/composables/yjs'
 import type { FileContentOptions, FileContext } from '../../../../src/composables/appDefaults'
 import type { FileAction } from '../../../../src/composables/actions'
+import type { AuthServiceInterface } from '../../../../src/composables/authContext'
 import { eventBus } from '../../../../src/services'
 import {
   type CustomComponentExtension,
+  useAuthStore,
   useExtensionRegistry,
   useMessages,
   useModals
@@ -122,7 +124,10 @@ function setup({
     params: { driveAliasAndItem: 'personal/alan/a.md' }
   }),
   isGuestContext = false,
-  fileContentOptions = undefined as FileContentOptions
+  isUserContext = false,
+  isPublicLinkContext = false,
+  fileContentOptions = undefined as FileContentOptions,
+  authService = mock<AuthServiceInterface>()
 } = {}) {
   const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
   const beginSave = vi.fn()
@@ -195,7 +200,7 @@ function setup({
     })
   })
 
-  const mocks = defaultComponentMocks({ currentRoute })
+  const mocks = { ...defaultComponentMocks({ currentRoute }), $authService: authService }
   // A deep mock hands back a function for every property; the wrapper
   // compares this one against the initiator in SSE events.
   ;(mocks.$clientService as any).initiatorId = 'tab-own'
@@ -212,7 +217,12 @@ function setup({
       appsState: {
         apps: { 'test-app': { id: 'test-app', name: 'Test App', meta: { fileSizeLimit } } }
       },
-      authState: { accessToken: sse ? 'token' : undefined, guestContextReady: isGuestContext },
+      authState: {
+        accessToken: sse ? 'token' : undefined,
+        guestContextReady: isGuestContext,
+        userContextReady: isUserContext,
+        publicLinkContextReady: isPublicLinkContext
+      },
       capabilityState: { capabilities: { core: { 'support-sse': sse } as any } }
     }
   })
@@ -244,19 +254,23 @@ function setup({
   // deletion is handed to this wrapper's subscription only.
   const subscribeSpy = vi.spyOn(eventBus, 'subscribe')
   let slotProps: any
-  const wrapper = mount(AppWrapper, {
-    slots: {
-      default: (props: any) => {
-        slotProps = props
-        return h('div', { class: 'slot-content' })
-      }
-    },
-    props: {
-      applicationId: 'test-app',
-      wrappedComponent,
-      ...(yjsEnabled ? { yjs: { makeAdapter: () => mock<any>() } } : {}),
-      ...(fileContentOptions ? { fileContentOptions } : {})
-    },
+  const isShown = ref(true)
+  const appWrapperProps = {
+    applicationId: 'test-app',
+    wrappedComponent,
+    ...(yjsEnabled ? { yjs: { makeAdapter: () => mock<any>() } } : {}),
+    ...(fileContentOptions ? { fileContentOptions } : {})
+  }
+  const appWrapperSlots = {
+    default: (props: any) => {
+      slotProps = props
+      return h('div', { class: 'slot-content' })
+    }
+  }
+  const parent = defineComponent({
+    setup: () => () => (unref(isShown) ? h(AppWrapper, appWrapperProps, appWrapperSlots) : null)
+  })
+  const wrapper = mount(parent, {
     global: {
       plugins: [...piniaPlugins, router],
       mocks,
@@ -271,6 +285,11 @@ function setup({
 
   return {
     wrapper,
+    navigateAway() {
+      isShown.value = false
+    },
+    currentRoute,
+    authService,
     routerPush,
     currentFileContext,
     isEnabled: () => sessionOptions?.enabled(),
@@ -279,6 +298,7 @@ function setup({
     markConflicted,
     putFileContents,
     closeApp,
+    getFileInfo,
     getFileContents,
     unregisterAppBarExtension,
     wasWrittenByRoom,
@@ -448,6 +468,226 @@ describe('AppWrapper — loading a file that does not exist', () => {
 
     expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(true)
     expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
+  })
+})
+
+describe('AppWrapper — loading a file without access', () => {
+  const unauthorized = () => new HttpError('Unauthorized', undefined, 401)
+
+  it('hands a 401 while loading the resource to the auth error handling', async () => {
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    const error = unauthorized()
+    await s.rejectResource(error)
+
+    expect(s.authService.handleAuthError).toHaveBeenCalledWith(s.currentRoute, error)
+  })
+
+  it('hands a 401 while loading the content to the auth error handling', async () => {
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    const error = unauthorized()
+    s.rejectContent(error)
+    await flushPromises()
+
+    expect(s.authService.handleAuthError).toHaveBeenCalledWith(s.currentRoute, error)
+  })
+
+  it('hands a 401 of a graph request to the auth error handling', async () => {
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    const error = Object.assign(new Error('Unauthorized'), { response: { status: 401 } })
+    await s.rejectResource(error)
+
+    expect(s.authService.handleAuthError).toHaveBeenCalledWith(s.currentRoute, error)
+  })
+
+  it('does not hand other errors to the auth error handling', async () => {
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    await s.rejectResource(new HttpError('Forbidden', undefined, 403))
+
+    expect(s.authService.handleAuthError).not.toHaveBeenCalled()
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+  })
+
+  it('shows the error when the auth error handling stays on the page', async () => {
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    await s.rejectResource(unauthorized())
+
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+  })
+
+  it('loads the file again once after the token of a user was renewed', async () => {
+    const s = setup({ yjsEnabled: false, isUserContext: true })
+    await nextTick()
+    await s.rejectResource(unauthorized())
+
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
+
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+
+    expect(s.currentContent()).toEqual('content of a')
+  })
+
+  it('shows the error when loading fails again after the renewal', async () => {
+    const s = setup({ yjsEnabled: false, isUserContext: true })
+    await nextTick()
+    await s.rejectResource(unauthorized())
+    await s.rejectResource(unauthorized())
+
+    expect(s.authService.handleAuthError).toHaveBeenCalledTimes(2)
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+  })
+
+  it('loads the content again once after the token of a user was renewed', async () => {
+    const s = setup({ yjsEnabled: false, isUserContext: true })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    s.rejectContent(unauthorized())
+    await flushPromises()
+    await s.resolveContent('content of a')
+
+    expect(s.getFileContents).toHaveBeenCalledTimes(2)
+    expect(s.currentContent()).toEqual('content of a')
+  })
+
+  it('shows a spinner while loading again after the renewal', async () => {
+    const s = setup({ yjsEnabled: false, isUserContext: true })
+    await nextTick()
+    await s.rejectResource(unauthorized())
+
+    expect(s.wrapper.findComponent({ name: 'AppLoadingSpinner' }).exists()).toBe(true)
+  })
+
+  it('shows the error when the renewal failed and the navigation away was blocked', async () => {
+    const s = setup({ yjsEnabled: false, isUserContext: true })
+    vi.mocked(s.authService.handleAuthError).mockImplementation(() => {
+      useAuthStore().userContextReady = false
+    })
+    await nextTick()
+    await s.rejectResource(unauthorized())
+
+    expect(s.getFileInfo).toHaveBeenCalledTimes(1)
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+  })
+
+  it('shows the error when the auth error handling fails', async () => {
+    const s = setup({ yjsEnabled: false })
+    vi.mocked(s.authService.handleAuthError).mockRejectedValue(new Error('navigation failed'))
+    await nextTick()
+    await s.rejectResource(unauthorized())
+
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+  })
+
+  it('shows the error when loading the content fails again after the renewal', async () => {
+    const s = setup({ yjsEnabled: false, isUserContext: true })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    s.rejectContent(unauthorized())
+    await flushPromises()
+    s.rejectContent(unauthorized())
+    await flushPromises()
+
+    expect(s.authService.handleAuthError).toHaveBeenCalledTimes(2)
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+  })
+
+  it('does not load the content of the previous file again after switching files', async () => {
+    const s = setup({ yjsEnabled: false, isUserContext: true })
+    const authHandled = deferred<void>()
+    vi.mocked(s.authService.handleAuthError).mockReturnValue(authHandled.promise)
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    s.rejectContent(unauthorized())
+    await flushPromises()
+
+    s.currentFileContext.value = mock<FileContext>({ space: mock<any>(), path: '/b.md' })
+    await flushPromises()
+    authHandled.resolve()
+    await flushPromises()
+
+    expect(s.getFileContents).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not load again when the auth error handling closes the app with the next render', async () => {
+    const s = setup({ yjsEnabled: false, isUserContext: true })
+    vi.mocked(s.authService.handleAuthError).mockImplementation(() => {
+      s.navigateAway()
+    })
+    await nextTick()
+    await s.rejectResource(unauthorized())
+
+    expect(s.getFileInfo).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not load again when the app closes while the auth error handling is pending', async () => {
+    const s = setup({ yjsEnabled: false, isUserContext: true })
+    const authHandled = deferred<void>()
+    vi.mocked(s.authService.handleAuthError).mockReturnValue(authHandled.promise)
+    await nextTick()
+    await s.rejectResource(unauthorized())
+
+    s.wrapper.unmount()
+    authHandled.resolve()
+    await flushPromises()
+
+    expect(s.getFileInfo).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('AppWrapper — saving without access', () => {
+  it('tells a visitor without a user or public link session (a guest) to copy the changes', async () => {
+    const s = await openFile({
+      yjsEnabled: false,
+      isGuestContext: true,
+      putFileContents: vi.fn().mockRejectedValue({ statusCode: 401, response: {} })
+    })
+    await s.edit('edited content')
+
+    await s.pressCtrlS()
+
+    expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        desc: 'Your access to this file has ended, so it cannot be saved. Copy your changes before you leave this page.'
+      })
+    )
+    expect(s.authService.handleAuthError).not.toHaveBeenCalled()
+    expect(s.currentContent()).toEqual('edited content')
+  })
+
+  it('tells a public link visitor that saving is not authorized', async () => {
+    const s = await openFile({
+      yjsEnabled: false,
+      isPublicLinkContext: true,
+      putFileContents: vi.fn().mockRejectedValue({ statusCode: 401, response: {} })
+    })
+    await s.edit('edited content')
+
+    await s.pressCtrlS()
+
+    expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ desc: "You're not authorized to save this file" })
+    )
+  })
+
+  it('tells a user that saving is not authorized', async () => {
+    const s = await openFile({
+      yjsEnabled: false,
+      isUserContext: true,
+      putFileContents: vi.fn().mockRejectedValue({ statusCode: 401, response: {} })
+    })
+    await s.edit('edited content')
+
+    await s.pressCtrlS()
+
+    expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ desc: "You're not authorized to save this file" })
+    )
   })
 })
 
@@ -1031,6 +1271,23 @@ describe('AppWrapper — Yjs session gate', () => {
     // `resource` is already b.md while `currentContent` still holds a.md's
     // body. The gate must stay shut for this whole window.
     await s.resolveResource(FILE_B)
+    expect(s.isEnabled()).toBe(false)
+
+    await s.resolveContent('content of b')
+    expect(s.isEnabled()).toBe(true)
+  })
+
+  it('keeps loading when switching to another file while the content is still loading', async () => {
+    const s = setup()
+    await nextTick()
+    await s.resolveResource(FILE_A)
+
+    s.currentFileContext.value = mock<FileContext>({ space: mock<any>(), path: '/b.md' })
+    await flushPromises()
+    expect(s.wrapper.findComponent({ name: 'AppLoadingSpinner' }).exists()).toBe(true)
+
+    await s.resolveResource(FILE_B)
+    expect(s.wrapper.findComponent({ name: 'AppLoadingSpinner' }).exists()).toBe(true)
     expect(s.isEnabled()).toBe(false)
 
     await s.resolveContent('content of b')
