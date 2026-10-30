@@ -4,7 +4,7 @@ docker_repo_slug = "opencloudeu/web"
 ALPINE_GIT = "alpine/git:latest"
 
 # renovate: datasource=docker depName=apache/tika
-APACHE_TIKA = "apache/tika:4.2.1-SNAPSHOT"
+APACHE_TIKA = "apache/tika:4.3.0-SNAPSHOT"
 
 # renovate: datasource=docker depName=shumc/imagor
 IMAGOR = "shumc/imagor:1.9.14"
