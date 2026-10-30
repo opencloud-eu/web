@@ -1,22 +1,28 @@
 <template>
   <nav class="oc-pagination" :aria-label="$gettext('Pagination')">
-    <ol class="oc-pagination-list flex items-center flex-wrap m-0 gap-2">
+    <ol ref="listRef" class="oc-pagination-list flex items-center flex-wrap m-0 gap-2">
       <li v-if="isPrevPageAvailable" class="oc-pagination-list-item">
         <component
           :is="routerLinkComponent"
           class="oc-pagination-list-item-prev flex mr-2 rounded-sm hover:bg-role-secondary hover:text-role-on-secondary [&_svg]:hover:!fill-role-on-secondary"
           :aria-label="$gettext('Go to the previous page')"
+          :aria-current="null"
           :to="previousPageLink"
         >
           <oc-icon name="arrow-drop-left" fill-type="line" color="var(--oc-role-on-surface)" />
         </component>
       </li>
-      <li v-for="(page, index) in displayedPages" :key="index" class="oc-pagination-list-item">
+      <li
+        v-for="(page, index) in displayedPages"
+        :key="typeof page === 'number' ? page : `ellipsis-${index}`"
+        class="oc-pagination-list-item"
+      >
         <component
           :is="pageComponent(page)"
           class="oc-pagination-list-item-page py-1 px-2 rounded-sm hover:bg-role-secondary hover:text-role-on-secondary transition-colors duration-200 ease-in-out"
           :class="pageClass(page)"
           v-bind="bindPageProps(page)"
+          :aria-current="isCurrentPage(page) ? 'page' : null"
         >
           {{ page }}
         </component>
@@ -26,6 +32,7 @@
           :is="routerLinkComponent"
           class="oc-pagination-list-item-next flex ml-2 rounded-sm hover:bg-role-secondary [&_svg]:hover:!fill-role-on-secondary"
           :aria-label="$gettext('Go to the next page')"
+          :aria-current="null"
           :to="nextPageLink"
         >
           <oc-icon name="arrow-drop-right" fill-type="line" color="var(--oc-role-on-surface)" />
@@ -36,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
+import { computed, nextTick, unref, useTemplateRef, watch } from 'vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import { useGettext } from 'vue3-gettext'
 import { RouteLocation } from 'vue-router'
@@ -76,6 +83,7 @@ const {
 } = defineProps<Props>()
 
 const { $gettext } = useGettext()
+const listRef = useTemplateRef<HTMLElement>('listRef')
 
 const displayedPages = computed(() => {
   let pagesCollection: Array<Page> = []
@@ -93,13 +101,13 @@ const displayedPages = computed(() => {
       currentPageIndex + indentation + 1
     )
 
-    if (unref($_currentPage) > 2) {
+    if (Number(pagesCollection[0]) > 1) {
       Number(pagesCollection[0]) > 2
         ? pagesCollection.unshift(1, '...')
         : pagesCollection.unshift(1)
     }
 
-    if (unref($_currentPage) < pages - 1) {
+    if (Number(pagesCollection[pagesCollection.length - 1]) < pages) {
       Number(pagesCollection[pagesCollection.length - 1]) < pages - 1
         ? pagesCollection.push('...', pages)
         : pagesCollection.push(pages)
@@ -136,7 +144,7 @@ const bindPageProps = (page: Page) => {
 
   if (isCurrentPage(page)) {
     return {
-      'aria-current': 'page'
+      tabindex: -1
     }
   }
 
@@ -176,4 +184,20 @@ const bindPageLink = (page: Page) => {
     params: currentRoute.params
   }
 }
+
+watch(
+  () => currentPage,
+  async () => {
+    if (!unref(listRef)?.contains(document.activeElement)) {
+      return
+    }
+    await nextTick()
+    // the activated link may have been replaced by the new current page, which drops focus to the body
+    if (!unref(listRef)?.contains(document.activeElement)) {
+      unref(listRef)
+        ?.querySelector<HTMLElement>('[aria-current="page"]')
+        ?.focus({ preventScroll: true })
+    }
+  }
+)
 </script>

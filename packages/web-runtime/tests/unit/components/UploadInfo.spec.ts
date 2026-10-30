@@ -15,6 +15,7 @@ const selectors = {
   success: '.upload-info-success',
   error: '.upload-info-danger',
   message: '.upload-info-message',
+  itemStatus: '.upload-info-item-status',
   info: {
     items: '.upload-info-items',
     item: '.upload-info-items li'
@@ -217,6 +218,26 @@ describe('UploadInfo component', () => {
 
       const uploadedItems = wrapper.findAll(selectors.info.item)
       expect(uploadedItems.length).toBe(2)
+    })
+    it('tells screen readers the status of each item', async () => {
+      const { wrapper } = getShallowWrapper()
+      const vm = wrapper.vm as any
+      vm.showInfo = true
+      vm.infoExpanded = true
+      vm.uploads = Object.fromEntries(
+        ['success', 'cancelled', 'error', undefined].map((status, i) => [
+          i,
+          { name: `file${i}`, path: '/', type: 'file', status, meta: { uploadId: i } }
+        ])
+      )
+      await nextTick()
+
+      const statuses = () => wrapper.findAll(selectors.itemStatus).map((s) => s.text())
+      expect(statuses()).toEqual(['Uploaded', 'Cancelled', 'Failed', 'Uploading'])
+
+      vm.togglePauseUploads()
+      await nextTick()
+      expect(statuses()).toEqual(['Uploaded', 'Cancelled', 'Failed', 'Paused'])
     })
     it('should show a message on the failed uploaded files', async () => {
       const { wrapper } = getShallowWrapper()

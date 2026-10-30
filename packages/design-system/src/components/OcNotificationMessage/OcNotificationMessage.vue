@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="rootRef"
     class="flex flex-wrap oc-notification-message shadow-sm/10 rounded-xl border break-keep bg-role-surface motion-safe:animate-fade-in relative"
     :class="classes"
   >
@@ -39,7 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, unref } from 'vue'
+import { ref, computed, unref, useTemplateRef, watch } from 'vue'
+import { useElementHover, useFocusWithin, useTimeoutFn } from '@vueuse/core'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcButton from '../OcButton/OcButton.vue'
 import OcErrorLog from '../OcErrorLog/OcErrorLog.vue'
@@ -100,6 +102,7 @@ const {
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
+const rootRef = useTemplateRef<HTMLElement>('rootRef')
 const showErrorLog = ref(false)
 
 const classes = computed(() => `oc-notification-message-${status}`)
@@ -111,13 +114,20 @@ const close = () => {
   emit('close')
 }
 
-onMounted(() => {
-  if (timeout !== 0) {
-    setTimeout(() => {
-      close()
-    }, timeout * 1000)
-  }
-})
+const isHovered = useElementHover(rootRef)
+const { focused } = useFocusWithin(rootRef)
+const { start, stop } = useTimeoutFn(close, timeout * 1000, { immediate: false })
+
+watch(
+  [isHovered, focused],
+  ([hovered, isFocused]) => {
+    stop()
+    if (timeout !== 0 && !hovered && !isFocused) {
+      start()
+    }
+  },
+  { immediate: true }
+)
 </script>
 <style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
