@@ -9,6 +9,7 @@ import {
 import { Router, RouteLocation } from 'vue-router'
 import {
   contextRouteNameKey,
+  locationGuestShares,
   queryItemAsString,
   useAuthStore,
   useEmbedMode
@@ -94,6 +95,14 @@ export const setupAuthGuard = (router: Router) => {
           query: { resume: 'true', redirectUrl: to.fullPath }
         }
       }
+    }
+
+    if (
+      (isUserContextRequired(router, to) || isIdpContextRequired(router, to)) &&
+      authStore.isGuestContext &&
+      router.hasRoute(locationGuestShares.name)
+    ) {
+      return locationGuestShares
     }
 
     if (isUserContextRequired(router, to)) {

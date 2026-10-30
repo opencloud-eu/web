@@ -105,7 +105,7 @@ const homeLink = computed(() => {
   }
 
   if (authStore.isGuestContext) {
-    // other routes would end the guest session
+    // other routes would only redirect the guest here
     return createLocationGuest('files-guest-shares')
   }
 

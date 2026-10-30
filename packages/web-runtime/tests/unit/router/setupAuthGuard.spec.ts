@@ -200,6 +200,50 @@ describe('setupAuthGuard', () => {
     })
   })
 
+  describe('route that needs a user', () => {
+    it.each(['/user', '/idp'])(
+      'redirects %s to the guest shares with an active guest session',
+      async (path) => {
+        const router = getRouter()
+        useAuthStore().setGuestContext('permission-id', 'share-id')
+
+        await router.push(path)
+
+        expect(router.currentRoute.value.name).toEqual('files-guest-shares')
+        expect(router.currentRoute.value.query.permissionId).toEqual('permission-id')
+      }
+    )
+
+    it('redirects to the login page with an active guest session but without the guest shares route', async () => {
+      const router = getRouter()
+      router.removeRoute('files-guest-shares')
+      useAuthStore().setGuestContext('permission-id', 'share-id')
+
+      await router.push('/user')
+
+      expect(router.currentRoute.value.name).toEqual('login')
+    })
+
+    it('redirects to the login page without a guest session', async () => {
+      const router = getRouter()
+
+      await router.push('/user')
+
+      expect(router.currentRoute.value.name).toEqual('login')
+    })
+
+    it('prefers the user context over a guest context', async () => {
+      const router = getRouter()
+      const authStore = useAuthStore()
+      authStore.setGuestContext('permission-id', 'share-id')
+      authStore.setUserContextReady(true)
+
+      await router.push('/user')
+
+      expect(router.currentRoute.value.name).toEqual('user')
+    })
+  })
+
   describe('guest permission id', () => {
     it('is appended to the query while a guest context is active', async () => {
       const router = getRouter()
@@ -277,7 +321,15 @@ function getRouter() {
         component,
         meta: { authContext: 'guest' }
       },
+      {
+        path: '/guest-shares',
+        name: 'files-guest-shares',
+        component,
+        meta: { authContext: 'guest' }
+      },
       { path: '/app', name: 'app', component, meta: { authContext: 'hybrid' } },
+      { path: '/user', name: 'user', component, meta: { authContext: 'user' } },
+      { path: '/idp', name: 'idp', component, meta: { authContext: 'idp' } },
       {
         path: '/f/:fileId',
         name: 'resolvePrivateLink',

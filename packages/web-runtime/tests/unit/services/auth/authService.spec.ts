@@ -856,6 +856,31 @@ describe('AuthService', () => {
       }
     )
 
+    it.each(['user', 'idp'])('keeps an active guest session on a %s route', async (authContext) => {
+      localStorage.setItem('oc.guestPermissionId', 'permission-id')
+      const { clientService } = getClientService([])
+
+      const authService = new AuthService()
+      Object.defineProperty(authService, 'userManager', {
+        value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null) })
+      })
+
+      const { authStore } = initAuthService({
+        authService,
+        clientService,
+        router: createRouter()
+      })
+      authStore.setGuestContext('permission-id', 'share-id')
+      await authService.initializeContext({
+        meta: { authContext },
+        params: {},
+        query: {}
+      } as unknown as RouteLocation)
+
+      expect(authStore.isGuestContext).toBeTruthy()
+      expect(localStorage.getItem('oc.guestPermissionId')).toEqual('permission-id')
+    })
+
     it('drops a persisted guest session on a public link route when a user is signed in', async () => {
       localStorage.setItem('oc.guestPermissionId', 'permission-id')
       localStorage.setItem(
