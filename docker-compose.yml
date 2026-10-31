@@ -359,7 +359,7 @@ services:
       - default
 
   mailpit:
-    image: axllent/mailpit:v1.32.0
+    image: axllent/mailpit:v1.33.0
     container_name: web_mailpit
     ports:
       - '127.0.0.1:8025:8025' # web UI and REST API
