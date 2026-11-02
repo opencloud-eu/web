@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div
-      v-if="loadReadmeContentTask.isRunning || !loadReadmeContentTask.last"
-      class="flex justify-center"
-    >
+    <div v-if="!loadReadmeContentTask.lastSuccessful" class="flex justify-center">
       <oc-spinner size="large" class="my-4" :aria-label="$gettext('Loading README content')" />
     </div>
     <div
@@ -30,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { preloadTextEditor, TextEditorViewer, useClientService } from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
@@ -76,19 +73,6 @@ const onMarkdownResize = () => {
   }
 }
 const markdownResizeObserver = new ResizeObserver(onMarkdownResize)
-const observeMarkdownContainerResize = () => {
-  if (!markdownResizeObserver || !unref(markdownContainerRef)) {
-    return
-  }
-  markdownResizeObserver.unobserve(unref(markdownContainerRef))
-  markdownResizeObserver.observe(unref(markdownContainerRef))
-}
-const unobserveMarkdownContainerResize = () => {
-  if (!markdownResizeObserver || !unref(markdownContainerRef)) {
-    return
-  }
-  markdownResizeObserver.unobserve(unref(markdownContainerRef))
-}
 
 const loadReadmeContentTask = useTask(function* (signal) {
   try {
@@ -104,15 +88,27 @@ const loadReadmeContentTask = useTask(function* (signal) {
   } catch (e) {
     console.error('failed to load README.md content', e)
   }
+}).restartable()
+
+watch(
+  markdownContainerRef,
+  (container) => {
+    if (container) {
+      markdownResizeObserver.observe(container)
+    }
+  },
+  { flush: 'post' }
+)
+
+watch([() => readmeFile.id, () => readmeFile.etag, () => readmeFile.mdate], () => {
+  loadReadmeContentTask.perform()
 })
 
-onMounted(async () => {
-  await loadReadmeContentTask.perform()
-  await nextTick()
-  observeMarkdownContainerResize()
+onMounted(() => {
+  loadReadmeContentTask.perform()
 })
 
 onBeforeUnmount(() => {
-  unobserveMarkdownContainerResize()
+  markdownResizeObserver.disconnect()
 })
 </script>
