@@ -167,8 +167,7 @@
           'forceAllowOldBrowser',
           JSON.stringify({ expiry: new Date().getTime() + 30 * 24 * 60 * 60 * 1000 })
         )
-        browserError.classList.add('splash-hide')
-        init()
+        location.reload()
       }
 
       function removeLoadingSpinner() {
