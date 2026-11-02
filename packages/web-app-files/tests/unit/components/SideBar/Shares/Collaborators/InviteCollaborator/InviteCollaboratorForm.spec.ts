@@ -545,6 +545,27 @@ describe('InviteCollaboratorForm', () => {
       expect(showMessage).toHaveBeenCalledTimes(1)
       expect(showMessage).toHaveBeenCalledWith({ title: 'Share was added successfully' })
     })
+    it('shows the success message and finishes saving when refreshing the space fails', async () => {
+      const { wrapper, mocks } = getWrapper({
+        resource: mock<SpaceResource>({ id: 'space-id', driveType: 'project' })
+      })
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+      mocks.$clientService.graphAuthenticated.drives.getDrive.mockRejectedValue(
+        new Error('refresh failed')
+      )
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      ;(wrapper.vm as any).selectedCollaborators = [mock<CollaboratorAutoCompleteItem>({ id: '2' })]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      const { showMessage } = useMessages()
+      expect(mocks.$clientService.graphAuthenticated.drives.getDrive).toHaveBeenCalledWith(
+        'space-id'
+      )
+      expect(showMessage).toHaveBeenCalledWith({ title: 'Share was added successfully' })
+      expect((wrapper.vm as any).saving).toBe(false)
+    })
     it('clicking the invite-sharees button calls the "share"-action', async () => {
       const { wrapper } = getWrapper()
       const shareSpy = vi.spyOn(wrapper.vm as any, 'share')

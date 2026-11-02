@@ -428,9 +428,14 @@ const share = async () => {
   await Promise.allSettled(savePromises)
 
   if (isProjectSpaceResource(unref(resource))) {
-    const updatedSpace = await clientService.graphAuthenticated.drives.getDrive(unref(resource).id)
-
-    upsertSpace({ ...updatedSpace, graphPermissions: unref(space).graphPermissions })
+    try {
+      const updatedSpace = await clientService.graphAuthenticated.drives.getDrive(
+        unref(resource).id
+      )
+      upsertSpace({ ...updatedSpace, graphPermissions: unref(space).graphPermissions })
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   if (addedShares.length > 0) {
