@@ -1,5 +1,5 @@
 import { mock } from 'vitest-mock-extended'
-import { defineComponent, h, nextTick, ref, toValue, unref } from 'vue'
+import { defineComponent, h, nextTick, reactive, ref, toValue, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import type { Resource, ShareSpaceResource } from '@opencloud-eu/web-client'
 import { HttpError } from '@opencloud-eu/web-client'
@@ -122,7 +122,9 @@ function setup({
     params: { driveAliasAndItem: 'personal/alan/a.md' }
   }),
   isGuestContext = false,
-  fileContentOptions = undefined as FileContentOptions
+  fileContentOptions = undefined as FileContentOptions,
+  // Receives the errors Vue would otherwise report as unhandled.
+  errorHandler = undefined as (err: unknown) => void
 } = {}) {
   const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
   const beginSave = vi.fn()
@@ -261,7 +263,8 @@ function setup({
       plugins: [...piniaPlugins, router],
       mocks,
       provide: mocks,
-      stubs: { 'file-side-bar': true }
+      stubs: { 'file-side-bar': true },
+      config: { errorHandler }
     }
   })
   const [, onResourcesDeleted] = subscribeSpy.mock.calls.find(
@@ -417,6 +420,49 @@ describe('AppWrapper — missing drive alias', () => {
       )
     }
   )
+
+  it('loads the file after adding the drive alias restarted the loading', async () => {
+    getResourceContextSpy.mockResolvedValue({ space: shareSpace, path: '/sub/a.md' })
+    const route = reactive({
+      path: '/test-app',
+      query: { fileId: 'file-id' },
+      params: { driveAliasAndItem: '' }
+    })
+    const errorHandler = vi.fn()
+    const s = setup({
+      yjsEnabled: false,
+      currentRoute: route as unknown as RouteLocation,
+      errorHandler
+    })
+    // Like the router: the new route changes the file context, which restarts
+    // the loading while the first run is still waiting for the route change.
+    s.routerPush.mockImplementationOnce(async (to: any) => {
+      route.params.driveAliasAndItem = to.params.driveAliasAndItem
+      s.currentFileContext.value = mock<FileContext>({ space: mock<any>(), path: '/sub/a.md' })
+      await flushPromises()
+      return undefined
+    })
+    await flushPromises()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+
+    expect(s.routerPush).toHaveBeenCalledTimes(1)
+    expect(s.currentContent()).toBe('content of a')
+    expect(errorHandler).not.toHaveBeenCalled()
+  })
+})
+
+describe('AppWrapper — closing the app while the file is loading', () => {
+  it('stops loading without an error', async () => {
+    const errorHandler = vi.fn()
+    const s = setup({ yjsEnabled: false, errorHandler })
+    await nextTick()
+
+    s.wrapper.unmount()
+    await flushPromises()
+
+    expect(errorHandler).not.toHaveBeenCalled()
+  })
 })
 
 describe('AppWrapper — top bar extension', () => {

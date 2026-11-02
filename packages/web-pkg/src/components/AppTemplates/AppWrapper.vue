@@ -572,7 +572,13 @@ watch(
       loading.value = true
       loadingError.value = undefined
 
-      await loadResourceTask.perform()
+      try {
+        await loadResourceTask.perform()
+      } catch {
+        // errors end up in loadingError, so this only rejects when a newer run (e.g. after
+        // adding the drive alias to the route) or the unmount cancelled the task
+        return
+      }
       if (unref(loadingError)) {
         return
       }
