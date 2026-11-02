@@ -68,6 +68,16 @@ describe('useSearch', () => {
         wrapper.vm.buildSearchTerm({ term: 'test' })
       )
     })
+    it('doubles quotes in the term', () => {
+      const wrapper = createWrapper({ searchProperties: { content: true, tag: true } })
+      expect(wrapper.vm.buildSearchTerm({ term: 'say "hi"' })).toBe(
+        '(name:"*say ""hi""*" OR content:"say ""hi""" OR tag:"*say ""hi""*")'
+      )
+    })
+    it('doubles quotes in tag filters', () => {
+      const wrapper = createWrapper()
+      expect(wrapper.vm.buildSearchTerm({ term: '', tags: 'a"b+c' })).toBe('tag:("a""b" OR "c")')
+    })
   })
 })
 

@@ -13,6 +13,7 @@ import {
 import { SearchResource } from '@opencloud-eu/web-client'
 import { useTask } from 'vue-concurrency'
 import { getVaultClaim, markVaultStatus } from '../../helpers/vault'
+import { escapeKqlValue } from '../../helpers/searchFilters'
 
 export const useSearch = () => {
   const clientService = useClientService()
@@ -119,7 +120,7 @@ export const useSearch = () => {
   }) => {
     const query: string[] = []
 
-    term = term?.trim()
+    term = escapeKqlValue(term?.trim() ?? '')
     if (term) {
       // the term matches names, and unless only titles are searched also contents and tags
       const conditions = [`name:"*${term}*"`]
@@ -138,7 +139,7 @@ export const useSearch = () => {
     }
 
     if (tags) {
-      const tagArr = tags.split('+').map((t) => `"${t}"`)
+      const tagArr = tags.split('+').map((t) => `"${escapeKqlValue(t)}"`)
       query.push(`tag:(${tagArr.join(' OR ')})`)
     }
 

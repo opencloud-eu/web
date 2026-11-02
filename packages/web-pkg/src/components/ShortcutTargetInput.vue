@@ -93,7 +93,7 @@ import { useGettext } from 'vue3-gettext'
 import { useRouter } from '../composables/router'
 import { useSearch } from '../composables/search'
 import { isLocationPublicActive } from '../router'
-import { getShortcutUrl } from '../helpers'
+import { escapeKqlValue, getShortcutUrl } from '../helpers'
 import ResourcePreview from './Search/ResourcePreview.vue'
 import { SearchResult, SearchResultValue } from './Search/types'
 
@@ -130,7 +130,10 @@ const activeOptionId = computed(() => {
 })
 const searchTask = useTask(function* (_signal, term: string) {
   try {
-    const result: SearchResult = yield search(`name:"*${term}*" NOT name:"*.url"`, 7)
+    const result: SearchResult = yield search(
+      `name:"*${escapeKqlValue(term)}*" NOT name:"*.url"`,
+      7
+    )
     searchResults.value = result.values
     showSuggestions()
   } catch {

@@ -76,6 +76,11 @@ function getMediaTypeLabel(keyword: string, $gettext: Language['$gettext']) {
   }
 }
 
+// KQL writes a double quote inside a quoted value as two double quotes
+export function escapeKqlValue(value: string) {
+  return value.replaceAll('"', '""')
+}
+
 export function getLastModifiedFilterOptions(
   keywords: string[] | undefined,
   $gettext: Language['$gettext']
