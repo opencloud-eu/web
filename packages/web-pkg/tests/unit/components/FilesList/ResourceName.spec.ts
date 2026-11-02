@@ -170,4 +170,23 @@ describe('OcResourceName', () => {
 
     expect(wrapper.find('.oc-resource-name').attributes('title')).toBe('README')
   })
+
+  it.each([
+    { name: 'forest.jpg', extension: 'jpg' },
+    { name: '.bashrc', extension: 'bashrc' },
+    { name: '.config.json', extension: 'json' }
+  ])('uses the full name as title for the file "$name"', ({ name, extension }) => {
+    const wrapper = shallowMount(Name, {
+      props: {
+        fullPath: name,
+        name,
+        extension,
+        type: 'file',
+        isExtensionDisplayed: true
+      },
+      global: { stubs: { OcFilterHighlight: false } }
+    })
+
+    expect(wrapper.find('.oc-resource-name').attributes('title')).toBe(name)
+  })
 })
