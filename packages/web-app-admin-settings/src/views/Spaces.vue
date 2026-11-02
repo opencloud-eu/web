@@ -74,6 +74,7 @@ import {
   SpaceNoSelection,
   useClientService,
   useFileActions,
+  useMessages,
   useSideBar,
   useSpacesStore,
   AppLoadingSpinner
@@ -92,6 +93,7 @@ const sidebarStore = useSideBar()
 const { isSideBarOpen } = storeToRefs(sidebarStore)
 const spacesStore = useSpacesStore()
 const { getExtensionActions } = useFileActions()
+const { showErrorMessage } = useMessages()
 
 const spaceSettingsStore = useSpaceSettingsStore()
 const { selectedSpaces } = storeToRefs(spaceSettingsStore)
@@ -104,17 +106,23 @@ const filterTerm = ref('')
 const spacePermissionsExpand = 'root($expand=permissions)'
 
 const loadResourcesTask = useTask(function* (signal) {
-  const drives = yield* call(
-    clientService.graphAuthenticated.drives.listAllDrives(
-      {
-        orderBy: 'name asc',
-        filter: 'driveType eq project',
-        expand: spacePermissionsExpand
-      },
-      { signal }
+  try {
+    const drives = yield* call(
+      clientService.graphAuthenticated.drives.listAllDrives(
+        {
+          orderBy: 'name asc',
+          filter: 'driveType eq project',
+          expand: spacePermissionsExpand
+        },
+        { signal }
+      )
     )
-  )
-  spacesStore.setAllProjectSpaces(drives)
+    spacesStore.setAllProjectSpaces(drives)
+  } catch (e) {
+    console.error(e)
+    spacesStore.setAllProjectSpaces([])
+    showErrorMessage({ title: $gettext('Failed to load spaces'), errors: [e] })
+  }
 })
 
 const isLoading = computed(() => {
