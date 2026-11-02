@@ -49,16 +49,27 @@
           />
           <oc-filter-highlight
             class="pl-2 truncate"
+            :title="item.onPremisesSamAccountName"
             :text="item.onPremisesSamAccountName"
             :term="filterTerm"
           />
         </div>
       </template>
       <template #displayName="{ item }">
-        <oc-filter-highlight :text="item.displayName" :term="filterTerm" />
+        <oc-filter-highlight
+          class="line-clamp-1 break-all max-w-sm"
+          :title="item.displayName"
+          :text="item.displayName"
+          :term="filterTerm"
+        />
       </template>
       <template #mail="{ item }">
-        <oc-filter-highlight :text="item.mail" :term="filterTerm" />
+        <oc-filter-highlight
+          class="line-clamp-1 break-all max-w-sm"
+          :title="item.mail"
+          :text="item.mail"
+          :term="filterTerm"
+        />
       </template>
       <template #role="{ item }">
         <template v-if="item.appRoleAssignments">{{ getRoleDisplayNameByUser(item) }}</template>
