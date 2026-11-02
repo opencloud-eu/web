@@ -61,6 +61,17 @@ describe('CreateGroupModal', () => {
         'Group "admins" already exists'
       )
     })
+    it('checks the trimmed display name for an existing group', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { getGroup } = mocks.$clientService.graphAuthenticated.groups
+      getGroup.mockResolvedValue(mock<Group>({ displayName: 'admins' }))
+      await setDisplayName(wrapper, ' admins ')
+      expect(getGroup).toHaveBeenCalledWith('admins')
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe(
+        'Group "admins" already exists'
+      )
+      expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([true])
+    })
     it('disables the confirm button while the name check is running', async () => {
       const { wrapper, mocks } = getWrapper()
       const { getGroup } = mocks.$clientService.graphAuthenticated.groups
@@ -99,6 +110,17 @@ describe('CreateGroupModal', () => {
       expect(showMessage).toHaveBeenCalled()
       const { upsertGroup } = useGroupSettingsStore()
       expect(upsertGroup).toHaveBeenCalled()
+    })
+    it('creates the group with the trimmed display name', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { groups } = mocks.$clientService.graphAuthenticated
+      groups.getGroup.mockRejectedValue(new Error(''))
+      groups.createGroup.mockResolvedValue(mock<Group>({ id: '1' }))
+      await setDisplayName(wrapper, ' foo bar ')
+
+      await wrapper.vm.onConfirm()
+
+      expect(groups.createGroup).toHaveBeenCalledWith({ displayName: 'foo bar' })
     })
     it('shows an error message and keeps the dialog open on failure', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)

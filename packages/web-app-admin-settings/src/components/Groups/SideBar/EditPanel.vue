@@ -55,7 +55,10 @@ const invalidFormData = computed(() => {
 async function onEditGroup(editGroup: Group) {
   try {
     const client = clientService.graphAuthenticated
-    await client.groups.editGroup(editGroup.id, editGroup)
+    await client.groups.editGroup(editGroup.id, {
+      ...editGroup,
+      displayName: editGroup.displayName.trim()
+    })
     const updatedGroup = await client.groups.getGroup(editGroup.id)
     groupSettingsStore.upsertGroup(updatedGroup)
     saved.value = true
@@ -72,25 +75,25 @@ async function onEditGroup(editGroup: Group) {
 
 async function validateDisplayName() {
   formData.value.displayName.valid = false
+  const displayName = unref(editGroup).displayName.trim()
 
-  if (unref(editGroup).displayName.trim() === '') {
+  if (displayName === '') {
     formData.value.displayName.errorMessage = $gettext('Group name cannot be empty')
     return false
   }
 
-  if (unref(editGroup).displayName.length > 255) {
+  if (displayName.length > 255) {
     formData.value.displayName.errorMessage = $gettext('Group name cannot exceed 255 characters')
     return false
   }
 
-  const { displayName } = unref(editGroup)
   if (group.displayName !== displayName) {
     const exists = await clientService.graphAuthenticated.groups.getGroup(displayName).then(
       () => true,
       () => false
     )
     // the name changed while the request was running, the validation of the new name decides
-    if (unref(editGroup).displayName !== displayName) {
+    if (unref(editGroup).displayName.trim() !== displayName) {
       return false
     }
     if (exists) {
