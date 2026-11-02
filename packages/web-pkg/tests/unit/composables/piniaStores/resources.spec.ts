@@ -46,6 +46,21 @@ describe('useResourcesStore', () => {
     })
   })
 
+  describe('resourcesLoading', () => {
+    it('stays true until all overlapping loads have finished', () => {
+      const store = useResourcesStore()
+      expect(store.resourcesLoading).toBe(false)
+
+      store.startResourcesLoading()
+      store.startResourcesLoading()
+      store.finishResourcesLoading()
+      expect(store.resourcesLoading).toBe(true)
+
+      store.finishResourcesLoading()
+      expect(store.resourcesLoading).toBe(false)
+    })
+  })
+
   describe('updateResourceField', () => {
     it('updates the current folder reactively if the id matches', () => {
       const store = useResourcesStore()
