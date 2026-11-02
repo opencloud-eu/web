@@ -231,6 +231,7 @@ const emptyStateDescription = computed(() => {
 })
 
 const {
+  sortedResources,
   paginatedResources,
   selectedResources,
   selectedResourcesIds,
@@ -288,7 +289,7 @@ onMounted(async () => {
   }
 
   await loadResourcesTask.perform()
-  scrollToResourceFromRoute(unref(paginatedResources), 'files-app-bar')
+  scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
 })
 
 onBeforeUnmount(() => {

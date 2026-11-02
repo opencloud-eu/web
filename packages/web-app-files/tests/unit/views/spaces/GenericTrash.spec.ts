@@ -2,6 +2,7 @@ import GenericTrash from '../../../../src/views/spaces/GenericTrash.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
 import { ref } from 'vue'
+import { flushPromises } from '@vue/test-utils'
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -42,6 +43,17 @@ describe('GenericTrash view', () => {
       wrapper.findComponent<typeof AppBar>('app-bar-stub').props().breadcrumbs[1].text
     ).toEqual(space.name)
   })
+  describe('scrollTo', () => {
+    it('finds the resource to scroll to beyond the current page', async () => {
+      const files = Array.from({ length: 25 }, (_, i) => mock<Resource>({ id: `${i + 1}` }))
+      const scrollToResourceFromRoute = vi.fn()
+      getMountedWrapper({ files, viewDefaults: { scrollToResourceFromRoute } })
+      await flushPromises()
+
+      const [resources] = scrollToResourceFromRoute.mock.calls[0]
+      expect(resources).toContain(files[24])
+    })
+  })
   describe('different files view states', () => {
     it('shows the loading spinner during loading', () => {
       const { wrapper } = getMountedWrapper({ loading: true })
@@ -72,19 +84,24 @@ function getMountedWrapper({
   mocks = {},
   props = {} as PartialComponentProps<typeof GenericTrash>,
   files = [],
-  loading = false
+  loading = false,
+  viewDefaults = {}
 }: {
   mocks?: Record<string, unknown>
   props?: PartialComponentProps<typeof GenericTrash>
   files?: Resource[]
   loading?: boolean
+  viewDefaults?: Partial<ReturnType<typeof useResourcesViewDefaults>>
 } = {}) {
   const plugins = [...defaultPlugins()]
   vi.mocked(useResourcesViewDefaults).mockImplementation(() =>
     useResourcesViewDefaultsMock({
       storeItems: ref(files),
-      paginatedResources: ref(files),
-      areResourcesLoading: ref(loading)
+      // like the real view defaults: all resources get sorted, only the first page is shown
+      sortedResources: ref(files),
+      paginatedResources: ref(files.slice(0, 20)),
+      areResourcesLoading: ref(loading),
+      ...viewDefaults
     })
   )
 

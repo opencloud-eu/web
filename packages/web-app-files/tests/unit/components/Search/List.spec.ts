@@ -189,6 +189,18 @@ describe('List component', () => {
     await flushPromises()
     expect(limitText()).toBe('Found 500, showing the 4 best matching results')
   })
+  it('finds the resource to scroll to beyond the current page', async () => {
+    const resources = Array.from({ length: 25 }, (_, i) => mock<Resource>({ id: `${i + 1}` }))
+    const { wrapper, mocks } = getWrapper({
+      sortedResources: ref(resources),
+      paginatedResources: ref(resources.slice(0, 20))
+    })
+    await wrapper.setProps({ searchResult: { totalResults: 25, values: [] } })
+    await flushPromises()
+
+    const [scrollToResources] = vi.mocked(mocks.scrollToResourceFromRoute).mock.calls[0]
+    expect(scrollToResources).toContain(resources[24])
+  })
   it('searches again when only the folder scope changes', async () => {
     const $router = createRouter({
       routes: [{ name: 'files-common-search', path: '/files-common-search', redirect: null }],
@@ -351,6 +363,7 @@ function getWrapper({
   availableTags = [],
   resources = [],
   paginatedResources = undefined,
+  sortedResources = undefined,
   resourcesStore = {},
   searchTerm = '',
   tagFilterQuery = null,
@@ -368,6 +381,7 @@ function getWrapper({
   availableTags?: string[]
   resources?: Resource[]
   paginatedResources?: Ref<Resource[]>
+  sortedResources?: Ref<Resource[]>
   resourcesStore?: { resources?: Resource[]; areHiddenFilesShown?: boolean }
   searchTerm?: string
   tagFilterQuery?: string
@@ -389,6 +403,7 @@ function getWrapper({
 
   const resourcesViewDetailsMock = useResourcesViewDefaultsMock({
     paginatedResources: paginatedResources || ref(resources),
+    sortedResources: sortedResources || ref(resources),
     sortFields: ref(sortFields)
   })
   if (folderViewComponent) {
@@ -417,7 +432,7 @@ function getWrapper({
   } satisfies Partial<Capabilities['capabilities']>
 
   return {
-    mocks: localMocks,
+    mocks: { ...localMocks, ...resourcesViewDetailsMock },
     wrapper: shallowMount(List, {
       props: { searchResult },
       global: {
