@@ -152,6 +152,13 @@ describe('SpacesList', () => {
       const { wrapper } = getWrapper({ spaces: spaceMocks })
       expect(getColumn(wrapper, 'manager')).toEqual(['user1, user2... +1', 'user1, user2... +1'])
     })
+    it('shows the managers in the title', () => {
+      const { wrapper } = getWrapper({ spaces: spaceMocks })
+      const titles = wrapper
+        .findAll('.oc-table-data-cell-manager [title]')
+        .map((el) => el.attributes('title'))
+      expect(titles).toEqual(['user1, user2... +1', 'user1, user2... +1'])
+    })
     it('renders the member count', () => {
       const { wrapper } = getWrapper({ spaces: spaceMocks })
       expect(getColumn(wrapper, 'members')).toEqual(['3', '5'])
