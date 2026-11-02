@@ -299,6 +299,32 @@ describe('UploadInfo component', () => {
 
       expect(wrapper.find(selectors.message).text()).toBe('name too long')
     })
+    it.each([
+      {
+        source: 'file upload',
+        error: new HttpError(
+          'tus: unexpected response while creating upload, originated from request (method: POST, url: x, response code: 423, response text: , request id: n/a)',
+          undefined
+        )
+      },
+      { source: 'folder creation', error: new HttpError('locked', undefined, 423) }
+    ])('shows the locked message when a $source hits a locked resource', async ({ error }) => {
+      const { wrapper } = getShallowWrapper()
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).infoExpanded = true
+      ;(wrapper.vm as any).uploads = {
+        '1': {
+          name: 'file',
+          path: '/',
+          type: 'file',
+          meta: { uploadId: '1' }
+        } as unknown as OcUppyFile
+      }
+      ;(wrapper.vm as any).errors = { 1: error }
+      await nextTick()
+
+      expect(wrapper.find(selectors.message).text()).toBe('This item is locked')
+    })
     it('folder is clickable', async () => {
       const { wrapper } = getShallowWrapper()
       ;(wrapper.vm as any).showInfo = true
