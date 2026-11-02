@@ -59,7 +59,7 @@ export function usePagination<T>(options: PaginationOptions<T>): PaginationResul
       if (index >= 0) {
         const page = Math.ceil((index + 1) / Number(unref(perPage)))
         const route = unref(router.currentRoute)
-        router.push({ ...route, query: { ...route.query, page } }).then(() => {
+        router.push({ path: route.path, query: { ...route.query, page } }).then(() => {
           eventBus.publish('app.files.navigate.scrollTo', {
             resourceId,
             forceScroll,

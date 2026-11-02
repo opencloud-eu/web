@@ -1,10 +1,13 @@
 import { mock } from 'vitest-mock-extended'
+import { flushPromises } from '@vue/test-utils'
 import { Task } from 'vue-concurrency'
 import { unref } from 'vue'
+import { Router } from 'vue-router'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import { ExtensionPoint, FolderViewExtension, useResourcesStore } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
+  createRouter,
   getComposableWrapper,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
@@ -16,11 +19,11 @@ describe('useResourcesViewDefaults', () => {
       const { mocks } = getWrapper()
       const resourcesStore = useResourcesStore()
       resourcesStore.setSelection(['1'])
-      vi.mocked(mocks.$router.push).mockClear()
+      vi.mocked(mocks.$router.replace).mockClear()
 
       resourcesStore.resetSelection()
       await vi.waitFor(() =>
-        expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
           expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
         )
       )
@@ -29,11 +32,11 @@ describe('useResourcesViewDefaults', () => {
       const { mocks } = getWrapper()
       const resourcesStore = useResourcesStore()
       resourcesStore.setSelection(['1'])
-      vi.mocked(mocks.$router.push).mockClear()
+      vi.mocked(mocks.$router.replace).mockClear()
 
       resourcesStore.removeSelection('1')
       await vi.waitFor(() =>
-        expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
           expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
         )
       )
@@ -42,11 +45,11 @@ describe('useResourcesViewDefaults', () => {
       const { mocks } = getWrapper()
       const resourcesStore = useResourcesStore()
       resourcesStore.setSelection(['1'])
-      vi.mocked(mocks.$router.push).mockClear()
+      vi.mocked(mocks.$router.replace).mockClear()
 
       resourcesStore.setSelection(['2'])
       await vi.waitFor(() =>
-        expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
           expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
         )
       )
@@ -57,7 +60,9 @@ describe('useResourcesViewDefaults', () => {
 
       resourcesStore.setSelection(['1'])
       await new Promise((resolve) => setTimeout(resolve))
-      expect(mocks.$router.push).not.toHaveBeenCalled()
+      expect(mocks.$router.replace).not.toHaveBeenCalledWith(
+        expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
+      )
     })
     it('keeps the param when the incoming share from the param gets selected', async () => {
       const share = {
@@ -72,7 +77,27 @@ describe('useResourcesViewDefaults', () => {
 
       resourcesStore.setSelection(['share-id'])
       await new Promise((resolve) => setTimeout(resolve))
-      expect(mocks.$router.push).not.toHaveBeenCalled()
+      expect(mocks.$router.replace).not.toHaveBeenCalledWith(
+        expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
+      )
+    })
+    it('stays in the current folder when its name contains a hash', async () => {
+      const $router = createRouter({
+        routes: [
+          { name: 'files-public-link', path: '/files/link/:driveAliasAndItem(.*)?', component: {} }
+        ]
+      })
+      await $router.push('/files/link/public/token/Doc%23A?scrollTo=1')
+      getWrapper({ router: $router })
+      await flushPromises()
+      const resourcesStore = useResourcesStore()
+      resourcesStore.setSelection(['1'])
+      const pushSpy = vi.spyOn($router, 'push')
+
+      resourcesStore.resetSelection()
+      await vi.waitFor(() => expect(unref($router.currentRoute).query.scrollTo).toBeUndefined())
+      expect(unref($router.currentRoute).path).toBe('/files/link/public/token/Doc%23A')
+      expect(pushSpy).not.toHaveBeenCalled()
     })
     it('keeps the param when there was no selection to reset', async () => {
       const { mocks } = getWrapper()
@@ -80,7 +105,9 @@ describe('useResourcesViewDefaults', () => {
 
       resourcesStore.resetSelection()
       await new Promise((resolve) => setTimeout(resolve))
-      expect(mocks.$router.push).not.toHaveBeenCalled()
+      expect(mocks.$router.replace).not.toHaveBeenCalledWith(
+        expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
+      )
     })
   })
   describe('filterResources', () => {
@@ -116,15 +143,20 @@ describe('useResourcesViewDefaults', () => {
 function getWrapper({
   query = { scrollTo: '1' },
   resources = [],
-  filterResources
+  filterResources,
+  router
 }: {
   query?: Record<string, string>
   resources?: Resource[]
   filterResources?: (resources: Resource[]) => Resource[]
+  router?: Router
 } = {}) {
-  const mocks = defaultComponentMocks({
-    currentRoute: mock<RouteLocation>({ path: '/files', query })
-  })
+  const mocks = {
+    ...defaultComponentMocks({
+      currentRoute: mock<RouteLocation>({ path: '/files', query })
+    }),
+    ...(router && { $router: router })
+  }
   let result: ReturnType<typeof useResourcesViewDefaults>
   const wrapper = getComposableWrapper(
     () => {
