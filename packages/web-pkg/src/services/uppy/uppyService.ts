@@ -3,6 +3,7 @@ import Tus from '@uppy/tus'
 import { TusOptions } from '@uppy/tus'
 import XHRUpload, { XHRUploadOptions } from '@uppy/xhr-upload'
 import { Language } from 'vue3-gettext'
+import { omit } from 'lodash-es'
 import { eventBus } from '../eventBus'
 import DropTarget from './DropTarget/plugin'
 import { Resource, urlJoin } from '@opencloud-eu/web-client'
@@ -86,6 +87,7 @@ export class UppyService {
   uppy: Uppy<OcUppyMeta, OcUppyBody>
   uploadInputs: HTMLInputElement[] = []
   uploadFolderMap: Record<string, Resource> = {}
+  private heldBackFileIds = new Set<string>()
 
   constructor({ language }: UppyServiceOptions) {
     const { $gettext } = language
@@ -100,6 +102,10 @@ export class UppyService {
         file.meta.relativePath = this.getRelativeFilePath(file)?.normalize('NFC')
         // id needs to be generated after the relative path has been set.
         file.id = this.generateUploadId(file)
+        if (this.heldBackFileIds.has(file.id)) {
+          // file is currently being prepared, e.g. awaits the conflict dialog
+          return false
+        }
         return file
       }
     })
@@ -330,6 +336,22 @@ export class UppyService {
 
   log(message: unknown, type?: 'error' | 'warning'): void {
     this.uppy.log(message, type)
+  }
+
+  /**
+   * Takes files out of Uppy's state so that upload() ignores them, e.g. while their batch awaits
+   * user input. Adding them again is rejected until releaseHeldBackFiles is called.
+   */
+  holdBackFiles(fileIds: string[]) {
+    fileIds.forEach((id) => this.heldBackFileIds.add(id))
+    this.uppy.setState({ files: omit(this.uppy.getState().files, fileIds) })
+  }
+
+  /**
+   * Allows adding held back files again. Does not put them back into Uppy's state.
+   */
+  releaseHeldBackFiles(fileIds: string[]) {
+    fileIds.forEach((id) => this.heldBackFileIds.delete(id))
   }
 
   addFiles(files: OcMinimalUppyFile[] | File[]) {

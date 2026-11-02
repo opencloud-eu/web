@@ -539,9 +539,21 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
           ;(dashboard[0] as HTMLElement).style.display = 'none'
         }
 
-        const result = await conflictHandler.displayOverwriteDialog(filesToUpload, conflicts)
-        const remainingIds = result.files.map(({ id }) => id)
-        this.removeFilesFromUpload(filesToUpload.filter(({ id }) => !remainingIds.includes(id)))
+        // keep batch out of uppy while the dialog is open, another batch's upload() would upload it.
+        // kept files are re-added below.
+        const batchIds = filesToUpload.map(({ id }) => id)
+        this.uppyService.holdBackFiles(batchIds)
+        const result = await conflictHandler
+          .displayOverwriteDialog(filesToUpload, conflicts)
+          .finally(() => this.uppyService.releaseHeldBackFiles(batchIds))
+        if (result.dismissed) {
+          const { $gettext } = this.language
+          this.messageStore.showMessage({
+            title: $gettext('Upload cancelled'),
+            desc: $gettext('The conflict dialog was closed, no files were uploaded.'),
+            status: 'warning'
+          })
+        }
         if (result.files.length === 0) {
           return this.uppyService.clearInputs()
         }
