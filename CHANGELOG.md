@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: prevent double profile picture upload on repeated set [[#4107](https://github.com/opencloud-eu/web/pull/4107)]
 - fix: reset avatar file input after a rejected file [[#4106](https://github.com/opencloud-eu/web/pull/4106)]
 - fix: trim group names when creating and renaming groups [[#4105](https://github.com/opencloud-eu/web/pull/4105)]
 - fix: show error message when restoring a file version fails [[#4102](https://github.com/opencloud-eu/web/pull/4102)]
