@@ -60,8 +60,8 @@ const extensionPointsWithUserPreferences = computed(() => {
     ) {
       return false
     }
-    const extensions = extensionRegistry.requestExtensions(extensionPoint)
-    return !!extensions.length
+    // a single extension leaves nothing to choose from
+    return extensionRegistry.requestExtensions(extensionPoint).length > 1
   })
 })
 </script>

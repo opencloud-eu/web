@@ -22,20 +22,27 @@ describe('account extension page', () => {
     expect(wrapper.find(selectors.noContentMessage).exists()).toBeTruthy()
   })
 
-  it('should be hidden if an extension point only has 1 or less extensions', () => {
-    const extensionPointMock = mock<ExtensionPoint<Extension>>({
-      userPreference: {
-        label: 'example-extension-point',
-        description: 'example-extension-point'
-      }
-    })
-    const { wrapper } = getWrapper({
-      extensionPoints: [extensionPointMock]
-    })
+  it.each([0, 1])(
+    'should be hidden if an extension point has %s registered extensions',
+    (count) => {
+      const extensionPointMock = mock<ExtensionPoint<Extension>>({
+        userPreference: {
+          label: 'example-extension-point',
+          description: 'example-extension-point'
+        }
+      })
+      const extensions = Array.from({ length: count }, (_, i) =>
+        mock<Extension>({ id: `foo-${i}`, userPreference: { optionLabel: `Foo ${i}` } })
+      )
+      const { wrapper } = getWrapper({
+        extensionPoints: [extensionPointMock],
+        extensions
+      })
 
-    expect(wrapper.find(selectors.extensionsSection).exists()).toBeFalsy()
-    expect(wrapper.find(selectors.noContentMessage).exists()).toBeTruthy()
-  })
+      expect(wrapper.find(selectors.extensionsSection).exists()).toBeFalsy()
+      expect(wrapper.find(selectors.noContentMessage).exists()).toBeTruthy()
+    }
+  )
 
   it('should be visible if an extension point has at least 2 extensions', () => {
     const extensionPoint = mock<ExtensionPoint<Extension>>({
