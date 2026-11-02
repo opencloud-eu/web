@@ -58,6 +58,17 @@ describe('EditDropdown component', () => {
 
   describe('editOptions computed property', () => {
     describe('expiration date', () => {
+      it('focuses the date input of the modal initially', () => {
+        const { wrapper } = getWrapper()
+        const option = (wrapper.vm as any).editOptions.find(
+          (option: EditOption) => option.id === 'add-expiration'
+        )
+        option.method()
+        const { dispatchModal } = useModals()
+        expect(dispatchModal).toHaveBeenCalledWith(
+          expect.objectContaining({ focusTrapInitial: '#date-picker-modal-input' })
+        )
+      })
       it('does contain "add-expiration" option', () => {
         const { wrapper } = getWrapper()
         expect(

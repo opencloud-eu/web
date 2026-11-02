@@ -1,5 +1,6 @@
 <template>
   <oc-datepicker
+    id="date-picker-modal-input"
     :label="$gettext('Expiration date')"
     type="date"
     :min-date="minDate"

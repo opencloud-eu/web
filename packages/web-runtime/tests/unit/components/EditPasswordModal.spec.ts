@@ -11,6 +11,12 @@ describe('EditPasswordModal', () => {
       .map((input) => input.attributes('autocomplete'))
     expect(autocomplete).toEqual(['current-password', 'new-password', 'new-password'])
   })
+  it('renders the current password input as the first field', () => {
+    const { wrapper } = getWrapper()
+    expect(wrapper.findAllComponents({ name: 'OcTextInput' })[0].attributes('id')).toBe(
+      'edit-password-current-input'
+    )
+  })
 
   describe('computed method "confirmButtonDisabled"', () => {
     it('should be true if any data set is invalid', () => {

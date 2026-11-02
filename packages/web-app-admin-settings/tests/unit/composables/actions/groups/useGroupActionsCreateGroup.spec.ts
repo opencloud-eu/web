@@ -14,6 +14,17 @@ describe('useGroupActionsCreateGroup', () => {
         }
       })
     })
+    it('focuses the display name input initially', () => {
+      getWrapper({
+        setup: ({ actions }) => {
+          const { dispatchModal } = useModals()
+          unref(actions)[0].handler()
+          expect(dispatchModal).toHaveBeenCalledWith(
+            expect.objectContaining({ focusTrapInitial: '#create-group-input-display-name' })
+          )
+        }
+      })
+    })
   })
 })
 

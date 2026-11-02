@@ -381,18 +381,23 @@ onUnmounted(() => {
 
 let initialFocusPlaced = false
 const initialFocusRef = computed<FocusTargetOrFalse>(() => {
-  if (focusTrapInitial || focusTrapInitial === false) {
-    return focusTrapInitial as FocusTargetOrFalse
+  if (focusTrapInitial === false) {
+    return false
   }
   return () => {
     // the trap asks again when a nested trap (e.g. an info drop) closes, then the focus stays put
     const focused = document.activeElement as HTMLElement
-    if (initialFocusPlaced && unref(ocModalBody)?.closest('.oc-modal')?.contains(focused)) {
+    const modal = unref(ocModalBody)?.closest<HTMLElement>('.oc-modal')
+    if (initialFocusPlaced && modal?.contains(focused)) {
       return focused
     }
     initialFocusPlaced = true
+    const initialElement =
+      typeof focusTrapInitial === 'string'
+        ? modal?.querySelector<HTMLElement>(focusTrapInitial)
+        : unref(ocModalInput)?.$el?.querySelector('input')
     // needs to be one of those elements or undefined. null will throw errors
-    return unref(ocModalInput)?.$el?.querySelector('input') || unref(ocModalBody) || undefined
+    return initialElement || unref(ocModalBody) || undefined
   }
 })
 

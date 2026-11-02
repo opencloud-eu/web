@@ -99,7 +99,8 @@ export function useCollaboraPostMessages({
           callbackFn: (newFileName: string) => {
             postMessageToCollabora('Action_SaveAs', { Filename: newFileName, Notify: true })
           }
-        })
+        }),
+        focusTrapInitial: '#file-name-input'
       })
       return
     }
@@ -113,7 +114,8 @@ export function useCollaboraPostMessages({
         callbackFn: (newFileName: string) => {
           postMessageToCollabora('Action_SaveAs', { Filename: newFileName, Notify: true })
         }
-      })
+      }),
+      focusTrapInitial: '#file-name-input'
     })
   }
 

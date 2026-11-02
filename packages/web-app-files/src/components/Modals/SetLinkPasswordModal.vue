@@ -1,5 +1,6 @@
 <template>
   <oc-text-input
+    id="set-link-password-input"
     :model-value="password"
     :label="$gettext('Password')"
     type="password"

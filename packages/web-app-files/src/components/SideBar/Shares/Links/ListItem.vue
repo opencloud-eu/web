@@ -128,7 +128,8 @@ const showPasswordModal = (callbackFn: () => void = undefined) => {
       resource: unref(resource),
       link: linkShare,
       ...(callbackFn && { callbackFn })
-    })
+    }),
+    focusTrapInitial: '#set-link-password-input'
   })
 }
 
