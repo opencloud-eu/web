@@ -19,7 +19,7 @@ import {
   translateSortFields
 } from '@opencloud-eu/web-pkg'
 import { Task } from 'vue-concurrency'
-import { Resource } from '@opencloud-eu/web-client'
+import { isIncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import { useSelectedResources, SelectedResourcesResult } from '@opencloud-eu/web-pkg'
 import { ReadOnlyRef } from '@opencloud-eu/web-pkg'
 import {
@@ -137,6 +137,17 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     })
   }
 
+  function isScrollToResourceSelected() {
+    const scrollTo = queryItemAsString(unref(scrollToParam))
+    if (resourcesStore.selectedIds.includes(scrollTo)) {
+      return true
+    }
+    // incoming shares are referenced by their remote item id
+    return resourcesStore.selectedResources.some(
+      (r) => isIncomingShareResource(r) && r.remoteItemId === scrollTo
+    )
+  }
+
   resourcesStore.$onAction((action) => {
     const hadSelection = resourcesStore.selectedIds.length > 0
     action.after(async () => {
@@ -170,8 +181,8 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
           }
           break
         case 'setSelection':
-          if (action.args[0].length === 0 && unref(scrollToParam)) {
-            // selection reset
+          if (unref(scrollToParam) && !isScrollToResourceSelected()) {
+            // selection reset or replaced by other resources
             resetScrollToParam()
           }
           break

@@ -203,6 +203,16 @@ describe('GenericSpace view', () => {
       await flushPromises()
       expect(mocks.scrollToResourceFromRoute).toHaveBeenCalledTimes(1)
     })
+    it('finds the resource to scroll to beyond the current page', async () => {
+      const files = Array.from({ length: 25 }, (_, i) =>
+        mock<Resource>({ id: `${i + 1}`, name: `file-${i + 1}.txt` })
+      )
+      const { mocks } = getMountedWrapper({ files })
+      await flushPromises()
+
+      const [resources] = vi.mocked(mocks.scrollToResourceFromRoute).mock.calls[0]
+      expect(resources).toContain(files[24])
+    })
     it('re-loads the resources on item change', async () => {
       const { wrapper, mocks } = getMountedWrapper()
       await flushPromises()
@@ -472,7 +482,9 @@ function getMountedWrapper({
   })
 
   const resourcesViewDetailsMock = useResourcesViewDefaultsMock({
-    paginatedResources: ref(files),
+    // like the real view defaults: all resources get sorted, only the first page is shown
+    sortedResources: ref(files),
+    paginatedResources: ref(files.slice(0, 20)),
     selectedResources: ref(selectedResources),
     areResourcesLoading: ref(loading),
     storeItems: ref(files)

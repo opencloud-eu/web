@@ -82,6 +82,16 @@ describe('Favorites view', () => {
       )
     })
   })
+  describe('scrollTo', () => {
+    it('finds the resource to scroll to beyond the current page', async () => {
+      const files = Array.from({ length: 25 }, (_, i) => mock<Resource>({ id: `${i + 1}` }))
+      const { resourcesViewDefaults } = getMountedWrapper({ files })
+      await flushPromises()
+
+      const [resources] = vi.mocked(resourcesViewDefaults.scrollToResourceFromRoute).mock.calls[0]
+      expect(resources).toContain(files[24])
+    })
+  })
   describe('filter', () => {
     it('does not show filter if no values are available', () => {
       const { wrapper } = getMountedWrapper()
@@ -226,7 +236,9 @@ function getMountedWrapper({
   vi.mocked(useRouteQuery).mockImplementationOnce(() => tagParam)
 
   const resourcesViewDefaults = useResourcesViewDefaultsMock({
-    paginatedResources: ref(files),
+    // like the real view defaults: all resources get sorted, only the first page is shown
+    sortedResources: ref(files),
+    paginatedResources: ref(files.slice(0, 20)),
     areResourcesLoading: ref(loading)
   })
 

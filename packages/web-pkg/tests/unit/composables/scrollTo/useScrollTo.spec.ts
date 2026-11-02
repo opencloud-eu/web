@@ -6,7 +6,7 @@ import {
   RouteLocation,
   defaultComponentMocks
 } from '@opencloud-eu/web-test-helpers'
-import { useSideBar } from '../../../../src'
+import { eventBus, useResourcesStore, useSideBar } from '../../../../src'
 
 const mockResourceId = 'fakeResourceId'
 const mockFilesTopBar = {
@@ -154,6 +154,32 @@ describe('useScrollTo', () => {
             store
           }
         }
+      )
+    })
+    it('selects the resource and switches to its page when it is not rendered on the current one', () => {
+      vi.spyOn(document, 'querySelectorAll').mockImplementation(() => [] as any)
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+      const mocks = {
+        ...defaultComponentMocks({
+          currentRoute: mock<RouteLocation>({ query: { scrollTo: resourceId } })
+        })
+      }
+
+      getComposableWrapper(
+        () => {
+          const resource = mock<Resource>({ id: resourceId })
+          const { scrollToResourceFromRoute } = useScrollTo()
+          scrollToResourceFromRoute([resource], 'files-app-bar')
+
+          const { setSelection } = useResourcesStore()
+          expect(setSelection).toHaveBeenCalledWith([resourceId])
+          expect(publishSpy).toHaveBeenCalledWith('app.files.navigate.page', {
+            resourceId,
+            forceScroll: true,
+            topbarElement: 'files-app-bar'
+          })
+        },
+        { mocks, provide: mocks }
       )
     })
     it('opens the sidebar when a resource is found and the "details" param is given', () => {

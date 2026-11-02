@@ -54,11 +54,22 @@ describe('Pagination', () => {
       expect(links.at(1).props().to.name).toBe(filesPersonalRoute.name)
       expect(links.at(2).props().to.name).toBe(filesPersonalRoute.name)
     })
+    it('drops the scrollTo param from the page links', () => {
+      const { wrapper } = getWrapper({}, mount, { scrollTo: 'resource-id', sort: 'name' })
+      const links = wrapper.findAllComponents<any>(RouterLinkStub)
+
+      for (const link of links) {
+        expect(link.props().to.query).not.toHaveProperty('scrollTo')
+        expect(link.props().to.query.sort).toBe('name')
+      }
+    })
   })
 })
 
-function getWrapper(propsData = {}, mountType = shallowMount) {
-  const mocks = defaultComponentMocks({ currentRoute: mock<RouteLocation>(filesPersonalRoute) })
+function getWrapper(propsData = {}, mountType = shallowMount, query = {}) {
+  const mocks = defaultComponentMocks({
+    currentRoute: mock<RouteLocation>({ ...filesPersonalRoute, query })
+  })
   return {
     wrapper: mountType(Pagination, {
       props: merge({ currentPage: 1, pages: 10 }, propsData),
@@ -67,6 +78,7 @@ function getWrapper(propsData = {}, mountType = shallowMount) {
           RouterLink: RouterLinkStub
         },
         mocks,
+        provide: mocks,
         plugins: [...defaultPlugins()]
       }
     }),
