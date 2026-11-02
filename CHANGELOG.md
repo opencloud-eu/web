@@ -1,6 +1,6 @@
 # Changelog
 
-## [8.3.0](https://github.com/opencloud-eu/web/releases/tag/v8.3.0) - 2026-11-02
+## [8.2.2](https://github.com/opencloud-eu/web/releases/tag/v8.2.2) - 2026-11-02
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,8 +8,10 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show error message when restoring a file version fails [[#4102](https://github.com/opencloud-eu/web/pull/4102)]
 - fix: hide extension preferences with only one option [[#4112](https://github.com/opencloud-eu/web/pull/4112)]
 - fix: focus the first input when opening text entry modals [[#4089](https://github.com/opencloud-eu/web/pull/4089)]
+- Rework the EPUB reader [[#3924](https://github.com/opencloud-eu/web/pull/3924)]
 - fix: hide guest invites when guest links are disabled [[#4071](https://github.com/opencloud-eu/web/pull/4071)]
 - fix: pause toasts, fix pagination semantics and name upload states [[#4069](https://github.com/opencloud-eu/web/pull/4069)]
 - fix: show all invite search results returned by the server [[#4081](https://github.com/opencloud-eu/web/pull/4081)]
@@ -30,10 +32,6 @@
 - fix(preview): keep the active file when the folder changes [[#4051](https://github.com/opencloud-eu/web/pull/4051)]
 - fix: keep raw html and decode named entities in markdown files [[#4025](https://github.com/opencloud-eu/web/pull/4025)]
 - fix: small a11y fixes from the third audit round [[#4023](https://github.com/opencloud-eu/web/pull/4023)]
-
-### 📈 Enhancement
-
-- Rework the EPUB reader [[#3924](https://github.com/opencloud-eu/web/pull/3924)]
 
 ### 📦️ Dependencies
 
