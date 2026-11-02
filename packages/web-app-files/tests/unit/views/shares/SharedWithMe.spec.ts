@@ -151,6 +151,26 @@ describe('SharedWithMe view', () => {
         expect(wrapper.find('.shared-by-filter').exists()).toBeTruthy()
         expect(filterItems).toEqual([collaborator1, collaborator2])
       })
+      it('lists collaborators with the same display name separately', () => {
+        const collaborator1 = { id: 'user1', displayName: 'Twin' }
+        const collaborator2 = { id: 'user2', displayName: 'Twin' }
+        const { wrapper } = getMountedWrapper({
+          files: [
+            mock<IncomingShareResource>({
+              sharedBy: [collaborator1],
+              shareTypes: [ShareTypes.user.value]
+            }),
+            mock<IncomingShareResource>({
+              sharedBy: [collaborator2, collaborator1],
+              shareTypes: [ShareTypes.user.value]
+            })
+          ]
+        })
+        const filterItems = wrapper
+          .findComponent<typeof ItemFilter>('.shared-by-filter')
+          .props('items')
+        expect(filterItems).toEqual([collaborator1, collaborator2])
+      })
     })
     describe('search', () => {
       it('shows filter', () => {
