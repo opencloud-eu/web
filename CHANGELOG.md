@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: trim group names when creating and renaming groups [[#4105](https://github.com/opencloud-eu/web/pull/4105)]
 - fix: show error message when restoring a file version fails [[#4102](https://github.com/opencloud-eu/web/pull/4102)]
 - fix: hide extension preferences with only one option [[#4112](https://github.com/opencloud-eu/web/pull/4112)]
 - fix: focus the first input when opening text entry modals [[#4089](https://github.com/opencloud-eu/web/pull/4089)]
