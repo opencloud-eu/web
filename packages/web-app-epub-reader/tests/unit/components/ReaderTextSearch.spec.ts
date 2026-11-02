@@ -1,5 +1,6 @@
 import { mount, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 import { vi } from 'vitest'
+import { nextTick } from 'vue'
 import ReaderTextSearch from '../../../src/components/ReaderTextSearch.vue'
 
 function getWrapper() {
@@ -32,6 +33,11 @@ describe('ReaderTextSearch component', () => {
     vi.useRealTimers()
   })
 
+  it('renders the search as a non-menu drop, so Tab moves through its fields', () => {
+    const wrapper = getWrapper()
+    expect(wrapper.find('oc-drop-stub').attributes('is-menu')).toBe('false')
+  })
+
   it('shows empty status when query is empty', () => {
     const wrapper = getWrapper()
     expect(wrapper.find('.epub-reader-search-result-count').text()).toBe('')
@@ -45,9 +51,39 @@ describe('ReaderTextSearch component', () => {
     expect(wrapper.emitted('searchTermChanged')).toEqual([['whale']])
   })
 
+  it('shows a pending status until the debounced search is requested', async () => {
+    const wrapper = getWrapper()
+    await wrapper.find('.oc-search-input').setValue('whale')
+
+    expect(wrapper.find('.epub-reader-search-result-count').text()).toBe('Searching...')
+    expect(wrapper.emitted('searchTermChanged')).toBeUndefined()
+
+    vi.runOnlyPendingTimers()
+    await nextTick()
+
+    expect(wrapper.emitted('searchTermChanged')).toEqual([['whale']])
+    expect(wrapper.find('.epub-reader-search-result-count').text()).toBe('2/3')
+  })
+
+  it('announces the search status in words through a live region that stays polite', async () => {
+    const wrapper = getWrapper()
+    const liveRegion = wrapper.find('.epub-reader-search-result-announcement')
+
+    await wrapper.find('.oc-search-input').setValue('whale')
+    expect(liveRegion.text()).toBe('Searching...')
+
+    vi.runOnlyPendingTimers()
+    await nextTick()
+
+    expect(liveRegion.attributes('aria-live')).toBe('polite')
+    expect(liveRegion.text()).toBe('Result 2 of 3')
+  })
+
   it('renders search result status and emits next/previous events', async () => {
     const wrapper = getWrapper()
     await wrapper.find('.oc-search-input').setValue('whale')
+    vi.runOnlyPendingTimers()
+    await nextTick()
 
     expect(wrapper.find('.epub-reader-search-result-count').text()).toBe('2/3')
 
@@ -78,8 +114,11 @@ describe('ReaderTextSearch component', () => {
     })
 
     await wrapper.find('.oc-search-input').setValue('not-found')
+    vi.runOnlyPendingTimers()
+    await nextTick()
 
     expect(wrapper.find('.epub-reader-search-result-count').text()).toBe('0/0')
+    expect(wrapper.find('.epub-reader-search-result-announcement').text()).toBe('No results')
   })
 
   it('clears search and emits close event', async () => {

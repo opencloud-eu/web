@@ -1,6 +1,6 @@
 <template>
   <div class="px-3 pb-3 pt-1">
-    <div v-if="enabled" class="flex items-center gap-2">
+    <div v-if="enabled" class="flex h-4 items-center gap-2">
       <div class="relative flex-1">
         <oc-range
           :model-value="sliderValue"
@@ -22,11 +22,12 @@
         {{ progressLabel }}
       </span>
     </div>
-    <div v-else>
+    <div v-else-if="loading" class="flex h-4 items-center">
       <div
         class="epub-reader-progress-shimmer relative h-[14px] w-full overflow-hidden rounded-sm bg-role-surface-container-high"
       />
     </div>
+    <div v-else class="h-4" />
   </div>
 </template>
 
@@ -37,7 +38,10 @@ import { throttle } from 'lodash-es'
 
 const { readingProgressPercent, enabled } = defineProps<{
   readingProgressPercent: number | null
+  /** The locations exist, the slider can be used. */
   enabled: boolean
+  /** The locations are still being generated. */
+  loading: boolean
 }>()
 
 const emit = defineEmits<{
@@ -54,7 +58,12 @@ const { $gettext } = useGettext()
 const dragValue = ref<number | null>(null)
 const isDragging = ref(false)
 
-const sliderValue = computed(() => unref(dragValue) ?? readingProgressPercent ?? 0)
+const sliderValue = computed(() => {
+  if (unref(dragValue) !== null) {
+    return unref(dragValue)
+  }
+  return readingProgressPercent === null ? 0 : readingProgressPercent
+})
 
 const progressLabel = computed(() => {
   const percent = readingProgressPercent

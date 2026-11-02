@@ -1,17 +1,17 @@
 <template>
   <div
-    ref="chapterListRoot"
-    class="hidden lg:block w-80 shrink-0 overflow-y-auto bg-role-surface-container-low p-2 shadow-[8px_0_20px_-14px_rgb(0_0_0_/_0.28)]"
+    class="hidden lg:flex w-80 shrink-0 flex-col bg-role-surface-container-low shadow-[8px_0_20px_-14px_rgb(0_0_0_/_0.28)]"
   >
     <oc-search-bar
       v-model="filterTerm"
-      class="mb-2"
+      class="shrink-0 p-2 pb-0"
       :label="$gettext('Search chapters')"
       :placeholder="$gettext('Search chapters')"
       :is-rounded="false"
       button-hidden
+      is-filter
     />
-    <oc-list>
+    <oc-list ref="chapterListRoot" class="min-h-0 flex-1 overflow-y-auto p-2">
       <li
         v-for="chapter in filteredChapters"
         :key="chapter.id"
@@ -23,10 +23,12 @@
         }"
       >
         <oc-button
-          class="max-w-full justify-start px-2 py-1.5"
+          class="max-w-full justify-start py-1.5 pl-[calc(0.5rem+var(--depth)*0.75rem)] pr-2"
           :class="{
             'font-semibold': currentChapter?.id === chapter.id
           }"
+          :style="{ '--depth': chapter.depth }"
+          :aria-current="currentChapter?.id === chapter.id ? 'true' : undefined"
           appearance="raw"
           no-hover
           @click="onChapterClick(chapter)"
@@ -45,17 +47,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, unref, watch } from 'vue'
-import type { NavItem } from 'epubjs'
+import { ComponentPublicInstance, computed, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
+import type { Chapter } from '../types'
 import { useGettext } from 'vue3-gettext'
 
 const { chapters, currentChapter } = defineProps<{
-  chapters: NavItem[]
-  currentChapter?: NavItem
+  chapters: Chapter[]
+  currentChapter?: Chapter
 }>()
 const { $gettext } = useGettext()
 const filterTerm = ref('')
-const chapterListRoot = ref<HTMLElement>()
+const chapterListRoot = useTemplateRef<ComponentPublicInstance>('chapterListRoot')
 
 const filteredChapters = computed(() => {
   const term = unref(filterTerm).trim().toLowerCase()
@@ -66,10 +68,10 @@ const filteredChapters = computed(() => {
 })
 
 const emit = defineEmits<{
-  (e: 'chapterSelected', chapter: NavItem): void
+  (e: 'chapterSelected', chapter: Chapter): void
 }>()
 
-function onChapterClick(chapter: NavItem) {
+function onChapterClick(chapter: Chapter) {
   emit('chapterSelected', chapter)
 }
 
@@ -79,10 +81,10 @@ function scrollCurrentChapterIntoView() {
     return
   }
 
-  const chapterElements = unref(chapterListRoot)?.querySelectorAll<HTMLElement>(
-    '.epub-reader-chapters-list-item'
-  )
-  const activeChapterElement = Array.from(chapterElements ?? []).find(
+  const chapterElements = (
+    unref(chapterListRoot)?.$el as HTMLElement | undefined
+  )?.querySelectorAll<HTMLElement>('.epub-reader-chapters-list-item')
+  const activeChapterElement = Array.from(chapterElements || []).find(
     (element) => element.dataset.chapterId === currentChapterId
   )
   activeChapterElement?.scrollIntoView({ block: 'nearest' })
