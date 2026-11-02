@@ -9,8 +9,9 @@ import { mock, mockDeep } from 'vitest-mock-extended'
 import { GraphSharePermission, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ProjectSpaceResource, ShareSpaceResource } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-helpers'
-import { useDownloadFile, useResourcesStore } from '@opencloud-eu/web-pkg'
+import { useDownloadFile, useMessages, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { computed } from 'vue'
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -142,6 +143,25 @@ describe('FileVersions', () => {
             await wrapper.vm.$nextTick()
 
             expect(updateResourceField).toHaveBeenCalledTimes(2)
+          })
+          it('shows an error message and does not update the resource when restoring fails', async () => {
+            vi.spyOn(console, 'error').mockImplementation(() => undefined)
+            const { wrapper, mocks } = getMountedWrapper()
+            const error = new Error('locked')
+            mocks.$clientService.webdav.restoreFileVersion.mockRejectedValue(error)
+            const revertVersionButton = wrapper.findAll(selectors.revertVersionButton)
+            const { updateResourceField } = useResourcesStore()
+            const { showErrorMessage } = useMessages()
+
+            await revertVersionButton.at(0).trigger('click')
+            await flushPromises()
+
+            expect(showErrorMessage).toHaveBeenCalledWith({
+              title: 'Failed to restore version',
+              errors: [error]
+            })
+            expect(mocks.$clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+            expect(updateResourceField).not.toHaveBeenCalled()
           })
           it('restores the version via the file id', async () => {
             const resource = mock<Resource>({
