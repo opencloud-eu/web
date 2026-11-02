@@ -120,7 +120,7 @@ export const useSearch = () => {
   }) => {
     const query: string[] = []
 
-    term = escapeKqlValue(term?.trim() ?? '')
+    term = escapeKqlValue(term?.trim() || '')
     if (term) {
       // the term matches names, and unless only titles are searched also contents and tags
       const conditions = [`name:"*${term}*"`]

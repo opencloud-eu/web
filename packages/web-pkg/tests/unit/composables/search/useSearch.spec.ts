@@ -76,7 +76,9 @@ describe('useSearch', () => {
     })
     it('doubles quotes in tag filters', () => {
       const wrapper = createWrapper()
-      expect(wrapper.vm.buildSearchTerm({ term: '', tags: 'a"b+c' })).toBe('tag:("a""b" OR "c")')
+      expect(wrapper.vm.buildSearchTerm({ term: undefined, tags: 'a"b+c' })).toBe(
+        'tag:("a""b" OR "c")'
+      )
     })
   })
 })
