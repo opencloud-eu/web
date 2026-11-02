@@ -7,6 +7,7 @@ import { GetFileContentsFactory } from './getFileContents'
 import { GetFileInfoFactory } from './getFileInfo'
 import { GetFileUrlFactory } from './getFileUrl'
 import { GetPublicFileUrlFactory } from './getPublicFileUrl'
+import { GetPublicLinkSignatureFactory } from './getPublicLinkSignature'
 import { ListFilesFactory } from './listFiles'
 import { MoveFilesFactory } from './moveFiles'
 import { PutFileContentsFactory } from './putFileContents'
@@ -26,6 +27,7 @@ export * from './types'
 
 export type { ListFilesOptions, ListFilesResult } from './listFiles'
 export type { GetFileContentsResponse } from './getFileContents'
+export type { PublicLinkSignature } from './getPublicLinkSignature'
 
 export const webdav = (
   baseURI: string,
@@ -73,6 +75,7 @@ export const webdav = (
     options
   )
   const { getPublicFileUrl } = GetPublicFileUrlFactory(dav, options)
+  const { getPublicLinkSignature } = GetPublicLinkSignatureFactory(dav, options)
 
   const { copyFiles } = CopyFilesFactory(dav, options)
   const { moveFiles } = MoveFilesFactory(dav, options)
@@ -100,6 +103,7 @@ export const webdav = (
     getFileInfo,
     getFileUrl,
     getPublicFileUrl,
+    getPublicLinkSignature,
     getPathForFileId,
     listFiles,
     listFileVersions,

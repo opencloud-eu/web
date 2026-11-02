@@ -3,6 +3,7 @@ import { GetFileContentsFactory } from './getFileContents'
 import { GetFileInfoFactory } from './getFileInfo'
 import { GetFileUrlFactory } from './getFileUrl'
 import { GetPublicFileUrlFactory } from './getPublicFileUrl'
+import { GetPublicLinkSignatureFactory } from './getPublicLinkSignature'
 import { ListFilesFactory } from './listFiles'
 import { PutFileContentsFactory } from './putFileContents'
 import { CopyFilesFactory } from './copyFiles'
@@ -30,6 +31,7 @@ export interface WebDAV {
   getFileInfo: ReturnType<typeof GetFileInfoFactory>['getFileInfo']
   getFileUrl: ReturnType<typeof GetFileUrlFactory>['getFileUrl']
   getPublicFileUrl: ReturnType<typeof GetPublicFileUrlFactory>['getPublicFileUrl']
+  getPublicLinkSignature: ReturnType<typeof GetPublicLinkSignatureFactory>['getPublicLinkSignature']
   revokeUrl: ReturnType<typeof GetFileUrlFactory>['revokeUrl']
   listFiles: ReturnType<typeof ListFilesFactory>['listFiles']
   createFolder: ReturnType<typeof CreateFolderFactory>['createFolder']
