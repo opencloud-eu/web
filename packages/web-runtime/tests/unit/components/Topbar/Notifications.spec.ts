@@ -8,6 +8,7 @@ import { AxiosResponse } from 'axios'
 import { UserAvatar, useMessages, useSpacesStore } from '@opencloud-eu/web-pkg'
 import { flushPromises } from '@vue/test-utils'
 import { defineComponent } from 'vue'
+import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 
 const selectors = {
   notificationBellStub: 'notification-bell-stub',
@@ -104,6 +105,85 @@ describe('Notification component', () => {
       await flushPromises()
       await wrapper.find(selectors.markAll).trigger('click')
       expect(hideDropMock).not.toHaveBeenCalled()
+    })
+  })
+  describe('refetch', () => {
+    it('refetches the notifications when the drop opens', async () => {
+      const notifications = [mock<Notification>({ messageRich: undefined })]
+      const { wrapper, mocks } = getWrapper({ notifications })
+      await flushPromises()
+      expect(wrapper.findAll(selectors.notificationItem).length).toBe(1)
+
+      mockFetchResponse(mocks, [])
+      wrapper.findComponent(OcDropStub).vm.$emit('showDrop')
+      await flushPromises()
+      expect(mocks.$clientService.httpAuthenticated.get).toHaveBeenCalledTimes(2)
+      expect(wrapper.find(selectors.notificationItem).exists()).toBeFalsy()
+      expect(wrapper.find(selectors.noNewNotifications).exists()).toBeTruthy()
+    })
+    it('refetches the notifications when the tab becomes visible again', async () => {
+      const notifications = [mock<Notification>({ messageRich: undefined })]
+      const { wrapper, mocks } = getWrapper({ notifications })
+      await flushPromises()
+
+      mockFetchResponse(mocks, [])
+      document.dispatchEvent(new Event('visibilitychange'))
+      await flushPromises()
+      expect(mocks.$clientService.httpAuthenticated.get).toHaveBeenCalledTimes(2)
+      expect(wrapper.find(selectors.notificationItem).exists()).toBeFalsy()
+      wrapper.unmount()
+    })
+    it('does not refetch the notifications when the tab becomes hidden', async () => {
+      const visibilityStateSpy = vi
+        .spyOn(document, 'visibilityState', 'get')
+        .mockReturnValue('hidden')
+      const { wrapper, mocks } = getWrapper()
+      await flushPromises()
+
+      document.dispatchEvent(new Event('visibilitychange'))
+      await flushPromises()
+      expect(mocks.$clientService.httpAuthenticated.get).toHaveBeenCalledTimes(1)
+      wrapper.unmount()
+      visibilityStateSpy.mockRestore()
+    })
+    it('does not show the loading state while refetching', async () => {
+      const notifications = [mock<Notification>({ messageRich: undefined })]
+      const { wrapper } = getWrapper({ notifications })
+      await flushPromises()
+
+      wrapper.findComponent(OcDropStub).vm.$emit('showDrop')
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find(selectors.notificationsLoading).exists()).toBeFalsy()
+      expect(wrapper.findAll(selectors.notificationItem).length).toBe(1)
+    })
+    it('does not duplicate a fetched notification that also arrives via SSE', async () => {
+      const notification = getNotification({ notification_id: '1' })
+      const { wrapper, mocks } = getWrapper({ notifications: [notification], supportSSE: true })
+      await flushPromises()
+      const onSSENotification =
+        mocks.$clientService.sseAuthenticated.addEventListener.mock.calls.find(
+          ([type]) => type === MESSAGE_TYPE.NOTIFICATION
+        )[1] as (event: MessageEvent) => void
+
+      onSSENotification(new MessageEvent('message', { data: JSON.stringify(notification) }))
+      await wrapper.vm.$nextTick()
+      expect(wrapper.findAll(selectors.notificationItem).length).toBe(1)
+    })
+    it('does not restore notifications marked as read while refetching', async () => {
+      const notifications = [getNotification({ notification_id: '1' })]
+      const { wrapper, mocks } = getWrapper({ notifications })
+      await flushPromises()
+
+      let resolveFetch: (response: AxiosResponse) => void
+      mocks.$clientService.httpAuthenticated.get.mockReturnValue(
+        new Promise((resolve) => (resolveFetch = resolve))
+      )
+      wrapper.findComponent(OcDropStub).vm.$emit('showDrop')
+      await wrapper.vm.$nextTick()
+      await wrapper.find(selectors.markAll).trigger('click')
+      resolveFetch(mock<AxiosResponse>({ data: { ocs: { data: notifications } }, headers: {} }))
+      await flushPromises()
+      expect(wrapper.find(selectors.notificationItem).exists()).toBeFalsy()
     })
   })
   describe('avatar', () => {
@@ -285,6 +365,25 @@ describe('Notification component', () => {
   })
 })
 
+function getNotification(notification: Partial<Notification>) {
+  return {
+    messageRich: undefined,
+    messageRichParameters: undefined,
+    subject: 'subject',
+    datetime: '2026-01-01T00:00:00Z',
+    ...notification
+  } as Notification
+}
+
+function mockFetchResponse(
+  mocks: ReturnType<typeof defaultComponentMocks>,
+  notifications: Notification[]
+) {
+  mocks.$clientService.httpAuthenticated.get.mockResolvedValue(
+    mock<AxiosResponse>({ data: { ocs: { data: notifications } }, headers: {} })
+  )
+}
+
 const hideDropMock = vi.fn()
 const OcDropStub = defineComponent({
   name: 'OcDrop',
@@ -297,24 +396,31 @@ const OcDropStub = defineComponent({
 function getWrapper({
   mocks = {},
   notifications = [],
-  spaces = []
+  spaces = [],
+  supportSSE = false
 }: {
   mocks?: Record<string, unknown>
   notifications?: Notification[]
   spaces?: SpaceResource[]
+  supportSSE?: boolean
 } = {}) {
   hideDropMock.mockReset()
   const localMocks = { ...defaultComponentMocks(), ...mocks }
-  localMocks.$clientService.httpAuthenticated.get.mockResolvedValue(
-    mock<AxiosResponse>({ data: { ocs: { data: notifications } }, headers: {} })
-  )
+  mockFetchResponse(localMocks, notifications)
 
   return {
     mocks: localMocks,
     wrapper: shallowMount(Notifications, {
       global: {
         renderStubDefaultSlot: true,
-        plugins: [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })],
+        plugins: [
+          ...defaultPlugins({
+            piniaOptions: {
+              spacesState: { spaces },
+              capabilityState: { capabilities: { core: { 'support-sse': supportSSE } as any } }
+            }
+          })
+        ],
         mocks: localMocks,
         provide: localMocks,
         stubs: { 'user-avatar': true, OcButton: false, OcDrop: OcDropStub }
