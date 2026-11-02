@@ -46,6 +46,69 @@ describe('useResourcesStore', () => {
     })
   })
 
+  describe('removing selected resources', () => {
+    const fileX = mock<Resource>({ id: '1', name: 'x.txt', type: 'file' })
+    const fileY = mock<Resource>({ id: '2', name: 'y.txt', type: 'file' })
+
+    function setupStore() {
+      const store = useResourcesStore()
+      store.setResources([fileX, fileY])
+      store.addSelection('1')
+      return store
+    }
+
+    it('removes them from the selection', () => {
+      const store = setupStore()
+
+      store.removeResources([fileX])
+
+      expect(store.selectedIds).toEqual([])
+    })
+
+    it('does not select them again when they get added back', () => {
+      const store = setupStore()
+      store.removeResources([fileX])
+      store.addSelection('2')
+
+      store.upsertResource(fileX)
+
+      expect(store.selectedResources).toEqual([fileY])
+    })
+
+    it('resets the latest selected resource and the shift selection anchor', () => {
+      const store = setupStore()
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+
+      store.removeResources([fileX])
+
+      expect(store.latestSelectedId).toBeNull()
+      expect(publishSpy).toHaveBeenCalledWith('app.files.shiftAnchor.reset')
+    })
+
+    it('resets the latest selected resource when it is removed without being selected', () => {
+      const store = setupStore()
+      store.removeSelection('2')
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+
+      store.removeResources([fileY])
+
+      expect(store.selectedIds).toEqual(['1'])
+      expect(store.latestSelectedId).toBeNull()
+      expect(publishSpy).toHaveBeenCalledWith('app.files.shiftAnchor.reset')
+    })
+
+    it('keeps the selection when unselected resources get removed', () => {
+      const store = setupStore()
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+
+      store.removeResources([fileY])
+
+      expect(store.selectedIds).toEqual(['1'])
+      expect(store.latestSelectedId).toBe('1')
+      expect(publishSpy).not.toHaveBeenCalledWith('app.files.shiftAnchor.reset')
+    })
+  })
+
   describe('resourcesLoading', () => {
     it('stays true until all overlapping loads have finished', () => {
       const store = useResourcesStore()
@@ -134,6 +197,18 @@ describe('useResourcesStore', () => {
       store.setAreHiddenFilesShown(false)
 
       expect(publishSpy).toHaveBeenCalledWith('app.files.shiftAnchor.reset')
+    })
+
+    it('keeps the selection and the shift selection anchor if no hidden resource is selected', () => {
+      const store = setupStore()
+      store.setSelection(['1'])
+      store.setLastSelectedId('1')
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+
+      store.setAreHiddenFilesShown(false)
+
+      expect(store.selectedIds).toEqual(['1'])
+      expect(publishSpy).not.toHaveBeenCalledWith('app.files.shiftAnchor.reset')
     })
 
     it('resets the latest selected resource if it is no longer shown', () => {

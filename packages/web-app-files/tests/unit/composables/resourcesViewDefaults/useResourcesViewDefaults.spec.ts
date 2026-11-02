@@ -38,6 +38,34 @@ describe('useResourcesViewDefaults', () => {
         )
       )
     })
+    it('removes the param when the last selected resource gets removed from the list', async () => {
+      const resource = { id: '1', name: 'file.txt' } as Resource
+      const { mocks } = getWrapper({ resources: [resource] })
+      const resourcesStore = useResourcesStore()
+      resourcesStore.setSelection(['1'])
+      vi.mocked(mocks.$router.push).mockClear()
+
+      resourcesStore.removeResources([resource])
+      resourcesStore.resetSelection()
+      await vi.waitFor(() =>
+        expect(mocks.$router.push).toHaveBeenCalledWith(
+          expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
+        )
+      )
+    })
+    it('keeps the param when an unselected resource gets removed from the list', async () => {
+      const resources = [
+        { id: '1', name: 'file.txt' },
+        { id: '2', name: 'other.txt' }
+      ] as Resource[]
+      const { mocks } = getWrapper({ resources })
+      const resourcesStore = useResourcesStore()
+      resourcesStore.setSelection(['1'])
+
+      resourcesStore.removeResources([resources[1]])
+      await new Promise((resolve) => setTimeout(resolve))
+      expect(mocks.$router.push).not.toHaveBeenCalled()
+    })
     it('removes the param when another resource gets selected', async () => {
       const { mocks } = getWrapper()
       const resourcesStore = useResourcesStore()
