@@ -5,6 +5,7 @@
       <div class="min-w-0 flex-1">
         <h2
           class="truncate text-center text-lg font-bold leading-none"
+          :title="currentAddressBook.name"
           v-text="currentAddressBook.name"
         />
       </div>

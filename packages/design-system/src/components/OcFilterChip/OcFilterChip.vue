@@ -31,6 +31,7 @@
       />
       <span
         class="truncate oc-filter-chip-label"
+        :title="selectedItemNames[0]"
         v-text="!!selectedItemNames.length ? selectedItemNames[0] : filterLabel"
       />
       <span v-if="selectedItemNames.length > 1" v-text="` +${selectedItemNames.length - 1}`" />

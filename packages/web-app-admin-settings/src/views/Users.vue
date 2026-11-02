@@ -21,6 +21,7 @@
         />
         <h2
           class="m-0 text-base font-semibold min-w-0 flex-1 truncate"
+          :title="selectedUsers[0].displayName"
           v-text="selectedUsers[0].displayName"
         />
       </div>

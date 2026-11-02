@@ -16,7 +16,11 @@
     <div class="mail-list-item-content ml-5 min-w-0 w-full">
       <div class="mail-list-item-header">
         <div class="mail-list-item-sender flex items-center justify-between gap-2">
-          <span class="font-bold text-lg truncate flex-1" v-text="fromText"></span>
+          <span
+            class="font-bold text-lg truncate flex-1"
+            :title="fromText"
+            v-text="fromText"
+          ></span>
           <span
             class="mail-list-item-received-at whitespace-nowrap"
             v-text="receivedAtRelativeDate"
@@ -24,7 +28,7 @@
         </div>
       </div>
       <div class="mail-list-item-subject mt-1 flex justify-between items-center">
-        <span class="block font-bold truncate" v-text="mail.subject" />
+        <span class="block font-bold truncate" :title="mail.subject" v-text="mail.subject" />
         <mail-indicators :mail="mail" />
       </div>
       <div class="mail-list-item-preview text-role-on-surface-variant mt-1">

@@ -55,7 +55,12 @@
           :user-name="rowData.item.displayName"
           background-color="var(--oc-role-secondary)"
         />
-        <oc-filter-highlight class="truncate" :text="rowData.item.displayName" :term="filterTerm" />
+        <oc-filter-highlight
+          class="truncate"
+          :title="rowData.item.displayName"
+          :text="rowData.item.displayName"
+          :term="filterTerm"
+        />
         <oc-icon
           v-if="rowData.item.groupTypes?.includes('ReadOnly')"
           v-oc-tooltip="readOnlyLabel"

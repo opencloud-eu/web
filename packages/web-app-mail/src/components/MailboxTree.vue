@@ -27,7 +27,7 @@
           <div class="flex items-center justify-between w-full">
             <div class="flex items-center truncate">
               <oc-icon name="folder" class="mr-2" fill-type="line" />
-              <span class="truncate font-bold" v-text="mailbox.name" />
+              <span class="truncate font-bold" :title="mailbox.name" v-text="mailbox.name" />
             </div>
             <oc-tag
               v-if="mailbox.unreadEmails"

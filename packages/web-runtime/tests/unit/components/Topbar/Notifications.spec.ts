@@ -182,6 +182,9 @@ describe('Notification component', () => {
       const { wrapper } = getWrapper({ notifications: [notification] })
       await flushPromises()
       expect(wrapper.find(selectors.notificationLink).exists()).toBeTruthy()
+      expect(wrapper.find(`${selectors.notificationLink} a`).attributes('title')).toBe(
+        'http://some-link.com'
+      )
     })
     it('does not trigger the item navigation when clicked', async () => {
       const notification = mock<Notification>({

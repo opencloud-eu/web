@@ -22,7 +22,11 @@
             @click="runItem(item)"
           >
             <UserAvatar :user-id="item.id" :user-name="item.label" :width="28" />
-            <span class="text-editor-mention-menu__item-label" v-text="item.label" />
+            <span
+              class="text-editor-mention-menu__item-label"
+              :title="item.label"
+              v-text="item.label"
+            />
           </oc-button>
         </li>
       </ul>

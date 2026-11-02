@@ -17,7 +17,12 @@
             size-class="size-5"
             class="mr-1"
           />
-          <span data-testid="resource-label" class="truncate">{{ resource.label }}</span>
+          <span
+            data-testid="resource-label"
+            class="truncate"
+            :title="resource.label"
+            v-text="resource.label"
+          />
         </span>
         <oc-icon name="external-link" fill-type="line" size-class="size-4" class="shrink-0" />
       </a>

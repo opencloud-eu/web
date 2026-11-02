@@ -41,6 +41,14 @@ describe('OcBreadcrumbItem', () => {
     expect(wrapper.find('[aria-current="page"]').exists()).toBe(false)
     expect(wrapper.find('.font-bold').exists()).toBe(false)
   })
+  it('shows the full item text as title, so truncated names stay readable', () => {
+    const text = 'A very long folder name that gets truncated in the breadcrumb'
+    const { wrapper } = getWrapper({
+      item: { text, to: { path: 'folder' } },
+      textClass: 'truncate'
+    })
+    expect(wrapper.find('.truncate').attributes('title')).toBe(text)
+  })
   it('renders item icons passed via props', () => {
     const { wrapper } = getWrapper({
       item: { text: 'Vault', icon: 'resource-type-vault', iconAccessibleLabel: 'Encrypted vault' }

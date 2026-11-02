@@ -47,6 +47,15 @@ describe('OcMobileDrop', () => {
     expect(label).toBe('Close Bottom Drawer')
   })
 
+  it('shows the full drawer title as native title on the truncated header', async () => {
+    const { wrapper } = getWrapper()
+    await wrapper.find(selectors.toggle).trigger('click')
+    const header = wrapper.find('.oc-mobile-drop span.truncate')
+    const title = header.attributes('title')
+    wrapper.unmount()
+    expect(title).toBe('Bottom Drawer')
+  })
+
   it('does not render when toggle is not clicked', async () => {
     const { wrapper } = getWrapper()
     await nextTick()

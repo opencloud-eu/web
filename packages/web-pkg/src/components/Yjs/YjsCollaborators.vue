@@ -76,7 +76,7 @@
               :background-color="user.color"
             />
           </span>
-          <span class="min-w-0 flex-1 truncate" v-text="user.name" />
+          <span class="min-w-0 flex-1 truncate" :title="user.name" v-text="user.name" />
           <span
             v-if="user.isSelf"
             class="shrink-0 text-sm text-role-on-surface-variant"

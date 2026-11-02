@@ -43,6 +43,11 @@ describe('OcTile component', () => {
       expect(wrapper.find('resource-icon-stub').attributes('sizeclass')).toEqual(resourceIconSize)
     }
   )
+  it('shows the full description as title on the truncated description', () => {
+    const description = 'A very long space description that gets truncated on the tile'
+    const wrapper = getWrapper({ resource: { ...getSpaceMock(), description } as SpaceResource })
+    expect(wrapper.find('p.truncate').attributes('title')).toBe(description)
+  })
   it('shows a loading spinner if isLoading is set to true', () => {
     const wrapper = getWrapper({ resource: getSpaceMock(), isLoading: true })
     expect(wrapper.find('.oc-tile-card-loading-spinner').exists()).toBeTruthy()

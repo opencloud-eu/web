@@ -66,7 +66,11 @@
                   size-class="size-4"
                 />
                 <oc-icon v-else name="folder" class="align-middle" fill-type="line" />
-                <span>{{ truncationItem.text }}</span>
+                <span
+                  class="oc-breadcrumb-truncation-item-text truncate"
+                  :title="truncationItem.text"
+                  v-text="truncationItem.text"
+                />
               </oc-button>
             </div>
           </oc-drop>

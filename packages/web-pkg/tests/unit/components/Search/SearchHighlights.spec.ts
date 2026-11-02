@@ -39,6 +39,7 @@ describe('SearchHighlights component', () => {
     expect(tags.length).toBe(1)
     expect(tags[0].text()).toBe('Invoice')
     expect(tags[0].find('.oc-filter-highlight-match').text()).toBe('voice')
+    expect(tags[0].find('.oc-filter-highlight').attributes('title')).toBe('Invoice')
   })
   it('renders the tags selected in the tag filter', () => {
     const { wrapper } = getWrapper({ tags: ['Invoice', 'private'], filterTags: ['private'] })

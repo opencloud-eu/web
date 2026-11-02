@@ -49,7 +49,7 @@
                 <div>
                   <slot name="image" :item="item" :term="filterTerm || ''" />
                 </div>
-                <div class="truncate [&>*]:truncate">
+                <div class="truncate [&>*]:truncate" :title="item[displayNameAttribute]">
                   <slot name="item" :item="item" :term="filterTerm || ''" />
                 </div>
               </div>

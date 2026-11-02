@@ -32,7 +32,7 @@
         size="xsmall"
       >
         <oc-icon name="price-tag-3" size="xsmall" />
-        <oc-filter-highlight class="truncate" :text="tag" :term="term" />
+        <oc-filter-highlight class="truncate" :title="tag" :text="tag" :term="term" />
       </oc-tag>
     </div>
   </div>

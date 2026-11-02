@@ -23,7 +23,7 @@
           >
             <oc-icon name="arrow-left" fill-type="line" />
           </oc-button>
-          <span class="font-semibold truncate" v-text="title" />
+          <span class="font-semibold truncate" :title="title" v-text="title" />
           <oc-button
             appearance="raw"
             class="raw-hover-surface oc-bottom-drawer-close-button"
