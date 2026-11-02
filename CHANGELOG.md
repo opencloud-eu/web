@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: apply sse file events after running folder load [[#4083](https://github.com/opencloud-eu/web/pull/4083)]
 - fix: wait for a running save instead of hanging in AppWrapper [[#4131](https://github.com/opencloud-eu/web/pull/4131)]
 - fix: keep long values in the admin users and spaces tables in bounds [[#4116](https://github.com/opencloud-eu/web/pull/4116)]
 - fix: prevent double profile picture upload on repeated set [[#4107](https://github.com/opencloud-eu/web/pull/4107)]
