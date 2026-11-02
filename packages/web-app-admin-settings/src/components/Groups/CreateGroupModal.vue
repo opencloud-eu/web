@@ -58,9 +58,9 @@ function setDisplayNameError(errorMessage: string) {
 }
 
 async function validateDisplayName() {
-  const { displayName } = unref(group)
+  const displayName = unref(group).displayName.trim()
 
-  if (displayName.trim() === '') {
+  if (displayName === '') {
     return setDisplayNameError($gettext('Group name cannot be empty'))
   }
 
@@ -74,7 +74,7 @@ async function validateDisplayName() {
     () => false
   )
   // the name changed while the request was running, the validation of the new name decides
-  if (unref(group).displayName !== displayName) {
+  if (unref(group).displayName.trim() !== displayName) {
     return false
   }
   if (exists) {
@@ -94,7 +94,10 @@ async function onConfirm() {
   }
 
   try {
-    const createdGroup = await clientService.graphAuthenticated.groups.createGroup(unref(group))
+    const createdGroup = await clientService.graphAuthenticated.groups.createGroup({
+      ...unref(group),
+      displayName: unref(group).displayName.trim()
+    })
     showMessage({ title: $gettext('Group was created successfully') })
     groupSettingsStore.upsertGroup(createdGroup)
   } catch (error) {

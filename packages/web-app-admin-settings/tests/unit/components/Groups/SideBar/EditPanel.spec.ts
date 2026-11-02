@@ -65,6 +65,17 @@ describe('EditPanel', () => {
         'Group "users" already exists'
       )
     })
+    it('checks the trimmed display name for an existing group', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { getGroup } = mocks.$clientService.graphAuthenticated.groups
+      getGroup.mockResolvedValue(mock<Group>({ displayName: 'users' }))
+      await setDisplayName(wrapper, ' users ')
+      expect(getGroup).toHaveBeenCalledWith('users')
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe(
+        'Group "users" already exists'
+      )
+      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeTruthy()
+    })
     it('does not look up the group if the display name is unchanged', async () => {
       const { wrapper, mocks } = getWrapper()
       await setDisplayName(wrapper, 'group')
@@ -109,6 +120,23 @@ describe('EditPanel', () => {
       const { upsertGroup } = useGroupSettingsStore()
       expect(upsertGroup).toHaveBeenCalledWith(updatedGroup)
       expect(getCompareSaveDialog(wrapper).props('saved')).toBe(true)
+    })
+    it('saves the trimmed display name', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { groups } = mocks.$clientService.graphAuthenticated
+      groups.getGroup.mockRejectedValueOnce(new Error(''))
+      await setDisplayName(wrapper, ' administrators ')
+
+      groups.editGroup.mockResolvedValue(undefined)
+      groups.getGroup.mockResolvedValue(mock<Group>({ id: '1', displayName: 'administrators' }))
+
+      getCompareSaveDialog(wrapper).vm.$emit('confirm')
+      await flushPromises()
+
+      expect(groups.editGroup).toHaveBeenCalledWith(
+        '1',
+        expect.objectContaining({ displayName: 'administrators' })
+      )
     })
     it('shows an error message on failure', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
