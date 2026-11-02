@@ -55,13 +55,20 @@ describe('resolvePrivateLink', () => {
     const resource = buildResource({ fileId })
     const { mocks } = getWrapper({ space, resource, fileId, path: '/' })
     await flushPromises()
-    expect(mocks.$router.push).toHaveBeenCalledWith(
+    expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'files-spaces-generic',
         params: expect.objectContaining({ driveAliasAndItem }),
         query: expect.objectContaining({ scrollTo: fileId })
       })
     )
+  })
+  it('replaces the private link in the history, so going back does not resolve it again', async () => {
+    const space = mock<SpaceResource>({ getDriveAliasAndItem: () => 'personal/home' })
+    const { mocks } = getWrapper({ space, resource: buildResource({ fileId: '1' }), path: '/' })
+    await flushPromises()
+    expect(mocks.$router.replace).toHaveBeenCalled()
+    expect(mocks.$router.push).not.toHaveBeenCalled()
   })
   describe('resolves to "files-shares-with-me"', () => {
     it('resolves for single file shares', async () => {
@@ -74,7 +81,7 @@ describe('resolvePrivateLink', () => {
       const resource = buildResource({ fileId })
       const { mocks } = getWrapper({ space, resource, fileId, path: '/' })
       await flushPromises()
-      expect(mocks.$router.push).toHaveBeenCalledWith(
+      expect(mocks.$router.replace).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'files-shares-with-me' })
       )
     })
@@ -84,7 +91,7 @@ describe('resolvePrivateLink', () => {
     ])('resolves for the share jail id', async (fileId) => {
       const { mocks } = getWrapper({ fileId })
       await flushPromises()
-      expect(mocks.$router.push).toHaveBeenCalledWith(
+      expect(mocks.$router.replace).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'files-shares-with-me' })
       )
     })
@@ -104,7 +111,7 @@ describe('resolvePrivateLink', () => {
         hiddenShare: true
       })
       await flushPromises()
-      expect(mocks.$router.push).toHaveBeenCalledWith(
+      expect(mocks.$router.replace).toHaveBeenCalledWith(
         expect.objectContaining({
           query: expect.objectContaining({ 'q_share-visibility': 'hidden' })
         })
@@ -127,10 +134,10 @@ describe('resolvePrivateLink', () => {
       hiddenShare: true
     })
     await flushPromises()
-    expect(mocks.$router.push).toHaveBeenCalledWith(
+    expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'files-guest-link' })
     )
-    expect(mocks.$router.push).not.toHaveBeenCalledWith(
+    expect(mocks.$router.replace).not.toHaveBeenCalledWith(
       expect.objectContaining({
         query: expect.objectContaining({ 'q_share-visibility': 'hidden' })
       })
@@ -140,7 +147,7 @@ describe('resolvePrivateLink', () => {
     it('does not resolve the share jail id to "files-shares-with-me"', async () => {
       const { mocks } = getWrapper({ fileId: `${SHARE_JAIL_ID}$${SHARE_JAIL_ID}`, isGuest: true })
       await flushPromises()
-      expect(mocks.$router.push).not.toHaveBeenCalledWith(
+      expect(mocks.$router.replace).not.toHaveBeenCalledWith(
         expect.objectContaining({ name: 'files-shares-with-me' })
       )
     })
@@ -152,7 +159,7 @@ describe('resolvePrivateLink', () => {
           resolveError: new HttpError('denied', undefined, statusCode)
         })
         await flushPromises()
-        expect(mocks.$router.push).not.toHaveBeenCalled()
+        expect(mocks.$router.replace).not.toHaveBeenCalled()
         expect(wrapper.find(selectors.errorMessage).exists()).toBeTruthy()
 
         await wrapper.find(selectors.loginButton).trigger('click')
@@ -198,7 +205,7 @@ describe('resolvePrivateLink', () => {
     const details = 'sharing'
     const { mocks } = getWrapper({ details, path: '/' })
     await flushPromises()
-    expect(mocks.$router.push).toHaveBeenCalledWith(
+    expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({ query: expect.objectContaining({ details }) })
     )
   })

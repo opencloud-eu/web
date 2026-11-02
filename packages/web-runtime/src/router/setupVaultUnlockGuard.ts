@@ -13,6 +13,7 @@ import {
   VaultClaim
 } from '@opencloud-eu/web-pkg'
 import { isPublicSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
+import { routeNames } from './names'
 
 /** Space-relative, absolute path a `driveAliasAndItem` points at within `space`. */
 function spaceRelativePath(driveAliasAndItem: string, space: SpaceResource): string {
@@ -29,7 +30,8 @@ function isInsideVaultRoot(path: string, vaultRoot: string): boolean {
 
 /**
  * Where cancelling the unlock should return the user to. `from` only qualifies
- * if it's somewhere they can actually stay: not the unlock route itself, and
+ * if it's somewhere they can actually stay: not the unlock route itself, not a
+ * private link (it only redirects and would resolve into the vault again), and
  * not inside the very vault we're locking them out of.
  */
 function getCancelUrl(
@@ -37,7 +39,11 @@ function getCancelUrl(
   space: SpaceResource,
   claim: VaultClaim
 ): string | undefined {
-  if (!from.name || from.name === claim.unlockRoute?.name) {
+  if (
+    !from.name ||
+    from.name === claim.unlockRoute?.name ||
+    from.name === routeNames.resolvePrivateLink
+  ) {
     return undefined
   }
   const fromDriveAliasAndItem = from.params?.driveAliasAndItem as string | undefined

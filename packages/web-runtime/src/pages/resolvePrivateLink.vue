@@ -83,7 +83,7 @@ const resolvePrivateLinkTask = useTask(function* (signal, id) {
       `${SHARE_JAIL_ID}$${SHARE_JAIL_ID}`
     ].includes(id)
   ) {
-    return router.push(createLocationShares('files-shares-with-me'))
+    return router.replace(createLocationShares('files-shares-with-me'))
   }
 
   try {
@@ -94,7 +94,7 @@ const resolvePrivateLinkTask = useTask(function* (signal, id) {
     }
 
     const targetRoute = getTargetRoute({ resource, space, path, driveItem })
-    router.push(targetRoute)
+    router.replace(targetRoute)
   } catch (e) {
     console.error('Error resolving private link', e)
     if (authStore.isGuestContext && isGuestSessionInvalidError(e)) {
