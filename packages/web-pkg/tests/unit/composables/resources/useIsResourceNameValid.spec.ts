@@ -298,7 +298,7 @@ describe('useIsResourceNameValid', () => {
             const { isValid, error } = isSpaceNameValid(specialChar)
             expect(isValid).toBe(false)
             expect(error).toEqual(
-              'The Space name cannot contain the following characters: / \\\\ . : ? * " > < |\''
+              String.raw`The Space name cannot contain the following characters: / \ . : ? * " > < |`
             )
           }
         })

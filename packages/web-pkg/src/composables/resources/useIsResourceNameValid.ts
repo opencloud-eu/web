@@ -94,7 +94,7 @@ export const useIsResourceNameValid = () => {
       return {
         isValid: false,
         error: $gettext(
-          'The Space name cannot contain the following characters: / \\\\ . : ? * " > < |\''
+          'The Space name cannot contain the following characters: / \\ . : ? * " > < |'
         )
       }
     }
