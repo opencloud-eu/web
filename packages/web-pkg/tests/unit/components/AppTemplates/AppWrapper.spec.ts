@@ -88,8 +88,12 @@ const LATIN1_BYTES = new Uint8Array([0x47, 0x72, 0xfc, 0xdf, 0x65])
 
 function deferred<T>() {
   let resolve: (value: T) => void
-  const promise = new Promise<T>((r) => (resolve = r))
-  return { promise, resolve }
+  let reject: (reason: unknown) => void
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res
+    reject = rej
+  })
+  return { promise, resolve, reject }
 }
 
 const wrappedComponent = defineComponent({
@@ -906,6 +910,81 @@ describe('AppWrapper — saving before deleting or downloading the open file', (
     expect(useMessages().showErrorMessage).toHaveBeenCalled()
     expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
     expect(s.downloadFile).toHaveBeenCalled()
+  })
+})
+
+describe('AppWrapper — saving while a save is running', () => {
+  async function openFileWithRunningSave() {
+    const firstPut = deferred<Resource>()
+    const s = await openFile({
+      putFileContents: vi
+        .fn()
+        .mockReturnValueOnce(firstPut.promise)
+        .mockResolvedValue(mock<Resource>({ etag: 'etag-saved-again' }))
+    })
+    await s.edit('saved by Ctrl+S')
+    void s.pressCtrlS()
+    await vi.waitFor(() => expect(s.putFileContents).toHaveBeenCalledTimes(1))
+    return { s, firstPut }
+  }
+
+  it('leaves the editor once the running save finished', async () => {
+    const { s, firstPut } = await openFileWithRunningSave()
+    const { dispatchModal } = useModals()
+    const guard = vi.mocked(onBeforeRouteLeave).mock.calls.at(-1)[0]
+
+    const leaving = (guard as any)({}, {}) as Promise<boolean>
+    await flushPromises()
+    const confirming = vi.mocked(dispatchModal).mock.calls.at(-1)[0].onConfirm('')
+    firstPut.resolve(mock<Resource>({ etag: 'etag-saved' }))
+    await confirming
+
+    expect(await leaving).toBe(true)
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+  })
+
+  it('stays in the editor without saving again when the running save fails', async () => {
+    const { s, firstPut } = await openFileWithRunningSave()
+    const { dispatchModal } = useModals()
+    const guard = vi.mocked(onBeforeRouteLeave).mock.calls.at(-1)[0]
+
+    const leaving = (guard as any)({}, {}) as Promise<boolean>
+    await flushPromises()
+    const confirming = vi.mocked(dispatchModal).mock.calls.at(-1)[0].onConfirm('')
+    firstPut.reject({ statusCode: 423, response: {} })
+    await confirming
+
+    expect(await leaving).toBe(false)
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+    expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
+  })
+
+  it('saves what was typed meanwhile on a second Ctrl+S', async () => {
+    const { s, firstPut } = await openFileWithRunningSave()
+    await s.edit('typed while saving')
+
+    const saving = s.pressCtrlS()
+    firstPut.resolve(mock<Resource>({ etag: 'etag-saved' }))
+    await saving
+    await flushPromises()
+
+    expect(s.putFileContents).toHaveBeenCalledTimes(2)
+    expect(s.putFileContents).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({ content: 'typed while saving' })
+    )
+  })
+
+  it('skips the autosave while a save is running', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const { s, firstPut } = await openFileWithRunningSave()
+
+    await vi.advanceTimersByTimeAsync(130_000)
+    firstPut.resolve(mock<Resource>({ etag: 'etag-saved' }))
+    await flushPromises()
+
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+    expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
   })
 })
 

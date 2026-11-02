@@ -723,11 +723,22 @@ async function runSaveCallback(content: unknown): Promise<void> {
 }
 
 const save = async () => {
-  if (isResourceDeleted) {
+  // `saveFileTask` drops a save started while another one runs, and a dropped instance never
+  // settles. No await between the check and `perform`, so concurrent callers can't race in.
+  let runningSaveResult: boolean | null = null
+  while (saveFileTask.isRunning) {
+    runningSaveResult = await saveFileTask.last
+  }
+  // retrying right away would fail the same way and show the error again
+  if (runningSaveResult === false || isResourceDeleted) {
     return false
   }
 
   flushPendingContent()
+  if (runningSaveResult && !unref(isDirty)) {
+    return true
+  }
+
   const saved = await saveFileTask.perform()
   if (!saved) {
     return false
@@ -770,7 +781,7 @@ onMounted(() => {
     autosaveIntervalId = setInterval(
       async () => {
         flushPendingContent()
-        if (!unref(isDirty) || unref(isConflicted)) {
+        if (!unref(isDirty) || unref(isConflicted) || saveFileTask.isRunning) {
           return
         }
         if (await save()) {
@@ -816,8 +827,8 @@ const actionOptions = computed<FileActionOptions>(() => ({
 }))
 
 /**
- * Whether there are changes to save, once a running save finished and the session flushed. A save
- * started while another one runs is dropped, and the running one may miss the latest changes.
+ * Whether there are changes to save, once a running save finished and the session flushed. A
+ * running save may miss the latest changes.
  */
 async function hasChangesToSave() {
   while (saveFileTask.isRunning) {
