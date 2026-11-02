@@ -56,7 +56,11 @@
       </div>
     </template>
     <template #manager="{ item }">
-      {{ getManagerNames(item) }}
+      <span
+        class="line-clamp-1 break-all max-w-sm"
+        :title="getManagerNames(item)"
+        v-text="getManagerNames(item)"
+      />
     </template>
     <template #members="{ item }">
       {{ getMemberCount(item) }}

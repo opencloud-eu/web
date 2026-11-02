@@ -138,6 +138,23 @@ describe('UsersList', () => {
       expect(matches('mail')).toEqual(['alex'])
     })
   })
+  describe('long values', () => {
+    it.each(['onPremisesSamAccountName', 'displayName', 'mail'] as const)(
+      'are shown in full in the title of the "%s" column',
+      (name) => {
+        const value = 'a'.repeat(160)
+        const user = {
+          id: '1',
+          onPremisesSamAccountName: 'jan',
+          displayName: 'Jan',
+          mail: 'jan@x.org'
+        }
+        const users = [{ ...user, [name]: value }] as User[]
+        const { wrapper } = getWrapper({ mountType: mount, users })
+        expect(wrapper.find(`.oc-table-data-cell-${name} [title]`).attributes('title')).toBe(value)
+      }
+    )
+  })
   describe('squashed table', () => {
     it.each([true, false])(
       'sets the squashed class depending on the side bar being open (%s)',
