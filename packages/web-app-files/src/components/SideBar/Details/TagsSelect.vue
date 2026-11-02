@@ -163,25 +163,27 @@ const isOptionSelectable = (option: TagOption) => {
   return unref(selectedTags).length <= tagsMaxCount && option.selectable !== false
 }
 
+function setSelectedTags(labels: string[]) {
+  selectedTags.value = labels.map((label) => ({ label }))
+  const allAvailableTags = new Set([...allTags, ...unref(availableTags).map((t) => t.label)])
+  availableTags.value = diff(Array.from(allAvailableTags), labels).map((label) => ({ label }))
+}
+
 const save = async (e: TagOption[] | string[]) => {
+  const { id, tags, fileId } = unref(resource)
+  let assignedTags: string[] = []
+  let savedSelection: TagOption[]
+
   try {
     // the server stores tags comma-separated, so a pasted "a,b" has to become two tags
     const labels = e
       .flatMap((x) => (typeof x === 'object' ? x.label : x).split(','))
       .map((label) => label.trim())
       .filter(Boolean)
-    selectedTags.value = uniq(labels).map((label) => ({ label }))
-    const allAvailableTags = new Set([...allTags, ...unref(availableTags).map((t) => t.label)])
+    const selectedTagLabels = uniq(labels)
+    setSelectedTags(selectedTagLabels)
+    savedSelection = unref(selectedTags)
 
-    availableTags.value = diff(
-      Array.from(allAvailableTags),
-      unref(selectedTags).map((o) => o.label)
-    ).map((label) => ({
-      label
-    }))
-
-    const { id, tags, fileId } = unref(resource)
-    const selectedTagLabels = unref(selectedTags).map((t) => t.label)
     const tagsToAdd = diff(selectedTagLabels, tags)
     const tagsToRemove = diff(tags, selectedTagLabels)
 
@@ -190,6 +192,8 @@ const save = async (e: TagOption[] | string[]) => {
         resourceId: fileId,
         tags: tagsToAdd
       })
+      assignedTags = tagsToAdd
+      allTags.push(...tagsToAdd)
     }
 
     if (tagsToRemove.length) {
@@ -204,10 +208,19 @@ const save = async (e: TagOption[] | string[]) => {
     if (unref(tagSelect) !== null) {
       unref(tagSelect).$refs.search.focus()
     }
-
-    allTags.push(...tagsToAdd)
   } catch (e) {
     console.error(e)
+
+    // show the tags the resource really has, including the ones assigned before the error
+    const actualTags = [...tags, ...assignedTags]
+    if (assignedTags.length) {
+      updateResourceField({ id, field: 'tags', value: actualTags })
+    }
+    // skip if a resource switch or a newer save has replaced the selection meanwhile
+    if (unref(selectedTags) === savedSelection) {
+      setSelectedTags(actualTags)
+    }
+
     showErrorMessage({
       title: $gettext('Failed to edit tags'),
       errors: [e]
