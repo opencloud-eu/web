@@ -106,11 +106,13 @@ const onFileChange = async (event: Event) => {
         size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString()
       })
     })
+    resetFileInput()
     return
   }
 
   if (!(await isDecodableImage(file))) {
     showErrorMessage({ title: $gettext('The selected image is not supported or damaged') })
+    resetFileInput()
     return
   }
 
@@ -187,11 +189,14 @@ const onRemoveModalConfirm = async () => {
   showRemoveModal.value = false
 }
 
-const destroyCropper = () => {
+function resetFileInput() {
   if (unref(fileInputRef)) {
     fileInputRef.value.value = ''
   }
+}
 
+const destroyCropper = () => {
+  resetFileInput()
   selectedFile.value = null
 }
 </script>

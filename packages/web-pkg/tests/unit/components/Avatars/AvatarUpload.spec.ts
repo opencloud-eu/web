@@ -159,6 +159,39 @@ describe('AvatarUpload', () => {
       expect(wrapper.find(selectors.modalConfirm).exists()).toBe(false)
     })
 
+    it.each([
+      { name: 'too large', size: 20 * 1024 * 1024, decodable: true },
+      { name: 'not decodable', size: 1024, decodable: false }
+    ])(
+      'should reset the file input when the file is $name so it can be picked again',
+      async ({ size, decodable }) => {
+        if (!decodable) {
+          createImageBitmap.mockRejectedValueOnce(new Error('broken'))
+        }
+        const { wrapper } = getWrapper()
+        const file = createMockFile('rejected.png', size, 'image/png')
+        const input = wrapper.find(selectors.avatarFileInput).element as HTMLInputElement
+        let inputValue = 'C:\\fakepath\\rejected.png'
+        Object.defineProperty(input, 'value', {
+          get: () => inputValue,
+          set: (value: string) => {
+            inputValue = value
+          }
+        })
+        const event = new Event('change')
+
+        Object.defineProperty(event, 'target', {
+          writable: false,
+          value: { files: [file] }
+        })
+
+        input.dispatchEvent(event)
+        await flushPromises()
+
+        expect(input.value).toBe('')
+      }
+    )
+
     it('should show message on successful upload', async () => {
       const { wrapper } = getWrapper()
       const file = createMockFile('file.png', 9 * 1024 * 1024, 'image/png')
