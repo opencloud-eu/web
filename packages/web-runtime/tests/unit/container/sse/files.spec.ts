@@ -29,6 +29,7 @@ import { User } from '@opencloud-eu/web-client/graph/generated'
 import { createTestingPinia, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { Language } from 'vue3-gettext'
 import PQueue from 'p-queue'
+import { nextTick } from 'vue'
 
 describe('file events', () => {
   describe('in an incoming share', () => {
@@ -392,6 +393,37 @@ describe('file events', () => {
       await onSSEFileLockingEvent({ sseData, ...mocks })
       expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).toHaveBeenCalled()
+    })
+    it('waits for a running folder load before updating the resource', async () => {
+      const resourceToUnlock = mock<Resource>({
+        id: 'file1',
+        storageId: 'space1',
+        parentFolderId: 'currenFolder!currentFolder'
+      })
+      const mocks = getMocks()
+      vi.mocked(mocks.resourcesStore).resourcesLoading = true
+      mocks.clientService.webdav.getFileInfo.mockResolvedValue(
+        mock<Resource>({ ...resourceToUnlock, locked: false })
+      )
+      const sseData = mock<EventSchemaType>({
+        itemid: resourceToUnlock.id,
+        spaceid: resourceToUnlock.storageId,
+        parentitemid: resourceToUnlock.parentFolderId
+      })
+
+      const handled = onSSEFileLockingEvent({ sseData, ...mocks })
+      await nextTick()
+      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+
+      // the folder load finishes with the resource still being locked
+      mocks.resourcesStore.resources = [mock<Resource>({ ...resourceToUnlock, locked: true })]
+      vi.mocked(mocks.resourcesStore).resourcesLoading = false
+      await handled
+
+      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(
+        expect.objectContaining({ locked: false })
+      )
     })
     it('does not trigger any action when resource is not in store', async () => {
       const mocks = getMocks()
@@ -807,6 +839,55 @@ describe('file events', () => {
       })
       await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
+    })
+  })
+  describe('during a running folder load', () => {
+    it.each(
+      [
+        onSSEItemRenamedEvent,
+        onSSEFileLockingEvent,
+        onSSEProcessingFinishedEvent,
+        onSSEItemTrashedEvent,
+        onSSEItemRestoredEvent,
+        onSSEItemMovedEvent,
+        onSSEFileTouchedEvent,
+        onSSEFolderCreatedEvent,
+        onSSEItemFavoriteAddedEvent,
+        onSSEItemFavoriteRemovedEvent
+      ].map((handler) => ({ name: handler.name, handler }))
+    )('$name waits for the load to finish', async ({ handler }) => {
+      const currentFolderId = 'currenFolder!currentFolder'
+      const resource = mock<Resource>({
+        id: 'file1',
+        storageId: 'space1',
+        parentFolderId: currentFolderId
+      })
+      const mocks = getMocks({ resources: [resource] })
+      vi.mocked(mocks.resourcesStore).resourcesLoading = true
+      mocks.clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>({ ...resource }))
+      const sseData = mock<EventSchemaType>({
+        itemid: resource.id,
+        spaceid: resource.storageId,
+        parentitemid: currentFolderId,
+        etag: 'newEtag'
+      })
+      const { upsertResource, removeResources, updateResourceField } = mocks.resourcesStore
+
+      const handled = handler({ sseData, ...mocks })
+      await nextTick()
+      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+      for (const action of [upsertResource, removeResources, updateResourceField]) {
+        expect(action).not.toHaveBeenCalled()
+      }
+
+      vi.mocked(mocks.resourcesStore).resourcesLoading = false
+      await handled
+
+      expect(
+        [upsertResource, removeResources, updateResourceField].some(
+          (action) => vi.mocked(action).mock.calls.length
+        )
+      ).toBe(true)
     })
   })
 })

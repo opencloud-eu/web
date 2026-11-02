@@ -112,6 +112,18 @@ export const useResourcesStore = defineStore('resources', () => {
     selectedIds.value = []
   }
 
+  // counter because folder loads can overlap
+  const runningResourceLoads = ref(0)
+  const resourcesLoading = computed(() => unref(runningResourceLoads) > 0)
+
+  const startResourcesLoading = () => {
+    runningResourceLoads.value = unref(runningResourceLoads) + 1
+  }
+
+  const finishResourcesLoading = () => {
+    runningResourceLoads.value = Math.max(0, unref(runningResourceLoads) - 1)
+  }
+
   const selectedIds = ref<string[]>([])
   const latestSelectedId = ref<string>(null)
 
@@ -339,6 +351,10 @@ export const useResourcesStore = defineStore('resources', () => {
 
     initResourceList,
     clearResourceList,
+
+    resourcesLoading,
+    startResourcesLoading,
+    finishResourcesLoading,
 
     selectedIds,
     selectedIdsSet,
