@@ -8,7 +8,13 @@ import { PasswordPolicy } from '@opencloud-eu/design-system/helpers'
 import { useEmbedMode } from '../../../src/composables/embedMode'
 import { useLinkTypes } from '../../../src/composables/links'
 import { nextTick, ref } from 'vue'
-import { CapabilityStore, Modal, useSharesStore } from '../../../src/composables/piniaStores'
+import {
+  CapabilityStore,
+  Modal,
+  useMessages,
+  useModals,
+  useSharesStore
+} from '../../../src/composables/piniaStores'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
 import { describe } from 'vitest'
 
@@ -120,6 +126,41 @@ describe('CreateLinkModal', () => {
       await wrapper.vm.onConfirm()
 
       expect(consoleMock).toHaveBeenCalledTimes(1)
+    })
+    it('shows an error message in embed mode for links that failed to be created', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const resources = [mock<Resource>({ isFolder: false }), mock<Resource>({ isFolder: false })]
+      const { wrapper, mocks } = getWrapper({ resources, embedModeEnabled: true })
+      const link = mock<LinkShare>({ webUrl: 'someurl' })
+      const error = { response: {} }
+
+      const { addLink } = useSharesStore()
+      vi.mocked(addLink).mockResolvedValueOnce(link).mockRejectedValueOnce(error)
+      await wrapper.vm.onConfirm()
+
+      expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:share', [link.webUrl])
+      expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:share-links', [
+        { url: link.webUrl }
+      ])
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith({
+        errors: [error],
+        title: 'Failed to create link'
+      })
+    })
+    it('shows an error message in embed mode when all links failed to be created', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const resources = [mock<Resource>({ isFolder: false }), mock<Resource>({ isFolder: false })]
+      const { wrapper, mocks } = getWrapper({ resources, embedModeEnabled: true })
+
+      const { addLink } = useSharesStore()
+      vi.mocked(addLink).mockRejectedValue({ response: {} })
+      await wrapper.vm.onConfirm()
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to create links' })
+      )
+      expect(useModals().removeModal).toHaveBeenCalled()
     })
   })
   describe('action buttons', () => {
