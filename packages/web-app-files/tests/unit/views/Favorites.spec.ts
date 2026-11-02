@@ -53,6 +53,22 @@ describe('Favorites view', () => {
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
       expect(wrapper.find('resource-table-stub').exists()).toBeTruthy()
     })
+    it('shows the favorites empty message when no filter is active', () => {
+      const { wrapper } = getMountedWrapper()
+      expect(wrapper.find('#files-favorites-empty').text()).toContain(
+        'Nothing marked as favorite, yet'
+      )
+    })
+    it.each([
+      { name: 'last modified', filter: { lastModifiedParam: ref('today') } },
+      { name: 'media type', filter: { mediaTypeParam: ref('image') } },
+      { name: 'tags', filter: { tagParam: ref('work') } }
+    ])('shows "No favorites found" when the $name filter matches nothing', ({ filter }) => {
+      const { wrapper } = getMountedWrapper(filter)
+      const message = wrapper.find('#files-favorites-empty').text()
+      expect(message).toContain('No favorites found')
+      expect(message).not.toContain('Nothing marked as favorite, yet')
+    })
     it('shows default empty-state text when no filter is active', () => {
       const { wrapper } = getMountedWrapper()
       expect((wrapper.vm as any).emptyStateDescription).toBe('All your favorites will show up here')
