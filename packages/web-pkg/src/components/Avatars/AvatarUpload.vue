@@ -33,6 +33,7 @@
       :title="$gettext('Crop your new profile picture')"
       :button-confirm-text="$gettext('Set')"
       :button-confirm-disabled="!imageUrl"
+      :is-loading="isSetting"
       focus-trap-initial="#image-cropper-selection"
       @cancel="onCropModalCancel"
       @confirm="onCropModalConfirm"
@@ -85,6 +86,7 @@ const imageCropperRef = ref<InstanceType<typeof ImageCropper> | null>(null)
 const showCropModal = ref(false)
 const showRemoveModal = ref(false)
 const isRemoving = ref(false)
+const isSetting = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const maxFileSize = AVATAR_UPLOAD_MAX_FILE_SIZE_MB * 1024 * 1024
@@ -141,31 +143,41 @@ const onCropModalCancel = () => {
 }
 
 const onCropModalConfirm = async () => {
-  const croppedImage = await getCroppedImage()
-  if (!croppedImage) {
+  // keeps the dialog from being cancelled or confirmed again while the upload is in flight
+  if (unref(isSetting)) {
     return
   }
 
-  const blob = await getCanvasBlob(croppedImage)
-  const objectUrl = URL.createObjectURL(blob)
-  const file = new File([blob], 'avatar.png', {
-    type: 'image/png',
-    lastModified: Date.now()
-  })
-
+  isSetting.value = true
   try {
-    await graphAuthenticated.photos.updateOwnUserPhotoPatch(file)
-    avatarsStore.addAvatar(unref(user).id, objectUrl)
-    showMessage({ title: $gettext('Profile picture was set successfully') })
-  } catch (error) {
-    showErrorMessage({
-      title: $gettext('Failed to set profile picture'),
-      errors: [error]
-    })
-  }
+    const croppedImage = await getCroppedImage()
+    if (!croppedImage) {
+      return
+    }
 
-  showCropModal.value = false
-  destroyCropper()
+    const blob = await getCanvasBlob(croppedImage)
+    const objectUrl = URL.createObjectURL(blob)
+    const file = new File([blob], 'avatar.png', {
+      type: 'image/png',
+      lastModified: Date.now()
+    })
+
+    try {
+      await graphAuthenticated.photos.updateOwnUserPhotoPatch(file)
+      avatarsStore.addAvatar(unref(user).id, objectUrl)
+      showMessage({ title: $gettext('Profile picture was set successfully') })
+    } catch (error) {
+      showErrorMessage({
+        title: $gettext('Failed to set profile picture'),
+        errors: [error]
+      })
+    }
+
+    showCropModal.value = false
+    destroyCropper()
+  } finally {
+    isSetting.value = false
+  }
 }
 
 const onRemoveModalConfirm = async () => {

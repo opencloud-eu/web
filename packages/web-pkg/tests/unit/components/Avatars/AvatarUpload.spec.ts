@@ -116,6 +116,55 @@ describe('AvatarUpload', () => {
       expect(wrapper.find(selectors.modalCancel).exists()).toBeFalsy()
     })
   })
+  describe('crop modal', () => {
+    it('uploads only once on a double click and disables confirm while the upload is in flight', async () => {
+      const { wrapper, mocks } = getWrapper()
+      let finishUpload: () => void
+      mocks.$clientService.graphAuthenticated.photos.updateOwnUserPhotoPatch.mockReturnValueOnce(
+        new Promise<void>((resolve) => {
+          finishUpload = resolve
+        }) as any
+      )
+
+      const file = createMockFile('file.png', 1024, 'image/png')
+      const input = wrapper.find(selectors.avatarFileInput).element as HTMLInputElement
+      const event = new Event('change')
+
+      Object.defineProperty(event, 'target', {
+        writable: false,
+        value: { files: [file] }
+      })
+
+      input.dispatchEvent(event)
+      await flushPromises()
+      ;(wrapper.vm as any).imageCropperRef = {
+        getCroppedCanvas: vi.fn(() =>
+          Promise.resolve({
+            toBlob: vi.fn((cb) => cb(new Blob())),
+            toDataURL: vi.fn(() => 'data:image/png;base64,mocked')
+          })
+        )
+      }
+
+      const confirmButton = wrapper.find(selectors.modalConfirm)
+      confirmButton.trigger('click')
+      confirmButton.trigger('click')
+      await flushPromises()
+
+      expect(
+        mocks.$clientService.graphAuthenticated.photos.updateOwnUserPhotoPatch
+      ).toHaveBeenCalledTimes(1)
+      expect(wrapper.find(selectors.modalConfirm).attributes('disabled')).toBeDefined()
+
+      finishUpload()
+      await flushPromises()
+
+      expect(wrapper.find(selectors.modalConfirm).exists()).toBeFalsy()
+      const { showMessage, showErrorMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledTimes(1)
+      expect(showErrorMessage).not.toHaveBeenCalled()
+    })
+  })
   describe('uploadButton', () => {
     it('should show error message when file size it too big', () => {
       const { wrapper } = getWrapper({})
