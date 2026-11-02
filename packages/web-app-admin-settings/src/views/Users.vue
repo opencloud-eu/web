@@ -442,6 +442,10 @@ watch(
         unref(selectedUsers).map((user) => loadAdditionalUserDataTask.perform(user))
       )
     } catch (e) {
+      // leaving the page cancels the loading
+      if (e === 'cancel') {
+        return
+      }
       console.error(e)
       showErrorMessage({ title: $gettext('Failed to load user details'), errors: [e] })
     } finally {
@@ -452,8 +456,8 @@ watch(
 
 let editQuotaActionEventToken: string
 
-onMounted(async () => {
-  await loadResourcesTask.perform()
+onMounted(() => {
+  loadResourcesTask.perform()
 
   editQuotaActionEventToken = eventBus.subscribe(
     'app.admin-settings.users.user.quota.updated',

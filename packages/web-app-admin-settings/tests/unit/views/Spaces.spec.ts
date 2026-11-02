@@ -238,6 +238,15 @@ describe('Spaces view', () => {
       expect(wrapper.findComponent(AppTemplate).props('batchActionsLoading')).toBeTruthy()
     })
   })
+  it('stops loading the spaces without an error when leaving the page', async () => {
+    const errorHandler = vi.fn()
+    const { wrapper } = getWrapper({ pendingSpaces: true, errorHandler })
+
+    wrapper.unmount()
+    await flushPromises()
+
+    expect(errorHandler).not.toHaveBeenCalled()
+  })
 })
 
 function getSideBarPanels(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
@@ -257,15 +266,23 @@ function getWrapper({
   ],
   selectedSpaces = [],
   stubActions = true,
-  loadError
+  loadError,
+  pendingSpaces = false,
+  errorHandler = undefined
 }: {
   spaces?: SpaceResource[]
   selectedSpaces?: SpaceResource[]
   stubActions?: boolean
   loadError?: Error
+  pendingSpaces?: boolean
+  errorHandler?: (err: unknown) => void
 } = {}) {
   const $clientService = mockDeep<ClientService>()
-  $clientService.graphAuthenticated.drives.listAllDrives.mockResolvedValue(spaces)
+  if (pendingSpaces) {
+    $clientService.graphAuthenticated.drives.listAllDrives.mockReturnValue(new Promise(() => {}))
+  } else {
+    $clientService.graphAuthenticated.drives.listAllDrives.mockResolvedValue(spaces)
+  }
   if (loadError) {
     $clientService.graphAuthenticated.drives.listAllDrives.mockRejectedValueOnce(loadError)
   }
@@ -302,7 +319,8 @@ function getWrapper({
           OcBreadcrumb: true,
           BatchActions: true,
           ViewOptions: true
-        }
+        },
+        config: { errorHandler }
       }
     })
   }

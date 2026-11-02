@@ -269,8 +269,8 @@ watch(
   }
 )
 
-onMounted(async () => {
-  await loadResourcesTask.perform()
+onMounted(() => {
+  loadResourcesTask.perform()
 })
 
 onBeforeUnmount(() => {
