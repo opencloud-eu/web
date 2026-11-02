@@ -60,6 +60,7 @@ import {
   formatFileSize,
   useClientService,
   useDownloadFile,
+  useMessages,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { computed, inject, Ref, unref } from 'vue'
@@ -78,6 +79,8 @@ const { isReadOnly = false } = defineProps<{
 
 const clientService = useClientService()
 const language = useGettext()
+const { $gettext } = language
+const { showErrorMessage } = useMessages()
 const { downloadFile } = useDownloadFile({ clientService })
 const { updateResourceField } = useResourcesStore()
 
@@ -98,7 +101,13 @@ const isRevertible = computed(() => {
 })
 
 const revertToVersion = async (version: Resource) => {
-  await clientService.webdav.restoreFileVersion(unref(space), unref(resource), version.name)
+  try {
+    await clientService.webdav.restoreFileVersion(unref(space), unref(resource), version.name)
+  } catch (e) {
+    console.error(e)
+    showErrorMessage({ title: $gettext('Failed to restore version'), errors: [e] })
+    return
+  }
   const restoredResource = await clientService.webdav.getFileInfo(unref(space), unref(resource))
 
   const fieldsToUpdate = ['size', 'mdate'] as const
