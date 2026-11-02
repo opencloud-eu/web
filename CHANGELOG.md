@@ -1,5 +1,60 @@
 # Changelog
 
+## [8.3.0](https://github.com/opencloud-eu/web/releases/tag/v8.3.0) - 2026-11-02
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @v-scharf
+
+### 🐛 Bug Fixes
+
+- fix: hide extension preferences with only one option [[#4112](https://github.com/opencloud-eu/web/pull/4112)]
+- fix: focus the first input when opening text entry modals [[#4089](https://github.com/opencloud-eu/web/pull/4089)]
+- fix: hide guest invites when guest links are disabled [[#4071](https://github.com/opencloud-eu/web/pull/4071)]
+- fix: pause toasts, fix pagination semantics and name upload states [[#4069](https://github.com/opencloud-eu/web/pull/4069)]
+- fix: show all invite search results returned by the server [[#4081](https://github.com/opencloud-eu/web/pull/4081)]
+- fix: restore parent folders before their children from the trash [[#4076](https://github.com/opencloud-eu/web/pull/4076)]
+- fix: play flac files in chromium browsers [[#4080](https://github.com/opencloud-eu/web/pull/4080)]
+- fix: raise contrast, target sizes and visibility of small UI parts [[#4074](https://github.com/opencloud-eu/web/pull/4074)]
+- fix: copy action for the current folder [[#4073](https://github.com/opencloud-eu/web/pull/4073)]
+- fix: versions for guest users [[#4067](https://github.com/opencloud-eu/web/pull/4067)]
+- fix: prevent clipped descenders in resource names [[#4072](https://github.com/opencloud-eu/web/pull/4072)]
+- fix: restore the cleartext name when undoing a deletion in a vault [[#4024](https://github.com/opencloud-eu/web/pull/4024)]
+- fix(text-editor): allow inline code inside other marks in markdown [[#4066](https://github.com/opencloud-eu/web/pull/4066)]
+- fix: keep upload info closable when folder creation fails [[#4030](https://github.com/opencloud-eu/web/pull/4030)]
+- fix: resolve permanent links into unsynced shares [[#4042](https://github.com/opencloud-eu/web/pull/4042)]
+- fix: only escape markdown text where it would be read as syntax [[#4038](https://github.com/opencloud-eu/web/pull/4038)]
+- fix: more small a11y fixes from the audit [[#4043](https://github.com/opencloud-eu/web/pull/4043)]
+- fix: truncate long sidebar nav item labels [[#4056](https://github.com/opencloud-eu/web/pull/4056)]
+- fix: validate name length in vaults [[#4054](https://github.com/opencloud-eu/web/pull/4054)]
+- fix(preview): keep the active file when the folder changes [[#4051](https://github.com/opencloud-eu/web/pull/4051)]
+- fix: keep raw html and decode named entities in markdown files [[#4025](https://github.com/opencloud-eu/web/pull/4025)]
+- fix: small a11y fixes from the third audit round [[#4023](https://github.com/opencloud-eu/web/pull/4023)]
+
+### 📈 Enhancement
+
+- Rework the EPUB reader [[#3924](https://github.com/opencloud-eu/web/pull/3924)]
+
+### 📦️ Dependencies
+
+- chore(deps): update traefik docker tag to v3.7.17 [[#4091](https://github.com/opencloud-eu/web/pull/4091)]
+- chore(deps): update axllent/mailpit docker tag to v1.33.0 [[#4093](https://github.com/opencloud-eu/web/pull/4093)]
+- chore(deps): update apache/tika docker tag to v4.3.0 [[#4078](https://github.com/opencloud-eu/web/pull/4078)]
+- chore(deps): update collabora/code docker tag to v26.04.5.2.1 [[#4010](https://github.com/opencloud-eu/web/pull/4010)]
+- fix(deps): update dependency qs to v6.17.1 [[#4070](https://github.com/opencloud-eu/web/pull/4070)]
+- chore(deps): update hocuspocus monorepo to v4.8.0 [[#4064](https://github.com/opencloud-eu/web/pull/4064)]
+- fix(deps): update dependency @casl/ability to v7.1.0 [[#4065](https://github.com/opencloud-eu/web/pull/4065)]
+- chore(deps): update dependency @casl/vue to v3.1.0 [[#4063](https://github.com/opencloud-eu/web/pull/4063)]
+- chore(deps): update node.js to v24.22.2 [[#4060](https://github.com/opencloud-eu/web/pull/4060)]
+- fix(deps): update dependency @casl/ability to v7.1.0 [[#4062](https://github.com/opencloud-eu/web/pull/4062)]
+- chore(deps): update dependency axios to v1.21.0 [[#4044](https://github.com/opencloud-eu/web/pull/4044)]
+- fix(deps): update dependency qs to v6.17.0 [[#4045](https://github.com/opencloud-eu/web/pull/4045)]
+- chore(deps): update pnpm to v11.28.9 [[#4040](https://github.com/opencloud-eu/web/pull/4040)]
+- [full-ci] chore: bump opencloud for tests to 9.0.0 [[#4037](https://github.com/opencloud-eu/web/pull/4037)]
+- chore(deps): update dependency focus-trap to v8.2.4 [[#4035](https://github.com/opencloud-eu/web/pull/4035)]
+- chore(deps): update dependency eslint-plugin-vue to v10.12.0 [[#4027](https://github.com/opencloud-eu/web/pull/4027)]
+- chore(deps): update dependency postcss to v8.5.32 [[#4034](https://github.com/opencloud-eu/web/pull/4034)]
+
 ## [8.2.1](https://github.com/opencloud-eu/web/releases/tag/v8.2.1) - 2026-10-27
 
 ### ❤️ Thanks to all contributors! ❤️
