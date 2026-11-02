@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: correct forbidden characters in space name error [[#4108](https://github.com/opencloud-eu/web/pull/4108)]
 - fix: apply sse file events after running folder load [[#4083](https://github.com/opencloud-eu/web/pull/4083)]
 - fix: wait for a running save instead of hanging in AppWrapper [[#4131](https://github.com/opencloud-eu/web/pull/4131)]
 - fix: keep long values in the admin users and spaces tables in bounds [[#4116](https://github.com/opencloud-eu/web/pull/4116)]
