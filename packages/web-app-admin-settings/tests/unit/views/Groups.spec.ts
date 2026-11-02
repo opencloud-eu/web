@@ -1,6 +1,6 @@
 import Groups from '../../../src/views/Groups.vue'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { ClientService, SideBarPanel } from '@opencloud-eu/web-pkg'
+import { ClientService, SideBarPanel, useMessages } from '@opencloud-eu/web-pkg'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { flushPromises } from '@vue/test-utils'
@@ -20,6 +20,20 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 describe('Groups view', () => {
+  describe('loading groups', () => {
+    it('shows an error message when loading fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const clientService = getClientServiceMock()
+      clientService.graphAuthenticated.groups.listGroups.mockRejectedValueOnce(new Error('failed'))
+      const { wrapper } = getWrapper({ clientService })
+      await flushPromises()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to load groups' })
+      )
+      expect(wrapper.find('no-content-message-stub').exists()).toBeTruthy()
+    })
+  })
+
   describe('side bar panels', () => {
     describe('EditPanel', () => {
       it('should be available when one group is selected', () => {

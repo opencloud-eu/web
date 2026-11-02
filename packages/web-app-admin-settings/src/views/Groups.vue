@@ -80,7 +80,8 @@ import {
   NoContentMessage,
   SideBarPanel,
   SideBarPanelContext,
-  useClientService
+  useClientService,
+  useMessages
 } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { computed, ref, unref, onBeforeUnmount, onMounted, provide } from 'vue'
@@ -93,6 +94,7 @@ const groupSettingsStore = useGroupSettingsStore()
 const { selectedGroups, groups } = storeToRefs(groupSettingsStore)
 const clientService = useClientService()
 const { $gettext } = useGettext()
+const { showErrorMessage } = useMessages()
 const filterTerm = ref('')
 
 provide(
@@ -101,10 +103,16 @@ provide(
 )
 
 const loadResourcesTask = useTask(function* (signal) {
-  const loadedGroups = yield* call(
-    clientService.graphAuthenticated.groups.listGroups({ orderBy: ['displayName'] }, { signal })
-  )
-  groupSettingsStore.setGroups(loadedGroups || [])
+  try {
+    const loadedGroups = yield* call(
+      clientService.graphAuthenticated.groups.listGroups({ orderBy: ['displayName'] }, { signal })
+    )
+    groupSettingsStore.setGroups(loadedGroups || [])
+  } catch (e) {
+    console.error(e)
+    groupSettingsStore.setGroups([])
+    showErrorMessage({ title: $gettext('Failed to load groups'), errors: [e] })
+  }
 }).restartable()
 
 const isLoading = computed(() => loadResourcesTask.isRunning || !loadResourcesTask.last)
