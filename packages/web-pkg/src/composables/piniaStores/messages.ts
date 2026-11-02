@@ -28,8 +28,11 @@ export const useMessages = defineStore('messages', () => {
   }
 
   const getXRequestIdsFromErrors = (errors: Message['errors']) => {
-    const getXRequestID = (error: MessageError) => {
-      return (error as HttpError).response?.headers?.get('x-request-id')
+    const getXRequestID = (error: MessageError): string | undefined => {
+      const headers = (error as HttpError).response?.headers as Record<string, unknown> | undefined
+      const value =
+        typeof headers?.get === 'function' ? headers.get('x-request-id') : headers?.['x-request-id']
+      return value ? String(value) : undefined
     }
 
     return errors

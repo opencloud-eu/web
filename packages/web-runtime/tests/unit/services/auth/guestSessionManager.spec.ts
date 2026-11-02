@@ -3,7 +3,7 @@ import { AxiosError, AxiosResponse } from 'axios'
 import { ClientService, useAuthStore, useSpacesStore } from '@opencloud-eu/web-pkg'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { resetSSE } from '@opencloud-eu/web-client/sse'
-import { DavHttpError } from '@opencloud-eu/web-client'
+import { DavHttpError, HttpError } from '@opencloud-eu/web-client'
 import {
   GuestSessionManager,
   GuestShareNotFoundError,
@@ -61,6 +61,38 @@ describe('isGuestSessionInvalidError', () => {
     ['a dav 401', davUnauthorizedError('https://cloud.test/dav/spaces/share-id'), true],
     ['a graph 401 from a non-guest endpoint', graphUnauthorizedError('/graph/v1.0/me'), false],
     ['a dav 401 without url', new DavHttpError('', undefined, undefined, 401), false],
+    [
+      'a 401 of a file download',
+      new HttpError(
+        'Request failed with status code 401',
+        { status: 401, config: { url: 'https://cloud.test/dav/spaces/share-id/a.txt' } } as any,
+        401
+      ),
+      true
+    ],
+    [
+      'a 401 of a fetch response wrapped into an http error',
+      new HttpError(
+        'Unauthorized',
+        { status: 401, url: 'https://cloud.test/dav/spaces/share-id/a.txt' } as Response,
+        401
+      ),
+      true
+    ],
+    [
+      'a 401 wrapped into an http error without a request url',
+      new HttpError('Unauthorized', { status: 401, url: '' } as Response, 401),
+      false
+    ],
+    [
+      'a 401 of a non-guest endpoint wrapped into an http error',
+      new HttpError(
+        'Request failed with status code 401',
+        { status: 401, config: { url: 'https://cloud.test/graph/v1.0/me' } } as any,
+        401
+      ),
+      false
+    ],
     ['a missing share', new GuestShareNotFoundError(), false],
     ['nothing', undefined, false]
   ])('detects %s: %s', (_, error, expected) => {

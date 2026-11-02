@@ -282,6 +282,44 @@ describe('AuthService', () => {
       expect(removeUser).not.toHaveBeenCalled()
     })
 
+    it('resolves only after a logout on an auth error led to the access denied page', async () => {
+      const authService = new AuthService()
+      let onUserUnloaded: () => Promise<void>
+      const userManager = mock<UserManager>({
+        getUser: vi.fn().mockResolvedValue(null),
+        areEventHandlersRegistered: false,
+        unloadReason: 'authError',
+        // like oidc-client-ts, which awaits the userUnloaded callbacks
+        removeUser: vi.fn((): Promise<void> => onUserUnloaded()),
+        events: mock<UserManager['events']>({
+          addUserUnloaded: vi.fn((callback: () => Promise<void>): (() => void) => {
+            onUserUnloaded = callback
+            return () => undefined
+          })
+        })
+      })
+      Object.defineProperty(authService, 'userManager', { value: userManager })
+      const router = createRouter()
+      let finishNavigation: () => void
+      vi.spyOn(router, 'push').mockImplementation(
+        () => new Promise<undefined>((resolve) => (finishNavigation = () => resolve(undefined)))
+      )
+      initAuthService({ authService, router })
+      Object.defineProperty(authService, 'userStore', { value: { reset: vi.fn() } })
+      await authService.initializeContext(userContextRoute)
+
+      let isHandled = false
+      const promise = authService.handleAuthError(userContextRoute).then(() => (isHandled = true))
+      await vi.runAllTimersAsync()
+
+      expect(router.push).toHaveBeenCalledWith(expect.objectContaining({ name: 'accessDenied' }))
+      expect(isHandled).toBe(false)
+
+      finishNavigation()
+      await promise
+      expect(isHandled).toBe(true)
+    })
+
     it('logs the user out once transient retries are exhausted', async () => {
       const authService = new AuthService()
       const signinSilent = vi.fn().mockRejectedValue(new ErrorTimeout('timeout'))
