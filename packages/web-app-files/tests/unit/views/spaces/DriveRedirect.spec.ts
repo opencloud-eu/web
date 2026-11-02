@@ -1,9 +1,12 @@
 import DriveRedirect from '../../../../src/views/spaces/DriveRedirect.vue'
 import { mock } from 'vitest-mock-extended'
 import { join } from 'path'
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
+import { flushPromises } from '@vue/test-utils'
+import { Router } from 'vue-router'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
+  createRouter,
   defaultPlugins,
   mount,
   defaultComponentMocks,
@@ -66,6 +69,28 @@ describe('DriveRedirect view', () => {
         params: expect.objectContaining({ driveAliasAndItem: 'personal/admin/folder/file.txt' })
       })
     )
+  })
+
+  it('keeps a folder with a hash in its name of the static personal drive alias', async () => {
+    const router = createRouter({
+      routes: [
+        {
+          name: 'files-spaces-generic',
+          path: '/files/spaces/:driveAliasAndItem(.*)?',
+          component: {}
+        }
+      ]
+    })
+    await router.push('/files/spaces/personal/home/Doc%23A')
+    getMountedWrapper({
+      driveAliasAndItem: 'personal/home/Doc#A',
+      spaces: [getPersonalSpace()],
+      router
+    })
+    await flushPromises()
+
+    const { params } = router.resolve(unref(router.currentRoute).fullPath)
+    expect(params.driveAliasAndItem).toBe('personal/admin/Doc#A')
   })
 
   describe('unknown project space', () => {
@@ -146,12 +171,14 @@ function getMountedWrapper({
   currentRouteName = 'files-spaces-generic',
   driveAliasAndItem = '',
   isGuest = false,
-  spaces = []
+  spaces = [],
+  router
 }: {
   currentRouteName?: string
   driveAliasAndItem?: string
   isGuest?: boolean
   spaces?: SpaceResource[]
+  router?: Router
 } = {}) {
   const plugins = defaultPlugins({
     piniaOptions: {
@@ -164,6 +191,9 @@ function getMountedWrapper({
     ...defaultComponentMocks({ currentRoute: getRoute(currentRouteName, driveAliasAndItem) })
   }
   mocks.$router.replace.mockResolvedValue(undefined)
+  if (router) {
+    mocks.$router = router as typeof mocks.$router
+  }
 
   return {
     mocks,
