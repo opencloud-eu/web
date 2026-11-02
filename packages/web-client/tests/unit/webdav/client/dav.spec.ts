@@ -1,6 +1,7 @@
 import { createClient, WebDAVClient } from 'webdav'
 import { mock } from 'vitest-mock-extended'
 import { DAV } from '../../../../src/webdav/client/dav'
+import { DavHttpError } from '../../../../src/errors'
 
 vi.mock('webdav', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -22,6 +23,26 @@ describe('DAV', () => {
       await dav.delete('/some/path')
 
       expect(customRequest.mock.calls[0][1].withCredentials).toBeUndefined()
+    })
+  })
+  describe('request errors', () => {
+    it('rethrows errors without a response as they are', async () => {
+      const networkError = new TypeError('Failed to fetch')
+      const { dav, customRequest } = getDav()
+      customRequest.mockRejectedValue(networkError)
+
+      await expect(dav.delete('/some/path')).rejects.toBe(networkError)
+    })
+    it('throws a DavHttpError for errors with a response', async () => {
+      const { dav, customRequest } = getDav()
+      customRequest.mockRejectedValue({
+        response: { status: 404, text: () => Promise.resolve('') }
+      })
+
+      const error = await dav.delete('/some/path').catch((e) => e)
+
+      expect(error).toBeInstanceOf(DavHttpError)
+      expect(error.statusCode).toBe(404)
     })
   })
 })
