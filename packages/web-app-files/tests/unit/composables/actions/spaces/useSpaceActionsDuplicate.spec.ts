@@ -172,6 +172,58 @@ describe('restore', () => {
         }
       })
     })
+    it('should show an error message for spaces the current user is no member of', async () => {
+      let instance: ReturnType<typeof useSpaceActionsDuplicate>
+      const { mocks } = getWrapper({
+        setup: (i) => {
+          instance = i
+        }
+      })
+      mocks.$clientService.graphAuthenticated.drives.createDrive.mockResolvedValue(
+        mock<SpaceResource>({ id: '3', name: 'Moon (1)' })
+      )
+      mocks.$clientService.webdav.listFiles.mockResolvedValue({ children: [] } as ListFilesResult)
+      const otherSpace = mock<SpaceResource>({
+        id: 'other',
+        name: 'Mars',
+        disabled: false,
+        driveType: 'project'
+      })
+      const memberSpace = mock<SpaceResource>({
+        id: '1',
+        name: 'Moon',
+        disabled: false,
+        driveType: 'project',
+        spaceImageData: null,
+        spaceReadmeData: null,
+        spaceQuota: { total: 1 }
+      })
+      await unref(instance.actions)[0].handler({ resources: [otherSpace, memberSpace] })
+      const { showMessage, showErrorMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledTimes(1)
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
+      expect(showErrorMessage).toHaveBeenCalledWith({
+        title: 'Space »Mars« could not be duplicated because you are not a member'
+      })
+    })
+    it('should show one error message with the count for several spaces the current user is no member of', async () => {
+      let instance: ReturnType<typeof useSpaceActionsDuplicate>
+      const { mocks } = getWrapper({
+        setup: (i) => {
+          instance = i
+        }
+      })
+      const otherSpaces = ['Mars', 'Venus'].map((name) =>
+        mock<SpaceResource>({ id: name, name, disabled: false, driveType: 'project' })
+      )
+      await unref(instance.actions)[0].handler({ resources: otherSpaces })
+      expect(mocks.$clientService.webdav.listFiles).not.toHaveBeenCalled()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
+      expect(showErrorMessage).toHaveBeenCalledWith({
+        title: '2 spaces could not be duplicated because you are not a member'
+      })
+    })
   })
   describe('method "duplicateSpace"', () => {
     it('should not create a space if the files of the space can not be read', () => {

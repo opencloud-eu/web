@@ -25,7 +25,7 @@ export const useSpaceActionsDuplicate = () => {
   const sharesStore = useSharesStore()
   const { showMessage, showErrorMessage } = useMessages()
   const router = useRouter()
-  const { $gettext } = useGettext()
+  const { $gettext, $ngettext } = useGettext()
   const ability = useAbility()
   const clientService = useClientService()
   const loadingService = useLoadingService()
@@ -124,11 +124,27 @@ export const useSpaceActionsDuplicate = () => {
   }
 
   const handler = async ({ resources }: SpaceActionOptions) => {
+    const skippedSpaces: SpaceResource[] = []
     for (const resource of resources) {
-      if (resource.disabled || !isProjectSpaceResource(resource) || !isMemberSpace(resource)) {
+      if (resource.disabled || !isProjectSpaceResource(resource)) {
+        continue
+      }
+      if (!isMemberSpace(resource)) {
+        skippedSpaces.push(resource)
         continue
       }
       await duplicateSpace(resource)
+    }
+
+    if (skippedSpaces.length) {
+      showErrorMessage({
+        title: $ngettext(
+          'Space »%{space}« could not be duplicated because you are not a member',
+          '%{count} spaces could not be duplicated because you are not a member',
+          skippedSpaces.length,
+          { space: skippedSpaces[0].name, count: skippedSpaces.length.toString() }
+        )
+      })
     }
   }
 
