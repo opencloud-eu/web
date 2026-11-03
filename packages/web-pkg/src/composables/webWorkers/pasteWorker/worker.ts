@@ -89,7 +89,7 @@ self.onmessage = async (e: MessageEvent) => {
           resourceName: resource.name,
           message: e.message,
           statusCode: e.statusCode,
-          xReqId: e.response.headers?.get('x-request-id')
+          xReqId: e.response?.headers?.get('x-request-id')
         })
       }
     })

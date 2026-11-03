@@ -137,6 +137,28 @@ describe('delete worker', () => {
     await workerPromise
   })
 
+  it('returns failed files on a network error without response', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    webDavMock.deleteFile.mockRejectedValue(new TypeError('Failed to fetch'))
+
+    unref(worker.worker).onmessage = (e: MessageEvent) => {
+      const { successful, failed } = JSON.parse(e.data)
+      expect(successful.length).toBe(0)
+      expect(failed).toEqual([{ resource: resourceMock, message: 'Failed to fetch' }])
+
+      resolveTest(true)
+    }
+
+    worker.post(
+      JSON.stringify({
+        topic: 'fileListDelete',
+        data: dataMock
+      })
+    )
+
+    await workerPromise
+  })
+
   it.each([true, false])(
     'passes withCredentials %s to the webdav client',
     async (withCredentials) => {
