@@ -163,6 +163,25 @@ describe('FileVersions', () => {
             expect(mocks.$clientService.webdav.getFileInfo).not.toHaveBeenCalled()
             expect(updateResourceField).not.toHaveBeenCalled()
           })
+          it('shows an error message and does not update the resource when refreshing the file fails', async () => {
+            vi.spyOn(console, 'error').mockImplementation(() => undefined)
+            const { wrapper, mocks } = getMountedWrapper()
+            const error = new Error('refresh failed')
+            mocks.$clientService.webdav.getFileInfo.mockRejectedValue(error)
+            const revertVersionButton = wrapper.findAll(selectors.revertVersionButton)
+            const { updateResourceField } = useResourcesStore()
+            const { showErrorMessage } = useMessages()
+
+            await revertVersionButton.at(0).trigger('click')
+            await flushPromises()
+
+            expect(mocks.$clientService.webdav.restoreFileVersion).toHaveBeenCalled()
+            expect(showErrorMessage).toHaveBeenCalledWith({
+              title: 'Failed to refresh file',
+              errors: [error]
+            })
+            expect(updateResourceField).not.toHaveBeenCalled()
+          })
           it('restores the version via the file id', async () => {
             const resource = mock<Resource>({
               id: 'share-jail-id',
