@@ -161,7 +161,7 @@ export class AuthService implements AuthServiceInterface {
       // a guest might only pass a user route, keep a pending renewal until a user signs in
       if (isUserSignedIn) {
         this.guestSessionManager.clear()
-      } else {
+      } else if (!this.authStore.isGuestContext) {
         this.guestSessionManager.expire()
       }
     } else if (isGuestContextRequired(this.router, to)) {
