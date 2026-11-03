@@ -140,7 +140,10 @@ const showSize = computed(() => {
   return resourcesStore.currentFolder?.id === unref(resource).id
 })
 const size = computed(() => {
-  return `${formatFileSize(unref(resource).size, currentLanguage)}, ${unref(resourceContentsText)}`
+  // uploads and deletions only refresh the quota, the size is set once when the space loads
+  const usedQuota = unref(resource).spaceQuota?.used
+  const spaceSize = typeof usedQuota === 'number' ? usedQuota : unref(resource).size
+  return `${formatFileSize(spaceSize, currentLanguage)}, ${unref(resourceContentsText)}`
 })
 
 watch(

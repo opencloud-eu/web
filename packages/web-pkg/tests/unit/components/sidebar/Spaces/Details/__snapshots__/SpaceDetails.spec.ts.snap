@@ -24,7 +24,7 @@ exports[`Details SideBar Panel > displays the details side panel 1`] = `
       <space-quota-stub spacequota="[object Object]"></space-quota-stub>
     </dd>
     <dt>Size</dt>
-    <dd>?, 1 item in total (1 file, 0 folders)</dd>
+    <dd>100 B, 1 item in total (1 file, 0 folders)</dd>
     <!--v-if-->
     <custom-component-target-stub extensionpoint="[object Object]"></custom-component-target-stub>
   </dl>
