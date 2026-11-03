@@ -1,6 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { Language } from 'vue3-gettext'
-import { OcUppyMeta, UppyService } from '../../../../src/services/uppy/uppyService'
+import XHRUpload from '@uppy/xhr-upload'
+import { OcUppyBody, OcUppyMeta, UppyService } from '../../../../src/services/uppy/uppyService'
 
 describe('UppyService', () => {
   describe('cancelAllUploads', () => {
@@ -81,6 +82,21 @@ describe('UppyService', () => {
       expect(uppyService.uppy.getPlugin('XHRUpload').opts).toEqual(
         expect.objectContaining({ withCredentials: true })
       )
+    })
+
+    it.each([
+      { status: 0, retry: true },
+      { status: 423, retry: false },
+      { status: 500, retry: false },
+      { status: 507, retry: false }
+    ])('retries an xhr upload with status $status: $retry', ({ status, retry }) => {
+      const uppyService = getUppyService()
+
+      uppyService.useXhr({ endpoint: '', timeout: 60000, headers: {}, withCredentials: false })
+
+      const { shouldRetry } =
+        uppyService.getPlugin<XHRUpload<OcUppyMeta, OcUppyBody>>('XHRUpload').opts
+      expect(shouldRetry(mock<XMLHttpRequest>({ status }))).toBe(retry)
     })
   })
 })
