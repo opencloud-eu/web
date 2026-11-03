@@ -7,8 +7,11 @@ import {
   type AuthServiceInterface,
   CapabilityStore,
   CompareSaveDialog,
-  QuotaSelect
+  QuotaSelect,
+  useMessages
 } from '@opencloud-eu/web-pkg'
+import { cloneDeep } from 'lodash-es'
+import { useUserSettingsStore } from '../../../../../src/composables/stores/userSettings'
 import { OcSelect, OcSwitch, OcTextInput } from '@opencloud-eu/design-system/components'
 import { flushPromises } from '@vue/test-utils'
 import GroupSelect from '../../../../../src/components/Users/GroupSelect.vue'
@@ -246,6 +249,62 @@ describe('EditPanel', () => {
 
       expect(editUser).toHaveBeenCalledWith('2', { onPremisesSamAccountName: 'jana' })
       expect(mocks.$authService.signinSilent).not.toHaveBeenCalled()
+    })
+
+    describe('when a part of the changes fails to save', () => {
+      function setupPartialFailure() {
+        const user = reactive({
+          id: '2',
+          displayName: 'jan',
+          mail: 'jan@opencloud.eu',
+          drive: { quota: {} } as Drive,
+          memberOf: [],
+          appRoleAssignments: []
+        } as User)
+        const { wrapper, mocks } = getWrapper({ user })
+        const { users, groups } = mocks.$clientService.graphAuthenticated
+        users.getUser.mockResolvedValue({ ...cloneDeep(user), displayName: 'jana' })
+        groups.addMember.mockRejectedValue(new Error('group not found'))
+        const { upsertUser } = useUserSettingsStore()
+        vi.mocked(upsertUser).mockImplementation((updatedUser) => {
+          Object.assign(user, updatedUser)
+        })
+        return { wrapper, mocks, upsertUser }
+      }
+
+      async function saveNameAndGroup(wrapper: Wrapper) {
+        await setInput(wrapper, selectors.displayNameInput, 'jana')
+        wrapper
+          .findComponent<typeof GroupSelect>(selectors.groupSelectStub)
+          .vm.$emit('selectedOptionChange', [availableGroupOptions[0]])
+        await nextTick()
+        getCompareSaveDialog(wrapper).vm.$emit('confirm')
+        await flushPromises()
+      }
+
+      it('reloads the user and keeps only the failed changes as unsaved', async () => {
+        const { wrapper, mocks, upsertUser } = setupPartialFailure()
+        await saveNameAndGroup(wrapper)
+
+        expect(mocks.$clientService.graphAuthenticated.users.editUser).toHaveBeenCalled()
+        const { showErrorMessage } = useMessages()
+        expect(showErrorMessage).toHaveBeenCalled()
+        expect(upsertUser).toHaveBeenCalledWith(expect.objectContaining({ displayName: 'jana' }))
+        const dialog = getCompareSaveDialog(wrapper)
+        expect(dialog.props('originalObject')).toMatchObject({ displayName: 'jana', memberOf: [] })
+        expect(dialog.props('compareObject').displayName).toBe('jana')
+        expect(dialog.props('compareObject').memberOf.map((g: Group) => g.id)).toEqual([
+          availableGroupOptions[0].id
+        ])
+      })
+
+      it('does not keep an already saved password as unsaved', async () => {
+        const { wrapper } = setupPartialFailure()
+        await setInput(wrapper, selectors.passwordInput, 'secret123')
+        await saveNameAndGroup(wrapper)
+
+        expect(getCompareSaveDialog(wrapper).props('compareObject').passwordProfile).toBeUndefined()
+      })
     })
   })
 

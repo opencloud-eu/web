@@ -110,7 +110,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { computed, nextTick, ref, unref, watch } from 'vue'
 import * as EmailValidator from 'email-validator'
 import {
   CompareSaveDialog,
@@ -245,6 +245,8 @@ async function onEditUser({ user, editUser }: { user: User; editUser: User }) {
 
     if (!isEmpty(graphEditUserPayload)) {
       await client.users.editUser(editUser.id, graphEditUserPayload)
+      // the password can't be reloaded, so it must not stay as unsaved change if a later step fails
+      delete editUser.passwordProfile
     }
 
     if (!isEqual(user.drive?.quota?.total, editUser.drive?.quota?.total)) {
@@ -269,15 +271,8 @@ async function onEditUser({ user, editUser }: { user: User; editUser: User }) {
       await authService.signinSilent()
     }
 
-    const updatedUser = await client.users.getUser(user.id)
-    userSettingsStore.upsertUser(updatedUser)
-
+    const updatedUser = await loadUser(user.id)
     saved.value = true
-
-    if (userStore.user.id === updatedUser.id) {
-      userStore.setUser(updatedUser)
-    }
-
     return updatedUser
   } catch (error) {
     console.error(error)
@@ -285,7 +280,37 @@ async function onEditUser({ user, editUser }: { user: User; editUser: User }) {
       title: $gettext('Failed to edit user'),
       errors: [error]
     })
+    await reloadUserAfterFailedSave(user.id)
   }
+}
+
+async function loadUser(userId: string) {
+  const updatedUser = await clientService.graphAuthenticated.users.getUser(userId)
+  userSettingsStore.upsertUser(updatedUser)
+
+  if (userStore.user.id === updatedUser.id) {
+    userStore.setUser(updatedUser)
+  }
+
+  return updatedUser
+}
+
+async function reloadUserAfterFailedSave(userId: string) {
+  // some changes might have been saved before the failure, so the user needs to be reloaded
+  const unsavedUser = cloneDeep(unref(editUser))
+  try {
+    await loadUser(userId)
+  } catch (error) {
+    console.error(error)
+    return
+  }
+
+  // the reloaded user resets the form, the changes that could not be saved stay in it
+  await nextTick()
+  if (user?.id !== userId) {
+    return
+  }
+  editUser.value = unsavedUser
 }
 
 const maxQuota = computed(() => capabilityStore.spacesMaxQuota)
