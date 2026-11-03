@@ -99,6 +99,7 @@ export const setupAuthGuard = (router: Router) => {
     if (isUserContextRequired(router, to)) {
       if (!authStore.userContextReady) {
         if (unref(isDelegatingAuthentication)) {
+          authService.setPostLoginRedirectUrl(to.fullPath)
           return { path: '/web-oidc-callback' }
         }
 
