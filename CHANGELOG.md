@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: stream archive downloads on password protected public links [[#4115](https://github.com/opencloud-eu/web/pull/4115)]
 - fix: keep the guest session when a guest opens a route that needs a user [[#4086](https://github.com/opencloud-eu/web/pull/4086)]
 - fix: list sharers with the same display name separately in the Shared By filter [[#4152](https://github.com/opencloud-eu/web/pull/4152)]
 - fix: show the locked message when uploading onto a locked resource [[#4109](https://github.com/opencloud-eu/web/pull/4109)]
