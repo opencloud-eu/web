@@ -140,6 +140,17 @@ describe('Users view', () => {
         expect.any(Function)
       )
     })
+    it('stops loading the users without an error when leaving the page', async () => {
+      const clientService = getClientService()
+      clientService.graphAuthenticated.users.listUsers.mockReturnValue(new Promise(() => {}))
+      const errorHandler = vi.fn()
+      const { wrapper } = getMountedWrapper({ mountType: mount, clientService, errorHandler })
+
+      wrapper.unmount()
+      await flushPromises()
+
+      expect(errorHandler).not.toHaveBeenCalled()
+    })
   })
 
   describe('side bar panels', () => {
@@ -277,6 +288,20 @@ describe('Users view', () => {
 
       expect(useUserSettingsStore().selectedUsers.map(({ id }) => id)).toEqual([failingUser.id])
       expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
+    })
+
+    it('stops loading the user details without an error when leaving the page', async () => {
+      const clientService = getClientService()
+      const { wrapper } = getMountedWrapper({ mountType: mount, clientService })
+      await flushPromises()
+      clientService.graphAuthenticated.users.getUser.mockReturnValue(new Promise(() => {}))
+      useUserSettingsStore().selectedUsers = [{ ...getDefaultUser(), id: '2' }]
+      await nextTick()
+
+      wrapper.unmount()
+      await flushPromises()
+
+      expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
     })
   })
 
@@ -552,7 +577,8 @@ function getMountedWrapper({
   users = [],
   selectedUsers = [],
   stubActions = true,
-  stubs = {}
+  stubs = {},
+  errorHandler = undefined
 }: {
   mountType?: typeof shallowMount | typeof mount
   clientService?: ReturnType<typeof mockDeep<ClientService>>
@@ -564,6 +590,7 @@ function getMountedWrapper({
   selectedUsers?: User[]
   stubActions?: boolean
   stubs?: Record<string, boolean>
+  errorHandler?: (err: unknown) => void
 } = {}) {
   const query: Record<string, string> = reactive({
     ...(displayNameFilterQuery && { q_displayName: displayNameFilterQuery }),
@@ -604,7 +631,8 @@ function getMountedWrapper({
           BatchActions: true,
           OcButton: true,
           ...stubs
-        }
+        },
+        config: { errorHandler }
       }
     })
   }

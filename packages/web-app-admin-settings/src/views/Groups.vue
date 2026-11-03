@@ -169,8 +169,8 @@ const sideBarAvailablePanels = [
   }
 ] satisfies SideBarPanel<unknown, unknown, Group>[]
 
-onMounted(async () => {
-  await loadResourcesTask.perform()
+onMounted(() => {
+  loadResourcesTask.perform()
 })
 
 onBeforeUnmount(() => {

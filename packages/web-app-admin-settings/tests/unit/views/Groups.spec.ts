@@ -90,6 +90,18 @@ describe('Groups view', () => {
       expect(wrapper.find(selectors.batchActionsStub).exists()).toBeTruthy()
     })
   })
+
+  it('stops loading the groups without an error when leaving the page', async () => {
+    const clientService = getClientServiceMock()
+    clientService.graphAuthenticated.groups.listGroups.mockReturnValue(new Promise(() => {}))
+    const errorHandler = vi.fn()
+    const { wrapper } = getWrapper({ clientService, errorHandler })
+
+    wrapper.unmount()
+    await flushPromises()
+
+    expect(errorHandler).not.toHaveBeenCalled()
+  })
 })
 
 function getSideBarPanels(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
@@ -103,8 +115,14 @@ function getSideBarPanels(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
 function getWrapper({
   clientService = getClientServiceMock(),
   groups = [],
-  selectedGroups = []
-}: { clientService?: ClientService; groups?: Group[]; selectedGroups?: Group[] } = {}) {
+  selectedGroups = [],
+  errorHandler = undefined
+}: {
+  clientService?: ClientService
+  groups?: Group[]
+  selectedGroups?: Group[]
+  errorHandler?: (err: unknown) => void
+} = {}) {
   const mocks = { ...defaultComponentMocks(), $clientService: clientService }
 
   return {
@@ -125,7 +143,8 @@ function getWrapper({
           GroupsList: true,
           OcBreadcrumb: true,
           BatchActions: true
-        }
+        },
+        config: { errorHandler }
       }
     })
   }
