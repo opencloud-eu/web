@@ -62,7 +62,7 @@ const capabilityStore = useCapabilityStore()
 const { spacesMaxQuota, spacesDefaultQuota } = storeToRefs(capabilityStore)
 const { updateResourceField } = useResourcesStore()
 
-const selectedQuota = ref(spaces[0]?.spaceQuota?.total || 0)
+const selectedQuota = ref<number | null>(getInitialQuota())
 
 const defaultQuota = computed(() => {
   if (!spaces.length || !spaces.every(isProjectSpaceResource)) {
@@ -70,6 +70,21 @@ const defaultQuota = computed(() => {
   }
   return unref(spacesDefaultQuota)
 })
+
+function getQuotaTotal(space: SpaceResource) {
+  return space.spaceQuota?.total || 0
+}
+
+function getInitialQuota() {
+  if (!spaces.length) {
+    return 0
+  }
+  const total = getQuotaTotal(spaces[0])
+  if (spaces.some((space) => getQuotaTotal(space) !== total)) {
+    return null
+  }
+  return total
+}
 
 function getSuccessMessage(count: number) {
   if (resourceType === 'space') {
@@ -112,7 +127,10 @@ function getErrorMessage(count: number) {
 }
 
 const confirmButtonDisabled = computed(() => {
-  return !spaces.some((space) => space.spaceQuota.total !== unref(selectedQuota))
+  if (unref(selectedQuota) === null) {
+    return true
+  }
+  return !spaces.some((space) => getQuotaTotal(space) !== unref(selectedQuota))
 })
 
 watchImmediate(confirmButtonDisabled, (disabled) => {
@@ -151,6 +169,9 @@ async function updateQuota(space: SpaceResource, total: number) {
 
 async function onConfirm() {
   const quota = unref(selectedQuota)
+  if (quota === null) {
+    return
+  }
   const results = await Promise.allSettled(spaces.map((space) => updateQuota(space, quota)))
   const succeeded = results.filter(isPromiseFulfilled)
   if (succeeded.length) {
