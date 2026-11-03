@@ -119,13 +119,17 @@ describe('makeTiptapYjsAdapter', () => {
     })
 
     it('matches what an editor bound to the same doc produces', () => {
-      const strategy = useStrategyMarkdown(createState())
-      const adapter = makeTiptapYjsAdapter(strategy)
+      const adapter = makeTiptapYjsAdapter(useStrategyMarkdown(createState()))
       const ydoc = new Y.Doc()
       adapter.hydrate(ydoc, MARKDOWN)
 
-      const editor = boundEditor(strategy, ydoc)
-      expect(adapter.serialize(ydoc)).toBe(strategy.serialize(editor.state.doc))
+      // The mounted editor has its own strategy, which never deserializes in Yjs mode
+      const editorStrategy = useStrategyMarkdown(createState())
+      const editor = boundEditor(editorStrategy, ydoc)
+      expect(adapter.serialize(ydoc)).toBe(
+        editorStrategy.serialize(editor.state.doc, { finalNewline: false })
+      )
+      expect(editorStrategy.serialize(editor.state.doc)).toBe(`${MARKDOWN}\n`)
 
       editor.destroy()
       ydoc.destroy()
@@ -210,6 +214,22 @@ describe('makeTiptapYjsAdapter', () => {
       ydoc.destroy()
     })
 
+    it.each([`${MARKDOWN}\n`, MARKDOWN])(
+      'keeps whether %j ends with a newline on a peer that did not hydrate',
+      (content) => {
+        const seeder = new Y.Doc()
+        makeTiptapYjsAdapter(useStrategyMarkdown(createState())).hydrate(seeder, content)
+        const peer = new Y.Doc()
+        Y.applyUpdate(peer, Y.encodeStateAsUpdate(seeder))
+
+        const peerAdapter = makeTiptapYjsAdapter(useStrategyMarkdown(createState()))
+
+        expect(peerAdapter.serialize(peer)).toBe(content)
+        seeder.destroy()
+        peer.destroy()
+      }
+    )
+
     it('resolves the strategy per call, not at build time', () => {
       // The adapter is built before the file is loaded, so the content type is
       // only known once the resource is there.
@@ -281,6 +301,27 @@ describe('makeTiptapYjsAdapter', () => {
       adapter.hydrate(ydoc, '# Fresh\n\nBody.')
       expect(adapter.serialize(ydoc)).toBe('# Fresh\n\nBody.')
 
+      ydoc.destroy()
+    })
+
+    it('forgets the final newline of the previous content', () => {
+      const strategy = useStrategyMarkdown(createState())
+      const adapter = makeTiptapYjsAdapter(strategy)
+      const ydoc = new Y.Doc()
+      adapter.hydrate(ydoc, MARKDOWN)
+
+      adapter.reset!(ydoc)
+      adapter.hydrate(ydoc, '')
+
+      const editor = boundEditor(useStrategyMarkdown(createState()), ydoc)
+      editor.commands.insertContent({
+        type: 'paragraph',
+        content: [{ type: 'text', text: 'New.' }]
+      })
+
+      expect(adapter.serialize(ydoc)).toBe('New.\n')
+
+      editor.destroy()
       ydoc.destroy()
     })
   })

@@ -122,6 +122,11 @@ export interface TextEditorInstance {
   collaborators: Ref<YjsCollaborator[]>
   showTableOfContents: boolean
   actionGroups(): EditorActionGroup[]
+  /**
+   * In Yjs mode this editor never deserializes the file, so format details
+   * only the file knows (e.g. the markdown final newline) use defaults here.
+   * The saved content comes from the Yjs adapter.
+   */
   getContent(): string
   setContent(value: string): void
   isEmpty: Ref<boolean>

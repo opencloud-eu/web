@@ -53,7 +53,7 @@ describe('markdown strategy marked instance', () => {
     })
 
     expect(editor.state.doc.firstChild?.type.name).toBe('frontmatter')
-    expect(strategy.serialize(editor.state.doc)).toBe('---\na: 1\n---\n\nFoo')
+    expect(strategy.serialize(editor.state.doc)).toBe('---\na: 1\n---\n\nFoo\n')
     editor.destroy()
   })
 
