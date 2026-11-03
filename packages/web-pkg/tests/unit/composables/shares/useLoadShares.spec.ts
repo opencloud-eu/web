@@ -34,6 +34,23 @@ describe('useLoadShares', () => {
       expect(sharesStore.setCollaboratorShares).not.toHaveBeenCalled()
       expect(sharesStore.setLinkShares).not.toHaveBeenCalled()
     })
+
+    it('resets the loading state when loading the shares fails', async () => {
+      const { instance, sharesStore, mocks } = getWrapper()
+      const error = new Error('failed')
+      mocks.$clientService.graphAuthenticated.permissions.listPermissions.mockRejectedValue(error)
+
+      await expect(
+        instance.loadSharesTask.perform({
+          space: mock<SpaceResource>({ id: 'space-id' }),
+          resource: mock<Resource>({ id: 'resource-id' })
+        })
+      ).rejects.toThrow(error)
+
+      expect(sharesStore.setLoading).toHaveBeenLastCalledWith(false)
+      expect(sharesStore.setCollaboratorShares).toHaveBeenCalledWith([])
+      expect(sharesStore.setLinkShares).toHaveBeenCalledWith([])
+    })
   })
 })
 
