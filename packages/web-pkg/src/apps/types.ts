@@ -100,7 +100,11 @@ export interface ApplicationFileExtension {
   }
   routeName?: string
   secureView?: boolean
-  /** Narrows the matching resources the app is offered for, e.g. to those with a server preview. */
+  /**
+   * Narrows the matching resources the app is offered for, e.g. to those with a server preview.
+   * Also decides whether the app wrapper loads a resource opened directly via the app route, so it
+   * must only rely on data `getFileInfo` returns.
+   */
   canOpen?: (resource: Resource) => boolean
 }
 

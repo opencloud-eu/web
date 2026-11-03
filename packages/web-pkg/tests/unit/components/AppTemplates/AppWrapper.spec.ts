@@ -22,6 +22,7 @@ import AppWrapper from '../../../../src/components/AppTemplates/AppWrapper.vue'
 import type { YjsSession, YjsStatus } from '../../../../src/composables/yjs'
 import type { FileContentOptions, FileContext } from '../../../../src/composables/appDefaults'
 import type { FileAction } from '../../../../src/composables/actions'
+import type { ApplicationFileExtension } from '../../../../src/apps'
 import { eventBus } from '../../../../src/services'
 import { ResourceNotFoundError } from '../../../../src/errors'
 import {
@@ -79,10 +80,18 @@ const FILE_A = mock<Resource>({
   id: 'storage$space!file-a',
   fileId: 'storage$space!file-a',
   name: 'a.md',
+  extension: 'md',
+  isFolder: false,
   etag: 'etag-a',
   permissions: 'RDNVW'
 })
-const FILE_B = mock<Resource>({ id: 'storage$space!file-b', name: 'b.md', permissions: 'RDNVW' })
+const FILE_B = mock<Resource>({
+  id: 'storage$space!file-b',
+  name: 'b.md',
+  extension: 'md',
+  isFolder: false,
+  permissions: 'RDNVW'
+})
 
 // The wrapper loads text as raw bytes to detect files that are not valid UTF-8. No `mock()`: it
 // empties the ArrayBuffer.
@@ -122,7 +131,18 @@ const wrappedComponent = defineComponent({
   template: '<div />'
 })
 
+// A viewer like the PDF viewer, which embeds the file via a URL.
+const urlComponent = defineComponent({
+  props: {
+    resource: { type: Object, default: null },
+    url: { type: String, default: '' }
+  },
+  template: '<div />'
+})
+
 function setup({
+  component = wrappedComponent as ReturnType<typeof defineComponent>,
+  getUrlForResource = vi.fn().mockResolvedValue('blob:file-url'),
   yjsEnabled = true,
   status = 'connected' as YjsStatus,
   // Whether the room can account for the write that caused a save conflict.
@@ -146,6 +166,7 @@ function setup({
   isGuestContext = false,
   fileContext = mock<FileContext>({ space: mock<any>(), path: '/a.md' }),
   fileContentOptions = undefined as FileContentOptions,
+  fileExtensions = [{ app: 'test-app', extension: 'md' }] as ApplicationFileExtension[],
   // Receives the errors Vue would otherwise report as unhandled.
   errorHandler = undefined as (err: unknown) => void
 } = {}) {
@@ -193,6 +214,7 @@ function setup({
       getFileContents,
       putFileContents,
       closeApp,
+      getUrlForResource,
       folderLoadingError: ref(folderLoadingError)
     })
   )
@@ -235,7 +257,8 @@ function setup({
   const piniaPlugins = defaultPlugins({
     piniaOptions: {
       appsState: {
-        apps: { 'test-app': { id: 'test-app', name: 'Test App', meta: { fileSizeLimit } } }
+        apps: { 'test-app': { id: 'test-app', name: 'Test App', meta: { fileSizeLimit } } },
+        fileExtensions
       },
       authState: { accessToken: sse ? 'token' : undefined, guestContextReady: isGuestContext },
       capabilityState: { capabilities: { core: { 'support-sse': sse } as any } }
@@ -279,7 +302,7 @@ function setup({
     },
     props: {
       applicationId: 'test-app',
-      wrappedComponent,
+      wrappedComponent: component,
       ...(yjsEnabled ? { yjs: { makeAdapter: () => mock<any>() } } : {}),
       ...(fileContentOptions ? { fileContentOptions } : {})
     },
@@ -309,6 +332,7 @@ function setup({
     closeApp,
     getFileInfo,
     getFileContents,
+    getUrlForResource,
     unregisterAppBarExtension,
     wasWrittenByRoom,
     beginSave,
@@ -630,6 +654,158 @@ describe('AppWrapper — loading a file that does not exist', () => {
 
     expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(true)
     expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
+  })
+})
+
+describe('AppWrapper — file types the app did not register', () => {
+  const htmlFile = mock<Resource>({
+    id: 'storage$space!evil',
+    name: 'evil.html',
+    extension: 'html',
+    mimeType: 'text/html',
+    isFolder: false,
+    permissions: 'RDNVW'
+  })
+
+  it('refuses to load the file', async () => {
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    await s.resolveResource(htmlFile)
+
+    const errorScreen = s.wrapper.findComponent({ name: 'ErrorScreen' })
+    expect(errorScreen.exists()).toBe(true)
+    expect(errorScreen.props('message')).toContain('evil.html')
+    expect(s.getFileContents).not.toHaveBeenCalled()
+  })
+
+  it('refuses a file type only another app registered', async () => {
+    const s = setup({
+      yjsEnabled: false,
+      fileExtensions: [
+        { app: 'test-app', extension: 'md' },
+        { app: 'other-app', extension: 'html' }
+      ]
+    })
+    await nextTick()
+    await s.resolveResource(htmlFile)
+
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+    expect(s.getFileContents).not.toHaveBeenCalled()
+  })
+
+  it('loads a file type the app registered', async () => {
+    const s = await openFile({ yjsEnabled: false })
+
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
+    expect(s.getFileContents).toHaveBeenCalledTimes(1)
+  })
+
+  describe('in a viewer that embeds the file via a URL', () => {
+    const fileExtensions = [{ app: 'test-app', extension: 'pdf' }]
+
+    it('creates no URL for the file', async () => {
+      const s = setup({ yjsEnabled: false, component: urlComponent, fileExtensions })
+      await nextTick()
+      await s.resolveResource(htmlFile)
+
+      expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+      expect(s.getUrlForResource).not.toHaveBeenCalled()
+    })
+
+    it('creates the URL for a file type the app registered', async () => {
+      const s = setup({ yjsEnabled: false, component: urlComponent, fileExtensions })
+      await nextTick()
+      await s.resolveResource(
+        mock<Resource>({
+          id: 'storage$space!pdf',
+          name: 'a.pdf',
+          extension: 'pdf',
+          isFolder: false,
+          permissions: 'R'
+        })
+      )
+
+      expect(s.getUrlForResource).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('at the root of a public folder link', () => {
+    // reva names the link root after the token, so it has no extension
+    const linkRoot = mock<Resource>({
+      id: 'storage$space!link-root',
+      name: 'DFvfUJqnFIEvcHU',
+      path: '/',
+      extension: '',
+      mimeType: 'httpd/unix-directory',
+      isFolder: true,
+      permissions: 'R'
+    })
+    const folderComponent = defineComponent({
+      props: { resource: { type: Object, default: null } },
+      template: '<div />'
+    })
+
+    async function openLinkRoot(fileExtensions: ApplicationFileExtension[]) {
+      const s = setup({ yjsEnabled: false, component: folderComponent, fileExtensions })
+      s.currentFileContext.value = mock<FileContext>({
+        space: mock<any>({ driveType: 'public', publicLinkPermission: 1 }),
+        path: '/'
+      })
+      await nextTick()
+      await s.resolveResource(linkRoot)
+      return s
+    }
+
+    it('opens it in an app that registered a folder type', async () => {
+      const s = await openLinkRoot([{ app: 'test-app', extension: 'pastebin', type: 'folder' }])
+
+      expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
+    })
+
+    it('refuses it in an app that registered only file types', async () => {
+      const s = await openLinkRoot([{ app: 'test-app', extension: 'md' }])
+
+      expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+    })
+
+    it('refuses it when only another app registered a folder type', async () => {
+      const s = await openLinkRoot([
+        { app: 'test-app', extension: 'md' },
+        { app: 'other-app', extension: 'pastebin', type: 'folder' }
+      ])
+
+      expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+    })
+
+    it('refuses a folder below the root that lacks the registered extension', async () => {
+      const s = setup({
+        yjsEnabled: false,
+        component: folderComponent,
+        fileExtensions: [{ app: 'test-app', extension: 'pastebin', type: 'folder' }]
+      })
+      s.currentFileContext.value = mock<FileContext>({
+        space: mock<any>({ driveType: 'public', publicLinkPermission: 1 }),
+        path: '/sub'
+      })
+      await nextTick()
+      await s.resolveResource(
+        mock<Resource>({ ...linkRoot, id: 'storage$space!sub', name: 'sub', path: '/sub' })
+      )
+
+      expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+    })
+  })
+
+  it('refuses a file switched to while another file is open', async () => {
+    const s = await openFile({ yjsEnabled: false })
+
+    s.currentFileContext.value = mock<FileContext>({ space: mock<any>(), path: '/evil.html' })
+    await nextTick()
+    await s.resolveResource(htmlFile)
+
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+    expect(s.wrapper.find('.slot-content').exists()).toBe(false)
+    expect(s.getFileContents).toHaveBeenCalledTimes(1)
   })
 })
 
@@ -978,7 +1154,14 @@ describe('AppWrapper — changes still pending in the session', () => {
     const s = setup()
     await nextTick()
     await s.resolveResource(
-      mock<Resource>({ id: 'storage$space!ro', name: 'ro.md', etag: 'e', permissions: 'R' })
+      mock<Resource>({
+        id: 'storage$space!ro',
+        name: 'ro.md',
+        extension: 'md',
+        isFolder: false,
+        etag: 'e',
+        permissions: 'R'
+      })
     )
     await s.resolveContent('content of a')
 
@@ -1566,6 +1749,7 @@ describe('AppWrapper — resource identity across a save', () => {
       id: 'share-mount-id',
       fileId: 'storage$space!real-file-id',
       name: 'shared.md',
+      extension: 'md',
       path: '/',
       etag: 'etag-open',
       size: 10,
@@ -1947,7 +2131,14 @@ describe('AppWrapper — locked session', () => {
     const s = setup()
     await nextTick()
     await s.resolveResource(
-      mock<Resource>({ id: 'storage$space!ro', name: 'ro.md', etag: 'e', permissions: 'R' })
+      mock<Resource>({
+        id: 'storage$space!ro',
+        name: 'ro.md',
+        extension: 'md',
+        isFolder: false,
+        etag: 'e',
+        permissions: 'R'
+      })
     )
     await s.resolveContent('content of a')
     await s.edit('edited content')
