@@ -25,6 +25,10 @@ describe('FolderLoaderFavorites', () => {
       expect.anything()
     )
   })
+  it('doubles quotes in tag filters', async () => {
+    const { search } = await loadFavorites({ q_tags: 'a"b+c' })
+    expect(search).toHaveBeenCalledWith('tag:("a""b" OR "c") AND is:favorite', expect.anything())
+  })
   it('combines the tag filter with the other filters', async () => {
     const { search } = await loadFavorites({
       q_lastModified: 'today',

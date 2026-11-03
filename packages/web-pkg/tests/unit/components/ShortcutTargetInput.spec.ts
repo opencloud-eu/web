@@ -63,6 +63,13 @@ describe('ShortcutTargetInput', () => {
     expect(search).toHaveBeenCalledExactlyOnceWith('name:"*report*" NOT name:"*.url"', 7)
   })
 
+  it('doubles quotes in the search term', async () => {
+    const { input } = setup()
+    await input('"report"')
+    await vi.advanceTimersByTimeAsync(200)
+    expect(search).toHaveBeenCalledExactlyOnceWith('name:"*""report""*" NOT name:"*.url"', 7)
+  })
+
   it('does not search in a public link', async () => {
     const { input, drop } = setup({ route: 'files-public-link' })
     await input('report')

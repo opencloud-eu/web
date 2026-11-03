@@ -310,6 +310,22 @@ describe('useMotionPhoto', () => {
       expect(mocks.$clientService.webdav.getFileInfo).not.toHaveBeenCalled()
     })
 
+    it('doubles quotes in the content id it searches for', async () => {
+      const still = buildLivePhotoStill('a"b')
+      const { instance, mocks } = getWrapper({ resources: [still] })
+      mocks.$clientService.webdav.search.mockResolvedValue({
+        resources: [],
+        totalResults: 0
+      } as SearchResult)
+
+      await expect(instance.loadVideoUrl(space, still)).rejects.toThrow()
+
+      expect(mocks.$clientService.webdav.search).toHaveBeenCalledWith(
+        'livePhoto.contentId:"a""b"',
+        expect.anything()
+      )
+    })
+
     it('loads the facet of a search hit that comes without one', async () => {
       const still = buildLivePhotoStill('search-facet')
       const video = buildLivePhotoVideo('search-facet')
