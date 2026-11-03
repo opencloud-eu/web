@@ -4,14 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @saw-jan, @v-scharf
-
-### ✅ Tests
-
-- test(e2e): fix yjs test scenario behavior [[#4222](https://github.com/opencloud-eu/web/pull/4222)]
+@AlexAndBear, @JammingBen, @andrewyager, @saw-jan, @v-scharf
 
 ### 🐛 Bug Fixes
 
+- fix: leave the oidc callback page when the sign-in fails [[#4218](https://github.com/opencloud-eu/web/pull/4218)]
 - fix: keep network errors when loading webdav files fails [[#4171](https://github.com/opencloud-eu/web/pull/4171)]
 - fix: ignore cancelled loading when leaving admin users, groups and spaces [[#4138](https://github.com/opencloud-eu/web/pull/4138)]
 - fix: escape double quotes in search queries [[#4094](https://github.com/opencloud-eu/web/pull/4094)]
@@ -57,8 +54,13 @@
 - fix: keep raw html and decode named entities in markdown files [[#4025](https://github.com/opencloud-eu/web/pull/4025)]
 - fix: small a11y fixes from the third audit round [[#4023](https://github.com/opencloud-eu/web/pull/4023)]
 
+### ✅ Tests
+
+- test(e2e): fix yjs test scenario behavior [[#4222](https://github.com/opencloud-eu/web/pull/4222)]
+
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) to v4.3.4 [[#4225](https://github.com/opencloud-eu/web/pull/4225)]
 - chore(deps): update devdependencies (non-major) [[#4079](https://github.com/opencloud-eu/web/pull/4079)]
 - chore(deps): update traefik docker tag to v3.7.17 [[#4091](https://github.com/opencloud-eu/web/pull/4091)]
 - chore(deps): update axllent/mailpit docker tag to v1.33.0 [[#4093](https://github.com/opencloud-eu/web/pull/4093)]
