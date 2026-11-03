@@ -132,7 +132,7 @@ const createAppToken = async () => {
   updateModal(modal.id, 'isLoading', true)
   try {
     const label = unref(trimmedTokenLabel)
-    const expiry = `${unref(expiryDate).diff(DateTime.now(), 'hours').hours}h`
+    const expiry = getExpiryDuration(unref(expiryDate))
     const { data } = await client.post<AppToken>('/auth-app/tokens', null, {
       params: { label, expiry }
     })
@@ -148,6 +148,14 @@ const createAppToken = async () => {
     isCreating.value = false
     updateModal(modal.id, 'isLoading', false)
   }
+}
+
+// The server adds the duration to its own, slightly later time. Aiming at the middle of the
+// last minute of the picked day keeps the expiry at 23:59 of that day instead of rolling over.
+function getExpiryDuration(date: DateTime) {
+  const target = date.startOf('minute').plus({ seconds: 30 })
+  const seconds = Math.floor(target.diff(DateTime.now()).as('seconds'))
+  return `${seconds}s`
 }
 
 async function copyToken() {

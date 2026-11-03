@@ -95,6 +95,32 @@ describe('AppTokenModal component', () => {
         { params: expect.objectContaining({ label: 'someNote' }) }
       )
     })
+    describe('expiry', () => {
+      afterEach(() => {
+        vi.useRealTimers()
+      })
+      it.each([0, 5])(
+        'should let the token expire at 23:59 of the picked day when the server adds the duration %i s later',
+        async (serverDelay) => {
+          const now = DateTime.fromISO('2026-12-01T10:00:00.250')
+          vi.useFakeTimers({ toFake: ['Date'] })
+          vi.setSystemTime(now.toJSDate())
+          // the datepicker emits the end of the picked day
+          const pickedDate = DateTime.fromISO('2026-12-11').endOf('day')
+          const { wrapper, mocks } = getWrapper()
+          emitNoteInput(wrapper, 'someNote')
+          emitDateInput(wrapper, pickedDate)
+          await wrapper.vm.$nextTick()
+          await findConfirmButton(wrapper).trigger('click')
+
+          const { expiry } = mocks.$clientService.httpAuthenticated.post.mock.calls[0][2].params
+          expect(expiry).toMatch(/^\d+s$/)
+          const serverExpiry = now.plus({ seconds: serverDelay + parseInt(expiry) })
+          expect(serverExpiry.hasSame(pickedDate, 'day')).toBe(true)
+          expect(serverExpiry.toFormat('HH:mm')).toBe('23:59')
+        }
+      )
+    })
     it('should create a token on submit', async () => {
       const { wrapper, mocks } = getWrapper()
       emitNoteInput(wrapper, 'someNote')
