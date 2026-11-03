@@ -1,6 +1,6 @@
 # Changelog
 
-## [8.2.2](https://github.com/opencloud-eu/web/releases/tag/v8.2.2) - 2026-11-02
+## [8.2.2](https://github.com/opencloud-eu/web/releases/tag/v8.2.2) - 2026-11-03
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,11 @@
 
 ### 🐛 Bug Fixes
 
+- fix: reload after continuing with an unsupported browser [[#4110](https://github.com/opencloud-eu/web/pull/4110)]
+- fix: find scrollTo targets on all pages of the file lists [[#4118](https://github.com/opencloud-eu/web/pull/4118)]
+- fix: show error message when loading admin groups or spaces fails [[#4127](https://github.com/opencloud-eu/web/pull/4127)]
+- fix: show "No favorites found" when a favorites filter matches nothing [[#4129](https://github.com/opencloud-eu/web/pull/4129)]
+- fix: ignore cancelled resource loading when opening an app via fileId [[#4130](https://github.com/opencloud-eu/web/pull/4130)]
 - fix: correct forbidden characters in space name error [[#4108](https://github.com/opencloud-eu/web/pull/4108)]
 - fix: apply sse file events after running folder load [[#4083](https://github.com/opencloud-eu/web/pull/4083)]
 - fix: wait for a running save instead of hanging in AppWrapper [[#4131](https://github.com/opencloud-eu/web/pull/4131)]
