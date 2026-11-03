@@ -71,6 +71,39 @@ describe('useAppFolderHandling', () => {
         expect(loaderTask.perform).toHaveBeenCalled()
       }
     )
+
+    it('reruns the search with the filters of the search results', async () => {
+      const { mocks } = getWrapper({
+        fileResource: mock<Resource>(),
+        contextRouteQuery: { term: 'zq', q_mediaType: 'image', q_lastModified: 'today' }
+      })
+      mocks.$clientService.webdav.search.mockResolvedValue({ resources: [], totalResults: 0 })
+      await mocks.instance.loadFolderForFileContext(
+        mock<FileContext>({ routeName: 'files-common-search' })
+      )
+
+      expect(mocks.$clientService.webdav.search).toHaveBeenCalledWith(
+        'name:"*zq*" AND mtime:today AND mediatype:("image")',
+        expect.anything()
+      )
+    })
+
+    it('reruns the search for search results without a term, e.g. only filtered by a tag', async () => {
+      const { mocks } = getWrapper({
+        fileResource: mock<Resource>(),
+        contextRouteQuery: { q_tags: 'work' }
+      })
+      mocks.$clientService.webdav.search.mockResolvedValue({ resources: [], totalResults: 0 })
+      await mocks.instance.loadFolderForFileContext(
+        mock<FileContext>({ routeName: 'files-common-search' })
+      )
+
+      expect(mocks.$clientService.webdav.search).toHaveBeenCalledWith(
+        'tag:("work")',
+        expect.anything()
+      )
+      expect(mocks.$clientService.webdav.listFiles).not.toHaveBeenCalled()
+    })
   })
 })
 
@@ -86,15 +119,20 @@ function createFileContext(space: SpaceResource): FileContext {
 function getWrapper({
   fileResource,
   folder = fileResource,
-  children = []
+  children = [],
+  contextRouteQuery = undefined
 }: {
   fileResource: Resource
   folder?: Resource
   children?: Resource[]
+  contextRouteQuery?: Record<string, string>
 }) {
   const mocks = {
     ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({ name: 'preview', query: {} })
+      currentRoute: {
+        name: 'preview',
+        query: { ...(contextRouteQuery && { contextRouteQuery }) }
+      } as unknown as RouteLocation
     }),
     instance: undefined as ReturnType<typeof useAppFolderHandling>
   }

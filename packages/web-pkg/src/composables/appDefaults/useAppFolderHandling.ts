@@ -16,7 +16,7 @@ import { useAuthService } from '../authContext/useAuthService'
 import { isMountPointSpaceResource } from '@opencloud-eu/web-client'
 import { useResourcesStore, useSpacesStore } from '../piniaStores'
 import { storeToRefs } from 'pinia'
-import { useRouteQuery } from '../router'
+import { LocationQuery, useRouteQuery } from '../router'
 import { useSearch } from '../search'
 
 interface AppFolderHandlingOptions {
@@ -43,8 +43,8 @@ export function useAppFolderHandling({
   const { getFileInfo } = useAppFileHandling({ clientService })
   const authService = useAuthService()
   const spacesStore = useSpacesStore()
-  const { buildSearchTerm, search } = useSearch()
-  const currentRouteQuery = useRouteQuery('contextRouteQuery')
+  const { buildSearchTermFromQuery, search } = useSearch()
+  const currentRouteQuery = useRouteQuery('contextRouteQuery') as unknown as Ref<LocationQuery>
 
   const resourcesStore = useResourcesStore()
   const { activeResources } = storeToRefs(resourcesStore)
@@ -56,10 +56,12 @@ export function useAppFolderHandling({
     try {
       context = unref(context)
 
-      if ((unref(currentRouteQuery) as any)?.term) {
-        // run search query to load all results
-        // TODO: add filters from query params
-        const searchTerm = buildSearchTerm({ term: (unref(currentRouteQuery) as any)?.term })
+      // the search bar preview passes the term along with the file's folder route
+      const isSearchContext =
+        unref(context.routeName) === 'files-common-search' || !!unref(currentRouteQuery)?.term
+      if (isSearchContext) {
+        // run search query with the term and filters of the search results to load all of them
+        const searchTerm = buildSearchTermFromQuery(unref(currentRouteQuery) || {})
         const { values } = await search(searchTerm, 200)
         const resources = values
           .filter(({ data }) => isSearchResource(data as Resource))
