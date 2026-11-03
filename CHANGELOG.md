@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: don't return to a permanent link when cancelling a vault unlock [[#4155](https://github.com/opencloud-eu/web/pull/4155)]
 - fix: prevent duplicate GDPR export requests on double click [[#4156](https://github.com/opencloud-eu/web/pull/4156)]
 - fix: align shift-click range selection in admin lists and files table [[#4236](https://github.com/opencloud-eu/web/pull/4236)]
 - fix: replace the selection when dragging an unselected file [[#4153](https://github.com/opencloud-eu/web/pull/4153)]
