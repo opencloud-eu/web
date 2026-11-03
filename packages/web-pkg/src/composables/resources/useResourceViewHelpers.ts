@@ -55,15 +55,19 @@ export const useResourceViewHelpers = ({
     return unref(deleteQueueSet).has(id)
   }
 
+  const embedModeFileTypesSet = computed(
+    () => new Set((unref(embedModeFileTypes) || []).map((fileType) => fileType.toLowerCase()))
+  )
+
   const isResourceDisabled = (resource: Resource) => {
     if (unref(isEmbedModeEnabled) && resource.isInVault) {
       return true
     }
 
-    if (unref(isEmbedModeEnabled) && unref(embedModeFileTypes)?.length) {
+    if (unref(isEmbedModeEnabled) && unref(embedModeFileTypesSet).size) {
       return (
-        !unref(embedModeFileTypes).includes(resource.extension) &&
-        !unref(embedModeFileTypes).includes(resource.mimeType) &&
+        !unref(embedModeFileTypesSet).has(resource.extension?.toLowerCase()) &&
+        !unref(embedModeFileTypesSet).has(resource.mimeType?.toLowerCase()) &&
         !resource.isFolder
       )
     }
