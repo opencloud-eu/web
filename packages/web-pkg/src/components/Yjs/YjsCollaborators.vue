@@ -23,7 +23,10 @@
             :key="item.userId"
             class="yjs-collaborator-avatar relative inline-flex rounded-full border-2"
             :class="{ 'yjs-collaborator-avatar-followed': item.userId === followedUser?.id }"
-            :style="{ borderColor: colorById[item.userId], zIndex: avatars.length - index }"
+            :style="{
+              borderColor: colorById[item.userId],
+              zIndex: avatars.length - (index as number)
+            }"
             :data-test-user-id="item.userId"
           >
             <user-avatar
