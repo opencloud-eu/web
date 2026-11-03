@@ -269,7 +269,7 @@ const fileOwners = computed(() => {
     .filter((i) => i.sharedBy)
     .map((i) => i.sharedBy)
     .flat()
-  return [...new Map(flatList.map((item) => [item.displayName, item])).values()]
+  return [...new Map(flatList.map((item) => [item.id, item])).values()]
 })
 
 let loadResourcesEventToken: string
