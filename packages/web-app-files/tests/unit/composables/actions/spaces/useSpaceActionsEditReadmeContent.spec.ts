@@ -4,7 +4,7 @@ import { User } from '@opencloud-eu/web-client/graph/generated'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ClientService } from '@opencloud-eu/web-pkg'
-import { useFileActions } from '@opencloud-eu/web-pkg'
+import { useFileActions, useMessages } from '@opencloud-eu/web-pkg'
 import { useSpaceActionsEditReadmeContent } from '../../../../../src/composables/actions/spaces'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -109,6 +109,24 @@ describe('editReadmeContent', () => {
         }
       })
     })
+
+    it('shows an error message when loading the readme fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      let instance: ReturnType<typeof useSpaceActionsEditReadmeContent>
+      const { mocks } = getWrapper({ setup: (i) => (instance = i) })
+      mocks.clientService.webdav.getFileInfo.mockRejectedValue(
+        mock<Error>({ statusCode: 500 } as any)
+      )
+
+      await unref(instance.actions)[0].handler({ resources: [spaceWithReadme] })
+
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to open space description' })
+      )
+      expect(mocks.clientService.webdav.putFileContents).not.toHaveBeenCalled()
+      expect(mocks.triggerDefaultAction).not.toHaveBeenCalled()
+    })
   })
 })
 
@@ -139,6 +157,7 @@ function getWrapper({
   const mocks = { triggerDefaultAction, clientService }
 
   return {
+    mocks,
     wrapper: getComposableWrapper(
       () => {
         const instance = useSpaceActionsEditReadmeContent()

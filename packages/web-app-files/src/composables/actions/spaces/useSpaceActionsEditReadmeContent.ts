@@ -3,6 +3,7 @@ import { useGettext } from 'vue3-gettext'
 import {
   getRelativeSpecialFolderSpacePath,
   isProjectSpaceResource,
+  Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
 import {
@@ -11,6 +12,7 @@ import {
   useClientService,
   useCreateSpace,
   useFileActions,
+  useMessages,
   useUserStore
 } from '@opencloud-eu/web-pkg'
 
@@ -19,6 +21,7 @@ export const useSpaceActionsEditReadmeContent = () => {
   const { triggerDefaultAction } = useFileActions()
   const { setSpaceReadme } = useCreateSpace()
   const userStore = useUserStore()
+  const { showErrorMessage } = useMessages()
   const { $gettext } = useGettext()
 
   /**
@@ -42,7 +45,20 @@ export const useSpaceActionsEditReadmeContent = () => {
 
   const handler = async ({ resources }: SpaceActionOptions) => {
     const space = resources[0]
-    triggerDefaultAction({ space, resources: [await getReadme(space)] })
+
+    let readme: Resource
+    try {
+      readme = await getReadme(space)
+    } catch (error) {
+      console.error(error)
+      showErrorMessage({
+        title: $gettext('Failed to open space description'),
+        errors: [error]
+      })
+      return
+    }
+
+    triggerDefaultAction({ space, resources: [readme] })
   }
 
   const actions = computed((): SpaceAction[] => [
