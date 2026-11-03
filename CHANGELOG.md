@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @v-scharf
+@AlexAndBear, @JammingBen, @saw-jan, @v-scharf
+
+### ✅ Tests
+
+- test(e2e): fix yjs test scenario behavior [[#4222](https://github.com/opencloud-eu/web/pull/4222)]
 
 ### 🐛 Bug Fixes
 
