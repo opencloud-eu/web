@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: ignore cancelled loading when leaving admin users, groups and spaces [[#4138](https://github.com/opencloud-eu/web/pull/4138)]
 - fix: escape double quotes in search queries [[#4094](https://github.com/opencloud-eu/web/pull/4094)]
 - fix: show error message when refreshing the file after a version restore fails [[#4137](https://github.com/opencloud-eu/web/pull/4137)]
 - fix: finish adding space members when the space refresh fails [[#4126](https://github.com/opencloud-eu/web/pull/4126)]
