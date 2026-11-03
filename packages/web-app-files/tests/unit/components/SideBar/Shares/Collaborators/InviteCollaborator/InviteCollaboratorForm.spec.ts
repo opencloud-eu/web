@@ -678,6 +678,53 @@ describe('InviteCollaboratorForm', () => {
         errors: [error]
       })
     })
+    it('keeps the recipients whose share failed selected together with the expiration date', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare, addLink } = useSharesStore()
+      vi.mocked(addShare).mockImplementation(({ options }) =>
+        options.recipients[0].objectId === 'failing-user'
+          ? Promise.reject(new Error('share failed'))
+          : Promise.resolve(mock<CollaboratorShare>())
+      )
+      vi.mocked(addLink).mockRejectedValue(new Error('link failed'))
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const succeeding = mock<CollaboratorAutoCompleteItem>({
+        id: 'succeeding-user',
+        shareType: ShareTypes.user.value
+      })
+      const failing = mock<CollaboratorAutoCompleteItem>({
+        id: 'failing-user',
+        shareType: ShareTypes.user.value
+      })
+      const failingContact = mock<CollaboratorAutoCompleteItem>({
+        id: 'contact@example.com',
+        mail: 'contact@example.com',
+        shareType: ShareTypes.contact.value
+      })
+      ;(wrapper.vm as any).expirationDate = '2026-10-01T00:00:00.000Z'
+      ;(wrapper.vm as any).selectedCollaborators = [succeeding, failing, failingContact]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      expect(
+        (wrapper.vm as any).selectedCollaborators.map(({ id }: CollaboratorAutoCompleteItem) => id)
+      ).toEqual(['failing-user', 'contact@example.com'])
+      expect((wrapper.vm as any).expirationDate).toBe('2026-10-01T00:00:00.000Z')
+    })
+    it('clears the recipients and the expiration date when all shares were added', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+      ;(wrapper.vm as any).expirationDate = '2026-10-01T00:00:00.000Z'
+      ;(wrapper.vm as any).selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({ id: '2', shareType: ShareTypes.user.value })
+      ]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      expect((wrapper.vm as any).selectedCollaborators).toEqual([])
+      expect((wrapper.vm as any).expirationDate).toBeNull()
+    })
     it.todo('resets focus upon selecting an invitee')
   })
   describe('share role type filter', () => {
