@@ -18,6 +18,7 @@
         data-testid="request-export-btn"
         class="mr-2"
         no-hover
+        :disabled="requestExportTask.isRunning"
         @click="requestExport"
       >
         <div class="flex items-center">
@@ -101,20 +102,26 @@ const loadExportTask = useTask(function* (signal) {
   }
 }).restartable()
 
-const requestExport = async () => {
+const requestExportTask = useTask(function* () {
   try {
-    await clientService.graphAuthenticated.users.exportPersonalData(userStore.user.id, {
+    yield clientService.graphAuthenticated.users.exportPersonalData(userStore.user.id, {
       storageLocation: `/${GDPR_EXPORT_FILE_NAME}`
     })
-    await loadExportTask.perform()
-    showMessage({ title: $gettext('GDPR export has been requested') })
   } catch (e) {
     showErrorMessage({
       title: $gettext('GDPR export could not be requested. Please contact an administrator.'),
       errors: [e]
     })
+    return
   }
+  showMessage({ title: $gettext('GDPR export has been requested') })
+  yield loadExportTask.perform()
+}).drop()
+
+function requestExport() {
+  requestExportTask.perform()
 }
+
 const downloadExport = () => {
   return downloadFile(spacesStore.personalSpace, unref(exportFile))
 }
