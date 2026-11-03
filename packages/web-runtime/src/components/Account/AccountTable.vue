@@ -50,7 +50,7 @@ const columnWidths = computed(() => {
 
 @layer utilities {
   .account-table table {
-    @apply block md:table;
+    @apply block md:table md:table-fixed;
   }
 
   .account-table tbody {
@@ -58,7 +58,7 @@ const columnWidths = computed(() => {
   }
 
   .account-table td {
-    @apply block md:table-cell py-2 md:py-3 px-0;
+    @apply block md:table-cell py-2 md:py-3 px-0 wrap-anywhere;
   }
 
   .account-table th {
