@@ -249,7 +249,40 @@ describe('useStrategyMarkdown', () => {
           { type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: 'Hello' }] }
         ]
       })
-      expect(strategy.serialize(doc)).toBe('# Hello')
+      expect(strategy.serialize(doc)).toBe('# Hello\n')
+    })
+
+    it.each(['# Hello\n', '# Hello'])('keeps whether %j ends with a newline', (markdown) => {
+      const strategy = createStrategy()
+      const schema = getSchema(strategy.extensions())
+      const doc = schema.nodeFromJSON({
+        type: 'doc',
+        content: [
+          { type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: 'Hello' }] }
+        ]
+      })
+      strategy.deserialize(markdown)
+      expect(strategy.serialize(doc)).toBe(markdown)
+    })
+
+    it('follows the finalNewline option over the loaded content', () => {
+      const strategy = createStrategy()
+      const schema = getSchema(strategy.extensions())
+      const doc = schema.nodeFromJSON({
+        type: 'doc',
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hello' }] }]
+      })
+      strategy.deserialize('Hello')
+      expect(strategy.serialize(doc, { finalNewline: true })).toBe('Hello\n')
+      strategy.deserialize('Hello\n')
+      expect(strategy.serialize(doc, { finalNewline: false })).toBe('Hello')
+    })
+
+    it('adds no newline to an empty document', () => {
+      const strategy = createStrategy()
+      const schema = getSchema(strategy.extensions())
+      const doc = schema.nodeFromJSON({ type: 'doc', content: [{ type: 'paragraph' }] })
+      expect(strategy.serialize(doc)).toBe('')
     })
   })
 
