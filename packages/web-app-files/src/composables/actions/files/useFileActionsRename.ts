@@ -45,6 +45,10 @@ export const useFileActionsRename = () => {
   const vaultStore = useVaultStore()
 
   const renameResource = async (space: SpaceResource, resource: Resource, newName: string) => {
+    if (newName === resource.name) {
+      return
+    }
+
     let currentFolder = resourcesStore.currentFolder
 
     try {
