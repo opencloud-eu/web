@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: replace the selection when dragging an unselected file [[#4153](https://github.com/opencloud-eu/web/pull/4153)]
 - fix: match embed file types case-insensitively [[#4154](https://github.com/opencloud-eu/web/pull/4154)]
 - fix: stream archive downloads on password protected public links [[#4115](https://github.com/opencloud-eu/web/pull/4115)]
 - fix: keep the guest session when a guest opens a route that needs a user [[#4086](https://github.com/opencloud-eu/web/pull/4086)]
