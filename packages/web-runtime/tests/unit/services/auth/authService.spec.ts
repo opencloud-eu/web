@@ -94,6 +94,36 @@ describe('AuthService', () => {
       }
     )
 
+    it('navigates to the access denied page when the sign-in response has no matching state', async () => {
+      const authService = new AuthService()
+
+      Object.defineProperty(authService, 'userManager', {
+        value: {
+          signinRedirectCallback: vi
+            .fn()
+            .mockRejectedValue(new Error('No matching state found in storage'))
+        }
+      })
+
+      const router = createRouter({
+        routes: [
+          {
+            path: '/web-oidc-callback',
+            name: 'oidcCallback',
+            component: {},
+            meta: { authContext: 'anonymous' }
+          }
+        ]
+      })
+      await router.push('/web-oidc-callback?code=code&state=unknown-state')
+      const replaceSpy = vi.spyOn(router, 'replace').mockResolvedValue(undefined)
+
+      initAuthService({ authService, router })
+      await authService.signInCallback()
+
+      expect(replaceSpy).toHaveBeenCalledWith({ name: 'accessDenied' })
+    })
+
     it('applies delegated token updates received after sign-in', async () => {
       const authService = new AuthService()
       const updateContext = vi.fn()
