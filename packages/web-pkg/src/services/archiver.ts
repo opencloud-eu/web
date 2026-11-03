@@ -1,5 +1,6 @@
 import { RuntimeError } from '../errors'
-import { HttpError, urlJoin } from '@opencloud-eu/web-client'
+import { urlJoin } from '@opencloud-eu/web-client'
+import { PublicLinkSignature } from '@opencloud-eu/web-client/webdav'
 import { ClientService } from '../services'
 import { triggerDownloadWithFilename } from '../helpers/download'
 import { Ref, ref, computed, unref } from 'vue'
@@ -54,14 +55,22 @@ export class ArchiverService {
       throw new RuntimeError('requested archive with empty list of resources')
     }
 
-    const downloadUrl = this.buildDownloadUrl({ ...options })
+    // password protected links can't send credentials with a plain browser download,
+    // so they authenticate via a server-generated signature instead. no signature means
+    // the password has been removed in the meantime, so the plain url works.
+    let signature: PublicLinkSignature
+    if (options.publicToken && options.publicLinkPassword) {
+      signature = await this.clientService.webdav.getPublicLinkSignature(options.publicToken)
+    }
+
+    const downloadUrl = this.buildDownloadUrl(options, signature)
     if (!downloadUrl) {
       throw new RuntimeError('download url could not be built')
     }
 
     // public links carry their token in the url and guests are authenticated via their
     // session cookie, so only regular users need a signed url
-    let url =
+    const url =
       options.publicToken || this.authStore.isGuestContext
         ? downloadUrl
         : await this.clientService.ocs.signUrl(
@@ -69,38 +78,23 @@ export class ArchiverService {
             this.userStore.user?.onPremisesSamAccountName
           )
 
-    let fileName: string
-    if (options.publicLinkPassword) {
-      // FIXME: remove as soon as we remove client-side URL signing https://github.com/opencloud-eu/opencloud/issues/1197
-      try {
-        const response = await fetch(url, {
-          headers: {
-            ...this.clientService.getRequestHeaders({ useAuth: false }),
-            Authorization:
-              'Basic ' +
-              Buffer.from(['public', options.publicLinkPassword].join(':')).toString('base64')
-          }
-        })
-
-        if (!response.ok) {
-          throw new HttpError('', response)
-        }
-
-        const blob = await response.blob()
-        url = URL.createObjectURL(blob)
-        fileName = decodeURI(response.headers.get('content-disposition')?.split('"')[1])
-      } catch {
-        throw new Error('archive could not be fetched')
-      }
-    }
-    triggerDownloadWithFilename(url, fileName)
+    triggerDownloadWithFilename(url)
     return url
   }
 
-  private buildDownloadUrl(options: TriggerDownloadOptions): string {
+  private buildDownloadUrl(
+    options: TriggerDownloadOptions,
+    signature?: PublicLinkSignature
+  ): string {
     const queryParams = []
     if (options.publicToken) {
       queryParams.push(`public-token=${options.publicToken}`)
+    }
+    if (signature?.signature && signature.expiration) {
+      queryParams.push(
+        `signature=${encodeURIComponent(signature.signature)}`,
+        `expiration=${encodeURIComponent(signature.expiration)}`
+      )
     }
 
     queryParams.push(...options.fileIds.map((id) => `id=${id}`))
