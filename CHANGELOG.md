@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @andrewyager, @saw-jan, @v-scharf
+@AlexAndBear, @JammingBen, @andrewyager, @kulmann, @saw-jan, @v-scharf
 
 ### 🐛 Bug Fixes
 
+- fix: keep the guest session when a guest opens a route that needs a user [[#4086](https://github.com/opencloud-eu/web/pull/4086)]
 - fix: list sharers with the same display name separately in the Shared By filter [[#4152](https://github.com/opencloud-eu/web/pull/4152)]
 - fix: show the locked message when uploading onto a locked resource [[#4109](https://github.com/opencloud-eu/web/pull/4109)]
 - fix: show restored files again after undoing a delete on the search results page [[#4175](https://github.com/opencloud-eu/web/pull/4175)]
