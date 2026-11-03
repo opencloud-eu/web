@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show error message when refreshing the file after a version restore fails [[#4137](https://github.com/opencloud-eu/web/pull/4137)]
 - fix: finish adding space members when the space refresh fails [[#4126](https://github.com/opencloud-eu/web/pull/4126)]
 - fix: don't carry the query of other views into the search [[#4128](https://github.com/opencloud-eu/web/pull/4128)]
 - fix: reload the folder README when README.md changes [[#4114](https://github.com/opencloud-eu/web/pull/4114)]
