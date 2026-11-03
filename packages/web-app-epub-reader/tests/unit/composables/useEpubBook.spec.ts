@@ -14,6 +14,7 @@ import {
 const books: BookMock[] = []
 const nextBook = vi.hoisted(() => ({
   rejectReady: false,
+  failOpen: false,
   rejectFirstDisplay: false,
   spineItems: undefined as SpineItemMock[] | undefined,
   currentLocation: undefined as Location | undefined
@@ -28,6 +29,10 @@ vi.mock('epubjs', () => ({
     })
     if (nextBook.rejectReady) {
       book.ready = Promise.reject(new Error('not an epub'))
+    }
+    if (nextBook.failOpen) {
+      // epub.js only emits `openFailed` and never settles `ready` for a book it cannot open
+      book.ready = new Promise(() => {})
     }
     if (nextBook.rejectFirstDisplay) {
       book.rendition.display.mockRejectedValueOnce(new Error('No Section Found'))
@@ -48,6 +53,7 @@ describe('useEpubBook', () => {
   beforeEach(() => {
     books.length = 0
     nextBook.rejectReady = false
+    nextBook.failOpen = false
     nextBook.rejectFirstDisplay = false
     nextBook.spineItems = undefined
     nextBook.currentLocation = undefined
@@ -156,6 +162,32 @@ describe('useEpubBook', () => {
     expect(unref(result.loadError)?.message).toBe('not an epub')
     expect(unref(result.isLoading)).toBe(false)
     expect(books[0].renderTo).not.toHaveBeenCalled()
+  })
+
+  it('reports a book that epub.js fails to open instead of loading forever', async () => {
+    const { result } = mountComposable(() => useEpubBook())
+    nextBook.failOpen = true
+    result.open('content', { container: document.createElement('div') })
+    books[0].emit('openFailed', new Error('Cannot load book at content'))
+    await flushPromises()
+
+    expect(unref(result.loadError)?.message).toBe('Cannot load book at content')
+    expect(unref(result.isLoading)).toBe(false)
+    expect(books[0].renderTo).not.toHaveBeenCalled()
+  })
+
+  it('ignores a failed open of a book that was superseded while loading', async () => {
+    const { result } = mountComposable(() => useEpubBook())
+    nextBook.failOpen = true
+    const first = result.open('one', { container: document.createElement('div') })
+    nextBook.failOpen = false
+    await result.open('two', { container: document.createElement('div') })
+    books[0].emit('openFailed', new Error('Cannot load book at one'))
+    await first
+
+    expect(unref(result.loadError)).toBeUndefined()
+    expect(unref(result.book)).toBe(books[1])
+    expect(books[1].renderTo).toHaveBeenCalled()
   })
 
   it('falls back to the beginning when the stored position cannot be displayed', async () => {
