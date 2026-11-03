@@ -17,7 +17,7 @@ function serializeParagraph(content: JSONContent[]): string {
   const strategy = createStrategy()
   const editor = createEditor(strategy, '')
   editor.commands.setContent({ type: 'doc', content: [{ type: 'paragraph', content }] })
-  return strategy.serialize(editor.state.doc)
+  return strategy.serialize(editor.state.doc, { finalNewline: false })
 }
 
 function serializeText(text: string): string {

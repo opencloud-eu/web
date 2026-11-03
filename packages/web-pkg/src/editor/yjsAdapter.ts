@@ -71,17 +71,26 @@ export function makeTiptapYjsAdapter(
     return opts
   }
 
+  // Whether the hydrated file ended with a newline. Shared through the doc,
+  // because only the hydrating peer ever sees the file.
+  function metaFor(ydoc: Y.Doc): Y.Map<boolean> {
+    return ydoc.getMap<boolean>(`${fragment}-meta`)
+  }
+
   return {
     hydrate(ydoc, content) {
       if (!content) return
       const editor = makeHeadlessEditor(ydoc)
       try {
-        editor.commands.setContent(
-          toValue(strategy).deserialize(content) as Parameters<
-            typeof editor.commands.setContent
-          >[0],
-          setContentOptions()
-        )
+        ydoc.transact(() => {
+          editor.commands.setContent(
+            toValue(strategy).deserialize(content) as Parameters<
+              typeof editor.commands.setContent
+            >[0],
+            setContentOptions()
+          )
+          metaFor(ydoc).set('finalNewline', content.endsWith('\n'))
+        })
       } finally {
         editor.destroy()
       }
@@ -93,7 +102,7 @@ export function makeTiptapYjsAdapter(
         ydoc.getXmlFragment(fragment),
         schemaFor(current)
       )
-      return current.serialize(doc)
+      return current.serialize(doc, { finalNewline: metaFor(ydoc).get('finalNewline') ?? true })
     },
 
     hasContent(ydoc) {
@@ -101,6 +110,7 @@ export function makeTiptapYjsAdapter(
     },
 
     reset(ydoc) {
+      metaFor(ydoc).delete('finalNewline')
       const frag = ydoc.getXmlFragment(fragment)
       if (frag.length === 0) return
       frag.delete(0, frag.length)
