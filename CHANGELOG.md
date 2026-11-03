@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: prevent duplicate GDPR export requests on double click [[#4156](https://github.com/opencloud-eu/web/pull/4156)]
 - fix: align shift-click range selection in admin lists and files table [[#4236](https://github.com/opencloud-eu/web/pull/4236)]
 - fix: replace the selection when dragging an unselected file [[#4153](https://github.com/opencloud-eu/web/pull/4153)]
 - fix: match embed file types case-insensitively [[#4154](https://github.com/opencloud-eu/web/pull/4154)]
