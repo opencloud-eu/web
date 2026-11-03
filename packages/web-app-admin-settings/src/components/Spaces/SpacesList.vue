@@ -228,7 +228,12 @@ const {
 
 const keyActions = useKeyboardActions()
 useKeyboardTableNavigation(keyActions, paginatedItems, selectedSpaces, lastSelectedSpaceId)
-useKeyboardTableMouseActions(keyActions, paginatedItems, selectedSpaces, lastSelectedSpaceId)
+const { setSelectionStart } = useKeyboardTableMouseActions(
+  keyActions,
+  paginatedItems,
+  selectedSpaces,
+  lastSelectedSpaceId
+)
 
 const { loadPreview } = useLoadPreview()
 
@@ -436,6 +441,7 @@ function showContextMenuOnRightClick(event: MouseEvent, space: SpaceResource) {
   event.preventDefault()
   if (!isSpaceSelected(space)) {
     spaceSettingsStore.setSelectedSpaces([space])
+    setSelectionStart(space)
   }
   const anchorElement = createVirtualCursorElement(event as MouseEvent)
   unref(contextMenuDrops)[space.id]?.show({ anchorElement })
@@ -451,8 +457,7 @@ function showDetailsForSpace(space: SpaceResource) {
 }
 
 function selectSpace(selectedSpace: SpaceResource) {
-  lastSelectedSpaceId.value = selectedSpace.id
-  keyActions.resetSelectionCursor()
+  setSelectionStart(selectedSpace)
 
   const isSpaceSelected = unref(selectedSpaces).find((space) => space.id === selectedSpace.id)
   if (!isSpaceSelected) {

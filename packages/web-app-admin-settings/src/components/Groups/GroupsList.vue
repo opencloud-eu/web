@@ -182,7 +182,12 @@ const {
 
 const keyActions = useKeyboardActions()
 useKeyboardTableNavigation(keyActions, paginatedItems, selectedGroups, lastSelectedGroupId)
-useKeyboardTableMouseActions(keyActions, paginatedItems, selectedGroups, lastSelectedGroupId)
+const { setSelectionStart } = useKeyboardTableMouseActions(
+  keyActions,
+  paginatedItems,
+  selectedGroups,
+  lastSelectedGroupId
+)
 
 const readOnlyLabel = computed(() => $gettext("This group is read-only and can't be edited"))
 // the selection is kept across pages, so only the groups of the current page count
@@ -229,8 +234,7 @@ function isGroupSelected(group: Group) {
 }
 
 function selectGroup(group: Group) {
-  lastSelectedGroupId.value = group.id
-  keyActions.resetSelectionCursor()
+  setSelectionStart(group)
 
   if (!isGroupSelected(group)) {
     return groupSettingsStore.addSelectedGroup(group)
@@ -302,6 +306,7 @@ function showContextMenuOnRightClick(event: MouseEvent, group: Group) {
   event.preventDefault()
   if (!isGroupSelected(group)) {
     groupSettingsStore.setSelectedGroups([group])
+    setSelectionStart(group)
   }
   const anchorElement = createVirtualCursorElement(event)
   unref(contextMenuDrops)[group.id]?.show({ anchorElement })
