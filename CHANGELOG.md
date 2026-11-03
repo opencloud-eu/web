@@ -52,6 +52,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#4079](https://github.com/opencloud-eu/web/pull/4079)]
 - chore(deps): update traefik docker tag to v3.7.17 [[#4091](https://github.com/opencloud-eu/web/pull/4091)]
 - chore(deps): update axllent/mailpit docker tag to v1.33.0 [[#4093](https://github.com/opencloud-eu/web/pull/4093)]
 - chore(deps): update apache/tika docker tag to v4.3.0 [[#4078](https://github.com/opencloud-eu/web/pull/4078)]
