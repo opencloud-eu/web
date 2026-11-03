@@ -302,29 +302,39 @@ describe('UploadInfo component', () => {
     it.each([
       {
         source: 'file upload',
+        isFolder: false,
         error: new HttpError(
           'tus: unexpected response while creating upload, originated from request (method: POST, url: x, response code: 423, response text: , request id: n/a)',
           undefined
-        )
+        ),
+        message: 'This item is locked'
       },
-      { source: 'folder creation', error: new HttpError('locked', undefined, 423) }
-    ])('shows the locked message when a $source hits a locked resource', async ({ error }) => {
-      const { wrapper } = getShallowWrapper()
-      ;(wrapper.vm as any).showInfo = true
-      ;(wrapper.vm as any).infoExpanded = true
-      ;(wrapper.vm as any).uploads = {
-        '1': {
-          name: 'file',
-          path: '/',
-          type: 'file',
-          meta: { uploadId: '1' }
-        } as unknown as OcUppyFile
+      {
+        source: 'folder creation',
+        isFolder: true,
+        error: new HttpError('locked', undefined, 423),
+        message: "The folder you're uploading to is locked"
       }
-      ;(wrapper.vm as any).errors = { 1: error }
-      await nextTick()
+    ])(
+      'shows the locked message when a $source hits a locked resource',
+      async ({ isFolder, error, message }) => {
+        const { wrapper } = getShallowWrapper()
+        ;(wrapper.vm as any).showInfo = true
+        ;(wrapper.vm as any).infoExpanded = true
+        ;(wrapper.vm as any).uploads = {
+          '1': {
+            name: 'item',
+            path: '/',
+            type: isFolder ? 'folder' : 'file',
+            meta: { uploadId: '1', isFolder }
+          } as unknown as OcUppyFile
+        }
+        ;(wrapper.vm as any).errors = { 1: error }
+        await nextTick()
 
-      expect(wrapper.find(selectors.message).text()).toBe('This item is locked')
-    })
+        expect(wrapper.find(selectors.message).text()).toBe(message)
+      }
+    )
     it('folder is clickable', async () => {
       const { wrapper } = getShallowWrapper()
       ;(wrapper.vm as any).showInfo = true

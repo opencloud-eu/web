@@ -626,7 +626,9 @@ function getUploadItemMessage(item: UploadResult) {
 
   const errorObject = formatErrorMessageToObject(error.message)
   if (error.statusCode === 423 || errorObject.responseCode === 423) {
-    return $gettext('This item is locked')
+    return item.meta.isFolder
+      ? $gettext("The folder you're uploading to is locked")
+      : $gettext('This item is locked')
   }
 
   switch (errorObject.responseCode) {
