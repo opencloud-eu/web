@@ -108,7 +108,14 @@ const revertToVersion = async (version: Resource) => {
     showErrorMessage({ title: $gettext('Failed to restore version'), errors: [e] })
     return
   }
-  const restoredResource = await clientService.webdav.getFileInfo(unref(space), unref(resource))
+  let restoredResource: Resource
+  try {
+    restoredResource = await clientService.webdav.getFileInfo(unref(space), unref(resource))
+  } catch (e) {
+    console.error(e)
+    showErrorMessage({ title: $gettext('Failed to refresh file'), errors: [e] })
+    return
+  }
 
   const fieldsToUpdate = ['size', 'mdate'] as const
   for (const field of fieldsToUpdate) {
