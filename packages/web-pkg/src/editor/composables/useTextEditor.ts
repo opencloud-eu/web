@@ -18,6 +18,7 @@ import type { TableOfContentData } from '@tiptap/extension-table-of-contents'
 import type { Awareness } from 'y-protocols/awareness'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { UndoManager } from 'yjs'
 import type { Resource } from '@opencloud-eu/web-client'
 import type {
@@ -27,6 +28,7 @@ import type {
   TextEditorState
 } from '../types'
 import { DEFAULT_YDOC_FRAGMENT } from '../types'
+import { getYdocFinalNewline, setYdocFinalNewline } from '../yjsAdapter'
 import type { EditorAction, EditorActionGroup } from './useEditorActions'
 import { Mentions, SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
@@ -118,6 +120,24 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
       ...group,
       actions: filterActions(group.actions)
     }))
+
+  // Set by edits that bypass `setContent`, e.g. the source view. Without it
+  // the strategy keeps what the last deserialized content had.
+  let finalNewline: boolean | undefined
+
+  function serialize(doc: ProseMirrorNode): string {
+    return strategy.serialize(doc, {
+      finalNewline: options.ydoc ? getYdocFinalNewline(options.ydoc, yjsFragment) : finalNewline
+    })
+  }
+
+  function setFinalNewline(value: boolean): void {
+    if (options.ydoc) {
+      setYdocFinalNewline(options.ydoc, value, yjsFragment)
+      return
+    }
+    finalNewline = value
+  }
 
   // Debounce onUpdate to avoid firing on every keystroke while typing.
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
@@ -247,7 +267,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
       }
       debounceTimer = setTimeout(() => {
         debounceTimer = null
-        options.onUpdate!(strategy.serialize(e.state.doc))
+        options.onUpdate!(serialize(e.state.doc))
       }, 250)
     }
   }) as unknown as ShallowRef<Editor | null>
@@ -260,13 +280,14 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     if (!editor.value) {
       return ''
     }
-    return strategy.serialize(editor.value.state.doc)
+    return serialize(editor.value.state.doc)
   }
 
   const setContent = (value: string): void => {
     if (!editor.value) {
       return
     }
+    finalNewline = undefined
     const content = strategy.deserialize(value)
     const setContentOptions: Record<string, any> = { emitUpdate: false }
     if (strategy.editorContentType) {
@@ -290,7 +311,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     if (debounceTimer) {
       clearTimeout(debounceTimer)
       if (options.onUpdate && editor.value) {
-        options.onUpdate(strategy.serialize(editor.value.state.doc))
+        options.onUpdate(serialize(editor.value.state.doc))
       }
       debounceTimer = null
     }
@@ -327,6 +348,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     actionGroups: editorActionGroups,
     getContent,
     setContent,
+    setFinalNewline,
     isEmpty,
     isFocused,
     focus,

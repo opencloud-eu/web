@@ -122,13 +122,14 @@ export interface TextEditorInstance {
   collaborators: Ref<YjsCollaborator[]>
   showTableOfContents: boolean
   actionGroups(): EditorActionGroup[]
-  /**
-   * In Yjs mode this editor never deserializes the file, so format details
-   * only the file knows (e.g. the markdown final newline) use defaults here.
-   * The saved content comes from the Yjs adapter.
-   */
   getContent(): string
   setContent(value: string): void
+  /**
+   * Whether the content ends with a newline, for formats whose document can't
+   * hold it (e.g. markdown). For edits that bypass {@link setContent}, like
+   * the source view. Shared with all peers when bound to a Y.Doc.
+   */
+  setFinalNewline(value: boolean): void
   isEmpty: Ref<boolean>
   isFocused: Ref<boolean>
   focus(): void
