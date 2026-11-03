@@ -87,6 +87,23 @@ describe('setupVaultUnlockGuard', () => {
     ).toBe(true)
   })
 
+  it.each(['resolvePublicLink', 'resolvePublicOcmLink'])(
+    'does not wait for spaces on the %s route with a path after the token',
+    async (name) => {
+      // spaces of a public link only get initialized after the route resolved the token
+      const waitForSpaces = vi.fn(() => new Promise<void>(() => {}))
+      const guard = installGuard({ waitForSpaces })
+
+      const result = await Promise.race([
+        guard({ name, params: { token: 'token', driveAliasAndItem: 'sub' } }, coldStart),
+        new Promise((resolve) => setTimeout(() => resolve('pending'), 50))
+      ])
+
+      expect(result).toBe(true)
+      expect(waitForSpaces).not.toHaveBeenCalled()
+    }
+  )
+
   it('allows a non-vault path', async () => {
     const guard = installGuard({ spaces: [space], claim: null })
     expect(

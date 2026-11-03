@@ -235,6 +235,28 @@ const isSingleFileLink = computed(() => {
 })
 
 /**
+ * Fetches the resource at the path after the link token. Returns `undefined` if the server can't
+ * find it, e.g. a path inside an encrypted vault or one that doesn't exist (anymore).
+ */
+async function getItemResource(signal?: AbortSignal): Promise<Resource | undefined> {
+  try {
+    return await clientService.webdav.getFileInfo(
+      unref(publicLinkSpace),
+      { path: unref(item) },
+      { signal }
+    )
+  } catch (error) {
+    if ((error as DavHttpError).statusCode === 404) {
+      return undefined
+    }
+    throw error
+  }
+}
+
+/**
+ * A path after the link token resolves to the resource at that path. If the server can't find it,
+ * the path is kept, so the file list (and the vault unlock guard) can handle it.
+ *
  * For a public link pointing to a single file, the link root is the file itself. Since the root
  * is built as a space, the actual file resource needs to be fetched to be able to resolve the
  * app it can be opened with.
@@ -243,6 +265,13 @@ const getTargetResource = async (
   signal?: AbortSignal
 ): Promise<{ resource: Resource; path: string }> => {
   const space = unref(loadedSpace)
+  if (unref(item)) {
+    const resource = await getItemResource(signal)
+    if (resource) {
+      return { resource, path: resource.path }
+    }
+  }
+
   if (unref(item) || !unref(isSingleFileLink)) {
     return { resource: space, path: unref(item) || '/' }
   }

@@ -13,6 +13,7 @@ import {
   VaultClaim
 } from '@opencloud-eu/web-pkg'
 import { isPublicSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
+import { routeNames } from './names'
 
 /** Space-relative, absolute path a `driveAliasAndItem` points at within `space`. */
 function spaceRelativePath(driveAliasAndItem: string, space: SpaceResource): string {
@@ -73,6 +74,11 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
     const driveAliasAndItem = to.params?.driveAliasAndItem as string | undefined
     if (!driveAliasAndItem) return true
     if (to.name === 'rclone-crypt-unlock') return true
+    // these routes initialize the spaces themselves and redirect to a files route,
+    // which this guard checks then
+    if (to.name === routeNames.resolvePublicLink || to.name === routeNames.resolvePublicOcmLink) {
+      return true
+    }
 
     const authStore = useAuthStore()
     const spacesStore = useSpacesStore()
