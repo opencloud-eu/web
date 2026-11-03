@@ -43,7 +43,7 @@
               <account-label
                 class="truncate"
                 :label="$gettext('CalDAV URL')"
-                :description="configStore.serverUrl"
+                :description="serverUrl"
               />
             </oc-table-td>
             <oc-table-td>
@@ -107,7 +107,7 @@ import { useTask } from 'vue-concurrency'
 const { $gettext } = useGettext()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const configStore = useConfigStore()
+const { serverUrl } = storeToRefs(useConfigStore())
 const clientService = useClientService()
 
 const isCalDavAvailable = ref(false)
@@ -127,7 +127,7 @@ function announceCopied() {
 }
 
 const copyCalDavUrlToClipboard = () => {
-  navigator.clipboard.writeText(unref(configStore.serverUrl))
+  navigator.clipboard.writeText(unref(serverUrl))
   copyCalDavUrlIcon.value = copiedIcon
   announceCopied()
   setTimeout(() => (copyCalDavUrlIcon.value = copyIcon), 1500)
@@ -145,7 +145,7 @@ const loadCalDavTask = useTask(function* () {
   try {
     const response = yield clientService.httpAuthenticated.get(wellKnownUrl, { method: 'OPTIONS' })
     isCalDavAvailable.value = response.request.responseURL.includes(
-      urlJoin(configStore.serverUrl, 'caldav')
+      urlJoin(unref(serverUrl), 'caldav')
     )
   } catch (e) {
     console.error(e)
