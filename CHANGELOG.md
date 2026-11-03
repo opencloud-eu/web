@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: list sharers with the same display name separately in the Shared By filter [[#4152](https://github.com/opencloud-eu/web/pull/4152)]
 - fix: show the locked message when uploading onto a locked resource [[#4109](https://github.com/opencloud-eu/web/pull/4109)]
 - fix: show restored files again after undoing a delete on the search results page [[#4175](https://github.com/opencloud-eu/web/pull/4175)]
 - fix: keep the requested route when delegating authentication in embed mode [[#4191](https://github.com/opencloud-eu/web/pull/4191)]
