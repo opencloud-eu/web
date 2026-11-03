@@ -105,8 +105,9 @@ function createPerPageRef<T>(options: PaginationOptions<T>): ComputedRef<number>
   return computed(() => {
     // the route query is populated asynchronously, so it can still be missing on
     // the first render. Falling back to the default keeps `items` from returning
-    // the whole (potentially huge) list for one render pass.
+    // the whole (potentially huge) list for one render pass. Values below 1 (e.g.
+    // from a manipulated URL) would break the page count, so they fall back too.
     const perPage = parseInt(queryItemAsString(unref(perPageQuery)))
-    return isNaN(perPage) ? parseInt(perPageDefault) : perPage
+    return isNaN(perPage) || perPage < 1 ? parseInt(perPageDefault) : perPage
   })
 }
