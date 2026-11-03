@@ -42,7 +42,8 @@ function mountSourceView({
       sourceMode: ref(true),
       sourceModeReadonly: ref(sourceModeReadonly)
     },
-    getContent: vi.fn(() => editorContent)
+    getContent: vi.fn(() => editorContent),
+    setFinalNewline: vi.fn()
   } as unknown as TextEditorInstance
 
   const wrapper = mount(TextEditorSourceView, {
@@ -72,6 +73,17 @@ describe('TextEditorSourceView', () => {
     })
   })
 
+  it.each([
+    ['# Edited\n', true],
+    ['# Edited', false],
+    ['', true]
+  ])('records whether %j ends with a newline', async (value, finalNewline) => {
+    const { wrapper, textEditor } = mountSourceView()
+
+    await wrapper.find('textarea').setValue(value)
+    expect(textEditor.setFinalNewline).toHaveBeenCalledWith(finalNewline)
+  })
+
   it('writes html edits back with the html content type', async () => {
     const { wrapper, setContent } = mountSourceView({
       contentType: 'html',
@@ -93,7 +105,7 @@ describe('TextEditorSourceView', () => {
   })
 
   it('is read-only and swallows input when the source mode is read-only', async () => {
-    const { wrapper, setContent } = mountSourceView({ sourceModeReadonly: true })
+    const { wrapper, textEditor, setContent } = mountSourceView({ sourceModeReadonly: true })
 
     const textarea = wrapper.find('textarea')
     expect(textarea.attributes('readonly')).toBeDefined()
@@ -101,6 +113,7 @@ describe('TextEditorSourceView', () => {
 
     await textarea.setValue('# Edited')
     expect(setContent).not.toHaveBeenCalled()
+    expect(textEditor.setFinalNewline).not.toHaveBeenCalled()
   })
 
   it('follows document updates while a Yjs session is active', async () => {
