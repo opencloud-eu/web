@@ -195,10 +195,7 @@ Feature: yjs conflict handling
     And "Alice" logs out
     And "Brian" logs out
 
-  # A share recipient of a personal-space file receives no server-sent events
-  # for it, so the update only reaches the room once a peer with the fresh
-  # file joins.
-  Scenario: share recipient sees an external file update when the owner joins
+  Scenario: share recipient sees an external file update
     When "Alice" uploads the following local file into personal space using API
       | localFile        | to               |
       | textfile.ocnote  | textfile.ocnote  |
@@ -220,7 +217,8 @@ Feature: yjs conflict handling
     When "Alice" uploads the following local file into personal space using API
       | localFile        | to               |
       | textfile.ocnote  | textfile.ocnote  |
-    Then "Brian" should see the text "Brian says hello" in the text-editor
+    Then "Brian" should see the text "some random text" in the text-editor
+    And "Brian" logs out
 
     When "Alice" logs in
     And "Alice" opens the "files" app
@@ -229,6 +227,4 @@ Feature: yjs conflict handling
       | status    |
       | Connected |
     Then "Alice" should see the text "some random text" in the text-editor
-    And "Brian" should see the text "some random text" in the text-editor
     And "Alice" logs out
-    And "Brian" logs out

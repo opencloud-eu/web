@@ -65,7 +65,6 @@ export const appConfig = {
   tokenTimeout: parseInt(process.env.TOKEN_TIMEOUT || '40'),
   largeUploadTimeout: parseInt(process.env.LARGE_UPLOAD_TIMEOUT || '240'),
 
-  slowMo: process.env.SLOW_MO ? parseInt(process.env.SLOW_MO) : 0,
   acceptDownloads: process.env.DOWNLOADS !== 'false',
   assetsPath: path.join(__dirname, 'filesForUpload'),
   tempAssetsPath: path.join(__dirname, 'filesForUpload', 'temp'),
