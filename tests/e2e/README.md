@@ -60,7 +60,6 @@ Useful env vars (set before the command, e.g. `OC_BASE_URL=... pnpm test:e2e`; f
 | `BASIC_AUTH`                   | `false`                     | Basic auth instead of OIDC login |
 | `KEYCLOAK`                     | `false`                     | Enable Keycloak-specific tests   |
 | `FEDERATED_SERVER`             | `false`                     | Run against the federated server |
-| `SLOW_MO`                      | `0`                         | Slow down operations by N ms     |
 | `TEST_TIMEOUT`                 | `120`                       | Per-test timeout in seconds      |
 | `FAIL_ON_UNCAUGHT_CONSOLE_ERR` | `true`                      | Fail on uncaught console errors  |
 

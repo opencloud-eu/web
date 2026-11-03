@@ -705,7 +705,6 @@ def e2eTests(ctx):
     default = {
         "skip": False,
         "logLevel": "2",
-        "reportTracing": False,
         "db": "mysql:5.5",
         "suites": [],
         "features": [],
@@ -751,10 +750,7 @@ def e2eTests(ctx):
 
         for browser_name in browsers_for_suite:
             environment = {
-                "RETRY": "1",
-                "REPORT_TRACING": params["reportTracing"],
                 "OC_BASE_URL": "opencloud:9200",
-                "OC_SHOW_USER_EMAIL_IN_RESULTS": True,
                 "FAIL_ON_UNCAUGHT_CONSOLE_ERR": True,
                 "PLAYWRIGHT_BROWSERS_PATH": "tests/e2e/.playwright",
                 "TERM": "xterm-256color",
@@ -1837,7 +1833,6 @@ def e2eTestsOnKeycloak(ctx):
                      "image": OC_CI_NODEJS,
                      "environment": {
                          "OC_BASE_URL": "opencloud:9200",
-                         "RETRY": "1",
                          "KEYCLOAK": True,
                          "KEYCLOAK_HOST": "keycloak:8443",
                          "PLAYWRIGHT_BROWSERS_PATH": "tests/e2e/.playwright",
