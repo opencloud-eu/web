@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show the locked message when uploading onto a locked resource [[#4109](https://github.com/opencloud-eu/web/pull/4109)]
 - fix: show restored files again after undoing a delete on the search results page [[#4175](https://github.com/opencloud-eu/web/pull/4175)]
 - fix: keep the requested route when delegating authentication in embed mode [[#4191](https://github.com/opencloud-eu/web/pull/4191)]
 - fix: leave the oidc callback page when the sign-in fails [[#4218](https://github.com/opencloud-eu/web/pull/4218)]
@@ -62,6 +63,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @casl/ability to v7.1.1 [[#4092](https://github.com/opencloud-eu/web/pull/4092)]
+- chore(deps): update pnpm to v11.28.10 [[#4090](https://github.com/opencloud-eu/web/pull/4090)]
 - chore(deps): update devdependencies (non-major) to v4.3.4 [[#4225](https://github.com/opencloud-eu/web/pull/4225)]
 - chore(deps): update devdependencies (non-major) [[#4079](https://github.com/opencloud-eu/web/pull/4079)]
 - chore(deps): update traefik docker tag to v3.7.17 [[#4091](https://github.com/opencloud-eu/web/pull/4091)]
