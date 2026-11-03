@@ -31,8 +31,8 @@ export const useResourceViewDrag = ({
 
   const dragStart = async (resource: Resource, event: DragEvent) => {
     if (!unref(selectedIds).includes(resource.id)) {
-      resourcesStore.toggleSelection(resource.id)
-      emit('update:selectedIds', [...resourcesStore.selectedIds])
+      resourcesStore.setSelection([resource.id])
+      emit('update:selectedIds', [resource.id])
     }
     await setDragItem(resource, event)
   }

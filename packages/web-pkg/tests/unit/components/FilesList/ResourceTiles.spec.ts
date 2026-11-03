@@ -217,6 +217,39 @@ describe('ResourceTiles component', () => {
 
       expect(wrapper.emitted('update:selectedIds')).toBeDefined()
     })
+    it('replaces the selection with the dragged resource if it is not selected', () => {
+      const { wrapper } = getWrapper({
+        props: { resources: spacesResources },
+        stubs: { ResourceTile: true },
+        selectedIds: ['2']
+      })
+
+      const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
+      resourceTile.vm.$emit('dragstart', {
+        dataTransfer: { setDragImage: vi.fn() }
+      })
+
+      const resourcesStore = useResourcesStore()
+      expect(resourcesStore.setSelection).toHaveBeenCalledWith(['1'])
+      expect(wrapper.emitted('update:selectedIds')).toEqual([[['1']]])
+    })
+    it('keeps the selection if the dragged resource is already selected', () => {
+      const { wrapper } = getWrapper({
+        props: { resources: spacesResources },
+        stubs: { ResourceTile: true },
+        selectedIds: ['1', '2']
+      })
+
+      const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
+      resourceTile.vm.$emit('dragstart', {
+        dataTransfer: { setDragImage: vi.fn() }
+      })
+
+      const resourcesStore = useResourcesStore()
+      expect(resourcesStore.setSelection).not.toHaveBeenCalled()
+      expect(resourcesStore.toggleSelection).not.toHaveBeenCalled()
+      expect(wrapper.emitted('update:selectedIds')).toBeUndefined()
+    })
     it('emits the "fileDropped"-event on resource drop', () => {
       const { wrapper } = getWrapper({
         props: { resources: spacesResources },
@@ -301,13 +334,15 @@ describe('ResourceTiles component', () => {
     slots = {},
     stubs = {},
     canBeOpenedWithSecureView = true,
-    deleteQueue = []
+    deleteQueue = [],
+    selectedIds = []
   }: {
     props?: Record<string, unknown>
     slots?: Record<string, string>
     stubs?: Record<string, boolean>
     canBeOpenedWithSecureView?: boolean
     deleteQueue?: string[]
+    selectedIds?: string[]
   } = {}) {
     const mocks = defaultComponentMocks()
 
@@ -329,7 +364,7 @@ describe('ResourceTiles component', () => {
           plugins: [
             ...defaultPlugins({
               piniaOptions: {
-                resourcesStore: { deleteQueue },
+                resourcesStore: { deleteQueue, selectedIds },
                 spacesState: { spaces: spacesResources }
               }
             })
