@@ -394,6 +394,28 @@ describe('ResourceTable', () => {
         expect(trTxt.attributes('class').includes('oc-table-disabled')).toBeFalsy()
         expect(trJpg.attributes('class').includes('oc-table-disabled')).toBeTruthy()
       })
+      it.each([
+        { fileTypes: ['txt'], extension: 'TXT', mimeType: undefined },
+        { fileTypes: ['TXT'], extension: 'txt', mimeType: undefined },
+        { fileTypes: ['text/plain'], extension: 'md', mimeType: 'Text/Plain' }
+      ])(
+        'matches file types case-insensitively ($fileTypes, $extension, $mimeType)',
+        ({ fileTypes, extension, mimeType }) => {
+          mockUseEmbedMode.mockReturnValue({
+            isEnabled: computed(() => true),
+            fileTypes: computed(() => fileTypes)
+          })
+
+          const resources = resourcesWithAllFields.map((resource) =>
+            resource.id === 'notes' ? { ...resource, extension, mimeType } : resource
+          )
+          const { wrapper } = getMountedWrapper({ resources })
+          const trTxt = wrapper.find('.oc-tbody-tr-notes')
+          const trJpg = wrapper.find('.oc-tbody-tr-forest')
+          expect(trTxt.attributes('class').includes('oc-table-disabled')).toBeFalsy()
+          expect(trJpg.attributes('class').includes('oc-table-disabled')).toBeTruthy()
+        }
+      )
     })
 
     describe('embed mode location target', () => {
