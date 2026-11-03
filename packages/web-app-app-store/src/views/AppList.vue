@@ -30,9 +30,9 @@
     />
     <span class="sr-only" role="status" v-text="resultCountText" />
     <div v-if="filteredApps.length" class="flex items-center justify-between gap-4 mb-2">
-      <div class="flex items-center gap-1 min-w-0">
+      <div class="flex items-center gap-1">
         <h2
-          class="app-list-results-title my-0 text-base capitalize min-w-0 wrap-anywhere"
+          class="app-list-results-title my-0 text-base capitalize wrap-anywhere"
           v-text="`${resultsTitle} (${filteredApps.length})`"
         />
         <oc-filter-chip

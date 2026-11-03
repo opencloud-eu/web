@@ -58,7 +58,7 @@ const columnWidths = computed(() => {
   }
 
   .account-table td {
-    @apply block md:table-cell py-2 md:py-3 px-0 wrap-anywhere;
+    @apply block md:table-cell py-2 md:py-3 px-0 wrap-break-word;
   }
 
   .account-table th {

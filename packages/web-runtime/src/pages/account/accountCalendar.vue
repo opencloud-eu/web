@@ -39,7 +39,7 @@
           :fields="[$gettext('CalDAV information name'), $gettext('CalDAV information actions')]"
         >
           <oc-table-tr>
-            <oc-table-td class="md:max-w-0">
+            <oc-table-td>
               <account-label
                 class="truncate [&>*]:truncate"
                 :title="configStore.serverUrl"
