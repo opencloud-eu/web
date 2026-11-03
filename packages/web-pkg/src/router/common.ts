@@ -20,6 +20,7 @@ export const buildRoutes = (components: RouteComponents): RouteRecordRaw[] => [
   {
     path: '/search',
     component: components.App,
+    redirect: (to) => createLocationCommon('files-common-search', to),
     children: [
       {
         name: locationSearch.name,
