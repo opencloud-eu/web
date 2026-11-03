@@ -1,5 +1,5 @@
 diff --git a/dist/vue-inline-svg.esm.js b/dist/vue-inline-svg.esm.js
-index 23bd9ee3bb2f08c0560ac1f139e3c93f778f48d5..4c7d03d3cef19e5234be19c3c04c2d99b227c43c 100644
+index 23bd9ee..2b42fb9 100644
 --- a/dist/vue-inline-svg.esm.js
 +++ b/dist/vue-inline-svg.esm.js
 @@ -29,13 +29,12 @@ function O(n) {
@@ -22,3 +22,22 @@ index 23bd9ee3bb2f08c0560ac1f139e3c93f778f48d5..4c7d03d3cef19e5234be19c3c04c2d99
  }
  const R = /* @__PURE__ */ C({
    inheritAttrs: !1,
+@@ -63,7 +62,7 @@ const R = /* @__PURE__ */ C({
+         const s = typeof t.uniqueIds == "string" ? t.uniqueIds : b;
+         e = q(e, s, t.uniqueIdsBase);
+       }
+-      return e = t.transformSource(e), t.title && P(e, t.title), e.innerHTML;
++      return e = t.transformSource(e), t.title && P(e, t.title), e;
+     }
+     function I(e) {
+       h[e] || (h[e] = A(e)), i.value && h[e].getIsPending() && !t.keepDuringLoading && (i.value = null, f("unloaded")), h[e].then((s) => {
+@@ -93,8 +92,7 @@ const R = /* @__PURE__ */ C({
+     const B = () => i.value ? D(
+       "svg",
+       {
+-        ...V(i.value, v),
+-        innerHTML: y(i.value),
++        ...((T) => ({ ...V(T, v), innerHTML: T.innerHTML }))(y(i.value)),
+         ref: m
+       }
+     ) : null;
