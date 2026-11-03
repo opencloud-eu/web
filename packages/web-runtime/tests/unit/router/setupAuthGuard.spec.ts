@@ -1,5 +1,5 @@
 import { createMemoryHistory, createRouter } from 'vue-router'
-import { useAuthStore } from '@opencloud-eu/web-pkg'
+import { useAuthStore, useConfigStore } from '@opencloud-eu/web-pkg'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { setupAuthGuard } from '../../../src/router/setupAuthGuard'
 import { authService } from '../../../src/services/auth/authService'
@@ -9,7 +9,8 @@ vi.mock('../../../src/services/auth/authService', () => ({
     initializeContext: vi.fn(),
     hasAuthErrorOccurred: false,
     consumeExpiredGuestPermissionId: vi.fn(),
-    consumeUnavailableGuestPermissionId: vi.fn()
+    consumeUnavailableGuestPermissionId: vi.fn(),
+    setPostLoginRedirectUrl: vi.fn()
   }
 }))
 
@@ -263,6 +264,27 @@ describe('setupAuthGuard', () => {
       }
     )
   })
+
+  describe('delegated authentication', () => {
+    beforeEach(() => {
+      useConfigStore().options = { embed: { enabled: true, delegateAuthentication: true } }
+    })
+
+    it('keeps the requested route as post login redirect without a user context', async () => {
+      const router = getRouter()
+      const location = {
+        path: '/files/folder',
+        query: { embed: 'true', 'view-mode': 'resource-table' }
+      }
+
+      await router.push(location)
+
+      expect(router.currentRoute.value.name).toEqual('oidcCallback')
+      expect(authService.setPostLoginRedirectUrl).toHaveBeenCalledWith(
+        router.resolve(location).fullPath
+      )
+    })
+  })
 })
 
 function getRouter() {
@@ -286,6 +308,8 @@ function getRouter() {
       },
       { path: '/g/renew/:permissionId', name: 'renewGuestLink', component, meta },
       { path: '/g/:token', name: 'resolveGuestLink', component, meta },
+      { path: '/files/:item(.*)?', name: 'files', component, meta: { authContext: 'user' } },
+      { path: '/web-oidc-callback', name: 'oidcCallback', component, meta },
       { path: '/login', name: 'login', component, meta },
       { path: '/s/:token', name: 'resolvePublicLink', component, meta },
       { path: '/other', name: 'other', component, meta },

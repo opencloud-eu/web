@@ -16,7 +16,12 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { useFileActionsRestore } from './useFileActionsRestore'
 import { storeToRefs } from 'pinia'
-import { isPersonalSpaceResource, isProjectSpaceResource, Resource } from '@opencloud-eu/web-client'
+import {
+  isPersonalSpaceResource,
+  isProjectSpaceResource,
+  isSearchResource,
+  Resource
+} from '@opencloud-eu/web-client'
 
 type UndoActionOptions = FileActionOptions & { callback?: () => void }
 
@@ -43,6 +48,21 @@ export const useFileActionsUndoDelete = () => {
         resourcesStore.upsertResources(
           children.filter(({ id }) => resources.some((s) => s.id === transformToTrashId(id)))
         )
+        return
+      }
+
+      if (isLocationCommonActive(router, 'files-common-search')) {
+        // only resources deleted from the search results belong into them again
+        const results = await Promise.allSettled(
+          resources.filter(isSearchResource).map(async ({ path, highlights }) => {
+            const resource = await webdav.getFileInfo(space, { path })
+            return Object.assign(resource, { highlights })
+          })
+        )
+        // upsert by id, search results can contain the same path from different spaces
+        results
+          .filter((r) => r.status === 'fulfilled')
+          .forEach(({ value }) => resourcesStore.upsertResource(value))
         return
       }
 

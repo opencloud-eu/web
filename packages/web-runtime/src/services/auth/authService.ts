@@ -308,6 +308,10 @@ export class AuthService implements AuthServiceInterface {
     return this.userManager.signinRedirect()
   }
 
+  public setPostLoginRedirectUrl(redirectUrl?: string) {
+    this.userManager.setPostLoginRedirectUrl(redirectUrl)
+  }
+
   public signinSilent() {
     return this.userManager.signinSilent()
   }
