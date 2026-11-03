@@ -5,6 +5,7 @@ import { isPublicSpaceResource, Resource, SpaceResource } from '@opencloud-eu/we
 import { useClientService } from '../clientService'
 import { useResourcesStore } from '../piniaStores'
 import { useGetMatchingSpace } from '../spaces'
+import { escapeKqlValue } from '../../helpers/searchFilters'
 
 const PAIRED_VIDEO_SEARCH_LIMIT = 10
 const PAIRED_VIDEO_MISSING_TTL_MS = 30_000
@@ -155,7 +156,7 @@ export function useMotionPhoto() {
   ): Promise<PairedVideo | null> {
     try {
       const { resources } = await clientService.webdav.search(
-        `livePhoto.contentId:"${resource.livePhoto.contentId}"`,
+        `livePhoto.contentId:"${escapeKqlValue(resource.livePhoto.contentId)}"`,
         { searchLimit: PAIRED_VIDEO_SEARCH_LIMIT, signal }
       )
       const hit = resources.find(({ mimeType }) => mimeType?.startsWith('video/'))

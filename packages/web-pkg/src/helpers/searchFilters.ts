@@ -109,3 +109,8 @@ export function getMediaTypeFilterOptions(
 
   return options
 }
+
+// KQL writes a double quote inside a quoted value as two double quotes
+export function escapeKqlValue(value: string) {
+  return value.replaceAll('"', '""')
+}

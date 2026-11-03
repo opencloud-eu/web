@@ -5,6 +5,7 @@ import { isLocationCommonActive } from '../../../router'
 import { unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { getVaultClaim, markVaultStatus } from '../../../helpers/vault'
+import { escapeKqlValue } from '../../../helpers/searchFilters'
 import { queryItemAsString } from '../../../composables/appDefaults'
 
 export class FolderLoaderFavorites implements FolderLoader {
@@ -46,7 +47,7 @@ export class FolderLoaderFavorites implements FolderLoader {
 
       const tags = queryItemAsString(currentRoute.query.q_tags)
       if (tags) {
-        const tagList = tags.split('+').map((t) => `"${t}"`)
+        const tagList = tags.split('+').map((t) => `"${escapeKqlValue(t)}"`)
         query.push(`tag:(${tagList.join(' OR ')})`)
       }
 
