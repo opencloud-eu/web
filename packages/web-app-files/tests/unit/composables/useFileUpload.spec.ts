@@ -81,6 +81,23 @@ describe('useFileUpload', () => {
     expect(resourcesStore.upsertResources).not.toHaveBeenCalled()
   })
 
+  it('updates the resources when all files of an uploaded folder failed', async () => {
+    const createdFolder = { id: 'created', path: '/folder/fdir', etag: 'new' } as Resource
+    const space = mock<SpaceResource>({ id: 'space-1', driveType: 'personal' })
+    const { resourcesStore, completeUpload } = setup({
+      space,
+      existing: [],
+      children: [createdFolder]
+    })
+
+    await completeUpload({
+      successful: [],
+      failed: [{ meta: { spaceId: space.id, driveType: space.driveType } }]
+    } as UploadResult)
+
+    expect(resourcesStore.upsertResources).toHaveBeenCalledWith([createdFolder])
+  })
+
   it('keeps the share id of resources in a share space', async () => {
     const replaced = { id: 'file', path: '/folder/file.txt', etag: 'new' } as Resource
     const { resourcesStore, completeUpload } = setup({
@@ -143,7 +160,7 @@ function setup({
     mocks,
     resourcesStore,
     spacesStore,
-    completeUpload: () => subscriptions.uploadCompleted(uploadResult),
+    completeUpload: (result = uploadResult) => subscriptions.uploadCompleted(result),
     cancelUpload: (result = uploadResult) => subscriptions.uploadCancelled(result)
   }
 }

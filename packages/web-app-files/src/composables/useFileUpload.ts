@@ -56,7 +56,8 @@ export const useFileUpload = (space: Ref<SpaceResource>) => {
   })
 
   async function onUploadComplete(result: UploadResult) {
-    const file = result.successful?.[0]
+    // folders of failed files may have been created already, so failed uploads need a refresh too
+    const file = result.successful?.[0] || result.failed?.[0]
     if (!file) {
       return
     }
