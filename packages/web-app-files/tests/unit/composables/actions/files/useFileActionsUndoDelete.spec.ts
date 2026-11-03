@@ -1,4 +1,10 @@
-import { FileAction, CapabilityStore, VaultEngine, resolveVaultEngine } from '@opencloud-eu/web-pkg'
+import {
+  FileAction,
+  CapabilityStore,
+  VaultEngine,
+  resolveVaultEngine,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
 import {
   useFileActionsRestore,
   useFileActionsUndoDelete
@@ -6,7 +12,8 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { computed, unref } from 'vue'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SearchResource, SpaceResource } from '@opencloud-eu/web-client'
+import { RouteLocation } from 'vue-router'
 
 vi.mock('../../../../../src/composables/actions/files/useFileActionsRestore')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -107,13 +114,75 @@ describe('undoDelete', () => {
       })
     })
   })
+  describe('restore complete on the search results page', () => {
+    it('adds the restored resources back by id, keeping same paths from other spaces', async () => {
+      const otherSpaceFile = { id: 'other$space!1', path: '/file.txt' } as Resource
+      const { mocks } = getWrapper({
+        currentRouteName: 'files-common-search',
+        stubActions: false,
+        resources: [otherSpaceFile],
+        setup: vi.fn()
+      })
+      const restoredResource = { id: '1$2!3', path: '/file.txt' } as Resource
+      mocks.$clientService.webdav.getFileInfo.mockResolvedValue(restoredResource)
+      const space = mock<SpaceResource>()
+      const resources = [{ id: '3', path: '/file.txt', highlights: 'snippet' } as SearchResource]
+
+      const { onRestoreComplete } = vi.mocked(useFileActionsRestore).mock.lastCall[0]
+      await onRestoreComplete({ space, resources })
+
+      expect(mocks.$clientService.webdav.getFileInfo).toHaveBeenCalledWith(space, {
+        path: '/file.txt'
+      })
+      const resourcesStore = useResourcesStore()
+      expect(resourcesStore.resources).toEqual([
+        otherSpaceFile,
+        { ...restoredResource, highlights: 'snippet' }
+      ])
+    })
+    it('skips resources that could not be fetched', async () => {
+      const { mocks } = getWrapper({ currentRouteName: 'files-common-search', setup: vi.fn() })
+      const restoredResource = { id: '1$2!4', path: '/b.txt' } as Resource
+      mocks.$clientService.webdav.getFileInfo.mockImplementation((_, { path }) =>
+        path === '/a.txt' ? Promise.reject(new Error()) : Promise.resolve(restoredResource)
+      )
+      const resources = [
+        { id: '3', path: '/a.txt', highlights: '' },
+        { id: '4', path: '/b.txt', highlights: '' }
+      ] as SearchResource[]
+
+      const { onRestoreComplete } = vi.mocked(useFileActionsRestore).mock.lastCall[0]
+      await onRestoreComplete({ space: mock<SpaceResource>(), resources })
+
+      const { upsertResource } = useResourcesStore()
+      expect(upsertResource).toHaveBeenCalledTimes(1)
+      expect(upsertResource).toHaveBeenCalledWith(restoredResource)
+    })
+    it('does not add resources that were not deleted from the search results', async () => {
+      const { mocks } = getWrapper({ currentRouteName: 'files-common-search', setup: vi.fn() })
+      const resources = [{ id: '3', path: '/a.txt' } as Resource]
+
+      const { onRestoreComplete } = vi.mocked(useFileActionsRestore).mock.lastCall[0]
+      await onRestoreComplete({ space: mock<SpaceResource>(), resources })
+
+      expect(mocks.$clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+      const { upsertResource } = useResourcesStore()
+      expect(upsertResource).not.toHaveBeenCalled()
+    })
+  })
 })
 
 function getWrapper({
   trashBinEnabled = true,
+  currentRouteName = '',
+  stubActions = true,
+  resources = [],
   setup
 }: {
   trashBinEnabled?: boolean
+  currentRouteName?: string
+  stubActions?: boolean
+  resources?: Resource[]
   setup: (
     instance: ReturnType<typeof useFileActionsUndoDelete>,
     mocks: {
@@ -128,7 +197,9 @@ function getWrapper({
   ])
   vi.mocked(useFileActionsRestore).mockReturnValue(useFileActionsRestoreMock)
 
-  const mocks = defaultComponentMocks()
+  const mocks = defaultComponentMocks({
+    currentRoute: mock<RouteLocation>({ name: currentRouteName })
+  })
   const capabilities = {
     dav: { trashbin: trashBinEnabled ? '1.0' : undefined }
   } satisfies Partial<CapabilityStore['capabilities']>
@@ -147,7 +218,9 @@ function getWrapper({
         provide: mocks,
         pluginOptions: {
           piniaOptions: {
-            capabilityState: { capabilities }
+            stubActions,
+            capabilityState: { capabilities },
+            resourcesStore: { resources }
           }
         }
       }
