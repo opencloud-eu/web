@@ -1,4 +1,6 @@
 import App from '../../src/App.vue'
+import MediaAudio from '../../src/components/Sources/MediaAudio.vue'
+import MediaVideo from '../../src/components/Sources/MediaVideo.vue'
 import { defineComponent, h, nextTick, ref, unref } from 'vue'
 import { flushPromises, VueWrapper } from '@vue/test-utils'
 import {
@@ -443,6 +445,65 @@ describe('Preview app', () => {
         expect.objectContaining({ name: 'happy_hippo.gif' })
       )
       expect(mocks.$router.replace).toHaveBeenCalled()
+    })
+  })
+
+  describe('Media that fails to play', () => {
+    it.each([
+      { name: 'clip.mp4', mimeType: 'video/mp4', component: MediaVideo },
+      { name: 'song.mp3', mimeType: 'audio/mpeg', component: MediaAudio }
+    ])('shows the error state for $name', async ({ name, mimeType, component }) => {
+      vi.mocked(queryItemAsString).mockReturnValue(name)
+      const file = {
+        id: name,
+        fileId: name,
+        name,
+        mimeType,
+        path: `personal/admin/${name}`,
+        hidden: false,
+        canDownload: () => true,
+        hasPreview: () => false
+      }
+      const { wrapper, getUrlForResource } = createShallowMountWrapper({
+        files: [file],
+        isFolderLoading: false
+      })
+      getUrlForResource.mockResolvedValue(`https://example.org/${name}`)
+      await flushPromises()
+
+      wrapper.findComponent(component).vm.$emit('error')
+      await nextTick()
+
+      expect(wrapper.findComponent(component).exists()).toBe(false)
+      expect(wrapper.text()).toContain(`Failed to load "${name}"`)
+    })
+
+    it('shows the error state when the video reload returns the same url', async () => {
+      vi.mocked(queryItemAsString).mockReturnValue('clip.mp4')
+      const file = {
+        id: 'clip.mp4',
+        fileId: 'clip.mp4',
+        name: 'clip.mp4',
+        mimeType: 'video/mp4',
+        path: 'personal/admin/clip.mp4',
+        hidden: false,
+        canDownload: () => true,
+        hasPreview: () => false
+      }
+      const { wrapper, getUrlForResource, revokeUrl } = createShallowMountWrapper({
+        files: [file],
+        isFolderLoading: false
+      })
+      getUrlForResource.mockResolvedValue('https://example.org/clip.mp4')
+      await flushPromises()
+
+      wrapper.findComponent(MediaVideo).vm.$emit('reload-url')
+      await flushPromises()
+
+      expect(getUrlForResource).toHaveBeenCalledTimes(2)
+      expect(revokeUrl).not.toHaveBeenCalled()
+      expect(wrapper.findComponent(MediaVideo).exists()).toBe(false)
+      expect(wrapper.text()).toContain('Failed to load "clip.mp4"')
     })
   })
 
