@@ -219,7 +219,12 @@ const {
 
 const keyActions = useKeyboardActions()
 useKeyboardTableNavigation(keyActions, paginatedItems, selectedUsers, lastSelectedUserId)
-useKeyboardTableMouseActions(keyActions, paginatedItems, selectedUsers, lastSelectedUserId)
+const { setSelectionStart } = useKeyboardTableMouseActions(
+  keyActions,
+  paginatedItems,
+  selectedUsers,
+  lastSelectedUserId
+)
 
 // the selection is kept across pages, so only the users of the current page count
 const allUsersSelected = computed(
@@ -290,8 +295,7 @@ function isUserSelected(user: User) {
 }
 
 function selectUser(user: User) {
-  lastSelectedUserId.value = user.id
-  keyActions.resetSelectionCursor()
+  setSelectionStart(user)
 
   if (!isUserSelected(user)) {
     return userSettingsStore.addSelectedUser(user)
@@ -373,6 +377,7 @@ function showContextMenuOnRightClick(event: MouseEvent, user: User) {
   event.preventDefault()
   if (!isUserSelected(user)) {
     userSettingsStore.setSelectedUsers([user])
+    setSelectionStart(user)
   }
   const anchorElement = createVirtualCursorElement(event)
   unref(contextMenuDrops)[user.id]?.show({ anchorElement })

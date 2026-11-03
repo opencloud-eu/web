@@ -1,6 +1,6 @@
 import { onBeforeUnmount, onMounted, unref, Ref } from 'vue'
 import { eventBus, KeyboardActions } from '@opencloud-eu/web-pkg'
-import { findIndex, find } from 'lodash-es'
+import { findIndex } from 'lodash-es'
 import { Item, Resource } from '@opencloud-eu/web-client'
 
 export function useKeyboardTableMouseActions(
@@ -11,6 +11,14 @@ export function useKeyboardTableMouseActions(
 ) {
   let resourceListClickedMetaEvent: string
   let resourceListClickedShiftEvent: string
+  let shiftSelectionAnchorId: string | null = null
+
+  // makes the item the start of the next shift-click or shift + arrow range
+  function setSelectionStart(item: Item) {
+    lastSelectedRowId.value = String(item.id)
+    keyActions.resetSelectionCursor()
+    shiftSelectionAnchorId = null
+  }
 
   function handleCtrlClickAction(resource: Resource) {
     const rowIndex = findIndex(unref(selectedRows), { id: resource.id })
@@ -19,39 +27,45 @@ export function useKeyboardTableMouseActions(
     } else {
       selectedRows.value.push(resource)
     }
-    keyActions.resetSelectionCursor()
+    setSelectionStart(resource)
+  }
 
-    lastSelectedRowId.value = String(resource.id)
+  function getShiftSelectionAnchorId(resource: Item) {
+    const selectedIds = unref(selectedRows).map(({ id }) => id)
+    if (shiftSelectionAnchorId && selectedIds.includes(shiftSelectionAnchorId)) {
+      return shiftSelectionAnchorId
+    }
+    const latestId = unref(lastSelectedRowId)
+    if (selectedIds.includes(latestId)) {
+      return latestId
+    }
+    // unknown latest row, the range starts at the first row
+    if (!latestId && selectedIds.length) {
+      return null
+    }
+    return resource.id
   }
 
   function handleShiftClickAction({ resource }: { resource: Item }) {
-    const targetNode = document.querySelector(`[data-item-id='${resource.id}']`)
-    const parent = targetNode?.closest('tr') || targetNode?.parentElement
-
-    const resourceNodes = Object.values(parent.parentNode.children)
-    const latestNode = resourceNodes.find(
-      (r) => r.getAttribute('data-item-id') === unref(lastSelectedRowId)
-    )
-    const clickedNode = resourceNodes.find((r) => r.getAttribute('data-item-id') === resource.id)
-
-    let latestNodeIndex = resourceNodes.indexOf(latestNode)
-    latestNodeIndex = latestNodeIndex === -1 ? 0 : latestNodeIndex
-
-    const clickedNodeIndex = resourceNodes.indexOf(clickedNode)
-    const minIndex = Math.min(latestNodeIndex, clickedNodeIndex)
-    const maxIndex = Math.max(latestNodeIndex, clickedNodeIndex)
-
-    for (let i = minIndex; i <= maxIndex; i++) {
-      const nodeId = resourceNodes[i].getAttribute('data-item-id')
-      const selectedRowIndex = findIndex(unref(selectedRows), { id: nodeId })
-      if (selectedRowIndex === -1) {
-        const selectedRow = find(unref(paginatedResources), { id: nodeId })
-        selectedRows.value.push(selectedRow)
-      }
+    const resources = unref(paginatedResources)
+    const clickedIndex = resources.findIndex(({ id }) => id === resource.id)
+    if (clickedIndex === -1) {
+      return
     }
 
+    const anchorId = getShiftSelectionAnchorId(resource)
+    // anchor may be unknown or on another page
+    const anchorIndex = Math.max(
+      resources.findIndex(({ id }) => id === anchorId),
+      0
+    )
+    const minIndex = Math.min(anchorIndex, clickedIndex)
+    const maxIndex = Math.max(anchorIndex, clickedIndex)
+    selectedRows.value = resources.slice(minIndex, maxIndex + 1)
+    shiftSelectionAnchorId = resources[anchorIndex].id
+
     lastSelectedRowId.value = String(resource.id)
-    keyActions.selectionCursor.value = clickedNodeIndex - latestNodeIndex
+    keyActions.selectionCursor.value = clickedIndex - anchorIndex
   }
 
   onMounted(() => {
@@ -69,4 +83,6 @@ export function useKeyboardTableMouseActions(
     eventBus.unsubscribe('app.admin-settings.list.clicked.meta', resourceListClickedMetaEvent)
     eventBus.unsubscribe('app.admin-settings.list.clicked.shift', resourceListClickedShiftEvent)
   })
+
+  return { setSelectionStart }
 }
