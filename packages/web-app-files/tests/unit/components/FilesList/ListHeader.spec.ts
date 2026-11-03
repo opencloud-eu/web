@@ -1,7 +1,7 @@
 import ListHeader from '../../../../src/components/FilesList/ListHeader.vue'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { HttpError, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { flushPromises } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -91,6 +91,92 @@ describe('ListHeader', () => {
       'Latest README content'
     )
   })
+  describe('README still processing', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it.each([425, 429])(
+      'retries loading the README content after a %s response',
+      async (statusCode) => {
+        const mocks = defaultComponentMocks()
+        mocks.$clientService.webdav.getFileContents
+          .mockRejectedValueOnce(getHttpError(statusCode))
+          .mockResolvedValueOnce({ body: 'Processed README content' })
+        const { wrapper } = getWrapper({ mocks })
+        await flushPromises()
+
+        expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(1)
+        expect(wrapper.find('oc-spinner-stub').exists()).toBeTruthy()
+
+        await vi.advanceTimersByTimeAsync(5000)
+        await flushPromises()
+
+        expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(2)
+        expect(wrapper.findComponent({ name: 'TextEditorViewer' }).attributes('content')).toBe(
+          'Processed README content'
+        )
+      }
+    )
+    it('waits as long as the retry-after header says before retrying', async () => {
+      const mocks = defaultComponentMocks()
+      mocks.$clientService.webdav.getFileContents
+        .mockRejectedValueOnce(getHttpError(425, { 'retry-after': '2' }))
+        .mockResolvedValueOnce({ body: 'Processed README content' })
+      getWrapper({ mocks })
+      await flushPromises()
+
+      await vi.advanceTimersByTimeAsync(1999)
+      expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(1)
+
+      await vi.advanceTimersByTimeAsync(1)
+      expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(2)
+    })
+    it('stops retrying when the component unmounts', async () => {
+      const mocks = defaultComponentMocks()
+      mocks.$clientService.webdav.getFileContents.mockRejectedValueOnce(getHttpError(425))
+      const { wrapper } = getWrapper({ mocks })
+      await flushPromises()
+
+      wrapper.unmount()
+      expect(vi.getTimerCount()).toBe(0)
+
+      await vi.advanceTimersByTimeAsync(5000)
+      expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(1)
+    })
+    it('stops retrying when the README file changes', async () => {
+      const mocks = defaultComponentMocks()
+      mocks.$clientService.webdav.getFileContents
+        .mockRejectedValueOnce(getHttpError(425))
+        .mockResolvedValueOnce({ body: 'Other README content' })
+      const { wrapper } = getWrapper({ mocks })
+      await flushPromises()
+
+      await wrapper.setProps({
+        readmeFile: mock<Resource>({ id: 'other-readme-id', path: '/other/README.md' })
+      })
+      await flushPromises()
+      await vi.advanceTimersByTimeAsync(5000)
+
+      expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(2)
+      expect(wrapper.findComponent({ name: 'TextEditorViewer' }).attributes('content')).toBe(
+        'Other README content'
+      )
+    })
+    it('does not retry on other errors', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const mocks = defaultComponentMocks()
+      mocks.$clientService.webdav.getFileContents.mockRejectedValueOnce(getHttpError(404))
+      getWrapper({ mocks })
+      await flushPromises()
+
+      await vi.advanceTimersByTimeAsync(5000)
+      expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(1)
+    })
+  })
   it('does not reload the README content when the README file did not change', async () => {
     const { wrapper, mocks } = getWrapper()
     await flushPromises()
@@ -110,14 +196,13 @@ describe('ListHeader', () => {
   })
 })
 
-function getWrapper() {
-  const mocks = {
-    ...defaultComponentMocks()
+function getWrapper({ mocks }: { mocks?: ReturnType<typeof defaultComponentMocks> } = {}) {
+  if (!mocks) {
+    mocks = defaultComponentMocks()
+    mocks.$clientService.webdav.getFileContents.mockResolvedValueOnce({
+      body: 'Sample README content'
+    })
   }
-
-  mocks.$clientService.webdav.getFileContents.mockResolvedValueOnce({
-    body: 'Sample README content'
-  })
 
   return {
     mocks,
@@ -138,4 +223,9 @@ function getWrapper() {
       }
     })
   }
+}
+
+function getHttpError(statusCode: number, headers: Record<string, string> = {}) {
+  // the webdav client passes the axios response, whose headers are a plain object
+  return new HttpError('', { headers } as unknown as Response, statusCode)
 }

@@ -74,19 +74,36 @@ const onMarkdownResize = () => {
 }
 const markdownResizeObserver = new ResizeObserver(onMarkdownResize)
 
+function waitForRetry(seconds: number, signal: AbortSignal) {
+  return new Promise<void>((resolve) => {
+    const timeout = setTimeout(resolve, seconds * 1000)
+    signal.addEventListener('abort', () => clearTimeout(timeout), { once: true })
+  })
+}
+
 const loadReadmeContentTask = useTask(function* (signal) {
-  try {
-    const [{ body }] = yield Promise.all([
-      getFileContents(
-        space,
-        { fileId: unref(readmeFile).id, path: unref(readmeFile).path },
-        { signal }
-      ),
-      preloadTextEditor()
-    ])
-    markdownContent.value = body || ''
-  } catch (e) {
-    console.error('failed to load README.md content', e)
+  while (!signal.aborted) {
+    try {
+      const [{ body }] = yield Promise.all([
+        getFileContents(
+          space,
+          { fileId: unref(readmeFile).id, path: unref(readmeFile).path },
+          { signal }
+        ),
+        preloadTextEditor()
+      ])
+      markdownContent.value = body || ''
+      return
+    } catch (e) {
+      if (![425, 429].includes(e.statusCode)) {
+        console.error('failed to load README.md content', e)
+        return
+      }
+
+      // the README is still processing or rate limited, try again later
+      const retryAfter = e.response?.headers?.['retry-after'] || 5
+      yield waitForRetry(retryAfter, signal)
+    }
   }
 }).restartable()
 
