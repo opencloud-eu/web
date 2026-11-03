@@ -2,9 +2,8 @@ import CreateUserModal from '../../../../src/components/Users/CreateUserModal.vu
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
-import { Modal, useMessages } from '@opencloud-eu/web-pkg'
+import { Modal, eventBus, useMessages } from '@opencloud-eu/web-pkg'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
-import { useUserSettingsStore } from '../../../../src/composables/stores/userSettings'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
 const selectors = {
@@ -15,6 +14,10 @@ const selectors = {
 }
 
 describe('CreateUserModal', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('disables the confirm button initially', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([true])
@@ -121,6 +124,7 @@ describe('CreateUserModal', () => {
       expect(mocks.$clientService.graphAuthenticated.users.createUser).not.toHaveBeenCalled()
     })
     it('enables the confirm button and creates the user when the form is valid', async () => {
+      const publishSpy = vi.spyOn(eventBus, 'publish')
       const { wrapper, mocks } = getWrapper()
       const { users } = mocks.$clientService.graphAuthenticated
       users.getUser.mockRejectedValueOnce(new Error(''))
@@ -128,7 +132,8 @@ describe('CreateUserModal', () => {
       expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([false])
 
       users.createUser.mockResolvedValue(mock<User>({ id: '1' }))
-      users.getUser.mockResolvedValueOnce(mock<User>({ id: '1' }))
+      const createdUser = mock<User>({ id: '1' })
+      users.getUser.mockResolvedValueOnce(createdUser)
       await wrapper.vm.onConfirm()
 
       expect(users.createUser).toHaveBeenCalledWith({
@@ -137,13 +142,13 @@ describe('CreateUserModal', () => {
         mail: 'foo@bar.com',
         passwordProfile: { password: 'asecret' }
       })
-      const { upsertUser } = useUserSettingsStore()
-      expect(upsertUser).toHaveBeenCalled()
+      expect(publishSpy).toHaveBeenCalledWith('app.admin-settings.users.user.created', createdUser)
       const { showMessage } = useMessages()
       expect(showMessage).toHaveBeenCalled()
     })
     it('shows an error message and keeps the dialog open when creating the user fails', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const publishSpy = vi.spyOn(eventBus, 'publish')
       const { wrapper, mocks } = getWrapper()
       const { users } = mocks.$clientService.graphAuthenticated
       users.getUser.mockRejectedValueOnce(new Error(''))
@@ -160,11 +165,11 @@ describe('CreateUserModal', () => {
       })
       expect(showMessage).not.toHaveBeenCalled()
       expect(users.getUser).toHaveBeenCalledExactlyOnceWith('foo')
-      const { upsertUser } = useUserSettingsStore()
-      expect(upsertUser).not.toHaveBeenCalled()
+      expect(publishSpy).not.toHaveBeenCalled()
     })
     it('allows the dialog to close when the user is created but loading their details fails', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const publishSpy = vi.spyOn(eventBus, 'publish')
       const { wrapper, mocks } = getWrapper()
       const { users } = mocks.$clientService.graphAuthenticated
       users.getUser.mockRejectedValueOnce(new Error(''))
@@ -183,8 +188,7 @@ describe('CreateUserModal', () => {
         title: 'Failed to load user',
         errors: [error]
       })
-      const { upsertUser } = useUserSettingsStore()
-      expect(upsertUser).not.toHaveBeenCalled()
+      expect(publishSpy).not.toHaveBeenCalled()
     })
   })
 })
