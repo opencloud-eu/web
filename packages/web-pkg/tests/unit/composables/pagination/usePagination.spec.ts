@@ -2,6 +2,7 @@ import { ref, unref } from 'vue'
 import { usePagination } from '../../../../src/composables'
 import { eventBus } from '../../../../src/services'
 import { createRouter, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { flushPromises } from '@vue/test-utils'
 
 describe('usePagination', () => {
   describe('computed items', () => {
@@ -96,6 +97,34 @@ describe('usePagination', () => {
       wrapper.unmount()
 
       expect(unsubscribeSpy).toHaveBeenCalledWith('app.files.navigate.page', token)
+    })
+    it('switches to the page of the resource and scrolls to it', async () => {
+      const router = createRouter({ routes: [{ path: '/', redirect: null }] })
+      router.push('/')
+      await router.isReady()
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+
+      const mocks = { $router: router }
+      const items = Array.from({ length: 25 }, (_, i) => ({ id: `${i + 1}` }))
+      const wrapper = getComposableWrapper(
+        () => usePagination({ items: ref(items), perPage: 20, perPageStoragePrefix: 'unit-tests' }),
+        { mocks, provide: mocks }
+      )
+
+      eventBus.publish('app.files.navigate.page', {
+        resourceId: '25',
+        forceScroll: true,
+        topbarElement: 'files-app-bar'
+      })
+      await flushPromises()
+
+      expect(unref(router.currentRoute).query.page).toBe('2')
+      expect(publishSpy).toHaveBeenCalledWith('app.files.navigate.scrollTo', {
+        resourceId: '25',
+        forceScroll: true,
+        topbarElement: 'files-app-bar'
+      })
+      wrapper.unmount()
     })
   })
 })

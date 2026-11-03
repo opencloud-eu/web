@@ -389,6 +389,7 @@ const {
   sortFields,
   viewSize,
   handleSort,
+  sortedResources,
   paginatedResources,
   viewMode,
   viewModes,
@@ -431,7 +432,7 @@ const performLoaderTask = async (sameRoute: boolean, path?: string, fileId?: str
   if (unref(currentFolder) && !unref(displayResourceAsSingleResource)) {
     // when a single resource is shown (e.g. a public link to a file), the file list table
     // - and therefore the row to scroll to - is not rendered, so there is nothing to scroll to
-    scrollToResourceFromRoute([unref(currentFolder), ...unref(paginatedResources)], 'files-app-bar')
+    scrollToResourceFromRoute([unref(currentFolder), ...unref(sortedResources)], 'files-app-bar')
   }
 
   refreshFileListHeaderPosition()

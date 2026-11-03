@@ -1,7 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { Task } from 'vue-concurrency'
 import { unref } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
+import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import { ExtensionPoint, FolderViewExtension, useResourcesStore } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
@@ -11,7 +11,7 @@ import {
 import { useResourcesViewDefaults } from '../../../../src/composables/resourcesViewDefaults'
 
 describe('useResourcesViewDefaults', () => {
-  describe('scrollTo param on selection reset', () => {
+  describe('scrollTo param on selection changes', () => {
     it('removes the param when a selection gets reset', async () => {
       const { mocks } = getWrapper()
       const resourcesStore = useResourcesStore()
@@ -37,6 +37,42 @@ describe('useResourcesViewDefaults', () => {
           expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
         )
       )
+    })
+    it('removes the param when another resource gets selected', async () => {
+      const { mocks } = getWrapper()
+      const resourcesStore = useResourcesStore()
+      resourcesStore.setSelection(['1'])
+      vi.mocked(mocks.$router.push).mockClear()
+
+      resourcesStore.setSelection(['2'])
+      await vi.waitFor(() =>
+        expect(mocks.$router.push).toHaveBeenCalledWith(
+          expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
+        )
+      )
+    })
+    it('keeps the param when the resource from the param gets selected', async () => {
+      const { mocks } = getWrapper()
+      const resourcesStore = useResourcesStore()
+
+      resourcesStore.setSelection(['1'])
+      await new Promise((resolve) => setTimeout(resolve))
+      expect(mocks.$router.push).not.toHaveBeenCalled()
+    })
+    it('keeps the param when the incoming share from the param gets selected', async () => {
+      const share = {
+        id: 'share-id',
+        remoteItemId: 'remote-item-id',
+        name: 'file.txt',
+        sharedWith: [],
+        outgoing: false
+      } as IncomingShareResource
+      const { mocks } = getWrapper({ query: { scrollTo: 'remote-item-id' }, resources: [share] })
+      const resourcesStore = useResourcesStore()
+
+      resourcesStore.setSelection(['share-id'])
+      await new Promise((resolve) => setTimeout(resolve))
+      expect(mocks.$router.push).not.toHaveBeenCalled()
     })
     it('keeps the param when there was no selection to reset', async () => {
       const { mocks } = getWrapper()

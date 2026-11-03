@@ -5,6 +5,7 @@ import {
   AppLoadingSpinner,
   ClientService,
   useAppDefaults,
+  useMessages,
   useSpacesStore,
   ViewOptions,
   SideBarPanel
@@ -158,6 +159,15 @@ describe('Spaces view', () => {
   })
 
   describe('loading states', () => {
+    it('should show an error message if loading fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const { wrapper } = getWrapper({ spaces: [], loadError: new Error('failed') })
+      await flushPromises()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to load spaces' })
+      )
+      expect(wrapper.find(selectors.noContentMessageStub).exists()).toBeTruthy()
+    })
     it('should show loading spinner if loading', () => {
       const { wrapper } = getWrapper()
       expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeTruthy()
@@ -246,10 +256,19 @@ function getWrapper({
     } as SpaceResource
   ],
   selectedSpaces = [],
-  stubActions = true
-}: { spaces?: SpaceResource[]; selectedSpaces?: SpaceResource[]; stubActions?: boolean } = {}) {
+  stubActions = true,
+  loadError
+}: {
+  spaces?: SpaceResource[]
+  selectedSpaces?: SpaceResource[]
+  stubActions?: boolean
+  loadError?: Error
+} = {}) {
   const $clientService = mockDeep<ClientService>()
   $clientService.graphAuthenticated.drives.listAllDrives.mockResolvedValue(spaces)
+  if (loadError) {
+    $clientService.graphAuthenticated.drives.listAllDrives.mockRejectedValueOnce(loadError)
+  }
   $clientService.graphAuthenticated.permissions.listPermissions.mockResolvedValue({
     shares: [],
     allowedActions: [],

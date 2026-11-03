@@ -79,7 +79,7 @@
           img-src="images/illustrations/favorites.svg"
         >
           <template #message>
-            <span v-text="$gettext('Nothing marked as favorite, yet')" />
+            <span v-text="emptyStateMessage" />
           </template>
           <template #callToAction>
             <span v-text="emptyStateDescription" />
@@ -223,14 +223,26 @@ const displayFilter = computed(() => {
   )
 })
 
+const hasActiveFilter = computed(() => {
+  return !!(unref(lastModifiedParam) || unref(mediaTypeParam) || unref(tagParam))
+})
+
+const emptyStateMessage = computed(() => {
+  if (unref(hasActiveFilter)) {
+    return $gettext('No favorites found')
+  }
+  return $gettext('Nothing marked as favorite, yet')
+})
+
 const emptyStateDescription = computed(() => {
-  if (unref(lastModifiedParam) || unref(mediaTypeParam) || unref(tagParam)) {
+  if (unref(hasActiveFilter)) {
     return $gettext('Try refining the search term or filters to get results')
   }
   return $gettext('All your favorites will show up here')
 })
 
 const {
+  sortedResources,
   paginatedResources,
   selectedResources,
   selectedResourcesIds,
@@ -288,7 +300,7 @@ onMounted(async () => {
   }
 
   await loadResourcesTask.perform()
-  scrollToResourceFromRoute(unref(paginatedResources), 'files-app-bar')
+  scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
 })
 
 onBeforeUnmount(() => {

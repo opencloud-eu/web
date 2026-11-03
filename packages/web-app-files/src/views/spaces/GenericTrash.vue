@@ -191,7 +191,7 @@ const performLoaderTask = async () => {
   await resourcesViewDefaults.loadResourcesTask.perform(props.space)
   resourcesViewDefaults.refreshFileListHeaderPosition()
   resourcesViewDefaults.scrollToResourceFromRoute(
-    unref(resourcesViewDefaults.paginatedResources),
+    unref(resourcesViewDefaults.sortedResources),
     'files-app-bar'
   )
 }

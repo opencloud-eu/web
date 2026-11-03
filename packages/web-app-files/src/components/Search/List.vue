@@ -242,6 +242,7 @@ const { triggerDefaultAction } = useFileActions()
 
 const {
   folderView,
+  sortedResources,
   paginatedResources,
   paginationPage,
   paginationPages,
@@ -436,7 +437,7 @@ watch(
         : []
     })
     await nextTick()
-    scrollToResourceFromRoute(unref(paginatedResources), 'files-app-bar')
+    scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
   }
 )
 

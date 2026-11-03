@@ -53,6 +53,22 @@ describe('Favorites view', () => {
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
       expect(wrapper.find('resource-table-stub').exists()).toBeTruthy()
     })
+    it('shows the favorites empty message when no filter is active', () => {
+      const { wrapper } = getMountedWrapper()
+      expect(wrapper.find('#files-favorites-empty').text()).toContain(
+        'Nothing marked as favorite, yet'
+      )
+    })
+    it.each([
+      { name: 'last modified', filter: { lastModifiedParam: ref('today') } },
+      { name: 'media type', filter: { mediaTypeParam: ref('image') } },
+      { name: 'tags', filter: { tagParam: ref('work') } }
+    ])('shows "No favorites found" when the $name filter matches nothing', ({ filter }) => {
+      const { wrapper } = getMountedWrapper(filter)
+      const message = wrapper.find('#files-favorites-empty').text()
+      expect(message).toContain('No favorites found')
+      expect(message).not.toContain('Nothing marked as favorite, yet')
+    })
     it('shows default empty-state text when no filter is active', () => {
       const { wrapper } = getMountedWrapper()
       expect((wrapper.vm as any).emptyStateDescription).toBe('All your favorites will show up here')
@@ -64,6 +80,16 @@ describe('Favorites view', () => {
       expect((wrapper.vm as any).emptyStateDescription).toBe(
         'Try refining the search term or filters to get results'
       )
+    })
+  })
+  describe('scrollTo', () => {
+    it('finds the resource to scroll to beyond the current page', async () => {
+      const files = Array.from({ length: 25 }, (_, i) => mock<Resource>({ id: `${i + 1}` }))
+      const { resourcesViewDefaults } = getMountedWrapper({ files })
+      await flushPromises()
+
+      const [resources] = vi.mocked(resourcesViewDefaults.scrollToResourceFromRoute).mock.calls[0]
+      expect(resources).toContain(files[24])
     })
   })
   describe('filter', () => {
@@ -210,7 +236,9 @@ function getMountedWrapper({
   vi.mocked(useRouteQuery).mockImplementationOnce(() => tagParam)
 
   const resourcesViewDefaults = useResourcesViewDefaultsMock({
-    paginatedResources: ref(files),
+    // like the real view defaults: all resources get sorted, only the first page is shown
+    sortedResources: ref(files),
+    paginatedResources: ref(files.slice(0, 20)),
     areResourcesLoading: ref(loading)
   })
 
