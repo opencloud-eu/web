@@ -273,13 +273,44 @@ describe('Search Bar portal component', () => {
     })
   })
   test('starts on the first page when navigating to the search results', async () => {
-    const { wrapper } = getMountedWrapper({ query: { page: '2' } })
+    const { wrapper } = getMountedWrapper({ route: 'files-common-search', query: { page: '2' } })
     wrapper.find(selectors.searchInput).setValue('albert')
     await flushPromises()
     wrapper.find(selectors.searchInput).trigger('keyup.enter')
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
       name: 'files-common-search',
       query: expect.not.objectContaining({ page: '2' })
+    })
+  })
+  test('keeps the search filters when searching again on the search results page', async () => {
+    const { wrapper } = getMountedWrapper({
+      route: 'files-common-search',
+      query: { q_mediaType: 'image' }
+    })
+    await wrapper.find(selectors.searchInput).setValue('albert')
+    await flushPromises()
+    await wrapper.find(selectors.searchInput).trigger('keyup.enter')
+    expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
+      name: 'files-common-search',
+      query: expect.objectContaining({ term: 'albert', q_mediaType: 'image' })
+    })
+  })
+  test('does not take the query of other views into the search', async () => {
+    const { wrapper } = getMountedWrapper({
+      route: 'files-common-favorites',
+      query: { q_mediaType: 'image' }
+    })
+    await wrapper.find(selectors.searchInput).setValue('albert')
+    await flushPromises()
+    expect(wrapper.find(selectors.providerMoreResultsLink).exists()).toBe(true)
+    expect(wrapper.findComponent(RouterLinkStub).props('to')).toEqual({
+      name: 'files-common-search',
+      query: { term: 'albert', useScope: 'false', provider: 'files' }
+    })
+    await wrapper.find(selectors.searchInput).trigger('keyup.enter')
+    expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
+      name: 'files-common-search',
+      query: { term: 'albert', useScope: 'false', provider: 'files.sdk' }
     })
   })
   test('does not navigate to the list view if no list provider given', async () => {

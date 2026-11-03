@@ -375,11 +375,14 @@ function onKeyUpEnter() {
 }
 
 function getSearchResultLocation(providerId: string) {
-  const currentQuery = unref(router.currentRoute).query
+  // keep the filters when searching again on the results page, but not the query of other views
+  const currentQuery = isLocationCommonActive(router, 'files-common-search')
+    ? unref(router.currentRoute).query
+    : {}
 
   return createLocationCommon('files-common-search', {
     query: {
-      ...(currentQuery && omit(currentQuery, 'page')),
+      ...omit(currentQuery, 'page'),
       term: unref(term),
       ...(unref(scope) && { scope: unref(scope) }),
       useScope: unref(useScope).toString(),
