@@ -14,6 +14,7 @@ import { SearchResource } from '@opencloud-eu/web-client'
 import { useTask } from 'vue-concurrency'
 import { getVaultClaim, markVaultStatus } from '../../helpers/vault'
 import { escapeKqlValue } from '../../helpers/searchFilters'
+import { isHiddenResource } from '../../helpers/resource/isHiddenResource'
 
 export const useSearch = () => {
   const clientService = useClientService()
@@ -88,7 +89,7 @@ export const useSearch = () => {
         .filter(({ data }) => {
           // filter results if hidden files shouldn't be shown due to settings, unless the
           // caller keeps them (e.g. because it filters them reactively via the resources store)
-          return includeHidden || !data.name.startsWith('.') || unref(areHiddenFilesShown)
+          return includeHidden || !isHiddenResource(data) || unref(areHiddenFilesShown)
         })
     }
   }).restartable()

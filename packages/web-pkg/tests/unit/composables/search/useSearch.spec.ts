@@ -43,6 +43,24 @@ describe('useSearch', () => {
         const result = await wrapper.vm.search('foo', null, { includeHidden: true })
         expect(result.values.map((r) => r.id)).toEqual(['foo', 'hidden'])
       })
+      it('filters results inside a hidden folder if hidden files are not shown', async () => {
+        const resources = [
+          { id: 'visible', name: 'inside.txt', path: '/visible/inside.txt' },
+          { id: 'nested', name: 'inside.txt', path: '/.hidden/inside.txt' },
+          { id: 'deep', name: 'inside.txt', path: '/folder/.hidden/sub/inside.txt' }
+        ] as SearchResource[]
+        const wrapper = createWrapper({ resources, areHiddenFilesShown: false })
+        const result = await wrapper.vm.search('inside')
+        expect(result.values.map((r) => r.id)).toEqual(['visible'])
+      })
+      it('keeps results inside a hidden folder if hidden files are shown', async () => {
+        const resources = [
+          { id: 'nested', name: 'inside.txt', path: '/.hidden/inside.txt' }
+        ] as SearchResource[]
+        const wrapper = createWrapper({ resources, areHiddenFilesShown: true })
+        const result = await wrapper.vm.search('inside')
+        expect(result.values.map((r) => r.id)).toEqual(['nested'])
+      })
     })
   })
   describe('method "buildSearchTerm"', () => {

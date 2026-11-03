@@ -145,7 +145,11 @@
               class="text-center w-full my-2"
               v-text="searchResultExceedsLimitText"
             />
-            <list-info v-else-if="paginatedResources.length > 0" class="w-full my-2" />
+            <list-info
+              v-else-if="paginatedResources.length > 0"
+              class="w-full my-2"
+              :is-hidden="isHiddenResource"
+            />
           </template>
         </component>
       </template>
@@ -184,6 +188,7 @@ import {
   useGetMatchingSpace,
   getLastModifiedFilterOptions,
   getMediaTypeFilterOptions,
+  isHiddenResource,
   SearchMediaTypeFilterOption,
   useRoute,
   useRouteQuery,
@@ -232,13 +237,18 @@ const { buildSearchTerm } = useSearch()
 
 const resourcesStore = useResourcesStore()
 const { initResourceList, clearResourceList, setAncestorMetaData } = resourcesStore
-const { totalResourcesCount, areHiddenFilesShown } = storeToRefs(resourcesStore)
+const { resources, areHiddenFilesShown } = storeToRefs(resourcesStore)
 
 const searchTermQuery = useRouteQuery('term')
 const scopeQuery = useRouteQuery('scope')
 const doUseScope = useRouteQuery('useScope')
 
 const { triggerDefaultAction } = useFileActions()
+
+// the store only checks the item's own name, search results are also hidden by a hidden parent folder
+function isResultShown(resource: Resource) {
+  return unref(areHiddenFilesShown) || !isHiddenResource(resource)
+}
 
 const {
   folderView,
@@ -259,7 +269,8 @@ const {
   isResourceInSelection,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<SearchResource, any, any[]>({
-  folderViewExtensionPoint: folderViewsSearchExtensionPoint
+  folderViewExtensionPoint: folderViewsSearchExtensionPoint,
+  filterResources: (items) => items.filter(isResultShown)
 })
 
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
@@ -350,11 +361,9 @@ const breadcrumbs = computed(() => {
 })
 
 const itemCount = computed(() => {
-  const { files, folders, hiddenFiles, hiddenFolders } = unref(totalResourcesCount)
-  if (unref(areHiddenFilesShown)) {
-    return files + folders
-  }
-  return files + folders - hiddenFiles - hiddenFolders
+  return unref(resources).filter(
+    (resource) => ['file', 'folder'].includes(resource.type) && isResultShown(resource)
+  ).length
 })
 const rangeSupported = computed(() => {
   return searchResult.totalResults
@@ -440,6 +449,14 @@ watch(
     scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
   }
 )
+
+watch(areHiddenFilesShown, (shown) => {
+  if (shown) {
+    return
+  }
+  // the store only deselects items with a hidden name, also deselect results in hidden folders
+  resourcesStore.deselectHiddenResources(isHiddenResource)
+})
 
 watch(selectedResourcesIds, async (ids) => {
   if (!ids.length) {

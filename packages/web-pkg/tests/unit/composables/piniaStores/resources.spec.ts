@@ -153,5 +153,17 @@ describe('useResourcesStore', () => {
 
       expect(store.latestSelectedId).toBe('1')
     })
+
+    it('deselects resources matching a custom hidden check', () => {
+      const store = setupStore()
+      store.setLastSelectedId('1')
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+
+      store.deselectHiddenResources(({ id }) => id === '1')
+
+      expect(store.selectedIds).toEqual(['2', '3'])
+      expect(store.latestSelectedId).toBeNull()
+      expect(publishSpy).toHaveBeenCalledWith('app.files.shiftAnchor.reset')
+    })
   })
 })

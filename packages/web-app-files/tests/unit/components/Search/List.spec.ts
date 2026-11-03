@@ -1,6 +1,7 @@
 import { merge } from 'lodash-es'
 import { flushPromises, shallowMount } from '@vue/test-utils'
 import List from '../../../../src/components/Search/List.vue'
+import ListInfo from '../../../../src/components/FilesList/ListInfo.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
 import { createRouter, createMemoryHistory } from 'vue-router'
@@ -8,6 +9,7 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 import {
   AppBar,
+  isHiddenResource,
   ItemFilter,
   queryItemAsString,
   ResourceTable,
@@ -170,12 +172,72 @@ describe('List component', () => {
 
     expect(wrapper.emitted('search').length).toBe(searchCount)
   })
+  describe('results inside hidden folders', () => {
+    const visible = mock<Resource>({ id: 'visible', name: 'inside.txt', path: '/inside.txt' })
+    const nested = mock<Resource>({
+      id: 'nested',
+      name: 'inside.txt',
+      path: '/.hidden/inside.txt'
+    })
+
+    it('shows and hides them when toggling hidden files', async () => {
+      getWrapper({ resourcesStore: { areHiddenFilesShown: false } })
+      await flushPromises()
+      const { filterResources } = vi.mocked(useResourcesViewDefaults).mock.lastCall[0]
+      const filteredIds = () => filterResources([visible, nested]).map(({ id }) => id)
+      expect(filteredIds()).toEqual(['visible'])
+
+      useResourcesStore().areHiddenFilesShown = true
+      expect(filteredIds()).toEqual(['visible', 'nested'])
+    })
+    it('deselects them when hiding hidden files', async () => {
+      getWrapper({ resourcesStore: { resources: [visible, nested], areHiddenFilesShown: true } })
+      await flushPromises()
+      const resourcesStore = useResourcesStore()
+
+      resourcesStore.areHiddenFilesShown = false
+      await flushPromises()
+      expect(resourcesStore.deselectHiddenResources).toHaveBeenCalledWith(isHiddenResource)
+    })
+    it('counts them as hidden in the footer', async () => {
+      const { wrapper } = getWrapper({
+        resources: [visible],
+        searchResult: { totalResults: 2, values: [] },
+        resourcesStore: { resources: [visible, nested], areHiddenFilesShown: false },
+        stubs: { FooterView: false },
+        folderViewComponent: defineComponent({
+          name: 'FooterView',
+          setup(_, { slots }) {
+            return () => h('div', [slots.footer?.()])
+          }
+        })
+      })
+      await flushPromises()
+      expect(wrapper.findComponent(ListInfo).props('isHidden')).toBe(isHiddenResource)
+    })
+  })
   it('counts only the shown results in the search limit hint', async () => {
     const resources = [
-      mock<Resource>({ id: 'file', name: 'file', type: 'file' }),
-      mock<Resource>({ id: 'folder', name: 'folder', type: 'folder' }),
-      mock<Resource>({ id: 'hidden-file', name: '.hidden-file', type: 'file' }),
-      mock<Resource>({ id: 'hidden-folder', name: '.hidden-folder', type: 'folder' })
+      mock<Resource>({ id: 'file', name: 'file', type: 'file', path: '/file' }),
+      mock<Resource>({ id: 'folder', name: 'folder', type: 'folder', path: '/folder' }),
+      mock<Resource>({
+        id: 'hidden-file',
+        name: '.hidden-file',
+        type: 'file',
+        path: '/.hidden-file'
+      }),
+      mock<Resource>({
+        id: 'hidden-folder',
+        name: '.hidden-folder',
+        type: 'folder',
+        path: '/.hidden-folder'
+      }),
+      mock<Resource>({
+        id: 'nested-file',
+        name: 'nested-file',
+        type: 'file',
+        path: '/.hidden-folder/nested-file'
+      })
     ]
     const { wrapper } = getWrapper({
       searchResult: { totalResults: 500, values: [] },
@@ -187,7 +249,7 @@ describe('List component', () => {
 
     useResourcesStore().areHiddenFilesShown = true
     await flushPromises()
-    expect(limitText()).toBe('Found 500, showing the 4 best matching results')
+    expect(limitText()).toBe('Found 500, showing the 5 best matching results')
   })
   it('finds the resource to scroll to beyond the current page', async () => {
     const resources = Array.from({ length: 25 }, (_, i) => mock<Resource>({ id: `${i + 1}` }))

@@ -41,6 +41,24 @@ describe('resourceContents', () => {
         }
       })
     })
+    it('counts hidden resources with a custom hidden check', () => {
+      const resources = [
+        mock<Resource>({ type: 'folder', name: 'folder1', path: '/folder1' }),
+        mock<Resource>({ type: 'folder', name: 'folder2', path: '/.hidden/folder2' }),
+        mock<Resource>({ type: 'file', name: 'file1', path: '/file1' }),
+        mock<Resource>({ type: 'file', name: 'file2', path: '/.hidden/file2' })
+      ]
+      getWrapper({
+        resources,
+        areHiddenFilesShown: false,
+        isHidden: ({ path }) => path.startsWith('/.hidden/'),
+        setup: ({ resourceContentsText }) => {
+          expect(unref(resourceContentsText)).toBe(
+            '4 items in total (2 files including 1 hidden, 2 folders including 1 hidden)'
+          )
+        }
+      })
+    })
     it.each([
       { prop: { resources: [] }, expectedText: '0 items in total (0 files, 0 folders)' },
       {
@@ -176,9 +194,11 @@ function getWrapper({
   currentRouteName = 'files-spaces-generic',
   currentFolder = null,
   resources = [],
+  isHidden,
   setup
 }: {
   areHiddenFilesShown?: boolean
+  isHidden?: (resource: Resource) => boolean
   currentFolder?: Resource
   currentRouteName?: string
   resources: Resource[]
@@ -193,7 +213,7 @@ function getWrapper({
   return {
     wrapper: getComposableWrapper(
       () => {
-        const instance = useResourceContents()
+        const instance = useResourceContents({ isHidden })
         setup(instance)
       },
       {

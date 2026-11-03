@@ -189,10 +189,12 @@ export const useResourcesStore = defineStore('resources', () => {
     }
   }
 
-  function deselectHiddenResources() {
+  function deselectHiddenResources(
+    isHidden: (resource: Resource) => boolean = ({ name }) => name.startsWith('.')
+  ) {
     const hiddenIds = new Set(
       unref(resources)
-        .filter(({ name }) => name.startsWith('.'))
+        .filter(isHidden)
         .map(({ id }) => id)
     )
     if (!hiddenIds.size) {
@@ -374,6 +376,7 @@ export const useResourcesStore = defineStore('resources', () => {
     areEmptyTrashesShown,
     areFoldersSortedFirst,
     setAreHiddenFilesShown,
+    deselectHiddenResources,
     setAreFileExtensionsShown,
     setAreWebDavDetailsShown,
     setAreDisabledSpacesShown,

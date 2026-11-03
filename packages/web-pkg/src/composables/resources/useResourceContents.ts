@@ -5,17 +5,37 @@ import { useResourcesStore } from '../piniaStores'
 import { useRouter } from '../router'
 import { isLocationSharesActive } from '../../router'
 import { formatFileSize } from '../../helpers'
+import { Resource } from '@opencloud-eu/web-client'
 
 export const useResourceContents = ({
-  showSizeInformation = true
+  showSizeInformation = true,
+  isHidden
 }: {
   showSizeInformation?: boolean
+  // overrides which resources count as hidden, the store only checks their names
+  isHidden?: (resource: Resource) => boolean
 } = {}) => {
   const resourcesStore = useResourcesStore()
   const { current: currentLanguage, $gettext, $ngettext } = useGettext()
   const router = useRouter()
 
-  const { resources, totalResourcesCount, areHiddenFilesShown } = storeToRefs(resourcesStore)
+  const {
+    resources,
+    totalResourcesCount: storeResourcesCount,
+    areHiddenFilesShown
+  } = storeToRefs(resourcesStore)
+
+  const totalResourcesCount = computed(() => {
+    if (!isHidden) {
+      return unref(storeResourcesCount)
+    }
+    const hiddenResources = unref(resources).filter(isHidden)
+    return {
+      ...unref(storeResourcesCount),
+      hiddenFiles: hiddenResources.filter(({ type }) => type === 'file').length,
+      hiddenFolders: hiddenResources.filter(({ type }) => type === 'folder').length
+    }
+  })
 
   const itemSize = computed(() => {
     const accumulatedSize = unref(resources)

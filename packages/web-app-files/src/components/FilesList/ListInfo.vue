@@ -9,7 +9,12 @@
 </template>
 
 <script setup lang="ts">
+import { Resource } from '@opencloud-eu/web-client'
 import { useResourceContents } from '@opencloud-eu/web-pkg'
 
-const { resourceContentsText } = useResourceContents()
+const { isHidden = undefined } = defineProps<{
+  isHidden?: (resource: Resource) => boolean
+}>()
+
+const { resourceContentsText } = useResourceContents({ isHidden })
 </script>
