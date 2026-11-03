@@ -6,6 +6,9 @@ import { unref, ref, Ref } from 'vue'
 import { ArchiverCapability } from '@opencloud-eu/web-client/ocs'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { useAuthStore, useUserStore } from '../../../src/composables/piniaStores'
+import { triggerDownloadWithFilename } from '../../../src/helpers/download'
+
+vi.mock('../../../src/helpers/download')
 
 const serverUrl = 'https://demo.opencloud.eu'
 const getArchiverServiceInstance = (
@@ -88,6 +91,52 @@ describe('archiver', () => {
       const url = await archiverService.triggerDownload({ fileIds: ['asdf'], publicToken: 'token' })
       expect(clientServiceMock.ocs.signUrl).not.toHaveBeenCalled()
       expect(url).toBe(`${archiverUrl}?public-token=token&id=asdf`)
+    })
+    it('authenticates password protected public links via a server-generated signature', async () => {
+      const { archiverService, clientServiceMock } = getArchiverServiceInstance(capabilities)
+      clientServiceMock.webdav.getPublicLinkSignature.mockResolvedValue({
+        signature: 'sig',
+        expiration: '2026-11-02T12:00:00+01:00'
+      })
+      const url = await archiverService.triggerDownload({
+        fileIds: ['asdf'],
+        publicToken: 'token',
+        publicLinkPassword: 'password'
+      })
+      expect(clientServiceMock.webdav.getPublicLinkSignature).toHaveBeenCalledWith('token')
+      expect(clientServiceMock.ocs.signUrl).not.toHaveBeenCalled()
+      expect(url).toBe(
+        `${archiverUrl}?public-token=token&signature=sig&expiration=2026-11-02T12%3A00%3A00%2B01%3A00&id=asdf`
+      )
+    })
+    it('falls back to the unsigned url if no signature is available for a public link with password', async () => {
+      const { archiverService, clientServiceMock } = getArchiverServiceInstance(capabilities)
+      clientServiceMock.webdav.getPublicLinkSignature.mockResolvedValue(undefined)
+      const url = await archiverService.triggerDownload({
+        fileIds: ['asdf'],
+        publicToken: 'token',
+        publicLinkPassword: 'password'
+      })
+      expect(clientServiceMock.webdav.getPublicLinkSignature).toHaveBeenCalledWith('token')
+      expect(url).toBe(`${archiverUrl}?public-token=token&id=asdf`)
+    })
+    it('fails without triggering a download if the signature request fails', async () => {
+      const { archiverService, clientServiceMock } = getArchiverServiceInstance(capabilities)
+      const error = new Error('unauthorized')
+      clientServiceMock.webdav.getPublicLinkSignature.mockRejectedValue(error)
+      await expect(
+        archiverService.triggerDownload({
+          fileIds: ['asdf'],
+          publicToken: 'token',
+          publicLinkPassword: 'password'
+        })
+      ).rejects.toThrow(error)
+      expect(triggerDownloadWithFilename).not.toHaveBeenCalled()
+    })
+    it('does not fetch a signature for public links without password', async () => {
+      const { archiverService, clientServiceMock } = getArchiverServiceInstance(capabilities)
+      await archiverService.triggerDownload({ fileIds: ['asdf'], publicToken: 'token' })
+      expect(clientServiceMock.webdav.getPublicLinkSignature).not.toHaveBeenCalled()
     })
     it('does not sign the download url for guests', async () => {
       const { archiverService, clientServiceMock } = getArchiverServiceInstance(capabilities, {

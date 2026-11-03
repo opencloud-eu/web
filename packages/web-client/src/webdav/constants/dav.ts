@@ -114,7 +114,11 @@ const DavPropertyMapping = {
   PublicLinkPermission: defString('public-link-permission' as const),
   PublicLinkExpiration: defString('public-link-expiration' as const),
   PublicLinkShareDate: defString('public-link-share-datetime' as const),
-  PublicLinkShareOwner: defString('public-link-share-owner' as const)
+  PublicLinkShareOwner: defString('public-link-share-owner' as const),
+  SignatureAuth: {
+    value: 'signature-auth' as const,
+    type: null as { signature: string; expiration: string }
+  }
 } as const satisfies Record<string, M<unknown, unknown>>
 
 type DavPropertyMappingType = typeof DavPropertyMapping
