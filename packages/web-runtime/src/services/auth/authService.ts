@@ -339,7 +339,13 @@ export class AuthService implements AuthServiceInterface {
       })
     } catch (e) {
       console.warn('error during authentication:', e)
-      return this.handleAuthError(unref(this.router.currentRoute))
+      await this.handleAuthError(unref(this.router.currentRoute))
+
+      // the callback page is anonymous, so no navigation follows that lets the
+      // authGuard show the access denied page. Navigate there explicitly.
+      if (this.hasAuthErrorOccurred) {
+        return this.router.replace({ name: 'accessDenied' })
+      }
     }
   }
 
