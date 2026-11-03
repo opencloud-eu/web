@@ -21,10 +21,12 @@ export const useKeyboardFileMouseActions = (
 
   const handleCtrlClickAction = (resource: Resource) => {
     resourcesStore.toggleSelection(resource.id)
+    keyActions.resetSelectionCursor()
+    shiftSelectionAnchorId = null
   }
 
   const getShiftSelectionAnchorId = (resource: Resource) => {
-    if (shiftSelectionAnchorId) {
+    if (shiftSelectionAnchorId && unref(selectedIds).includes(shiftSelectionAnchorId)) {
       return shiftSelectionAnchorId
     }
 
@@ -71,6 +73,16 @@ export const useKeyboardFileMouseActions = (
     }
 
     resourcesStore.setLastSelectedId(resource.id)
+
+    // lets shift + arrow keys shrink or extend the range from the anchor.
+    // shift + arrow skips processing rows, so only count rows it can land on.
+    const resourcesById = new Map(resourcesStore.resources.map((r) => [r.id, r]))
+    const steps = resourceNodes
+      .slice(minIndex + 1, maxIndex + 1)
+      .filter(
+        (node) => resourcesById.get(node.getAttribute('data-item-id'))?.processing !== true
+      ).length
+    keyActions.selectionCursor.value = clickedIndex < anchorIndex ? -steps : steps
   }
 
   const handleTilesShiftClickAction = ({

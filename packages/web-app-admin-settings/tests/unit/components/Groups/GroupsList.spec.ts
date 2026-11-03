@@ -171,6 +171,15 @@ describe('GroupsList', () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', shiftKey: true }))
       expect(getSelectedIds()).toEqual(['1', '2'])
     })
+    it('starts the shift click range at a right clicked row', async () => {
+      const { wrapper } = getWrapper({ groups, realCheckboxes: true })
+      await getCheckboxInput(wrapper, groups[0]).trigger('click')
+      await wrapper.find(`tr[data-item-id="${groups[1].id}"]`).trigger('contextmenu')
+      expect(getSelectedIds()).toEqual(['2'])
+
+      await getCheckboxInput(wrapper, groups[2]).trigger('click', { shiftKey: true })
+      expect(getSelectedIds()).toEqual(['2', '3'])
+    })
   })
 })
 
