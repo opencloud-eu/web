@@ -137,8 +137,13 @@ watch(
   left: -40%;
   width: 40%;
   opacity: 0.55;
-  animation: shimmer 1.25s linear infinite;
   background-image: linear-gradient(90deg, #ffffff00 0, #ffffffa8 50%, #ffffff00 100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .epub-reader-progress-shimmer::after {
+    animation: shimmer 1.25s linear infinite;
+  }
 }
 
 @keyframes shimmer {
