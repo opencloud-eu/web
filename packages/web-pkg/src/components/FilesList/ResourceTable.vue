@@ -101,7 +101,7 @@
               v-for="action in getResourceTableActions(item)"
               :key="`resource-table-action-${item.id}-${action.name}`"
               v-oc-tooltip="getResourceTableLabel(action, item)"
-              class="resource-table-edit-name inline-flex shrink-0 raw-hover-surface p-1 -my-1 ml-1 pointer-events-auto"
+              class="resource-table-edit-name inline-flex shrink-0 raw-hover-surface p-1 -my-1 ml-1"
               appearance="raw"
               :aria-label="getResourceTableLabel(action, item)"
               @click.stop="

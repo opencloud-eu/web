@@ -94,6 +94,17 @@ describe('OcResource', () => {
     expect(wrapper.find('.parent-folder').attributes('class')).toContain('cursor-default')
   })
 
+  it('renders the name of a non-clickable resource without a link', () => {
+    const wrapper = getWrapper({
+      resource: folderResource,
+      link: { name: 'files-spaces-generic' },
+      isResourceClickable: false
+    })
+
+    expect(wrapper.find('.oc-resource-link').exists()).toBeFalsy()
+    expect(wrapper.find('router-link-stub').exists()).toBeFalsy()
+  })
+
   it('displays parent folder name default if calculated name is empty', () => {
     const wrapper = getWrapper({
       resource: fileResourceWithoutParentFoldername,
