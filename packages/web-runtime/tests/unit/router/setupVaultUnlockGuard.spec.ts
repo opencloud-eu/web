@@ -236,6 +236,24 @@ describe('setupVaultUnlockGuard', () => {
     expect(result.query).not.toHaveProperty('cancelUrl')
   })
 
+  it('omits the cancel URL when the user came from a private link, which would resolve into the vault again', async () => {
+    const guard = installGuard({
+      spaces: [space],
+      claim: { vaultRoot: '/my.vault', unlockRoute },
+      engine: null
+    })
+
+    const result = (await guard(
+      {
+        params: { driveAliasAndItem: 'personal/admin/my.vault' },
+        fullPath: '/files/personal/admin/my.vault?scrollTo=file-1'
+      },
+      { name: 'resolvePrivateLink', params: { fileId: 'file-1' }, fullPath: '/f/file-1' }
+    )) as any
+
+    expect(result.query).not.toHaveProperty('cancelUrl')
+  })
+
   it('omits the cancel URL when the user came from inside the same vault', async () => {
     const guard = installGuard({
       spaces: [space],
