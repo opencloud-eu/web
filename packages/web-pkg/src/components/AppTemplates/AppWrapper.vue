@@ -195,6 +195,7 @@ let deleteResourceEventToken = ''
 let isResourceDeleted = false
 let appOnDeleteResourceCallback: (() => void) | null = null
 let appOnSaveCallback: ((content: unknown) => void | Promise<void>) | null = null
+let appOnFlushContentCallback: (() => void | Promise<void>) | null = null
 
 const extensionRegistry = useExtensionRegistry()
 const topBarExtensionId = 'app.app-wrapper.app-top-bar'
@@ -333,6 +334,35 @@ const isLoading = computed(() => {
  */
 function flushPendingContent() {
   yjsSession?.flushContent()
+}
+
+/**
+ * Lets the wrapped app emit the edits it only turns into content on demand. Callers check for the
+ * callback first, so apps without one don't get an await. Resolves to false when the app failed.
+ */
+async function flushAppContent() {
+  try {
+    await appOnFlushContentCallback()
+    return true
+  } catch (e) {
+    console.error('Error running the app flush content callback', e)
+    return false
+  }
+}
+
+/**
+ * Like `flushAppContent`, before a save. Saving the content the app failed to update would report
+ * its latest edits as saved, so the save has to be dropped.
+ */
+async function flushAppContentForSave() {
+  if (await flushAppContent()) {
+    return true
+  }
+  showErrorMessage({
+    title: $gettext('Failed to save "%{resource}"', { resource: unref(resource).name }),
+    desc: $gettext('The app could not provide your latest changes.')
+  })
+  return false
 }
 
 // `beforeunload` can't wait for a flush, so a pending change counts as unsaved there.
@@ -728,7 +758,8 @@ async function runSaveCallback(content: unknown): Promise<void> {
   }
 }
 
-const save = async () => {
+/** Saves `currentContent` as it is, for callers that just flushed the app to check `isDirty`. */
+async function saveCurrentContent() {
   // `saveFileTask` drops a save started while another one runs, and a dropped instance never
   // settles. No await between the check and `perform`, so concurrent callers can't race in.
   let runningSaveResult: boolean | null = null
@@ -754,6 +785,13 @@ const save = async () => {
   return true
 }
 
+async function save() {
+  if (appOnFlushContentCallback && !(await flushAppContentForSave())) {
+    return false
+  }
+  return saveCurrentContent()
+}
+
 const { saveAction, saveAsAction } = useFileActionsSave({
   content: currentContent,
   isDirty,
@@ -761,6 +799,13 @@ const { saveAction, saveAsAction } = useFileActionsSave({
   isReadOnly,
   onSave: async () => {
     await save()
+  },
+  flushContent: async () => {
+    if (appOnFlushContentCallback && !(await flushAppContentForSave())) {
+      return false
+    }
+    flushPendingContent()
+    return true
   }
 })
 
@@ -786,11 +831,14 @@ onMounted(() => {
   if (editorOptions.autosaveEnabled && !disableAutoSave) {
     autosaveIntervalId = setInterval(
       async () => {
+        if (appOnFlushContentCallback && !(await flushAppContentForSave())) {
+          return
+        }
         flushPendingContent()
         if (!unref(isDirty) || unref(isConflicted) || saveFileTask.isRunning) {
           return
         }
-        if (await save()) {
+        if (await saveCurrentContent()) {
           autosavePopup()
         }
       },
@@ -819,12 +867,15 @@ onBeforeUnmount(() => {
 })
 
 const { bindKeyAction } = useKeyboardActions({ skipDisabledKeyBindingsCheck: true })
-bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, () => {
+bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, async () => {
+  if (appOnFlushContentCallback && !(await flushAppContentForSave())) {
+    return
+  }
   flushPendingContent()
   if (!unref(isDirty)) {
     return
   }
-  save()
+  saveCurrentContent()
 })
 
 const actionOptions = computed<FileActionOptions>(() => ({
@@ -833,12 +884,16 @@ const actionOptions = computed<FileActionOptions>(() => ({
 }))
 
 /**
- * Whether there are changes to save, once a running save finished and the session flushed. A
- * running save may miss the latest changes.
+ * Whether there are changes to save, once a running save finished and the app and the session
+ * flushed. A running save may miss the latest changes, and an app that failed to flush may have
+ * some.
  */
 async function hasChangesToSave() {
   while (saveFileTask.isRunning) {
     await saveFileTask.last
+  }
+  if (appOnFlushContentCallback && !(await flushAppContent())) {
+    return true
   }
   flushPendingContent()
   return unref(isDirty)
@@ -982,9 +1037,12 @@ const dropDownMenuSections = computed(() => {
 })
 
 // Returns instead of calling `next`: the unsaved changes modal resolves the navigation later.
-onBeforeRouteLeave(() => {
+onBeforeRouteLeave(async () => {
+  // A deleted file can't be saved anymore, so there is no flush to wait for. An app that failed
+  // to flush may have unsaved changes.
+  const isAppFlushed = isResourceDeleted || !appOnFlushContentCallback || (await flushAppContent())
   flushPendingContent()
-  if (!unref(isDirty) || isResourceDeleted) {
+  if ((isAppFlushed && !unref(isDirty)) || isResourceDeleted) {
     unregisterAppBarExtension()
     return true
   }
@@ -1061,6 +1119,10 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => (
 
   'onRegister:onSaveCallback': (value: (content: unknown) => void | Promise<void>) => {
     appOnSaveCallback = value
+  },
+
+  'onRegister:onFlushContentCallback': (value: () => void | Promise<void>) => {
+    appOnFlushContentCallback = value
   },
 
   'onDelete:resource': () => {
