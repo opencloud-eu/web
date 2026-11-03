@@ -150,10 +150,10 @@ const createAppToken = async () => {
   }
 }
 
-// The server adds the duration to its own, slightly later time. Aiming at the middle of the
-// last minute of the picked day keeps the expiry at 23:59 of that day instead of rolling over.
+// The server adds the duration to its own, slightly later time. Ending 30 seconds before the end
+// of the picked day leaves a margin, so the expiry stays at 23:59 of that day instead of rolling over.
 function getExpiryDuration(date: DateTime) {
-  const target = date.startOf('minute').plus({ seconds: 30 })
+  const target = date.endOf('day').minus({ seconds: 30 })
   const seconds = Math.floor(target.diff(DateTime.now()).as('seconds'))
   return `${seconds}s`
 }
