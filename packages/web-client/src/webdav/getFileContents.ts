@@ -46,6 +46,10 @@ export const GetFileContentsFactory = (dav: DAV, { axiosClient }: WebDavOptions)
         }
       } catch (error) {
         const { message, response } = error
+        if (!response) {
+          // network errors and cancellations have no response, keep them as they are
+          throw error
+        }
         throw new HttpError(message, response, response.status)
       }
     }

@@ -234,6 +234,10 @@ export class DAV {
       }
     } catch (error) {
       const { response } = error
+      if (!response) {
+        // network errors and cancellations have no response, keep them as they are
+        throw error
+      }
       const body = await response.text()
       const errorMessage = parseError(body)
       throw new DavHttpError(
