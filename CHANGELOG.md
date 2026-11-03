@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show restored files again after undoing a delete on the search results page [[#4175](https://github.com/opencloud-eu/web/pull/4175)]
+- fix: keep the requested route when delegating authentication in embed mode [[#4191](https://github.com/opencloud-eu/web/pull/4191)]
 - fix: leave the oidc callback page when the sign-in fails [[#4218](https://github.com/opencloud-eu/web/pull/4218)]
 - fix: keep network errors when loading webdav files fails [[#4171](https://github.com/opencloud-eu/web/pull/4171)]
 - fix: ignore cancelled loading when leaving admin users, groups and spaces [[#4138](https://github.com/opencloud-eu/web/pull/4138)]
