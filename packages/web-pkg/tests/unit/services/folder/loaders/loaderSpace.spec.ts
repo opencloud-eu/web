@@ -71,7 +71,7 @@ describe('FolderLoaderSpace', () => {
       })
     })
 
-    it('keeps the webdav permissions on the share root', async () => {
+    it('keeps the webdav permissions, favorite state and tags on the share root', async () => {
       vi.mocked(getSharedDriveItem).mockResolvedValueOnce({
         id: 'mount-id',
         name: 'f1',
@@ -93,13 +93,25 @@ describe('FolderLoaderSpace', () => {
         graphPermissions: [],
         getDriveAliasAndItem: () => 'share/f1'
       } as unknown as SpaceResource
-      const root = { id: 'share-space-id', path: '/', isFolder: true, permissions: 'SNVCK' }
+      const root = {
+        id: 'share-space-id',
+        path: '/',
+        isFolder: true,
+        permissions: 'SNVCK',
+        starred: true,
+        tags: ['important']
+      }
 
       const { resourcesStore } = await loadFolder({ space, path: '/', resource: root as Resource })
 
       expect(resourcesStore.initResourceList).toHaveBeenCalledWith(
         expect.objectContaining({
-          currentFolder: expect.objectContaining({ id: 'mount-id', permissions: 'SNVCK' })
+          currentFolder: expect.objectContaining({
+            id: 'mount-id',
+            permissions: 'SNVCK',
+            starred: true,
+            tags: ['important']
+          })
         })
       )
     })

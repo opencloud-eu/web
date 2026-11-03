@@ -120,8 +120,10 @@ export class FolderLoaderSpace implements FolderLoader {
                   driveItem: sharedDriveItem,
                   serverUrl: configStore.serverUrl
                 }),
-                // graph doesn't expose the webdav permissions of the share root
-                permissions: currentFolder.permissions
+                // graph doesn't expose the webdav permissions, favorite state and tags of the share root
+                permissions: currentFolder.permissions,
+                starred: currentFolder.starred,
+                tags: currentFolder.tags
               }
             }
           } else if (!isPersonalSpaceResource(space) && !isPublicSpaceResource(space)) {
