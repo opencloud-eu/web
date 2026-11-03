@@ -17,7 +17,8 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { LanguageOption, SettingsBundle, SettingsValue } from '../../../../src/helpers/settings'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { VueWrapper } from '@vue/test-utils'
+import { VueWrapper, flushPromises } from '@vue/test-utils'
+import { AxiosResponse } from 'axios'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
 import { computed } from 'vue'
@@ -109,6 +110,38 @@ describe('account preferences page', () => {
       const select = wrapper.findAll('.vs__dropdown-toggle').at(-1)
       expect(select.attributes('aria-label')).toContain('Email sending interval')
     })
+
+    it('restores a checkbox to its saved value when saving fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      vi.mocked(useNotificationsSettings).mockReturnValueOnce({
+        options: computed(() => [
+          mock<SettingsBundle['settings'][0]>({
+            id: 'share-created',
+            name: 'share-created',
+            displayName: 'Share Received',
+            multiChoiceCollectionValue: {
+              options: [{ key: 'in-app', displayValue: 'In-App', value: { boolValue: {} } }]
+            }
+          })
+        ]),
+        values: computed(() => ({ 'share-created': { 'in-app': true } })),
+        emailOptions: computed<SettingsBundle['settings']>(() => []),
+        emailValues: computed(() => ({}))
+      })
+      const { wrapper, mocks } = getWrapper({
+        capabilities: { notifications: { configurable: true } } as any
+      })
+      await blockLoadingState(wrapper)
+
+      mocks.$clientService.httpAuthenticated.post.mockImplementation(() => mockAxiosReject('err'))
+      const checkbox = wrapper.find<HTMLInputElement>('.checkbox-cell-wrapper input')
+      await checkbox.setValue(false)
+      await flushPromises()
+
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalled()
+      expect(checkbox.element.checked).toBe(true)
+    })
   })
 
   describe('Method "updateDisableEmailNotifications', () => {
@@ -133,6 +166,63 @@ describe('account preferences page', () => {
       await (wrapper.vm as any).updateDisableEmailNotifications(true)
       const { showErrorMessage } = useMessages()
       expect(showErrorMessage).toHaveBeenCalled()
+    })
+    it('restores the checkbox to its saved value on error', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+
+      const { wrapper, mocks } = getWrapper({
+        capabilities: { notifications: { configurable: false } } as any
+      })
+      await blockLoadingState(wrapper)
+
+      mocks.$clientService.httpAuthenticated.post.mockImplementation(() => mockAxiosReject('err'))
+      const checkbox = wrapper.find<HTMLInputElement>(
+        '[data-testid="account-page-notification-mails-checkbox"] input'
+      )
+      expect(checkbox.element.checked).toBe(true)
+      await checkbox.setValue(false)
+      await flushPromises()
+
+      expect(checkbox.element.checked).toBe(true)
+    })
+    describe('when the checkbox is clicked twice before the first save is done', () => {
+      async function clickTwice() {
+        const { wrapper, mocks } = getWrapper({
+          capabilities: { notifications: { configurable: false } } as any
+        })
+        await blockLoadingState(wrapper)
+
+        const saves: { resolve: (value: AxiosResponse) => void; reject: (e: Error) => void }[] = []
+        mocks.$clientService.httpAuthenticated.post.mockImplementation(
+          () => new Promise((resolve, reject) => saves.push({ resolve, reject }))
+        )
+        const checkbox = wrapper.find<HTMLInputElement>(
+          '[data-testid="account-page-notification-mails-checkbox"] input'
+        )
+        await checkbox.setValue(false)
+        await checkbox.setValue(true)
+        return { checkbox, saves }
+      }
+
+      it('shows the saved value when both saves fail', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => undefined)
+        const { checkbox, saves } = await clickTwice()
+
+        saves[0].reject(new Error())
+        await flushPromises()
+        saves[1].reject(new Error())
+        await flushPromises()
+
+        expect(checkbox.element.checked).toBe(true)
+      })
+      it('keeps the second value while its save is pending', async () => {
+        const { checkbox, saves } = await clickTwice()
+
+        saves[0].resolve({ data: { value: { value: { id: 'value-id' } } } } as AxiosResponse)
+        await flushPromises()
+
+        expect(checkbox.element.checked).toBe(true)
+      })
     })
   })
 
