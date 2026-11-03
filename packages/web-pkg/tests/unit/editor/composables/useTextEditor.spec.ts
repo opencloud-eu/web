@@ -1,5 +1,6 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { useTextEditor } from '../../../../src/editor/composables/useTextEditor'
+import { getYdocFinalNewline, setYdocFinalNewline } from '../../../../src/editor/yjsAdapter'
 import { withSetup } from './helpers'
 import { nextTick, ref, toRef, unref } from 'vue'
 import * as Y from 'yjs'
@@ -84,6 +85,45 @@ describe('useTextEditor', () => {
     const { result } = createEditor()
     result.destroy()
     expect(result.editor.value).toBeNull()
+  })
+
+  describe('final newline', () => {
+    it('follows the flag shared through a local Y.Doc', () => {
+      const ydoc = new Y.Doc()
+      const { result } = createEditor({ contentType: 'markdown', ydoc })
+      try {
+        result.editor.value!.commands.insertContent('hello')
+        expect(result.getContent()).toBe('hello\n')
+
+        setYdocFinalNewline(ydoc, false)
+        expect(result.getContent()).toBe('hello')
+      } finally {
+        result.destroy()
+        ydoc.destroy()
+      }
+    })
+
+    it('writes the flag to the Y.Doc', () => {
+      const ydoc = new Y.Doc()
+      const { result } = createEditor({ contentType: 'markdown', ydoc })
+      try {
+        result.setFinalNewline(false)
+        expect(getYdocFinalNewline(ydoc)).toBe(false)
+      } finally {
+        result.destroy()
+        ydoc.destroy()
+      }
+    })
+
+    it('overrides the loaded content until the next setContent without a Y.Doc', () => {
+      const { result } = createEditor({ contentType: 'markdown', modelValue: toRef('hello\n') })
+
+      result.setFinalNewline(false)
+      expect(result.getContent()).toBe('hello')
+
+      result.setContent('hello\n')
+      expect(result.getContent()).toBe('hello\n')
+    })
   })
 
   describe('slash commands', () => {
