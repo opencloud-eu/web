@@ -44,6 +44,7 @@ interface ResourcesViewDefaultsOptions<T, U extends any[], R extends Resource = 
   sortFields?: SortField[]
   /**
    * Resources matching this predicate get sorted before the rest, regardless of the sort direction.
+   * When folders are sorted first, this applies within the folder and the file group.
    */
   pinFirst?: (resource: R) => boolean
 }

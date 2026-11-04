@@ -120,7 +120,6 @@ import {
   NoContentMessage,
   Pagination,
   ProcessorType,
-  resourceTilesSortFields,
   translateSortFields,
   useClientService,
   useGetMatchingSpace,
@@ -130,7 +129,8 @@ import {
   useSpacesStore,
   useUserStore,
   ResourceIndicator,
-  ResourceStatusIndicators
+  ResourceStatusIndicators,
+  spaceTilesSortFields
 } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import {
@@ -171,11 +171,11 @@ const {
   paginatedResources,
   paginationPages,
   paginationPage
-} = useResourcesViewDefaults<SpaceResource, any, any>({
+} = useResourcesViewDefaults<SpaceResource, any, any[]>({
   folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint,
   filterResources: filter,
   sortFields: translateSortFields(
-    resourceTilesSortFields.filter(({ name }) => name === 'name'),
+    spaceTilesSortFields.filter(({ name }) => name === 'name'),
     language
   ),
   pinFirst: isPersonalSpaceResource

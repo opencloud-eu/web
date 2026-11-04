@@ -31,6 +31,7 @@ export interface SortOptions<T extends object> {
   foldersFirst?: MaybeRef<boolean>
   /**
    * Items matching this predicate get sorted before the rest, regardless of the sort direction.
+   * When folders are sorted first, this applies within the folder and the file group.
    */
   pinFirst?: (item: T) => boolean
 }
