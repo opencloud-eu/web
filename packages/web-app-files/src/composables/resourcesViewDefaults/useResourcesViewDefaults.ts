@@ -42,6 +42,10 @@ interface ResourcesViewDefaultsOptions<T, U extends any[], R extends Resource = 
    * Sort fields for all view modes, instead of the ones determined from the resources.
    */
   sortFields?: SortField[]
+  /**
+   * Resources matching this predicate get sorted before the rest, regardless of the sort direction.
+   */
+  pinFirst?: (resource: R) => boolean
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
@@ -126,7 +130,8 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   const { sortBy, sortDir, items, handleSort } = useSort<T>({
     items: filteredItems,
     fields: sortFields,
-    foldersFirst: computed(() => resourcesStore.areFoldersSortedFirst)
+    foldersFirst: computed(() => resourcesStore.areFoldersSortedFirst),
+    pinFirst: options.pinFirst
   })
   const {
     items: paginatedResources,

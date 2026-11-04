@@ -1,6 +1,5 @@
 import TrashOverview from '../../../../src/views/trash/Overview.vue'
-import { useResourcesViewDefaults } from '../../../../src/composables'
-import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
+import { folderViewsTrashOverviewExtensionPoint } from '../../../../src/extensionPoints'
 import {
   defaultComponentMocks,
   defaultPlugins,
@@ -11,11 +10,14 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { nextTick } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { ResourceTable } from '@opencloud-eu/web-pkg'
+import {
+  eventBus,
+  FolderViewExtension,
+  ResourceTable,
+  useExtensionRegistry
+} from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { flushPromises } from '@vue/test-utils'
-
-vi.mock('../../../../src/composables')
 
 const spaceMocks = [
   {
@@ -90,36 +92,45 @@ describe('TrashOverview', () => {
     })
   })
   describe('sorting', () => {
-    it('sorts by property name', async () => {
-      const { wrapper } = getWrapper()
+    it.each([
+      { sortDir: SortDir.Asc, expected: ['1', '2', '3'] },
+      { sortDir: SortDir.Desc, expected: ['1', '3', '2'] }
+    ])('keeps the personal space on top when sorting $sortDir', async ({ sortDir, expected }) => {
+      const spaces = [spaceMocks[2], spaceMocks[0], spaceMocks[1]]
+      const { wrapper } = getWrapper({ spaces, query: { 'sort-by': 'name', 'sort-dir': sortDir } })
       await flushPromises()
-      let sortedSpaces = []
-      ;(wrapper.vm as any).sortBy = 'name'
+      expect(getRenderedIds(wrapper)).toEqual(expected)
+    })
+    it('sorts names numerically', async () => {
+      const spaces = [
+        { ...spaceMocks[1], id: '10', name: 'Project space 10' },
+        { ...spaceMocks[1], id: '2', name: 'Project space 2' }
+      ] as SpaceResource[]
+      const { wrapper } = getWrapper({ spaces })
+      await flushPromises()
+      expect(getRenderedIds(wrapper)).toEqual(['2', '10'])
+    })
+  })
+  it('switches only once to the page of a space that is on another page', async () => {
+    const spaces = Array.from({ length: 130 }, (_, i) => {
+      const id = String(i + 1).padStart(3, '0')
+      return { ...spaceMocks[1], id, name: `Project space ${id}` }
+    }) as SpaceResource[]
+    const { mocks } = getWrapper({ spaces })
+    await flushPromises()
+    mocks.$router.push.mockClear()
+    mocks.$router.push.mockReturnValue(new Promise(() => undefined))
 
-      await nextTick()
-      sortedSpaces = wrapper.findComponent(ResourceTable).props().resources as SpaceResource[]
-      expect(sortedSpaces.map((s) => s.id)).toEqual([
-        spaceMocks[0].id,
-        spaceMocks[1].id,
-        spaceMocks[2].id
-      ])
-      ;(wrapper.vm as any).sortDir = SortDir.Desc
-      await nextTick()
-      sortedSpaces = wrapper.findComponent(ResourceTable).props().resources as SpaceResource[]
-      expect(sortedSpaces.map((s) => s.id)).toEqual([
-        spaceMocks[0].id,
-        spaceMocks[2].id,
-        spaceMocks[1].id
-      ])
+    eventBus.publish('app.files.navigate.page', {
+      resourceId: '121',
+      forceScroll: true,
+      topbarElement: 'files-app-bar'
     })
-    it('should set the sort parameters accordingly when calling "handleSort"', () => {
-      const { wrapper } = getWrapper({ spaces: [spaceMocks[0]] })
-      const sortBy = 'name'
-      const sortDir = SortDir.Desc
-      ;(wrapper.vm as any).handleSort({ sortBy, sortDir })
-      expect((wrapper.vm as any).sortBy).toEqual(sortBy)
-      expect((wrapper.vm as any).sortDir).toEqual(sortDir)
-    })
+
+    expect(mocks.$router.push).toHaveBeenCalledTimes(1)
+    expect(mocks.$router.push).toHaveBeenCalledWith(
+      expect.objectContaining({ query: expect.objectContaining({ page: 2 }) })
+    )
   })
   describe('indicators', () => {
     const intersectionObserver = window.IntersectionObserver
@@ -166,26 +177,83 @@ describe('TrashOverview', () => {
   describe('filtering', () => {
     it('shows only filtered spaces if filter applied', async () => {
       const { wrapper } = getWrapper()
+      await flushPromises()
       ;(wrapper.vm as any).filterTerm = 'Personal'
       await nextTick()
-      expect((wrapper.vm as any).displaySpaces.length).toEqual(1)
-      expect((wrapper.vm as any).displaySpaces[0].id).toEqual(spaceMocks[0].id)
+      expect(getRenderedIds(wrapper)).toEqual([spaceMocks[0].id])
     })
+    it.each([
+      { areEmptyTrashesShown: true, expected: ['1', '2', '3'] },
+      { areEmptyTrashesShown: false, expected: ['1', '3'] }
+    ])(
+      'shows empty trash bins: $areEmptyTrashesShown',
+      async ({ areEmptyTrashesShown, expected }) => {
+        const spaces = [spaceMocks[0], { ...spaceMocks[1], hasTrashedItems: false }, spaceMocks[2]]
+        const { wrapper } = getWrapper({ spaces, areEmptyTrashesShown })
+        await flushPromises()
+        expect(getRenderedIds(wrapper)).toEqual(expected)
+      }
+    )
   })
 })
 
+function getRenderedIds(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
+  const resources = wrapper.findComponent(ResourceTable).props('resources') as SpaceResource[]
+  return resources.map(({ id }) => id)
+}
+
 function getWrapper({
   spaces = spaceMocks,
-  stubResourceTable = true
-}: { spaces?: SpaceResource[]; stubResourceTable?: boolean } = {}) {
+  stubResourceTable = true,
+  areEmptyTrashesShown = true,
+  query = {}
+}: {
+  spaces?: SpaceResource[]
+  stubResourceTable?: boolean
+  areEmptyTrashesShown?: boolean
+  query?: Record<string, string>
+} = {}) {
   const mocks = {
     ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({ name: 'trash-overview' })
+      currentRoute: mock<RouteLocation>({
+        name: 'trash-overview',
+        query: {
+          'view-mode': 'resource-table',
+          'tiles-size': '1',
+          'sort-by': 'name',
+          'sort-dir': 'asc',
+          ...query
+        }
+      })
     })
   }
 
-  const plugins = [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })]
-  vi.mocked(useResourcesViewDefaults).mockImplementation(() => useResourcesViewDefaultsMock())
+  const plugins = [
+    ...defaultPlugins({
+      piniaOptions: {
+        spacesState: { spaces },
+        resourcesStore: { resources: spaces, areEmptyTrashesShown }
+      }
+    })
+  ]
+
+  const extensions = [
+    {
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
+      type: 'folderView',
+      extensionPointIds: [folderViewsTrashOverviewExtensionPoint.id],
+      folderView: {
+        name: 'resource-table',
+        label: 'Switch to default view',
+        icon: { name: 'menu-line', fillType: 'none' },
+        component: ResourceTable
+      }
+    }
+  ] satisfies FolderViewExtension[]
+  const { requestExtensions } = useExtensionRegistry()
+  vi.mocked(requestExtensions).mockImplementation((extensionPoint) =>
+    extensions.filter((e) => e.type === extensionPoint.extensionType)
+  )
 
   mocks.$clientService.graphAuthenticated.drives.listMyDrives.mockResolvedValue(spaceMocks)
 

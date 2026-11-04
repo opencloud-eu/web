@@ -33,6 +33,58 @@ describe('useSort', () => {
     })
   })
 
+  describe('pin first', () => {
+    const resources = [
+      { id: '1', name: 'b', type: 'folder' },
+      { id: '2', name: 'z', type: 'folder' },
+      { id: '3', name: 'a.txt', type: 'file' },
+      { id: '4', name: 'c', type: 'folder' },
+      { id: '5', name: 'y.txt', type: 'file' },
+      { id: '6', name: 'm.txt', type: 'file' }
+    ] as (SortableItem & { id: string; name: string })[]
+    const fields = [{ name: 'name', sortable: true }]
+    const pinFirst = ({ name }: { name: string }) => ['c', 'm.txt'].includes(name)
+
+    it.each([
+      {
+        sortDir: SortDir.Asc,
+        foldersFirst: true,
+        expected: ['c', 'b', 'z', 'm.txt', 'a.txt', 'y.txt']
+      },
+      {
+        sortDir: SortDir.Desc,
+        foldersFirst: true,
+        expected: ['c', 'z', 'b', 'm.txt', 'y.txt', 'a.txt']
+      },
+      {
+        sortDir: SortDir.Asc,
+        foldersFirst: false,
+        expected: ['c', 'm.txt', 'a.txt', 'b', 'y.txt', 'z']
+      },
+      {
+        sortDir: SortDir.Desc,
+        foldersFirst: false,
+        expected: ['m.txt', 'c', 'z', 'y.txt', 'b', 'a.txt']
+      }
+    ])(
+      'sorts the pinned items first with sortDir $sortDir and foldersFirst $foldersFirst',
+      ({ sortDir, foldersFirst, expected }) => {
+        getComposableWrapper(() => {
+          const { items } = useSort({
+            items: resources,
+            fields,
+            sortBy: ref('name'),
+            sortDir: ref(sortDir),
+            foldersFirst,
+            pinFirst
+          })
+
+          expect(unref(items).map(({ name }) => name)).toEqual(expected)
+        })
+      }
+    )
+  })
+
   describe('folders first', () => {
     const resources = [
       { id: '1', name: 'b.txt', type: 'file', size: 4 },

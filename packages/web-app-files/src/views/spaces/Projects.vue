@@ -249,7 +249,7 @@ const {
 } = useResourcesViewDefaults<SpaceResource, any, any[]>({
   loadResourcesTask,
   folderViewExtensionPoint: folderViewsProjectSpacesExtensionPoint,
-  filterResources: (spaces) => filter(spaces, unref(filterTerm)),
+  filterResources: filter,
   sortFields: translateSortFields(spaceTilesSortFields, language)
 })
 
@@ -278,17 +278,17 @@ const tableDisplayFields = [
   'mdate'
 ]
 
-function filter(spaces: SpaceResource[], filterTerm: string) {
+function filter(spaces: SpaceResource[]) {
   if (!unref(areDisabledSpacesShown)) {
     spaces = spaces.filter((space) => space.disabled !== true)
   }
 
-  if (!(filterTerm || '').trim()) {
+  if (!(unref(filterTerm) || '').trim()) {
     return spaces
   }
 
   const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
-  return searchEngine.search(filterTerm).map((r) => r.item)
+  return searchEngine.search(unref(filterTerm)).map((r) => r.item)
 }
 
 const batchActionsLoading = computed(() => {

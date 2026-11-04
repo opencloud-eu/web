@@ -29,6 +29,10 @@ export interface SortOptions<T extends object> {
   sortDirQueryName?: MaybeRef<string>
   routeName?: MaybeRef<string>
   foldersFirst?: MaybeRef<boolean>
+  /**
+   * Items matching this predicate get sorted before the rest, regardless of the sort direction.
+   */
+  pinFirst?: (item: T) => boolean
 }
 
 export interface SortResult<T> {
@@ -67,7 +71,8 @@ export function useSort<T extends object>(options: SortOptions<T>): SortResult<T
       unref(fields),
       unref(sortBy),
       unref(sortDir),
-      unref(options.foldersFirst) ?? true
+      unref(options.foldersFirst) ?? true,
+      options.pinFirst
     )
   })
 
@@ -136,7 +141,8 @@ export const sortHelper = <T extends object>(
   fields: SortField[],
   sortBy: string,
   sortDir: SortDir,
-  foldersFirst = true
+  foldersFirst = true,
+  pinFirst?: (item: T) => boolean
 ) => {
   const field = fields.find((f) => {
     return f.name === sortBy
@@ -147,8 +153,12 @@ export const sortHelper = <T extends object>(
   const { sortable } = field
   const collator = new Intl.Collator(navigator.language, { sensitivity: 'accent', numeric: true })
 
-  const compareItems = (a: T, b: T) =>
-    compare(a, b, collator, field.prop || field.name, sortDir, sortable)
+  const compareItems = (a: T, b: T) => {
+    if (pinFirst && pinFirst(a) !== pinFirst(b)) {
+      return pinFirst(a) ? -1 : 1
+    }
+    return compare(a, b, collator, field.prop || field.name, sortDir, sortable)
+  }
 
   if (foldersFirst) {
     const isFolder = (item: T) => {
