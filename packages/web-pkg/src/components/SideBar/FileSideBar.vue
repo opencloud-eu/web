@@ -37,7 +37,8 @@ import {
   useCanListShares,
   useCanListVersions,
   useSideBar,
-  useLoadShares
+  useLoadShares,
+  useMessages
 } from '../../composables'
 import {
   isProjectSpaceResource,
@@ -51,12 +52,15 @@ import {
 import { storeToRefs } from 'pinia'
 import { useTask } from 'vue-concurrency'
 import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../helpers'
+import { useGettext } from 'vue3-gettext'
 
 const { space = undefined } = defineProps<{
   space?: SpaceResource
 }>()
 
 const clientService = useClientService()
+const { $gettext } = useGettext()
+const { showErrorMessage } = useMessages()
 const extensionRegistry = useExtensionRegistry()
 const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
@@ -190,7 +194,7 @@ function loadVersions(resource: Resource) {
   }
 }
 
-function loadShares(resource: Resource) {
+async function loadShares(resource: Resource) {
   if (resource.id === unref(loadedSharesResourceId)) {
     // don't load shares if already loaded
     return
@@ -206,10 +210,19 @@ function loadShares(resource: Resource) {
     loadSharesTask.cancelAll()
   }
 
+  const taskInstance = loadSharesTask.perform({ space, resource })
   try {
-    loadSharesTask.perform({ space, resource })
+    await taskInstance
   } catch (e) {
+    if (taskInstance.isCanceled) {
+      return
+    }
     console.error(e)
+    if (unref(loadedSharesResourceId) === resource.id) {
+      // allow loading the shares of this resource again
+      loadedSharesResourceId.value = undefined
+    }
+    showErrorMessage({ title: $gettext('Failed to load shares'), errors: [e] })
   }
 }
 
