@@ -58,6 +58,56 @@ describe('UppyService', () => {
     })
   })
 
+  describe('holdBackFiles', () => {
+    let uppyService: UppyService
+
+    beforeEach(() => {
+      uppyService = getUppyService()
+    })
+
+    afterEach(() => {
+      uppyService.uppy.destroy()
+    })
+
+    function addFile(name: string, webkitRelativePath = '') {
+      const data = new File([name], name, { lastModified: 1 })
+      Object.defineProperty(data, 'webkitRelativePath', { value: webkitRelativePath })
+      return uppyService.uppy.addFile({ name, data })
+    }
+
+    it('takes the files out of the uppy state', () => {
+      const heldId = addFile('held.txt')
+      const otherId = addFile('other.txt')
+
+      uppyService.holdBackFiles([heldId])
+
+      expect(uppyService.uppy.getFiles().map(({ id }) => id)).toEqual([otherId])
+    })
+
+    it('rejects adding held back files again until they are released', () => {
+      const heldId = addFile('held.txt')
+      uppyService.holdBackFiles([heldId])
+
+      expect(() => addFile('held.txt')).toThrow()
+      expect(uppyService.uppy.getFiles()).toEqual([])
+
+      uppyService.releaseHeldBackFiles([heldId])
+      addFile('held.txt')
+      expect(uppyService.uppy.getFiles().map(({ id }) => id)).toEqual([heldId])
+    })
+
+    it.each([
+      { case: 'nested file from folder input', name: 'held.txt', path: 'folder/held.txt' },
+      { case: 'NFD file name', name: 'héld.txt', path: '' }
+    ])('rejects adding a held back $case again', ({ name, path }) => {
+      const heldId = addFile(name, path)
+      uppyService.holdBackFiles([heldId])
+
+      expect(() => addFile(name, path)).toThrow()
+      expect(uppyService.uppy.getFiles()).toEqual([])
+    })
+  })
+
   describe('useXhr', () => {
     it.each([true, false])(
       'configures the xhr plugin with withCredentials %s',

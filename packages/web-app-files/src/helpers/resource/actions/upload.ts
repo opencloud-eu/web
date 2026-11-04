@@ -1,4 +1,4 @@
-import { markRaw } from 'vue'
+import { markRaw, watch } from 'vue'
 import { escapeRegExp } from 'lodash-es'
 import { Language } from 'vue3-gettext'
 import { Resource } from '@opencloud-eu/web-client'
@@ -37,6 +37,8 @@ function renameUploadFolderInEndpoint(endpoint: string, segments: string[], newF
 
 export class UploadResourceConflict extends ConflictDialog {
   resourcesStore: ResourcesStore
+  // a dialog was closed without an answer, e.g. on route change
+  private dismissed = false
 
   constructor(resourcesStore: ResourcesStore, language: Language) {
     const { $gettext, $ngettext } = language
@@ -52,10 +54,10 @@ export class UploadResourceConflict extends ConflictDialog {
     separateSkipHandling = false, // separate skip-handling between files and folders
     existingIsFolder = resource.isFolder
   ): Promise<ResolveConflict> {
-    const { dispatchModal } = useModals()
+    const modalStore = useModals()
 
     return new Promise<ResolveConflict>((resolve) => {
-      dispatchModal({
+      const modal = modalStore.dispatchModal({
         title: existingIsFolder
           ? this.$gettext('Folder already exists')
           : this.$gettext('File already exists'),
@@ -72,10 +74,23 @@ export class UploadResourceConflict extends ConflictDialog {
           existingIsFolder,
           hideSecondaryAction: existingIsFolder !== resource.isFolder,
           callbackFn: (conflict: ResolveConflict) => {
+            stop()
             resolve(conflict)
           }
         })
       })
+
+      const stop = watch(
+        () => modalStore.modals.some(({ id }) => id === modal.id),
+        (isOpen) => {
+          if (isOpen) {
+            return
+          }
+          stop()
+          this.dismissed = true
+          resolve({ strategy: ResolveStrategy.SKIP, doForAllConflicts: true })
+        }
+      )
     })
   }
 
@@ -109,7 +124,7 @@ export class UploadResourceConflict extends ConflictDialog {
   async displayOverwriteDialog(
     files: OcUppyFile[],
     conflicts: ConflictedResource[]
-  ): Promise<{ files: OcUppyFile[]; mergedFolders: string[] }> {
+  ): Promise<{ files: OcUppyFile[]; mergedFolders: string[]; dismissed?: boolean }> {
     const resolvedFileConflicts: { name: string; strategy: ResolveStrategy }[] = []
     const resolvedFolderConflicts: { name: string; strategy: ResolveStrategy }[] = []
     const allStrategies: Record<
@@ -155,6 +170,9 @@ export class UploadResourceConflict extends ConflictDialog {
         true,
         conflict.existingIsFolder
       )
+      if (this.dismissed) {
+        return { files: [], mergedFolders: [], dismissed: true }
+      }
       if (resolvedConflict.doForAllConflicts) {
         strategies[typeMismatch ? 'typeMismatch' : 'regular'] = resolvedConflict.strategy
       }

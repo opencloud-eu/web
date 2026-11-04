@@ -2,16 +2,28 @@ import { dirname } from 'path'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { Language } from 'vue3-gettext'
 import { UploadResourceConflict } from '../../../../../src/helpers/resource'
-import { ResolveStrategy, OcUppyFile, useModals, useResourcesStore } from '@opencloud-eu/web-pkg'
+import {
+  ResolveConflict,
+  ResolveStrategy,
+  OcUppyFile,
+  useModals,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
+import { nextTick } from 'vue'
 import { Resource, urlJoin } from '@opencloud-eu/web-client'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 const getResourceConflictInstance = ({
-  currentFiles = [mockDeep<Resource>()]
+  currentFiles = [mockDeep<Resource>()],
+  stubActions = true
 }: {
   currentFiles?: Resource[]
+  stubActions?: boolean
 } = {}) => {
-  createTestingPinia({ initialState: { resources: { resources: currentFiles } } })
+  createTestingPinia({ stubActions, initialState: { resources: { resources: currentFiles } } })
+  if (stubActions) {
+    vi.mocked(useModals().dispatchModal).mockImplementation((data) => ({ ...data, id: 'modal' }))
+  }
   const resourcesStore = useResourcesStore()
   return new UploadResourceConflict(resourcesStore, mock<Language>())
 }
@@ -99,6 +111,30 @@ describe('upload helper', () => {
 
       const attrs = vi.mocked(dispatchModal).mock.calls[0][0].customComponentAttrs()
       expect(attrs.hideSecondaryAction).toBe(false)
+    })
+    it('resolves with the answer given in the dialog', async () => {
+      const instance = getResourceConflictInstance({ stubActions: false })
+
+      const promise = instance.resolveFileExists({ name: 'dup' } as Resource, 1)
+      answerDialog({ strategy: ResolveStrategy.REPLACE, doForAllConflicts: false })
+      await nextTick()
+
+      await expect(promise).resolves.toEqual({
+        strategy: ResolveStrategy.REPLACE,
+        doForAllConflicts: false
+      })
+    })
+    it('skips all conflicts if the dialog is closed without an answer', async () => {
+      const instance = getResourceConflictInstance({ stubActions: false })
+      const modalStore = useModals()
+
+      const promise = instance.resolveFileExists({ name: 'dup' } as Resource, 1)
+      modalStore.removeAllModals()
+
+      await expect(promise).resolves.toEqual({
+        strategy: ResolveStrategy.SKIP,
+        doForAllConflicts: true
+      })
     })
   })
   describe('method "displayOverwriteDialog"', () => {
@@ -831,6 +867,42 @@ describe('upload helper', () => {
       )
     })
 
+    describe('with real dialogs', () => {
+      const files = [createUploadFile('one.txt'), createUploadFile('a.txt', '/docs')]
+      const conflicts = [
+        { name: 'one.txt', type: 'file', existingIsFolder: false },
+        { name: 'docs', type: 'folder', existingIsFolder: true }
+      ]
+      const currentFiles = [
+        mock<Resource>({ name: 'one.txt', isFolder: false }),
+        mock<Resource>({ name: 'docs', isFolder: true })
+      ]
+
+      it('drops the whole batch if a dialog is closed without an answer', async () => {
+        const instance = getResourceConflictInstance({ currentFiles, stubActions: false })
+        const modalStore = useModals()
+
+        const promise = instance.displayOverwriteDialog(files, conflicts)
+        modalStore.removeAllModals()
+
+        await expect(promise).resolves.toEqual({ files: [], mergedFolders: [], dismissed: true })
+        expect(modalStore.modals).toEqual([])
+      })
+      it('keeps asking for the remaining conflicts after a dialog is answered', async () => {
+        const instance = getResourceConflictInstance({ currentFiles, stubActions: false })
+        const modalStore = useModals()
+
+        const promise = instance.displayOverwriteDialog(files, conflicts)
+        answerDialog({ strategy: ResolveStrategy.SKIP, doForAllConflicts: false })
+        await vi.waitFor(() => expect(modalStore.modals).toHaveLength(1))
+        answerDialog({ strategy: ResolveStrategy.MERGE, doForAllConflicts: false })
+
+        const result = await promise
+        expect(result.files.map(({ id }) => id)).toEqual(['/docs/a.txt'])
+        expect(result.mergedFolders).toEqual(['docs'])
+      })
+    })
+
     it('should show dialog twice if do for all conflicts is ticked and folders and files are uploaded', async () => {
       const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test' })
       const OcUppyFileTwo = mockDeep<OcUppyFile>({ name: 'folder' })
@@ -855,6 +927,17 @@ describe('upload helper', () => {
     })
   })
 })
+
+// mimics ResourceConflictModal, which removes itself before calling back
+function answerDialog(conflict: ResolveConflict) {
+  const modalStore = useModals()
+  const modal = modalStore.activeModal
+  const { callbackFn } = modal.customComponentAttrs() as {
+    callbackFn: (conflict: ResolveConflict) => void
+  }
+  modalStore.removeModal(modal.id)
+  callbackFn(conflict)
+}
 
 function createUploadFile(name: string, relativeFolder = '', transport: 'xhr' | 'tus' = 'xhr') {
   const relativePath = `${relativeFolder}/${name}`
