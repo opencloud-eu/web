@@ -11,9 +11,17 @@ import {
 vi.mock('@opencloud-eu/web-pkg', async () => {
   const { getSpaceForDriveAliasAndItem } =
     await import('../../../../web-pkg/src/helpers/spaces/driveAlias')
-  const { queryItemAsString, routeToContextQuery } =
-    await import('../../../../web-pkg/src/composables/appDefaults/useAppNavigation')
+  const {
+    contextRouteNameKey,
+    contextRouteParamsKey,
+    contextRouteQueryKey,
+    queryItemAsString,
+    routeToContextQuery
+  } = await import('../../../../web-pkg/src/composables/appDefaults/useAppNavigation')
   return {
+    contextRouteNameKey,
+    contextRouteParamsKey,
+    contextRouteQueryKey,
     getSpaceForDriveAliasAndItem,
     queryItemAsString,
     routeToContextQuery,
@@ -180,6 +188,64 @@ describe('setupVaultUnlockGuard', () => {
     })
   })
 
+  it('keeps the guest context, so guests are not sent to the login', async () => {
+    vi.mocked(useAuthStore).mockReturnValueOnce({ isGuestContext: true } as any)
+    const shareSpace = { id: 'share-123', driveAlias: 'share/myvault.vault' }
+    getSpace.mockReturnValueOnce(shareSpace)
+    const guard = installGuard({
+      spaces: [shareSpace],
+      claim: { vaultRoot: '/', unlockRoute },
+      engine: null
+    })
+
+    const result = await guard(
+      {
+        name: 'files-guest-link',
+        params: { driveAliasAndItem: 'share/myvault.vault' },
+        query: { shareId: 'share-123' },
+        fullPath: '/files/guest/share/myvault.vault?shareId=share-123'
+      },
+      coldStart
+    )
+
+    expect(result).toMatchObject({
+      query: {
+        contextRouteName: 'files-guest-link',
+        contextRouteParams: { driveAliasAndItem: 'share/myvault.vault' },
+        redirectUrl: '/files/guest/share/myvault.vault?shareId=share-123'
+      }
+    })
+  })
+
+  it("passes on an app route's own context, as the auth guard only looks one level deep", async () => {
+    vi.mocked(useAuthStore).mockReturnValueOnce({ isGuestContext: true } as any)
+    const shareSpace = { id: 'share-123', driveAlias: 'share/myvault.vault' }
+    getSpace.mockReturnValueOnce(shareSpace)
+    const guard = installGuard({
+      spaces: [shareSpace],
+      claim: { vaultRoot: '/', unlockRoute },
+      engine: null
+    })
+    const contextQuery = {
+      contextRouteName: 'files-guest-link',
+      contextRouteParams: { driveAliasAndItem: 'share/myvault.vault' },
+      contextRouteQuery: { shareId: 'share-123' }
+    }
+
+    const result = (await guard(
+      {
+        name: 'text-editor',
+        params: { driveAliasAndItem: 'share/myvault.vault/notes.md' },
+        query: { shareId: 'share-123', permissionId: 'permission-1', ...contextQuery },
+        fullPath: '/text-editor/share/myvault.vault/notes.md'
+      },
+      coldStart
+    )) as any
+
+    expect(result.query).toMatchObject(contextQuery)
+    expect(result.query).not.toHaveProperty('permissionId')
+  })
+
   it('carries where the user came from, so cancelling can return there', async () => {
     // e.g. opening a vault from the search results: cancelling the unlock has to
     // land back on the results, not next to the vault.
@@ -236,23 +302,30 @@ describe('setupVaultUnlockGuard', () => {
     expect(result.query).not.toHaveProperty('cancelUrl')
   })
 
-  it('omits the cancel URL when the user came from a private link, which would resolve into the vault again', async () => {
-    const guard = installGuard({
-      spaces: [space],
-      claim: { vaultRoot: '/my.vault', unlockRoute },
-      engine: null
-    })
+  it.each([
+    { name: 'resolvePrivateLink', fullPath: '/f/file-1' },
+    { name: 'resolveGuestLink', fullPath: '/g/token' },
+    { name: 'renewGuestLink', fullPath: '/g/renew/permission-1' }
+  ])(
+    'omits the cancel URL when the user came from $name, which would resolve into the vault again',
+    async (from) => {
+      const guard = installGuard({
+        spaces: [space],
+        claim: { vaultRoot: '/my.vault', unlockRoute },
+        engine: null
+      })
 
-    const result = (await guard(
-      {
-        params: { driveAliasAndItem: 'personal/admin/my.vault' },
-        fullPath: '/files/personal/admin/my.vault?scrollTo=file-1'
-      },
-      { name: 'resolvePrivateLink', params: { fileId: 'file-1' }, fullPath: '/f/file-1' }
-    )) as any
+      const result = (await guard(
+        {
+          params: { driveAliasAndItem: 'personal/admin/my.vault' },
+          fullPath: '/files/personal/admin/my.vault?scrollTo=file-1'
+        },
+        from
+      )) as any
 
-    expect(result.query).not.toHaveProperty('cancelUrl')
-  })
+      expect(result.query).not.toHaveProperty('cancelUrl')
+    }
+  )
 
   it('omits the cancel URL when the user came from inside the same vault', async () => {
     const guard = installGuard({
