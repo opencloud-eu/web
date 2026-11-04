@@ -575,6 +575,94 @@ describe('file events', () => {
       expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
     })
+    describe('in a trash bin', () => {
+      const space = mockDeep<SpaceResource>({ id: 'storage$space1' })
+      const sseData = mock<EventSchemaType>({
+        itemid: 'storage$space1!node1',
+        spaceid: 'storage$space1',
+        parentitemid: 'storage$space1!parent'
+      })
+
+      function getTrashMocks() {
+        const mocks = getMocks({
+          currentSpace: space,
+          spaces: [space],
+          currentRouteName: 'files-trash-generic'
+        })
+        mocks.resourceQueue.add.mockImplementation((task) => Promise.resolve(task({})))
+        return mocks
+      }
+
+      it('adds the trashed item to the trash bin of its space', async () => {
+        const mocks = getTrashMocks()
+        const trashItem = mock<Resource>({ id: 'node1' })
+        mocks.clientService.webdav.getFileInfo.mockResolvedValue(trashItem)
+
+        await onSSEItemTrashedEvent({ sseData, ...mocks })
+
+        expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalledWith(
+          space,
+          { path: 'node1' },
+          expect.objectContaining({ isTrash: true })
+        )
+        expect(mocks.resourceQueue.add).toHaveBeenCalledTimes(1)
+        expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(trashItem)
+      })
+      it('does not add the trashed item if the space changes while it is loaded', async () => {
+        const mocks = getTrashMocks()
+        let resolveTrashItem: (resource: Resource) => void
+        mocks.clientService.webdav.getFileInfo.mockReturnValue(
+          new Promise((resolve) => {
+            resolveTrashItem = resolve
+          })
+        )
+
+        const handled = onSSEItemTrashedEvent({ sseData, ...mocks })
+        await vi.waitFor(() => expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled())
+        mocks.spacesStore.currentSpace = mockDeep<SpaceResource>({ id: 'space2' })
+        resolveTrashItem(mock<Resource>({ id: 'node1' }))
+        await handled
+
+        expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+      })
+      it.each([
+        { description: 'another space', currentRouteName: 'files-trash-generic', id: 'space2' },
+        {
+          description: 'a folder of the space',
+          currentRouteName: 'files-spaces-generic',
+          id: 'storage$space1'
+        }
+      ])('does not load the trashed item in $description', async ({ currentRouteName, id }) => {
+        const currentSpace = mockDeep<SpaceResource>({ id })
+        const mocks = getMocks({ currentSpace, spaces: [currentSpace], currentRouteName })
+
+        await onSSEItemTrashedEvent({ sseData, ...mocks })
+
+        expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+        expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+      })
+      it('does nothing if the trashed item cannot be loaded', async () => {
+        const mocks = getTrashMocks()
+        mocks.clientService.webdav.getFileInfo.mockRejectedValue(new Error('not found'))
+
+        await onSSEItemTrashedEvent({ sseData, ...mocks })
+
+        expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+        expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+      })
+      it('marks the space as having trashed items in the trash overview', async () => {
+        const mocks = getMocks({ spaces: [space], currentRouteName: 'files-trash-overview' })
+
+        await onSSEItemTrashedEvent({ sseData, ...mocks })
+
+        expect(mocks.spacesStore.updateSpaceField).toHaveBeenCalledWith({
+          id: 'storage$space1',
+          field: 'hasTrashedItems',
+          value: true
+        })
+        expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+      })
+    })
   })
   describe('onSSEItemRestoredEvent', () => {
     it('calls "upsertResource" when resource has been restored', async () => {
@@ -628,6 +716,45 @@ describe('file events', () => {
       expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
       expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+    })
+    describe('in a trash bin', () => {
+      const trashItem = mock<Resource>({ id: 'node1' })
+      const sseData = mock<EventSchemaType>({
+        itemid: 'storage$space1!node1',
+        spaceid: 'storage$space1',
+        parentitemid: 'storage$space1!parent'
+      })
+
+      it('removes the restored item from the trash bin of its space', async () => {
+        const space = mockDeep<SpaceResource>({ id: 'storage$space1' })
+        const mocks = getMocks({
+          currentSpace: space,
+          spaces: [space],
+          resources: [trashItem],
+          currentRouteName: 'files-trash-generic'
+        })
+
+        mocks.resourcesStore.selectedIds = ['node1', 'node2']
+
+        await onSSEItemRestoredEvent({ sseData, ...mocks })
+
+        expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([trashItem])
+        expect(mocks.resourcesStore.setSelection).toHaveBeenCalledWith(['node2'])
+        expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+      })
+      it('does not remove a trash item of another space', async () => {
+        const space = mockDeep<SpaceResource>({ id: 'space2' })
+        const mocks = getMocks({
+          currentSpace: space,
+          spaces: [space],
+          resources: [trashItem],
+          currentRouteName: 'files-trash-generic'
+        })
+
+        await onSSEItemRestoredEvent({ sseData, ...mocks })
+
+        expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+      })
     })
   })
   describe('onSSEItemMovedEvent', () => {
