@@ -18,6 +18,7 @@ import RoleDropdown from '../../../../../../src/components/SideBar/Shares/Collab
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationNamedRaw } from 'vue-router'
+import { DateTime } from 'luxon'
 
 const selectors = {
   userAvatarImage: 'user-avatar-stub.files-collaborators-collaborator-indicator',
@@ -223,6 +224,22 @@ describe('Collaborator ListItem component', () => {
       // the role was persisted, so the dropdown must keep the new role
       expect(wrapper.find(label).text()).toEqual('Can edit')
     })
+    it('sends the new role when replacing custom permissions with a role', async () => {
+      const share = getShareMock()
+      share.role = undefined
+      share.permissions = [GraphSharePermission.readBasic]
+      const { wrapper } = createWrapper({ share })
+      const newRole = mock<ShareRole>({ id: 'editor', displayName: 'Can edit', description: '' })
+      wrapper
+        .findComponent<typeof RoleDropdown>('role-dropdown-stub')
+        .vm.$emit('optionChange', newRole)
+      await nextTicks(4)
+
+      const sharesStore = useSharesStore()
+      expect(sharesStore.updateShare).toHaveBeenCalledWith(
+        expect.objectContaining({ options: expect.objectContaining({ roles: ['editor'] }) })
+      )
+    })
   })
   describe('change expiration date', () => {
     it('calls "changeShare" for regular resources', () => {
@@ -250,6 +267,42 @@ describe('Collaborator ListItem component', () => {
 
       const messagesStore = useMessages()
       expect(messagesStore.showErrorMessage).toHaveBeenCalled()
+    })
+    it('keeps the role of a share with a role', async () => {
+      const share = getShareMock()
+      share.role = mock<ShareRole>({ id: 'viewer', displayName: 'Can view', description: '' })
+      const { wrapper } = createWrapper({ share })
+      const expirationDateTime = DateTime.fromISO('2030-01-01T00:00:00.000Z')
+      wrapper
+        .findComponent<typeof EditDropdown>('edit-dropdown-stub')
+        .vm.$emit('expirationDateChanged', { expirationDateTime })
+      await nextTicks(4)
+
+      const sharesStore = useSharesStore()
+      expect(sharesStore.updateShare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: { roles: ['viewer'], expirationDateTime: expirationDateTime.toISO() }
+        })
+      )
+    })
+    it('saves the expiration date of a share with custom permissions', async () => {
+      const share = getShareMock()
+      share.role = undefined
+      const { wrapper } = createWrapper({ share })
+      const expirationDateTime = DateTime.fromISO('2030-01-01T00:00:00.000Z')
+      wrapper
+        .findComponent<typeof EditDropdown>('edit-dropdown-stub')
+        .vm.$emit('expirationDateChanged', { expirationDateTime })
+      await nextTicks(4)
+
+      const sharesStore = useSharesStore()
+      const messagesStore = useMessages()
+      expect(sharesStore.updateShare).toHaveBeenCalledTimes(1)
+      const { options } = vi.mocked(sharesStore.updateShare).mock.calls[0][0]
+      expect(options).toEqual({ expirationDateTime: expirationDateTime.toISO() })
+      expect(options).not.toHaveProperty('roles')
+      expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
+      expect(messagesStore.showMessage).toHaveBeenCalled()
     })
   })
   describe('external user shares', () => {

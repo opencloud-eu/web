@@ -269,7 +269,7 @@ const saveShareChanges = async ({
   role,
   expirationDateTime
 }: {
-  role: ShareRole
+  role?: ShareRole
   expirationDateTime?: string | null
 }) => {
   try {
@@ -279,7 +279,7 @@ const saveShareChanges = async ({
         space: unref(space),
         resource: unref(resource),
         collaboratorShare: share,
-        options: { roles: [role.id], expirationDateTime }
+        options: { ...(role && { roles: [role.id] }), expirationDateTime }
       })
     } catch (e) {
       // the change could not be saved, revert the dropdown to the previously saved role
