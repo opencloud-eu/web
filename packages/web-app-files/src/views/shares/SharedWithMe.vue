@@ -192,7 +192,8 @@ const {
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<IncomingShareResource, any, any>({
   folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint,
-  filterResources: filterShares
+  filterResources: filterShares,
+  handlePageNavigation: true
 })
 
 const { $gettext } = useGettext()

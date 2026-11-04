@@ -1,6 +1,6 @@
 import { ref, unref } from 'vue'
-import { usePagination } from '../../../../src/composables'
-import { eventBus } from '../../../../src/services'
+import { usePagination, useScrollTo } from '../../../../src/composables'
+import { EventBus, eventBus } from '../../../../src/services'
 import { createRouter, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { flushPromises } from '@vue/test-utils'
 
@@ -87,7 +87,8 @@ describe('usePagination', () => {
         setup: () => undefined,
         items: [1, 2, 3],
         currentPage: 1,
-        itemsPerPage: 2
+        itemsPerPage: 2,
+        handlePageNavigation: true
       })
 
       const token = subscribeSpy.mock.results[0].value
@@ -98,6 +99,70 @@ describe('usePagination', () => {
 
       expect(unsubscribeSpy).toHaveBeenCalledWith('app.files.navigate.page', token)
     })
+    it('ignores the page navigation event when page navigation is not enabled', async () => {
+      const router = createRouter({ routes: [{ path: '/', redirect: null }] })
+      router.push('/')
+      await router.isReady()
+      const pushSpy = vi.spyOn(router, 'push')
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+
+      const mocks = { $router: router }
+      const items = Array.from({ length: 25 }, (_, i) => ({ id: `${i + 1}` }))
+      const wrapper = getComposableWrapper(
+        () => usePagination({ items: ref(items), perPage: 20, perPageStoragePrefix: 'unit-tests' }),
+        { mocks, provide: mocks }
+      )
+
+      eventBus.publish('app.files.navigate.page', {
+        resourceId: '25',
+        forceScroll: true,
+        topbarElement: 'files-app-bar'
+      })
+      await flushPromises()
+
+      expect(pushSpy).not.toHaveBeenCalled()
+      expect(publishSpy).not.toHaveBeenCalledWith('app.files.navigate.scrollTo', expect.anything())
+      wrapper.unmount()
+    })
+    it('does not loop when the resource is on the shown page but not rendered', async () => {
+      const router = createRouter({ routes: [{ path: '/', redirect: null }] })
+      router.push('/')
+      await router.isReady()
+
+      const publish = EventBus.prototype.publish.bind(eventBus)
+      let pageNavigations = 0
+      const publishSpy = vi.spyOn(eventBus, 'publish').mockImplementation((topic, data) => {
+        if (topic === 'app.files.navigate.page') {
+          pageNavigations++
+          if (pageNavigations > 10) {
+            return
+          }
+        }
+        publish(topic, data)
+      })
+
+      const mocks = { $router: router }
+      const items = Array.from({ length: 25 }, (_, i) => ({ id: `${i + 1}` }))
+      const wrapper = getComposableWrapper(
+        () => {
+          usePagination({
+            items: ref(items),
+            perPage: 20,
+            perPageStoragePrefix: 'unit-tests',
+            handlePageNavigation: true
+          })
+          return useScrollTo()
+        },
+        { mocks, provide: mocks }
+      )
+
+      wrapper.vm.scrollToResource('5', { forceScroll: true, topbarElement: 'files-app-bar' })
+      await flushPromises()
+      wrapper.unmount()
+      publishSpy.mockRestore()
+
+      expect(pageNavigations).toBe(1)
+    })
     it('switches to the page of the resource and scrolls to it', async () => {
       const router = createRouter({ routes: [{ path: '/', redirect: null }] })
       router.push('/')
@@ -107,7 +172,13 @@ describe('usePagination', () => {
       const mocks = { $router: router }
       const items = Array.from({ length: 25 }, (_, i) => ({ id: `${i + 1}` }))
       const wrapper = getComposableWrapper(
-        () => usePagination({ items: ref(items), perPage: 20, perPageStoragePrefix: 'unit-tests' }),
+        () =>
+          usePagination({
+            items: ref(items),
+            perPage: 20,
+            perPageStoragePrefix: 'unit-tests',
+            handlePageNavigation: true
+          }),
         { mocks, provide: mocks }
       )
 
@@ -138,7 +209,13 @@ describe('usePagination', () => {
       const mocks = { $router: router }
       const items = Array.from({ length: 25 }, (_, i) => ({ id: `${i + 1}` }))
       const wrapper = getComposableWrapper(
-        () => usePagination({ items: ref(items), perPage: 20, perPageStoragePrefix: 'unit-tests' }),
+        () =>
+          usePagination({
+            items: ref(items),
+            perPage: 20,
+            perPageStoragePrefix: 'unit-tests',
+            handlePageNavigation: true
+          }),
         { mocks, provide: mocks }
       )
 
@@ -160,12 +237,14 @@ function getWrapper({
   setup,
   items,
   currentPage,
-  itemsPerPage
+  itemsPerPage,
+  handlePageNavigation = false
 }: {
   setup: (instance: ReturnType<typeof usePagination>) => void
   items: number[]
   currentPage: number
   itemsPerPage: number
+  handlePageNavigation?: boolean
 }) {
   return {
     wrapper: getComposableWrapper(() => {
@@ -173,7 +252,8 @@ function getWrapper({
         items: ref(items),
         page: currentPage,
         perPage: itemsPerPage,
-        perPageStoragePrefix: 'unit-tests'
+        perPageStoragePrefix: 'unit-tests',
+        handlePageNavigation
       })
       setup(instance)
     })

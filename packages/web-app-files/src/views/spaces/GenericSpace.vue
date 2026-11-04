@@ -399,7 +399,8 @@ const {
   isResourceInSelection,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<Resource, any, any[]>({
-  folderViewExtensionPoint: folderViewsFolderExtensionPoint
+  folderViewExtensionPoint: folderViewsFolderExtensionPoint,
+  handlePageNavigation: true
 })
 useDocumentTitle({ titleSegments })
 

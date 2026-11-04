@@ -158,7 +158,8 @@ const {
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
   folderViewExtensionPoint: folderViewsSharedViaLinkExtensionPoint,
-  filterResources: filterShares
+  filterResources: filterShares,
+  handlePageNavigation: true
 })
 
 const { triggerDefaultAction } = useFileActions()

@@ -117,7 +117,8 @@ const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
 const resourcesViewDefaults = useResourcesViewDefaults<TrashResource, any, any>({
-  folderViewExtensionPoint: folderViewsTrashExtensionPoint
+  folderViewExtensionPoint: folderViewsTrashExtensionPoint,
+  handlePageNavigation: true
 })
 
 const {

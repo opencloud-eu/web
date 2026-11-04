@@ -300,7 +300,8 @@ const {
 } = usePagination({
   items,
   perPageDefault: '50',
-  perPageStoragePrefix: 'files'
+  perPageStoragePrefix: 'files',
+  handlePageNavigation: true
 })
 
 const batchActionsLoading = computed(() => {

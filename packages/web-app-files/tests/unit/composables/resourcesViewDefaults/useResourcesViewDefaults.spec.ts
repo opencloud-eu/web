@@ -4,7 +4,12 @@ import { Task } from 'vue-concurrency'
 import { unref } from 'vue'
 import { Router } from 'vue-router'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
-import { ExtensionPoint, FolderViewExtension, useResourcesStore } from '@opencloud-eu/web-pkg'
+import {
+  eventBus,
+  ExtensionPoint,
+  FolderViewExtension,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   createRouter,
@@ -138,18 +143,50 @@ describe('useResourcesViewDefaults', () => {
       expect(unref(result.sortedResources).length).toBe(29)
     })
   })
+  describe('handlePageNavigation', () => {
+    const resources = Array.from(
+      { length: 30 },
+      (_, i) => ({ id: `${i + 1}`, name: `file-${i + 1}`, type: 'file' }) as Resource
+    )
+
+    it.each([
+      { handlePageNavigation: undefined, expectedPushes: 0 },
+      { handlePageNavigation: true, expectedPushes: 1 }
+    ])(
+      'switches the page on page navigation: $handlePageNavigation',
+      ({ handlePageNavigation, expectedPushes }) => {
+        const { wrapper, mocks } = getWrapper({
+          query: { page: '1', 'items-per-page': '20' },
+          resources,
+          handlePageNavigation
+        })
+        vi.mocked(mocks.$router.push).mockReturnValue(new Promise(() => undefined))
+
+        eventBus.publish('app.files.navigate.page', {
+          resourceId: '30',
+          forceScroll: true,
+          topbarElement: 'files-app-bar'
+        })
+        wrapper.unmount()
+
+        expect(mocks.$router.push).toHaveBeenCalledTimes(expectedPushes)
+      }
+    )
+  })
 })
 
 function getWrapper({
   query = { scrollTo: '1' },
   resources = [],
   filterResources,
-  router
+  router,
+  handlePageNavigation
 }: {
   query?: Record<string, string>
   resources?: Resource[]
   filterResources?: (resources: Resource[]) => Resource[]
   router?: Router
+  handlePageNavigation?: boolean
 } = {}) {
   const mocks = {
     ...defaultComponentMocks({
@@ -164,7 +201,8 @@ function getWrapper({
       result = useResourcesViewDefaults({
         folderViewExtensionPoint: mock<ExtensionPoint<FolderViewExtension>>(),
         loadResourcesTask: mock<Task<unknown, unknown[]>>(),
-        filterResources
+        filterResources,
+        handlePageNavigation
       })
       return result
     },

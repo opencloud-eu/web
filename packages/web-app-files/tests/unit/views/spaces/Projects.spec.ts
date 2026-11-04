@@ -6,7 +6,8 @@ import {
   useExtensionRegistry,
   FolderViewExtension,
   ResourceTable,
-  FileSideBar
+  FileSideBar,
+  eventBus
 } from '@opencloud-eu/web-pkg'
 
 import {
@@ -112,6 +113,30 @@ describe('Projects view', () => {
       await nextTick()
       expect(wrapper.findAll('tbody tr').length).toEqual(3)
     })
+  })
+  it('switches only once to the page of a space that is on another page', async () => {
+    const spaces = Array.from({ length: 130 }, (_, i) => {
+      const id = String(i + 1).padStart(3, '0')
+      return { ...spacesResources[0], id, name: `Space ${id}`, getDriveAliasAndItem: () => id }
+    }) as unknown as SpaceResource[]
+    const { mocks } = getMountedWrapper({
+      spaces,
+      store: { resourcesStore: { resources: spaces } }
+    })
+    await flushPromises()
+    mocks.$router.push.mockClear()
+    mocks.$router.push.mockReturnValue(new Promise(() => undefined))
+
+    eventBus.publish('app.files.navigate.page', {
+      resourceId: '121',
+      forceScroll: true,
+      topbarElement: 'files-app-bar'
+    })
+
+    expect(mocks.$router.push).toHaveBeenCalledTimes(1)
+    expect(mocks.$router.push).toHaveBeenCalledWith(
+      expect.objectContaining({ query: expect.objectContaining({ page: 3 }) })
+    )
   })
   it('should not pass selected resource as space to sidebar when driveType is not "project"', () => {
     const resource = mock<SpaceResource>({ id: 'selected-resource', driveType: 'personal' })

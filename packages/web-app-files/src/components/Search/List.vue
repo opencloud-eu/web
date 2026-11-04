@@ -259,7 +259,8 @@ const {
   isResourceInSelection,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<SearchResource, any, any[]>({
-  folderViewExtensionPoint: folderViewsSearchExtensionPoint
+  folderViewExtensionPoint: folderViewsSearchExtensionPoint,
+  handlePageNavigation: true
 })
 
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)

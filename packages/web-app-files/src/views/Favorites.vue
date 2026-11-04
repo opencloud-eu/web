@@ -263,7 +263,8 @@ const {
   isResourceInSelection,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<Resource, any, any[]>({
-  folderViewExtensionPoint: folderViewsFavoritesExtensionPoint
+  folderViewExtensionPoint: folderViewsFavoritesExtensionPoint,
+  handlePageNavigation: true
 })
 
 const keyActions = useKeyboardActions()
