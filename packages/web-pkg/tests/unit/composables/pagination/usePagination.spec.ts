@@ -126,6 +126,33 @@ describe('usePagination', () => {
       })
       wrapper.unmount()
     })
+    it('stays in the current folder when its name contains a hash', async () => {
+      const router = createRouter({
+        routes: [
+          { name: 'files-public-link', path: '/files/link/:driveAliasAndItem(.*)?', component: {} }
+        ]
+      })
+      router.push('/files/link/public/token/Doc%23A')
+      await router.isReady()
+
+      const mocks = { $router: router }
+      const items = Array.from({ length: 25 }, (_, i) => ({ id: `${i + 1}` }))
+      const wrapper = getComposableWrapper(
+        () => usePagination({ items: ref(items), perPage: 20, perPageStoragePrefix: 'unit-tests' }),
+        { mocks, provide: mocks }
+      )
+
+      eventBus.publish('app.files.navigate.page', {
+        resourceId: '25',
+        forceScroll: true,
+        topbarElement: 'files-app-bar'
+      })
+      await flushPromises()
+
+      expect(unref(router.currentRoute).path).toBe('/files/link/public/token/Doc%23A')
+      expect(unref(router.currentRoute).query.page).toBe('2')
+      wrapper.unmount()
+    })
   })
 })
 
