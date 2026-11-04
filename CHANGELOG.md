@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep favorite state and tags on the received share root [[#4208](https://github.com/opencloud-eu/web/pull/4208)]
+- fix: show an error for EPUB files that can't be opened [[#4209](https://github.com/opencloud-eu/web/pull/4209)]
 - fix: show message for spaces skipped when duplicating [[#4210](https://github.com/opencloud-eu/web/pull/4210)]
 - fix: stream vault content encryption block by block [[#4125](https://github.com/opencloud-eu/web/pull/4125)]
 - fix: stop the shares panel loader when loading the shares fails [[#4203](https://github.com/opencloud-eu/web/pull/4203)]
