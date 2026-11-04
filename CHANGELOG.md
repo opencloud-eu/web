@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep upload batch out of uppy while the conflict dialog is open [[#4140](https://github.com/opencloud-eu/web/pull/4140)]
 - fix: don't return to a permanent link when cancelling a vault unlock [[#4155](https://github.com/opencloud-eu/web/pull/4155)]
 - fix: prevent duplicate GDPR export requests on double click [[#4156](https://github.com/opencloud-eu/web/pull/4156)]
 - fix: align shift-click range selection in admin lists and files table [[#4236](https://github.com/opencloud-eu/web/pull/4236)]
