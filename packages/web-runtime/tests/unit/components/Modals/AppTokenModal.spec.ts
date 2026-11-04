@@ -95,6 +95,38 @@ describe('AppTokenModal component', () => {
         { params: expect.objectContaining({ label: 'someNote' }) }
       )
     })
+    describe('expiry', () => {
+      afterEach(() => {
+        vi.useRealTimers()
+      })
+      // the datepicker emits the end of the picked day, but the expiry must not depend on that
+      it.each([
+        { time: 'end', serverDelay: 0 },
+        { time: 'end', serverDelay: 5 },
+        { time: 'start', serverDelay: 0 },
+        { time: 'start', serverDelay: 5 }
+      ] as const)(
+        'should let the token expire at 23:59 of the picked day ($time of day) when the server adds the duration $serverDelay s later',
+        async ({ time, serverDelay }) => {
+          const now = DateTime.fromISO('2026-12-01T10:00:00.250')
+          vi.useFakeTimers({ toFake: ['Date'] })
+          vi.setSystemTime(now.toJSDate())
+          const day = DateTime.fromISO('2026-12-11')
+          const pickedDate = time === 'end' ? day.endOf('day') : day.startOf('day')
+          const { wrapper, mocks } = getWrapper()
+          emitNoteInput(wrapper, 'someNote')
+          emitDateInput(wrapper, pickedDate)
+          await wrapper.vm.$nextTick()
+          await findConfirmButton(wrapper).trigger('click')
+
+          const { expiry } = mocks.$clientService.httpAuthenticated.post.mock.calls[0][2].params
+          expect(expiry).toMatch(/^\d+s$/)
+          const serverExpiry = now.plus({ seconds: serverDelay + parseInt(expiry) })
+          expect(serverExpiry.hasSame(pickedDate, 'day')).toBe(true)
+          expect(serverExpiry.toFormat('HH:mm')).toBe('23:59')
+        }
+      )
+    })
     it('should create a token on submit', async () => {
       const { wrapper, mocks } = getWrapper()
       emitNoteInput(wrapper, 'someNote')
