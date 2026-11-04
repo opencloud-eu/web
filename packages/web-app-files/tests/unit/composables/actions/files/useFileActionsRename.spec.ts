@@ -121,23 +121,72 @@ describe('rename', () => {
     )
 
     it.each([
-      { name: 'file.txt', extension: 'txt', expected: [0, 4] },
-      { name: 'README', extension: '', expected: [0, 6] },
-      { name: '.config.json', extension: 'json', expected: [0, 7] },
-      { name: '.profile', extension: 'profile', expected: [0, 8] }
+      { name: 'a.txt', extension: 'txt', shown: true, inputValue: 'a.txt', expected: [0, 1] },
+      { name: 'file.txt', extension: 'txt', shown: true, inputValue: 'file.txt', expected: [0, 4] },
+      { name: 'README', extension: '', shown: true, inputValue: 'README', expected: [0, 6] },
+      {
+        name: '.config.json',
+        extension: 'json',
+        shown: true,
+        inputValue: '.config.json',
+        expected: [0, 7]
+      },
+      {
+        name: '.profile',
+        extension: 'profile',
+        shown: true,
+        inputValue: '.profile',
+        expected: [0, 8]
+      },
+      { name: 'a.txt', extension: 'txt', shown: false, inputValue: 'a', expected: null },
+      { name: 'README', extension: '', shown: false, inputValue: 'README', expected: [0, 6] },
+      {
+        name: '.config.json',
+        extension: 'json',
+        shown: false,
+        inputValue: '.config.json',
+        expected: [0, 7]
+      },
+      {
+        name: '.bashrc',
+        extension: 'bashrc',
+        shown: false,
+        inputValue: '.bashrc',
+        expected: [0, 7]
+      }
     ])(
-      'selects $expected of "$name" with shown file extensions',
-      async ({ name, extension, expected }) => {
+      'selects $expected of "$name" with file extensions shown: $shown',
+      async ({ name, extension, shown, inputValue, expected }) => {
         let instance: ReturnType<typeof useFileActionsRename>
         const { mocks } = getWrapper({ setup: (i) => (instance = i) })
-        useResourcesStore().areFileExtensionsShown = true
+        useResourcesStore().areFileExtensionsShown = shown
         const resource = mock<Resource>({ name, extension, isFolder: false, path: `/${name}` })
         await unref(instance.actions)[0].handler({ space: mocks.space, resources: [resource] })
 
         const { dispatchModal } = useModals()
-        const { inputValue, inputSelectionRange } = vi.mocked(dispatchModal).mock.calls[0][0]
-        expect(inputValue).toBe(name)
-        expect(inputSelectionRange).toEqual(expected)
+        const modal = vi.mocked(dispatchModal).mock.calls[0][0]
+        expect(modal.inputValue).toBe(inputValue)
+        expect(modal.inputSelectionRange).toEqual(expected)
+      }
+    )
+
+    it.each([true, false])(
+      'does not select anything in folder names with file extensions shown: %s',
+      async (shown) => {
+        let instance: ReturnType<typeof useFileActionsRename>
+        const { mocks } = getWrapper({ setup: (i) => (instance = i) })
+        useResourcesStore().areFileExtensionsShown = shown
+        const resource = mock<Resource>({
+          name: 'dotted.folder',
+          extension: 'folder',
+          isFolder: true,
+          path: '/dotted.folder'
+        })
+        await unref(instance.actions)[0].handler({ space: mocks.space, resources: [resource] })
+
+        const { dispatchModal } = useModals()
+        const { inputSelectionRange } = vi.mocked(dispatchModal).mock.calls[0][0]
+        expect(inputSelectionRange).toBeNull()
       }
     )
   })

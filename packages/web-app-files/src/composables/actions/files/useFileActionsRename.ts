@@ -144,7 +144,7 @@ export const useFileActionsRename = () => {
       : $gettext('Rename file »%{name}«', { name: displayedName })
 
     const inputSelectionRange =
-      resources[0].isFolder || !areFileExtensionsShown
+      resources[0].isFolder || isExtensionHidden
         ? null
         : ([0, (nameWithoutExtension || resources[0].name).length] as [number, number])
 
