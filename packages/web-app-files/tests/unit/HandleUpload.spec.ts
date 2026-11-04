@@ -21,6 +21,7 @@ import {
   OcUppyBody
 } from '@opencloud-eu/web-pkg'
 import { Language } from 'vue3-gettext'
+import { omit } from 'lodash-es'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 let getConflictsMock = vi.fn()
@@ -545,16 +546,78 @@ describe('HandleUpload', () => {
         await instance.handleUpload([file])
         expect(getConflictsMock).not.toHaveBeenCalled()
       })
+      function useUppyFileState(
+        { uppy, opts }: ReturnType<typeof getWrapper>['mocks'],
+        files: OcUppyFile[]
+      ) {
+        let state = { files: Object.fromEntries(files.map((file) => [file.id, file])) }
+        uppy.getState.mockImplementation(() => state as State<OcUppyMeta, OcUppyBody>)
+        uppy.setState.mockImplementation((patch) => {
+          state = { ...state, ...patch }
+        })
+        vi.mocked(opts.uppyService.holdBackFiles).mockImplementation((ids) => {
+          state = { ...state, files: omit(state.files, ids) }
+        })
+        return () => Object.keys(state.files)
+      }
       it('does not start upload if all files were skipped in conflict handling', async () => {
+        const file = mock<OcUppyFile>({ id: 'skipped', name: 'name' })
         const { instance, mocks } = getWrapper({ conflicts: [{}], conflictHandlerResult: [] })
-        const removeFilesFromUploadSpy = vi.spyOn(instance, 'removeFilesFromUpload')
+        const uppyFileIds = useUppyFileState(mocks, [file])
 
-        await instance.handleUpload([mock<OcUppyFile>({ name: 'name' })])
+        await instance.handleUpload([file])
         expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
         expect(mocks.opts.uppyService.clearInputs).toHaveBeenCalled()
-        expect(removeFilesFromUploadSpy).toHaveBeenCalled()
+        expect(uppyFileIds()).toEqual([])
       })
-      it('removes skipped files from uppy and uploads the remaining ones', async () => {
+      it('informs the user if the conflict dialog was closed without an answer', async () => {
+        const file = mock<OcUppyFile>({ id: 'dismissed', name: 'name' })
+        const { instance, mocks } = getWrapper({ conflicts: [{}] })
+        displayOverwriteDialogMock.mockResolvedValue({
+          files: [],
+          mergedFolders: [],
+          dismissed: true
+        })
+        const showMessageSpy = vi.spyOn(mocks.opts.messageStore, 'showMessage')
+
+        await instance.handleUpload([file])
+        expect(showMessageSpy).toHaveBeenCalledWith(expect.objectContaining({ status: 'warning' }))
+        expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
+      })
+      it('does not show a message if all files were skipped in the conflict dialog', async () => {
+        const file = mock<OcUppyFile>({ id: 'skipped', name: 'name' })
+        const { instance, mocks } = getWrapper({ conflicts: [{}], conflictHandlerResult: [] })
+        const showMessageSpy = vi.spyOn(mocks.opts.messageStore, 'showMessage')
+
+        await instance.handleUpload([file])
+        expect(showMessageSpy).not.toHaveBeenCalled()
+      })
+      it('keeps the batch out of uppy while the conflict dialog is open', async () => {
+        const conflictFile = mock<OcUppyFile>({ id: 'conflict', name: 'one.txt' })
+        const freshFile = mock<OcUppyFile>({ id: 'fresh', name: 'fresh.txt' })
+        const otherBatchFile = mock<OcUppyFile>({ id: 'other', name: 'other.txt' })
+        const { instance, mocks } = getWrapper({
+          conflicts: [{}],
+          conflictHandlerResult: [conflictFile, freshFile]
+        })
+        vi.spyOn(instance, 'prepareFiles').mockReturnValue([conflictFile, freshFile])
+        const uppyFileIds = useUppyFileState(mocks, [conflictFile, freshFile, otherBatchFile])
+        const { releaseHeldBackFiles } = mocks.opts.uppyService
+        let idsWhileDialogOpen: string[]
+        displayOverwriteDialogMock.mockImplementation(() => {
+          idsWhileDialogOpen = uppyFileIds()
+          expect(releaseHeldBackFiles).not.toHaveBeenCalled()
+          return Promise.resolve({ files: [conflictFile, freshFile], mergedFolders: [] })
+        })
+
+        await instance.handleUpload([conflictFile, freshFile])
+        expect(mocks.opts.uppyService.holdBackFiles).toHaveBeenCalledWith(['conflict', 'fresh'])
+        expect(idsWhileDialogOpen).toEqual(['other'])
+        expect(releaseHeldBackFiles).toHaveBeenCalledWith(['conflict', 'fresh'])
+        expect(uppyFileIds()).toEqual(['other', 'conflict', 'fresh'])
+        expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
+      })
+      it('does not re-add skipped files to uppy and uploads the remaining ones', async () => {
         const skippedFile = mock<OcUppyFile>({ id: 'skipped', name: 'one.txt' })
         const freshFile = mock<OcUppyFile>({ id: 'fresh', name: 'fresh.txt' })
         const { instance, mocks } = getWrapper({
@@ -562,20 +625,24 @@ describe('HandleUpload', () => {
           conflictHandlerResult: [freshFile]
         })
         vi.spyOn(instance, 'prepareFiles').mockReturnValue([skippedFile, freshFile])
+        const uppyFileIds = useUppyFileState(mocks, [skippedFile, freshFile])
 
         await instance.handleUpload([skippedFile, freshFile])
-        expect(mocks.uppy.removeFile).toHaveBeenCalledWith('skipped')
-        expect(mocks.uppy.removeFile).not.toHaveBeenCalledWith('fresh')
+        expect(uppyFileIds()).toEqual(['fresh'])
         expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
       })
       it('sets the result of the conflict handler as uppy file state', async () => {
-        const conflictHandlerResult = [mock<OcUppyFile>({ id: '1' })]
-        const { instance, mocks } = getWrapper({ conflicts: [{}], conflictHandlerResult })
-        await instance.handleUpload([mock<OcUppyFile>(), mock<OcUppyFile>()])
-
-        expect(mocks.uppy.setState).toHaveBeenCalledWith({
-          files: { [conflictHandlerResult[0].id]: conflictHandlerResult[0] }
+        const files = [mock<OcUppyFile>({ id: '1' }), mock<OcUppyFile>({ id: '2' })]
+        const renamedFile = mock<OcUppyFile>({ id: '1', name: 'renamed' })
+        const { instance, mocks } = getWrapper({
+          conflicts: [{}],
+          conflictHandlerResult: [renamedFile]
         })
+        vi.spyOn(instance, 'prepareFiles').mockReturnValue(files)
+        useUppyFileState(mocks, files)
+        await instance.handleUpload(files)
+
+        expect(mocks.uppy.getState().files).toEqual({ '1': renamedFile })
       })
     })
     describe('vault name length check', () => {
