@@ -1,6 +1,6 @@
 import { Resource } from '@opencloud-eu/web-client'
 import { VaultEngine, streamToArrayBuffer } from '@opencloud-eu/web-pkg'
-import { createEngine } from './crypto/engine'
+import { BLOCK_SIZE, createEngine, FILE_HEADER_SIZE } from './crypto/engine'
 import { INTEGRITY_ID_PROP, integrityTokenOf, VaultTarget, writeIntegrityToken } from './integrity'
 
 export type UnlockResult =
@@ -8,16 +8,6 @@ export type UnlockResult =
   | { status: 'unlocked'; engine: VaultEngine }
   /** Cryptographically ruled out, as opposed to a request that simply failed. */
   | { status: 'wrong-passphrase' }
-
-/**
- * An rclone-crypt file is a 32-byte header (magic + nonce) followed by
- * Poly1305-sealed blocks. At exactly 32 bytes there are no blocks, so nothing is
- * authenticated and *any* key "decrypts" it - such a file proves nothing.
- */
-const FILE_HEADER_SIZE = 32
-
-/** One sealed rclone-crypt block: 64 KiB of data plus its 16-byte Poly1305 tag. */
-const BLOCK_SIZE = 16 + 64 * 1024
 
 /** Read the vault root itself, with the integrity token property requested. */
 function readVaultRoot({ webdav, space, vaultRoot }: VaultTarget): Promise<Resource | undefined> {

@@ -138,7 +138,9 @@ export interface VaultEngine {
    * Pipe a stream of encrypted bytes through the engine and get back a
    * stream of cleartext bytes. The engine is free to process the input
    * chunk-by-chunk or to buffer everything internally - callers must not
-   * rely on either behaviour.
+   * rely on either behaviour. Errors (e.g. a failed authentication) can
+   * arrive after data was already emitted, so don't trust or persist the
+   * output before the stream has closed.
    */
   decryptContent: (encrypted: ReadableStream<Uint8Array>) => ReadableStream<Uint8Array>
   /**
