@@ -660,22 +660,11 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         : ''
       const encryptedName = await vaultEngine.encryptPath(file.name)
 
-      // Feed the engine the Blob's native stream instead of materialising the
-      // whole plaintext first. The engine internals still collect today
-      // (lib only exposes `encryptData(Uint8Array)`), but keeping the
-      // input side genuinely streamed means a future engine that emits
-      // rclone-crypt blocks straight onto nacl can be swapped in without
-      // touching this call site.
-      //
-      // TODO(vault): the output is still collected into a Blob because
-      // Uppy + tus-js-client require `file.data` to be `Blob`-shaped with a
-      // working `.slice()` for chunked uploads. End-to-end streaming would
-      // need either a stream-aware uppy plugin or replacing the transport;
-      // both are out of scope for now. The engine API stays streaming so that
-      // change lands as a pure replacement here.
-      // Drive the engine end-to-end with streams. Collection only happens
-      // because Uppy + tus need a sliceable Blob for file.data, not because
-      // the engine API forces it.
+      // TODO(vault): the engine streams block by block, but the output is still
+      // collected into a Blob because Uppy + tus-js-client require `file.data`
+      // to be `Blob`-shaped with a working `.slice()` for chunked uploads.
+      // End-to-end streaming needs a custom tus fileReader that encrypts
+      // each requested slice on demand.
       const cipherBlob = await streamToBlob(
         vaultEngine.encryptContent((file.data as Blob).stream()),
         'application/octet-stream'

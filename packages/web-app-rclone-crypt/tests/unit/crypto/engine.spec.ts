@@ -1,5 +1,6 @@
+import { Cipher, encryptedSize } from '@fyears/rclone-crypt'
 import { encryptVaultPath } from '@opencloud-eu/web-pkg'
-import { createEngine } from '../../../src/crypto/engine'
+import { createEngine, FILE_HEADER_SIZE } from '../../../src/crypto/engine'
 import { fromBase64 } from '../../../src/integrity'
 
 async function collect(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
@@ -28,6 +29,49 @@ function streamOf(...chunks: Uint8Array[]): ReadableStream<Uint8Array> {
       controller.close()
     }
   })
+}
+
+const BLOCK = 64 * 1024
+
+function randomBytes(size: number): Uint8Array {
+  const out = new Uint8Array(size)
+  // getRandomValues is capped at 64 KiB per call
+  for (let offset = 0; offset < size; offset += BLOCK) {
+    crypto.getRandomValues(out.subarray(offset, offset + BLOCK))
+  }
+  return out
+}
+
+// yields one chunk per pull, so the source is still open when the engine cancels it
+function pullSourceOf(
+  chunks: Uint8Array[],
+  onCancel: (reason: unknown) => void
+): ReadableStream<Uint8Array> {
+  let index = 0
+  return new ReadableStream<Uint8Array>({
+    pull(controller) {
+      if (index < chunks.length) {
+        controller.enqueue(chunks[index++])
+        return
+      }
+      controller.close()
+    },
+    cancel: onCancel
+  })
+}
+
+function cut(bytes: Uint8Array, size: number): Uint8Array[] {
+  const chunks: Uint8Array[] = []
+  for (let offset = 0; offset < bytes.byteLength; offset += size) {
+    chunks.push(bytes.subarray(offset, offset + size))
+  }
+  return chunks
+}
+
+async function libCipher(): Promise<Cipher> {
+  const cipher = new Cipher('base32')
+  await cipher.key('foobar', '')
+  return cipher
 }
 
 describe('rclone-crypt engine', () => {
@@ -91,6 +135,98 @@ describe('rclone-crypt engine', () => {
       const back = await collect(engine.decryptContent(streamOf(ciphertext)))
       expect(new TextDecoder().decode(back)).toBe('chunk-one-chunk-two')
     })
+
+    it.each([
+      ['spanning several blocks with a partial last one', 3 * BLOCK + 123],
+      ['of an exact multiple of the block size', 2 * BLOCK]
+    ])('round-trips content %s, cut into odd chunks', async (_, size) => {
+      const plain = randomBytes(size)
+      const ciphertext = await collect(engine.encryptContent(streamOf(...cut(plain, 7777))))
+      expect(ciphertext.byteLength).toBe(encryptedSize(size))
+
+      const back = await collect(engine.decryptContent(streamOf(...cut(ciphertext, 5555))))
+      expect(back).toEqual(plain)
+    })
+
+    it('writes the exact rclone-crypt file format', async () => {
+      const plain = randomBytes(2 * BLOCK + 42)
+      const ciphertext = await collect(engine.encryptContent(streamOf(plain)))
+
+      expect(await (await libCipher()).decryptData(ciphertext)).toEqual(plain)
+    })
+
+    it('reads the exact rclone-crypt file format', async () => {
+      const plain = randomBytes(2 * BLOCK + 42)
+      const ciphertext = await (await libCipher()).encryptData(plain, undefined)
+
+      expect(await collect(engine.decryptContent(streamOf(ciphertext)))).toEqual(plain)
+    })
+
+    it('emits ciphertext before the whole input has been read', async () => {
+      let pulled = 0
+      const source = new ReadableStream<Uint8Array>({
+        pull(controller) {
+          pulled++
+          controller.enqueue(new Uint8Array(BLOCK))
+          if (pulled === 100) {
+            controller.close()
+          }
+        }
+      })
+
+      const { value } = await engine.encryptContent(source).getReader().read()
+
+      expect(value.byteLength).toBe(encryptedSize(BLOCK))
+      expect(pulled).toBeLessThan(5)
+    })
+
+    it('rejects a tampered block', async () => {
+      const ciphertext = await collect(engine.encryptContent(streamOf(randomBytes(2 * BLOCK))))
+      ciphertext[ciphertext.byteLength - 1] ^= 1
+
+      await expect(collect(engine.decryptContent(streamOf(ciphertext)))).rejects.toThrow(
+        'invalid tag'
+      )
+    })
+
+    it('rejects content without a valid header', async () => {
+      await expect(collect(engine.decryptContent(streamOf(new Uint8Array(10))))).rejects.toThrow(
+        'too short'
+      )
+      await expect(collect(engine.decryptContent(streamOf(new Uint8Array(64))))).rejects.toThrow(
+        'bad magic'
+      )
+    })
+
+    it('rejects content with a truncated block', async () => {
+      const ciphertext = await collect(engine.encryptContent(streamOf(randomBytes(100))))
+
+      await expect(
+        collect(engine.decryptContent(streamOf(ciphertext.subarray(0, FILE_HEADER_SIZE + 10))))
+      ).rejects.toThrow('truncated block header')
+    })
+
+    it('cancels the source when a block fails to decrypt', async () => {
+      const ciphertext = await collect(engine.encryptContent(streamOf(randomBytes(4 * BLOCK))))
+      ciphertext[FILE_HEADER_SIZE] ^= 1
+      const onCancel = vi.fn()
+
+      await expect(
+        collect(engine.decryptContent(pullSourceOf(cut(ciphertext, BLOCK), onCancel)))
+      ).rejects.toThrow('invalid tag')
+      expect(onCancel).toHaveBeenCalledOnce()
+    })
+
+    it.each(['encryptContent', 'decryptContent'] as const)(
+      'passes a cancel of the %s output on to the source',
+      async (method) => {
+        const onCancel = vi.fn()
+
+        await engine[method](pullSourceOf([new Uint8Array(BLOCK)], onCancel)).cancel('stop')
+
+        expect(onCancel).toHaveBeenCalledWith('stop')
+      }
+    )
   })
 
   describe('verifySegment', () => {
