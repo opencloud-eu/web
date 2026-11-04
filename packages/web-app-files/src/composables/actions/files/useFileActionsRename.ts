@@ -121,8 +121,10 @@ export const useFileActionsRename = () => {
     }
 
     const areFileExtensionsShown = resourcesStore.areFileExtensionsShown
+    // dot-files are always shown with their full name, the file list never splits off an extension
+    const isDotFile = resources[0].name.startsWith('.')
     const isExtensionHidden =
-      !areFileExtensionsShown && !resources[0].isFolder && !!resources[0].extension
+      !areFileExtensionsShown && !resources[0].isFolder && !!resources[0].extension && !isDotFile
     function withExtension(name: string) {
       return isExtensionHidden ? `${name}.${resources[0].extension}` : name
     }
@@ -135,26 +137,22 @@ export const useFileActionsRename = () => {
       setError(isValid ? null : error)
     }
     const nameWithoutExtension = extractNameWithoutExtension(resources[0])
-    const modalTitle =
-      !resources[0].isFolder && !areFileExtensionsShown ? nameWithoutExtension : resources[0].name
+    const displayedName = isExtensionHidden ? nameWithoutExtension : resources[0].name
 
     const title = resources[0].isFolder
-      ? $gettext('Rename folder »%{name}«', { name: modalTitle })
-      : $gettext('Rename file »%{name}«', { name: modalTitle })
-
-    const inputValue =
-      !resources[0].isFolder && !areFileExtensionsShown ? nameWithoutExtension : resources[0].name
+      ? $gettext('Rename folder »%{name}«', { name: displayedName })
+      : $gettext('Rename file »%{name}«', { name: displayedName })
 
     const inputSelectionRange =
-      resources[0].isFolder || !areFileExtensionsShown
+      resources[0].isFolder || isExtensionHidden
         ? null
-        : ([0, nameWithoutExtension.length] as [number, number])
+        : ([0, (nameWithoutExtension || resources[0].name).length] as [number, number])
 
     dispatchModal({
       title,
       confirmText: $gettext('Rename'),
       hasInput: true,
-      inputValue,
+      inputValue: displayedName,
       inputSelectionRange,
       inputLabel: resources[0].isFolder ? $gettext('Folder name') : $gettext('File name'),
       inputRequiredMark: true,

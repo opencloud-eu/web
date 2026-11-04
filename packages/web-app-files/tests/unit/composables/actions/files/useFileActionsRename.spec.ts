@@ -7,6 +7,7 @@ import { unref } from 'vue'
 
 const currentFolder = {
   id: '1',
+  name: 'folder',
   path: '/folder'
 }
 
@@ -48,25 +49,57 @@ describe('rename', () => {
     })
 
     it.each([
-      { name: 'folder', extension: '', isFolder: true, input: 'folder2', expected: '/folder2' },
+      {
+        name: 'folder',
+        extension: '',
+        isFolder: true,
+        inputValue: 'folder',
+        input: 'folder2',
+        expected: '/folder2'
+      },
       {
         name: 'dotted.folder',
         extension: 'folder',
         isFolder: true,
+        inputValue: 'dotted.folder',
         input: 'dotted2.folder',
         expected: '/dotted2.folder'
       },
-      { name: 'README', extension: '', isFolder: false, input: 'README2', expected: '/README2' },
+      {
+        name: 'README',
+        extension: '',
+        isFolder: false,
+        inputValue: 'README',
+        input: 'README2',
+        expected: '/README2'
+      },
       {
         name: 'file.txt',
         extension: 'txt',
         isFolder: false,
+        inputValue: 'file',
         input: 'file2',
         expected: '/file2.txt'
+      },
+      {
+        name: '.profile',
+        extension: 'profile',
+        isFolder: false,
+        inputValue: '.profile',
+        input: 'profile2',
+        expected: '/profile2'
+      },
+      {
+        name: '.config.json',
+        extension: 'json',
+        isFolder: false,
+        inputValue: '.config.json',
+        input: '.config2.json',
+        expected: '/.config2.json'
       }
     ])(
       'renames "$name" to "$expected" with hidden file extensions',
-      async ({ name, extension, isFolder, input, expected }) => {
+      async ({ name, extension, isFolder, inputValue, input, expected }) => {
         let instance: ReturnType<typeof useFileActionsRename>
         const { mocks } = getWrapper({ setup: (i) => (instance = i) })
         const { space, $clientService: clientService } = mocks
@@ -75,13 +108,85 @@ describe('rename', () => {
         await unref(instance.actions)[0].handler({ space, resources: [resource] })
 
         const { dispatchModal } = useModals()
-        const { inputValue, onConfirm } = vi.mocked(dispatchModal).mock.calls[0][0]
-        expect(inputValue).toBe(isFolder ? name : name.replace(`.${extension}`, ''))
-        await onConfirm(input)
+        const modal = vi.mocked(dispatchModal).mock.calls[0][0]
+        const type = isFolder ? 'folder' : 'file'
+        expect(modal.title).toBe(`Rename ${type} »${inputValue}«`)
+        expect(modal.inputValue).toBe(inputValue)
+        await modal.onConfirm(input)
 
         expect(clientService.webdav.moveFiles).toHaveBeenCalledWith(space, resource, space, {
           path: expected
         })
+      }
+    )
+
+    it.each([
+      { name: 'a.txt', extension: 'txt', shown: true, inputValue: 'a.txt', expected: [0, 1] },
+      { name: 'file.txt', extension: 'txt', shown: true, inputValue: 'file.txt', expected: [0, 4] },
+      { name: 'README', extension: '', shown: true, inputValue: 'README', expected: [0, 6] },
+      {
+        name: '.config.json',
+        extension: 'json',
+        shown: true,
+        inputValue: '.config.json',
+        expected: [0, 7]
+      },
+      {
+        name: '.profile',
+        extension: 'profile',
+        shown: true,
+        inputValue: '.profile',
+        expected: [0, 8]
+      },
+      { name: 'a.txt', extension: 'txt', shown: false, inputValue: 'a', expected: null },
+      { name: 'README', extension: '', shown: false, inputValue: 'README', expected: [0, 6] },
+      {
+        name: '.config.json',
+        extension: 'json',
+        shown: false,
+        inputValue: '.config.json',
+        expected: [0, 7]
+      },
+      {
+        name: '.bashrc',
+        extension: 'bashrc',
+        shown: false,
+        inputValue: '.bashrc',
+        expected: [0, 7]
+      }
+    ])(
+      'selects $expected of "$name" with file extensions shown: $shown',
+      async ({ name, extension, shown, inputValue, expected }) => {
+        let instance: ReturnType<typeof useFileActionsRename>
+        const { mocks } = getWrapper({ setup: (i) => (instance = i) })
+        useResourcesStore().areFileExtensionsShown = shown
+        const resource = mock<Resource>({ name, extension, isFolder: false, path: `/${name}` })
+        await unref(instance.actions)[0].handler({ space: mocks.space, resources: [resource] })
+
+        const { dispatchModal } = useModals()
+        const modal = vi.mocked(dispatchModal).mock.calls[0][0]
+        expect(modal.inputValue).toBe(inputValue)
+        expect(modal.inputSelectionRange).toEqual(expected)
+      }
+    )
+
+    it.each([true, false])(
+      'does not select anything in folder names with file extensions shown: %s',
+      async (shown) => {
+        let instance: ReturnType<typeof useFileActionsRename>
+        const { mocks } = getWrapper({ setup: (i) => (instance = i) })
+        useResourcesStore().areFileExtensionsShown = shown
+        const resource = mock<Resource>({
+          name: 'dotted.folder',
+          extension: 'folder',
+          isFolder: true,
+          path: '/dotted.folder'
+        })
+        await unref(instance.actions)[0].handler({ space: mocks.space, resources: [resource] })
+
+        const { dispatchModal } = useModals()
+        const { inputSelectionRange } = vi.mocked(dispatchModal).mock.calls[0][0]
+        expect(inputSelectionRange).toBeNull()
       }
     )
   })

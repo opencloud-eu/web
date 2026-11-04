@@ -73,6 +73,20 @@ describe('Details SideBar Panel', () => {
     const { wrapper } = createWrapper()
     expect(wrapper.findAll('dt').map((dt) => dt.text())).toContain('Size')
   })
+  it.each([
+    { size: 0, used: 205000, expected: '205 kB' },
+    { size: 205000, used: 0, expected: '0 B' },
+    { size: 205000, used: undefined, expected: '205 kB' }
+  ])(
+    'renders the used quota $used as size, falling back to the space size $size',
+    ({ size, used, expected }) => {
+      const { wrapper } = createWrapper({
+        spaceResource: { ...spaceMock, size, spaceQuota: { used, total: 1000000 } }
+      })
+      const sizeIndex = wrapper.findAll('dt').findIndex((dt) => dt.text() === 'Size')
+      expect(wrapper.findAll('dd').at(sizeIndex).text()).toContain(`${expected},`)
+    }
+  )
   it('does not render the size if the space is not the current folder', () => {
     const { wrapper } = createWrapper({ currentFolder: null })
     expect(wrapper.findAll('dt').map((dt) => dt.text())).not.toContain('Size')
