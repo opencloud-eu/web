@@ -7,11 +7,14 @@ import {
   RouteLocation,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
+import { flushPromises } from '@vue/test-utils'
+import type { Mock } from 'vitest'
 import { defineComponent, ref } from 'vue'
 import { useSelectedResources } from '../../../../src/composables/selection'
 import {
   useAppsStore,
   useExtensionRegistry,
+  useMessages,
   useResourcesStore,
   useSharesStore,
   useSideBar
@@ -276,6 +279,41 @@ describe('FileSideBar', () => {
         expect(sharesStore.setCollaboratorShares).toHaveBeenCalledWith([])
       })
     })
+    describe('when loading the shares fails', () => {
+      it('shows an error message and allows reloading the shares', async () => {
+        const resource = mock<Resource>({ id: 'resource-id', fileId: 'resource-id' })
+        const listPermissions = vi.fn().mockRejectedValue(new Error('failed'))
+        const { wrapper } = createWrapper({ item: resource, listPermissions })
+        await flushPromises()
+
+        const { showErrorMessage } = useMessages()
+        expect(showErrorMessage).toHaveBeenCalledWith(
+          expect.objectContaining({ title: 'Failed to load shares' })
+        )
+        expect(useSharesStore().setLoading).toHaveBeenLastCalledWith(false)
+
+        listPermissions.mockResolvedValue({ shares: [], allowedActions: [], allowedRoles: [] })
+        ;(wrapper.vm as any).loadShares(resource)
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalledTimes(2)
+      })
+      it('does not show an error message when the loading gets cancelled', async () => {
+        const resource = mock<Resource>({ id: 'resource-id', fileId: 'resource-id' })
+        const listPermissions = vi.fn().mockReturnValue(new Promise(() => {}))
+        const { wrapper } = createWrapper({ item: resource, listPermissions })
+        await flushPromises()
+
+        ;(wrapper.vm as any).loadShares(
+          mock<Resource>({ id: 'other-resource-id', fileId: 'other-resource-id' })
+        )
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalledTimes(2)
+        const { showErrorMessage } = useMessages()
+        expect(showErrorMessage).not.toHaveBeenCalled()
+      })
+    })
     describe('loadVersionsTask', () => {
       beforeEach(() => {
         canListVersionsMock.mockReturnValue(true)
@@ -319,13 +357,15 @@ function createWrapper({
   isOpen = true,
   currentRouteName = 'files-spaces-generic',
   currentFolder = undefined,
-  space = undefined
+  space = undefined,
+  listPermissions = undefined
 }: {
   item?: Resource
   isOpen?: boolean
   currentRouteName?: string
   currentFolder?: Resource
   space?: SpaceResource
+  listPermissions?: Mock
 } = {}) {
   const plugins = defaultPlugins()
 
@@ -345,6 +385,11 @@ function createWrapper({
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ name: currentRouteName })
   })
+  if (listPermissions) {
+    mocks.$clientService.graphAuthenticated.permissions.listPermissions.mockImplementation(
+      listPermissions
+    )
+  }
   return {
     mocks,
     wrapper: shallowMount(FileSideBar, {

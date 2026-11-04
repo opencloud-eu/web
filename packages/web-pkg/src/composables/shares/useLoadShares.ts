@@ -85,144 +85,156 @@ export const useLoadShares = () => {
       sharesStore.removeOrphanedShares()
     }
 
-    const { collaboratorShares: collaboratorCache, linkShares: linkCache } = sharesStore
-    const client = clientService.graphAuthenticated.permissions
+    try {
+      const { collaboratorShares: collaboratorCache, linkShares: linkCache } = sharesStore
+      const client = clientService.graphAuthenticated.permissions
 
-    let driveId = space?.id
-    if (isShareSpaceResource(space)) {
-      const matchingMountPoint = yield* call(
-        spacesStore.getMountPointForSpace({
-          graphClient: clientService.graphAuthenticated,
-          space,
-          signal
-        })
-      )
-      if (matchingMountPoint) {
-        driveId = matchingMountPoint.root.remoteItem.rootId
-      }
-    }
-
-    // load direct shares
-    const { shares, allowedRoles } = yield* call(
-      client.listPermissions(driveId, resource.fileId, sharesStore.graphRoles, {}, { signal })
-    )
-
-    const loadedCollaboratorShares = shares.filter(isCollaboratorShare)
-    const loadedLinkShares = shares.filter(isLinkShare)
-
-    const rolesArray = Object.values(sharesStore.graphRoles)
-    availableInternalShareRoles.value =
-      allowedRoles?.map((r) => {
-        return {
-          ...r,
-          icon: rolesArray.find((role) => role.id === r.id)?.icon
-        }
-      }) || []
-
-    // load external share roles
-    if (appsStore.isAppEnabled('open-cloud-mesh')) {
-      const { allowedRoles } = yield* call(
-        client.listPermissions(
-          driveId,
-          resource.fileId,
-          sharesStore.graphRoles,
-          {
-            filter: `@libre.graph.permissions.roles.allowedValues/rolePermissions/any(p:contains(p/condition, '@Subject.UserType=="Federated"'))`,
-            select: [ListPermissionsSpaceRootSelectEnum.LibreGraphPermissionsRolesAllowedValues]
-          },
-          { signal }
+      let driveId = space?.id
+      if (isShareSpaceResource(space)) {
+        const matchingMountPoint = yield* call(
+          spacesStore.getMountPointForSpace({
+            graphClient: clientService.graphAuthenticated,
+            space,
+            signal
+          })
         )
+        if (matchingMountPoint) {
+          driveId = matchingMountPoint.root.remoteItem.rootId
+        }
+      }
+
+      // load direct shares
+      const { shares, allowedRoles } = yield* call(
+        client.listPermissions(driveId, resource.fileId, sharesStore.graphRoles, {}, { signal })
       )
 
-      availableExternalShareRoles.value =
+      const loadedCollaboratorShares = shares.filter(isCollaboratorShare)
+      const loadedLinkShares = shares.filter(isLinkShare)
+
+      const rolesArray = Object.values(sharesStore.graphRoles)
+      availableInternalShareRoles.value =
         allowedRoles?.map((r) => {
           return {
             ...r,
             icon: rolesArray.find((role) => role.id === r.id)?.icon
           }
         }) || []
-    }
 
-    // use cache for indirect shares
-    const useCache = !includeInheritedShares && !unref(isFlatFileList) && !unref(isProjectsLocation)
-    if (useCache) {
-      collaboratorCache.forEach((share) => {
-        if (loadedCollaboratorShares.some((s) => s.id === share.id)) {
-          return
-        }
+      // load external share roles
+      if (appsStore.isAppEnabled('open-cloud-mesh')) {
+        const { allowedRoles } = yield* call(
+          client.listPermissions(
+            driveId,
+            resource.fileId,
+            sharesStore.graphRoles,
+            {
+              filter: `@libre.graph.permissions.roles.allowedValues/rolePermissions/any(p:contains(p/condition, '@Subject.UserType=="Federated"'))`,
+              select: [ListPermissionsSpaceRootSelectEnum.LibreGraphPermissionsRolesAllowedValues]
+            },
+            { signal }
+          )
+        )
 
-        loadedCollaboratorShares.push({ ...share, indirect: true })
+        availableExternalShareRoles.value =
+          allowedRoles?.map((r) => {
+            return {
+              ...r,
+              icon: rolesArray.find((role) => role.id === r.id)?.icon
+            }
+          }) || []
+      }
+
+      // use cache for indirect shares
+      const useCache =
+        !includeInheritedShares && !unref(isFlatFileList) && !unref(isProjectsLocation)
+      if (useCache) {
+        collaboratorCache.forEach((share) => {
+          if (loadedCollaboratorShares.some((s) => s.id === share.id)) {
+            return
+          }
+
+          loadedCollaboratorShares.push({ ...share, indirect: true })
+        })
+
+        linkCache.forEach((share) => {
+          if (loadedLinkShares.some((s) => s.id === share.id)) {
+            return
+          }
+
+          loadedLinkShares.push({ ...share, indirect: true })
+        })
+      }
+
+      if (includeInheritedShares || !resourcesStore.currentFolder) {
+        yield resourcesStore.loadAncestorMetaData({
+          folder: unref(resource),
+          space,
+          client: clientService.webdav,
+          signal
+        })
+      }
+
+      // gather all ancestors we need to load shares for (indirect shares, space members)
+      const cachedIds = [...collaboratorCache, ...linkCache].map(({ resourceId }) => resourceId)
+      const ancestorIds = Object.values(resourcesStore.ancestorMetaData)
+        .filter(({ id, path }) => {
+          if (id === resource.id || (!includeInheritedShares && cachedIds.includes(id))) {
+            // share already cached
+            return false
+          }
+          if (isIncomingShareResource(resource)) {
+            // incoming shares don't have ancestors because they are root elements themselves
+            return false
+          }
+          if (isPersonalSpaceResource(space)) {
+            // filter out personal space roots since they don't have shares
+            return path !== '/'
+          }
+          return true
+        })
+        .map(({ id }) => id)
+
+      if (
+        (includeInheritedShares || !resourcesStore.currentFolder) &&
+        isProjectSpaceResource(space) &&
+        !isProjectSpaceResource(resource)
+      ) {
+        ancestorIds.push(space.id)
+      }
+
+      const queue = new PQueue({
+        concurrency: configStore.options.concurrentRequests.shares.list
       })
 
-      linkCache.forEach((share) => {
-        if (loadedLinkShares.some((s) => s.id === share.id)) {
-          return
-        }
-
-        loadedLinkShares.push({ ...share, indirect: true })
+      const promises = [...new Set(ancestorIds)].map((id) => {
+        return queue.add(() =>
+          clientService.graphAuthenticated.permissions
+            .listPermissions(driveId, id, sharesStore.graphRoles, {}, { signal })
+            .then((result) => {
+              const indirectShares = result.shares.map((s) => ({ ...s, indirect: true }))
+              loadedCollaboratorShares.push(...indirectShares.filter(isCollaboratorShare))
+              loadedLinkShares.push(...indirectShares.filter(isLinkShare))
+            })
+        )
       })
+
+      yield Promise.allSettled(promises)
+      if (updateStore) {
+        sharesStore.setCollaboratorShares(loadedCollaboratorShares)
+        sharesStore.setLinkShares(loadedLinkShares)
+        sharesStore.setLoading(false)
+      }
+      return { collaboratorShares: loadedCollaboratorShares, linkShares: loadedLinkShares }
+    } catch (e) {
+      if (updateStore) {
+        availableInternalShareRoles.value = []
+        availableExternalShareRoles.value = []
+        sharesStore.setCollaboratorShares([])
+        sharesStore.setLinkShares([])
+        sharesStore.setLoading(false)
+      }
+      throw e
     }
-
-    if (includeInheritedShares || !resourcesStore.currentFolder) {
-      yield resourcesStore.loadAncestorMetaData({
-        folder: unref(resource),
-        space,
-        client: clientService.webdav,
-        signal
-      })
-    }
-
-    // gather all ancestors we need to load shares for (indirect shares, space members)
-    const cachedIds = [...collaboratorCache, ...linkCache].map(({ resourceId }) => resourceId)
-    const ancestorIds = Object.values(resourcesStore.ancestorMetaData)
-      .filter(({ id, path }) => {
-        if (id === resource.id || (!includeInheritedShares && cachedIds.includes(id))) {
-          // share already cached
-          return false
-        }
-        if (isIncomingShareResource(resource)) {
-          // incoming shares don't have ancestors because they are root elements themselves
-          return false
-        }
-        if (isPersonalSpaceResource(space)) {
-          // filter out personal space roots since they don't have shares
-          return path !== '/'
-        }
-        return true
-      })
-      .map(({ id }) => id)
-
-    if (
-      (includeInheritedShares || !resourcesStore.currentFolder) &&
-      isProjectSpaceResource(space) &&
-      !isProjectSpaceResource(resource)
-    ) {
-      ancestorIds.push(space.id)
-    }
-
-    const queue = new PQueue({
-      concurrency: configStore.options.concurrentRequests.shares.list
-    })
-
-    const promises = [...new Set(ancestorIds)].map((id) => {
-      return queue.add(() =>
-        clientService.graphAuthenticated.permissions
-          .listPermissions(driveId, id, sharesStore.graphRoles, {}, { signal })
-          .then((result) => {
-            const indirectShares = result.shares.map((s) => ({ ...s, indirect: true }))
-            loadedCollaboratorShares.push(...indirectShares.filter(isCollaboratorShare))
-            loadedLinkShares.push(...indirectShares.filter(isLinkShare))
-          })
-      )
-    })
-
-    yield Promise.allSettled(promises)
-    if (updateStore) {
-      sharesStore.setCollaboratorShares(loadedCollaboratorShares)
-      sharesStore.setLinkShares(loadedLinkShares)
-      sharesStore.setLoading(false)
-    }
-    return { collaboratorShares: loadedCollaboratorShares, linkShares: loadedLinkShares }
   }).restartable()
 
   return { loadSharesTask, availableInternalShareRoles, availableExternalShareRoles }
