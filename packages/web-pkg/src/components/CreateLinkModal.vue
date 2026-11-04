@@ -117,7 +117,8 @@ import {
   useClientService,
   useThemeStore,
   useModals,
-  useCopyLink
+  useCopyLink,
+  useMessages
 } from '../composables'
 import { isPromiseFulfilled, isPromiseRejected } from '../helpers'
 import { LinkShare, SpaceResource } from '@opencloud-eu/web-client'
@@ -146,8 +147,9 @@ defineEmits<{
 
 const clientService = useClientService()
 const language = useGettext()
-const { $gettext } = language
+const { $gettext, $ngettext } = language
 const { removeModal } = useModals()
+const { showErrorMessage } = useMessages()
 const { copyLink } = useCopyLink()
 const passwordPolicyService = usePasswordPolicyService()
 const { isEnabled: isEmbedEnabled, postMessage } = useEmbedMode()
@@ -284,6 +286,14 @@ const onConfirm = async (options: { copyPassword?: boolean } = {}) => {
           ...(options.copyPassword && { password: unref(password).value })
         }))
       )
+    }
+
+    const failed = result.filter(isPromiseRejected)
+    if (failed.length) {
+      showErrorMessage({
+        errors: failed.map(({ reason }) => reason),
+        title: $ngettext('Failed to create link', 'Failed to create links', failed.length)
+      })
     }
     removeModal(modal.id)
     return
