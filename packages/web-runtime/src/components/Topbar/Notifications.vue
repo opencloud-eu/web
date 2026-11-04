@@ -11,6 +11,7 @@
       :options="{ pos: 'bottom-right', delayHide: 0 }"
       padding-size="small"
       :is-menu="false"
+      @show-drop="refreshNotifications"
     >
       <div class="flex justify-end items-center" :class="{ 'mb-2': notifications.length }">
         <oc-button
@@ -83,6 +84,7 @@
 </template>
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, Ref, ref, unref, useTemplateRef } from 'vue'
+import { useEventListener } from '@vueuse/core'
 import isEmpty from 'lodash-es/isEmpty'
 import escape from 'lodash-es/escape'
 import {
@@ -117,7 +119,9 @@ const notifications: Ref<Notification[]> = ref([])
 const notificationsInterval = ref<ReturnType<typeof setInterval>>()
 
 const loading = computed(() => {
-  return fetchNotificationsTask.isRunning || deleteNotificationsTask.isRunning
+  const initialFetchRunning =
+    fetchNotificationsTask.isRunning && !fetchNotificationsTask.lastSuccessful
+  return initialFetchRunning || deleteNotificationsTask.isRunning
 })
 
 const formatDate = (date: string) => {
@@ -221,6 +225,7 @@ const fetchNotificationsTask = useTask(function* (signal) {
 }).restartable()
 
 const deleteNotificationsTask = useTask(function* (signal, ids) {
+  fetchNotificationsTask.cancelAll()
   try {
     yield clientService.httpAuthenticated.delete(
       'ocs/v2.php/apps/notifications/api/v1/notifications',
@@ -247,12 +252,28 @@ const onSSENotificationEvent = (event: MessageEvent) => {
     if (!notification || !notification.notification_id) {
       return
     }
+    if (unref(notifications).some((n) => n.notification_id === notification.notification_id)) {
+      return
+    }
     setAdditionalNotificationData(notification)
     notifications.value = [notification, ...unref(notifications)]
   } catch {
     console.error('Unable to parse sse notification data')
   }
 }
+
+function refreshNotifications() {
+  fetchNotificationsTask.perform()
+}
+
+function onVisibilityChange() {
+  if (document.visibilityState !== 'visible') {
+    return
+  }
+  refreshNotifications()
+}
+
+useEventListener(document, 'visibilitychange', onVisibilityChange)
 
 onMounted(() => {
   fetchNotificationsTask.perform()
