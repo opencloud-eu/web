@@ -420,9 +420,16 @@ const addMissingDriveAliasAndItem = async () => {
 const loadResourceTask = useTask(function* (signal) {
   try {
     if (!unref(driveAliasAndItem)) {
+      if (!unref(fileId)) {
+        throw new HttpError('Resource not found', undefined, 404)
+      }
       yield addMissingDriveAliasAndItem()
     }
     space.value = unref(unref(currentFileContext).space)
+    if (!unref(space)) {
+      // the space is unknown or not accessible, like the server answers for such resources
+      throw new HttpError('Resource not found', undefined, 404)
+    }
     const currentSpace = unref(space)
     if (isPublicSpaceResource(currentSpace) && currentSpace.publicLinkPermission === undefined) {
       // the link permission and file id are only known if the link got resolved beforehand,

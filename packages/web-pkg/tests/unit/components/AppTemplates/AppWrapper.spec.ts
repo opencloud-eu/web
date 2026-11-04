@@ -126,6 +126,7 @@ function setup({
     params: { driveAliasAndItem: 'personal/alan/a.md' }
   }),
   isGuestContext = false,
+  fileContext = mock<FileContext>({ space: mock<any>(), path: '/a.md' }),
   fileContentOptions = undefined as FileContentOptions,
   // Receives the errors Vue would otherwise report as unhandled.
   errorHandler = undefined as (err: unknown) => void
@@ -144,7 +145,7 @@ function setup({
     isConflicted.value = true
   })
   const statusRef = ref(status)
-  const currentFileContext = ref(mock<FileContext>({ space: mock<any>(), path: '/a.md' }))
+  const currentFileContext = ref(fileContext)
   // Deferred so the test controls when each half of the load completes.
   let resolveInfo: (r: Resource) => void
   let rejectInfo: (e: Error) => void
@@ -286,6 +287,7 @@ function setup({
     markConflicted,
     putFileContents,
     closeApp,
+    getFileInfo,
     getFileContents,
     unregisterAppBarExtension,
     wasWrittenByRoom,
@@ -436,6 +438,8 @@ describe('AppWrapper — missing drive alias', () => {
     const s = setup({
       yjsEnabled: false,
       currentRoute: route as unknown as RouteLocation,
+      // the drive resolver only finds the space once the route has the drive alias
+      fileContext: { space: undefined, path: '' } as FileContext,
       errorHandler
     })
     // Like the router: the new route changes the file context, which restarts
@@ -453,6 +457,54 @@ describe('AppWrapper — missing drive alias', () => {
     expect(s.routerPush).toHaveBeenCalledTimes(1)
     expect(s.currentContent()).toBe('content of a')
     expect(errorHandler).not.toHaveBeenCalled()
+  })
+})
+
+describe('AppWrapper — space that cannot be resolved', () => {
+  // e.g. the space of another user, whose alias the drive resolver doesn't know
+  const unresolvedFileContext = { space: undefined, path: '' } as FileContext
+
+  // no mock: it would hand out a file id for any query item
+  function routeWithoutFileId(driveAliasAndItem: string) {
+    return {
+      path: '/test-app',
+      query: {},
+      params: { driveAliasAndItem }
+    } as unknown as RouteLocation
+  }
+
+  function expectNotFoundMessage(s: ReturnType<typeof setup>) {
+    expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(true)
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
+  }
+
+  it('shows the not found message instead of loading the file without a space', async () => {
+    const s = setup({
+      yjsEnabled: false,
+      fileContext: unresolvedFileContext,
+      currentRoute: routeWithoutFileId('project/doesnotexist/x.md')
+    })
+    await flushPromises()
+
+    expect(s.getFileInfo).not.toHaveBeenCalled()
+    expect(getResourceContextSpy).not.toHaveBeenCalled()
+    expectNotFoundMessage(s)
+  })
+
+  it('shows the not found message for the app route without a file', async () => {
+    const errorHandler = vi.fn()
+    const s = setup({
+      yjsEnabled: false,
+      fileContext: unresolvedFileContext,
+      currentRoute: routeWithoutFileId(''),
+      errorHandler
+    })
+    await flushPromises()
+
+    expect(getResourceContextSpy).not.toHaveBeenCalled()
+    expect(s.getFileInfo).not.toHaveBeenCalled()
+    expect(errorHandler).not.toHaveBeenCalled()
+    expectNotFoundMessage(s)
   })
 })
 
