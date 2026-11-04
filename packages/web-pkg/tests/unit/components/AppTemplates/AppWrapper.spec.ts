@@ -4,7 +4,12 @@ import { flushPromises } from '@vue/test-utils'
 import type { Resource, ShareSpaceResource } from '@opencloud-eu/web-client'
 import { HttpError } from '@opencloud-eu/web-client'
 import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
-import { createMemoryHistory, createRouter, onBeforeRouteLeave } from 'vue-router'
+import {
+  createMemoryHistory,
+  createRouter,
+  onBeforeRouteLeave,
+  onBeforeRouteUpdate
+} from 'vue-router'
 import {
   defaultPlugins,
   defaultComponentMocks,
@@ -33,7 +38,8 @@ const { useAppDefaultsSpy, useYjsSessionSpy, getResourceContextSpy } = vi.hoiste
 
 vi.mock('vue-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('vue-router')>()),
-  onBeforeRouteLeave: vi.fn()
+  onBeforeRouteLeave: vi.fn(),
+  onBeforeRouteUpdate: vi.fn()
 }))
 
 vi.mock('../../../../src/composables/appDefaults/useAppDefaults', () => ({
@@ -94,6 +100,16 @@ function deferred<T>() {
     reject = rej
   })
   return { promise, resolve, reject }
+}
+
+function leaveRoute() {
+  const guard = vi.mocked(onBeforeRouteLeave).mock.calls.at(-1)[0]
+  return (guard as any)({}, {}) as Promise<boolean>
+}
+
+function updateRoute() {
+  const guard = vi.mocked(onBeforeRouteUpdate).mock.calls.at(-1)[0]
+  return (guard as any)({}, {})
 }
 
 const wrappedComponent = defineComponent({
@@ -614,11 +630,6 @@ describe('AppWrapper — changes still pending in the session', () => {
     return s
   }
 
-  function leaveRoute() {
-    const guard = vi.mocked(onBeforeRouteLeave).mock.calls.at(-1)[0]
-    return (guard as any)({}, {}) as Promise<boolean>
-  }
-
   it('saves the last keystrokes on Ctrl+S', async () => {
     const s = await openFileWithPendingChange('typed just now')
 
@@ -685,11 +696,6 @@ describe('AppWrapper — changes still pending in the session', () => {
 })
 
 describe('AppWrapper — deleting the open file', () => {
-  function leaveRoute() {
-    const guard = vi.mocked(onBeforeRouteLeave).mock.calls.at(-1)[0]
-    return (guard as any)({}, {}) as Promise<boolean>
-  }
-
   async function switchFile(s: ReturnType<typeof setup>, resource: Resource, content: string) {
     s.currentFileContext.value = mock<FileContext>({
       space: mock<any>(),
@@ -974,35 +980,94 @@ describe('AppWrapper — saving while a save is running', () => {
     return { s, firstPut }
   }
 
-  it('leaves the editor once the running save finished', async () => {
+  it('leaves the editor without asking once the running save finished', async () => {
     const { s, firstPut } = await openFileWithRunningSave()
     const { dispatchModal } = useModals()
-    const guard = vi.mocked(onBeforeRouteLeave).mock.calls.at(-1)[0]
 
-    const leaving = (guard as any)({}, {}) as Promise<boolean>
+    const leaving = leaveRoute()
     await flushPromises()
+    expect(dispatchModal).not.toHaveBeenCalled()
+
+    firstPut.resolve(mock<Resource>({ etag: 'etag-saved' }))
+
+    expect(await leaving).toBe(true)
+    expect(dispatchModal).not.toHaveBeenCalled()
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+    expect(s.unregisterAppBarExtension).toHaveBeenCalled()
+  })
+
+  it('asks once the running save finished when changes were typed meanwhile', async () => {
+    const { s, firstPut } = await openFileWithRunningSave()
+    const { dispatchModal } = useModals()
+    await s.edit('typed while saving')
+
+    void leaveRoute()
+    firstPut.resolve(mock<Resource>({ etag: 'etag-saved' }))
+    await flushPromises()
+
+    expect(dispatchModal).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Unsaved changes' })
+    )
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+  })
+
+  it('asks without saving again once the running save failed', async () => {
+    const { s, firstPut } = await openFileWithRunningSave()
+    const { dispatchModal } = useModals()
+
+    void leaveRoute()
+    firstPut.reject({ statusCode: 423, response: {} })
+    await flushPromises()
+
+    expect(dispatchModal).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Unsaved changes' })
+    )
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+    expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
+  })
+
+  it('asks only once when leaving again while waiting for the running save', async () => {
+    const { firstPut } = await openFileWithRunningSave()
+    const { dispatchModal } = useModals()
+
+    const firstLeave = leaveRoute()
+    void leaveRoute()
+    firstPut.reject({ statusCode: 423, response: {} })
+    await flushPromises()
+
+    expect(await firstLeave).toBe(true)
+    expect(dispatchModal).toHaveBeenCalledTimes(1)
+  })
+
+  it('gives up waiting when a same-route navigation replaces the leave', async () => {
+    const { s, firstPut } = await openFileWithRunningSave()
+    const { dispatchModal } = useModals()
+
+    const leaving = leaveRoute()
+    updateRoute()
+    firstPut.resolve(mock<Resource>({ etag: 'etag-saved' }))
+
+    expect(await leaving).toBe(true)
+    expect(dispatchModal).not.toHaveBeenCalled()
+    expect(s.unregisterAppBarExtension).not.toHaveBeenCalled()
+  })
+
+  it('leaves without saving again when Save is confirmed while a save started after asking', async () => {
+    const firstPut = deferred<Resource>()
+    const s = await openFile({ putFileContents: vi.fn().mockReturnValueOnce(firstPut.promise) })
+    const { dispatchModal } = useModals()
+    await s.edit('edited content')
+
+    const leaving = leaveRoute()
+    await flushPromises()
+    void s.pressCtrlS()
+    await vi.waitFor(() => expect(s.putFileContents).toHaveBeenCalledTimes(1))
     const confirming = vi.mocked(dispatchModal).mock.calls.at(-1)[0].onConfirm('')
     firstPut.resolve(mock<Resource>({ etag: 'etag-saved' }))
     await confirming
 
     expect(await leaving).toBe(true)
     expect(s.putFileContents).toHaveBeenCalledTimes(1)
-  })
-
-  it('stays in the editor without saving again when the running save fails', async () => {
-    const { s, firstPut } = await openFileWithRunningSave()
-    const { dispatchModal } = useModals()
-    const guard = vi.mocked(onBeforeRouteLeave).mock.calls.at(-1)[0]
-
-    const leaving = (guard as any)({}, {}) as Promise<boolean>
-    await flushPromises()
-    const confirming = vi.mocked(dispatchModal).mock.calls.at(-1)[0].onConfirm('')
-    firstPut.reject({ statusCode: 423, response: {} })
-    await confirming
-
-    expect(await leaving).toBe(false)
-    expect(s.putFileContents).toHaveBeenCalledTimes(1)
-    expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
   })
 
   it('saves what was typed meanwhile on a second Ctrl+S', async () => {
