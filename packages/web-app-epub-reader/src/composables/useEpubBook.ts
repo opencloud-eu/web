@@ -63,7 +63,7 @@ export function useEpubBook() {
     const nextBook = ePub(content)
     book.value = nextBook
     try {
-      await nextBook.ready
+      await whenReady(nextBook)
     } catch (error) {
       fail(nextBook, error)
       return
@@ -149,6 +149,14 @@ export function useEpubBook() {
     prev,
     next
   }
+}
+
+/** epub.js reports a book it cannot open only via `openFailed` and never settles `ready` then. */
+function whenReady(currentBook: Book) {
+  return new Promise<void>((resolve, reject) => {
+    currentBook.on('openFailed', reject)
+    currentBook.ready.then(() => resolve(), reject)
+  })
 }
 
 function findFirstRenderableHref(currentBook: Book) {
