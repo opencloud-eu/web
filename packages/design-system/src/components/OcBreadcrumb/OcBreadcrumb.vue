@@ -1,7 +1,14 @@
 <template>
   <nav
     :id="id"
-    :class="`oc-breadcrumb oc-breadcrumb-${variation} overflow-visible`"
+    :class="[
+      `oc-breadcrumb oc-breadcrumb-${variation} overflow-visible`,
+      {
+        'sm:min-w-0': isAtMinimumItemCount && mobileBreakpoint === 'sm',
+        'md:min-w-0': isAtMinimumItemCount && mobileBreakpoint === 'md',
+        'lg:min-w-0': isAtMinimumItemCount && mobileBreakpoint === 'lg'
+      }
+    ]"
     :aria-label="$gettext('Breadcrumbs')"
   >
     <ol
@@ -21,7 +28,10 @@
           'oc-breadcrumb-list-item',
           'flex',
           'items-center',
-          { 'sr-only': isItemHidden(item as BreadcrumbItem) }
+          {
+            'sr-only': isItemHidden(item as BreadcrumbItem),
+            'min-w-0': isAtMinimumItemCount && index === displayItems.length - 1
+          }
         ]"
         @dragover.prevent
         @dragenter.prevent="dropItemStyling(item as BreadcrumbItem, index, false, $event)"
@@ -81,6 +91,7 @@
           :current="index === displayItems.length - 1"
           :router-link-component="routerLinkComponent"
           class="first:text-base text-xl h-5 inline-flex items-center"
+          :class="{ 'min-w-0': index === displayItems.length - 1 }"
           :text-class="
             'align-sub truncate inline-block leading-[1.2] max-w-3xs' +
             (index === displayItems.length - 1 ? ' oc-breadcrumb-item-text-last' : '')
@@ -234,6 +245,13 @@ defineSlots<Slots>()
 const displayItems = ref<BreadcrumbItem[]>([])
 const truncationItems = ref<BreadcrumbItem[]>([])
 
+// reduceBreadcrumb never collapses below this item count. The last item may only shrink below
+// its max width at this count, a shrunk item would distort the width measurement while items
+// are still being collapsed. Rows that fit at this count don't shrink anyway.
+const isAtMinimumItemCount = computed(() => {
+  return unref(displayItems).length <= truncationOffset + 1
+})
+
 const isItemHidden = (item: BreadcrumbItem): boolean => {
   return (
     truncationItems.value.indexOf(item) !== -1 ||
@@ -286,7 +304,7 @@ const reduceBreadcrumb = (offsetIndex: number) => {
   const totalBreadcrumbWidth = calculateTotalBreadcrumbWidth()
 
   const isOverflowing = breadcrumbMaxWidth < totalBreadcrumbWidth
-  if (!isOverflowing || displayItems.value.length <= truncationOffset + 1) {
+  if (!isOverflowing || unref(isAtMinimumItemCount)) {
     return
   }
   // Remove from the left side
