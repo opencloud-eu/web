@@ -17,8 +17,16 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useFolderLink: vi.fn()
 }))
 
-const createMessageEvent = (data: Record<string, unknown>) =>
-  new MessageEvent('message', { data: JSON.stringify(data) })
+let currentAppIframeRef: Ref<HTMLIFrameElement | null>
+
+const createMessageEvent = (
+  data: Record<string, unknown>,
+  source: unknown = currentAppIframeRef?.value?.contentWindow
+) => {
+  const event = new MessageEvent('message', { data: JSON.stringify(data) })
+  Object.defineProperty(event, 'source', { value: source })
+  return event
+}
 
 const createMockIframe = (postMessage = vi.fn()): HTMLIFrameElement =>
   ({ contentWindow: { postMessage } }) as unknown as HTMLIFrameElement
@@ -50,14 +58,45 @@ describe('useCollaboraPostMessages', () => {
     })
   })
 
+  describe('message sender verification', () => {
+    it.each([
+      { description: 'another window', source: {} },
+      { description: 'no window', source: null }
+    ])('ignores messages sent by $description', async ({ source }) => {
+      const { instance, onClose } = getWrapper()
+
+      await instance.handlePostMessagesCollabora(
+        createMessageEvent({ MessageId: 'UI_Close' }, source)
+      )
+
+      expect(onClose).not.toHaveBeenCalled()
+      expect(mockMentionUsers.notifyMentionedUsers).not.toHaveBeenCalled()
+    })
+
+    it('ignores messages when the iframe is not available', async () => {
+      const { instance, onClose } = getWrapper({
+        appIframeRef: ref<HTMLIFrameElement | null>(null)
+      })
+
+      await instance.handlePostMessagesCollabora(createMessageEvent({ MessageId: 'UI_Close' }, {}))
+
+      expect(onClose).not.toHaveBeenCalled()
+    })
+  })
+
   describe('postMessageToCollabora', () => {
     it('logs an error when the iframe is not available', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      const { instance } = getWrapper({ appIframeRef: null })
+      const appIframeRef = ref<HTMLIFrameElement | null>(createMockIframe())
+      const { instance } = getWrapper({ appIframeRef })
 
       await instance.handlePostMessagesCollabora(
-        createMessageEvent({ MessageId: 'App_LoadingStatus', Values: { Status: 'Frame_Ready' } })
+        createMessageEvent({ MessageId: 'UI_SaveAs', Values: {} })
       )
+      appIframeRef.value = null
+      const { dispatchModal } = useModals()
+      const { callbackFn } = vi.mocked(dispatchModal).mock.calls[0][0].customComponentAttrs()
+      ;(callbackFn as (fileName: string) => void)('new.odt')
 
       expect(consoleError).toHaveBeenCalledWith('Collabora iframe not found')
     })
@@ -460,12 +499,10 @@ describe('useCollaboraPostMessages', () => {
     it('handles malformed JSON without throwing', async () => {
       const consoleDebug = vi.spyOn(console, 'debug').mockImplementation(() => undefined)
       const { instance } = getWrapper()
+      const event = new MessageEvent('message', { data: 'not-valid-json{' })
+      Object.defineProperty(event, 'source', { value: currentAppIframeRef.value.contentWindow })
 
-      await expect(
-        instance.handlePostMessagesCollabora(
-          new MessageEvent('message', { data: 'not-valid-json{' })
-        )
-      ).resolves.toBeUndefined()
+      await expect(instance.handlePostMessagesCollabora(event)).resolves.toBeUndefined()
 
       expect(consoleDebug).toHaveBeenCalled()
     })
@@ -485,6 +522,7 @@ function getWrapper({
 } = {}) {
   let instance!: ReturnType<typeof useCollaboraPostMessages>
   const onClose = vi.fn()
+  currentAppIframeRef = appIframeRef
 
   const wrapper = getComposableWrapper(
     () => {

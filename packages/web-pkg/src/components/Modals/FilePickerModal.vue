@@ -24,7 +24,7 @@ import {
 } from '../../composables'
 import { LocationQuery, RouteLocationRaw } from 'vue-router'
 import AppLoadingSpinner from '../AppLoadingSpinner.vue'
-import { buildUrl } from '../../helpers'
+import { buildUrl, isMessageFromIframe } from '../../helpers'
 
 const { modal, allowedFileTypes, parentFolderLink, callbackFn } = defineProps<{
   modal: Modal
@@ -52,8 +52,12 @@ const onLoad = () => {
   unref(iframeRef).contentWindow.focus()
 }
 
-const onFilePick = ({ data }: MessageEvent) => {
-  if (data.name !== 'opencloud-embed:file-pick') {
+const onFilePick = (event: MessageEvent) => {
+  const { data } = event
+  if (
+    !isMessageFromIframe(event, unref(iframeRef), iframeUrl.origin) ||
+    data?.name !== 'opencloud-embed:file-pick'
+  ) {
     return
   }
 
@@ -63,8 +67,12 @@ const onFilePick = ({ data }: MessageEvent) => {
   removeModal(modal.id)
 }
 
-const onCancel = ({ data }: MessageEvent) => {
-  if (data.name !== 'opencloud-embed:cancel') {
+const onCancel = (event: MessageEvent) => {
+  const { data } = event
+  if (
+    !isMessageFromIframe(event, unref(iframeRef), iframeUrl.origin) ||
+    data?.name !== 'opencloud-embed:cancel'
+  ) {
     return
   }
 

@@ -49,7 +49,7 @@ describe('SaveAsModal', () => {
 
       mocks.$clientService.webdav.putFileContents.mockResolvedValue(mock<Resource>())
       ;(wrapper.vm as any).onLocationPick(
-        mock<MessageEvent>({
+        createMessageEvent(wrapper, {
           data: {
             name: 'opencloud-embed:select',
             data: {
@@ -73,7 +73,7 @@ describe('SaveAsModal', () => {
 
       mocks.$clientService.webdav.putFileContents.mockRejectedValue(new Error(''))
       ;(wrapper.vm as any).onLocationPick(
-        mock<MessageEvent>({
+        createMessageEvent(wrapper, {
           data: {
             name: 'opencloud-embed:select',
             data: {
@@ -106,7 +106,7 @@ describe('SaveAsModal', () => {
         mock<ListFilesResult>({ children: [mock<Resource>({ name: fileName })] })
       )
       ;(wrapper.vm as any).onLocationPick(
-        mock<MessageEvent>({
+        createMessageEvent(wrapper, {
           data: {
             name: 'opencloud-embed:select',
             data: {
@@ -124,6 +124,58 @@ describe('SaveAsModal', () => {
       expect(window.open).not.toHaveBeenCalled()
     })
   })
+  describe('message sender verification', () => {
+    it.each([
+      { source: {}, origin: 'http://localhost:3000' },
+      { source: undefined, origin: 'http://attacker.example' }
+    ])(
+      'ignores "opencloud-embed:select" messages not sent by the picker iframe (%o)',
+      async ({ source, origin }) => {
+        const { wrapper, mocks } = getWrapper()
+        const modalStore = useModals()
+        await (wrapper.vm as any).onLocationPick(
+          createMessageEvent(
+            wrapper,
+            {
+              data: {
+                name: 'opencloud-embed:select',
+                data: { resources: [mock<Resource>({ storageId: '1' })], fileName: 'test.txt' }
+              }
+            },
+            { source, origin }
+          )
+        )
+        expect(mocks.$clientService.webdav.putFileContents).not.toHaveBeenCalled()
+        expect(modalStore.removeModal).not.toHaveBeenCalled()
+      }
+    )
+    it.each([
+      { source: {}, origin: 'http://localhost:3000' },
+      { source: undefined, origin: 'http://attacker.example' }
+    ])(
+      'ignores "opencloud-embed:cancel" messages not sent by the picker iframe (%o)',
+      ({ source, origin }) => {
+        const { wrapper } = getWrapper()
+        const modalStore = useModals()
+        ;(wrapper.vm as any).onCancel(
+          createMessageEvent(
+            wrapper,
+            { data: { name: 'opencloud-embed:cancel' } },
+            { source, origin }
+          )
+        )
+        expect(modalStore.removeModal).not.toHaveBeenCalled()
+      }
+    )
+    it('closes the modal on "opencloud-embed:cancel" sent by the picker iframe', () => {
+      const { wrapper } = getWrapper()
+      const modalStore = useModals()
+      ;(wrapper.vm as any).onCancel(
+        createMessageEvent(wrapper, { data: { name: 'opencloud-embed:cancel' } })
+      )
+      expect(modalStore.removeModal).toHaveBeenCalled()
+    })
+  })
 })
 
 function getWrapper() {
@@ -131,36 +183,48 @@ function getWrapper() {
   const mocks = { ...defaultComponentMocks(), $clientService }
   mocks.$clientService.webdav.listFiles.mockResolvedValue(mock<ListFilesResult>({ children: [] }))
 
-  return {
-    mocks,
-    wrapper: shallowMount(SaveAsModal, {
-      props: {
-        modal: mock<Modal>(),
-        content: 'some text',
-        originalResource: { id: '1', path: '/test.txt', name: 'test.txt', extension: 'txt' },
-        parentFolderLink: {
-          name: 'files-spaces-generic',
-          params: {
-            driveAliasAndItem: 'personal/admin'
-          },
-          query: {
-            fileId:
-              '61dcd768-0bc4-4dd5-975a-2fe2bc9bc664$f1e4f3ec-1f24-460d-9f9a-4416ab6ddb6b!36cce768-8c9d-45e4-9c7d-4c9611962a75'
-          }
+  const wrapper = shallowMount(SaveAsModal, {
+    props: {
+      modal: mock<Modal>(),
+      content: 'some text',
+      originalResource: { id: '1', path: '/test.txt', name: 'test.txt', extension: 'txt' },
+      parentFolderLink: {
+        name: 'files-spaces-generic',
+        params: {
+          driveAliasAndItem: 'personal/admin'
+        },
+        query: {
+          fileId:
+            '61dcd768-0bc4-4dd5-975a-2fe2bc9bc664$f1e4f3ec-1f24-460d-9f9a-4416ab6ddb6b!36cce768-8c9d-45e4-9c7d-4c9611962a75'
         }
-      },
-      global: {
-        plugins: [
-          ...defaultPlugins({
-            piniaOptions: {
-              spacesState: { spaces: [mock<SpaceResource>({ id: '1' })] },
-              themeState: { currentTheme: { name: 'OpenCloud' } as WebThemeType }
-            }
-          })
-        ],
-        mocks,
-        provide: mocks
       }
-    })
-  }
+    },
+    global: {
+      plugins: [
+        ...defaultPlugins({
+          piniaOptions: {
+            spacesState: { spaces: [mock<SpaceResource>({ id: '1' })] },
+            themeState: { currentTheme: { name: 'OpenCloud' } as WebThemeType }
+          }
+        })
+      ],
+      mocks,
+      provide: mocks
+    }
+  })
+  Object.defineProperty(wrapper.find('iframe').element, 'contentWindow', { value: {} })
+
+  return { mocks, wrapper }
+}
+
+function createMessageEvent(
+  wrapper: ReturnType<typeof getWrapper>['wrapper'],
+  { data }: { data: unknown },
+  { source, origin = 'http://localhost:3000' }: { source?: unknown; origin?: string } = {}
+) {
+  const event = new MessageEvent('message', { data, origin })
+  Object.defineProperty(event, 'source', {
+    value: source === undefined ? wrapper.find('iframe').element.contentWindow : source
+  })
+  return event
 }
