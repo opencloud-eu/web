@@ -188,6 +188,7 @@ import {
 } from '@opencloud-eu/web-client'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
+import { spaceTilesSortFields, translateSortFields } from '@opencloud-eu/web-pkg'
 import { defaultFuseOptions, formatFileSize, ResourceIcon, SpaceImage } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { useKeyboardActions } from '@opencloud-eu/web-pkg'
@@ -248,7 +249,8 @@ const {
 } = useResourcesViewDefaults<SpaceResource, any, any[]>({
   loadResourcesTask,
   folderViewExtensionPoint: folderViewsProjectSpacesExtensionPoint,
-  filterResources: (spaces) => filter(spaces, unref(filterTerm))
+  filterResources: (spaces) => filter(spaces, unref(filterTerm)),
+  sortFields: translateSortFields(spaceTilesSortFields, language)
 })
 
 let loadPreviewToken: string = null

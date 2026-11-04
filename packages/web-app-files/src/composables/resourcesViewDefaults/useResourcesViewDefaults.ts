@@ -38,6 +38,10 @@ interface ResourcesViewDefaultsOptions<T, U extends any[], R extends Resource = 
    * Narrows down the resources (e.g. via search or filters) before they get sorted and paginated.
    */
   filterResources?: (resources: R[]) => R[]
+  /**
+   * Sort fields for all view modes, instead of the ones determined from the resources.
+   */
+  sortFields?: SortField[]
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
@@ -103,6 +107,9 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   })
 
   const sortFields = computed((): SortField[] => {
+    if (options.sortFields) {
+      return options.sortFields
+    }
     if (unref(viewMode) === FolderViewModeConstants.name.tiles) {
       return translateSortFields(determineResourceTilesSortFields(unref(storeItems)[0]), language)
     }

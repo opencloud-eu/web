@@ -1,7 +1,6 @@
 import { isSpaceResource, Resource, ShareResource } from '@opencloud-eu/web-client'
 import { SortField } from '../../composables/sort'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
-import { sortableTotalQuota } from './resourceTiles'
 
 export const resourceTableSortFields: SortField[] = [
   {
@@ -67,7 +66,7 @@ export const spaceTableSortFields: SortField[] = [
   {
     name: 'totalQuota',
     prop: 'spaceQuota.total',
-    sortable: sortableTotalQuota,
+    sortable: true,
     sortDir: SortDir.Desc
   },
   {
