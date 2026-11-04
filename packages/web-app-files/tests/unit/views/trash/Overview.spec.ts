@@ -14,6 +14,7 @@ import {
   eventBus,
   FolderViewExtension,
   ResourceTable,
+  ResourceTiles,
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
@@ -100,6 +101,31 @@ describe('TrashOverview', () => {
       const { wrapper } = getWrapper({ spaces, query: { 'sort-by': 'name', 'sort-dir': sortDir } })
       await flushPromises()
       expect(getRenderedIds(wrapper)).toEqual(expected)
+    })
+    it.each([
+      { sortDir: SortDir.Asc, expected: ['1', '3', '2'] },
+      { sortDir: SortDir.Desc, expected: ['1', '2', '3'] }
+    ])(
+      'sorts by deleted items $sortDir with the personal space on top',
+      async ({ sortDir, expected }) => {
+        const spaces = [
+          { ...spaceMocks[1], hasTrashedItems: false },
+          spaceMocks[0],
+          spaceMocks[2]
+        ] as SpaceResource[]
+        const { wrapper } = getWrapper({
+          spaces,
+          query: { 'sort-by': 'indicators', 'sort-dir': sortDir }
+        })
+        await flushPromises()
+        expect(getRenderedIds(wrapper)).toEqual(expected)
+      }
+    )
+    it('offers only the name sort in the tiles view', async () => {
+      const { wrapper } = getWrapper({ query: { 'view-mode': 'resource-tiles' } })
+      await flushPromises()
+      const sortFields = wrapper.findComponent(ResourceTiles).props('sortFields')
+      expect(sortFields.map(({ label }) => label)).toEqual(['A-Z', 'Z-A'])
     })
     it('sorts names numerically', async () => {
       const spaces = [
@@ -237,16 +263,17 @@ function getWrapper({
     })
   ]
 
+  const viewMode = query['view-mode'] || 'resource-table'
   const extensions = [
     {
-      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table',
+      id: `com.github.opencloud-eu.web.files.folder-view.${viewMode}`,
       type: 'folderView',
       extensionPointIds: [folderViewsTrashOverviewExtensionPoint.id],
       folderView: {
-        name: 'resource-table',
-        label: 'Switch to default view',
+        name: viewMode,
+        label: 'Switch view',
         icon: { name: 'menu-line', fillType: 'none' },
-        component: ResourceTable
+        component: viewMode === 'resource-tiles' ? ResourceTiles : ResourceTable
       }
     }
   ] satisfies FolderViewExtension[]
@@ -264,6 +291,7 @@ function getWrapper({
         stubs: {
           ...defaultStubs,
           NoContentMessage: true,
+          'resource-tiles': true,
           ...(!stubResourceTable && { 'resource-table': false, 'trash-quick-actions': true })
         },
         mocks,

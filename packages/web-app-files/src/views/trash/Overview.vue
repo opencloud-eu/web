@@ -49,7 +49,7 @@
             :fields-displayed="['name']"
             :sort-by="sortBy"
             :sort-dir="sortDir"
-            :sort-fields="sortFields"
+            :sort-fields="sortFields.filter((field) => field.name === 'name')"
             :header-position="fileListHeaderY"
             :are-thumbnails-displayed="false"
             :are-paths-displayed="false"
@@ -144,6 +144,7 @@ import TrashQuickActions from '../../components/Trash/TrashQuickActions.vue'
 import { storeToRefs } from 'pinia'
 import { folderViewsTrashOverviewExtensionPoint } from '../../extensionPoints'
 import { useResourcesViewDefaults } from '../../composables'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 const userStore = useUserStore()
 const spacesStore = useSpacesStore()
@@ -174,10 +175,18 @@ const {
 } = useResourcesViewDefaults<SpaceResource, any, any[]>({
   folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint,
   filterResources: filter,
-  sortFields: translateSortFields(
-    spaceTilesSortFields.filter(({ name }) => name === 'name'),
-    language
-  ),
+  sortFields: [
+    ...translateSortFields(
+      spaceTilesSortFields.filter(({ name }) => name === 'name'),
+      language
+    ),
+    {
+      name: 'indicators',
+      prop: 'hasTrashedItems',
+      sortable: (hasTrashedItems: boolean) => Number(!hasTrashedItems),
+      sortDir: SortDir.Asc
+    }
+  ],
   pinFirst: isPersonalSpaceResource
 })
 
