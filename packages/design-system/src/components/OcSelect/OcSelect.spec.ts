@@ -1,4 +1,5 @@
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
+import { DOMWrapper } from '@vue/test-utils'
 import OcSelect from './OcSelect.vue'
 import { nextTick } from 'vue'
 
@@ -163,6 +164,137 @@ describe('OcSelect', () => {
       expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(false)
       expect(document.activeElement).toBe(input.element)
       wrapper.unmount()
+    })
+  })
+  describe('focus after picking an option', () => {
+    const options = [{ label: 'label1' }, { label: 'label2' }]
+
+    async function openList(wrapper: ReturnType<typeof getWrapper>) {
+      const input = wrapper.find(selectors.searchInput)
+      ;(input.element as HTMLInputElement).focus()
+      await input.trigger('keydown', { key: 'ArrowDown', keyCode: 40 })
+      expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(true)
+      return input
+    }
+
+    async function press(element: DOMWrapper<Element>, pointerType: string | null = 'mouse') {
+      if (pointerType) {
+        await element.trigger('pointerdown', { pointerType })
+      }
+      await element.trigger('mousedown')
+      await element.trigger('mouseup')
+      await element.trigger('click')
+      await nextTick()
+    }
+
+    function clickOption(
+      wrapper: ReturnType<typeof getWrapper>,
+      index: number,
+      pointerType: string | null = 'mouse'
+    ) {
+      return press(wrapper.findAll('.vs__dropdown-option').at(index), pointerType)
+    }
+
+    it('stays in the select after a mouse pick and keeps the list closed', async () => {
+      const wrapper = getWrapper({ options }, { attachTo: document.body })
+      const input = await openList(wrapper)
+
+      await clickOption(wrapper, 1)
+
+      expect(wrapper.emitted('update:modelValue')).toEqual([[options[1]]])
+      expect(document.activeElement).toBe(input.element)
+      expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(false)
+      wrapper.unmount()
+    })
+    it('stays in the select after a keyboard pick and keeps the list closed', async () => {
+      const wrapper = getWrapper({ options }, { attachTo: document.body })
+      const input = await openList(wrapper)
+      await input.trigger('keydown', { key: 'ArrowDown', keyCode: 40 })
+
+      await input.trigger('keydown', { key: 'Enter', keyCode: 13 })
+      await nextTick()
+
+      expect(wrapper.emitted('update:modelValue')).toEqual([[options[0]]])
+      expect(document.activeElement).toBe(input.element)
+      expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(false)
+      wrapper.unmount()
+    })
+    it.each(['.vs__actions', '.vs__selected'])(
+      'reopens the list with one click on %s after a mouse pick',
+      async (target) => {
+        const wrapper = getWrapper({ options }, { attachTo: document.body })
+        const input = await openList(wrapper)
+        await clickOption(wrapper, 1)
+
+        await press(wrapper.find(target))
+
+        expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(true)
+        expect(document.activeElement).toBe(input.element)
+        wrapper.unmount()
+      }
+    )
+    it('leaves the focus after a touch pick, so the soft keyboard closes', async () => {
+      const wrapper = getWrapper({ options }, { attachTo: document.body })
+      const input = await openList(wrapper)
+
+      await clickOption(wrapper, 1, 'touch')
+
+      expect(wrapper.emitted('update:modelValue')).toEqual([[options[1]]])
+      expect(document.activeElement).not.toBe(input.element)
+      expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(false)
+      wrapper.unmount()
+    })
+    it('stays in the select after a keyboard pick that follows a touch', async () => {
+      const wrapper = getWrapper({ options }, { attachTo: document.body })
+      const input = await openList(wrapper)
+      await wrapper.find('.vs__dropdown-option').trigger('pointerdown', { pointerType: 'touch' })
+      await input.trigger('keydown', { key: 'ArrowDown', keyCode: 40 })
+
+      await input.trigger('keydown', { key: 'Enter', keyCode: 13 })
+      await nextTick()
+
+      expect(wrapper.emitted('update:modelValue')).toEqual([[options[0]]])
+      expect(document.activeElement).toBe(input.element)
+      expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(false)
+      wrapper.unmount()
+    })
+    it('stays in the select after a pick without a pointer that follows a touch on the toggle', async () => {
+      const wrapper = getWrapper({ options }, { attachTo: document.body })
+      await press(wrapper.find('.vs__actions'), 'touch')
+      expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(true)
+
+      await clickOption(wrapper, 1, null)
+
+      expect(wrapper.emitted('update:modelValue')).toEqual([[options[1]]])
+      expect(document.activeElement).toBe(wrapper.find(selectors.searchInput).element)
+      wrapper.unmount()
+    })
+    it('stays in the select after a pick without a pointer that follows a touch pick', async () => {
+      const wrapper = getWrapper({ options }, { attachTo: document.body })
+      const input = await openList(wrapper)
+      await clickOption(wrapper, 1, 'touch')
+      expect(document.activeElement).not.toBe(input.element)
+
+      await press(wrapper.find('.vs__actions'), null)
+      await clickOption(wrapper, 0, null)
+
+      expect(wrapper.emitted('update:modelValue')).toEqual([[options[1]], [options[0]]])
+      expect(document.activeElement).toBe(input.element)
+      wrapper.unmount()
+    })
+    it('does not take the focus back from an element the pick moved it to', async () => {
+      const button = document.createElement('button')
+      document.body.appendChild(button)
+      const wrapper = getWrapper({ options, 'onUpdate:modelValue': () => button.focus() } as any, {
+        attachTo: document.body
+      })
+      await openList(wrapper)
+
+      await clickOption(wrapper, 1)
+
+      expect(document.activeElement).toBe(button)
+      wrapper.unmount()
+      button.remove()
     })
   })
   describe('keyboard highlight', () => {

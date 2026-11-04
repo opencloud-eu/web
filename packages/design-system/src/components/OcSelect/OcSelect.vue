@@ -38,8 +38,12 @@
       @update:model-value="emit('update:modelValue', $event)"
       @click="dropdownEnabled = true"
       @search:blur="dropdownEnabled = false"
+      @option:selecting="keepFocusAfterPick"
       @keydown="onKeydown"
       @mousemove="keyboardNavigation = false"
+      @mousedown.capture="syncOpenState"
+      @pointerdown.capture="trackTouchInput"
+      @keydown.capture="trackTouchInput"
     >
       <template #search="{ attributes, events }">
         <input
@@ -337,7 +341,6 @@ function mapKeydown(map: Record<number, (e: KeyboardEvent) => void>) {
         return
       }
       map[enterKeyCode](e)
-      unref(selectRef).searchEl.focus()
     },
     // vue-select blurs the input on escape, here it only closes the list and keeps the focus
     [escapeKeyCode]: (e: KeyboardEvent) => {
@@ -349,6 +352,39 @@ function mapKeydown(map: Record<number, (e: KeyboardEvent) => void>) {
       unref(selectRef).search = ''
     }
   }
+}
+
+// a touch pick is not refocused, so the soft keyboard closes after it
+let touchPick = false
+
+function trackTouchInput(e: PointerEvent | KeyboardEvent) {
+  touchPick =
+    'pointerType' in e &&
+    e.pointerType === 'touch' &&
+    !!(e.target as Element).closest('.vs__dropdown-menu')
+}
+
+// vue-select blurs the input after a pick, which would leave the focus on the body
+async function keepFocusAfterPick() {
+  const wasTouchPick = touchPick
+  touchPick = false
+  if (wasTouchPick) {
+    return
+  }
+  await nextTick()
+  if (document.activeElement !== document.body) {
+    return
+  }
+  unref(selectRef)?.searchEl?.focus()
+}
+
+// vue-select counts a focused select as open while its list is hidden, so a click on the toggle
+// would blur it instead of showing the list
+function syncOpenState(e: MouseEvent) {
+  if (unref(dropdownOpen) || (e.target as Element).closest('button')) {
+    return
+  }
+  unref(selectRef).open = false
 }
 
 function onKeydown(e: KeyboardEvent) {
