@@ -8,6 +8,10 @@
 
 ### 🐛 Bug Fixes
 
+- fix: let app tokens expire on the picked day [[#4202](https://github.com/opencloud-eu/web/pull/4202)]
+- fix: show the current space size in the space details after uploads and deletions [[#4204](https://github.com/opencloud-eu/web/pull/4204)]
+- fix: redirect /files/search to the search results page [[#4214](https://github.com/opencloud-eu/web/pull/4214)]
+- fix: rename dot-files correctly when file extensions are hidden [[#4157](https://github.com/opencloud-eu/web/pull/4157)]
 - fix: keep parent folder links and name tooltips usable for non-clickable resources [[#4242](https://github.com/opencloud-eu/web/pull/4242)]
 - fix: refetch notifications when opening the bell or returning to the tab [[#4166](https://github.com/opencloud-eu/web/pull/4166)]
 - fix: stay in folders with a # in their name when the scrollTo param is reset [[#4165](https://github.com/opencloud-eu/web/pull/4165)]
