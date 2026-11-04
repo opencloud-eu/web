@@ -1,6 +1,10 @@
-import { RouteLocationNormalized, Router } from 'vue-router'
+import { RouteLocation, RouteLocationNormalized, Router } from 'vue-router'
 import {
   ClientService,
+  contextRouteNameKey,
+  contextRouteParamsKey,
+  contextRouteQueryKey,
+  LocationQuery,
   getSpaceForDriveAliasAndItem,
   getVaultClaim,
   queryItemAsString,
@@ -29,9 +33,24 @@ function isInsideVaultRoot(path: string, vaultRoot: string): boolean {
 }
 
 /**
+ * Context route for the unlock route. An app route is hybrid itself, so its own
+ * context (e.g. the file list) is passed on, the auth guard only looks one level deep.
+ */
+function getContextQuery(to: RouteLocation): LocationQuery {
+  if (!to.query?.[contextRouteNameKey]) {
+    return routeToContextQuery(to)
+  }
+  return {
+    [contextRouteNameKey]: to.query[contextRouteNameKey],
+    [contextRouteParamsKey]: to.query[contextRouteParamsKey],
+    [contextRouteQueryKey]: to.query[contextRouteQueryKey]
+  }
+}
+
+/**
  * Where cancelling the unlock should return the user to. `from` only qualifies
  * if it's somewhere they can actually stay: not the unlock route itself, not a
- * private link (it only redirects and would resolve into the vault again), and
+ * private or guest link resolver (it only redirects and would resolve into the vault again), and
  * not inside the very vault we're locking them out of.
  */
 function getCancelUrl(
@@ -39,10 +58,15 @@ function getCancelUrl(
   space: SpaceResource,
   claim: VaultClaim
 ): string | undefined {
+  const resolverRouteNames: string[] = [
+    routeNames.resolvePrivateLink,
+    routeNames.resolveGuestLink,
+    routeNames.renewGuestLink
+  ]
   if (
     !from.name ||
     from.name === claim.unlockRoute?.name ||
-    from.name === routeNames.resolvePrivateLink
+    resolverRouteNames.includes(from.name as string)
   ) {
     return undefined
   }
@@ -158,7 +182,8 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
       ...claim.unlockRoute,
       query: {
         ...(claim.unlockRoute.query || {}),
-        ...(isPublicSpaceResource(space) && routeToContextQuery(to)),
+        // the hybrid unlock route needs the context route to keep a public link or guest session
+        ...((isPublicSpaceResource(space) || authStore.isGuestContext) && getContextQuery(to)),
         redirectUrl: to.fullPath,
         ...(cancelUrl && { cancelUrl })
       }
