@@ -178,12 +178,7 @@ const {
   items: paginatedItems,
   page: currentPage,
   total: totalPages
-} = usePagination({
-  items,
-  perPageDefault,
-  perPageStoragePrefix,
-  handlePageNavigation: true
-})
+} = usePagination({ items, perPageDefault, perPageStoragePrefix })
 
 const keyActions = useKeyboardActions()
 useKeyboardTableNavigation(keyActions, paginatedItems, selectedGroups, lastSelectedGroupId)

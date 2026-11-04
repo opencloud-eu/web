@@ -38,11 +38,6 @@ interface ResourcesViewDefaultsOptions<T, U extends any[], R extends Resource = 
    * Narrows down the resources (e.g. via search or filters) before they get sorted and paginated.
    */
   filterResources?: (resources: R[]) => R[]
-  /**
-   * Switches to the page of a resource when `app.files.navigate.page` is published for it.
-   * Only enable this when the view renders `paginatedResources`.
-   */
-  handlePageNavigation?: boolean
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
@@ -130,11 +125,7 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     items: paginatedResources,
     total: paginationPages,
     page: paginationPage
-  } = usePagination<T>({
-    items,
-    perPageStoragePrefix: 'files',
-    handlePageNavigation: options.handlePageNavigation
-  })
+  } = usePagination<T>({ items, perPageStoragePrefix: 'files' })
 
   const scrollToParam = useRouteQuery('scrollTo')
   function resetScrollToParam() {

@@ -287,8 +287,7 @@ const {
   total: totalPages
 } = usePagination({
   items: displaySpaces,
-  perPageStoragePrefix: 'files',
-  handlePageNavigation: true
+  perPageStoragePrefix: 'files'
 })
 
 const handleSort = (event: { sortBy: keyof SpaceResource; sortDir: SortDir }) => {

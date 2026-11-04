@@ -1,11 +1,11 @@
-import { Resource } from '@opencloud-eu/web-client'
+import { isSpaceResource, Resource } from '@opencloud-eu/web-client'
 import { SortField } from '../../composables/sort'
 import { Language } from 'vue3-gettext'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { $gettext } from '../../utils/dummyGettext'
 
 // a total quota of 0 means unrestricted, which needs to be sorted as the largest value
-function sortableTotalQuota(total: number) {
+export function sortableTotalQuota(total: number) {
   return total === 0 ? Infinity : total
 }
 
@@ -151,6 +151,10 @@ export const sortFields = spaceTilesSortFields
 export const determineResourceTilesSortFields = (firstResource: Resource): SortField[] => {
   if (!firstResource) {
     return []
+  }
+
+  if (isSpaceResource(firstResource)) {
+    return spaceTilesSortFields
   }
 
   return resourceTilesSortFields.filter((field) =>

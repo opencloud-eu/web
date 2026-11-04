@@ -13,11 +13,6 @@ interface PaginationOptions<T> {
   perPageDefault?: string
   perPageQueryName?: string
   perPageStoragePrefix: string
-  /**
-   * Switches to the page of an item when `app.files.navigate.page` is published for it.
-   * Only enable this for the pagination of the list that is actually rendered.
-   */
-  handlePageNavigation?: boolean
 }
 
 interface PaginationResult<T> {
@@ -49,32 +44,22 @@ export function usePagination<T>(options: PaginationOptions<T>): PaginationResul
     return unref(options.items).slice(start, end)
   })
 
-  if (options.handlePageNavigation) {
-    const navigatePageToken = eventBus.subscribe(
-      'app.files.navigate.page',
-      ({
-        resourceId,
-        forceScroll,
-        topbarElement
-      }: {
-        resourceId: string
-        forceScroll: boolean
-        topbarElement: string
-      }) => {
-        const index = findIndex(unref(options.items), (item: Item) => item.id === resourceId)
-        if (index < 0) {
-          return
-        }
-
-        const targetPage = Math.ceil((index + 1) / Number(unref(perPage)))
-        if (targetPage === unref(page)) {
-          // the item's page is shown already, so its row isn't rendered at all. Scrolling
-          // again would publish this event again and loop forever.
-          return
-        }
-
+  const navigatePageToken = eventBus.subscribe(
+    'app.files.navigate.page',
+    ({
+      resourceId,
+      forceScroll,
+      topbarElement
+    }: {
+      resourceId: string
+      forceScroll: boolean
+      topbarElement: string
+    }) => {
+      const index = findIndex(unref(options.items), (item: Item) => item.id === resourceId)
+      if (index >= 0) {
+        const page = Math.ceil((index + 1) / Number(unref(perPage)))
         const route = unref(router.currentRoute)
-        router.push({ path: route.path, query: { ...route.query, page: targetPage } }).then(() => {
+        router.push({ path: route.path, query: { ...route.query, page } }).then(() => {
           eventBus.publish('app.files.navigate.scrollTo', {
             resourceId,
             forceScroll,
@@ -82,12 +67,12 @@ export function usePagination<T>(options: PaginationOptions<T>): PaginationResul
           })
         })
       }
-    )
+    }
+  )
 
-    onBeforeUnmount(() => {
-      eventBus.unsubscribe('app.files.navigate.page', navigatePageToken)
-    })
-  }
+  onBeforeUnmount(() => {
+    eventBus.unsubscribe('app.files.navigate.page', navigatePageToken)
+  })
 
   return {
     items,
