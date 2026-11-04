@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: save expiration date of shares with custom permissions [[#4172](https://github.com/opencloud-eu/web/pull/4172)]
+- fix: use the full name as title for dot-files [[#4173](https://github.com/opencloud-eu/web/pull/4173)]
 - fix: keep upload batch out of uppy while the conflict dialog is open [[#4140](https://github.com/opencloud-eu/web/pull/4140)]
 - fix: don't return to a permanent link when cancelling a vault unlock [[#4155](https://github.com/opencloud-eu/web/pull/4155)]
 - fix: prevent duplicate GDPR export requests on double click [[#4156](https://github.com/opencloud-eu/web/pull/4156)]
