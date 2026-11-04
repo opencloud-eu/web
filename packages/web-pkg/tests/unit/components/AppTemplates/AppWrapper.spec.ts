@@ -18,6 +18,7 @@ import type { YjsSession, YjsStatus } from '../../../../src/composables/yjs'
 import type { FileContentOptions, FileContext } from '../../../../src/composables/appDefaults'
 import type { FileAction } from '../../../../src/composables/actions'
 import { eventBus } from '../../../../src/services'
+import { ResourceNotFoundError } from '../../../../src/errors'
 import {
   type CustomComponentExtension,
   useExtensionRegistry,
@@ -474,6 +475,7 @@ describe('AppWrapper — space that cannot be resolved', () => {
   }
 
   function expectNotFoundMessage(s: ReturnType<typeof setup>) {
+    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(ResourceNotFoundError))
     expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(true)
     expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
   }
