@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: refetch notifications when opening the bell or returning to the tab [[#4166](https://github.com/opencloud-eu/web/pull/4166)]
 - fix: stay in folders with a # in their name when the scrollTo param is reset [[#4165](https://github.com/opencloud-eu/web/pull/4165)]
 - fix: keep the guest session when unlocking a vault [[#4264](https://github.com/opencloud-eu/web/pull/4264)]
 - fix: show an error when creating share links fails in embed mode [[#4170](https://github.com/opencloud-eu/web/pull/4170)]
