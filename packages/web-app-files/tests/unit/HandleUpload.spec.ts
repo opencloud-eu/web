@@ -270,6 +270,29 @@ describe('HandleUpload', () => {
       )
       expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalledTimes(1)
     })
+    describe('failed files of earlier uploads', () => {
+      it('removes them before a batch starts while no upload is running', async () => {
+        const { instance, mocks } = getWrapper()
+        const { uppyService } = mocks.opts
+        await instance.handleUpload([mock<OcUppyFile>({ name: 'name' })])
+        expect(uppyService.removeFailedFiles).toHaveBeenCalledTimes(1)
+        expect(uppyService.removeFailedFiles.mock.invocationCallOrder[0]).toBeLessThan(
+          uppyService.uploadFiles.mock.invocationCallOrder[0]
+        )
+      })
+      it('keeps them when a batch starts while another upload is running, even if it finishes before the batch is sent', async () => {
+        const { instance, mocks } = getWrapper()
+        const { uppyService } = mocks.opts
+        uppyService.getCurrentUploads.mockReturnValue({ 'running-upload': {} })
+        vi.spyOn(instance, 'createDirectoryTree').mockImplementation((filesToUpload) => {
+          uppyService.getCurrentUploads.mockReturnValue({})
+          return Promise.resolve({ filesToUpload, folderFiles: [] })
+        })
+        await instance.handleUpload([mock<OcUppyFile>({ name: 'name' })])
+        expect(uppyService.uploadFiles).toHaveBeenCalledTimes(1)
+        expect(uppyService.removeFailedFiles).not.toHaveBeenCalled()
+      })
+    })
     describe('quota check', () => {
       it('checks quota if check enabled', async () => {
         const { instance } = getWrapper()
@@ -748,6 +771,7 @@ const getWrapper = ({
   })
 
   const uppyService = mock<UppyService>({ uploadFolderMap: uploadFolderForId })
+  uppyService.getCurrentUploads.mockReturnValue({})
 
   const opts = {
     clientService: mockDeep<ClientService>(),
