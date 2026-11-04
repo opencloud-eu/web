@@ -49,7 +49,7 @@
             :fields-displayed="['name']"
             :sort-by="sortBy"
             :sort-dir="sortDir"
-            :sort-fields="sortFields.filter((field) => field.name === 'name')"
+            :sort-fields="sortFields"
             :header-position="fileListHeaderY"
             :are-thumbnails-displayed="false"
             :are-paths-displayed="false"
@@ -181,10 +181,18 @@ const {
       language
     ),
     {
+      label: $gettext('Contains deleted items first'),
       name: 'indicators',
       prop: 'hasTrashedItems',
-      sortable: (hasTrashedItems: boolean) => Number(!hasTrashedItems),
+      sortable: sortableHasTrashedItems,
       sortDir: SortDir.Asc
+    },
+    {
+      label: $gettext('Empty first'),
+      name: 'indicators',
+      prop: 'hasTrashedItems',
+      sortable: sortableHasTrashedItems,
+      sortDir: SortDir.Desc
     }
   ],
   pinFirst: isPersonalSpaceResource
@@ -285,6 +293,10 @@ function indicatorFilter(indicator: ResourceIndicator) {
 const breadcrumbs = computed(() => [
   { text: $gettext('Deleted files'), onClick: () => loadResourcesTask.perform() }
 ])
+
+function sortableHasTrashedItems(hasTrashedItems: boolean) {
+  return Number(!hasTrashedItems)
+}
 
 function filter(spaces: SpaceResource[]) {
   if (!unref(areEmptyTrashesShown)) {

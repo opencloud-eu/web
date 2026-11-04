@@ -121,12 +121,31 @@ describe('TrashOverview', () => {
         expect(getRenderedIds(wrapper)).toEqual(expected)
       }
     )
-    it('offers only the name sort in the tiles view', async () => {
-      const { wrapper } = getWrapper({ query: { 'view-mode': 'resource-tiles' } })
-      await flushPromises()
-      const sortFields = wrapper.findComponent(ResourceTiles).props('sortFields')
-      expect(sortFields.map(({ label }) => label)).toEqual(['A-Z', 'Z-A'])
-    })
+    it.each([
+      { sortDir: SortDir.Asc, expected: 'Contains deleted items first' },
+      { sortDir: SortDir.Desc, expected: 'Empty first' }
+    ])(
+      'offers the name and status sort in the tiles view with $expected active',
+      async ({ sortDir, expected }) => {
+        const { wrapper } = getWrapper({
+          query: { 'view-mode': 'resource-tiles', 'sort-by': 'indicators', 'sort-dir': sortDir }
+        })
+        await flushPromises()
+        const tiles = wrapper.findComponent(ResourceTiles)
+        const sortFields = tiles.props('sortFields')
+        expect(sortFields.map(({ label }) => label)).toEqual([
+          'A-Z',
+          'Z-A',
+          'Contains deleted items first',
+          'Empty first'
+        ])
+        const activeField = sortFields.find(
+          ({ name, sortDir }) =>
+            name === tiles.props('sortBy') && sortDir === tiles.props('sortDir')
+        )
+        expect(activeField.label).toBe(expected)
+      }
+    )
     it('sorts names numerically', async () => {
       const spaces = [
         { ...spaceMocks[1], id: '10', name: 'Project space 10' },
