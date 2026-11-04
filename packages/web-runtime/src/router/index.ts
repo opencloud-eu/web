@@ -9,6 +9,7 @@ import ResolveGuestLinkPage from '../pages/resolveGuestLink.vue'
 import RenewGuestLinkPage from '../pages/renewGuestLink.vue'
 import { setupRouterHooks } from './setupRouter'
 import { setupAuthGuard } from './setupAuthGuard'
+import { setupContextRouteGuard } from './setupContextRouteGuard'
 import { patchRouter } from './patchCleanPath'
 import { routeNames } from './names'
 import {
@@ -183,4 +184,5 @@ export const router = patchRouter(
 )
 
 setupRouterHooks(router)
+setupContextRouteGuard(router)
 setupAuthGuard(router)
