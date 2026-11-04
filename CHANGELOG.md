@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: stream vault content encryption block by block [[#4125](https://github.com/opencloud-eu/web/pull/4125)]
 - fix: stop the shares panel loader when loading the shares fails [[#4203](https://github.com/opencloud-eu/web/pull/4203)]
 - fix: let app tokens expire on the picked day [[#4202](https://github.com/opencloud-eu/web/pull/4202)]
 - fix: show the current space size in the space details after uploads and deletions [[#4204](https://github.com/opencloud-eu/web/pull/4204)]
