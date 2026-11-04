@@ -196,7 +196,7 @@ const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boole
     router.push({
       name: 'files-public-upload',
       params: { token: unref(token) },
-      query: { fileId: unref(publicLinkSpace).fileId }
+      query: { fileId: unref(loadedSpace).fileId }
     })
     return
   }

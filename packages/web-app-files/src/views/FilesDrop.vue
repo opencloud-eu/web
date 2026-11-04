@@ -140,7 +140,7 @@ import {
 } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { HandleUpload } from '../HandleUpload'
-import { PublicSpaceResource, SharePermissionBit } from '@opencloud-eu/web-client'
+import { buildSpace, PublicSpaceResource, SharePermissionBit } from '@opencloud-eu/web-client'
 import { OcButton } from '@opencloud-eu/design-system/components'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
@@ -211,12 +211,23 @@ const resolvePublicLink = async () => {
 
   if (authStore.userContextReady && unref(fileId)) {
     try {
-      const path = await clientService.webdav.getPathForFileId(unref(fileId))
-      await resolveToInternalLocation(path)
-      loading.value = false
-      return
+      // the user's token needs to be set explicitly, otherwise the requests use the basic auth
+      // credentials of the public link.
+      const headers = { Authorization: `Bearer ${authStore.accessToken}` }
+      const path = await clientService.webdav.getPathForFileId(unref(fileId), { headers })
+      const folder = await clientService.webdav.getFileInfo(
+        buildSpace({ id: unref(fileId), name: '' }),
+        { fileId: unref(fileId) },
+        { headers }
+      )
+      // users who can't upload to the folder internally keep using the drop page
+      if (folder.canUpload({ user: userStore.user })) {
+        await resolveToInternalLocation(path)
+        loading.value = false
+        return
+      }
     } catch {
-      // getPathForFileId failed means the user doesn't have internal access to the resource
+      // a failed request means the user doesn't have internal access to the resource
     }
   }
 

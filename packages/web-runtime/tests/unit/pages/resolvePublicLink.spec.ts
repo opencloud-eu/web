@@ -2,7 +2,13 @@ import ResolvePublicLink from '../../../src/pages/resolvePublicLink.vue'
 import { defaultPlugins, defaultComponentMocks, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mockDeep } from 'vitest-mock-extended'
 import { CapabilityStore, ClientService, useRouteParam, useRouteQuery } from '@opencloud-eu/web-pkg'
-import { DavHttpError, PublicSpaceResource, Resource, urlJoin } from '@opencloud-eu/web-client'
+import {
+  DavHttpError,
+  PublicSpaceResource,
+  Resource,
+  SharePermissionBit,
+  urlJoin
+} from '@opencloud-eu/web-client'
 import { authService } from '../../../src/services/auth'
 import { defineComponent, ref, unref, useTemplateRef } from 'vue'
 import { DavErrorCode } from '@opencloud-eu/web-client/webdav'
@@ -130,6 +136,20 @@ describe('resolvePublicLink', () => {
         })
       )
     })
+    it('resolves to the drop page with the folder id for a link of type "Uploader"', async () => {
+      const { mocks } = getWrapper({
+        redirectUrl: '',
+        spaceFileId: 'storage$space!folder',
+        publicLinkPermission: SharePermissionBit.Create
+      })
+      await flushPromises()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith({
+        name: 'files-public-upload',
+        params: { token: 'token' },
+        query: { fileId: 'storage$space!folder' }
+      })
+    })
   })
   describe('error message', () => {
     it('should display an error message if the space cannot be resolved', async () => {
@@ -162,18 +182,21 @@ function getWrapper({
   getFileInfoErrorStatusCode = null,
   redirectUrl = 'redirectUrl',
   spaceFileId = 'folder-id',
+  publicLinkPermission = undefined,
   children = []
 }: {
   passwordRequired?: boolean
   getFileInfoErrorStatusCode?: number
   redirectUrl?: string
   spaceFileId?: string
+  publicLinkPermission?: number
   children?: Resource[]
 } = {}) {
   const $clientService = mockDeep<ClientService>()
   const spaceResource = mockDeep<PublicSpaceResource>({
     id: 'token',
     fileId: spaceFileId,
+    publicLinkPermission,
     driveType: 'public',
     driveAlias: 'public/token',
     isFolder: true,
