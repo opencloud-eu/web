@@ -4,7 +4,7 @@ import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 
 type Listener = (...args: unknown[]) => void
 
-export function createRenditionMock() {
+function createEmitterMock() {
   const listeners: Record<string, Listener[]> = {}
   return {
     on: vi.fn((event: string, listener: Listener) => {
@@ -14,7 +14,13 @@ export function createRenditionMock() {
       for (const listener of listeners[event] || []) {
         listener(...args)
       }
-    },
+    }
+  }
+}
+
+export function createRenditionMock() {
+  return {
+    ...createEmitterMock(),
     display: vi.fn(() => Promise.resolve()),
     currentLocation: vi.fn((): Location | undefined => undefined),
     prev: vi.fn(),
@@ -78,6 +84,7 @@ export function createBookMock({
   navPath?: string
 } = {}) {
   return {
+    ...createEmitterMock(),
     ready: Promise.resolve(),
     packaging: {
       navPath,
