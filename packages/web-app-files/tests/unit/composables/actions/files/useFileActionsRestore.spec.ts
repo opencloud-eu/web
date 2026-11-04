@@ -569,6 +569,79 @@ describe('restore', () => {
       }
     })
   })
+
+  describe('items restored elsewhere already', () => {
+    const fileA = { id: 'a', path: '/a.txt', name: 'a.txt' } as TrashResource
+    const fileB = { id: 'b', path: '/b.txt', name: 'b.txt' } as TrashResource
+    const fileC = { id: 'c', path: '/c.txt', name: 'c.txt' } as TrashResource
+
+    async function restore(resources: TrashResource[], existing: Partial<Resource>[]) {
+      let instance: ReturnType<typeof useFileActionsRestore>
+      let space: SpaceResource
+      const { mocks } = getWrapper({
+        setup: (i, { space: s }) => {
+          instance = i
+          space = s
+        }
+      })
+      mocks.$clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>(),
+        children: existing.map((resource) => mock<Resource>(resource))
+      })
+      const resourcesStore = useResourcesStore()
+      resourcesStore.selectedIds = [...resources.map(({ id }) => id), 'other']
+
+      unref(instance.actions)[0].handler({ space, resources })
+      await flushPromises()
+      return mocks
+    }
+
+    it('does not restore an item that has been restored already', async () => {
+      const mocks = await restore([fileA], [{ id: 'storage$space!a', name: 'a.txt' }])
+
+      expect(useModals().dispatchModal).not.toHaveBeenCalled()
+      expect(useRestoreWorker().startWorker).not.toHaveBeenCalled()
+      const { removeResources, setSelection } = useResourcesStore()
+      expect(removeResources).toHaveBeenCalledWith([fileA])
+      expect(setSelection).toHaveBeenCalledWith(['other'])
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith({
+        title: '»a.txt« is no longer in the trash bin'
+      })
+      expect(mocks.$clientService.webdav.listFiles).not.toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({ isTrash: true })
+      )
+    })
+
+    it('asks about a conflict with another resource of the same name', async () => {
+      await restore([fileA], [{ id: 'storage$space!other', name: 'a.txt' }])
+
+      expect(useModals().dispatchModal).toHaveBeenCalledTimes(1)
+      expect(useResourcesStore().removeResources).not.toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
+    })
+
+    it('restores the items that have not been restored already', async () => {
+      await restore(
+        [fileA, fileB, fileC],
+        [
+          { id: 'storage$space!a', name: 'a.txt' },
+          { id: 'storage$space!c', name: 'c.txt' }
+        ]
+      )
+
+      expect(useModals().dispatchModal).not.toHaveBeenCalled()
+      const { startWorker } = useRestoreWorker()
+      expect(vi.mocked(startWorker).mock.calls[0][0].resources).toEqual([fileB])
+      const { removeResources, setSelection } = useResourcesStore()
+      expect(removeResources).toHaveBeenCalledWith([fileA, fileC])
+      expect(setSelection).toHaveBeenCalledWith(['b', 'other'])
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith({
+        title: '2 items are no longer in the trash bin'
+      })
+    })
+  })
 })
 
 function getWrapper({

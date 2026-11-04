@@ -4,6 +4,7 @@ import { DAV } from '../../../src/webdav/client'
 import { GetPathForFileIdFactory } from '../../../src/webdav/getPathForFileId'
 import { SpaceResource } from '../../../src/helpers'
 import { WebDavOptions } from '../../../src/webdav/types'
+import { DavProperty } from '../../../src/webdav/constants'
 
 describe('listFiles', () => {
   it('throws a 404 instead of listing the space root when the file id resolves to an empty path', async () => {
@@ -41,5 +42,38 @@ describe('listFiles', () => {
     expect((resource as SpaceResource).getWebDavUrl({ path: '/file.txt' })).toBe(
       'https://server.example/dav/public-files/token/file.txt'
     )
+  })
+
+  it('builds a single trash item when listing the trash bin with a path', async () => {
+    const dav = mock<DAV>({ extraProps: [] })
+    dav.propfind.mockResolvedValue([
+      {
+        basename: 'node1',
+        filename: '/spaces/trash-bin/space-id/node1',
+        type: 'file',
+        props: {
+          [DavProperty.TrashbinOriginalFilename]: 'file.txt',
+          [DavProperty.TrashbinOriginalLocation]: 'folder/file.txt'
+        }
+      }
+    ] as Awaited<ReturnType<DAV['propfind']>>)
+    const filesFactory = ListFilesFactory(
+      dav,
+      mock<ReturnType<typeof GetPathForFileIdFactory>>(),
+      mock<WebDavOptions>()
+    )
+
+    const space = mock<SpaceResource>({ id: 'space-id' })
+    const { resource, children } = await filesFactory.listFiles(
+      space,
+      { path: 'node1' },
+      { depth: 0, isTrash: true }
+    )
+
+    expect(dav.propfind).toHaveBeenCalledWith('/spaces/trash-bin/space-id/node1', expect.anything())
+    expect(resource).toEqual(
+      expect.objectContaining({ id: 'node1', name: 'file.txt', path: '/folder/file.txt' })
+    )
+    expect(children).toEqual([])
   })
 })
