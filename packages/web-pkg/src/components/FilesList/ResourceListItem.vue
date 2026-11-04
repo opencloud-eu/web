@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible"
-    :class="{ 'pointer-events-none': !isResourceClickable }"
-  >
+  <div class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible">
     <motion-photo-overlay
       v-if="isIconDisplayed"
       :resource="resource"
