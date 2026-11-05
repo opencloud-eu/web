@@ -30,7 +30,7 @@ import { LocationQuery, RouteLocationRaw } from 'vue-router'
 import AppLoadingSpinner from '../AppLoadingSpinner.vue'
 import { isShareSpaceResource, Resource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import { unref } from 'vue'
-import { resolveFileNameDuplicate } from '../../helpers'
+import { isMessageFromIframe, resolveFileNameDuplicate } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 
@@ -70,8 +70,12 @@ export default defineComponent({
       unref(iframeRef).contentWindow.focus()
     }
 
-    const onLocationPick = async ({ data }: MessageEvent) => {
-      if (data.name !== 'opencloud-embed:select') {
+    const onLocationPick = async (event: MessageEvent) => {
+      const { data } = event
+      if (
+        !isMessageFromIframe(event, unref(iframeRef), iframeUrl.origin) ||
+        data?.name !== 'opencloud-embed:select'
+      ) {
         return
       }
 
@@ -156,8 +160,12 @@ export default defineComponent({
       window.open(editorRouteUrl.href, '_blank')
     }
 
-    const onCancel = ({ data }: MessageEvent) => {
-      if (data.name !== 'opencloud-embed:cancel') {
+    const onCancel = (event: MessageEvent) => {
+      const { data } = event
+      if (
+        !isMessageFromIframe(event, unref(iframeRef), iframeUrl.origin) ||
+        data?.name !== 'opencloud-embed:cancel'
+      ) {
         return
       }
 
@@ -180,7 +188,8 @@ export default defineComponent({
       iframeTitle,
       iframeSrc: iframeUrl.href,
       iframeRef,
-      onLocationPick
+      onLocationPick,
+      onCancel
     }
   }
 })
