@@ -4,6 +4,7 @@
   </div>
   <iframe
     v-else-if="appUrl && method === 'GET'"
+    ref="appIframe"
     :src="appUrl"
     class="size-full"
     :title="iFrameTitle"
@@ -59,6 +60,7 @@ import {
 import { urlJoin } from '@opencloud-eu/web-client'
 import {
   AppWrapperSlotProps,
+  isMessageFromIframe,
   isSameResource,
   useCapabilityStore,
   useConfigStore,
@@ -246,16 +248,20 @@ const determineOpenAsPreview = (appName: string) => {
 
 const isCollabora = unref(appName)?.toLowerCase()?.startsWith('collabora')
 
+const appIframeRef = useTemplateRef<HTMLIFrameElement>('appIframe')
+
 // switch to write mode when edit is clicked
 const catchClickMicrosoftEdit = (event: MessageEvent) => {
+  if (!isMessageFromIframe(event, unref(appIframeRef))) {
+    return
+  }
+
   try {
     if (JSON.parse(event.data)?.MessageId === 'UI_Edit') {
       loadAppUrl.perform('write')
     }
   } catch {}
 }
-
-const appIframeRef = useTemplateRef<HTMLIFrameElement>('appIframe')
 
 const { handlePostMessagesCollabora, resetMentionState } = useCollaboraPostMessages({
   space: toRef(() => space),
