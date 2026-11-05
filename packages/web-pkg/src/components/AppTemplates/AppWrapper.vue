@@ -93,21 +93,24 @@ import {
   SpaceResource,
   buildIncomingShareResource,
   call,
+  extractExtensionFromFile,
   isPersonalSpaceResource,
   isProjectSpaceResource,
   isPublicSpaceResource,
   isShareSpaceResource,
-  PublicSpaceResource
+  PublicSpaceResource,
+  urlJoin
 } from '@opencloud-eu/web-client'
 import { DavPermission } from '@opencloud-eu/web-client/webdav'
 import { HttpError } from '@opencloud-eu/web-client'
-import { dirname } from 'path'
+import { basename, dirname } from 'path'
 import { useFileActionsOpenWithApp } from '../../composables'
 import { UnsavedChangesModal } from '../Modals'
 import {
   decodeTextContent,
   formatFileSize,
   getSharedDriveItem,
+  renameResource,
   setCurrentUserShareSpacePermissions
 } from '../../helpers'
 import toNumber from 'lodash-es/toNumber'
@@ -570,6 +573,9 @@ watch(
     return `${ctx.path}::${ctx.itemId ?? ''}`
   },
   async () => {
+    if (pointsToLoadedResource()) {
+      return
+    }
     isResourceDeleted = false
 
     if (!unref(noResourceLoading)) {
@@ -618,6 +624,62 @@ watch(
     }
   },
   { immediate: true }
+)
+
+/** Whether the file context points to the loaded file, e.g. after following its rename. */
+function pointsToLoadedResource() {
+  const { space: contextSpace, item } = unref(currentFileContext)
+  const current = unref(resource)
+  return (
+    !unref(loading) &&
+    !unref(loadingError) &&
+    Boolean(unref(loadedResourceId)) &&
+    current?.id === unref(loadedResourceId) &&
+    unref(contextSpace)?.id === unref(space)?.id &&
+    urlJoin(unref(item)) === urlJoin(current.path)
+  )
+}
+
+/** The loaded file as the resources store knows it. Renames from this or other tabs land there. */
+const storedResource = computed(() =>
+  resourcesStore.resources.find(({ id }) => id === unref(loadedResourceId))
+)
+
+/**
+ * Follows a rename of the loaded file to its new path, which saves go to. Moves and extension
+ * changes aren't followed: the new parent may not be reachable from the current space, and the app
+ * would read the content in another format.
+ */
+watch(
+  () => unref(storedResource)?.path,
+  (path) => {
+    if (!path || unref(loading) || unref(loadingError)) {
+      return
+    }
+    const { space: contextSpace, item } = unref(currentFileContext)
+    const newItem = urlJoin(path)
+    const oldItem = urlJoin(unref(item))
+    // an empty basename comes from share lookups by id, which have no real path
+    if (newItem === oldItem || dirname(newItem) !== dirname(oldItem) || !basename(newItem)) {
+      return
+    }
+
+    const renamed = renameResource(unref(space), { ...unref(resource) }, newItem)
+    // resource may share its object with the store entry and already carry the new extension
+    const loadedExtension = extractExtensionFromFile({ name: basename(oldItem) } as Resource)
+    if (renamed.extension?.toLowerCase() !== loadedExtension.toLowerCase()) {
+      return
+    }
+
+    resource.value = renamed
+    router.replace({
+      params: {
+        ...unref(currentRoute).params,
+        driveAliasAndItem: unref(contextSpace).getDriveAliasAndItem({ path: newItem } as Resource)
+      },
+      query: unref(currentRoute).query
+    })
+  }
 )
 
 const errorPopup = (error: HttpError) => {
