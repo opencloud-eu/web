@@ -38,7 +38,7 @@ catalogs:
     '@tiptap/y-tiptap': ^3.0.9
     # Kept in step with what @tiptap/markdown resolves, so the editor and the
     # strategy share one marked instance instead of ending up with two copies.
-    marked: ^17.0.1
+    marked: ^18.0.0
 
 autoInstallPeers: true
 sharedWorkspaceLockfile: true
