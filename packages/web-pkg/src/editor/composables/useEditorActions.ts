@@ -796,6 +796,7 @@ export function useEditorActions(state: TextEditorState) {
     iconFillType: 'line',
     showInSlashCommands: false,
     menuCloseOnClick: false,
+    menuEnforceDropOnMobile: true,
     menuComponent: markRaw(TextEditorSearchAndReplacePanel),
     menuComponentAttrs: (editor, closeMenu) => ({
       editor,
