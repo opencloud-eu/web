@@ -1,10 +1,14 @@
 # Changelog
 
-## [7.1.6](https://github.com/opencloud-eu/web/releases/tag/v7.1.6) - 2026-10-12
+## [7.1.6](https://github.com/opencloud-eu/web/releases/tag/v7.1.6) - 2026-11-05
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @v-scharf
+
+### 🔒 Security
+
+- [stable-7.1] fix: verify the sender of postMessage events in picker modals and external apps (#4289) [[#4295](https://github.com/opencloud-eu/web/pull/4295)]
 
 ### 🐛 Bug Fixes
 
