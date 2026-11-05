@@ -1,5 +1,20 @@
 # Changelog
 
+## [7.1.6](https://github.com/opencloud-eu/web/releases/tag/v7.1.6) - 2026-11-05
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @v-scharf
+
+### 🔒 Security
+
+- [stable-7.1] fix: verify the sender of postMessage events in picker modals and external apps (#4289) [[#4295](https://github.com/opencloud-eu/web/pull/4295)]
+
+### 🐛 Bug Fixes
+
+- [stable-7.1] fix: move and copy into sub folders of received shares (#3466) [[#3508](https://github.com/opencloud-eu/web/pull/3508)]
+- [stable-7.1] fix: send mtime metadata for public link uploads (#3322) [[#3323](https://github.com/opencloud-eu/web/pull/3323)]
+
 ## [7.1.5](https://github.com/opencloud-eu/web/releases/tag/v7.1.5) - 2026-08-20
 
 ### ❤️ Thanks to all contributors! ❤️
