@@ -42,7 +42,7 @@
             <oc-table-td>
               <account-label
                 class="truncate [&>*]:truncate"
-                :title="configStore.serverUrl"
+                :title="serverUrl"
                 :label="$gettext('CalDAV URL')"
                 :description="serverUrl"
               />

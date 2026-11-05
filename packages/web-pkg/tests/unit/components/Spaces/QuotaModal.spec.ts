@@ -118,28 +118,47 @@ describe('QuotaModal', () => {
     }
   )
 
-  it('allows a mixed selection to be unified to the first quota', async () => {
-    const spaces = [makeSpace('space-1', 10e9), makeSpace('space-2', 2e9)]
-    const { wrapper, mocks } = getWrapper({ spaces })
-    expect(wrapper.emitted('update:confirmDisabled')).toEqual([[false]])
-
-    await wrapper.vm.onConfirm()
-
-    expect(mocks.$clientService.graphAuthenticated.drives.updateDrive).toHaveBeenCalledTimes(2)
-    spaces.forEach(({ id }) => {
-      expect(mocks.$clientService.graphAuthenticated.drives.updateDrive).toHaveBeenCalledWith(id, {
-        quota: { total: 10e9 }
+  describe('mixed quotas', () => {
+    it('preselects no quota and disables confirmation until one is picked', async () => {
+      const { wrapper, mocks } = getWrapper({
+        spaces: [makeSpace('space-1', 10e9), makeSpace('space-2', 2e9)]
       })
+      expect(wrapper.find('.vs__selected').exists()).toBe(false)
+      expect(wrapper.emitted('update:confirmDisabled')).toEqual([[true]])
+
+      await wrapper.vm.onConfirm()
+      expect(mocks.$clientService.graphAuthenticated.drives.updateDrive).not.toHaveBeenCalled()
     })
-    expect(useMessages().showMessage).toHaveBeenCalledWith({
-      title: 'Quota of 2 spaces was changed successfully'
+
+    it.each([
+      ['10 GB', 10e9],
+      ['No restriction', 0]
+    ] as const)('applies the picked quota %s to all items', async (label, total) => {
+      const spaces = [makeSpace('space-1', 10e9), makeSpace('space-2', 0)]
+      const { wrapper, mocks } = getWrapper({ spaces })
+      await selectQuota(wrapper, label)
+      expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([false])
+
+      await wrapper.vm.onConfirm()
+
+      expect(mocks.$clientService.graphAuthenticated.drives.updateDrive).toHaveBeenCalledTimes(2)
+      spaces.forEach(({ id }) => {
+        expect(mocks.$clientService.graphAuthenticated.drives.updateDrive).toHaveBeenCalledWith(
+          id,
+          { quota: { total } }
+        )
+      })
+      expect(useMessages().showMessage).toHaveBeenCalledWith({
+        title: 'Quota of 2 spaces was changed successfully'
+      })
     })
   })
 
-  it('disables confirmation for multiple spaces that already have the selected quota', () => {
+  it('preselects the shared quota of multiple spaces and disables confirmation', () => {
     const { wrapper } = getWrapper({
       spaces: [makeSpace('space-1', 10e9), makeSpace('space-2', 10e9)]
     })
+    expect(wrapper.find('.vs__selected').text()).toBe('10 GB')
     expect(wrapper.emitted('update:confirmDisabled')).toEqual([[true]])
   })
 
