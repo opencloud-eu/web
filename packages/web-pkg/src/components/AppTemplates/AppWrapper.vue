@@ -93,7 +93,6 @@ import {
   SpaceResource,
   buildIncomingShareResource,
   call,
-  extractExtensionFromFile,
   isPersonalSpaceResource,
   isProjectSpaceResource,
   isPublicSpaceResource,
@@ -489,7 +488,8 @@ const loadResourceTask = useTask(function* (signal) {
         graphClient: clientService.graphAuthenticated
       })
     }
-    resourcesStore.initResourceList({ currentFolder: null, resources: [unref(resource)] })
+    // a copy, so store updates like renames don't change the loaded file in place
+    resourcesStore.initResourceList({ currentFolder: null, resources: [{ ...unref(resource) }] })
     selectedResources.value = [unref(resource)]
   } catch (e) {
     console.error(e)
@@ -665,9 +665,7 @@ watch(
     }
 
     const renamed = renameResource(unref(space), { ...unref(resource) }, newItem)
-    // resource may share its object with the store entry and already carry the new extension
-    const loadedExtension = extractExtensionFromFile({ name: basename(oldItem) } as Resource)
-    if (renamed.extension?.toLowerCase() !== loadedExtension.toLowerCase()) {
+    if (renamed.extension?.toLowerCase() !== unref(resource).extension?.toLowerCase()) {
       return
     }
 
@@ -722,7 +720,12 @@ function applySavedResource(etag: string, saved: Resource | null = null) {
     updated.mdate = saved.mdate
   }
   resource.value = updated
-  resourcesStore.upsertResource(saved ?? updated)
+  if (saved) {
+    resourcesStore.upsertResource(saved)
+    return
+  }
+  // the store entry may carry newer fields than `resource`, e.g. from file actions
+  resourcesStore.updateResourceField({ id: current.id, field: 'etag', value: etag })
 }
 
 const saveFileTask = useTask(function* () {
@@ -896,9 +899,12 @@ bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, () => {
   save()
 })
 
+// the store entry carries updates of file actions like favorite or hide, `resource` doesn't
 const actionOptions = computed<FileActionOptions>(() => ({
   space: unref(space),
-  resources: [unref(resource)]
+  resources: [
+    resourcesStore.resources.find(({ id }) => id === unref(resource)?.id) ?? unref(resource)
+  ]
 }))
 
 /**

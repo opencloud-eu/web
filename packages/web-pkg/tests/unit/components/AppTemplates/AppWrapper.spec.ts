@@ -605,10 +605,12 @@ describe('AppWrapper - renaming the open file', () => {
   async function openFileInFolder() {
     const s = setup({ yjsEnabled: false, currentRoute, fileContext: fileContext('/folder/a.md') })
     await nextTick()
-    await s.resolveResource(fileA)
+    await s.resolveResource({ ...fileA })
     await s.resolveContent('content of a')
     const resourcesStore = useResourcesStore()
-    resourcesStore.resources = [{ id: FILE_A.id, name: 'a.md', path: '/folder/a.md' } as Resource]
+    resourcesStore.resources = vi
+      .mocked(resourcesStore.initResourceList)
+      .mock.calls.at(-1)[0].resources
     await nextTick()
     return s
   }
@@ -616,7 +618,8 @@ describe('AppWrapper - renaming the open file', () => {
   /** Like the SSE rename handler and the rename action, which update the stored resource. */
   async function renameInStore(path: string) {
     const name = path.split('/').pop()
-    Object.assign(useResourcesStore().resources[0], { name, path })
+    const extension = name.split('.').pop()
+    Object.assign(useResourcesStore().resources[0], { name, path, extension })
     await nextTick()
   }
 
@@ -626,6 +629,21 @@ describe('AppWrapper - renaming the open file', () => {
     ) as CustomComponentExtension[]
     return (topBar.componentProps() as any).resource as Resource
   }
+
+  function topBarActionResource() {
+    const [topBar] = unref(
+      vi.mocked(useExtensionRegistry().registerExtensions).mock.calls.at(-1)[0]
+    ) as CustomComponentExtension[]
+    return (topBar.componentProps() as any).dropDownActionOptions.resources[0] as Resource
+  }
+
+  it('passes store updates of the open file to the top bar actions', async () => {
+    await openFileInFolder()
+    Object.assign(useResourcesStore().resources[0], { starred: true })
+    await nextTick()
+
+    expect(topBarActionResource().starred).toBe(true)
+  })
 
   it('replaces the route with the new path', async () => {
     const s = await openFileInFolder()
@@ -669,25 +687,7 @@ describe('AppWrapper - renaming the open file', () => {
     await renameInStore('/folder/a.txt')
 
     expect(s.routerReplace).not.toHaveBeenCalled()
-    expect(topBarResource().name).toBe('a.md')
-  })
-
-  it('does not follow a rename to another extension when the store shares the loaded resource', async () => {
-    const s = setup({ yjsEnabled: false, currentRoute, fileContext: fileContext('/folder/a.md') })
-    await nextTick()
-    await s.resolveResource({ ...fileA })
-    await s.resolveContent('content of a')
-    const resourcesStore = useResourcesStore()
-    resourcesStore.resources = [topBarResource()]
-    await nextTick()
-    Object.assign(resourcesStore.resources[0], {
-      name: 'a.txt',
-      path: '/folder/a.txt',
-      extension: 'txt'
-    })
-    await nextTick()
-
-    expect(s.routerReplace).not.toHaveBeenCalled()
+    expect(topBarResource()).toMatchObject({ name: 'a.md', path: '/folder/a.md', extension: 'md' })
   })
 
   it('reloads the file when navigating back to it while another file is loading', async () => {
@@ -1573,6 +1573,29 @@ describe('AppWrapper — save conflict handling', () => {
       expect(s.markConflicted).not.toHaveBeenCalled()
     }
   )
+
+  it('only moves the etag of the stored resource when the conflict had the same content', async () => {
+    const putFileContents = vi.fn().mockRejectedValue(conflict())
+    const s = setup({ status: 'connected', putFileContents })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+
+    const pressed = s.pressCtrlS()
+    await flushPromises()
+    s.resolveContentWith('edited content', 'etag-fresh')
+    await pressed
+    await flushPromises()
+
+    const resourcesStore = useResourcesStore()
+    expect(resourcesStore.upsertResource).not.toHaveBeenCalled()
+    expect(resourcesStore.updateResourceField).toHaveBeenCalledWith({
+      id: FILE_A.id,
+      field: 'etag',
+      value: 'etag-fresh'
+    })
+  })
 
   // A failed refetch or a failed retry is just as likely a network blip as an
   // external write, so the user gets the popup but keeps the session.
