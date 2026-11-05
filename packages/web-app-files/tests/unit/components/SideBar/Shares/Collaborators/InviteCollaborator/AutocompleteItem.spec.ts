@@ -46,6 +46,9 @@ describe('AutocompleteItem component', () => {
       expect(wrapper.find('.files-collaborators-autocomplete-username').text()).toEqual(
         'Alice Hansen'
       )
+      expect(
+        wrapper.find('.files-collaborators-autocomplete-username').attributes('title')
+      ).toEqual('Alice Hansen')
     })
     it.each([ShareTypes.user.value, ShareTypes.group.value])(
       'hides share type for users and groups',
@@ -64,6 +67,9 @@ describe('AutocompleteItem component', () => {
       const mail = 'foo@bar.com'
       const { wrapper } = createWrapper({ shareType: ShareTypes.user.value, mail })
       expect(wrapper.find('.files-collaborators-autocomplete-additionalInfo').text()).toEqual(mail)
+      expect(
+        wrapper.find('.files-collaborators-autocomplete-additionalInfo').attributes('title')
+      ).toEqual(mail)
     })
     it('shows the onPremisesSamAccountName for a user if no mail given', () => {
       const onPremisesSamAccountName = 'fooBar'

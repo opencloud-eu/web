@@ -64,7 +64,13 @@
                   v-if="el.link && el.object_type !== 'local_share'"
                   class="oc-notifications-link truncate w-sm"
                 >
-                  <a :href="el.link" target="_blank" @click.stop v-text="el.link" />
+                  <a
+                    :href="el.link"
+                    :title="el.link"
+                    target="_blank"
+                    @click.stop
+                    v-text="el.link"
+                  />
                 </div>
                 <div v-if="el.datetime" class="text-sm text-role-on-surface-variant mt-1">
                   <span

@@ -19,7 +19,11 @@
       aria-live="polite"
       aria-atomic="true"
     >
-      <span class="app-details-gallery-caption truncate" v-text="currentImage?.caption" />
+      <span
+        class="app-details-gallery-caption truncate"
+        :title="currentImage?.caption"
+        v-text="currentImage?.caption"
+      />
       <span
         v-if="hasMultipleImages"
         class="app-details-gallery-counter shrink-0"

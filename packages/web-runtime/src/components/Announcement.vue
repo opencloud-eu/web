@@ -18,7 +18,7 @@
         color="var(--color-amber-950)"
         class="shrink-0"
       />
-      <span class="text-sm font-bold truncate" v-text="bannerText" />
+      <span class="text-sm font-bold truncate" :title="bannerText" v-text="bannerText" />
       <span
         class="announcement-details ml-auto shrink-0 flex items-center gap-1 text-sm font-medium"
       >
@@ -39,7 +39,7 @@
         color="var(--color-amber-950)"
         class="shrink-0"
       />
-      <span class="text-sm font-bold truncate" v-text="bannerText" />
+      <span class="text-sm font-bold truncate" :title="bannerText" v-text="bannerText" />
     </div>
     <span
       v-if="hasInfo"

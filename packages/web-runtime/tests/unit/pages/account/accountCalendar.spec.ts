@@ -40,6 +40,7 @@ describe('account calendar page', () => {
       'Here, you can access your personal calendar for integration with third-party apps like Thunderbird, Apple Calendar, and others.'
     )
     expect(wrapper.find('.calendar-not-configured-message').exists()).toBeFalsy()
+    expect(wrapper.find('[title="https://example.com/"]').text()).toContain('https://example.com/')
   })
 
   it('does not render content if CalDAV is not available', async () => {

@@ -123,7 +123,7 @@
             <slot name="contextMenu" :item="resource" />
           </div>
         </div>
-        <p v-if="resourceDescription" class="text-left my-0 truncate">
+        <p v-if="resourceDescription" class="text-left my-0 truncate" :title="resourceDescription">
           <span class="text-sm" v-text="resourceDescription" />
         </p>
         <slot name="additionalResourceContent" :item="resource" />

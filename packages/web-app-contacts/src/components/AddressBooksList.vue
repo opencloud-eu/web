@@ -29,7 +29,11 @@
           <div class="flex items-center justify-between w-full">
             <div class="flex items-center truncate">
               <oc-icon name="folder" class="mr-2" fill-type="line" />
-              <span class="truncate font-bold" v-text="addressBook.name" />
+              <span
+                class="truncate font-bold"
+                :title="addressBook.name"
+                v-text="addressBook.name"
+              />
             </div>
           </div>
         </oc-button>

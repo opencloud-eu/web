@@ -73,7 +73,11 @@
           <oc-spinner v-else size="small" :aria-label="$gettext('Loading members')" />
         </oc-button>
       </div>
-      <p v-if="space.description" class="mt-0 font-semibold">{{ space.description }}</p>
+      <p
+        v-if="space.description"
+        class="mt-0 font-semibold wrap-anywhere"
+        v-text="space.description"
+      />
       <div
         v-if="readmesLoading.includes(space.id)"
         class="space-header-readme-loading flex items-center justify-center"

@@ -18,7 +18,11 @@
       </oc-button>
       <MailActionBar :mail="currentMail" @edit-draft="onEditDraft" />
       <div class="mail-details-subject font-bold flex justify-between items-center mt-1">
-        <h3 class="text-lg block truncate" v-text="currentMail.subject" />
+        <h3
+          class="text-lg block truncate"
+          :title="currentMail.subject"
+          v-text="currentMail.subject"
+        />
         <MailIndicators :mail="currentMail" />
       </div>
       <div class="mail-details-subheader mt-2 flex min-w-0 justify-between">
@@ -26,14 +30,14 @@
           <oc-avatar :user-name="currentMail.from[0]?.name || currentMail.sender[0]?.name" />
         </div>
         <div class="mail-details-userinfo flex-1 min-w-0 ml-4">
-          <div class="font-bold text-lg truncate flex-1" v-text="fromName" />
-          <div class="truncate" v-text="fromEmail" />
+          <div class="font-bold text-lg truncate flex-1" :title="fromName" v-text="fromName" />
+          <div class="truncate" :title="fromEmail" v-text="fromEmail" />
         </div>
         <span class="mail-details-received-at shrink-0 ml-2" v-text="receivedAtRelativeDate" />
       </div>
-      <div class="mail-details-to mt-4">
+      <div class="mail-details-to mt-4 flex min-w-0">
         <span class="mr-4" v-text="$gettext('To:')" />
-        <span class="truncate" v-text="sendToNames" />
+        <span class="min-w-0 truncate" :title="sendToNames" v-text="sendToNames" />
       </div>
       <mail-appointment-list
         v-if="appointments?.length"

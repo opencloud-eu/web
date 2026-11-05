@@ -5,7 +5,7 @@ exports[`OcModal > displays input 1`] = `
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
     <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0">
       <div class="oc-modal-title shrink-0 flex items-center flex-row justify-between py-3 px-4 rounded-t-xl">
-        <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base">Create new folder</h2>
+        <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base" title="Create new folder">Create new folder</h2>
         <div class="flex items-center gap-1">
           <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-title-actions-cancel">
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-5" type="span" uniqueids="false"></oc-icon-stub>
@@ -34,7 +34,7 @@ exports[`OcModal > displays loading state 1`] = `
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
     <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0">
       <div class="oc-modal-title shrink-0 flex items-center flex-row justify-between py-3 px-4 rounded-t-xl">
-        <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base">Example title</h2>
+        <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base" title="Example title">Example title</h2>
         <div class="flex items-center gap-1"> <button type="button" disabled="" aria-label="Cancel" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-modal-title-actions-cancel">
             <!--v-if-->
             <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" unique-ids="false" transform-source="(svg) => {
@@ -69,7 +69,7 @@ exports[`OcModal > matches snapshot 1`] = `
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
     <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0">
       <div class="oc-modal-title shrink-0 flex items-center flex-row justify-between py-3 px-4 rounded-t-xl">
-        <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base">Example title</h2>
+        <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base" title="Example title">Example title</h2>
         <div class="flex items-center gap-1">
           <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-title-actions-cancel">
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-5" type="span" uniqueids="false"></oc-icon-stub>
@@ -98,7 +98,7 @@ exports[`OcModal > overrides props message with slot 1`] = `
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
     <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0">
       <div class="oc-modal-title shrink-0 flex items-center flex-row justify-between py-3 px-4 rounded-t-xl">
-        <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base">Example title</h2>
+        <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base" title="Example title">Example title</h2>
         <div class="flex items-center gap-1">
           <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-title-actions-cancel">
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-5" type="span" uniqueids="false"></oc-icon-stub>

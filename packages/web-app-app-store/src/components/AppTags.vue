@@ -6,11 +6,12 @@
       data-testid="tag-button"
       rounded
       size="small"
-      class="relative whitespace-nowrap cursor-pointer"
+      class="relative max-w-full whitespace-nowrap cursor-pointer"
       type="button"
+      :title="tag"
       @click="emit('click', tag)"
     >
-      <oc-filter-highlight :text="tag" :term="term" />
+      <oc-filter-highlight class="truncate" :text="tag" :term="term" />
     </oc-tag>
   </div>
 </template>

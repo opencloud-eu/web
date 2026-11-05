@@ -1,4 +1,5 @@
 import { defaultPlugins, PartialComponentProps, shallowMount } from '@opencloud-eu/web-test-helpers'
+import { nextTick } from 'vue'
 import Breadcrumb from './OcBreadcrumb.vue'
 import OcBreadcrumbItem from './OcBreadcrumbItem.vue'
 import OcBreadcrumbContextMenu from './OcBreadcrumbContextMenu.vue'
@@ -54,6 +55,23 @@ describe('OcBreadcrumb', () => {
     it('is not rendered if not enabled via property', () => {
       const { wrapper } = getWrapper({ showContextActions: false })
       expect(wrapper.findComponent(OcBreadcrumbContextMenu).exists()).toBe(false)
+    })
+  })
+  describe('collapsed items', () => {
+    it('shows the full name as title on the truncated item text', async () => {
+      const longName = 'A very long folder name that does not fit into the drop'
+      const { wrapper } = getWrapper({
+        maxWidth: 50,
+        items: [
+          { id: '1', text: 'Root', to: { path: '/root' } },
+          { id: '2', text: longName, to: { path: '/root/long' } },
+          { id: '3', text: 'Parent', to: { path: '/root/long/parent' } },
+          { id: '4', text: 'Current', to: { path: '/root/long/parent/current' } }
+        ]
+      })
+      await nextTick()
+      const texts = wrapper.findAll('.oc-breadcrumb-truncation-item-text')
+      expect(texts.map((text) => text.attributes('title'))).toEqual([longName, 'Parent'])
     })
   })
   describe('mobile navigation', () => {

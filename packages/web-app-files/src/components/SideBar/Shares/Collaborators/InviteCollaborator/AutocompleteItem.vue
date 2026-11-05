@@ -19,7 +19,7 @@
       class="mr-2"
     />
     <div class="truncate">
-      <span class="files-collaborators-autocomplete-username">
+      <span class="files-collaborators-autocomplete-username" :title="item.displayName">
         <oc-filter-highlight :text="item.displayName" :term="term" />
       </span>
       <template v-if="!isAnyPrimaryShareType">
@@ -28,10 +28,18 @@
           v-text="`(${$gettext(shareType.label)})`"
         />
       </template>
-      <div v-if="additionalInfo" class="files-collaborators-autocomplete-additionalInfo text-sm">
+      <div
+        v-if="additionalInfo"
+        class="files-collaborators-autocomplete-additionalInfo text-sm truncate"
+        :title="additionalInfo"
+      >
         <oc-filter-highlight :text="additionalInfo" :term="term" />
       </div>
-      <div v-if="externalIssuer" class="files-collaborators-autocomplete-externalIssuer text-sm">
+      <div
+        v-if="externalIssuer"
+        class="files-collaborators-autocomplete-externalIssuer text-sm truncate"
+        :title="externalIssuer"
+      >
         <oc-filter-highlight :text="externalIssuer" :term="term" />
       </div>
     </div>

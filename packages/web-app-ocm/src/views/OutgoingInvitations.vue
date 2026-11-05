@@ -65,7 +65,7 @@
         >
           <template #token="rowData">
             <div class="w-3xs flex">
-              <div class="truncate max-w-full">
+              <div class="truncate max-w-full" :title="rowData.item.token">
                 <span class="truncate">{{ rowData.item.token }}</span>
               </div>
               <oc-button

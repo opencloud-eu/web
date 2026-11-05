@@ -20,7 +20,7 @@
         <div
           class="oc-modal-title shrink-0 flex items-center flex-row justify-between py-3 px-4 rounded-t-xl"
         >
-          <h2 :id="titleId" class="truncate m-0 text-base" v-text="title" />
+          <h2 :id="titleId" class="truncate m-0 text-base" :title="title" v-text="title" />
           <div class="flex items-center gap-1">
             <slot name="headerActions"></slot>
             <oc-button

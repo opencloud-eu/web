@@ -115,6 +115,13 @@ describe('OcResource', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
 
+  it('shows the full parent folder name as title on the truncated parent folder', () => {
+    const parentFolderName = 'A very long parent folder name that gets truncated'
+    const wrapper = getWrapper({ resource: fileResource, isPathDisplayed: true, parentFolderName })
+
+    expect(wrapper.find('.parent-folder .text').attributes('title')).toBe(parentFolderName)
+  })
+
   it('displays the thumbnail as soon as it gets added to the resource', async () => {
     const resource = reactive({ ...fileResourceWithoutParentFoldername }) as Resource
     const wrapper = getWrapper({ resource })

@@ -60,7 +60,11 @@
             <oc-icon v-else name="user" fill-type="line" class="p-1" />
             <span :class="{ 'py-1': !authStore.guestEmail }">
               <span class="block" v-text="$gettext('Guest')" />
-              <span v-if="authStore.guestEmail" class="text-sm" v-text="authStore.guestEmail" />
+              <span
+                v-if="authStore.guestEmail"
+                class="text-sm wrap-anywhere"
+                v-text="authStore.guestEmail"
+              />
             </span>
           </li>
           <li class="flex items-center">
@@ -97,8 +101,8 @@
               background-color="var(--oc-role-chrome)"
             />
             <span :class="{ 'py-1': !user.mail }">
-              <span class="block" v-text="user.displayName" />
-              <span v-if="user.mail" class="text-sm" v-text="user.mail" />
+              <span class="block wrap-anywhere" v-text="user.displayName" />
+              <span v-if="user.mail" class="text-sm wrap-anywhere" v-text="user.mail" />
               <quota-information v-if="quota" :quota="quota" class="text-sm mt-1" />
             </span>
           </li>
