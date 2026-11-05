@@ -42,7 +42,7 @@ describe('DriveRedirect view', () => {
     expect(wrapper.find(selectors.notFoundMessage).exists()).toBeFalsy()
   })
 
-  it.each(['', 'personal/home'])(
+  it.each(['', 'personal/home', 'personal/'])(
     'redirects the drive alias "%s" to the personal space',
     (driveAliasAndItem) => {
       const { mocks, wrapper } = getMountedWrapper({
@@ -141,6 +141,28 @@ describe('DriveRedirect view', () => {
       const { mocks, wrapper } = getMountedWrapper({ driveAliasAndItem: 'project/unknown' })
       expect(mocks.$router.replace).not.toHaveBeenCalled()
       expect(wrapper.find(selectors.notFoundMessage).exists()).toBeTruthy()
+    })
+  })
+  describe("another user's personal space", () => {
+    it.each(['personal/other-user/folder', 'personal/homer'])(
+      'shows a not found message for the drive alias "%s"',
+      (driveAliasAndItem) => {
+        const { mocks, wrapper } = getMountedWrapper({
+          driveAliasAndItem,
+          spaces: [getPersonalSpace()]
+        })
+        expect(mocks.$router.replace).not.toHaveBeenCalled()
+        expect(wrapper.find(selectors.notFoundMessage).exists()).toBeTruthy()
+      }
+    )
+
+    it('redirects guests to their shares', () => {
+      const { mocks, wrapper } = getMountedWrapper({
+        isGuest: true,
+        driveAliasAndItem: 'personal/other-user'
+      })
+      expect(mocks.$router.replace).toHaveBeenCalledWith({ name: 'files-guest-shares' })
+      expect(wrapper.find(selectors.notFoundMessage).exists()).toBeFalsy()
     })
   })
 })
