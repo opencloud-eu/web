@@ -21,19 +21,38 @@ const postMessageMock = vi.fn()
 console.debug = vi.fn()
 
 describe('oidcCallback page', () => {
+  const parentWindow = {} as Window
+  let wrapper: ReturnType<typeof getWrapper>['wrapper']
+
+  beforeEach(() => {
+    vi.spyOn(window, 'parent', 'get').mockReturnValue(parentWindow)
+  })
+  afterEach(() => {
+    wrapper?.unmount()
+    wrapper = undefined
+    vi.restoreAllMocks()
+  })
+
+  function mountDelegated({ verifyOrigin = true }: { verifyOrigin?: boolean } = {}) {
+    const verifyDelegatedAuthenticationOrigin = vi.fn().mockReturnValue(verifyOrigin)
+    mockUseEmbedMode.mockReturnValue({
+      isDelegatingAuthentication: computed(() => true),
+      postMessage: postMessageMock,
+      verifyDelegatedAuthenticationOrigin
+    })
+
+    const signInCallbackSpy = vi
+      .spyOn(authService, 'signInCallback')
+      .mockImplementation(() => Promise.resolve())
+
+    wrapper = getWrapper().wrapper
+
+    return { signInCallbackSpy, verifyDelegatedAuthenticationOrigin }
+  }
+
   describe('delegated authentication', () => {
     it('when authentication is delegated does not call signInCallback immediately', () => {
-      mockUseEmbedMode.mockReturnValue({
-        isDelegatingAuthentication: computed(() => true),
-        postMessage: postMessageMock,
-        verifyDelegatedAuthenticationOrigin: vi.fn().mockReturnValue(true)
-      })
-
-      const signInCallbackSpy = vi
-        .spyOn(authService, 'signInCallback')
-        .mockImplementation(() => Promise.resolve())
-
-      getWrapper()
+      const { signInCallbackSpy } = mountDelegated()
 
       expect(signInCallbackSpy).not.toHaveBeenCalled()
     })
@@ -48,78 +67,92 @@ describe('oidcCallback page', () => {
         .spyOn(authService, 'signInCallback')
         .mockImplementation(() => Promise.resolve())
 
-      getWrapper()
+      wrapper = getWrapper().wrapper
 
       expect(signInCallbackSpy).toHaveBeenCalled()
     })
 
     it('when authentication is delegated calls postMessage with token request event', () => {
-      mockUseEmbedMode.mockReturnValue({
-        isDelegatingAuthentication: computed(() => true),
-        postMessage: postMessageMock,
-        verifyDelegatedAuthenticationOrigin: vi.fn().mockReturnValue(true)
-      })
-
-      vi.spyOn(authService, 'signInCallback').mockImplementation(() => Promise.resolve())
-
-      getWrapper()
+      mountDelegated()
 
       expect(postMessageMock).toHaveBeenCalledWith('opencloud-embed:request-token')
     })
 
-    it('when token update event is received calls signInCallback', async () => {
-      mockUseEmbedMode.mockReturnValue({
-        isDelegatingAuthentication: computed(() => true),
-        postMessage: postMessageMock,
-        verifyDelegatedAuthenticationOrigin: vi.fn().mockReturnValue(true)
+    it('when token update event is received calls signInCallback', () => {
+      const { signInCallbackSpy } = mountDelegated()
+
+      dispatchTokenMessage({
+        source: parentWindow,
+        data: { access_token: 'access-token', session_id: 'session-id' }
       })
-
-      const signInCallbackSpy = vi
-        .spyOn(authService, 'signInCallback')
-        .mockImplementation(() => Promise.resolve())
-
-      getWrapper()
-
-      window.postMessage(
-        {
-          name: 'opencloud-embed:update-token',
-          data: { access_token: 'access-token', session_id: 'session-id' }
-        },
-        '*'
-      )
-
-      await new Promise<void>((resolve) => setTimeout(() => resolve(), 10))
 
       expect(signInCallbackSpy).toHaveBeenCalledWith('access-token', 'session-id')
     })
 
-    it('when token update event is received but name is incorrect does not call signInCallback', async () => {
-      mockUseEmbedMode.mockReturnValue({
-        isDelegatingAuthentication: computed(() => true),
-        postMessage: postMessageMock,
-        verifyDelegatedAuthenticationOrigin: vi.fn().mockReturnValue(true)
+    it.each([
+      ['a different window', {}],
+      ['no window', null]
+    ])('when token update event is sent by %s does not call signInCallback', (_, source) => {
+      const { signInCallbackSpy } = mountDelegated()
+
+      dispatchTokenMessage({ source, data: { access_token: 'forged-token' } })
+
+      expect(signInCallbackSpy).not.toHaveBeenCalled()
+    })
+
+    it('when the app is not embedded does not accept a token update event', () => {
+      vi.spyOn(window, 'parent', 'get').mockReturnValue(window)
+      const { signInCallbackSpy } = mountDelegated()
+
+      dispatchTokenMessage({ source: window, data: { access_token: 'forged-token' } })
+
+      expect(signInCallbackSpy).not.toHaveBeenCalled()
+    })
+
+    it('when token update event comes from an unexpected origin does not call signInCallback', () => {
+      const { signInCallbackSpy, verifyDelegatedAuthenticationOrigin } = mountDelegated({
+        verifyOrigin: false
       })
 
-      const signInCallbackSpy = vi
-        .spyOn(authService, 'signInCallback')
-        .mockImplementation(() => Promise.resolve())
+      dispatchTokenMessage({
+        source: parentWindow,
+        origin: 'https://attacker.example',
+        data: { access_token: 'forged-token' }
+      })
 
-      getWrapper()
+      expect(verifyDelegatedAuthenticationOrigin).toHaveBeenCalledWith('https://attacker.example')
+      expect(signInCallbackSpy).not.toHaveBeenCalled()
+    })
 
-      window.postMessage(
-        {
-          name: 'update-token',
-          data: { access_token: 'access-token' }
-        },
-        '*'
-      )
+    it('when token update event is received but name is incorrect does not call signInCallback', () => {
+      const { signInCallbackSpy } = mountDelegated()
 
-      await new Promise<void>((resolve) => setTimeout(() => resolve(), 10))
+      dispatchTokenMessage({
+        source: parentWindow,
+        name: 'update-token',
+        data: { access_token: 'access-token' }
+      })
 
       expect(signInCallbackSpy).not.toHaveBeenCalled()
     })
   })
 })
+
+function dispatchTokenMessage({
+  source,
+  origin = 'https://host.example',
+  name = 'opencloud-embed:update-token',
+  data
+}: {
+  source: unknown
+  origin?: string
+  name?: string
+  data: Record<string, string>
+}) {
+  const event = new MessageEvent('message', { origin, data: { name, data } })
+  Object.defineProperty(event, 'source', { value: source })
+  window.dispatchEvent(event)
+}
 
 function getWrapper() {
   const mocks = {

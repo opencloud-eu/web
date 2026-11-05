@@ -16,7 +16,8 @@ import {
   useTokenTimerWorker,
   AuthServiceInterface,
   SpacesStore,
-  queryItemAsString
+  queryItemAsString,
+  isMessageFromParent
 } from '@opencloud-eu/web-pkg'
 import { RouteLocation, Router } from 'vue-router'
 import {
@@ -544,10 +545,7 @@ export class AuthService implements AuthServiceInterface {
   }
 
   private handleDelegatedTokenUpdate = (event: MessageEvent) => {
-    if (
-      this.configStore.options.embed?.delegateAuthenticationOrigin &&
-      event.origin !== this.configStore.options.embed.delegateAuthenticationOrigin
-    ) {
+    if (!isMessageFromParent(event, this.configStore.options.embed?.delegateAuthenticationOrigin)) {
       return
     }
 
