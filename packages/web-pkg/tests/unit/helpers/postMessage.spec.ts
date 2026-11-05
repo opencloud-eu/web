@@ -1,4 +1,4 @@
-import { isMessageFromIframe } from '../../../src/helpers/postMessage'
+import { isMessageFromIframe, isMessageFromParent } from '../../../src/helpers/postMessage'
 
 function createMessageEvent({ source, origin }: { source: unknown; origin: string }) {
   const event = new MessageEvent('message', { origin })
@@ -33,4 +33,37 @@ describe('isMessageFromIframe', () => {
       expect(isMessageFromIframe(event, unavailableIframe)).toBe(false)
     }
   )
+})
+
+describe('isMessageFromParent', () => {
+  const parentWindow = {} as Window
+
+  beforeEach(() => {
+    vi.spyOn(window, 'parent', 'get').mockReturnValue(parentWindow)
+  })
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('returns true if source is the parent window and origin matches', () => {
+    const event = createMessageEvent({ source: parentWindow, origin: 'https://host.example' })
+    expect(isMessageFromParent(event, 'https://host.example')).toBe(true)
+  })
+  it('returns true if source is the parent window and no origin is expected', () => {
+    const event = createMessageEvent({ source: parentWindow, origin: 'https://host.example' })
+    expect(isMessageFromParent(event)).toBe(true)
+  })
+  it.each([{}, null])('returns false if the source is not the parent window', (source) => {
+    const event = createMessageEvent({ source, origin: 'https://host.example' })
+    expect(isMessageFromParent(event, 'https://host.example')).toBe(false)
+  })
+  it('returns false if the origin does not match', () => {
+    const event = createMessageEvent({ source: parentWindow, origin: 'https://attacker.example' })
+    expect(isMessageFromParent(event, 'https://host.example')).toBe(false)
+  })
+  it('returns false if the app is not embedded', () => {
+    vi.restoreAllMocks()
+    const event = createMessageEvent({ source: window, origin: window.location.origin })
+    expect(isMessageFromParent(event)).toBe(false)
+  })
 })

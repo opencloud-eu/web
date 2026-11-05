@@ -9,3 +9,11 @@ export function isMessageFromIframe(
 
   return !expectedOrigin || event.origin === expectedOrigin
 }
+
+export function isMessageFromParent(event: MessageEvent, expectedOrigin?: string): boolean {
+  if (window.parent === window || !event.source || event.source !== window.parent) {
+    return false
+  }
+
+  return !expectedOrigin || event.origin === expectedOrigin
+}
