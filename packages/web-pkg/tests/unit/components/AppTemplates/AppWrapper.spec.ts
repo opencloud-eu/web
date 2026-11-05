@@ -1,7 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { defineComponent, h, nextTick, reactive, ref, toValue, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
-import type { Resource, ShareSpaceResource } from '@opencloud-eu/web-client'
+import type { Resource, ShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { HttpError } from '@opencloud-eu/web-client'
 import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
 import {
@@ -27,7 +27,8 @@ import {
   type CustomComponentExtension,
   useExtensionRegistry,
   useMessages,
-  useModals
+  useModals,
+  useResourcesStore
 } from '../../../../src/composables/piniaStores'
 
 const { useAppDefaultsSpy, useYjsSessionSpy, getResourceContextSpy } = vi.hoisted(() => ({
@@ -142,6 +143,7 @@ function setup({
     params: { driveAliasAndItem: 'personal/alan/a.md' }
   }),
   isGuestContext = false,
+  fileContext = mock<FileContext>({ space: mock<any>(), path: '/a.md' }),
   fileContentOptions = undefined as FileContentOptions,
   // Receives the errors Vue would otherwise report as unhandled.
   errorHandler = undefined as (err: unknown) => void
@@ -160,7 +162,7 @@ function setup({
     isConflicted.value = true
   })
   const statusRef = ref(status)
-  const currentFileContext = ref(mock<FileContext>({ space: mock<any>(), path: '/a.md' }))
+  const currentFileContext = ref(fileContext)
   // Deferred so the test controls when each half of the load completes.
   let resolveInfo: (r: Resource) => void
   let rejectInfo: (e: Error) => void
@@ -261,6 +263,7 @@ function setup({
     routes: [{ path: '/:all(.*)', component: wrappedComponent }]
   })
   const routerPush = vi.spyOn(router, 'push').mockResolvedValue(undefined)
+  const routerReplace = vi.spyOn(router, 'replace').mockResolvedValue(undefined)
 
   // Wrappers of earlier tests stay subscribed to the global event bus, so a
   // deletion is handed to this wrapper's subscription only.
@@ -295,6 +298,7 @@ function setup({
   return {
     wrapper,
     routerPush,
+    routerReplace,
     currentFileContext,
     isEnabled: () => sessionOptions?.enabled(),
     isLockedForReload,
@@ -302,6 +306,7 @@ function setup({
     markConflicted,
     putFileContents,
     closeApp,
+    getFileInfo,
     getFileContents,
     unregisterAppBarExtension,
     wasWrittenByRoom,
@@ -569,6 +574,172 @@ describe('AppWrapper — remounting the wrapped app', () => {
     const s = await openFile({ yjsEnabled: false })
     await switchFile(s, FILE_B, 'content of b')
     expect(s.slotKey()).toBe(FILE_B.id)
+  })
+})
+
+describe('AppWrapper - renaming the open file', () => {
+  const space = mock<SpaceResource>({
+    id: 'space-id',
+    webDavPath: '/spaces/space-id',
+    getDriveAliasAndItem: ({ path }: Resource) => `personal/alan${path}`
+  })
+  const currentRoute = mock<RouteLocation>({
+    path: '/test-app/personal/alan/folder/a.md',
+    query: { fileId: FILE_A.id },
+    params: { driveAliasAndItem: 'personal/alan/folder/a.md' }
+  })
+  const fileA = mock<Resource>({
+    id: FILE_A.id,
+    fileId: FILE_A.id,
+    name: 'a.md',
+    path: '/folder/a.md',
+    extension: 'md',
+    etag: 'etag-a',
+    permissions: 'RDNVW'
+  })
+
+  function fileContext(item: string) {
+    return mock<FileContext>({ space, path: `/spaces/space-id${item}`, item, itemId: FILE_A.id })
+  }
+
+  async function openFileInFolder() {
+    const s = setup({ yjsEnabled: false, currentRoute, fileContext: fileContext('/folder/a.md') })
+    await nextTick()
+    await s.resolveResource(fileA)
+    await s.resolveContent('content of a')
+    const resourcesStore = useResourcesStore()
+    resourcesStore.resources = [{ id: FILE_A.id, name: 'a.md', path: '/folder/a.md' } as Resource]
+    await nextTick()
+    return s
+  }
+
+  /** Like the SSE rename handler and the rename action, which update the stored resource. */
+  async function renameInStore(path: string) {
+    const name = path.split('/').pop()
+    Object.assign(useResourcesStore().resources[0], { name, path })
+    await nextTick()
+  }
+
+  function topBarResource() {
+    const [topBar] = unref(
+      vi.mocked(useExtensionRegistry().registerExtensions).mock.calls.at(-1)[0]
+    ) as CustomComponentExtension[]
+    return (topBar.componentProps() as any).resource as Resource
+  }
+
+  it('replaces the route with the new path', async () => {
+    const s = await openFileInFolder()
+    await renameInStore('/folder/renamed.md')
+
+    expect(s.routerReplace).toHaveBeenCalledWith({
+      params: { driveAliasAndItem: 'personal/alan/folder/renamed.md' },
+      query: currentRoute.query
+    })
+    expect(topBarResource().name).toBe('renamed.md')
+  })
+
+  it('keeps unsaved changes and saves them once the route followed', async () => {
+    const s = await openFileInFolder()
+    await s.edit('edited a')
+    await renameInStore('/folder/renamed.md')
+    s.currentFileContext.value = fileContext('/folder/renamed.md')
+    await flushPromises()
+
+    expect(s.getFileInfo).toHaveBeenCalledTimes(1)
+    expect(s.getFileContents).toHaveBeenCalledTimes(1)
+    expect(s.currentContent()).toBe('edited a')
+
+    await s.pressCtrlS()
+
+    expect(s.putFileContents).toHaveBeenCalledWith(
+      expect.objectContaining({ value: expect.objectContaining({ item: '/folder/renamed.md' }) }),
+      expect.objectContaining({ content: 'edited a', previousEntityTag: 'etag' })
+    )
+  })
+
+  it('does not follow a move to another folder', async () => {
+    const s = await openFileInFolder()
+    await renameInStore('/other/a.md')
+
+    expect(s.routerReplace).not.toHaveBeenCalled()
+  })
+
+  it('does not follow a rename to another extension', async () => {
+    const s = await openFileInFolder()
+    await renameInStore('/folder/a.txt')
+
+    expect(s.routerReplace).not.toHaveBeenCalled()
+    expect(topBarResource().name).toBe('a.md')
+  })
+
+  it('does not follow a rename to another extension when the store shares the loaded resource', async () => {
+    const s = setup({ yjsEnabled: false, currentRoute, fileContext: fileContext('/folder/a.md') })
+    await nextTick()
+    await s.resolveResource({ ...fileA })
+    await s.resolveContent('content of a')
+    const resourcesStore = useResourcesStore()
+    resourcesStore.resources = [topBarResource()]
+    await nextTick()
+    Object.assign(resourcesStore.resources[0], {
+      name: 'a.txt',
+      path: '/folder/a.txt',
+      extension: 'txt'
+    })
+    await nextTick()
+
+    expect(s.routerReplace).not.toHaveBeenCalled()
+  })
+
+  it('reloads the file when navigating back to it while another file is loading', async () => {
+    const s = await openFileInFolder()
+    s.currentFileContext.value = fileContext('/folder/b.md')
+    await nextTick()
+    s.currentFileContext.value = fileContext('/folder/a.md')
+    await nextTick()
+
+    expect(s.getFileInfo).toHaveBeenCalledTimes(3)
+    expect(unref(s.getFileInfo.mock.calls.at(-1)[0]).item).toBe('/folder/a.md')
+  })
+
+  it('reloads the file when navigating back to it after another file failed to load', async () => {
+    const s = await openFileInFolder()
+    s.currentFileContext.value = fileContext('/folder/b.md')
+    await nextTick()
+    await s.rejectResource(new HttpError('Resource not found', undefined, 404))
+    s.currentFileContext.value = fileContext('/folder/a.md')
+    await nextTick()
+    await s.resolveResource(fileA)
+    await s.resolveContent('content of a')
+
+    expect(s.getFileInfo).toHaveBeenCalledTimes(3)
+    expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(false)
+  })
+
+  it('does not follow a rename while another file is loading', async () => {
+    const s = await openFileInFolder()
+    s.currentFileContext.value = fileContext('/folder/b.md')
+    await nextTick()
+    await renameInStore('/folder/renamed.md')
+
+    expect(s.routerReplace).not.toHaveBeenCalled()
+  })
+
+  it('does not follow a rename after another file failed to load', async () => {
+    const s = await openFileInFolder()
+    s.currentFileContext.value = fileContext('/folder/b.md')
+    await nextTick()
+    await s.rejectResource(new HttpError('Resource not found', undefined, 404))
+    await renameInStore('/folder/renamed.md')
+
+    expect(s.routerReplace).not.toHaveBeenCalled()
+    expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(true)
+  })
+
+  it('follows a rename that only changes the case of the extension', async () => {
+    const s = await openFileInFolder()
+    await renameInStore('/folder/a.MD')
+
+    expect(s.routerReplace).toHaveBeenCalledTimes(1)
   })
 })
 

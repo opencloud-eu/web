@@ -8,7 +8,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { useModals } from '@opencloud-eu/web-pkg'
+import { useMessages, useModals } from '@opencloud-eu/web-pkg'
 
 describe('setImage', () => {
   describe('isVisible property', () => {
@@ -68,6 +68,31 @@ describe('setImage', () => {
           expect(dispatchModal).toHaveBeenCalled()
         }
       })
+    })
+
+    it('should show an error message when loading the image fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      let instance: ReturnType<typeof useSpaceActionsSetImage>
+      let clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
+      getWrapper({
+        setup: (i, mocks) => {
+          instance = i
+          clientService = mocks.clientService
+        }
+      })
+      clientService.webdav.getFileContents.mockRejectedValue(new Error())
+
+      await unref(instance.actions)[0].handler({
+        space: mock<SpaceResource>({ id: '1' }),
+        resources: [{ name: 'image.png' }] as Resource[]
+      })
+
+      const { showErrorMessage } = useMessages()
+      const { dispatchModal } = useModals()
+      expect(showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to set space image' })
+      )
+      expect(dispatchModal).not.toHaveBeenCalled()
     })
   })
 })
