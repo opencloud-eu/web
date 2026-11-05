@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show the full value of truncated user content on hover [[#4124](https://github.com/opencloud-eu/web/pull/4124)]
 - fix: revert the tags selection when a tag change fails [[#4167](https://github.com/opencloud-eu/web/pull/4167)]
 - fix: remove removed resources from the selection [[#4168](https://github.com/opencloud-eu/web/pull/4168)]
 - fix: wait for a running save before asking about unsaved changes on close [[#4277](https://github.com/opencloud-eu/web/pull/4277)]
