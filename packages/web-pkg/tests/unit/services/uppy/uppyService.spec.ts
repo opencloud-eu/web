@@ -1,7 +1,12 @@
 import { mock } from 'vitest-mock-extended'
 import { Language } from 'vue3-gettext'
 import XHRUpload from '@uppy/xhr-upload'
-import { OcUppyBody, OcUppyMeta, UppyService } from '../../../../src/services/uppy/uppyService'
+import {
+  OcUppyBody,
+  OcUppyFile,
+  OcUppyMeta,
+  UppyService
+} from '../../../../src/services/uppy/uppyService'
 
 describe('UppyService', () => {
   describe('cancelAllUploads', () => {
@@ -80,19 +85,20 @@ describe('UppyService', () => {
       const heldId = addFile('held.txt')
       const otherId = addFile('other.txt')
 
-      uppyService.holdBackFiles([heldId])
+      uppyService.holdBackFiles([uppyService.uppy.getFile(heldId)])
 
       expect(uppyService.uppy.getFiles().map(({ id }) => id)).toEqual([otherId])
     })
 
     it('rejects adding held back files again until they are released', () => {
       const heldId = addFile('held.txt')
-      uppyService.holdBackFiles([heldId])
+      const heldFile = uppyService.uppy.getFile(heldId)
+      uppyService.holdBackFiles([heldFile])
 
       expect(() => addFile('held.txt')).toThrow()
       expect(uppyService.uppy.getFiles()).toEqual([])
 
-      uppyService.releaseHeldBackFiles([heldId])
+      uppyService.releaseHeldBackFiles([heldFile])
       addFile('held.txt')
       expect(uppyService.uppy.getFiles().map(({ id }) => id)).toEqual([heldId])
     })
@@ -102,10 +108,34 @@ describe('UppyService', () => {
       { case: 'NFD file name', name: 'héld.txt', path: '' }
     ])('rejects adding a held back $case again', ({ name, path }) => {
       const heldId = addFile(name, path)
-      uppyService.holdBackFiles([heldId])
+      uppyService.holdBackFiles([uppyService.uppy.getFile(heldId)])
 
       expect(() => addFile(name, path)).toThrow()
       expect(uppyService.uppy.getFiles()).toEqual([])
+    })
+
+    it('rejects adding a failed file again while its upload run is still going', () => {
+      const failedId = addFile('failed.txt')
+      uppyService.uppy.setFileState(failedId, { error: 'failed' })
+      uppyService.uppy.setState({
+        currentUploads: { run: { fileIDs: [failedId], step: 0, result: {} } }
+      })
+
+      expect(() => addFile('failed.txt')).toThrow()
+
+      uppyService.uppy.setState({ currentUploads: {} })
+      expect(() => addFile('failed.txt')).not.toThrow()
+    })
+
+    it('counts held back remote files as remote uploads in progress', () => {
+      const heldId = addFile('held.txt')
+      const heldFile = { ...uppyService.uppy.getFile(heldId), isRemote: true } as OcUppyFile
+      uppyService.holdBackFiles([heldFile])
+
+      expect(uppyService.isRemoteUploadInProgress()).toBe(true)
+
+      uppyService.releaseHeldBackFiles([heldFile])
+      expect(uppyService.isRemoteUploadInProgress()).toBe(false)
     })
   })
 

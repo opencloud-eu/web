@@ -87,7 +87,7 @@ export class UppyService {
   uppy: Uppy<OcUppyMeta, OcUppyBody>
   uploadInputs: HTMLInputElement[] = []
   uploadFolderMap: Record<string, Resource> = {}
-  private heldBackFileIds = new Set<string>()
+  private heldBackFiles = new Map<string, OcUppyFile>()
 
   constructor({ language }: UppyServiceOptions) {
     const { $gettext } = language
@@ -102,8 +102,12 @@ export class UppyService {
         file.meta.relativePath = this.getRelativeFilePath(file)?.normalize('NFC')
         // id needs to be generated after the relative path has been set.
         file.id = this.generateUploadId(file)
-        if (this.heldBackFileIds.has(file.id)) {
-          // file is currently being prepared, e.g. awaits the conflict dialog
+        if (this.heldBackFiles.has(file.id)) {
+          // file is currently being prepared for upload
+          return false
+        }
+        if (this.isInRunningUpload(file.id)) {
+          // failed file whose upload run is still going, removing it would break that run
           return false
         }
         return file
@@ -343,19 +347,30 @@ export class UppyService {
   }
 
   /**
-   * Takes files out of Uppy's state so that upload() ignores them, e.g. while their batch awaits
-   * user input. Adding them again is rejected until releaseHeldBackFiles is called.
+   * Takes files out of Uppy's state so that upload() ignores them while their batch is being
+   * prepared. Adding them again is rejected until releaseHeldBackFiles is called.
    */
-  holdBackFiles(fileIds: string[]) {
-    fileIds.forEach((id) => this.heldBackFileIds.add(id))
-    this.uppy.setState({ files: omit(this.uppy.getState().files, fileIds) })
+  holdBackFiles(files: OcUppyFile[]) {
+    files.forEach((file) => this.heldBackFiles.set(file.id, file))
+    this.uppy.setState({
+      files: omit(
+        this.uppy.getState().files,
+        files.map(({ id }) => id)
+      )
+    })
   }
 
   /**
    * Allows adding held back files again. Does not put them back into Uppy's state.
    */
-  releaseHeldBackFiles(fileIds: string[]) {
-    fileIds.forEach((id) => this.heldBackFileIds.delete(id))
+  releaseHeldBackFiles(files: OcUppyFile[]) {
+    files.forEach(({ id }) => this.heldBackFiles.delete(id))
+  }
+
+  private isInRunningUpload(fileId: string) {
+    return Object.values(this.uppy.getState().currentUploads).some(({ fileIDs }) =>
+      fileIDs.includes(fileId)
+    )
   }
 
   addFiles(files: OcMinimalUppyFile[] | File[]) {
@@ -396,7 +411,9 @@ export class UppyService {
   }
 
   isRemoteUploadInProgress(): boolean {
-    return this.uppy.getFiles().some((f) => f.isRemote && !f.error)
+    return [...this.uppy.getFiles(), ...this.heldBackFiles.values()].some(
+      (f) => f.isRemote && !f.error
+    )
   }
 
   clearInputs() {

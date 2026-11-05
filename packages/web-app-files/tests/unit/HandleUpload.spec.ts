@@ -56,12 +56,6 @@ describe('HandleUpload', () => {
     instance.uninstall()
     expect(mocks.uppy.off).toHaveBeenCalledWith('files-added', instance.handleUpload)
   })
-  it('removes files from the uppy upload queue', () => {
-    const { instance, mocks } = getWrapper()
-    const fileToRemove = mock<OcUppyFile>()
-    instance.removeFilesFromUpload([fileToRemove])
-    expect(mocks.uppy.removeFile).toHaveBeenCalledWith(fileToRemove.id)
-  })
   describe('method prepareFiles', () => {
     it('correctly prepares all files that need to be uploaded', () => {
       const { instance, mocks } = getWrapper()
@@ -188,7 +182,6 @@ describe('HandleUpload', () => {
       const { filesToUpload } = await instance.createDirectoryTree([fileToUpload], mock<Resource>())
 
       expect(mocks.opts.uppyService.publish).toHaveBeenCalledWith('uploadError', expect.anything())
-      expect(mocks.uppy.removeFile).toHaveBeenCalled()
       expect(filesToUpload.length).toBe(0)
     })
     it('emits uploadSuccess for a folder that already exists (merge scenario)', async () => {
@@ -235,7 +228,7 @@ describe('HandleUpload', () => {
       )
       expect(filesToUpload.length).toBe(1)
     })
-    it('returns folder files and removes them from the uppy upload files', async () => {
+    it('returns folder files and filters them out of the files to upload', async () => {
       const { instance, mocks } = getWrapper()
       mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
       const relativeFolder = '/relativeFolder'
@@ -253,7 +246,6 @@ describe('HandleUpload', () => {
         uploadFolder
       )
 
-      expect(instance.uppy.removeFile).toHaveBeenCalled()
       expect(mocks.opts.clientService.webdav.createFolder).toHaveBeenCalledTimes(1)
       expect(filesToUpload.length).toBe(0)
       expect(folderFiles.length).toBe(1)
@@ -270,6 +262,120 @@ describe('HandleUpload', () => {
         expect.anything()
       )
       expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalledTimes(1)
+    })
+    describe('holding back the batch', () => {
+      function setup() {
+        const batchFile = mock<OcUppyFile>({ id: 'batch', name: 'batch.txt' })
+        const otherBatchFile = mock<OcUppyFile>({ id: 'other', name: 'other.txt' })
+        const { instance, mocks } = getWrapper({ conflictHandlingEnabled: false })
+        vi.spyOn(instance, 'prepareFiles').mockReturnValue([batchFile])
+        const uppyFileIds = useUppyFileState(mocks, [batchFile, otherBatchFile])
+        return { instance, mocks, batchFile, uppyFileIds }
+      }
+      function getCancelHandler(mocks: ReturnType<typeof getWrapper>['mocks']) {
+        const [, onCancel] = mocks.uppy.on.mock.calls.find(([event]) => event === 'cancel-all')
+        return onCancel as () => void
+      }
+      function cancelAll(mocks: ReturnType<typeof getWrapper>['mocks']) {
+        getCancelHandler(mocks)()
+      }
+
+      it('keeps the batch out of uppy until vault encryption is done', async () => {
+        const { instance, mocks, batchFile, uppyFileIds } = setup()
+        vi.mocked(resolveVaultEngine).mockResolvedValueOnce(mock<VaultEngine>())
+        let idsWhileEncrypting: string[]
+        vi.spyOn(instance as any, 'applyVaultEncryption').mockImplementation(() => {
+          idsWhileEncrypting = uppyFileIds()
+          return Promise.resolve([batchFile])
+        })
+
+        await instance.handleUpload([batchFile])
+        expect(idsWhileEncrypting).toEqual(['other'])
+        expect(uppyFileIds()).toEqual(['other', 'batch'])
+        expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalledTimes(1)
+      })
+      it('keeps the batch out of uppy until its folders are created', async () => {
+        const { instance, mocks, batchFile, uppyFileIds } = setup()
+        let idsWhileCreatingFolders: string[]
+        vi.spyOn(instance, 'createDirectoryTree').mockImplementation(() => {
+          idsWhileCreatingFolders = uppyFileIds()
+          return Promise.resolve({ filesToUpload: [batchFile], folderFiles: [] })
+        })
+
+        await instance.handleUpload([batchFile])
+        expect(idsWhileCreatingFolders).toEqual(['other'])
+        expect(uppyFileIds()).toEqual(['other', 'batch'])
+        expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalledTimes(1)
+      })
+      it('releases the batch once its upload has started', async () => {
+        const { instance, mocks, batchFile } = setup()
+        const { releaseHeldBackFiles, uploadFiles } = mocks.opts.uppyService
+
+        await instance.handleUpload([batchFile])
+        expect(mocks.opts.uppyService.holdBackFiles).toHaveBeenCalledWith([batchFile])
+        expect(releaseHeldBackFiles).toHaveBeenCalledWith([batchFile])
+        expect(uploadFiles.mock.invocationCallOrder[0]).toBeLessThan(
+          releaseHeldBackFiles.mock.invocationCallOrder[0]
+        )
+      })
+      it('removes its cancel listener once the batch is done', async () => {
+        const { instance, mocks, batchFile } = setup()
+
+        await instance.handleUpload([batchFile])
+        expect(mocks.uppy.off).toHaveBeenCalledWith('cancel-all', getCancelHandler(mocks))
+      })
+      it('drops the batch if its preparation fails', async () => {
+        const { instance, mocks, batchFile, uppyFileIds } = setup()
+        vi.spyOn(instance, 'createDirectoryTree').mockRejectedValue(new Error('failed'))
+
+        await expect(instance.handleUpload([batchFile])).rejects.toThrow('failed')
+        expect(mocks.opts.uppyService.releaseHeldBackFiles).toHaveBeenCalledWith([batchFile])
+        expect(uppyFileIds()).toEqual(['other'])
+        expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
+      })
+      it('does not upload the batch if all uploads were cancelled during encryption', async () => {
+        const { instance, mocks, batchFile, uppyFileIds } = setup()
+        vi.mocked(resolveVaultEngine).mockResolvedValueOnce(mock<VaultEngine>())
+        vi.spyOn(instance as any, 'applyVaultEncryption').mockImplementation(() => {
+          cancelAll(mocks)
+          return Promise.resolve([batchFile])
+        })
+
+        await instance.handleUpload([batchFile])
+        expect(mocks.opts.uppyService.publish).not.toHaveBeenCalledWith('uploadStarted')
+        expect(uppyFileIds()).toEqual(['other'])
+        expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
+        expect(mocks.opts.uppyService.clearInputs).toHaveBeenCalled()
+      })
+      it('does not upload the batch if all uploads were cancelled during folder creation', async () => {
+        const { instance, mocks, batchFile, uppyFileIds } = setup()
+        vi.spyOn(instance, 'createDirectoryTree').mockImplementation(() => {
+          cancelAll(mocks)
+          return Promise.resolve({ filesToUpload: [batchFile], folderFiles: [] })
+        })
+
+        await instance.handleUpload([batchFile])
+        expect(mocks.opts.uppyService.publish).not.toHaveBeenCalledWith(
+          'addedForUpload',
+          expect.anything()
+        )
+        expect(uppyFileIds()).toEqual(['other'])
+        expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
+      })
+      it('releases the batch as soon as all uploads are cancelled', async () => {
+        const { instance, mocks, batchFile } = setup()
+        const { releaseHeldBackFiles } = mocks.opts.uppyService
+        let releasedOnCancel: OcUppyFile[][]
+        vi.spyOn(instance, 'createDirectoryTree').mockImplementation(() => {
+          cancelAll(mocks)
+          releasedOnCancel = releaseHeldBackFiles.mock.calls.map(([files]) => files)
+          return Promise.resolve({ filesToUpload: [batchFile], folderFiles: [] })
+        })
+
+        await instance.handleUpload([batchFile])
+        expect(releasedOnCancel).toEqual([[batchFile]])
+        expect(releaseHeldBackFiles).toHaveBeenCalledTimes(1)
+      })
     })
     describe('quota check', () => {
       it('checks quota if check enabled', async () => {
@@ -468,10 +574,11 @@ describe('HandleUpload', () => {
           remaining: 100,
           resolvedFiles: files
         })
+        const uppyFileIds = useUppyFileState(mocks, files)
         await instance.handleUpload(files)
         expect(displayOverwriteDialogMock).toHaveBeenCalled()
         expect(showErrorMessageSpy).toHaveBeenCalled()
-        expect(mocks.uppy.removeFile).toHaveBeenCalledTimes(2)
+        expect(uppyFileIds()).toEqual([])
         expect(mocks.opts.uppyService.publish).not.toHaveBeenCalledWith('uploadStarted')
         expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
       })
@@ -546,20 +653,6 @@ describe('HandleUpload', () => {
         await instance.handleUpload([file])
         expect(getConflictsMock).not.toHaveBeenCalled()
       })
-      function useUppyFileState(
-        { uppy, opts }: ReturnType<typeof getWrapper>['mocks'],
-        files: OcUppyFile[]
-      ) {
-        let state = { files: Object.fromEntries(files.map((file) => [file.id, file])) }
-        uppy.getState.mockImplementation(() => state as State<OcUppyMeta, OcUppyBody>)
-        uppy.setState.mockImplementation((patch) => {
-          state = { ...state, ...patch }
-        })
-        vi.mocked(opts.uppyService.holdBackFiles).mockImplementation((ids) => {
-          state = { ...state, files: omit(state.files, ids) }
-        })
-        return () => Object.keys(state.files)
-      }
       it('does not start upload if all files were skipped in conflict handling', async () => {
         const file = mock<OcUppyFile>({ id: 'skipped', name: 'name' })
         const { instance, mocks } = getWrapper({ conflicts: [{}], conflictHandlerResult: [] })
@@ -611,9 +704,9 @@ describe('HandleUpload', () => {
         })
 
         await instance.handleUpload([conflictFile, freshFile])
-        expect(mocks.opts.uppyService.holdBackFiles).toHaveBeenCalledWith(['conflict', 'fresh'])
+        expect(mocks.opts.uppyService.holdBackFiles).toHaveBeenCalledWith([conflictFile, freshFile])
         expect(idsWhileDialogOpen).toEqual(['other'])
-        expect(releaseHeldBackFiles).toHaveBeenCalledWith(['conflict', 'fresh'])
+        expect(releaseHeldBackFiles).toHaveBeenCalledWith([conflictFile, freshFile])
         expect(uppyFileIds()).toEqual(['other', 'conflict', 'fresh'])
         expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
       })
@@ -663,12 +756,11 @@ describe('HandleUpload', () => {
           meta: { relativeFolder: `/${'y'.repeat(maxNameBytes + 1)}` }
         })
         vi.spyOn(instance, 'prepareFiles').mockReturnValue([fine, longName, longFolder])
+        const uppyFileIds = useUppyFileState(mocks, [fine, longName, longFolder])
 
         await instance.handleUpload([fine, longName, longFolder])
 
-        expect(mocks.uppy.removeFile).toHaveBeenCalledWith('longName')
-        expect(mocks.uppy.removeFile).toHaveBeenCalledWith('longFolder')
-        expect(mocks.uppy.removeFile).not.toHaveBeenCalledWith('fine')
+        expect(uppyFileIds()).toEqual(['fine'])
         expect(mocks.opts.messageStore.showErrorMessage).toHaveBeenCalled()
         expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
       })
@@ -692,10 +784,12 @@ describe('HandleUpload', () => {
           .mockReturnValueOnce(maxNameBytes)
         vi.spyOn(instance, 'prepareFiles').mockReturnValue([original])
         vi.spyOn(instance, 'isCurrentFolder').mockReturnValue(true)
+        const uppyFileIds = useUppyFileState(mocks, [original])
 
         await instance.handleUpload([original])
 
-        expect(mocks.uppy.removeFile).toHaveBeenCalledWith('conflict')
+        expect(mocks.opts.messageStore.showErrorMessage).toHaveBeenCalled()
+        expect(uppyFileIds()).toEqual([])
         expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
       })
       it('counts bytes, not characters', async () => {
@@ -710,7 +804,8 @@ describe('HandleUpload', () => {
 
         await instance.handleUpload([file])
 
-        expect(mocks.uppy.removeFile).toHaveBeenCalledWith('umlauts')
+        expect(mocks.opts.messageStore.showErrorMessage).toHaveBeenCalled()
+        expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
       })
       it('does not start the upload if all files were removed', async () => {
         const { instance, mocks } = getWrapper()
@@ -750,12 +845,18 @@ describe('HandleUpload', () => {
       it('does not check names outside of vaults', async () => {
         const { instance, mocks } = getWrapper()
         vi.mocked(getVaultNameMaxBytes).mockReturnValueOnce(undefined)
-        const file = mock<OcUppyFile>({ name: 'x'.repeat(200), meta: { relativeFolder: '' } })
+        const file = mock<OcUppyFile>({
+          id: 'long',
+          name: 'x'.repeat(200),
+          meta: { relativeFolder: '' }
+        })
         vi.spyOn(instance, 'prepareFiles').mockReturnValue([file])
+        const uppyFileIds = useUppyFileState(mocks, [file])
 
         await instance.handleUpload([file])
 
-        expect(mocks.uppy.removeFile).not.toHaveBeenCalled()
+        expect(mocks.opts.messageStore.showErrorMessage).not.toHaveBeenCalled()
+        expect(uppyFileIds()).toEqual(['long'])
         expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
       })
     })
@@ -772,18 +873,39 @@ describe('HandleUpload', () => {
         await instance.handleUpload([mock<OcUppyFile>({ name: 'name' })])
         expect(createDirectoryTreeSpy).not.toHaveBeenCalled()
       })
-      it('removes directory dummy files from uppy queue when directory tree creation is disabled', async () => {
+      it('does not upload directory dummy files when directory tree creation is disabled', async () => {
         const { instance, mocks } = getWrapper({ directoryTreeCreateEnabled: false })
-        const removeFilesFromUploadSpy = vi.spyOn(instance, 'removeFilesFromUpload')
         const directoryFile = mock<OcUppyFile>({ id: 'dir-1', name: 'emptyDir', type: 'directory' })
         const regularFile = mock<OcUppyFile>({ id: 'file-1', name: 'file.txt' })
+        const uppyFileIds = useUppyFileState(mocks, [directoryFile, regularFile])
         await instance.handleUpload([directoryFile, regularFile])
-        expect(removeFilesFromUploadSpy).toHaveBeenCalledWith([directoryFile])
+        expect(uppyFileIds()).toEqual(['file-1'])
         expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
       })
     })
   })
 })
+
+function useUppyFileState(
+  { uppy, opts }: ReturnType<typeof getWrapper>['mocks'],
+  files: OcUppyFile[]
+) {
+  let state = { files: Object.fromEntries(files.map((file) => [file.id, file])) }
+  uppy.getState.mockImplementation(() => state as State<OcUppyMeta, OcUppyBody>)
+  uppy.setState.mockImplementation((patch) => {
+    state = { ...state, ...patch }
+  })
+  vi.mocked(opts.uppyService.holdBackFiles).mockImplementation((heldBackFiles) => {
+    state = {
+      ...state,
+      files: omit(
+        state.files,
+        heldBackFiles.map(({ id }) => id)
+      )
+    }
+  })
+  return () => Object.keys(state.files)
+}
 
 const getWrapper = ({
   conflictHandlingEnabled = true,
