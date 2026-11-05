@@ -84,7 +84,11 @@
           :class="{ 'cursor-pointer': parentFolderLink, 'cursor-default': !parentFolderLink }"
         >
           <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" size-class="size-4" />
-          <span class="text truncate text-sm hover:underline" v-text="parentFolderName" />
+          <span
+            class="text truncate text-sm hover:underline"
+            :title="parentFolderName"
+            v-text="parentFolderName"
+          />
         </component>
       </div>
     </div>

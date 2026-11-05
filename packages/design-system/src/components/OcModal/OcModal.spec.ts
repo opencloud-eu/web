@@ -42,6 +42,16 @@ describe('OcModal', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
 
+  it('shows the full title as native title on the truncated heading', () => {
+    const title = 'Rename folder »A very long folder name that gets truncated«'
+    const wrapper = shallowMount(Modal, {
+      global: { renderStubDefaultSlot: true, plugins: [...defaultPlugins()] },
+      props: { ...defaultProps, title }
+    })
+
+    expect(wrapper.find('.oc-modal-title h2').attributes('title')).toBe(title)
+  })
+
   it('only dims the background while it is the topmost modal', () => {
     const backdrop = (active: boolean) =>
       shallowMount(Modal, {

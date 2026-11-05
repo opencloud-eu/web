@@ -58,7 +58,7 @@
         <span class="flex justify-center">
           <oc-tag class="tags-select-tag ml-1 max-w-50" :rounded="true" size="small">
             <oc-icon name="price-tag-3" size-class="size-4" />
-            <span class="truncate">{{ label }}</span>
+            <span class="truncate" :title="label">{{ label }}</span>
           </oc-tag>
         </span>
       </div>

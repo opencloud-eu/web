@@ -28,7 +28,7 @@ const { items } = defineProps<Props>()
 
 @layer components {
   .details-list dd {
-    @apply font-semibold mb-2 last-of-type:mb-0;
+    @apply font-semibold mb-2 last-of-type:mb-0 wrap-anywhere;
   }
 
   .details-list dt {

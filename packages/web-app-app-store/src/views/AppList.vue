@@ -32,7 +32,7 @@
     <div v-if="filteredApps.length" class="flex items-center justify-between gap-4 mb-2">
       <div class="flex items-center gap-1">
         <h2
-          class="app-list-results-title my-0 text-base capitalize"
+          class="app-list-results-title my-0 text-base capitalize wrap-anywhere"
           v-text="`${resultsTitle} (${filteredApps.length})`"
         />
         <oc-filter-chip

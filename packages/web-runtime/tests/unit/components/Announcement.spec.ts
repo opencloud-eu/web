@@ -10,6 +10,16 @@ describe('Announcement component', () => {
     expect(wrapper.find('.announcement').text()).toContain('Maintenance tonight')
   })
 
+  it.each([undefined, '# Details'])(
+    'shows the full banner text as title on the truncated text (info text: %s)',
+    (infoText) => {
+      const { wrapper } = getWrapper({ bannerText: 'Maintenance tonight', infoText })
+      expect(wrapper.find('.announcement-text .truncate').attributes('title')).toBe(
+        'Maintenance tonight'
+      )
+    }
+  )
+
   it('does not render when no announcement is set', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find('.announcement').exists()).toBe(false)

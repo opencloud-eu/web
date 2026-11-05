@@ -57,6 +57,13 @@ describe('ItemFilter', () => {
     })
     expect(wrapper.html()).toMatchSnapshot()
   })
+  it('shows the full display name of each item as title', () => {
+    const { wrapper } = getWrapper()
+    const titles = wrapper
+      .findAll(`${selectors.filterListItem} [title]`)
+      .map((el) => el.attributes('title'))
+    expect(titles).toEqual(['Albert Einstein', 'Marie Curie'])
+  })
   describe('filter', () => {
     it('renders the input field when enabled', () => {
       const { wrapper } = getWrapper({

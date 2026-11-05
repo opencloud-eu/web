@@ -80,6 +80,11 @@ describe('MentionMenu', () => {
     expect(
       wrapper.findAll('.text-editor-mention-menu__item-label').map((item) => item.text())
     ).toEqual(['Alice', 'Bob'])
+    expect(
+      wrapper
+        .findAll('.text-editor-mention-menu__item-label')
+        .map((item) => item.attributes('title'))
+    ).toEqual(['Alice', 'Bob'])
   })
 
   it('renders loading and empty states', async () => {

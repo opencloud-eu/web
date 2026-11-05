@@ -31,6 +31,7 @@ describe('AppDetailsGallery', () => {
     await wrapper.findAll(selectors.thumbnail)[1].trigger('click')
     expect(wrapper.find(selectors.image).attributes('src')).toBe(screenshots[0].url)
     expect(wrapper.find(selectors.caption).text()).toBe('First screenshot')
+    expect(wrapper.find(selectors.caption).attributes('title')).toBe('First screenshot')
     expect(wrapper.find(selectors.counter).text()).toBe('2 / 3')
     expect(wrapper.findAll(selectors.thumbnail)[1].attributes('aria-pressed')).toBe('true')
   })

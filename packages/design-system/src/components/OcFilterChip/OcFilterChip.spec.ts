@@ -27,6 +27,17 @@ describe('OcFilterChip', () => {
     const { wrapper } = getWrapper({ props: { selectedItemNames } })
     expect(wrapper.find(selectors.filterChipLabel).text()).toEqual(selectedItemNames[0])
   })
+  it('shows the full first selected item name as title on the truncated label', () => {
+    const selectedItemNames = ['A very long tag name that gets truncated', 'Marie']
+    const { wrapper } = getWrapper({ props: { selectedItemNames } })
+    expect(wrapper.find(selectors.filterChipLabel).attributes('title')).toEqual(
+      selectedItemNames[0]
+    )
+  })
+  it('does not set a title on the static filter label', () => {
+    const { wrapper } = getWrapper()
+    expect(wrapper.find(selectors.filterChipLabel).attributes('title')).toBeUndefined()
+  })
   it('emits the "clearFilter"-event when clicking the clear-button', async () => {
     const { wrapper } = getWrapper({ props: { selectedItemNames: ['Einstein', 'Marie'] } })
     await wrapper.find(selectors.clearBtn).trigger('click')

@@ -41,6 +41,7 @@ describe('AppResources.vue', () => {
     expect(link1.exists()).toBeTruthy()
     expect(link1.attributes().href).toBe(resource1.url)
     expect(link1.find(selectors.label).text()).toBe(resource1.label)
+    expect(link1.find(selectors.label).attributes('title')).toBe(resource1.label)
     expect(link1.find(selectors.icon).exists()).toBeTruthy()
     if (link1.find(selectors.icon).exists()) {
       expect(link1.find(selectors.icon).attributes().name).toBe(resource1.icon)

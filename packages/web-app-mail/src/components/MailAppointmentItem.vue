@@ -34,7 +34,7 @@
     <div class="mail-appointment-list-body text-role-on-surface-variant">
       <div v-if="icalEvent.location" class="flex items-center gap-2">
         <oc-icon name="map-pin" size-class="size-4" fill-type="line" />
-        <span class="truncate" v-text="icalEvent.location" />
+        <span class="truncate" :title="icalEvent.location" v-text="icalEvent.location" />
       </div>
       <div v-if="organizer" class="grid grid-cols-[auto_1fr] gap-x-2 mt-3">
         <oc-icon name="user" size-class="size-4" fill-type="line" />

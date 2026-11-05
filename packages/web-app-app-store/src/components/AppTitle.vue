@@ -2,7 +2,11 @@
   <div class="flex items-center min-w-0">
     <h3 class="min-w-0" :class="titleClass">
       <!-- the link covers the whole surrounding item, interactive elements need to be positioned on top -->
-      <router-link :to="getAppDetailsRoute(app)" class="block after:absolute after:inset-0">
+      <router-link
+        :to="getAppDetailsRoute(app)"
+        class="block after:absolute after:inset-0"
+        :title="app.name"
+      >
         <oc-filter-highlight class="block" :class="nameClass" :text="app.name" :term="term" />
       </router-link>
     </h3>

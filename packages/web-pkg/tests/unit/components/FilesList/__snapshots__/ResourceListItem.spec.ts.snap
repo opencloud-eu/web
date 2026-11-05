@@ -30,7 +30,7 @@ exports[`OcResource > displays parent folder name default if calculated name is 
 				svg.insertBefore(title, svg.firstChild);
 			};
 			return svg;
-		}" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="text truncate text-sm hover:underline">Example parent folder name</span></span></div>
+		}" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="text truncate text-sm hover:underline" title="Example parent folder name">Example parent folder name</span></span></div>
   </div>
 </div>"
 `;

@@ -60,12 +60,13 @@
             data-testid="tag-filter-hidden-button"
             type="button"
             rounded
-            class="whitespace-nowrap cursor-pointer"
+            class="max-w-full whitespace-nowrap cursor-pointer"
             :appearance="isActive(tag.name) ? 'filled' : 'outline'"
             :aria-pressed="isActive(tag.name)"
+            :title="tag.name"
             @click="toggleTag(tag.name)"
           >
-            {{ tag.name }}
+            <span class="truncate" v-text="tag.name" />
             <app-tag-count :count="tag.count" :active="isActive(tag.name)" />
           </oc-tag>
         </div>

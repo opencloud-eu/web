@@ -22,6 +22,14 @@ describe('WebDavDetails', () => {
     announceMock.mockReset()
   })
 
+  it('shows the full WebDAV path and URL as title on the truncated values', () => {
+    const wrapper = getWrapper()
+    const values = wrapper.findAll('dd .truncate')
+
+    expect(values.at(0).attributes('title')).toBe('/dav/spaces/1/file.txt')
+    expect(values.at(1).attributes('title')).toBe('https://example.com/dav/spaces/1/file.txt')
+  })
+
   it.each([
     { index: 0, copied: '/dav/spaces/1/file.txt' },
     { index: 1, copied: 'https://example.com/dav/spaces/1/file.txt' }

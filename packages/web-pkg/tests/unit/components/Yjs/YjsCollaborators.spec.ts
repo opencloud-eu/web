@@ -61,6 +61,7 @@ describe('YjsCollaborators', () => {
     expect(items[0].text()).toContain('Zoe')
     expect(items[0].text()).toContain('(you)')
     expect(items[1].text()).not.toContain('(you)')
+    expect(items[1].find('.truncate').attributes('title')).toBe('Alice')
   })
 
   it('labels the trigger with the user count', () => {

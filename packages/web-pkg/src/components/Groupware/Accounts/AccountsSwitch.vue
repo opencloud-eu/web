@@ -12,10 +12,15 @@
       <div class="flex items-center truncate">
         <oc-avatar :user-name="currentAccount?.name || ''" />
         <div class="flex flex-col items-start ml-5 truncate">
-          <span class="font-bold" v-text="currentAccount?.name || ''" />
+          <span
+            class="font-bold max-w-full truncate"
+            :title="currentAccount?.name || ''"
+            v-text="currentAccount?.name || ''"
+          />
           <span
             v-if="currentAccount?.identities?.[0]?.email"
             class="max-w-full truncate"
+            :title="currentAccount.identities[0].email"
             v-text="currentAccount.identities[0].email"
           />
         </div>
@@ -38,8 +43,17 @@
             <div class="flex items-center truncate">
               <oc-avatar :user-name="account.name" />
               <div class="flex flex-col items-start ml-5 truncate">
-                <span class="font-bold" v-text="account.name" />
-                <span v-if="account.identities?.[0]?.email" v-text="account.identities[0].email" />
+                <span
+                  class="font-bold max-w-full truncate"
+                  :title="account.name"
+                  v-text="account.name"
+                />
+                <span
+                  v-if="account.identities?.[0]?.email"
+                  class="max-w-full truncate"
+                  :title="account.identities[0].email"
+                  v-text="account.identities[0].email"
+                />
               </div>
             </div>
             <oc-icon

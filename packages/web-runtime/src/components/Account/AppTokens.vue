@@ -47,7 +47,7 @@
         @sort="handleSort"
       >
         <template #label="{ item }">
-          <div class="w-full truncate">
+          <div class="w-full truncate" :title="item.label">
             <span v-text="item.label || '-'" />
           </div>
         </template>

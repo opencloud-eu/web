@@ -1,5 +1,5 @@
 <template>
-  <ul class="inline-flex flex-wrap justify-end gap-x-1 m-0 p-0">
+  <ul class="inline-flex flex-wrap justify-end gap-x-1 m-0 p-0 wrap-anywhere">
     <li v-for="(author, index) in authors" :key="author.name" class="app-author-item">
       <a
         v-if="author.url"
