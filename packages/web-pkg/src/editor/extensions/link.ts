@@ -1,5 +1,6 @@
 import { getMarkRange, type Editor } from '@tiptap/core'
 import Link from '@tiptap/extension-link'
+import { formatMarkdownLinkTarget } from './markdownTextEscaping'
 
 const allowedProtocols = new Set(['http:', 'https:', 'mailto:'])
 const protocolPattern = /^([a-z][a-z\d+.-]*):/i
@@ -78,6 +79,12 @@ function exitLinkOnSpace(editor: Editor): boolean {
 }
 
 const LinkWithSpaceExit = Link.extend({
+  renderMarkdown(node, h) {
+    const href = typeof node.attrs?.href === 'string' ? node.attrs.href : ''
+    const title = typeof node.attrs?.title === 'string' ? node.attrs.title : ''
+    return `[${h.renderChildren(node)}](${formatMarkdownLinkTarget(href, title)})`
+  },
+
   addKeyboardShortcuts() {
     return {
       ...this.parent?.(),
