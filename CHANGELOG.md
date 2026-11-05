@@ -8,6 +8,9 @@
 
 ### 🐛 Bug Fixes
 
+- fix: trim embed-file-types values from the URL query [[#4169](https://github.com/opencloud-eu/web/pull/4169)]
+- fix: refresh file list when all files of an uploaded folder fail [[#4207](https://github.com/opencloud-eu/web/pull/4207)]
+- fix: ignore deferred panzoom transforms after the preview image is gone [[#4216](https://github.com/opencloud-eu/web/pull/4216)]
 - fix: keep favorite state and tags on the received share root [[#4208](https://github.com/opencloud-eu/web/pull/4208)]
 - fix: show an error for EPUB files that can't be opened [[#4209](https://github.com/opencloud-eu/web/pull/4209)]
 - fix: show message for spaces skipped when duplicating [[#4210](https://github.com/opencloud-eu/web/pull/4210)]
