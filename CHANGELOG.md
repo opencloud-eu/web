@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep folders with # in their name in the preview and drive redirect URLs [[#4174](https://github.com/opencloud-eu/web/pull/4174)]
 - fix: trim embed-file-types values from the URL query [[#4169](https://github.com/opencloud-eu/web/pull/4169)]
 - fix: refresh file list when all files of an uploaded folder fail [[#4207](https://github.com/opencloud-eu/web/pull/4207)]
 - fix: ignore deferred panzoom transforms after the preview image is gone [[#4216](https://github.com/opencloud-eu/web/pull/4216)]
