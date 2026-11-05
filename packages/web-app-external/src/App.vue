@@ -5,6 +5,7 @@
   </div>
   <iframe
     v-else-if="appUrl && method === 'GET'"
+    ref="appIframe"
     :src="appUrl"
     class="size-full"
     :title="iFrameTitle"
@@ -60,6 +61,7 @@ import {
 } from '@opencloud-eu/web-client'
 import { urlJoin } from '@opencloud-eu/web-client'
 import {
+  isMessageFromIframe,
   isSameResource,
   useCapabilityStore,
   useConfigStore,
@@ -237,8 +239,14 @@ const determineOpenAsPreview = (appName: string) => {
 
 const isCollabora = unref(appName)?.toLowerCase()?.startsWith('collabora')
 
+const appIframeRef = useTemplateRef<HTMLIFrameElement>('appIframe')
+
 // switch to write mode when edit is clicked
 const catchClickMicrosoftEdit = (event: MessageEvent) => {
+  if (!isMessageFromIframe(event, unref(appIframeRef))) {
+    return
+  }
+
   try {
     if (JSON.parse(event.data)?.MessageId === 'UI_Edit') {
       loadAppUrl.perform('write')
@@ -247,6 +255,10 @@ const catchClickMicrosoftEdit = (event: MessageEvent) => {
 }
 
 const handlePostMessagesCollabora = async (event: MessageEvent) => {
+  if (!isMessageFromIframe(event, unref(appIframeRef))) {
+    return
+  }
+
   try {
     const message = JSON.parse(event.data || '{}')
 
@@ -371,7 +383,6 @@ onBeforeUnmount(() => {
   }
 })
 
-const appIframeRef = useTemplateRef<HTMLIFrameElement>('appIframe')
 const postMessageToCollabora = (messageId: string, values?: { [key: string]: unknown }): void => {
   if (!unref(appIframeRef)) {
     console.error('Collabora iframe not found')
