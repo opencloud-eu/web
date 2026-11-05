@@ -2,7 +2,7 @@ import { defaultComponentMocks, mount, defaultPlugins } from '@opencloud-eu/web-
 import TagsSelect from '../../../../src/components/SideBar/Details/TagsSelect.vue'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
-import { ClientService, eventBus, useMessages } from '@opencloud-eu/web-pkg'
+import { ClientService, eventBus, useMessages, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { OcSelect } from '@opencloud-eu/design-system/components'
 import { flushPromises } from '@vue/test-utils'
 
@@ -104,6 +104,92 @@ describe('Tag Select', () => {
     expect(showErrorMessage).toHaveBeenCalledTimes(1)
   })
 
+  describe('reverts the selection on failure', () => {
+    beforeEach(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    })
+
+    it('when adding a tag fails, so the next change does not send it again', async () => {
+      const clientService = mockDeep<ClientService>()
+      const assignTagsStub = clientService.graphAuthenticated.tags.assignTags
+      assignTagsStub.mockRejectedValueOnce(new Error())
+      const { wrapper } = createWrapper(mock<Resource>({ tags: ['a'] }), clientService, ['a'])
+      await flushPromises()
+
+      await (wrapper.vm as any).save([{ label: 'a' }, { label: 'failed' }])
+      expect(getLabels((wrapper.vm as any).selectedTags)).toEqual(['a'])
+      expect(getLabels((wrapper.vm as any).availableTags)).toEqual([])
+
+      assignTagsStub.mockResolvedValueOnce(undefined)
+      await (wrapper.vm as any).save([...(wrapper.vm as any).selectedTags, { label: 'ok' }])
+      expect(assignTagsStub).toHaveBeenLastCalledWith(expect.objectContaining({ tags: ['ok'] }))
+    })
+
+    it('when removing a tag fails', async () => {
+      const clientService = mockDeep<ClientService>()
+      clientService.graphAuthenticated.tags.unassignTags.mockRejectedValueOnce(new Error())
+      const { wrapper } = createWrapper(mock<Resource>({ tags: ['a', 'b'] }), clientService, [
+        'a',
+        'b',
+        'c'
+      ])
+      await flushPromises()
+
+      await (wrapper.vm as any).save([{ label: 'a' }])
+      expect(getLabels((wrapper.vm as any).selectedTags)).toEqual(['a', 'b'])
+      expect(getLabels((wrapper.vm as any).availableTags)).toEqual(['c'])
+    })
+
+    it('keeps the tags that were added when removing a tag fails afterwards', async () => {
+      const clientService = mockDeep<ClientService>()
+      clientService.graphAuthenticated.tags.assignTags.mockResolvedValueOnce(undefined)
+      clientService.graphAuthenticated.tags.unassignTags.mockRejectedValueOnce(new Error())
+      const resource = mock<Resource>({ id: '1', tags: ['a', 'b'] })
+      const { wrapper } = createWrapper(resource, clientService, ['a', 'b'])
+      await flushPromises()
+
+      await (wrapper.vm as any).save([{ label: 'a' }, { label: 'c' }])
+      expect(getLabels((wrapper.vm as any).selectedTags)).toEqual(['a', 'b', 'c'])
+      expect(getLabels((wrapper.vm as any).availableTags)).toEqual([])
+      const { updateResourceField } = useResourcesStore()
+      expect(updateResourceField).toHaveBeenCalledWith({
+        id: '1',
+        field: 'tags',
+        value: ['a', 'b', 'c']
+      })
+    })
+
+    it('but not when the resource has been switched meanwhile', async () => {
+      const clientService = mockDeep<ClientService>()
+      const { promise, reject } = Promise.withResolvers<void>()
+      clientService.graphAuthenticated.tags.assignTags.mockReturnValueOnce(promise)
+      const { wrapper } = createWrapper(mock<Resource>({ id: '1', tags: ['a'] }), clientService)
+      await flushPromises()
+
+      const pendingSave = (wrapper.vm as any).save([{ label: 'a' }, { label: 'b' }])
+      await wrapper.setProps({ resource: mock<Resource>({ id: '2', tags: ['x'] }) })
+      reject(new Error())
+      await pendingSave
+      expect(getLabels((wrapper.vm as any).selectedTags)).toEqual(['x'])
+    })
+
+    it('but not when a newer change has been saved meanwhile', async () => {
+      const clientService = mockDeep<ClientService>()
+      const { promise, reject } = Promise.withResolvers<void>()
+      clientService.graphAuthenticated.tags.assignTags
+        .mockReturnValueOnce(promise)
+        .mockResolvedValueOnce(undefined)
+      const { wrapper } = createWrapper(mock<Resource>({ tags: ['x'] }), clientService)
+      await flushPromises()
+
+      const olderSave = (wrapper.vm as any).save([{ label: 'x' }, { label: 'y' }])
+      await (wrapper.vm as any).save([{ label: 'x' }, { label: 'y' }, { label: 'z' }])
+      reject(new Error())
+      await olderSave
+      expect(getLabels((wrapper.vm as any).selectedTags)).toEqual(['x', 'y', 'z'])
+    })
+  })
+
   it.each([
     { locked: false, deselectable: true },
     { locked: true, deselectable: false }
@@ -170,4 +256,8 @@ function createWrapper(
       }
     })
   }
+}
+
+function getLabels(options: { label: string }[]) {
+  return options.map(({ label }) => label)
 }
