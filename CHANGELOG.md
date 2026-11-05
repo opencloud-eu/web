@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: revert the tags selection when a tag change fails [[#4167](https://github.com/opencloud-eu/web/pull/4167)]
+- fix: remove removed resources from the selection [[#4168](https://github.com/opencloud-eu/web/pull/4168)]
 - fix: wait for a running save before asking about unsaved changes on close [[#4277](https://github.com/opencloud-eu/web/pull/4277)]
 - fix: keep folders with # in their name in the preview and drive redirect URLs [[#4174](https://github.com/opencloud-eu/web/pull/4174)]
 - fix: trim embed-file-types values from the URL query [[#4169](https://github.com/opencloud-eu/web/pull/4169)]
