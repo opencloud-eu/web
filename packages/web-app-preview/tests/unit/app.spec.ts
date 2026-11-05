@@ -1,10 +1,16 @@
 import App from '../../src/App.vue'
-import { defineComponent, h, nextTick, ref } from 'vue'
+import { defineComponent, h, nextTick, ref, unref } from 'vue'
 import { flushPromises, VueWrapper } from '@vue/test-utils'
-import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import {
+  createRouter,
+  defaultComponentMocks,
+  defaultPlugins,
+  shallowMount
+} from '@opencloud-eu/web-test-helpers'
 import { createFileRouteOptions, FileContext, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
+import { Router } from 'vue-router'
 
 vi.mock('@panzoom/panzoom')
 
@@ -334,6 +340,36 @@ describe('Preview app', () => {
     )
   })
 
+  describe('Switching files', () => {
+    it('keeps a folder with a hash in its name in the URL', async () => {
+      const router = createRouter({
+        routes: [
+          { name: 'preview-media', path: '/preview/:driveAliasAndItem(.*)?', component: {} },
+          { name: 'files-shares-with-me', path: '/files/shares/with-me', component: {} }
+        ]
+      })
+      await router.push('/preview/personal/admin/Doc%23A/bear.png?fileId=1')
+      vi.mocked(createFileRouteOptions).mockImplementationOnce((_, resource) => ({
+        params: { driveAliasAndItem: `personal/admin/Doc#A/${(resource as Resource).name}` },
+        query: { fileId: `${(resource as Resource).fileId}` }
+      }))
+      const { wrapper } = createShallowMountWrapper({ router })
+      await wrapper.setProps({ isFolderLoading: false })
+      await flushPromises()
+
+      wrapper
+        .find('.stage')
+        .element.parentElement.dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })
+        )
+      await flushPromises()
+
+      const { params, query } = router.resolve(unref(router.currentRoute).fullPath)
+      expect(params.driveAliasAndItem).toBe('personal/admin/Doc#A/cat_murr_murr.gif')
+      expect(query.fileId).toBe('8')
+    })
+  })
+
   describe('Deleting the active file', () => {
     it('points the URL to the file that is shown next', async () => {
       const { wrapper, mocks } = createShallowMountWrapper()
@@ -535,14 +571,19 @@ function createShallowMountWrapper({
   currentFileContext,
   stubs = {},
   files = activeFiles,
-  isFolderLoading = true
+  isFolderLoading = true,
+  router
 }: {
   currentFileContext?: Partial<FileContext>
   stubs?: Record<string, unknown>
   files?: unknown[]
   isFolderLoading?: boolean
+  router?: Router
 } = {}) {
   const mocks = defaultComponentMocks()
+  if (router) {
+    mocks.$router = router as typeof mocks.$router
+  }
   // blob urls mirror what the preview service returns for private spaces and keep the
   // browser cache warm-up out of the way, it has its own tests
   mocks.$previewService.loadPreview.mockImplementation(({ resource }) =>
