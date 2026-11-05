@@ -58,6 +58,56 @@ describe('AuthService', () => {
   })
 
   describe('signInCallback', () => {
+    const parentWindow = {} as Window
+
+    beforeEach(() => {
+      vi.spyOn(window, 'parent', 'get').mockReturnValue(parentWindow)
+    })
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    function dispatchTokenMessage({
+      source,
+      origin = 'https://host.example',
+      data
+    }: {
+      source: unknown
+      origin?: string
+      data: Record<string, string>
+    }) {
+      const event = new MessageEvent('message', {
+        origin,
+        data: { name: 'opencloud-embed:update-token', data }
+      })
+      Object.defineProperty(event, 'source', { value: source })
+      window.dispatchEvent(event)
+    }
+
+    async function signInWithDelegatedToken({
+      delegateAuthenticationOrigin
+    }: { delegateAuthenticationOrigin?: string } = {}) {
+      const authService = new AuthService()
+      const updateContext = vi.fn()
+
+      Object.defineProperty(authService, 'userManager', {
+        value: {
+          updateContext,
+          getAndClearPostLoginRedirectUrl: () => '/'
+        }
+      })
+
+      const configStore = useConfigStore()
+      configStore.options = {
+        embed: { enabled: true, delegateAuthentication: true, delegateAuthenticationOrigin }
+      }
+      initAuthService({ authService, configStore, router: createRouter() })
+      await authService.signInCallback('initial-token', 'session-id')
+      updateContext.mockClear()
+
+      return { updateContext }
+    }
+
     it.each([
       ['/', '/', {}],
       ['/?details=sharing', '/', { details: 'sharing' }],
@@ -125,55 +175,68 @@ describe('AuthService', () => {
     })
 
     it('applies delegated token updates received after sign-in', async () => {
-      const authService = new AuthService()
-      const updateContext = vi.fn()
+      const { updateContext } = await signInWithDelegatedToken()
 
-      Object.defineProperty(authService, 'userManager', {
-        value: {
-          updateContext,
-          getAndClearPostLoginRedirectUrl: () => '/'
-        }
+      dispatchTokenMessage({
+        source: parentWindow,
+        data: { access_token: 'new-token', session_id: 'session-id' }
       })
 
-      const configStore = useConfigStore()
-      configStore.options = { embed: { enabled: true, delegateAuthentication: true } }
-      initAuthService({ authService, configStore, router: createRouter() })
-      await authService.signInCallback('initial-token', 'session-id')
+      expect(updateContext).toHaveBeenCalledWith('new-token', 'session-id', false)
+    })
 
-      window.dispatchEvent(
-        new MessageEvent('message', {
-          data: {
-            name: 'opencloud-embed:update-token',
-            data: { access_token: 'new-token', session_id: 'session-id' }
-          }
-        })
-      )
+    it.each([
+      ['a different window', {}],
+      ['no window', null]
+    ])('ignores delegated token updates sent by %s', async (_, source) => {
+      const { updateContext } = await signInWithDelegatedToken()
 
-      expect(updateContext).toHaveBeenLastCalledWith('new-token', 'session-id', false)
+      dispatchTokenMessage({ source, data: { access_token: 'forged-token' } })
+
+      expect(updateContext).not.toHaveBeenCalled()
+    })
+
+    it('ignores delegated token updates when the app is not embedded', async () => {
+      const { updateContext } = await signInWithDelegatedToken()
+      vi.spyOn(window, 'parent', 'get').mockReturnValue(window)
+
+      dispatchTokenMessage({ source: window, data: { access_token: 'forged-token' } })
+
+      expect(updateContext).not.toHaveBeenCalled()
+    })
+
+    it('ignores delegated token updates from an origin other than the configured one', async () => {
+      const { updateContext } = await signInWithDelegatedToken({
+        delegateAuthenticationOrigin: 'https://host.example'
+      })
+
+      dispatchTokenMessage({
+        source: parentWindow,
+        origin: 'https://attacker.example',
+        data: { access_token: 'forged-token' }
+      })
+
+      expect(updateContext).not.toHaveBeenCalled()
+    })
+
+    it('applies delegated token updates from the configured origin', async () => {
+      const { updateContext } = await signInWithDelegatedToken({
+        delegateAuthenticationOrigin: 'https://host.example'
+      })
+
+      dispatchTokenMessage({
+        source: parentWindow,
+        origin: 'https://host.example',
+        data: { access_token: 'new-token', session_id: 'session-id' }
+      })
+
+      expect(updateContext).toHaveBeenCalledWith('new-token', 'session-id', false)
     })
 
     it('ignores delegated token updates without an access token', async () => {
-      const authService = new AuthService()
-      const updateContext = vi.fn()
+      const { updateContext } = await signInWithDelegatedToken()
 
-      Object.defineProperty(authService, 'userManager', {
-        value: {
-          updateContext,
-          getAndClearPostLoginRedirectUrl: () => '/'
-        }
-      })
-
-      const configStore = useConfigStore()
-      configStore.options = { embed: { enabled: true, delegateAuthentication: true } }
-      initAuthService({ authService, configStore, router: createRouter() })
-      await authService.signInCallback('initial-token', 'session-id')
-      updateContext.mockClear()
-
-      window.dispatchEvent(
-        new MessageEvent('message', {
-          data: { name: 'opencloud-embed:update-token', data: { session_id: 'session-id' } }
-        })
-      )
+      dispatchTokenMessage({ source: parentWindow, data: { session_id: 'session-id' } })
 
       expect(updateContext).not.toHaveBeenCalled()
     })

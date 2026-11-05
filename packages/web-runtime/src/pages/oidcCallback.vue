@@ -11,7 +11,12 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, unref } from 'vue'
-import { useEmbedMode, useRoute, AppLoadingSpinner } from '@opencloud-eu/web-pkg'
+import {
+  useEmbedMode,
+  useRoute,
+  AppLoadingSpinner,
+  isMessageFromParent
+} from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { useGettext } from 'vue3-gettext'
 import PlainCard from '../components/PlainCard.vue'
@@ -26,7 +31,7 @@ const error = ref(false)
 const route = useRoute()
 
 const handleRequestedTokenEvent = (event: MessageEvent): void => {
-  if (verifyDelegatedAuthenticationOrigin(event.origin) === false) {
+  if (!isMessageFromParent(event) || !verifyDelegatedAuthenticationOrigin(event.origin)) {
     return
   }
 
