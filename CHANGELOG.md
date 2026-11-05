@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: ignore items-per-page values below 1 [[#4213](https://github.com/opencloud-eu/web/pull/4213)]
 - fix: keep failed recipients selected in the invite form [[#4206](https://github.com/opencloud-eu/web/pull/4206)]
 - fix: don't preselect a quota for several items with different quotas [[#4205](https://github.com/opencloud-eu/web/pull/4205)]
 - fix: report delete, paste and restore failures on network errors [[#4192](https://github.com/opencloud-eu/web/pull/4192)]
