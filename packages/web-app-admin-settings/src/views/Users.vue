@@ -297,13 +297,17 @@ const selectedUsersDataLoaded = computed(() =>
   unref(selectedUsers).every(({ id }) => unref(additionalUserDataLoadedForUserIds).includes(id))
 )
 
-function reloadFilteredUsers() {
+function reloadUsers() {
   loadUsersTask.perform()
   if (unref(selectedUsers).length) {
     // only reset the selection if there is one because it messes with the focus otherwise
     userSettingsStore.setSelectedUsers([])
   }
   additionalUserDataLoadedForUserIds.value = []
+}
+
+function reloadFilteredUsers() {
+  reloadUsers()
   return router.replace({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 }
 
@@ -357,11 +361,7 @@ watch(searchTermQuery, (value) => {
   }
   searchTerm.value = term
   appliedSearchTerm.value = term
-  loadUsersTask.perform()
-  if (unref(selectedUsers).length) {
-    userSettingsStore.setSelectedUsers([])
-  }
-  additionalUserDataLoadedForUserIds.value = []
+  reloadUsers()
 })
 
 const batchActions = computed(() =>
@@ -429,6 +429,16 @@ function updateSpaceQuota({ spaceId, quota }: { spaceId: string; quota: Quota })
   userSettingsStore.upsertUser(user)
 }
 
+function onUserCreated(user: User) {
+  // the server decides whether the new user matches the active filters or search,
+  // a mandatory filter without any filter set shows no users at all
+  if (isFilteringMandatory || unref(isFilteringActive)) {
+    reloadUsers()
+    return
+  }
+  userSettingsStore.upsertUser(user)
+}
+
 watch(
   () => unref(selectedUsers).map(({ id }) => id),
   async (selectedIds, previousSelectedIds) => {
@@ -456,6 +466,7 @@ watch(
 )
 
 let editQuotaActionEventToken: string
+let userCreatedEventToken: string
 
 onMounted(() => {
   loadResourcesTask.perform()
@@ -464,10 +475,12 @@ onMounted(() => {
     'app.admin-settings.users.user.quota.updated',
     updateSpaceQuota
   )
+  userCreatedEventToken = eventBus.subscribe('app.admin-settings.users.user.created', onUserCreated)
 })
 
 onBeforeUnmount(() => {
   userSettingsStore.reset()
   eventBus.unsubscribe('app.admin-settings.users.user.quota.updated', editQuotaActionEventToken)
+  eventBus.unsubscribe('app.admin-settings.users.user.created', userCreatedEventToken)
 })
 </script>
