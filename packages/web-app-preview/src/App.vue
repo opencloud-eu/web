@@ -120,7 +120,6 @@ import {
   useTemplateRef,
   watch
 } from 'vue'
-import omit from 'lodash-es/omit'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
   createFileRouteOptions,
@@ -149,7 +148,6 @@ import PhotoRoll from './components/PhotoRoll.vue'
 import { MediaFile } from './helpers/types'
 import { canOpen } from './helpers/canOpen'
 import { useFileTypes, useImageControls, useMediaFileLoader } from './composables'
-import { RouteLocationRaw } from 'vue-router'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { useSwipe } from '@vueuse/core'
 
@@ -403,11 +401,10 @@ const updateLocalHistory = () => {
 
   const { params, query } = createFileRouteOptions(unref(space), unref(activeMediaFile).resource)
   router.replace({
-    ...omit(unref(route), 'fullPath'),
-    path: unref(route).fullPath,
+    name: unref(route).name,
     params: { ...unref(route).params, ...params },
     query: { ...unref(route).query, ...query }
-  } as RouteLocationRaw)
+  })
 }
 
 const setActiveFile = () => {

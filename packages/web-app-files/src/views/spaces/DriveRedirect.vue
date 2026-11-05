@@ -12,8 +12,6 @@ import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { createFileRouteOptions, createLocationGuest } from '@opencloud-eu/web-pkg'
 import { createLocationSpaces } from '@opencloud-eu/web-pkg'
-import omit from 'lodash-es/omit'
-import { RouteLocationRaw } from 'vue-router'
 import NotFoundMessage from '../../components/FilesList/NotFoundMessage.vue'
 
 // 'personal/home' is used as personal drive alias from static contexts
@@ -61,14 +59,13 @@ function redirect() {
 
   router
     .replace({
-      ...omit(unref(route), 'fullPath'),
-      path: unref(route).fullPath,
+      name: unref(route).name,
       params: {
         ...unref(route).params,
         ...params
       },
       query
-    } as RouteLocationRaw)
+    })
     // avoid NavigationDuplicated error in console
     .catch(() => {})
 }
