@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep the open file unchanged when its store entry is renamed [[#4303](https://github.com/opencloud-eu/web/pull/4303)]
 - fix: reload a filtered users list instead of adding a newly created user [[#4239](https://github.com/opencloud-eu/web/pull/4239)]
 - fix: follow a rename of the file open in an app [[#4300](https://github.com/opencloud-eu/web/pull/4300)]
 - fix: show errors when setting a space icon, image or description fails [[#4211](https://github.com/opencloud-eu/web/pull/4211)]
