@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: don't preselect a quota for several items with different quotas [[#4205](https://github.com/opencloud-eu/web/pull/4205)]
 - fix: report delete, paste and restore failures on network errors [[#4192](https://github.com/opencloud-eu/web/pull/4192)]
 - fix: show the full value of truncated user content on hover [[#4124](https://github.com/opencloud-eu/web/pull/4124)]
 - fix: revert the tags selection when a tag change fails [[#4167](https://github.com/opencloud-eu/web/pull/4167)]
