@@ -1176,6 +1176,12 @@ describe('useEditorActions', () => {
     })
   })
 
+  describe('menuSearchAndReplace', () => {
+    it('stays a drop on mobile, so no bottom drawer covers the current match', () => {
+      expect(actions.menuSearchAndReplace().menuEnforceDropOnMobile).toBe(true)
+    })
+  })
+
   describe('action metadata', () => {
     it('all actions have id, title, and icon', () => {
       for (const [key, factory] of Object.entries(actions)) {
