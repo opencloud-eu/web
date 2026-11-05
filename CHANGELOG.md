@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep the text editor search and replace panel as a drop on mobile [[#4309](https://github.com/opencloud-eu/web/pull/4309)]
 - fix: skip the rename request when the name is unchanged [[#4237](https://github.com/opencloud-eu/web/pull/4237)]
 - fix: keep the open file unchanged when its store entry is renamed [[#4303](https://github.com/opencloud-eu/web/pull/4303)]
 - fix: reload a filtered users list instead of adding a newly created user [[#4239](https://github.com/opencloud-eu/web/pull/4239)]
