@@ -362,6 +362,7 @@ const share = async () => {
   const errors: { displayName: string; error: Error }[] = []
   const contactErrors: { displayName: string; error: Error }[] = []
   const addedShares: CollaboratorShare[] = []
+  const failedCollaborators: CollaboratorAutoCompleteItem[] = []
   let invitedContactCount = 0
 
   unref(selectedCollaborators).forEach((collaborator) => {
@@ -382,6 +383,7 @@ const share = async () => {
           } catch (error) {
             console.error(error)
             contactErrors.push({ displayName, error })
+            failedCollaborators.push(collaborator)
             throw error
           }
         })
@@ -419,6 +421,7 @@ const share = async () => {
         } catch (error) {
           console.error(error)
           errors.push({ displayName, error })
+          failedCollaborators.push(collaborator)
           throw error
         }
       })
@@ -470,8 +473,13 @@ const share = async () => {
     })
   })
 
-  expirationDate.value = null
-  selectedCollaborators.value = []
+  // keep the recipients whose share failed, so they can be retried
+  selectedCollaborators.value = unref(selectedCollaborators).filter((collaborator) =>
+    failedCollaborators.includes(collaborator)
+  )
+  if (!failedCollaborators.length) {
+    expirationDate.value = null
+  }
   saving.value = false
 }
 
