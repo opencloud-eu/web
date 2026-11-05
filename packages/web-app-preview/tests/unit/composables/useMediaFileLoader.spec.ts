@@ -10,6 +10,8 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { useMediaFileLoader } from '../../../src/composables'
 import { MediaFile } from '../../../src/helpers/types'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -90,6 +92,9 @@ function createWrapper({ files = [createFile()], activeIndex = 0 }: CreateWrappe
   const mediaFiles = ref(files.map((file) => createFile(file)))
   const index = ref(activeIndex)
   const getUrlForResource = vi.fn().mockResolvedValue('full-url')
+  mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+    body: new TextEncoder().encode('<svg xmlns="http://www.w3.org/2000/svg"/>').buffer
+  })
 
   const wrapper = getComposableWrapper(
     () => ({ loader: useMediaFileLoader({ mediaFiles, activeIndex: index, getUrlForResource }) }),
@@ -297,15 +302,60 @@ describe('useMediaFileLoader', () => {
       wrapper.unmount()
     })
 
-    it('uses getUrlForResource for vault images and svg files', async () => {
+    it('uses the preview service for images and getUrlForResource for vault images', async () => {
       const { wrapper, loader, mocks, getUrlForResource } = createWrapper()
+      const image = createFile({ name: 'bear.png' })
+      const vaultImage = createFile({
+        name: 'vault.png',
+        resource: mock<Resource>({ name: 'vault.png', isInVault: true })
+      })
 
-      await loader.loadPreviewImage(createFile({ resource: mock<Resource>({ isInVault: true }) }))
-      await loader.loadPreviewImage(createFile({ name: 'logo.svg', mimeType: 'image/svg+xml' }))
+      await loader.loadPreviewImage(image)
+      await loader.loadPreviewImage(vaultImage)
 
-      expect(getUrlForResource).toHaveBeenCalledTimes(2)
-      expect(mocks.$previewService.loadPreview).not.toHaveBeenCalled()
+      expect(image.url).toBe('preview-url-bear.png')
+      expect(vaultImage.url).toBe('full-url')
+      expect(getUrlForResource).toHaveBeenCalledTimes(1)
+      expect(mocks.$clientService.webdav.getFileContents).not.toHaveBeenCalled()
       wrapper.unmount()
+    })
+
+    // a blob url belongs to the app's origin: opened in a new tab, the svg would run
+    // its scripts as the app. A data url opens on an opaque origin instead.
+    describe.each([
+      ['svg-root-event-handler.svg', false],
+      ['svg-root-event-handler.svg', true],
+      ['svg-global-css.svg', false],
+      ['svg-global-css.svg', true]
+    ])('svg file %s (in vault: %s)', (fixture, isInVault) => {
+      it('resolves to a data url with the file content, never to a blob url', async () => {
+        const svg = readFileSync(join(import.meta.dirname, '..', 'fixtures', fixture), 'utf8')
+        const { wrapper, loader, mocks, getUrlForResource } = createWrapper()
+        mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+          body: new TextEncoder().encode(svg).buffer
+        })
+        const resource = mock<Resource>({ name: fixture, path: `/${fixture}`, isInVault })
+        const file = createFile({ name: fixture, mimeType: 'image/svg+xml', resource })
+
+        await loader.loadPreviewImage(file)
+
+        const [prefix, data] = file.url.split(',')
+        expect(prefix).toBe('data:image/svg+xml;base64')
+        expect(new TextDecoder().decode(Uint8Array.from(atob(data), (c) => c.charCodeAt(0)))).toBe(
+          svg
+        )
+        expect(getUrlForResource).not.toHaveBeenCalled()
+        expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledWith(
+          space,
+          resource,
+          expect.objectContaining({
+            responseType: 'arraybuffer',
+            signal: expect.any(AbortSignal)
+          })
+        )
+        expect(file.isError).toBe(false)
+        wrapper.unmount()
+      })
     })
   })
 
@@ -761,11 +811,15 @@ describe('useMediaFileLoader', () => {
 
       expect(MockImage.instances).toHaveLength(0)
       // one resolution each, no decode-failure retry loop
-      expect(getUrlForResource).toHaveBeenCalledTimes(3)
+      expect(getUrlForResource).toHaveBeenCalledTimes(2)
+      expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(1)
       // skipping the warm-up must not break the load itself
       expect(mocks.$previewService.loadPreview).not.toHaveBeenCalled()
-      for (const file of [video, audio, svg]) {
+      for (const file of [video, audio]) {
         expect(file.url).toBe('full-url')
+      }
+      expect(svg.url).toMatch(/^data:image\/svg\+xml;base64,/)
+      for (const file of [video, audio, svg]) {
         expect(file.isLoading).toBe(false)
       }
       wrapper.unmount()
