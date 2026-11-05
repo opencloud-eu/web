@@ -3,6 +3,7 @@ import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { flushPromises } from '@vue/test-utils'
 import { Resource } from '@opencloud-eu/web-client'
 import { MediaFile } from '../../../src/helpers/types'
+import Panzoom, { PanzoomOptions } from '@panzoom/panzoom'
 
 // panzoom touches real DOM geometry which jsdom does not provide
 const panzoom = {
@@ -13,7 +14,7 @@ const panzoom = {
   getScale: () => 1,
   getPan: () => ({ x: 0, y: 0 })
 }
-vi.mock('@panzoom/panzoom', () => ({ default: () => panzoom }))
+vi.mock('@panzoom/panzoom', () => ({ default: vi.fn(() => panzoom) }))
 
 const mediaFile = (mimeType: string): MediaFile =>
   ({
@@ -90,6 +91,19 @@ describe('MediaImage component', () => {
       expect(panzoom.zoomIn).not.toHaveBeenCalled()
       expect(panzoom.zoomOut).not.toHaveBeenCalled()
     })
+  })
+
+  it('ignores a deferred panzoom transform after unmount', async () => {
+    const { wrapper } = getWrapper('image/png')
+    await flushPromises()
+    const { setTransform } = vi.mocked(Panzoom).mock.calls[0][1] as PanzoomOptions
+
+    wrapper.unmount()
+
+    expect(() =>
+      setTransform(document.createElement('div'), { scale: 1, x: 0, y: 0 }, {})
+    ).not.toThrow()
+    expect(panzoom.setStyle).not.toHaveBeenCalled()
   })
 
   it('reports an image the browser cannot decode', async () => {

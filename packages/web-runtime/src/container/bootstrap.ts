@@ -146,7 +146,10 @@ const getEmbedConfigFromQuery = (
   const embedFileTypes = getQueryParam('embed-file-types')
 
   if (embedFileTypes) {
-    config.fileTypes = embedFileTypes.split(',')
+    config.fileTypes = embedFileTypes
+      .split(',')
+      .map((fileType) => fileType.trim())
+      .filter(Boolean)
   }
 
   const delegateAuthentication = getQueryParam('embed-delegate-authentication')
