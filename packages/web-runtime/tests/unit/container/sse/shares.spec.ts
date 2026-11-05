@@ -88,7 +88,7 @@ describe('shares events', () => {
       expect(mocks.spacesStore.removeSpace).not.toHaveBeenCalled()
       expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
     })
-    it('calls "removeSpace" when space member has been removed and current user is affected', async () => {
+    it('calls "removeSpace" when space member has been removed and current user has no access anymore', async () => {
       const space = mock<SpaceResource>({ id: 'space1' })
       const mocks = getMocks({ currentRouteFilesSpacesProjects: true, spaces: [space] })
       const sseData = mock<EventSchemaType>({
@@ -96,15 +96,20 @@ describe('shares events', () => {
         spaceid: space.id,
         affecteduserids: ['1']
       })
+      // users who may list all spaces still get the single drive after losing their membership
       mocks.clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(space)
+      mocks.clientService.graphAuthenticated.drives.listMyDrives.mockResolvedValue([])
       await onSSESpaceMemberRemovedEvent({ sseData, ...mocks })
-      expect(mocks.clientService.graphAuthenticated.drives.getDrive).not.toHaveBeenCalled()
+      expect(mocks.clientService.graphAuthenticated.drives.listMyDrives).toHaveBeenCalledWith({
+        filter: `id eq '${space.id}'`
+      })
       expect(mocks.spacesStore.upsertSpace).not.toHaveBeenCalled()
       // the space itself still exists, e.g. for the admin settings
       expect(mocks.spacesStore.removeSpace).toHaveBeenCalledWith(space, { deleted: false })
+      expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([space])
       expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
     })
-    it('calls "showMessage" when space member has been removed and current user is affected and navigated to space', async () => {
+    it('calls "showMessage" when space member has been removed and current user has no access anymore and navigated to space', async () => {
       const space = mock<SpaceResource>({ id: 'space1' })
       const mocks = getMocks({ currentRouteFilesSpacesGeneric: true, spaces: [space] })
       const sseData = mock<EventSchemaType>({
@@ -112,12 +117,49 @@ describe('shares events', () => {
         spaceid: space.id,
         affecteduserids: ['1']
       })
-      mocks.clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(space)
+      mocks.clientService.graphAuthenticated.drives.listMyDrives.mockRejectedValue(new Error('500'))
       await onSSESpaceMemberRemovedEvent({ sseData, ...mocks })
-      expect(mocks.clientService.graphAuthenticated.drives.getDrive).not.toHaveBeenCalled()
       expect(mocks.spacesStore.upsertSpace).not.toHaveBeenCalled()
       expect(mocks.spacesStore.removeSpace).toHaveBeenCalled()
       expect(mocks.messageStore.showMessage).toHaveBeenCalled()
+    })
+    describe('current user is affected but still has access, e.g. via a group', () => {
+      it('keeps the space and reloads its permissions', async () => {
+        const space = mock<SpaceResource>({ id: 'space1' })
+        const mocks = getMocks({ currentRouteFilesSpacesProjects: true, spaces: [space] })
+        const sseData = mock<EventSchemaType>({
+          itemid: space.id,
+          spaceid: space.id,
+          affecteduserids: ['1']
+        })
+        mocks.clientService.graphAuthenticated.drives.listMyDrives.mockResolvedValue([space])
+        await onSSESpaceMemberRemovedEvent({ sseData, ...mocks })
+        expect(mocks.clientService.graphAuthenticated.drives.listMyDrives).toHaveBeenCalledWith({
+          filter: `id eq '${space.id}'`
+        })
+        expect(mocks.spacesStore.upsertSpace).toHaveBeenCalledWith(space)
+        expect(mocks.spacesStore.loadGraphPermissions).toHaveBeenCalledWith(
+          expect.objectContaining({ ids: [space.id], useCache: false })
+        )
+        expect(mocks.spacesStore.removeSpace).not.toHaveBeenCalled()
+        expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+        expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+      })
+      it('reloads the file list instead of showing a message when navigated to space', async () => {
+        const space = mock<SpaceResource>({ id: 'space1' })
+        const mocks = getMocks({ currentRouteFilesSpacesGeneric: true, spaces: [space] })
+        const sseData = mock<EventSchemaType>({
+          itemid: space.id,
+          spaceid: space.id,
+          affecteduserids: ['1']
+        })
+        mocks.clientService.graphAuthenticated.drives.listMyDrives.mockResolvedValue([space])
+        const busStub = vi.spyOn(eventBus, 'publish')
+        await onSSESpaceMemberRemovedEvent({ sseData, ...mocks })
+        expect(mocks.spacesStore.removeSpace).not.toHaveBeenCalled()
+        expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+        expect(busStub).toHaveBeenCalledWith('app.files.list.load')
+      })
     })
     it('does not trigger any action when initiator ids are identical', async () => {
       const space = mock<SpaceResource>({ id: 'space1' })
@@ -131,6 +173,7 @@ describe('shares events', () => {
       mocks.clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(space)
       await onSSESpaceMemberRemovedEvent({ sseData, ...mocks })
       expect(mocks.clientService.graphAuthenticated.drives.getDrive).not.toHaveBeenCalled()
+      expect(mocks.clientService.graphAuthenticated.drives.listMyDrives).not.toHaveBeenCalled()
       expect(mocks.spacesStore.upsertSpace).not.toHaveBeenCalled()
       expect(mocks.spacesStore.removeSpace).not.toHaveBeenCalled()
       expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
