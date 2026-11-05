@@ -134,7 +134,7 @@ import {
 } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import type { Editor } from '@tiptap/core'
-import { debounce } from 'lodash-es'
+import { debounce, isEqual, pick } from 'lodash-es'
 import {
   OcButton,
   OcHiddenAnnouncer,
@@ -217,6 +217,8 @@ const scrollToCurrentResult = () => {
   }
 }
 
+let previousSearchOptions = {}
+
 const updateResultState = () => {
   const storage = editor.storage.findAndReplace
   const results = storage?.results || []
@@ -224,13 +226,16 @@ const updateResultState = () => {
   const newCount = results.length
   const newPosition = currentIndex === null || currentIndex < 0 ? 0 : currentIndex + 1
 
-  // Only scroll if the position actually changed
+  // a new search or option can point to another match at the same position, document edits must not scroll
   const positionChanged = newPosition !== unref(currentResultPosition)
+  const searchOptions = pick(storage, ['searchTerm', 'caseSensitive', 'useRegex', 'wholeWord'])
+  const searchChanged = !isEqual(searchOptions, previousSearchOptions)
+  previousSearchOptions = searchOptions
 
   resultCount.value = newCount
   currentResultPosition.value = newPosition
 
-  if (positionChanged && newPosition > 0) {
+  if ((positionChanged || searchChanged) && newPosition > 0) {
     scrollToCurrentResult()
   }
 }
