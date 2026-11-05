@@ -46,12 +46,12 @@ describe('useResourcesViewDefaults', () => {
       const { mocks } = getWrapper({ resources: [resource] })
       const resourcesStore = useResourcesStore()
       resourcesStore.setSelection(['1'])
-      vi.mocked(mocks.$router.push).mockClear()
+      vi.mocked(mocks.$router.replace).mockClear()
 
       resourcesStore.removeResources([resource])
       resourcesStore.resetSelection()
       await vi.waitFor(() =>
-        expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
           expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
         )
       )
@@ -67,7 +67,9 @@ describe('useResourcesViewDefaults', () => {
 
       resourcesStore.removeResources([resources[1]])
       await new Promise((resolve) => setTimeout(resolve))
-      expect(mocks.$router.push).not.toHaveBeenCalled()
+      expect(mocks.$router.replace).not.toHaveBeenCalledWith(
+        expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
+      )
     })
     it('removes the param when another resource gets selected', async () => {
       const { mocks } = getWrapper()
