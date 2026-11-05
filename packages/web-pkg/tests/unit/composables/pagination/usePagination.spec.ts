@@ -77,6 +77,34 @@ describe('usePagination', () => {
         { mocks, provide: mocks }
       )
     })
+    it.each(['0', '-1'])(
+      'falls back to the default for the invalid route query value %s',
+      async (itemsPerPage) => {
+        const router = createRouter({ routes: [{ path: '/', redirect: null }] })
+        router.push({ path: '/', query: { 'items-per-page': itemsPerPage } })
+        await router.isReady()
+
+        const mocks = { $router: router }
+        getComposableWrapper(
+          () => {
+            const {
+              items: paginatedItems,
+              perPage,
+              total
+            } = usePagination({
+              items: ref([1, 2, 3, 4, 5, 6]),
+              perPageDefault: '100',
+              perPageStoragePrefix: 'unit-tests'
+            })
+
+            expect(unref(perPage)).toBe(100)
+            expect(unref(total)).toBe(1)
+            expect(unref(paginatedItems)).toEqual([1, 2, 3, 4, 5, 6])
+          },
+          { mocks, provide: mocks }
+        )
+      }
+    )
   })
   describe('event bus subscription', () => {
     it('unsubscribes from the page navigation event on unmount', () => {
