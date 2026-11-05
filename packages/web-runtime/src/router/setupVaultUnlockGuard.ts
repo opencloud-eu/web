@@ -48,25 +48,32 @@ function getContextQuery(to: RouteLocation): LocationQuery {
 }
 
 /**
+ * Routes that only redirect on to somewhere else. Returning to one of them would
+ * resolve into the vault again or, for the OIDC callback, hang on its spent code.
+ */
+const redirectOnlyRouteNames: string[] = [
+  routeNames.oidcCallback,
+  routeNames.resolvePrivateLink,
+  routeNames.resolvePublicLink,
+  routeNames.resolvePublicOcmLink,
+  routeNames.resolveGuestLink,
+  routeNames.renewGuestLink
+]
+
+/**
  * Where cancelling the unlock should return the user to. `from` only qualifies
  * if it's somewhere they can actually stay: not the unlock route itself, not a
- * private or guest link resolver (it only redirects and would resolve into the vault again), and
- * not inside the very vault we're locking them out of.
+ * redirect-only route, and not inside the very vault we're locking them out of.
  */
 function getCancelUrl(
   from: RouteLocationNormalized,
   space: SpaceResource,
   claim: VaultClaim
 ): string | undefined {
-  const resolverRouteNames: string[] = [
-    routeNames.resolvePrivateLink,
-    routeNames.resolveGuestLink,
-    routeNames.renewGuestLink
-  ]
   if (
     !from.name ||
     from.name === claim.unlockRoute?.name ||
-    resolverRouteNames.includes(from.name as string)
+    redirectOnlyRouteNames.includes(from.name as string)
   ) {
     return undefined
   }

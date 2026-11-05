@@ -22,6 +22,7 @@ type Space = {
   driveAlias?: string
   name?: string
   contentType?: string
+  getDriveAliasAndItem?: (resource: { path: string }) => string
 }
 
 function mountUnlockVault({
@@ -273,6 +274,29 @@ describe('UnlockVault', () => {
 
       expect(mocks.$router.push).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'files-guest-shares' })
+      )
+    })
+
+    it('stays on the public link route when leaving a vault in a public link', async () => {
+      // The spaces route needs a user, an anonymous visitor would be asked to log in.
+      const { wrapper, mocks } = await mountProbed({
+        spaces: [
+          {
+            id: spaceId,
+            driveType: 'public',
+            driveAlias: 'public/token',
+            getDriveAliasAndItem: ({ path }) => `public/token${path}`
+          }
+        ],
+        query: { spaceId, vaultRoot: '/docs/my.vault' }
+      })
+      await (wrapper.vm as any).onCancel()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'files-public-link',
+          params: { driveAliasAndItem: 'public/token/docs' }
+        })
       )
     })
 
