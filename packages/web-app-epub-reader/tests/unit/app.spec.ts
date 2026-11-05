@@ -98,17 +98,6 @@ describe('Epub reader app', () => {
     })
   })
 
-  it('opens another book when the content changes', async () => {
-    const { wrapper } = await getWrapper()
-
-    await wrapper.setProps({ currentContent: 'other-content' })
-    await flushPromises()
-
-    expect(books).toHaveLength(2)
-    expect(books[0].rendition.destroy).toHaveBeenCalled()
-    expect(books[1].rendition.display).toHaveBeenCalled()
-  })
-
   describe('font size', () => {
     it('changes the font size with the toolbar buttons', async () => {
       const { wrapper, book } = await getWrapper()

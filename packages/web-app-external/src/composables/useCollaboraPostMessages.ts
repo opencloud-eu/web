@@ -42,7 +42,6 @@ export function useCollaboraPostMessages({
   const {
     getMentionUsers,
     notifyMentionedUsers,
-    resetMentionState,
     selectMentionUser: handleMentionSelected
   } = useMentionUsers({ space, resource })
 
@@ -318,7 +317,6 @@ export function useCollaboraPostMessages({
   }
 
   return {
-    handlePostMessagesCollabora,
-    resetMentionState
+    handlePostMessagesCollabora
   }
 }

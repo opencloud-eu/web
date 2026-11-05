@@ -147,16 +147,10 @@ useReaderSwipe({ rendition, onSwipeLeft: next, onSwipeRight: prev })
 useBookContainerResize({ rendition, location, container: bookContainer })
 
 onMounted(() => {
-  watch(
-    () => currentContent,
-    (content) => {
-      open(content, {
-        container: unref(bookContainer),
-        initialCfi: loadReadingPosition(resource.id)
-      })
-    },
-    { immediate: true }
-  )
+  open(currentContent, {
+    container: unref(bookContainer),
+    initialCfi: loadReadingPosition(resource.id)
+  })
 })
 
 watch(location, (currentLocation) => {
