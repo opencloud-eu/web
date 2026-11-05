@@ -189,6 +189,30 @@ describe('rename', () => {
         expect(inputSelectionRange).toBeNull()
       }
     )
+
+    it.each([
+      { name: 'folder', extension: '', isFolder: true, areFileExtensionsShown: false },
+      { name: 'file.txt', extension: 'txt', isFolder: false, areFileExtensionsShown: false },
+      { name: 'file.txt', extension: 'txt', isFolder: false, areFileExtensionsShown: true }
+    ])(
+      'does not send a request when "$name" is confirmed unchanged (extensions shown: $areFileExtensionsShown)',
+      async ({ name, extension, isFolder, areFileExtensionsShown }) => {
+        let instance: ReturnType<typeof useFileActionsRename>
+        const { mocks } = getWrapper({ setup: (i) => (instance = i) })
+        const { space, $clientService: clientService } = mocks
+        useResourcesStore().areFileExtensionsShown = areFileExtensionsShown
+        const resource = mock<Resource>({ name, extension, isFolder, path: `/${name}` })
+        await unref(instance.actions)[0].handler({ space, resources: [resource] })
+
+        const { dispatchModal } = useModals()
+        const { inputValue, onConfirm } = vi.mocked(dispatchModal).mock.calls[0][0]
+        await onConfirm(inputValue)
+
+        expect(clientService.webdav.moveFiles).not.toHaveBeenCalled()
+        const { showErrorMessage } = useMessages()
+        expect(showErrorMessage).not.toHaveBeenCalled()
+      }
+    )
   })
 
   describe('method "renameResource"', () => {
