@@ -14,6 +14,7 @@ import {
 } from '@opencloud-eu/web-client'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 import { until } from '@vueuse/core'
+import { unref } from 'vue'
 import { dirname } from 'path'
 import { SSEEventOptions } from './types'
 
@@ -83,6 +84,8 @@ function waitForResourcesLoad(resourcesStore: SSEEventOptions['resourcesStore'])
   return until(() => resourcesStore.resourcesLoading).toBe(false)
 }
 
+const folderRouteNames = ['files-spaces-generic', 'files-public-link', 'files-guest-link']
+
 export const onSSEItemRenamedEvent = async ({
   sseData,
   resourcesStore,
@@ -120,12 +123,21 @@ export const onSSEItemRenamedEvent = async ({
 
   if (resourceIsCurrentFolder) {
     resourcesStore.setCurrentFolder(updatedResource)
-    return router.push(
-      createFileRouteOptions(space, {
+
+    // apps (e.g. the preview) set the parent folder of the opened file as current folder,
+    // their route must not be replaced with the folder route
+    const routeName = unref(router.currentRoute).name as string
+    if (!folderRouteNames.includes(routeName)) {
+      return
+    }
+
+    return router.push({
+      name: routeName,
+      ...createFileRouteOptions(space, {
         path: updatedResource.path,
         fileId: updatedResource.fileId
       })
-    )
+    })
   }
 
   resourcesStore.upsertResource(updatedResource)

@@ -333,13 +333,39 @@ describe('file events', () => {
       expect(mocks.resourcesStore.upsertResource).toHaveBeenCalled()
       expect(mocks.resourcesStore.setCurrentFolder).not.toHaveBeenCalled()
     })
-    it('calls "setCurrentFolder" when resource is current folder and has been renamed', async () => {
+    it.each(['files-spaces-generic', 'files-public-link', 'files-guest-link'])(
+      'calls "setCurrentFolder" and updates the "%s" route when resource is current folder and has been renamed',
+      async (currentRouteName) => {
+        const resourceToRename = mock<Resource>({
+          id: 'currenFolder!currentFolder',
+          storageId: 'space1',
+          parentFolderId: 'space1'
+        })
+        const mocks = getMocks({ resources: [resourceToRename], currentRouteName })
+        mocks.clientService.webdav.getFileInfo.mockResolvedValue(
+          mock<Resource>({ ...resourceToRename, name: 'folder2', parentFolderId: 'space1' })
+        )
+        const sseData = mock<EventSchemaType>({
+          itemid: resourceToRename.id,
+          spaceid: resourceToRename.storageId,
+          parentitemid: resourceToRename.parentFolderId
+        })
+        await onSSEItemRenamedEvent({ sseData, ...mocks })
+        expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
+        expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalled()
+        expect(mocks.router.push).toHaveBeenCalledWith(
+          expect.objectContaining({ name: currentRouteName })
+        )
+        expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+      }
+    )
+    it('does not change the route of an app when the folder of its file has been renamed', async () => {
       const resourceToRename = mock<Resource>({
         id: 'currenFolder!currentFolder',
         storageId: 'space1',
         parentFolderId: 'space1'
       })
-      const mocks = getMocks({ resources: [resourceToRename] })
+      const mocks = getMocks({ resources: [resourceToRename], currentRouteName: 'preview-media' })
       mocks.clientService.webdav.getFileInfo.mockResolvedValue(
         mock<Resource>({ ...resourceToRename, name: 'folder2', parentFolderId: 'space1' })
       )
@@ -349,10 +375,11 @@ describe('file events', () => {
         parentitemid: resourceToRename.parentFolderId
       })
       await onSSEItemRenamedEvent({ sseData, ...mocks })
-      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
-      expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalled()
-      expect(mocks.router.push).toHaveBeenCalled()
-      expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+      expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'folder2' })
+      )
+      expect(mocks.router.push).not.toHaveBeenCalled()
+      expect(mocks.router.replace).not.toHaveBeenCalled()
     })
     it('does not trigger any action when initiator ids are identical', async () => {
       const resourceToRename = mock<Resource>({
