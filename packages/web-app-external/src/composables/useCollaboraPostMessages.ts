@@ -11,7 +11,8 @@ import {
   useMentionUsers,
   useConfigStore,
   queryItemAsString,
-  FilePickerModal
+  FilePickerModal,
+  isMessageFromIframe
 } from '@opencloud-eu/web-pkg'
 import FileNameModal from '../components/FileNameModal.vue'
 
@@ -275,6 +276,10 @@ export function useCollaboraPostMessages({
   })
 
   async function handlePostMessagesCollabora(event: MessageEvent): Promise<void> {
+    if (!isMessageFromIframe(event, unref(appIframeRef))) {
+      return
+    }
+
     try {
       const message: CollaboraMessage = JSON.parse(event.data || '{}')
 

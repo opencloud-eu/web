@@ -39,6 +39,7 @@ import {
 import {
   buildUrl,
   getTextByteSize,
+  isMessageFromIframe,
   getVaultNameMaxBytes,
   resolveFileNameDuplicate
 } from '../../helpers'
@@ -78,8 +79,12 @@ const onLoad = () => {
   unref(iframeRef).contentWindow.focus()
 }
 
-const onLocationPick = async ({ data }: MessageEvent) => {
-  if (data.name !== 'opencloud-embed:select') {
+const onLocationPick = async (event: MessageEvent) => {
+  const { data } = event
+  if (
+    !isMessageFromIframe(event, unref(iframeRef), iframeUrl.origin) ||
+    data?.name !== 'opencloud-embed:select'
+  ) {
     return
   }
 
@@ -171,8 +176,12 @@ const openFile = ({
   window.open(buildUrl(router, routeOpts), '_blank')
 }
 
-const onCancel = ({ data }: MessageEvent) => {
-  if (data.name !== 'opencloud-embed:cancel') {
+const onCancel = (event: MessageEvent) => {
+  const { data } = event
+  if (
+    !isMessageFromIframe(event, unref(iframeRef), iframeUrl.origin) ||
+    data?.name !== 'opencloud-embed:cancel'
+  ) {
     return
   }
 

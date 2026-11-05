@@ -24,7 +24,7 @@ import {
 } from '../../composables'
 import { RouteLocationRaw } from 'vue-router'
 import AppLoadingSpinner from '../AppLoadingSpinner.vue'
-import { buildUrl } from '../../helpers'
+import { buildUrl, isMessageFromIframe } from '../../helpers'
 
 const {
   modal,
@@ -72,8 +72,12 @@ const onLoad = () => {
   unref(iframeRef).contentWindow.focus()
 }
 
-const onLocationPick = ({ data }: MessageEvent) => {
-  if (data.name !== 'opencloud-embed:select') {
+const onLocationPick = (event: MessageEvent) => {
+  const { data } = event
+  if (
+    !isMessageFromIframe(event, unref(iframeRef), iframeUrl.origin) ||
+    data?.name !== 'opencloud-embed:select'
+  ) {
     return
   }
 
@@ -92,8 +96,12 @@ const onLocationPick = ({ data }: MessageEvent) => {
   removeModal(modal.id)
 }
 
-const onCancel = ({ data }: MessageEvent) => {
-  if (data.name !== 'opencloud-embed:cancel') {
+const onCancel = (event: MessageEvent) => {
+  const { data } = event
+  if (
+    !isMessageFromIframe(event, unref(iframeRef), iframeUrl.origin) ||
+    data?.name !== 'opencloud-embed:cancel'
+  ) {
     return
   }
 
