@@ -14,9 +14,11 @@ const MenuComponentStub = markRaw(defineComponent({ template: '<div class="menu-
 const OcDropStub = defineComponent({
   props: {
     dropId: { type: String, default: '' },
-    title: { type: String, default: '' }
+    title: { type: String, default: '' },
+    enforceDropOnMobile: { type: Boolean, default: false }
   },
-  template: '<div class="oc-drop-stub" :data-drop-id="dropId" :data-title="title"><slot /></div>'
+  template:
+    '<div class="oc-drop-stub" :data-drop-id="dropId" :data-title="title" :data-enforce-drop-on-mobile="enforceDropOnMobile"><slot /></div>'
 })
 
 function mountItem(item: EditorAction) {
@@ -86,4 +88,23 @@ describe('TextEditorToolbarItem', () => {
       wrapper.find('[data-drop-id="toolbar-dropdown-table-custom"]').attributes('data-title')
     ).toBe('Choose rows & columns')
   })
+
+  it.each([true, false])(
+    'keeps the drop of a menu action on mobile only when the action opts in (%s)',
+    (menuEnforceDropOnMobile) => {
+      const wrapper = mountItem({
+        id: 'search',
+        title: 'Search and replace',
+        icon: 'seo',
+        menuComponent: MenuComponentStub,
+        ...(menuEnforceDropOnMobile && { menuEnforceDropOnMobile })
+      })
+
+      expect(
+        wrapper
+          .find('[data-drop-id="toolbar-dropdown-search"]')
+          .attributes('data-enforce-drop-on-mobile')
+      ).toBe(menuEnforceDropOnMobile.toString())
+    }
+  )
 })
