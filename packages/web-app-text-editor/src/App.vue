@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef, unref, watch } from 'vue'
+import { computed, toRef, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useAuthStore, useMentionUsers, type YjsEditorSlotProps } from '@opencloud-eu/web-pkg'
 import {
@@ -48,18 +48,11 @@ const mentionsEnabled = authStore.userContextReady && unref(isRichText)
 
 let mentions: TextEditorMentionsOptions | undefined
 if (mentionsEnabled) {
-  const {
-    getMentionUsers,
-    notifyMentionedUsers,
-    ownMentionLabel,
-    resetMentionState,
-    selectMentionUser
-  } = useMentionUsers({
-    space: toRef(() => space),
-    resource: toRef(() => resource)
-  })
-
-  watch([() => space.id, () => resource.id], resetMentionState)
+  const { getMentionUsers, notifyMentionedUsers, ownMentionLabel, selectMentionUser } =
+    useMentionUsers({
+      space: toRef(() => space),
+      resource: toRef(() => resource)
+    })
 
   emit('register:onSaveCallback', (content) =>
     notifyMentionedUsers(typeof content === 'string' ? content : undefined)

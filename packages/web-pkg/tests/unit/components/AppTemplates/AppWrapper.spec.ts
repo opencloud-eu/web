@@ -327,6 +327,7 @@ function setup({
       await flushPromises()
     },
     currentContent: () => slotProps?.currentContent,
+    slotKey: () => slotProps?.key,
     isReadOnly: () => slotProps?.isReadOnly,
     yjsStatus: () => slotProps?.yjsStatus,
     statusRef,
@@ -394,6 +395,16 @@ async function openFile(options: Parameters<typeof setup>[0] = {}) {
   await s.resolveResource(FILE_A)
   await s.resolveContent('content of a')
   return s
+}
+
+async function switchFile(s: ReturnType<typeof setup>, resource: Resource, content: string) {
+  s.currentFileContext.value = mock<FileContext>({
+    space: mock<any>(),
+    path: `/${resource.name}`
+  })
+  await nextTick()
+  await s.resolveResource(resource)
+  await s.resolveContent(content)
 }
 
 describe('AppWrapper — ESC close behavior', () => {
@@ -536,6 +547,28 @@ describe('AppWrapper — loading the file content', () => {
       expect.objectContaining({ responseType: 'blob' })
     )
     expect(s.currentContent()).toBeInstanceOf(ArrayBuffer)
+  })
+})
+
+describe('AppWrapper — remounting the wrapped app', () => {
+  it('keys the app by the loaded file', async () => {
+    const s = await openFile({ yjsEnabled: false })
+    expect(s.slotKey()).toBe(FILE_A.id)
+  })
+
+  it('keeps the key on a save', async () => {
+    const s = await openFile({ yjsEnabled: false })
+    await s.edit('edited a')
+    await s.pressCtrlS()
+
+    expect(s.putFileContents).toHaveBeenCalled()
+    expect(s.slotKey()).toBe(FILE_A.id)
+  })
+
+  it('changes the key once the next file is loaded', async () => {
+    const s = await openFile({ yjsEnabled: false })
+    await switchFile(s, FILE_B, 'content of b')
+    expect(s.slotKey()).toBe(FILE_B.id)
   })
 })
 
@@ -696,16 +729,6 @@ describe('AppWrapper — changes still pending in the session', () => {
 })
 
 describe('AppWrapper — deleting the open file', () => {
-  async function switchFile(s: ReturnType<typeof setup>, resource: Resource, content: string) {
-    s.currentFileContext.value = mock<FileContext>({
-      space: mock<any>(),
-      path: `/${resource.name}`
-    })
-    await nextTick()
-    await s.resolveResource(resource)
-    await s.resolveContent(content)
-  }
-
   it('saves the unsaved changes before moving the file to the trash', async () => {
     const put = deferred<Resource>()
     const s = await openFile({ putFileContents: vi.fn().mockReturnValue(put.promise) })
