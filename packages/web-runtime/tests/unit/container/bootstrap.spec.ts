@@ -343,6 +343,24 @@ describe('announceConfiguration', () => {
     await announceConfiguration({ path: '/config.json', configStore })
     expect(configStore.options.embed.submitButtonTitle).toStrictEqual('Move here')
   })
+
+  it('should trim embed file types from URL query and drop empty ones', async () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '?embed-file-types=pdf,%20docx%20,,text/plain,'
+      },
+      writable: true
+    })
+    vi.spyOn(global, 'fetch').mockResolvedValue(
+      mock<Response>({
+        status: 200,
+        json: () => Promise.resolve({ theme: '', server: '', options: {} })
+      })
+    )
+    const configStore = useConfigStore()
+    await announceConfiguration({ path: '/config.json', configStore })
+    expect(configStore.options.embed.fileTypes).toStrictEqual(['pdf', 'docx', 'text/plain'])
+  })
 })
 
 describe('announceUpdates', () => {
