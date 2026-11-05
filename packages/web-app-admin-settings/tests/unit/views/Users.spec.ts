@@ -153,6 +153,90 @@ describe('Users view', () => {
     })
   })
 
+  describe('created user', () => {
+    // the views subscribe to the global event bus, so they must not outlive their test
+    let wrapper: ReturnType<typeof getMountedWrapper>['wrapper']
+    afterEach(() => {
+      wrapper?.unmount()
+      wrapper = undefined
+    })
+
+    it('adds the created user to the list if no filter is active', async () => {
+      const clientService = getClientService()
+      wrapper = getMountedWrapper({ clientService }).wrapper
+      const { upsertUser } = useUserSettingsStore()
+      await flushPromises()
+      const createdUser = mock<User>({ id: '2' })
+
+      eventBus.publish('app.admin-settings.users.user.created', createdUser)
+      await flushPromises()
+
+      expect(upsertUser).toHaveBeenCalledWith(createdUser)
+      expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledTimes(1)
+    })
+    it.each([
+      {
+        description: 'a group filter',
+        query: { groupFilterQuery: '1' },
+        expected: { filter: "(memberOf/any(m:m/id eq '1'))" }
+      },
+      {
+        description: 'a search term',
+        query: { displayNameFilterQuery: 'Albert' },
+        expected: { search: '"Albert"' }
+      }
+    ])(
+      'reloads the list instead of adding the created user if $description is active',
+      async ({ query, expected }) => {
+        const clientService = getClientService()
+        wrapper = getMountedWrapper({
+          clientService,
+          selectedUsers: [{ id: '1', displayName: 'Admin' }] as User[],
+          ...query
+        }).wrapper
+        const { upsertUser, setSelectedUsers } = useUserSettingsStore()
+        await flushPromises()
+
+        eventBus.publish('app.admin-settings.users.user.created', mock<User>({ id: '2' }))
+        await flushPromises()
+
+        expect(upsertUser).not.toHaveBeenCalled()
+        expect(setSelectedUsers).toHaveBeenCalledWith([])
+        expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledTimes(2)
+        expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenLastCalledWith(
+          expect.objectContaining(expected),
+          expect.anything()
+        )
+      }
+    )
+    it('keeps the list empty if a filter is mandatory but none is set', async () => {
+      const clientService = getClientService()
+      wrapper = getMountedWrapper({
+        clientService,
+        stubActions: false,
+        options: { userListRequiresFilter: true }
+      }).wrapper
+      const userSettingsStore = useUserSettingsStore()
+      await flushPromises()
+
+      eventBus.publish('app.admin-settings.users.user.created', mock<User>({ id: '2' }))
+      await flushPromises()
+
+      expect(userSettingsStore.users).toEqual([])
+      expect(clientService.graphAuthenticated.users.listUsers).not.toHaveBeenCalled()
+    })
+    it('stops listening for created users when leaving the page', async () => {
+      const { wrapper: unmountedWrapper } = getMountedWrapper()
+      const { upsertUser } = useUserSettingsStore()
+      await flushPromises()
+      unmountedWrapper.unmount()
+
+      eventBus.publish('app.admin-settings.users.user.created', mock<User>({ id: '2' }))
+
+      expect(upsertUser).not.toHaveBeenCalled()
+    })
+  })
+
   describe('side bar panels', () => {
     it('should contain EditPanel when one user is selected and loaded', async () => {
       const { wrapper } = getMountedWrapper()

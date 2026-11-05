@@ -52,8 +52,7 @@
 import { useGettext } from 'vue3-gettext'
 import { computed, ref, unref, watch } from 'vue'
 import * as EmailValidator from 'email-validator'
-import { Modal, useClientService, useMessages } from '@opencloud-eu/web-pkg'
-import { useUserSettingsStore } from '../../composables/stores/userSettings'
+import { Modal, eventBus, useClientService, useMessages } from '@opencloud-eu/web-pkg'
 import { useUserNameValidation } from '../../composables/users'
 
 type FormField = 'userName' | 'displayName' | 'email' | 'password'
@@ -68,7 +67,6 @@ const emit = defineEmits<{
 const { showMessage, showErrorMessage } = useMessages()
 const clientService = useClientService()
 const { $gettext } = useGettext()
-const userSettingsStore = useUserSettingsStore()
 const { getUserNameError } = useUserNameValidation()
 
 const formData = ref<Record<FormField, { errorMessage: string; valid: boolean }>>({
@@ -191,7 +189,8 @@ async function onConfirm() {
 
   try {
     const createdUser = await client.users.getUser(createdUserId)
-    userSettingsStore.upsertUser(createdUser)
+    // the users view decides whether the new user matches its filters
+    eventBus.publish('app.admin-settings.users.user.created', createdUser)
   } catch (error) {
     console.error(error)
     showErrorMessage({
