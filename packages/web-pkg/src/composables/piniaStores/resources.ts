@@ -50,8 +50,10 @@ export const useResourcesStore = defineStore('resources', () => {
   }
 
   const removeResources = (values: Resource[]) => {
+    const removedIds = new Set(values.map(({ id }) => id))
     releaseFilePreviews(values.map(({ id }) => id))
-    resources.value = unref(resources).filter((file) => !values.find(({ id }) => id === file.id))
+    resources.value = unref(resources).filter((file) => !removedIds.has(file.id))
+    deselectResources(removedIds)
   }
 
   const clearResources = () => {
@@ -195,16 +197,25 @@ export const useResourcesStore = defineStore('resources', () => {
         .filter(({ name }) => name.startsWith('.'))
         .map(({ id }) => id)
     )
-    if (!hiddenIds.size) {
+    deselectResources(hiddenIds)
+  }
+
+  function deselectResources(ids: Set<string>) {
+    const removesLatest = ids.has(unref(latestSelectedId))
+    const removesSelected = unref(selectedIds).some((id) => ids.has(id))
+    if (!removesLatest && !removesSelected) {
       return
     }
 
-    selectedIds.value = unref(selectedIds).filter((id) => !hiddenIds.has(id))
-    if (hiddenIds.has(unref(latestSelectedId))) {
+    if (removesSelected) {
+      selectedIds.value = unref(selectedIds).filter((id) => !ids.has(id))
+    }
+    if (removesLatest) {
       latestSelectedId.value = null
     }
     eventBus.publish('app.files.shiftAnchor.reset')
   }
+
   const setAreFileExtensionsShown = (value: boolean) => {
     areFileExtensionsShown.value = value
     window.localStorage.setItem('oc_fileExtensionsShown', value.toString())
