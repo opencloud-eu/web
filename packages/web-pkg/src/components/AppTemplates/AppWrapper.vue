@@ -46,7 +46,7 @@ import {
 import { DateTime } from 'luxon'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
-import { onBeforeRouteLeave, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
 
 import AppTopBar from '../AppTopBar.vue'
 import ErrorScreen from './PartialViews/ErrorScreen.vue'
@@ -981,10 +981,21 @@ const dropDownMenuSections = computed(() => {
   return sections
 })
 
+let leaveAttempt = 0
+// same-record navigations (e.g. Back) skip the leave guard but still supersede a waiting leave
+onBeforeRouteUpdate(() => {
+  leaveAttempt++
+})
 // Returns instead of calling `next`: the unsaved changes modal resolves the navigation later.
-onBeforeRouteLeave(() => {
-  flushPendingContent()
-  if (!unref(isDirty) || isResourceDeleted) {
+onBeforeRouteLeave(async () => {
+  const attempt = ++leaveAttempt
+  const hasChanges = !isResourceDeleted && (await hasChangesToSave())
+  // superseded by a newer navigation while waiting, the router cancels this one itself.
+  // `false` would make it revert the browser history of a Back/Forward navigation.
+  if (attempt !== leaveAttempt) {
+    return true
+  }
+  if (!hasChanges) {
     unregisterAppBarExtension()
     return true
   }
