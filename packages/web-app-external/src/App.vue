@@ -44,7 +44,6 @@ import {
   nextTick,
   ref,
   toRef,
-  watch,
   onMounted,
   useTemplateRef,
   onBeforeUnmount
@@ -61,7 +60,6 @@ import { urlJoin } from '@opencloud-eu/web-client'
 import {
   AppWrapperSlotProps,
   isMessageFromIframe,
-  isSameResource,
   useCapabilityStore,
   useConfigStore,
   useMessages,
@@ -263,7 +261,7 @@ const catchClickMicrosoftEdit = (event: MessageEvent) => {
   } catch {}
 }
 
-const { handlePostMessagesCollabora, resetMentionState } = useCollaboraPostMessages({
+const { handlePostMessagesCollabora } = useCollaboraPostMessages({
   space: toRef(() => space),
   resource: toRef(() => resource),
   appIframeRef,
@@ -288,46 +286,39 @@ onBeforeUnmount(() => {
   }
 })
 
-watch(
-  () => resource,
-  async (newResource, oldResource) => {
-    if (isSameResource(newResource, oldResource)) {
-      return
+async function loadApp() {
+  let viewMode = 'read'
+
+  if (isShareSpaceResource(space)) {
+    // load graph permissions if not already loaded
+    if (space.graphPermissions === undefined) {
+      const sharedDriveItem = await getSharedDriveItemTask.perform()
+      setCurrentUserShareSpacePermissions({
+        sharesStore,
+        spacesStore,
+        space,
+        sharedDriveItem
+      })
     }
 
-    resetMentionState()
-    let viewMode = 'read'
-
-    if (isShareSpaceResource(space)) {
-      // load graph permissions if not already loaded
-      if (space.graphPermissions === undefined) {
-        const sharedDriveItem = await getSharedDriveItemTask.perform()
-        setCurrentUserShareSpacePermissions({
-          sharesStore,
-          spacesStore,
-          space,
-          sharedDriveItem
-        })
-      }
-
-      if (!space.graphPermissions?.includes(GraphSharePermission.readContent)) {
-        // secure view
-        viewMode = 'view'
-      }
-    }
-
-    if (!isReadOnly) {
-      viewMode = unref(viewModeQueryValue) || 'write'
-    }
-
-    if (
-      determineOpenAsPreview(unref(appName)) &&
-      (isShareSpaceResource(space) || isPublicSpaceResource(space) || isProjectSpaceResource(space))
-    ) {
+    if (!space.graphPermissions?.includes(GraphSharePermission.readContent)) {
+      // secure view
       viewMode = 'view'
     }
-    loadAppUrl.perform(viewMode)
-  },
-  { immediate: true, deep: true }
-)
+  }
+
+  if (!isReadOnly) {
+    viewMode = unref(viewModeQueryValue) || 'write'
+  }
+
+  if (
+    determineOpenAsPreview(unref(appName)) &&
+    (isShareSpaceResource(space) || isPublicSpaceResource(space) || isProjectSpaceResource(space))
+  ) {
+    viewMode = 'view'
+  }
+  loadAppUrl.perform(viewMode)
+}
+
+loadApp()
 </script>

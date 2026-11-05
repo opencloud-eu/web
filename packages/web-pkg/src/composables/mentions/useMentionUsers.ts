@@ -50,6 +50,7 @@ export function useMentionUsers({
   )
 
   let pendingCollaborators: Promise<CollaboratorShare[]> | null = null
+  /** @deprecated only used by `resetMentionState`. */
   let mentionStateVersion = 0
 
   function loadCollaborators(): Promise<CollaboratorShare[]> {
@@ -155,8 +156,8 @@ export function useMentionUsers({
     )
 
     if (!failedMentions.length || stateVersion !== mentionStateVersion) {
-      // the mention state has been reset in the meantime, e.g. because another resource
-      // is being edited now. those mentions must not be notified anymore.
+      // the mention state has been reset in the meantime via `resetMentionState`,
+      // those mentions must not be notified anymore.
       return
     }
 
@@ -177,6 +178,7 @@ export function useMentionUsers({
     collaboratorsFetched.value = false
   }
 
+  /** @deprecated AppWrapper remounts the app per file, so a fresh instance is used instead. Will be removed in the next major version. */
   function resetMentionState(): void {
     invalidateCollaborators()
     mentionStateVersion++
@@ -197,6 +199,7 @@ export function useMentionUsers({
     getMentionUsers,
     notifyMentionedUsers,
     ownMentionLabel,
+    /** @deprecated AppWrapper remounts the app per file, so a fresh instance is used instead. Will be removed in the next major version. */
     resetMentionState,
     selectMentionUser
   }

@@ -485,16 +485,6 @@ describe('useCollaboraPostMessages', () => {
     })
   })
 
-  describe('resetMentionState', () => {
-    it('resets the mention state of the current resource', () => {
-      const { instance } = getWrapper()
-
-      instance.resetMentionState()
-
-      expect(mockMentionUsers.resetMentionState).toHaveBeenCalledOnce()
-    })
-  })
-
   describe('invalid message', () => {
     it('handles malformed JSON without throwing', async () => {
       const consoleDebug = vi.spyOn(console, 'debug').mockImplementation(() => undefined)
