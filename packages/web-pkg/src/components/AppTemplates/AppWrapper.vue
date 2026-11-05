@@ -186,6 +186,11 @@ const currentContent = ref<unknown>()
  * ahead of the body; the Yjs session's `enabled` gate compares the two.
  */
 const contentResourceId = ref<string>()
+/**
+ * Id of the resource all slot data (content, url) was loaded for. Keys the wrapped component, so
+ * it remounts on a file switch but stays mounted on a save, which only replaces `resource`.
+ */
+const loadedResourceId = ref<string>()
 let deleteResourceEventToken = ''
 /**
  * The open file was moved to the trash, so it can't be saved anymore: the PUT would fail or even
@@ -549,6 +554,8 @@ const loadFileTask = useTask(function* (signal) {
         signal
       })
     }
+
+    loadedResourceId.value = unref(resource).id
   } catch (e) {
     console.error(e)
     loadingError.value = e
@@ -1031,7 +1038,8 @@ onBeforeRouteLeave(async () => {
   })
 })
 
-const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => ({
+const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers & { key: string }>(() => ({
+  key: unref(loadedResourceId),
   url: unref(url),
   space: unref(unref(currentFileContext).space),
   resource: unref(resource),
