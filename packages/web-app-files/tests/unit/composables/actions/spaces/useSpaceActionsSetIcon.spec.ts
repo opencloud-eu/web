@@ -1,6 +1,6 @@
 import { unref } from 'vue'
 import { mock } from 'vitest-mock-extended'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   defaultComponentMocks,
   RouteLocation,
@@ -15,7 +15,7 @@ describe('setIcon', () => {
     createElementMock.mockImplementation(() => {
       return {
         insertBefore: vi.fn(),
-        toBlob: () => new Blob(),
+        toBlob: (callback: BlobCallback) => callback(new Blob()),
         getContext: () => ({
           fillText: vi.fn()
         })
@@ -87,31 +87,44 @@ describe('setIcon', () => {
     })
   })
   describe('method "setIconSpace"', () => {
-    it('should show message on success', () => {
-      getWrapper({
-        setup: async ({ setIconSpace }, { clientService }) => {
-          clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(
-            mock<SpaceResource>()
-          )
-          await setIconSpace(mock<SpaceResource>(), '🐻')
+    it('should show message on success', async () => {
+      let instance: ReturnType<typeof useSpaceActionsSetIcon>
+      const { mocks } = getWrapper({ setup: (i) => (instance = i) })
+      mocks.$clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(
+        mock<SpaceResource>()
+      )
 
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      await instance.setIconSpace(mock<SpaceResource>(), '🐻')
+
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledTimes(1)
     })
 
-    it('should show message on error', () => {
+    it('should show message on error', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      getWrapper({
-        setup: async ({ setIconSpace }, { clientService }) => {
-          clientService.graphAuthenticated.drives.updateDrive.mockRejectedValue(new Error())
-          await setIconSpace(mock<SpaceResource>(), '🐻')
+      let instance: ReturnType<typeof useSpaceActionsSetIcon>
+      const { mocks } = getWrapper({ setup: (i) => (instance = i) })
+      mocks.$clientService.graphAuthenticated.drives.updateDrive.mockRejectedValue(new Error())
 
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      await instance.setIconSpace(mock<SpaceResource>(), '🐻')
+
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
+    })
+
+    it('should show message when loading the space folder fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      let instance: ReturnType<typeof useSpaceActionsSetIcon>
+      const { mocks } = getWrapper({ setup: (i) => (instance = i) })
+      mocks.$clientService.webdav.listFiles.mockRejectedValue(new Error())
+
+      await instance.setIconSpace(mock<SpaceResource>(), '🐻')
+
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to set space icon' })
+      )
+      expect(mocks.$clientService.webdav.putFileContents).not.toHaveBeenCalled()
     })
   })
 })
@@ -131,6 +144,13 @@ function getWrapper({
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
   })
+  mocks.$clientService.webdav.listFiles.mockResolvedValue({
+    resource: mock<Resource>(),
+    children: [mock<Resource>({ id: 'meta-folder', name: '.space' })]
+  })
+  mocks.$clientService.webdav.putFileContents.mockResolvedValue(
+    mock<Resource>({ fileId: 'image-id' })
+  )
 
   return {
     mocks,

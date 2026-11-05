@@ -8,6 +8,7 @@ import {
   SpaceImageModal,
   useClientService,
   useLoadingService,
+  useMessages,
   useModals,
   useUserStore
 } from '@opencloud-eu/web-pkg'
@@ -20,15 +21,26 @@ export const useSpaceActionsSetImage = () => {
   const clientService = useClientService()
   const loadingService = useLoadingService()
   const { dispatchModal } = useModals()
+  const { showErrorMessage } = useMessages()
   const { saveSpaceImage } = useSpaceImage()
 
   const handler = async ({ space, resources }: FileActionOptions) => {
     const { getFileContents } = clientService.webdav
 
-    const response = await getFileContents(space, resources[0], {
-      responseType: 'blob'
-    })
-    const file = new File([response.body], resources[0].name)
+    let file: File
+    try {
+      const response = await getFileContents(space, resources[0], {
+        responseType: 'blob'
+      })
+      file = new File([response.body], resources[0].name)
+    } catch (error) {
+      console.error(error)
+      showErrorMessage({
+        title: $gettext('Failed to set space image'),
+        errors: [error]
+      })
+      return
+    }
 
     dispatchModal({
       title: $gettext('Crop your Space image'),

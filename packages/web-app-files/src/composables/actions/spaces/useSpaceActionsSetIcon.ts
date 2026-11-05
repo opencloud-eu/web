@@ -43,14 +43,8 @@ export const useSpaceActionsSetIcon = () => {
     })
   }
 
-  const setIconSpace = async (space: SpaceResource, emoji: string) => {
+  const setIconSpace = (space: SpaceResource, emoji: string) => {
     const graphClient = clientService.graphAuthenticated
-    const content = await emojiToImage(emoji)
-
-    let metaFolder = await getDefaultMetaFolder(space)
-    if (!metaFolder) {
-      metaFolder = await createDefaultMetaFolder(space)
-    }
 
     return loadingService.addTask(async () => {
       const headers = {
@@ -58,6 +52,13 @@ export const useSpaceActionsSetIcon = () => {
       }
 
       try {
+        const content = await emojiToImage(emoji)
+
+        let metaFolder = await getDefaultMetaFolder(space)
+        if (!metaFolder) {
+          metaFolder = await createDefaultMetaFolder(space)
+        }
+
         const { fileId } = await clientService.webdav.putFileContents(space, {
           parentFolderId: metaFolder.id,
           fileName: 'image.png',
