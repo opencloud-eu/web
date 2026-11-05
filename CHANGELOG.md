@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @andrewyager, @kulmann, @saw-jan, @v-scharf
 
+### 🔒 Security
+
+- fix: verify the sender of postMessage events in picker modals and external apps [[#4289](https://github.com/opencloud-eu/web/pull/4289)]
+
 ### 🐛 Bug Fixes
 
 - fix: show the full value of truncated user content on hover [[#4124](https://github.com/opencloud-eu/web/pull/4124)]
