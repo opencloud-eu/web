@@ -8,6 +8,7 @@
 
 ### 🔒 Security
 
+- fix: only accept delegated tokens from the embedding host [[#4297](https://github.com/opencloud-eu/web/pull/4297)]
 - fix: verify the sender of postMessage events in picker modals and external apps [[#4289](https://github.com/opencloud-eu/web/pull/4289)]
 
 ### 🐛 Bug Fixes
