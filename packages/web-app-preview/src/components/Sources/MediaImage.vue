@@ -93,6 +93,11 @@ const onWheelEvent = (e: WheelEvent) => {
 }
 
 const setTransform = ({ scale, x, y }: { scale: number; x: number; y: number }) => {
+  // panzoom calls this deferred, possibly after it got destroyed on unmount
+  if (!unref(panzoom)) {
+    return
+  }
+
   let h: number
   let v: number
 
