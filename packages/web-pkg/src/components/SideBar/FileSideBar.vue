@@ -195,16 +195,18 @@ function loadVersions(resource: Resource) {
 }
 
 async function loadShares(resource: Resource) {
+  if (!canListShares({ space, resource })) {
+    // check again next time, e.g. when a disabled space gets enabled
+    loadedSharesResourceId.value = undefined
+    return
+  }
+
   if (resource.id === unref(loadedSharesResourceId)) {
     // don't load shares if already loaded
     return
   }
 
   loadedSharesResourceId.value = resource.id
-
-  if (!canListShares({ space, resource })) {
-    return
-  }
 
   if (loadSharesTask.isRunning) {
     loadSharesTask.cancelAll()
