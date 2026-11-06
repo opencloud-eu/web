@@ -14,8 +14,12 @@ const htmlInlineTokenType = 'htmlInline'
  * entity references, the image node writes its attributes unescaped. A bare `&`,
  * e.g. in a query string, is what the editor writes itself.
  */
-const editorImagePattern =
-  /^<img(?:\s+(?:src|alt|title|width|height)="(?:[^"&]|&(?!#|[a-zA-Z][a-zA-Z0-9]*;))*")*\s*\/?>$/i
+const editorImageTag =
+  '<img(?:\\s+(?:src|alt|title|width|height)="(?:[^"&]|&(?!#|[a-zA-Z][a-zA-Z0-9]*;))*")*\\s*\\/?>'
+const editorImagePattern = new RegExp(`^${editorImageTag}$`, 'i')
+const leadingEditorImagePattern = new RegExp(`^${editorImageTag}`, 'i')
+// the editor writes unsized images as markdown
+const sizedImagePattern = /\s(?:width|height)="/i
 
 // every `<br>` goes to tiptap as a hard break, the editor writes those into table cells
 const lineBreakPattern = /^<br\s*\/?>$/i
@@ -61,6 +65,29 @@ function decodeNamedHtmlEntities(text: string): string {
   })
 }
 
+function startsWithResizedEditorImage(line: string): boolean {
+  const tag = line.match(leadingEditorImagePattern)?.[0]
+  return !!tag && sizedImagePattern.test(tag)
+}
+
+/**
+ * A resized image followed by more lines, e.g. after a hard break, is how the
+ * editor writes a paragraph starting with one. CommonMark reads it as an html
+ * block. Other tags on the following lines mean hand-written html, that stays a block.
+ */
+function isParagraphStartingWithImage(raw: string): boolean {
+  const [first, ...rest] = raw
+    .trimEnd()
+    .split('\n')
+    .map((line) => line.trim())
+
+  return (
+    rest.length > 0 &&
+    startsWithResizedEditorImage(first) &&
+    rest.every((line) => !line.startsWith('<') || startsWithResizedEditorImage(line))
+  )
+}
+
 /**
  * Decodes named entities and, with `keepSource`, hands raw HTML to the nodes
  * below instead of tiptap. Tiptap runs it through the editor schema and keeps
@@ -83,26 +110,49 @@ export function registerMarkdownHtmlTokenizer(
     return { ...token, text: decodeNamedHtmlEntities(token.text) }
   }
 
+  const html: TokenizerObject['html'] = function (src) {
+    const token = Tokenizer.prototype.html.call(this, src) as Tokens.HTML | undefined
+    if (!token) {
+      return false
+    }
+
+    // `undefined` makes marked skip the html rule, `false` falls back to the original tokenizer
+    if (isParagraphStartingWithImage(token.raw)) {
+      return undefined
+    }
+
+    if (!keepSource || editorImagePattern.test(token.raw.trim())) {
+      return token
+    }
+
+    return { ...token, type: htmlBlockTokenType } as unknown as Tokens.HTML
+  }
+
   if (!keepSource) {
-    instance.use({ tokenizer: { inlineText } })
+    instance.use({ tokenizer: { inlineText, html } })
     return
   }
 
   instance.use({
     tokenizer: {
       inlineText,
-      html(src) {
-        const token = Tokenizer.prototype.html.call(this, src) as Tokens.HTML | undefined
-        if (!token || editorImagePattern.test(token.raw.trim())) {
-          return token ?? false
-        }
-
-        return { ...token, type: htmlBlockTokenType } as unknown as Tokens.HTML
-      },
+      html,
       tag(src) {
         const token = Tokenizer.prototype.tag.call(this, src) as Tokens.Tag | undefined
-        if (!token || lineBreakPattern.test(token.raw)) {
-          return token ?? false
+        if (!token) {
+          return false
+        }
+
+        // The editor writes resized images on one line, e.g. next to text. In link
+        // text the image node would drop the link, so it stays raw. An unsized one
+        // would be saved as markdown, which breaks e.g. on a space in its source.
+        const isEditorImage =
+          !this.lexer.state.inLink &&
+          !token.raw.includes('\n') &&
+          editorImagePattern.test(token.raw) &&
+          sizedImagePattern.test(token.raw)
+        if (lineBreakPattern.test(token.raw) || isEditorImage) {
+          return token
         }
 
         return { ...token, type: htmlInlineTokenType } as unknown as Tokens.Tag
