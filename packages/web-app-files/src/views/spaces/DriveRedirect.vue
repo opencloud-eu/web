@@ -7,7 +7,14 @@
 
 <script setup lang="ts">
 import { computed, unref, watch } from 'vue'
-import { useAuthStore, useRoute, useRouter, useSpacesStore } from '@opencloud-eu/web-pkg'
+import { useGettext } from 'vue3-gettext'
+import {
+  useAuthStore,
+  useDocumentTitle,
+  useRoute,
+  useRouter,
+  useSpacesStore
+} from '@opencloud-eu/web-pkg'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { createFileRouteOptions, createLocationGuest } from '@opencloud-eu/web-pkg'
@@ -26,6 +33,7 @@ const router = useRouter()
 const route = useRoute()
 const spacesStore = useSpacesStore()
 const authStore = useAuthStore()
+const { $gettext } = useGettext()
 
 const personalSpace = computed(() => {
   return spacesStore.spaces.find((space) => space.driveType === 'personal')
@@ -82,4 +90,9 @@ watch(
   },
   { immediate: true }
 )
+
+// only the not found message gets a title, a redirect leaves it to the view it redirects to
+if (unref(isUnknownProjectSpace)) {
+  useDocumentTitle({ titleSegments: computed(() => [$gettext('Resource not found')]) })
+}
 </script>
