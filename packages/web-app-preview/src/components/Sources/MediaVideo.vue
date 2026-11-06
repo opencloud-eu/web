@@ -22,6 +22,7 @@ const { file, isAutoPlayEnabled = true } = defineProps<{
 
 const emit = defineEmits<{
   (e: 'reload-url'): void
+  (e: 'error'): void
 }>()
 
 const video = useTemplateRef('video')
@@ -53,8 +54,15 @@ function onCanPlay() {
   isRetryInProgress = false
 }
 
-function onError() {
+function onError(event: Event) {
+  // a removed element of the previous file may still report its error
+  if (!unref(video)?.contains(event.target as Node)) {
+    return
+  }
+
+  // a fresh signed URL can't fix a broken file or a blob URL
   if (isRetryInProgress || !unref(isSignedUrl)) {
+    emit('error')
     return
   }
 

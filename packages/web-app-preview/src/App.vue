@@ -74,12 +74,14 @@
           :file="activeMediaFile"
           :is-auto-play-enabled="isAutoPlayEnabled"
           @reload-url="reloadMediaFileUrl(activeMediaFile)"
+          @error="onMediaError(activeMediaFile)"
         />
         <media-audio
           v-else-if="activeMediaFile.isAudio"
           :file="activeMediaFile"
           :is-auto-play-enabled="isAutoPlayEnabled"
           @ended="onAudioEnded"
+          @error="onMediaError(activeMediaFile)"
         />
       </div>
       <media-controls
@@ -309,6 +311,12 @@ async function reloadMediaFileUrl(mediaFile: MediaFile) {
 
     if (signal.aborted) {
       revokeUrl(url)
+      return
+    }
+
+    // the same url can't load what just failed, and the player wouldn't reload it anyway
+    if (url === mediaFile.url) {
+      onMediaError(mediaFile)
       return
     }
 

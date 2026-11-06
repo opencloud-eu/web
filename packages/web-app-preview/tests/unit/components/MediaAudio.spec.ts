@@ -39,4 +39,20 @@ describe('MediaAudio component', () => {
     const wrapper = getWrapper('audio/mpeg')
     expect(wrapper.find('source').attributes('type')).toBe('audio/mpeg')
   })
+
+  it.each(['source', 'audio'])('reports an error of the %s element', async (selector) => {
+    const wrapper = getWrapper('audio/mpeg')
+    await wrapper.find(selector).trigger('error')
+    expect(wrapper.emitted('error')).toHaveLength(1)
+  })
+
+  it('ignores an error of the previous file after switching files', async () => {
+    const wrapper = getWrapper('audio/mpeg')
+    const previousSource = wrapper.find('source').element
+
+    await wrapper.setProps({ file: { ...mediaFile('audio/mpeg'), id: 'audio2' } })
+    previousSource.dispatchEvent(new Event('error'))
+
+    expect(wrapper.emitted('error')).toBeUndefined()
+  })
 })
