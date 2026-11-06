@@ -36,5 +36,15 @@ export const getSharedDriveItem = async ({
     return findInSharedWithMe()
   }
   const { id } = matchingMountPoint
-  return graphClient.driveItems.getDriveItem(id.split('!')[0], id)
+  try {
+    return await graphClient.driveItems.getDriveItem(id.split('!')[0], id)
+  } catch (error) {
+    if (error?.response?.status !== 404) {
+      throw error
+    }
+    // the cached mount point belongs to a share that has been removed in the meantime,
+    // access might still be granted via another share (e.g. a group share)
+    spacesStore.removeSpace(matchingMountPoint, { deleted: false })
+    return findInSharedWithMe()
+  }
 }

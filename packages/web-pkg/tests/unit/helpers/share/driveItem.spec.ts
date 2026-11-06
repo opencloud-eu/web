@@ -39,6 +39,37 @@ describe('getSharedDriveItem', () => {
     expect(graphClient.driveItems.getDriveItem).not.toHaveBeenCalled()
   })
 
+  it('returns the shared drive item via sharedWithMe if the mount point no longer exists', async () => {
+    const { graphAuthenticated: graphClient } = mockDeep<ClientService>()
+    const spacesStore = useSpacesStore()
+    const space = mock<SpaceResource>({ id: 'share-id' })
+
+    const driveItem = mock<DriveItem>({ remoteItem: { id: 'share-id' } })
+    graphClient.driveItems.getDriveItem.mockRejectedValue({ response: { status: 404 } })
+    graphClient.driveItems.listSharedWithMe.mockResolvedValue([driveItem])
+    const mountPoint = mock<MountPointSpaceResource>({ id: 'sharejail!removed-share-id' })
+    vi.mocked(spacesStore.getMountPointForSpace).mockResolvedValue(mountPoint)
+
+    const sharedDriveItem = await getSharedDriveItem({ graphClient, spacesStore, space })
+    expect(sharedDriveItem).toBe(driveItem)
+    expect(spacesStore.removeSpace).toHaveBeenCalledWith(mountPoint, { deleted: false })
+  })
+
+  it('throws if loading the mount point drive item fails for other reasons', async () => {
+    const { graphAuthenticated: graphClient } = mockDeep<ClientService>()
+    const spacesStore = useSpacesStore()
+    const space = mock<SpaceResource>({ id: 'share-id' })
+
+    const error = { response: { status: 500 } }
+    graphClient.driveItems.getDriveItem.mockRejectedValue(error)
+    const mountPoint = mock<MountPointSpaceResource>({ id: 'sharejail!share-id' })
+    vi.mocked(spacesStore.getMountPointForSpace).mockResolvedValue(mountPoint)
+
+    await expect(getSharedDriveItem({ graphClient, spacesStore, space })).rejects.toBe(error)
+    expect(graphClient.driveItems.listSharedWithMe).not.toHaveBeenCalled()
+    expect(spacesStore.removeSpace).not.toHaveBeenCalled()
+  })
+
   it('does not return a drive item if neither a mount point nor a shared drive item matches', async () => {
     const { graphAuthenticated: graphClient } = mockDeep<ClientService>()
     const spacesStore = useSpacesStore()
