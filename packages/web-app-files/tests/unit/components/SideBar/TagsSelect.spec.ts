@@ -87,6 +87,57 @@ describe('Tag Select', () => {
     }
   )
 
+  it('removes a just added tag if the resource is a copy the store does not update', async () => {
+    const clientService = mockDeep<ClientService>()
+    clientService.graphAuthenticated.tags.assignTags.mockResolvedValue(undefined)
+    const unassignTagsStub =
+      clientService.graphAuthenticated.tags.unassignTags.mockResolvedValue(undefined)
+    const { wrapper } = createWrapper(mock<Resource>({ id: '1', tags: [] }), clientService)
+    await flushPromises()
+
+    await (wrapper.vm as any).save([{ label: 'a' }])
+    await (wrapper.vm as any).save([])
+    expect(unassignTagsStub).toHaveBeenCalledWith(expect.objectContaining({ tags: ['a'] }))
+  })
+
+  it('keeps the tags of a newer save when an older save finishes after it', async () => {
+    const clientService = mockDeep<ClientService>()
+    const { promise, resolve } = Promise.withResolvers<void>()
+    clientService.graphAuthenticated.tags.assignTags
+      .mockReturnValueOnce(promise)
+      .mockResolvedValueOnce(undefined)
+    const unassignTagsStub =
+      clientService.graphAuthenticated.tags.unassignTags.mockResolvedValue(undefined)
+    const { wrapper } = createWrapper(mock<Resource>({ tags: ['x'] }), clientService)
+    await flushPromises()
+
+    const olderSave = (wrapper.vm as any).save([{ label: 'x' }, { label: 'y' }])
+    await (wrapper.vm as any).save([{ label: 'x' }, { label: 'y' }, { label: 'z' }])
+    resolve()
+    await olderSave
+
+    await (wrapper.vm as any).save([{ label: 'x' }, { label: 'y' }])
+    expect(unassignTagsStub).toHaveBeenCalledWith(expect.objectContaining({ tags: ['z'] }))
+  })
+
+  it('keeps the tags of a switched resource when a save of the previous one finishes', async () => {
+    const clientService = mockDeep<ClientService>()
+    const { promise, resolve } = Promise.withResolvers<void>()
+    clientService.graphAuthenticated.tags.assignTags.mockReturnValueOnce(promise)
+    const unassignTagsStub =
+      clientService.graphAuthenticated.tags.unassignTags.mockResolvedValue(undefined)
+    const { wrapper } = createWrapper(mock<Resource>({ id: '1', tags: ['a'] }), clientService)
+    await flushPromises()
+
+    const pendingSave = (wrapper.vm as any).save([{ label: 'a' }, { label: 'b' }])
+    await wrapper.setProps({ resource: mock<Resource>({ id: '2', tags: ['x'] }) })
+    resolve()
+    await pendingSave
+
+    await (wrapper.vm as any).save([])
+    expect(unassignTagsStub).toHaveBeenCalledWith(expect.objectContaining({ tags: ['x'] }))
+  })
+
   it('shows message on failure', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const clientService = mockDeep<ClientService>()
