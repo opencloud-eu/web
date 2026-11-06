@@ -32,7 +32,12 @@ import {
   registerMarkdownListTokenizer,
   withMinimalTextEscaping
 } from '../../extensions'
-import { ContentTypeStrategy, ContentTypeStrategyOptions, ExtensionsOptions } from './types'
+import {
+  ContentTypeStrategy,
+  ContentTypeStrategyOptions,
+  ExtensionsOptions,
+  SerializeOptions
+} from './types'
 
 export const useStrategyMarkdown = (
   editorState: TextEditorState,
@@ -63,14 +68,22 @@ export const useStrategyMarkdown = (
   // Built lazily and once: it only reads the extensions' markdown specs, which
   // never change for a given strategy.
   let markdownManager: MarkdownManager | null = null
-  const serialize = (doc: ProseMirrorNode): string => {
+  // The document can't hold the file's final newline and the serializer never
+  // writes one, so remember whether the loaded file had it.
+  let finalNewline = true
+  const serialize = (doc: ProseMirrorNode, options: SerializeOptions = {}): string => {
     markdownManager ??= withMinimalTextEscaping(
       new MarkdownManager({ marked, extensions: extensions() })
     )
-    return markdownManager.serialize(doc.toJSON())
+    const markdown = markdownManager.serialize(doc.toJSON())
+    if (!markdown || markdown.endsWith('\n') || !(options.finalNewline ?? finalNewline)) {
+      return markdown
+    }
+    return `${markdown}\n`
   }
 
   const deserialize = (content: string): string => {
+    finalNewline = !content || content.endsWith('\n')
     return content
   }
 
