@@ -47,6 +47,32 @@ describe('useCanListShares', () => {
         }
       })
     })
+    it('returns false for disabled project spaces', () => {
+      getWrapper({
+        setup: ({ canListShares }) => {
+          const resource = mock<SpaceResource>({ driveType: 'project', disabled: true })
+
+          const capabilityStore = useCapabilityStore()
+          vi.mocked(capabilityStore).sharingApiEnabled = true
+
+          const canList = canListShares({ space: undefined, resource })
+          expect(canList).toBeFalsy()
+        }
+      })
+    })
+    it('returns true for enabled project spaces', () => {
+      getWrapper({
+        setup: ({ canListShares }) => {
+          const resource = mock<SpaceResource>({ driveType: 'project', disabled: false })
+
+          const capabilityStore = useCapabilityStore()
+          vi.mocked(capabilityStore).sharingApiEnabled = true
+
+          const canList = canListShares({ space: undefined, resource })
+          expect(canList).toBeTruthy()
+        }
+      })
+    })
     it('returns false in public spaces', () => {
       getWrapper({
         setup: ({ canListShares }) => {
