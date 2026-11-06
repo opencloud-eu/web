@@ -13,6 +13,11 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show the server's upload error on servers without TUS [[#4243](https://github.com/opencloud-eu/web/pull/4243)]
+- fix: restore notification preference checkboxes when saving fails [[#4244](https://github.com/opencloud-eu/web/pull/4244)]
+- fix: open public links with a path after the token [[#4240](https://github.com/opencloud-eu/web/pull/4240)]
+- fix: show not found in apps for an unknown space or a route without a file [[#4259](https://github.com/opencloud-eu/web/pull/4259)]
+- fix: improve focus management of the select after picking an option [[#4262](https://github.com/opencloud-eu/web/pull/4262)]
 - fix: keep the text editor search and replace panel as a drop on mobile [[#4309](https://github.com/opencloud-eu/web/pull/4309)]
 - fix: skip the rename request when the name is unchanged [[#4237](https://github.com/opencloud-eu/web/pull/4237)]
 - fix: keep the open file unchanged when its store entry is renamed [[#4303](https://github.com/opencloud-eu/web/pull/4303)]
