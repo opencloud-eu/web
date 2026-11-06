@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show the load error for video and audio files that can't be played [[#4251](https://github.com/opencloud-eu/web/pull/4251)]
 - fix: ignore update-token messages without an access token in delegated embed mode [[#4215](https://github.com/opencloud-eu/web/pull/4215)]
 - fix: report a created space when only some files could not be copied [[#4252](https://github.com/opencloud-eu/web/pull/4252)]
 - fix: keep the list filters when stepping through files in the preview [[#4246](https://github.com/opencloud-eu/web/pull/4246)]
