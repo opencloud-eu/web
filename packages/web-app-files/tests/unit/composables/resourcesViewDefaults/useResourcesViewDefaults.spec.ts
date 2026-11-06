@@ -4,7 +4,13 @@ import { Task } from 'vue-concurrency'
 import { unref } from 'vue'
 import { Router } from 'vue-router'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
-import { ExtensionPoint, FolderViewExtension, useResourcesStore } from '@opencloud-eu/web-pkg'
+import {
+  ExtensionPoint,
+  FolderViewExtension,
+  SortField,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 import {
   defaultComponentMocks,
   createRouter,
@@ -168,17 +174,38 @@ describe('useResourcesViewDefaults', () => {
       expect(unref(result.sortedResources).length).toBe(29)
     })
   })
+  describe('sortFields', () => {
+    it('sorts with the given sort fields', () => {
+      const sortFields: SortField[] = [
+        { name: 'largest', prop: 'size', sortable: true, sortDir: SortDir.Desc }
+      ]
+      const { result } = getWrapper({
+        query: { 'sort-by': 'largest', 'sort-dir': SortDir.Desc },
+        resources: [
+          { id: '1', name: 'a', type: 'file', size: 1 },
+          { id: '2', name: 'b', type: 'file', size: 3 },
+          { id: '3', name: 'c', type: 'file', size: 2 }
+        ] as Resource[],
+        sortFields
+      })
+
+      expect(unref(result.sortFields)).toEqual(sortFields)
+      expect(unref(result.sortedResources).map(({ id }) => id)).toEqual(['2', '3', '1'])
+    })
+  })
 })
 
 function getWrapper({
   query = { scrollTo: '1' },
   resources = [],
   filterResources,
+  sortFields,
   router
 }: {
   query?: Record<string, string>
   resources?: Resource[]
   filterResources?: (resources: Resource[]) => Resource[]
+  sortFields?: SortField[]
   router?: Router
 } = {}) {
   const mocks = {
@@ -194,7 +221,8 @@ function getWrapper({
       result = useResourcesViewDefaults({
         folderViewExtensionPoint: mock<ExtensionPoint<FolderViewExtension>>(),
         loadResourcesTask: mock<Task<unknown, unknown[]>>(),
-        filterResources
+        filterResources,
+        sortFields
       })
       return result
     },

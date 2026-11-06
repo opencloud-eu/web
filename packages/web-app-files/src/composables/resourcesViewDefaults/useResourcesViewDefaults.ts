@@ -38,6 +38,15 @@ interface ResourcesViewDefaultsOptions<T, U extends any[], R extends Resource = 
    * Narrows down the resources (e.g. via search or filters) before they get sorted and paginated.
    */
   filterResources?: (resources: R[]) => R[]
+  /**
+   * Sort fields for all view modes, instead of the ones determined from the resources.
+   */
+  sortFields?: SortField[]
+  /**
+   * Resources matching this predicate get sorted before the rest, regardless of the sort direction.
+   * When folders are sorted first, this applies within the folder and the file group.
+   */
+  pinFirst?: (resource: R) => boolean
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
@@ -103,6 +112,9 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   })
 
   const sortFields = computed((): SortField[] => {
+    if (options.sortFields) {
+      return options.sortFields
+    }
     if (unref(viewMode) === FolderViewModeConstants.name.tiles) {
       return translateSortFields(determineResourceTilesSortFields(unref(storeItems)[0]), language)
     }
@@ -119,7 +131,8 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   const { sortBy, sortDir, items, handleSort } = useSort<T>({
     items: filteredItems,
     fields: sortFields,
-    foldersFirst: computed(() => resourcesStore.areFoldersSortedFirst)
+    foldersFirst: computed(() => resourcesStore.areFoldersSortedFirst),
+    pinFirst: options.pinFirst
   })
   const {
     items: paginatedResources,
