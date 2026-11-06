@@ -251,6 +251,47 @@ describe('Notification component', () => {
         'Albert Einstein shared someFile.txt with you'
       )
     })
+    it('escapes the simple message', async () => {
+      const notification = mock<Notification>({
+        messageRich: undefined,
+        message: 'mary shared <img src=x onerror=alert(1)>.txt with you',
+        computedMessage: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await flushPromises()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.find('img').exists()).toBeFalsy()
+      expect(messageEl.text()).toEqual(notification.message)
+    })
+    it('does not interpolate placeholders inside the inserted values', async () => {
+      const resourceName = 'test-{virus}.txt'
+      const notification = mock<Notification>({
+        messageRich: '{user} shared {resource} with you',
+        messageRichParameters: {
+          user: { displayname: 'mary' },
+          resource: { name: resourceName }
+        },
+        computedMessage: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await flushPromises()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.findAll('strong').map((el) => el.text())).toEqual(['mary', resourceName])
+    })
+    it('escapes the simple message if a rich parameter is missing', async () => {
+      const notification = mock<Notification>({
+        message: 'mary shared <img src=x onerror=alert(1)>.txt with you',
+        messageRich: '{user} shared {resource} with you',
+        // explicitly null, the deep mock would provide a missing parameter otherwise
+        messageRichParameters: { user: { displayname: 'mary' }, resource: null },
+        computedMessage: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await flushPromises()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.find('img').exists()).toBeFalsy()
+      expect(messageEl.text()).toEqual(notification.message)
+    })
   })
   describe('link', () => {
     it('displays if given directly', async () => {
