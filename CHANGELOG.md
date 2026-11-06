@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: don't load shares of disabled project spaces [[#4338](https://github.com/opencloud-eu/web/pull/4338)]
 - fix: list a partially duplicated space and tell the user it's incomplete [[#4290](https://github.com/opencloud-eu/web/pull/4290)]
 - fix: scroll to the current search match when the search term changes [[#4314](https://github.com/opencloud-eu/web/pull/4314)]
 - fix: keep a space when access remains after a member removal [[#4312](https://github.com/opencloud-eu/web/pull/4312)]
