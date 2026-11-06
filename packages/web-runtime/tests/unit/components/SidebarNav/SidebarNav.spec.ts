@@ -38,36 +38,36 @@ describe('OcSidebarNav', () => {
     })
   })
 
-  describe('sponsor link', () => {
-    it('renders the sponsor link by default', () => {
+  describe('support card', () => {
+    it('renders the support card by default', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeTruthy()
+      expect(wrapper.find('support-card-stub').exists()).toBeTruthy()
     })
 
-    it('does not render the sponsor link when disabled in config', () => {
+    it('does not render the support card when the sponsor link is disabled in config', () => {
       const { wrapper } = getWrapper({
         configOptions: { disableSponsorLink: true }
       })
-      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeFalsy()
+      expect(wrapper.find('support-card-stub').exists()).toBeFalsy()
     })
   })
 
   describe('footer', () => {
     const backendStatus = { productversion: '3.5.0', versionstring: '3.5.0' }
 
-    it('renders the sponsor link, backend version and version check by default', () => {
+    it('renders the support card, backend version and version check by default', () => {
       const { wrapper } = getWrapper({ backendStatus })
-      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeTruthy()
+      expect(wrapper.find('support-card-stub').exists()).toBeTruthy()
       expect(wrapper.text()).toContain('OpenCloud 3.5.0')
       expect(wrapper.findComponent({ name: 'VersionCheck' }).exists()).toBeTruthy()
     })
 
-    it('does not render the sponsor link, backend version and version check in embed mode', () => {
+    it('does not render the support card, backend version and version check in embed mode', () => {
       const { wrapper } = getWrapper({
         backendStatus,
         configOptions: { embed: { enabled: true } }
       })
-      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeFalsy()
+      expect(wrapper.find('support-card-stub').exists()).toBeFalsy()
       expect(wrapper.text()).not.toContain('OpenCloud 3.5.0')
       expect(wrapper.findComponent({ name: 'VersionCheck' }).exists()).toBeFalsy()
     })
@@ -120,7 +120,7 @@ function getWrapper({
         plugins,
         mocks,
         provide: mocks,
-        stubs: { SidebarNavItem: true }
+        stubs: { SidebarNavItem: true, SupportCard: true }
       }
     })
   }
