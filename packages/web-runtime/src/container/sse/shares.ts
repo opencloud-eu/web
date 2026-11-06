@@ -2,7 +2,8 @@ import {
   buildIncomingShareResource,
   buildOutgoingShareResource,
   isShareSpaceResource,
-  ShareTypes
+  ShareTypes,
+  SpaceResource
 } from '@opencloud-eu/web-client'
 import {
   eventBus,
@@ -50,6 +51,35 @@ function isCurrentSpaceAffected({
   return resourcesStore.currentFolder?.storageId === sseData.spaceid
 }
 
+// resolves to undefined if the current user can't access the space anymore. fetching the single drive
+// isn't enough because it ignores the membership for users who are allowed to list all spaces
+async function getRemainingSpace({
+  id,
+  clientService
+}: { id: string } & Pick<SSEEventOptions, 'clientService'>) {
+  try {
+    const [space] = await clientService.graphAuthenticated.drives.listMyDrives({
+      filter: `id eq '${id}'`
+    })
+    return space
+  } catch {
+    return undefined
+  }
+}
+
+async function upsertSpaceWithPermissions({
+  space,
+  spacesStore,
+  clientService
+}: { space: SpaceResource } & Pick<SSEEventOptions, 'spacesStore' | 'clientService'>) {
+  spacesStore.upsertSpace(space)
+  await spacesStore.loadGraphPermissions({
+    ids: [space.id],
+    graphClient: clientService.graphAuthenticated,
+    useCache: false
+  })
+}
+
 export const onSSESpaceMemberAddedEvent = async ({
   sseData,
   resourcesStore,
@@ -63,12 +93,7 @@ export const onSSESpaceMemberAddedEvent = async ({
   }
 
   const space = await clientService.graphAuthenticated.drives.getDrive(sseData.itemid)
-  spacesStore.upsertSpace(space)
-  await spacesStore.loadGraphPermissions({
-    ids: [space.id],
-    graphClient: clientService.graphAuthenticated,
-    useCache: false
-  })
+  await upsertSpaceWithPermissions({ space, spacesStore, clientService })
 
   if (!isLocationSpacesActive(router, 'files-spaces-projects')) {
     return
@@ -95,12 +120,7 @@ export const onSSESpaceMemberRemovedEvent = async ({
 
   if (!isCurrentUserAffected({ sseData, authStore, userStore })) {
     const space = await clientService.graphAuthenticated.drives.getDrive(sseData.itemid)
-    spacesStore.upsertSpace(space)
-    await spacesStore.loadGraphPermissions({
-      ids: [space.id],
-      graphClient: clientService.graphAuthenticated,
-      useCache: false
-    })
+    await upsertSpaceWithPermissions({ space, spacesStore, clientService })
     return
   }
 
@@ -109,15 +129,27 @@ export const onSSESpaceMemberRemovedEvent = async ({
     return
   }
 
+  // the user may still have access to the space, e.g. via a group membership
+  const space = await getRemainingSpace({ id: sseData.itemid, clientService })
+  const isInRemovedSpace =
+    isLocationSpacesActive(router, 'files-spaces-generic') &&
+    removedSpace.id === resourcesStore.currentFolder?.storageId
+
+  if (space) {
+    await upsertSpaceWithPermissions({ space, spacesStore, clientService })
+
+    if (isInRemovedSpace) {
+      // the role might have changed
+      eventBus.publish('app.files.list.load')
+    }
+    return
+  }
+
   const { $gettext } = language
 
   spacesStore.removeSpace(removedSpace, { deleted: false })
 
-  if (
-    isLocationSpacesActive(router, 'files-spaces-generic') &&
-    removedSpace.id === resourcesStore.currentFolder?.storageId
-  ) {
-    // Fixme: Message triggers when user membership was revoked, but still is in a group membership, which is wrong
+  if (isInRemovedSpace) {
     return messageStore.showMessage({
       title: $gettext(
         'Your access to this space has been revoked. Please navigate to another location.'
@@ -145,12 +177,7 @@ export const onSSESpaceShareUpdatedEvent = async ({
   }
 
   const space = await clientService.graphAuthenticated.drives.getDrive(sseData.itemid)
-  spacesStore.upsertSpace(space)
-  await spacesStore.loadGraphPermissions({
-    ids: [space.id],
-    graphClient: clientService.graphAuthenticated,
-    useCache: false
-  })
+  await upsertSpaceWithPermissions({ space, spacesStore, clientService })
 
   if (
     isLocationSpacesActive(router, 'files-spaces-generic') &&
