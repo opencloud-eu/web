@@ -86,7 +86,9 @@
 import { computed, nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
+  createFileRouteOptions,
   createLocationGuest,
+  createLocationPublic,
   createLocationShares,
   NoContentMessage,
   queryItemAsString,
@@ -103,7 +105,12 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { probeVaultNeedsSetup, unlockVault } from '../unlock'
 import { VaultTarget } from '../integrity'
-import { isShareSpaceResource, Resource, urlJoin } from '@opencloud-eu/web-client'
+import {
+  isPublicSpaceResource,
+  isShareSpaceResource,
+  Resource,
+  urlJoin
+} from '@opencloud-eu/web-client'
 import VaultSetup from '../components/VaultSetup.vue'
 import { isVaultDrive, VAULT_EXTENSION } from '../vaultLocation'
 
@@ -176,6 +183,10 @@ const space = computed(() => spacesStore.spaces.find((s) => s.id === unref(space
 
 function spaceLocation(path: string) {
   const targetSpace = unref(space)
+  // a public link only opens on its own route, the spaces route needs a user
+  if (isPublicSpaceResource(targetSpace)) {
+    return createLocationPublic('files-public-link', createFileRouteOptions(targetSpace, { path }))
+  }
   const query = isShareSpaceResource(targetSpace)
     ? { shareId: targetSpace.id }
     : { ...(targetSpace.fileId && { fileId: targetSpace.fileId }) }
