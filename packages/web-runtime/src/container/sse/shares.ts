@@ -80,6 +80,25 @@ async function upsertSpaceWithPermissions({
   })
 }
 
+async function hasAccessToCurrentFolder({
+  spacesStore,
+  resourcesStore,
+  clientService
+}: Pick<SSEEventOptions, 'spacesStore' | 'resourcesStore' | 'clientService'>) {
+  const { currentSpace } = spacesStore
+  const { currentFolder } = resourcesStore
+  if (!currentSpace || !currentFolder) {
+    return false
+  }
+
+  try {
+    await clientService.webdav.getFileInfo(currentSpace, { path: currentFolder.path })
+    return true
+  } catch {
+    return false
+  }
+}
+
 export const onSSESpaceMemberAddedEvent = async ({
   sseData,
   resourcesStore,
@@ -329,7 +348,11 @@ export const onSSEShareRemovedEvent = async ({
     isAffected &&
     isCurrentSpaceAffected({ sseData, spacesStore, resourcesStore })
   ) {
-    // Fixme: Message triggers when user share was revoked, but still is in a group share, which is wrong
+    // the user may still have access, e.g. through a group share of the same item
+    if (await hasAccessToCurrentFolder({ spacesStore, resourcesStore, clientService })) {
+      return
+    }
+
     return messageStore.showMessage({
       title: $gettext(
         'Your access to this share has been revoked. Please navigate to another location.'

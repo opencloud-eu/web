@@ -552,21 +552,52 @@ describe('shares events', () => {
   })
   describe('onSSEShareRemovedEvent', () => {
     it('calls "showMessage" when share has been removed and current user is affected and navigated to share', async () => {
+      const shareSpace = mock<SpaceResource>({ id: 'sharedResource', driveType: 'share' })
       const mocks = getMocks({
-        currentRouteFilesSpacesGeneric: true
+        currentRouteFilesSpacesGeneric: true,
+        spaces: [shareSpace],
+        currentSpace: shareSpace
       })
       const sseData = mock<EventSchemaType>({
-        itemid: 'sharedResource',
+        itemid: shareSpace.id,
         spaceid: 'space1',
         affecteduserids: ['1']
       })
+      mocks.clientService.webdav.getFileInfo.mockRejectedValue(new Error('not found'))
+      const busStub = vi.spyOn(eventBus, 'publish')
       await onSSEShareRemovedEvent({ sseData, ...mocks })
 
+      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalledWith(shareSpace, {
+        path: mocks.resourcesStore.currentFolder.path
+      })
       expect(mocks.messageStore.showMessage).toHaveBeenCalled()
-      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+      expect(busStub).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+    })
+    it('does not call "showMessage" or reload the file list when access remains, e.g. through a group share', async () => {
+      const shareSpace = mock<SpaceResource>({ id: 'sharedResource', driveType: 'share' })
+      const mocks = getMocks({
+        currentRouteFilesSpacesGeneric: true,
+        spaces: [shareSpace],
+        currentSpace: shareSpace
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: shareSpace.id,
+        spaceid: 'space1',
+        affecteduserids: ['1']
+      })
+      mocks.clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>())
+      const busStub = vi.spyOn(eventBus, 'publish')
+      await onSSEShareRemovedEvent({ sseData, ...mocks })
+
+      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalledWith(shareSpace, {
+        path: mocks.resourcesStore.currentFolder.path
+      })
+      expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+      expect(mocks.spacesStore.updateSpaceField).not.toHaveBeenCalled()
+      expect(busStub).not.toHaveBeenCalled()
     })
 
     it('calls "upsertResource" when share has been removed and current user is not affected and share is located in current folder', async () => {
@@ -707,6 +738,7 @@ describe('shares events', () => {
           spaceid: 'space1',
           affecteduserids: ['guest@example.org']
         })
+        mocks.clientService.webdav.getFileInfo.mockRejectedValue(new Error('not found'))
         await onSSEShareRemovedEvent({ sseData, ...mocks })
         expect(mocks.messageStore.showMessage).toHaveBeenCalled()
       })
