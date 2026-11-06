@@ -1,6 +1,7 @@
 import ResolvePublicLink from '../../../src/pages/resolvePublicLink.vue'
 import { defaultPlugins, defaultComponentMocks, shallowMount } from '@opencloud-eu/web-test-helpers'
-import { mockDeep } from 'vitest-mock-extended'
+import { mock, mockDeep } from 'vitest-mock-extended'
+import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { CapabilityStore, ClientService, useRouteParam, useRouteQuery } from '@opencloud-eu/web-pkg'
 import { DavHttpError, PublicSpaceResource, Resource, urlJoin } from '@opencloud-eu/web-client'
 import { authService } from '../../../src/services/auth'
@@ -130,6 +131,67 @@ describe('resolvePublicLink', () => {
         })
       )
     })
+    describe('with a path after the token', () => {
+      it('resolves to the folder at that path', async () => {
+        const folder = {
+          id: 'sub-id',
+          fileId: 'sub-id',
+          isFolder: true,
+          type: 'folder',
+          path: '/sub'
+        } as Resource
+        const { mocks } = getWrapper({ redirectUrl: '', item: 'sub', itemResource: folder })
+        await flushPromises()
+
+        expect(mocks.$clientService.webdav.getFileInfo).toHaveBeenLastCalledWith(
+          expect.anything(),
+          { path: 'sub' },
+          expect.anything()
+        )
+        expect(mocks.$router.push).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'files-public-link',
+            params: expect.objectContaining({ driveAliasAndItem: 'public/token/sub' }),
+            query: expect.objectContaining({ fileId: 'sub-id' })
+          })
+        )
+      })
+      it('resolves a file at that path as a file', async () => {
+        const file = {
+          id: 'file-id',
+          fileId: 'file-id',
+          isFolder: false,
+          type: 'file',
+          path: '/sub/file.txt',
+          canDownload: () => false,
+          canBeDeleted: () => false,
+          canRestore: () => false
+        } as Resource
+        const { mocks } = getWrapper({ redirectUrl: '', item: 'sub/file.txt', itemResource: file })
+        await flushPromises()
+
+        expect(mocks.$router.push).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'files-public-link',
+            params: expect.objectContaining({ driveAliasAndItem: 'public/token/sub' }),
+            query: expect.objectContaining({ scrollTo: 'file-id' })
+          })
+        )
+      })
+      it('keeps the path if the server cannot find it', async () => {
+        // e.g. a path inside an encrypted vault, which the vault unlock guard handles on the file list
+        const { mocks } = getWrapper({ redirectUrl: '', item: 'missing', itemResource: 404 })
+        await flushPromises()
+
+        expect(mocks.$router.push).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'files-public-link',
+            params: expect.objectContaining({ driveAliasAndItem: 'public/token/missing' }),
+            query: expect.objectContaining({ fileId: 'folder-id' })
+          })
+        )
+      })
+    })
   })
   describe('error message', () => {
     it('should display an error message if the space cannot be resolved', async () => {
@@ -162,13 +224,18 @@ function getWrapper({
   getFileInfoErrorStatusCode = null,
   redirectUrl = 'redirectUrl',
   spaceFileId = 'folder-id',
-  children = []
+  children = [],
+  item = undefined,
+  itemResource = undefined
 }: {
   passwordRequired?: boolean
   getFileInfoErrorStatusCode?: number
   redirectUrl?: string
   spaceFileId?: string
   children?: Resource[]
+  item?: string
+  // the resource at `item`, or the status code fetching it fails with
+  itemResource?: Resource | number
 } = {}) {
   const $clientService = mockDeep<ClientService>()
   const spaceResource = mockDeep<PublicSpaceResource>({
@@ -196,9 +263,28 @@ function getWrapper({
     $clientService.webdav.getFileInfo.mockResolvedValueOnce(spaceResource)
   }
 
+  if (typeof itemResource === 'number') {
+    $clientService.webdav.getFileInfo.mockRejectedValueOnce(
+      new DavHttpError('', 'ERR_UNKNOWN' as DavErrorCode, undefined, itemResource)
+    )
+  } else if (itemResource) {
+    $clientService.webdav.getFileInfo.mockResolvedValueOnce(itemResource)
+  }
+
   $clientService.webdav.listFiles.mockResolvedValue({ resource: spaceResource, children })
 
-  const mocks = { ...defaultComponentMocks(), $clientService }
+  const mocks = {
+    ...defaultComponentMocks({
+      ...(item && {
+        currentRoute: mock<RouteLocationNormalizedLoaded>({
+          name: 'resolvePublicLink',
+          path: `/s/token/${item}`,
+          params: { token: 'token', driveAliasAndItem: item }
+        })
+      })
+    }),
+    $clientService
+  }
 
   const capabilities = {
     files_sharing: { federation: { incoming: true, outgoing: true } }

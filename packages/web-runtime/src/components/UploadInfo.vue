@@ -216,6 +216,9 @@ type UploadResult = OcUppyFile & {
   errorCount?: number
 }
 
+// @uppy/xhr-upload attaches the failed XMLHttpRequest to its errors
+type UploadError = HttpError & { request?: XMLHttpRequest }
+
 const uppyService = useService<UppyService>('$uppyService')
 const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 
@@ -223,7 +226,7 @@ const showInfo = ref(false) // show the overlay?
 const bodyCollapsed = ref(false)
 const infoExpanded = ref(false) // show the info including all uploads?
 const uploads = ref<Record<string, UploadResult>>({}) // uploads that are being displayed via "infoExpanded"
-const errors = ref<Record<string, HttpError>>({}) // all failed files
+const errors = ref<Record<string, UploadError>>({}) // all failed files
 const successful = ref<string[]>([]) // all successful root level items
 const itemsInProgressCount = ref(0) // root level files and folders that are being processed currently
 const totalProgress = ref(0) // current uploads progress (0-100)
@@ -605,9 +608,13 @@ function getUploadItemMessage(item: UploadResult) {
   }
 
   // TODO: Remove extraction code as soon as https://github.com/tus/tus-js-client/issues/448 is solved
-  const formatErrorMessageToObject = (errorMessage: string) => {
-    const responseCode = errorMessage.match(/response code: (\d+)/)?.[1]
-    const responseText = errorMessage.match(/response text: ([\s\S]+?), request id/)?.[1] || '{}'
+  const formatErrorToObject = ({ message, request }: UploadError) => {
+    // tus-js-client puts the response into the message, @uppy/xhr-upload into the request
+    const tusResponseCode = message.match(/response code: (\d+)/)?.[1]
+    const responseCode = tusResponseCode ? parseInt(tusResponseCode) : request?.status
+    const responseText = tusResponseCode
+      ? message.match(/response text: ([\s\S]+?), request id/)?.[1] || '{}'
+      : request?.responseText || '{}'
     let errorBody: { error?: { code?: string; message?: string } }
     try {
       errorBody = JSON.parse(responseText)
@@ -618,13 +625,13 @@ function getUploadItemMessage(item: UploadResult) {
     }
 
     return {
-      responseCode: responseCode ? parseInt(responseCode) : null,
+      responseCode: responseCode || null,
       errorCode: errorBody?.error?.code,
       errorMessage: errorBody?.error?.message
     }
   }
 
-  const errorObject = formatErrorMessageToObject(error.message)
+  const errorObject = formatErrorToObject(error)
   if (error.statusCode === 423 || errorObject.responseCode === 423) {
     return item.meta.isFolder
       ? $gettext("The folder you're uploading to is locked")
@@ -760,7 +767,7 @@ uppyService.subscribe('uploadError', ({ file, error }: { file: OcUppyFile; error
 
   uploads.value[file.meta.uploadId].targetRoute = buildRouteFromUppyResource(file)
   uploads.value[file.meta.uploadId].status = 'error'
-  errors.value[file.meta.uploadId] = error as HttpError
+  errors.value[file.meta.uploadId] = error as UploadError
 
   // root level item failed. files of a failed folder never reach uppy, so the folder is done as well
   if (!file.meta.relativeFolder && unref(itemsInProgressCount) > 0) {

@@ -70,7 +70,9 @@
           </oc-table-td>
           <oc-table-td data-testid="notification-mails">
             <oc-checkbox
-              :model-value="disableEmailNotificationsValue"
+              :model-value="
+                getShownValue('disable-email-notifications', disableEmailNotificationsValue)
+              "
               size="large"
               :label="$gettext('Receive notification mails')"
               label-hidden
@@ -117,9 +119,7 @@
             >
               <span class="checkbox-cell-wrapper">
                 <oc-checkbox
-                  :model-value="
-                    (notificationsValues[option.id] as Record<string, boolean>)[choice.key]
-                  "
+                  :model-value="getNotificationChoiceValue(option, choice.key)"
                   size="large"
                   :label="getNotificationChoiceLabel(option.displayName, choice.displayValue)"
                   :label-hidden="!isTablet"
@@ -204,6 +204,8 @@ const selectedLanguageValue = ref<LanguageOption>()
 const valuesList = ref<SettingsValue[]>()
 const graphUser = ref<User>()
 const accountBundle = ref<SettingsBundle>()
+// values that are being saved, shown until the save is done so a failed save restores the saved value
+const pendingValues = ref<Record<string, boolean>>({})
 
 const {
   options: notificationsOptions,
@@ -252,6 +254,32 @@ function getNotificationChoiceLabel(event: string, choice: string) {
     return choice
   }
   return $gettext('%{event}: %{choice}', { event, choice })
+}
+
+function getPendingNotificationChoiceKey(identifier: string, key: string) {
+  return `${identifier}:${key}`
+}
+
+function getShownValue(pendingKey: string, savedValue: boolean) {
+  const pendingValue = unref(pendingValues)[pendingKey]
+  if (typeof pendingValue === 'boolean') {
+    return pendingValue
+  }
+  return savedValue
+}
+
+function clearPendingValue(pendingKey: string, value: boolean) {
+  // a newer change of the same value keeps its pending value until its own save is done
+  if (unref(pendingValues)[pendingKey] === value) {
+    delete pendingValues.value[pendingKey]
+  }
+}
+
+function getNotificationChoiceValue(option: SettingsBundle['settings'][number], key: string) {
+  return getShownValue(
+    getPendingNotificationChoiceKey(option.name, key),
+    (unref(notificationsValues)[option.id] as Record<string, boolean>)[key]
+  )
 }
 
 const showEditPasswordModal = () => {
@@ -378,6 +406,9 @@ const updateSelectedLanguage = async (option: LanguageOption) => {
 }
 
 const updateDisableEmailNotifications = async (option: boolean) => {
+  const pendingKey = 'disable-email-notifications'
+  pendingValues.value[pendingKey] = option
+
   try {
     await saveValue({
       identifier: 'disable-email-notifications',
@@ -391,6 +422,8 @@ const updateDisableEmailNotifications = async (option: boolean) => {
       title: $gettext('Unable to save preference…'),
       errors: [e]
     })
+  } finally {
+    clearPendingValue(pendingKey, option)
   }
 }
 
@@ -472,6 +505,8 @@ const updateValueInValueList = (value: SettingsValue) => {
 }
 
 const updateMultiChoiceSettingsValue = async (identifier: string, key: string, value: boolean) => {
+  const pendingKey = getPendingNotificationChoiceKey(identifier, key)
+
   try {
     if (typeof value !== 'boolean') {
       const error = new TypeError(`Unsupported value type ${typeof value}`)
@@ -480,6 +515,8 @@ const updateMultiChoiceSettingsValue = async (identifier: string, key: string, v
 
       return
     }
+
+    pendingValues.value[pendingKey] = value
 
     const currentValue = unref(valuesList).find((v) => v.identifier.setting === identifier)
 
@@ -503,6 +540,8 @@ const updateMultiChoiceSettingsValue = async (identifier: string, key: string, v
       title: $gettext('Unable to save preference…'),
       errors: [error]
     })
+  } finally {
+    clearPendingValue(pendingKey, value)
   }
 }
 

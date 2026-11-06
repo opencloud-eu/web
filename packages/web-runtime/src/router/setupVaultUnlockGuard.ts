@@ -103,6 +103,11 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
     const driveAliasAndItem = to.params?.driveAliasAndItem as string | undefined
     if (!driveAliasAndItem) return true
     if (to.name === 'rclone-crypt-unlock') return true
+    // these routes initialize the spaces themselves and redirect to a files route,
+    // which this guard checks then
+    if (to.name === routeNames.resolvePublicLink || to.name === routeNames.resolvePublicOcmLink) {
+      return true
+    }
 
     const authStore = useAuthStore()
     const spacesStore = useSpacesStore()
