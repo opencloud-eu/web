@@ -199,6 +199,36 @@ describe('UnlockVault', () => {
       expect(vm.submitDisabled).toBe(false)
     })
 
+    it('does not set a password that misses the password policy', async () => {
+      const { wrapper } = await mountProbed({ needsSetup: true })
+      const setup = wrapper.findComponent({ name: 'VaultSetup' })
+      setup.vm.$emit('update:modelValue', 'ab')
+      setup.vm.$emit('update:valid', false)
+      await flushPromises()
+
+      expect(wrapper.find('#vault-unlock-submit').attributes('disabled')).toBeDefined()
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(unlockVault).not.toHaveBeenCalled()
+
+      setup.vm.$emit('update:valid', true)
+      await flushPromises()
+      expect(wrapper.find('#vault-unlock-submit').attributes('disabled')).toBeUndefined()
+    })
+
+    it('does not apply the password policy when unlocking an existing vault', async () => {
+      const { wrapper } = await mountProbed()
+      ;(wrapper.vm as any).password = 'ab'
+      await flushPromises()
+
+      expect(wrapper.find('#vault-unlock-submit').attributes('disabled')).toBeUndefined()
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(unlockVault).toHaveBeenCalledWith(expect.anything(), 'ab')
+    })
+
     it('keeps the submit button name and marks it busy while the password is checked', async () => {
       const { wrapper } = await mountProbed()
       vi.mocked(unlockVault).mockReturnValue(new Promise(() => undefined))

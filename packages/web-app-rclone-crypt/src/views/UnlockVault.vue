@@ -27,6 +27,7 @@
           :vault-name="vaultName"
           :error-message="errorMessage"
           :is-space="isSpaceVault"
+          @update:valid="setupValid = $event"
         />
         <template v-else>
           <div class="flex items-start gap-3">
@@ -125,6 +126,8 @@ const errorMessage = ref<string | null>(null)
 // passphrase committed yet, so the user is choosing one now, `false` = there's
 // an integrity token or content to verify the passphrase against.
 const needsSetup = ref<boolean | null>(null)
+// Whether the password chosen in the setup step meets the password policy.
+const setupValid = ref(false)
 
 const spaceId = computed(() => queryItemAsString(unref(route).query.spaceId))
 const vaultRoot = computed(() => queryItemAsString(unref(route).query.vaultRoot))
@@ -170,7 +173,10 @@ const submitLabel = computed(() =>
   unref(needsSetup) === true ? $gettext('Set password') : $gettext('Unlock')
 )
 
-const submitDisabled = computed(() => !unref(password) || unref(verifying))
+// Only a new password has to meet the policy, an existing vault opens with whatever it was set up with.
+const submitDisabled = computed(
+  () => !unref(password) || unref(verifying) || (unref(needsSetup) === true && !unref(setupValid))
+)
 
 const space = computed(() => spacesStore.spaces.find((s) => s.id === unref(spaceId)))
 
@@ -203,6 +209,9 @@ async function openVault() {
 }
 
 async function onSubmit() {
+  if (unref(submitDisabled)) {
+    return
+  }
   errorMessage.value = null
   verifying.value = true
   try {
@@ -230,8 +239,8 @@ onMounted(async () => {
     return
   }
 
-  // Probe once to pick between the "set up" and the "unlock" UI. We don't gate
-  // the submit button on this - onSubmit re-reads the live state.
+  // Probe once to pick between the "set up" and the "unlock" UI, and whether the
+  // password policy applies. onSubmit re-reads the live state.
   if (!unref(space) || !unref(vaultRoot)) {
     needsSetup.value = false
   } else {
