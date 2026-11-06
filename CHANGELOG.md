@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: skip the access revoked message when access to a share remains [[#4313](https://github.com/opencloud-eu/web/pull/4313)]
 - fix: fall back to shared with me when a share's mount point is gone [[#4345](https://github.com/opencloud-eu/web/pull/4345)]
 - fix: keep an open app in place when the folder of its file gets renamed [[#4292](https://github.com/opencloud-eu/web/pull/4292)]
 - fix: don't load shares of disabled project spaces [[#4338](https://github.com/opencloud-eu/web/pull/4338)]
