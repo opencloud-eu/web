@@ -1,9 +1,12 @@
 import {
+  contextRouteParamsKey,
   createFileRouteOptions,
   ImageDimension,
   isItemInCurrentFolder,
   isLocationCommonActive,
-  ProcessorType
+  ProcessorType,
+  queryItemAsString,
+  renameResource
 } from '@opencloud-eu/web-pkg'
 import {
   buildSpace,
@@ -14,6 +17,8 @@ import {
 } from '@opencloud-eu/web-client'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 import { until } from '@vueuse/core'
+import { unref } from 'vue'
+import { LocationQueryValue, RouteParams } from 'vue-router'
 import { dirname } from 'path'
 import { SSEEventOptions } from './types'
 
@@ -83,6 +88,67 @@ function waitForResourcesLoad(resourcesStore: SSEEventOptions['resourcesStore'])
   return until(() => resourcesStore.resourcesLoading).toBe(false)
 }
 
+const folderRouteNames = ['files-spaces-generic', 'files-public-link', 'files-guest-link']
+
+/**
+ * Moves the files of a renamed folder in the store to its new path. Apps like the preview keep
+ * showing them, they would load them from the old path otherwise.
+ */
+function moveFolderChildren(
+  resourcesStore: SSEEventOptions['resourcesStore'],
+  space: SpaceResource,
+  oldPath: string,
+  newPath: string
+) {
+  for (const resource of resourcesStore.resources) {
+    if (urlJoin(dirname(resource.path)) !== urlJoin(oldPath)) {
+      continue
+    }
+    const movedResource = renameResource(space, { ...resource }, urlJoin(newPath, resource.name))
+    // download urls are signed for the old path
+    movedResource.downloadURL = undefined
+    resourcesStore.upsertResource(movedResource)
+  }
+}
+
+/**
+ * Replaces the folder of the file in the app route (and of the app's folder context) with the
+ * new path of the renamed folder, so a page reload finds the file.
+ */
+function replaceAppRouteFolder(
+  router: SSEEventOptions['router'],
+  space: SpaceResource,
+  oldPath: string,
+  newPath: string
+) {
+  const route = unref(router.currentRoute)
+  const oldFolderItem = space.getDriveAliasAndItem({ path: oldPath } as Resource)
+  const newFolderItem = space.getDriveAliasAndItem({ path: newPath } as Resource)
+  const item = queryItemAsString(route.params.driveAliasAndItem)
+  if (!item?.startsWith(`${oldFolderItem}/`)) {
+    return
+  }
+
+  const contextRouteParams = route.query[contextRouteParamsKey] as unknown as RouteParams
+  const isFolderContext = contextRouteParams?.driveAliasAndItem === oldFolderItem
+  return router.replace({
+    name: route.name,
+    params: {
+      ...route.params,
+      driveAliasAndItem: `${newFolderItem}${item.slice(oldFolderItem.length)}`
+    },
+    query: {
+      ...route.query,
+      ...(isFolderContext && {
+        [contextRouteParamsKey]: {
+          ...contextRouteParams,
+          driveAliasAndItem: newFolderItem
+        } as unknown as LocationQueryValue
+      })
+    }
+  })
+}
+
 export const onSSEItemRenamedEvent = async ({
   sseData,
   resourcesStore,
@@ -120,12 +186,25 @@ export const onSSEItemRenamedEvent = async ({
 
   if (resourceIsCurrentFolder) {
     resourcesStore.setCurrentFolder(updatedResource)
-    return router.push(
-      createFileRouteOptions(space, {
+
+    // apps (e.g. the preview) set the parent folder of the opened file as current folder,
+    // their route must not be replaced with the folder route
+    const routeName = unref(router.currentRoute).name as string
+    if (!folderRouteNames.includes(routeName)) {
+      if (currentFolder.path === updatedResource.path) {
+        return
+      }
+      moveFolderChildren(resourcesStore, space, currentFolder.path, updatedResource.path)
+      return replaceAppRouteFolder(router, space, currentFolder.path, updatedResource.path)
+    }
+
+    return router.push({
+      name: routeName,
+      ...createFileRouteOptions(space, {
         path: updatedResource.path,
         fileId: updatedResource.fileId
       })
-    )
+    })
   }
 
   resourcesStore.upsertResource(updatedResource)
