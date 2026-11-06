@@ -52,6 +52,50 @@ export function escapeMarkdownText(text: string, hasMarks = false): string {
   })
 }
 
+// marked drops a backslash in front of any punctuation or symbol in a link destination or title
+const destinationEscape = /\\(?=[\p{P}\p{S}]|$)/gu
+const angleDestinationEscape = /\\(?=[\p{P}\p{S}]|$)|[<>]/gu
+const titleEscape = /\\(?=[\p{P}\p{S}]|$)|"/gu
+const spaceOrControl = /[ \x00-\x1f\x7f]/
+
+function hasBalancedParentheses(text: string): boolean {
+  // skips the loop for long sources without parentheses, like data URLs
+  if (!text.includes('(') && !text.includes(')')) {
+    return true
+  }
+
+  let depth = 0
+  for (const char of text) {
+    if (char === '(') {
+      depth++
+    } else if (char === ')' && --depth < 0) {
+      return false
+    }
+  }
+  return depth === 0
+}
+
+function formatMarkdownDestination(url: string): string {
+  if (!spaceOrControl.test(url) && !url.startsWith('<') && hasBalancedParentheses(url)) {
+    return url.replace(destinationEscape, '\\$&')
+  }
+  return `<${url.replace(angleDestinationEscape, '\\$&')}>`
+}
+
+function formatMarkdownTitle(title: string): string {
+  return `"${title.replace(titleEscape, '\\$&')}"`
+}
+
+/**
+ * The part in parentheses of a markdown link or image. A destination with
+ * spaces or unbalanced parentheses goes in angle brackets, anything else stays
+ * as it is in the file.
+ */
+export function formatMarkdownLinkTarget(url: string, title?: string): string {
+  const destination = formatMarkdownDestination(url)
+  return title ? `${destination} ${formatMarkdownTitle(title)}` : destination
+}
+
 /**
  * FIXME: see https://github.com/ueberdosis/tiptap/issues/8471. tiptap escapes
  * every special character in text, so each save rewrites plain text in the file.

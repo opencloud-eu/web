@@ -11,11 +11,23 @@ const htmlInlineTokenType = 'htmlInline'
 /**
  * The resized image the editor writes itself, see the markdown strategy. Anything
  * beyond these attributes would be lost by the image node, so it stays raw. So do
- * entity references, the image node writes its attributes unescaped. A bare `&`,
- * e.g. in a query string, is what the editor writes itself.
+ * `"` and entity references, which the editor writes escaped, see
+ * `escapeImageHtmlAttribute`. A bare `&`, e.g. in a query string, is what the
+ * editor writes itself.
  */
 const editorImagePattern =
   /^<img(?:\s+(?:src|alt|title|width|height)="(?:[^"&]|&(?!#|[a-zA-Z][a-zA-Z0-9]*;))*")*\s*\/?>$/i
+
+/**
+ * Escapes an attribute value of the resized image the editor writes. Only escapes
+ * what `editorImagePattern` rejects, so an image without such characters is read
+ * back as an image node and one with them stays raw html.
+ */
+export function escapeImageHtmlAttribute(value: string): string {
+  return value.replace(/"|&(?=#|[a-zA-Z][a-zA-Z0-9]*;)/g, (char) =>
+    char === '"' ? '&quot;' : '&amp;'
+  )
+}
 
 // every `<br>` goes to tiptap as a hard break, the editor writes those into table cells
 const lineBreakPattern = /^<br\s*\/?>$/i
