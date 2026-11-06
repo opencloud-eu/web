@@ -301,6 +301,46 @@ export const onSSEItemRestoredEvent = async ({
   resourcesStore.upsertResource(resource)
 }
 
+/**
+ * Flat lists like favorites or search results don't have a current folder. A moved resource stays
+ * in them with its new location. It only gets removed if it can't be loaded anymore, e.g. because
+ * its space is unknown (like for a resource in a received share) or it isn't accessible anymore.
+ */
+async function updateMovedResourceInFlatList({
+  sseData,
+  resourcesStore,
+  spacesStore,
+  clientService
+}: Pick<SSEEventOptions, 'sseData' | 'resourcesStore' | 'spacesStore' | 'clientService'>) {
+  const resource = resourcesStore.resources.find((r) => r.id === sseData.itemid)
+  if (!resource) {
+    return
+  }
+
+  const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
+  if (!space) {
+    return resourcesStore.removeResources([resource])
+  }
+
+  let movedResource: Resource
+  try {
+    movedResource = await loadEventResource(
+      { clientService, resourcesStore },
+      space,
+      sseData.itemid
+    )
+  } catch {
+    return resourcesStore.removeResources([resource])
+  }
+
+  // check again in case the user has navigated away in the meantime
+  if (!resourcesStore.resources.some((r) => r.id === sseData.itemid)) {
+    return
+  }
+
+  resourcesStore.upsertResource(movedResource)
+}
+
 export const onSSEItemMovedEvent = async ({
   sseData,
   resourcesStore,
@@ -313,6 +353,10 @@ export const onSSEItemMovedEvent = async ({
   }
 
   await waitForResourcesLoad(resourcesStore)
+
+  if (!resourcesStore.currentFolder) {
+    return updateMovedResourceInFlatList({ sseData, resourcesStore, spacesStore, clientService })
+  }
 
   // the new location might not be accessible anymore (e.g. moved out of a share), hence don't load the resource
   if (!isItemInCurrentFolder({ resourcesStore, parentFolderId: sseData.parentitemid })) {

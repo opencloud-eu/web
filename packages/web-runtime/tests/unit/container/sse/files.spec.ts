@@ -599,6 +599,96 @@ describe('file events', () => {
       expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
     })
 
+    describe('in a flat list without a current folder', () => {
+      it('updates the moved resource with its new location', async () => {
+        const resourceToMove = mock<Resource>({
+          id: 'file1',
+          storageId: 'space1',
+          path: '/src/fav.txt',
+          parentFolderId: 'space1!src'
+        })
+        const mocks = getMocks({ currentFolder: null, resources: [resourceToMove] })
+        const movedResource = mock<Resource>({
+          ...resourceToMove,
+          path: '/src/dest/fav.txt',
+          parentFolderId: 'space1!dest'
+        })
+        mocks.clientService.webdav.getFileInfo.mockResolvedValue(movedResource)
+        const sseData = mock<EventSchemaType>({
+          itemid: resourceToMove.id,
+          spaceid: resourceToMove.storageId,
+          parentitemid: 'space1!dest'
+        })
+        await onSSEItemMovedEvent({ sseData, ...mocks })
+        expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalledWith(
+          mocks.spacesStore.spaces[0],
+          {
+            path: '',
+            fileId: resourceToMove.id
+          }
+        )
+        expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(movedResource)
+        expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+      })
+      it('removes the moved resource if it can not be loaded anymore', async () => {
+        const resourceToMove = mock<Resource>({
+          id: 'file1',
+          storageId: 'space1',
+          parentFolderId: 'space1!src'
+        })
+        const mocks = getMocks({ currentFolder: null, resources: [resourceToMove] })
+        mocks.clientService.webdav.getFileInfo.mockRejectedValue(new Error('not found'))
+        const sseData = mock<EventSchemaType>({
+          itemid: resourceToMove.id,
+          spaceid: resourceToMove.storageId,
+          parentitemid: 'space1!dest'
+        })
+        await onSSEItemMovedEvent({ sseData, ...mocks })
+        expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([resourceToMove])
+        expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+      })
+      it('removes the moved resource if its space is unknown', async () => {
+        const resourceToMove = mock<Resource>({ id: 'file1', storageId: 'sharedSpace' })
+        const mocks = getMocks({ currentFolder: null, resources: [resourceToMove] })
+        const sseData = mock<EventSchemaType>({
+          itemid: resourceToMove.id,
+          spaceid: resourceToMove.storageId,
+          parentitemid: 'sharedSpace!dest'
+        })
+        await onSSEItemMovedEvent({ sseData, ...mocks })
+        expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+        expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([resourceToMove])
+        expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+      })
+      it('does not add the moved resource if the user navigated away while loading it', async () => {
+        const resourceToMove = mock<Resource>({ id: 'file1', storageId: 'space1' })
+        const mocks = getMocks({ currentFolder: null, resources: [resourceToMove] })
+        mocks.clientService.webdav.getFileInfo.mockImplementation(() => {
+          mocks.resourcesStore.resources = []
+          return Promise.resolve(mock<Resource>({ ...resourceToMove }))
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: resourceToMove.id,
+          spaceid: resourceToMove.storageId,
+          parentitemid: 'space1!dest'
+        })
+        await onSSEItemMovedEvent({ sseData, ...mocks })
+        expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+      })
+      it('does not add a moved resource that is not in the list', async () => {
+        const mocks = getMocks({ currentFolder: null, resources: [] })
+        const sseData = mock<EventSchemaType>({
+          itemid: 'file1',
+          spaceid: 'space1',
+          parentitemid: 'space1!dest'
+        })
+        await onSSEItemMovedEvent({ sseData, ...mocks })
+        expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+        expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+        expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+      })
+    })
+
     it('does not trigger any action when initiator ids are identical', async () => {
       const resourceToMove = mock<Resource>({
         id: 'file1',
