@@ -117,6 +117,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#4324](https://github.com/opencloud-eu/web/pull/4324)]
 - chore(deps): update dependency filesize to v11.0.30 [[#4275](https://github.com/opencloud-eu/web/pull/4275)]
 - fix(deps): update dependency @casl/ability to v7.1.1 [[#4092](https://github.com/opencloud-eu/web/pull/4092)]
 - chore(deps): update pnpm to v11.28.10 [[#4090](https://github.com/opencloud-eu/web/pull/4090)]
