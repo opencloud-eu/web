@@ -6,6 +6,7 @@ import {
   SpaceAction,
   SpaceActionOptions,
   isLocationSpacesActive,
+  isPromiseRejected,
   resolveFileNameDuplicate,
   useAbility,
   useClientService,
@@ -34,11 +35,13 @@ export const useSpaceActionsDuplicate = () => {
   const duplicateSpace = async (existingSpace: SpaceResource) => {
     const projectSpaces = spacesStore.spaces.filter(isProjectSpaceResource)
     const duplicatedSpaceName = resolveFileNameDuplicate(existingSpace.name, '', projectSpaces)
+    let duplicatedSpace: SpaceResource
+    const errors: Error[] = []
 
     try {
       const existingSpaceFiles = await clientService.webdav.listFiles(existingSpace)
 
-      let duplicatedSpace = await clientService.graphAuthenticated.drives.createDrive({
+      duplicatedSpace = await clientService.graphAuthenticated.drives.createDrive({
         name: duplicatedSpaceName,
         description: existingSpace.description,
         quota: { total: existingSpace.spaceQuota.total }
@@ -59,7 +62,8 @@ export const useSpaceActionsDuplicate = () => {
             )
           )
         }
-        await Promise.all(copyOps)
+        const results = await Promise.allSettled(copyOps)
+        errors.push(...results.filter(isPromiseRejected).map(({ reason }) => reason))
       }
 
       if (existingSpace.spaceReadmeData || existingSpace.spaceImageData) {
@@ -97,25 +101,41 @@ export const useSpaceActionsDuplicate = () => {
           sharesStore.graphRoles
         )
       }
+    } catch (error) {
+      console.error(error)
+      errors.push(error)
+    }
 
+    if (duplicatedSpace) {
       spacesStore.upsertSpace(duplicatedSpace)
-      const isProjectsLocation = isLocationSpacesActive(router, 'files-spaces-projects')
-      if (isProjectsLocation) {
+      if (isLocationSpacesActive(router, 'files-spaces-projects')) {
         upsertResource(duplicatedSpace)
       }
+    }
 
+    if (!errors.length) {
       showMessage({
         title: $gettext('Space »%{space}« was duplicated successfully', {
           space: existingSpace.name
         })
       })
-    } catch (error) {
-      console.error(error)
+      return
+    }
+
+    if (!duplicatedSpace) {
       showErrorMessage({
         title: $gettext('Failed to duplicate space »%{space}«', { space: existingSpace.name }),
-        errors: [error]
+        errors
       })
+      return
     }
+
+    showErrorMessage({
+      title: $gettext('Space »%{space}« was created, but could not be duplicated completely', {
+        space: duplicatedSpace.name
+      }),
+      errors
+    })
   }
 
   // the files of a space can only be copied if the user is a member of it
