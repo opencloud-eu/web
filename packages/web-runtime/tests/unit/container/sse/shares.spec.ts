@@ -623,6 +623,7 @@ describe('shares events', () => {
           spaceid: sharedResource.storageId,
           affecteduserids: ['1']
         })
+        mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([])
         await onSSEShareRemovedEvent({ sseData, ...mocks })
         expect(mocks.resourcesStore.removeResources).toHaveBeenCalled()
         expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
@@ -631,7 +632,29 @@ describe('shares events', () => {
         expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
       }
     )
-    it('does not call "removeResources" on a shared with me route when another user is affected', async () => {
+    it('does not call "removeResources" on a shared with me route when the current user is affected but the resource is still shared with them (e.g. through a group)', async () => {
+      const sharedResource = mock<Resource>({
+        id: 'sharedResource',
+        fileId: 'sharedResource',
+        storageId: 'space1'
+      })
+      const mocks = getMocks({
+        currentRouteFilesSharesWithMe: true,
+        currentFolder: null,
+        resources: [sharedResource]
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: sharedResource.id,
+        spaceid: sharedResource.storageId,
+        affecteduserids: ['1']
+      })
+      mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
+        mock<DriveItem>({ remoteItem: { id: sharedResource.id } })
+      ])
+      await onSSEShareRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+    })
+    it('does not call "removeResources" on a shared with me route when the resource is still shared with the current user', async () => {
       const sharedResource = mock<Resource>({
         id: 'sharedResource',
         fileId: 'sharedResource',
@@ -647,8 +670,33 @@ describe('shares events', () => {
         spaceid: sharedResource.storageId,
         affecteduserids: ['2']
       })
+      mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
+        mock<DriveItem>({ remoteItem: { id: sharedResource.id } })
+      ])
       await onSSEShareRemovedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+    })
+    it('calls "removeResources" on a shared with me route when a group share has been removed and the resource is not shared with the current user anymore', async () => {
+      const sharedResource = mock<Resource>({
+        id: 'sharedResource',
+        fileId: 'sharedResource',
+        storageId: 'space1'
+      })
+      const mocks = getMocks({
+        currentRouteFilesSharesWithMe: true,
+        currentFolder: null,
+        resources: [sharedResource]
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: sharedResource.id,
+        spaceid: sharedResource.storageId,
+        affecteduserids: ['group1']
+      })
+      mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
+        mock<DriveItem>({ remoteItem: { id: 'otherResource' } })
+      ])
+      await onSSEShareRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([sharedResource])
     })
     describe('as a guest', () => {
       it('calls "showMessage" when the guest is affected and navigated to the share', async () => {
@@ -701,6 +749,7 @@ describe('shares events', () => {
           spaceid: sharedResource.storageId,
           affecteduserids: ['guest@example.org']
         })
+        mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([])
         await onSSEShareRemovedEvent({ sseData, ...mocks })
         expect(mocks.resourcesStore.removeResources).toHaveBeenCalled()
         expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
@@ -724,6 +773,9 @@ describe('shares events', () => {
             parentitemid: 'otherFolder',
             affecteduserids: ['1']
           })
+          mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
+            mock<DriveItem>({ remoteItem: { id: sharedResource.id } })
+          ])
           await onSSEShareRemovedEvent({ sseData, ...mocks })
           expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
           expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()

@@ -36,6 +36,15 @@ function isCurrentUserAffected({
   return !!userId && !!sseData.affecteduserids?.includes(userId)
 }
 
+async function isSharedWithCurrentUser({
+  sseData,
+  clientService
+}: Pick<SSEEventOptions, 'sseData' | 'clientService'>) {
+  // FIXME: get drive item by id as soon as server supports it
+  const driveItems = await clientService.graphAuthenticated.driveItems.listSharedWithMe()
+  return driveItems.some(({ remoteItem }) => remoteItem?.id === sseData.itemid)
+}
+
 // a share space is identified by its shared item. other spaces may contain multiple shares,
 // so matching the storage id is only an approximation (e.g. members keep access via membership)
 function isCurrentSpaceAffected({
@@ -349,9 +358,13 @@ export const onSSEShareRemovedEvent = async ({
     }
   }
 
-  if (isSharedWithMeActive(router) && isAffected) {
+  if (isSharedWithMeActive(router)) {
     const removedShareResource = resourcesStore.resources.find((r) => r.fileId === sseData.itemid)
     if (!removedShareResource) {
+      return
+    }
+    // the user may still have access through another share of the same item, e.g. a group share
+    if (await isSharedWithCurrentUser({ sseData, clientService })) {
       return
     }
     return resourcesStore.removeResources([removedShareResource])
