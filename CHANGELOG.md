@@ -13,6 +13,9 @@
 
 ### 🐛 Bug Fixes
 
+- fix: ignore update-token messages without an access token in delegated embed mode [[#4215](https://github.com/opencloud-eu/web/pull/4215)]
+- fix: report a created space when only some files could not be copied [[#4252](https://github.com/opencloud-eu/web/pull/4252)]
+- fix: keep the list filters when stepping through files in the preview [[#4246](https://github.com/opencloud-eu/web/pull/4246)]
 - fix: show the server's upload error on servers without TUS [[#4243](https://github.com/opencloud-eu/web/pull/4243)]
 - fix: restore notification preference checkboxes when saving fails [[#4244](https://github.com/opencloud-eu/web/pull/4244)]
 - fix: open public links with a path after the token [[#4240](https://github.com/opencloud-eu/web/pull/4240)]
