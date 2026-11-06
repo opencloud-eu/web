@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep a space when access remains after a member removal [[#4312](https://github.com/opencloud-eu/web/pull/4312)]
 - fix: keep image embeds in markdown when saving [[#4340](https://github.com/opencloud-eu/web/pull/4340)]
 - fix: copy only the selected content in the markdown editor [[#4271](https://github.com/opencloud-eu/web/pull/4271)]
 - fix: keep moved items in favorites and search results [[#4282](https://github.com/opencloud-eu/web/pull/4282)]
