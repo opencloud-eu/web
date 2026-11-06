@@ -40,11 +40,27 @@ describe('FolderLoaderFavorites', () => {
       expect.anything()
     )
   })
+  it('uses the filters of the favorites list when opened from it, e.g. in the preview', async () => {
+    const { search } = await loadFavorites(
+      {
+        contextRouteName: 'files-common-favorites',
+        contextRouteQuery: { q_mediaType: 'image', q_tags: 'work' }
+      },
+      'preview'
+    )
+    expect(search).toHaveBeenCalledWith(
+      'mediatype:("image") AND tag:("work") AND is:favorite',
+      expect.anything()
+    )
+  })
 })
 
-async function loadFavorites(query: Record<string, string>) {
+async function loadFavorites(
+  query: Record<string, string | Record<string, string>>,
+  routeName = 'files-common-favorites'
+) {
   const mocks = defaultComponentMocks({
-    currentRoute: { name: 'files-common-favorites', query } as unknown as RouteLocation
+    currentRoute: { name: routeName, query } as unknown as RouteLocation
   })
   mocks.$clientService.webdav.search.mockResolvedValue({ resources: [], totalResults: 0 })
 

@@ -14,6 +14,8 @@ import { SearchResource } from '@opencloud-eu/web-client'
 import { useTask } from 'vue-concurrency'
 import { getVaultClaim, markVaultStatus } from '../../helpers/vault'
 import { escapeKqlValue } from '../../helpers/searchFilters'
+import { LocationQuery } from '../router/types'
+import { queryItemAsString } from '../appDefaults/useAppNavigation'
 
 export const useSearch = () => {
   const clientService = useClientService()
@@ -156,9 +158,25 @@ export const useSearch = () => {
       .join(' AND ')
   }
 
+  /**
+   * Builds the search term from the query params of the search results page (term and filters).
+   */
+  const buildSearchTermFromQuery = (query: LocationQuery) => {
+    return buildSearchTerm({
+      term: queryItemAsString(query.term),
+      isTitleOnlySearch: queryItemAsString(query.q_titleOnly) === 'true',
+      tags: queryItemAsString(query.q_tags),
+      lastModified: queryItemAsString(query.q_lastModified),
+      mediaType: queryItemAsString(query.q_mediaType),
+      scope: queryItemAsString(query.scope),
+      useScope: queryItemAsString(query.useScope) === 'true'
+    })
+  }
+
   return {
     search,
-    buildSearchTerm
+    buildSearchTerm,
+    buildSearchTermFromQuery
   }
 }
 

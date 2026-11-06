@@ -228,15 +228,13 @@ const { $gettext } = useGettext()
 const { y: fileListHeaderY } = useFileListHeaderPosition()
 const clientService = useClientService()
 const { getMatchingSpace } = useGetMatchingSpace()
-const { buildSearchTerm } = useSearch()
+const { buildSearchTermFromQuery } = useSearch()
 
 const resourcesStore = useResourcesStore()
 const { initResourceList, clearResourceList, setAncestorMetaData } = resourcesStore
 const { totalResourcesCount, areHiddenFilesShown } = storeToRefs(resourcesStore)
 
 const searchTermQuery = useRouteQuery('term')
-const scopeQuery = useRouteQuery('scope')
-const doUseScope = useRouteQuery('useScope')
 
 const { triggerDefaultAction } = useFileActions()
 
@@ -322,20 +320,7 @@ const hasFilter = computed(() => {
 })
 
 const doSearch = () => {
-  const isTitleOnlySearch = queryItemAsString(unref(titleOnlyParam)) == 'true'
-  const tags = queryItemAsString(unref(tagParam))
-  const lastModified = queryItemAsString(unref(lastModifiedParam))
-  const mediaType = queryItemAsString(unref(mediaTypeParam))
-
-  return buildSearchTerm({
-    term: unref(searchTerm),
-    isTitleOnlySearch,
-    tags,
-    lastModified,
-    mediaType,
-    scope: queryItemAsString(unref(scopeQuery)),
-    useScope: unref(doUseScope) === 'true'
-  })
+  return buildSearchTermFromQuery(unref(route).query)
 }
 
 const breadcrumbs = computed(() => {

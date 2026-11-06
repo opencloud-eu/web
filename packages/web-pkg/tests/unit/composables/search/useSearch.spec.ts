@@ -81,6 +81,30 @@ describe('useSearch', () => {
       )
     })
   })
+  describe('method "buildSearchTermFromQuery"', () => {
+    it('builds the search term from the term and all filters of the query', () => {
+      const wrapper = createWrapper({ searchProperties: { content: true, tag: true } })
+      expect(
+        wrapper.vm.buildSearchTermFromQuery({
+          term: 'test',
+          q_titleOnly: 'true',
+          q_tags: 'work',
+          q_lastModified: 'today',
+          q_mediaType: 'image+video',
+          scope: 'folder-id',
+          useScope: 'true'
+        })
+      ).toBe(
+        'name:"*test*" AND tag:("work") AND mtime:today AND mediatype:("image" OR "video") AND scope:folder-id'
+      )
+    })
+    it('ignores the scope if it is not used', () => {
+      const wrapper = createWrapper()
+      expect(wrapper.vm.buildSearchTermFromQuery({ term: 'test', scope: 'folder-id' })).toBe(
+        'name:"*test*"'
+      )
+    })
+  })
 })
 
 const createWrapper = ({
@@ -125,11 +149,12 @@ const createWrapper = ({
 
   return getComposableWrapper(
     () => {
-      const { search, buildSearchTerm } = useSearch()
+      const { search, buildSearchTerm, buildSearchTermFromQuery } = useSearch()
 
       return {
         search,
-        buildSearchTerm
+        buildSearchTerm,
+        buildSearchTermFromQuery
       }
     },
     {
