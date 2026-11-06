@@ -79,6 +79,45 @@ describe('makeTiptapYjsAdapter', () => {
       ydoc.destroy()
     })
 
+    it.each([
+      [
+        'table cells',
+        [
+          '| Image      | Name  |',
+          '| ---------- | ----- |',
+          '| ![](a.png) | Alpha |',
+          '| ![](b.png) | Beta  |'
+        ]
+      ],
+      [
+        'text',
+        [
+          'Some text ![](c.png) more text.',
+          '',
+          '- Looks like this:![](d.png)',
+          '- ![](e.png)',
+          '',
+          '- [ ] ![](f.png)',
+          '',
+          '> ![](g.png)',
+          '',
+          '![](h.png)',
+          '![](i.png)'
+        ]
+      ]
+    ])('keeps image embeds with the %s around them', (_, lines) => {
+      const markdown = lines.join('\n')
+      const strategy = useStrategyMarkdown(createState())
+      const adapter = makeTiptapYjsAdapter(strategy)
+      const ydoc = new Y.Doc()
+
+      adapter.hydrate(ydoc, markdown)
+
+      // tiptap writes blank lines around a table
+      expect(adapter.serialize(ydoc).trim()).toBe(markdown)
+      ydoc.destroy()
+    })
+
     it('matches what an editor bound to the same doc produces', () => {
       const strategy = useStrategyMarkdown(createState())
       const adapter = makeTiptapYjsAdapter(strategy)

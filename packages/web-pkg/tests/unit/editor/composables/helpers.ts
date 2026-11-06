@@ -120,7 +120,8 @@ export function createMockEditor(options: MockEditorOptions = {}) {
     getAttributes: vi.fn((mark: string) => attributes[mark] ?? {}),
     state: {
       selection: {
-        $anchor: { before: () => 0 }
+        $anchor: { before: () => 0 },
+        $from: { parent: { type: { spec: {} } } }
       },
       doc: {
         nodeAt: (): any => null,

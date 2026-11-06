@@ -1,5 +1,6 @@
 import FileHandler from '@tiptap/extension-file-handler'
 import type { Editor, Extension } from '@tiptap/core'
+import type { ResolvedPos } from '@tiptap/pm/model'
 
 // Explicit list instead of `image/*`, because the file handler matches mime types exactly
 export const supportedImageMimeTypes = [
@@ -13,6 +14,14 @@ export const supportedImageMimeTypes = [
   'image/webp'
 ]
 
+/**
+ * Code like blocks (code, frontmatter, raw html) hold plain text, an image
+ * there splits the block.
+ */
+export function canInsertImageAt($pos: ResolvedPos): boolean {
+  return !$pos.parent.type.spec.code
+}
+
 const isSupportedImageFile = (file: File) => supportedImageMimeTypes.includes(file.type)
 
 const readFileAsDataUrl = (file: File): Promise<string> =>
@@ -25,7 +34,7 @@ const readFileAsDataUrl = (file: File): Promise<string> =>
 
 const insertImages = async (editor: Editor, files: File[], pos: number) => {
   const imageFiles = files.filter(isSupportedImageFile)
-  if (imageFiles.length === 0) {
+  if (imageFiles.length === 0 || !canInsertImageAt(editor.state.doc.resolve(pos))) {
     return
   }
 
@@ -42,7 +51,8 @@ const insertImages = async (editor: Editor, files: File[], pos: number) => {
       if (!inserted) {
         editor.chain().focus().setImage({ src }).run()
       }
-      insertPos += 1
+      // behind the image, also when it got wrapped into a new paragraph
+      insertPos = editor.state.selection.to
     } catch {
       // Ignore failed files and continue with the remaining ones.
     }

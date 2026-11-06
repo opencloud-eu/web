@@ -1123,6 +1123,20 @@ describe('useEditorActions', () => {
       expect(cloudChild?.showInSlashCommands).toBe(true)
     })
 
+    it.each([
+      ['a code block', '<pre><code>code</code></pre>', false],
+      ['a paragraph', '<p>text</p>', true]
+    ])('enables the image actions in %s: %s', (_, content, enabled) => {
+      const editor = new Editor({ extensions: [StarterKit], content })
+      editor.commands.setTextSelection(2)
+
+      const image = actions.image()
+      for (const action of [image, ...(image.childActions ?? [])]) {
+        expect(action.isEnabled!(editor)).toBe(enabled)
+      }
+      editor.destroy()
+    })
+
     it('opens cloud picker from slash command and removes the slash token', () => {
       const editor = createMockEditor()
       const cloudAction = actions.image().childActions?.find(({ id }) => id === 'image-cloud')
