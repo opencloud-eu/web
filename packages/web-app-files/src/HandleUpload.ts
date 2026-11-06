@@ -602,6 +602,10 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       filesToUpload = await this.applyVaultEncryption(filesToUpload, uploadFolder, vaultEngine)
     }
 
+    if (!Object.keys(this.uppyService.getCurrentUploads()).length) {
+      // nothing is running, so the upload info starts over. uppy would silently re-send failed files otherwise
+      this.uppyService.removeFailedFiles()
+    }
     this.uppyService.publish('uploadStarted')
     let folderFiles: OcUppyFile[] = []
     if (this.directoryTreeCreateEnabled) {
