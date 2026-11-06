@@ -7,6 +7,7 @@ import { Resource } from '@opencloud-eu/web-client'
 import { getVaultClaim, markVaultStatus } from '../../../helpers/vault'
 import { escapeKqlValue } from '../../../helpers/searchFilters'
 import { queryItemAsString } from '../../../composables/appDefaults'
+import { LocationQuery } from '../../../composables/router'
 
 export class FolderLoaderFavorites implements FolderLoader {
   public isEnabled(): boolean {
@@ -32,20 +33,25 @@ export class FolderLoaderFavorites implements FolderLoader {
       resourcesStore.setAncestorMetaData({})
 
       const currentRoute = unref(router.currentRoute)
+      // when opened from the favorites list (e.g. in the preview), the list's filters are in the context route query
+      const isContextRoute = currentRoute.query?.contextRouteName === 'files-common-favorites'
+      const filterQuery = (
+        isContextRoute ? currentRoute.query.contextRouteQuery || {} : currentRoute.query
+      ) as LocationQuery
       const query: string[] = []
 
-      const lastModified = queryItemAsString(currentRoute.query.q_lastModified)
+      const lastModified = queryItemAsString(filterQuery.q_lastModified)
       if (lastModified) {
         query.push(`mtime:${lastModified}`)
       }
 
-      const mediaType = queryItemAsString(currentRoute.query.q_mediaType)
+      const mediaType = queryItemAsString(filterQuery.q_mediaType)
       if (mediaType) {
         const mediatypes = mediaType.split('+').map((t) => `"${t}"`)
         query.push(`mediatype:(${mediatypes.join(' OR ')})`)
       }
 
-      const tags = queryItemAsString(currentRoute.query.q_tags)
+      const tags = queryItemAsString(filterQuery.q_tags)
       if (tags) {
         const tagList = tags.split('+').map((t) => `"${escapeKqlValue(t)}"`)
         query.push(`tag:(${tagList.join(' OR ')})`)

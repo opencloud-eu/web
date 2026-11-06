@@ -35,6 +35,32 @@ export const useFileActionsCreateSpaceFromResource = () => {
   const resourcesStore = useResourcesStore()
   const { isSpaceNameValid } = useIsResourceNameValid()
 
+  async function copyResourcesToSpace({
+    resources,
+    space,
+    createdSpace
+  }: {
+    resources: Resource[]
+    space: SpaceResource
+    createdSpace: SpaceResource
+  }) {
+    const { webdav } = clientService
+    const queue = new PQueue({
+      concurrency: configStore.options.concurrentRequests.resourceBatchActions
+    })
+    const results = await Promise.allSettled(
+      resources.map((resource) =>
+        queue.add(() => webdav.copyFiles(space, resource, createdSpace, { path: resource.name }))
+      )
+    )
+
+    const errors = results
+      .filter((result): result is PromiseRejectedResult => result.status === 'rejected')
+      .map(({ reason }) => reason)
+    errors.forEach((error) => console.error(error))
+    return errors
+  }
+
   const confirmAction = async ({
     spaceName,
     resources,
@@ -44,38 +70,39 @@ export const useFileActionsCreateSpaceFromResource = () => {
     resources: Resource[]
     space: SpaceResource
   }) => {
-    const { webdav } = clientService
-    const queue = new PQueue({
-      concurrency: configStore.options.concurrentRequests.resourceBatchActions
-    })
-    const copyOps = []
-
+    let resourcesToCopy = resources
+    let createdSpace: SpaceResource
     try {
-      const createdSpace = await createSpace(spaceName)
-      spacesStore.upsertSpace(createdSpace)
-
       if (resources.length === 1 && resources[0].isFolder) {
         // If a single folder is selected we copy its content to the space root folder.
-        resources = (await webdav.listFiles(space, { path: resources[0].path })).children
+        const { children } = await clientService.webdav.listFiles(space, {
+          path: resources[0].path
+        })
+        resourcesToCopy = children
       }
 
-      for (const resource of resources) {
-        copyOps.push(
-          queue.add(() => webdav.copyFiles(space, resource, createdSpace, { path: resource.name }))
-        )
-      }
-
-      await Promise.all(copyOps)
-      resourcesStore.resetSelection()
-      showMessage({ title: $gettext('Space was created successfully') })
+      createdSpace = await createSpace(spaceName)
+      spacesStore.upsertSpace(createdSpace)
     } catch (error) {
       console.error(error)
-      const title =
-        error.statusCode === 425
-          ? $gettext('Some files could not be copied')
-          : $gettext('Creating space failed…')
-      showErrorMessage({ title, errors: [error] })
+      showErrorMessage({ title: $gettext('Creating space failed…'), errors: [error] })
+      return
     }
+
+    const errors = await copyResourcesToSpace({ resources: resourcesToCopy, space, createdSpace })
+    resourcesStore.resetSelection()
+
+    if (errors.length) {
+      showErrorMessage({
+        title: $gettext('Space was created'),
+        desc: $gettext('Not all files could be copied.'),
+        status: 'warning',
+        errors
+      })
+      return
+    }
+
+    showMessage({ title: $gettext('Space was created successfully') })
   }
 
   const handler = ({ resources, space }: FileActionOptions) => {

@@ -3,13 +3,12 @@ import { flushPromises, shallowMount } from '@vue/test-utils'
 import List from '../../../../src/components/Search/List.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
-import { createRouter, createMemoryHistory } from 'vue-router'
+import { createRouter, createMemoryHistory, RouteLocationNormalizedLoaded } from 'vue-router'
 
 import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 import {
   AppBar,
   ItemFilter,
-  queryItemAsString,
   ResourceTable,
   ResourceTiles,
   SearchResult,
@@ -24,7 +23,6 @@ import { Capabilities } from '@opencloud-eu/web-client/ocs'
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  queryItemAsString: vi.fn(),
   useAppDefaults: vi.fn(),
   useFileActions: () => ({ triggerDefaultAction: vi.fn() })
 }))
@@ -212,9 +210,6 @@ describe('List component', () => {
       fullTextSearchEnabled: false
     })
     await flushPromises()
-    vi.mocked(queryItemAsString)
-      .mockReset()
-      .mockImplementation((value) => (typeof value === 'string' ? value : undefined))
 
     await $router.replace({
       name: 'files-common-search',
@@ -396,11 +391,6 @@ function getWrapper({
   stubs?: Record<string, boolean | Component>
   searchResult?: SearchResult
 } = {}) {
-  vi.mocked(queryItemAsString).mockImplementationOnce(() => searchTerm)
-  vi.mocked(queryItemAsString).mockImplementationOnce(() => titleOnlyFilterQuery)
-  vi.mocked(queryItemAsString).mockImplementationOnce(() => tagFilterQuery)
-  vi.mocked(queryItemAsString).mockImplementationOnce(() => lastModifiedFilterQuery)
-
   const resourcesViewDetailsMock = useResourcesViewDefaultsMock({
     paginatedResources: paginatedResources || ref(resources),
     sortedResources: sortedResources || ref(resources),
@@ -414,8 +404,20 @@ function getWrapper({
   }
   vi.mocked(useResourcesViewDefaults).mockImplementation(() => resourcesViewDetailsMock)
 
+  const query = {
+    ...(searchTerm && { term: searchTerm }),
+    ...(titleOnlyFilterQuery && { q_titleOnly: titleOnlyFilterQuery }),
+    ...(tagFilterQuery && { q_tags: tagFilterQuery }),
+    ...(lastModifiedFilterQuery && { q_lastModified: lastModifiedFilterQuery })
+  }
   const localMocks = {
-    ...defaultComponentMocks(),
+    ...defaultComponentMocks({
+      currentRoute: {
+        name: 'files-common-search',
+        path: '/',
+        query
+      } as unknown as RouteLocationNormalizedLoaded
+    }),
     ...mocks
   }
   localMocks.$clientService.graphAuthenticated.tags.listTags.mockResolvedValue(availableTags)
