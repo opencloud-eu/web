@@ -1,10 +1,18 @@
 import SharedWithMe from '../../../../src/views/shares/SharedWithMe.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables'
-import { queryItemAsString, InlineFilterOption, ItemFilter, AppBar } from '@opencloud-eu/web-pkg'
+import {
+  queryItemAsString,
+  useRouteQuery,
+  useResourcesStore,
+  InlineFilterOption,
+  ItemFilter,
+  AppBar
+} from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
 import { computed, unref, defineComponent, h, readonly, ref } from 'vue'
 import { defaultStubs, RouteLocation } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import { flushPromises } from '@vue/test-utils'
 import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ShareTypes, IncomingShareResource, ShareType } from '@opencloud-eu/web-client'
@@ -278,6 +286,72 @@ describe('SharedWithMe view', () => {
       const [resources] = scrollToResourceFromRoute.mock.calls[0]
       expect(resources).toContain(files[29])
     })
+    it.each([
+      { hidden: true, query: { scrollTo: 'share-id' }, visibility: 'hidden' },
+      {
+        hidden: false,
+        query: { scrollTo: 'share-id', 'q_share-visibility': 'hidden', page: '2' },
+        visibility: 'visible'
+      }
+    ])(
+      'switches to the $visibility shares when the share to scroll to is $visibility',
+      async ({ hidden, query, visibility }) => {
+        const share = mock<IncomingShareResource>({
+          remoteItemId: 'share-id',
+          hidden,
+          shareTypes: [ShareTypes.user.value]
+        })
+        const otherShare = mock<IncomingShareResource>({
+          remoteItemId: 'other-id',
+          hidden: !hidden,
+          shareTypes: [ShareTypes.user.value]
+        })
+        const scrollToResourceFromRoute = vi.fn()
+        const { wrapper, router } = await getMountedWrapperWithRouter({
+          files: [share, otherShare],
+          query,
+          scrollToResourceFromRoute
+        })
+        await flushPromises()
+
+        expect(unref(router.currentRoute).query).toEqual({
+          scrollTo: 'share-id',
+          'q_share-visibility': visibility
+        })
+        expect(wrapper.find('.item-inline-filter-option-selected').attributes('id')).toBe(
+          visibility
+        )
+        expect(scrollToResourceFromRoute).toHaveBeenCalledWith([share], 'files-app-bar')
+
+        // the share must not get unselected by the filter change after it was selected
+        const { resetSelection } = useResourcesStore()
+        expect(resetSelection).toHaveBeenCalled()
+        const lastReset = Math.max(...vi.mocked(resetSelection).mock.invocationCallOrder)
+        expect(lastReset).toBeLessThan(scrollToResourceFromRoute.mock.invocationCallOrder[0])
+      }
+    )
+    it('keeps the visibility filter when the share to scroll to is listed', async () => {
+      const share = mock<IncomingShareResource>({
+        remoteItemId: 'share-id',
+        hidden: false,
+        shareTypes: [ShareTypes.user.value]
+      })
+      const { mocks } = getMountedWrapper({ files: [share], scrollTo: 'share-id' })
+      await flushPromises()
+
+      expect(mocks.$router.replace).not.toHaveBeenCalled()
+    })
+    it('keeps the visibility filter when the share to scroll to does not exist', async () => {
+      const share = mock<IncomingShareResource>({
+        remoteItemId: 'other-id',
+        hidden: true,
+        shareTypes: [ShareTypes.user.value]
+      })
+      const { mocks } = getMountedWrapper({ files: [share], scrollTo: 'share-id' })
+      await flushPromises()
+
+      expect(mocks.$router.replace).not.toHaveBeenCalled()
+    })
   })
 })
 
@@ -285,11 +359,13 @@ function getMountedWrapper({
   mocks = {},
   loading = false,
   files = [],
+  scrollTo = undefined,
   viewDefaults = {}
 }: {
   mocks?: Record<string, unknown>
   files?: IncomingShareResource[]
   loading?: boolean
+  scrollTo?: string
   viewDefaults?: Partial<ReturnType<typeof useResourcesViewDefaults>>
 } = {}) {
   const plugins = [...defaultPlugins()]
@@ -305,14 +381,17 @@ function getMountedWrapper({
       ...viewDefaults
     })
   })
-  // selected share types
-  vi.mocked(queryItemAsString).mockImplementationOnce(() => undefined)
-  // selected shared by
-  vi.mocked(queryItemAsString).mockImplementationOnce(() => undefined)
+  vi.mocked(useRouteQuery).mockImplementation((name) =>
+    ref(name === 'scrollTo' ? scrollTo : undefined)
+  )
+  vi.mocked(queryItemAsString).mockImplementation((value) => value as string)
 
   const defaultMocks = {
     ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({ name: 'files-shares-with-me' })
+      currentRoute: mock<RouteLocation>({
+        name: 'files-shares-with-me',
+        query: { ...(scrollTo && { scrollTo }) }
+      })
     }),
     ...(mocks && mocks)
   }
@@ -334,4 +413,56 @@ function getMountedWrapper({
       }
     })
   }
+}
+
+// mounts the view with the real visibility filter and router, so route changes reach the filter
+async function getMountedWrapperWithRouter({
+  files,
+  query,
+  scrollToResourceFromRoute
+}: {
+  files: IncomingShareResource[]
+  query: Record<string, string>
+  scrollToResourceFromRoute: ReturnType<
+    typeof useResourcesViewDefaults
+  >['scrollToResourceFromRoute']
+}) {
+  const { useRouteQuery: actualUseRouteQuery, queryItemAsString: actualQueryItemAsString } =
+    await vi.importActual<typeof import('@opencloud-eu/web-pkg')>('@opencloud-eu/web-pkg')
+  vi.mocked(useRouteQuery).mockImplementation(actualUseRouteQuery)
+  vi.mocked(queryItemAsString).mockImplementation(actualQueryItemAsString)
+
+  vi.mocked(useResourcesViewDefaults).mockImplementation(({ filterResources }) => {
+    const sortedResources = computed(() => filterResources(files))
+    return useResourcesViewDefaultsMock({
+      storeItems: ref(files),
+      sortedResources,
+      paginatedResources: sortedResources,
+      scrollToResourceFromRoute
+    })
+  })
+
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      {
+        path: '/files/shares/with-me',
+        name: 'files-shares-with-me',
+        component: defineComponent({ render: (): null => null })
+      }
+    ]
+  })
+  await router.push({ name: 'files-shares-with-me', query })
+
+  const mocks = { ...defaultComponentMocks(), $router: router }
+  const wrapper = mount(SharedWithMe, {
+    global: {
+      plugins: defaultPlugins(),
+      mocks,
+      provide: mocks,
+      stubs: { ...defaultStubs, 'app-bar': AppBarStub, ItemFilter: true, AppLoadingSpinner: true }
+    }
+  })
+
+  return { wrapper, router }
 }
