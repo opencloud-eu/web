@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep image embeds in markdown when saving [[#4340](https://github.com/opencloud-eu/web/pull/4340)]
 - fix: copy only the selected content in the markdown editor [[#4271](https://github.com/opencloud-eu/web/pull/4271)]
 - fix: keep moved items in favorites and search results [[#4282](https://github.com/opencloud-eu/web/pull/4282)]
 - fix: keep upload batch out of uppy until it is prepared [[#4327](https://github.com/opencloud-eu/web/pull/4327)]
