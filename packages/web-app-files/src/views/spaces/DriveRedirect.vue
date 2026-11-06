@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full">
-    <not-found-message v-if="isUnknownProjectSpace" class="w-full" />
+    <not-found-message v-if="isUnknownSpace" class="w-full" />
     <app-loading-spinner v-else />
   </div>
 </template>
@@ -13,10 +13,11 @@ import { urlJoin } from '@opencloud-eu/web-client'
 import { createFileRouteOptions, createLocationGuest } from '@opencloud-eu/web-pkg'
 import { createLocationSpaces } from '@opencloud-eu/web-pkg'
 import NotFoundMessage from '../../components/FilesList/NotFoundMessage.vue'
-
-// 'personal/home' is used as personal drive alias from static contexts
-// (i.e. places where we can't load the actual personal space)
-const fakePersonalDriveAlias = 'personal/home'
+import {
+  fakePersonalDriveAlias,
+  isFakePersonalDriveAlias,
+  isOwnedPersonalDriveAlias
+} from '../../helpers/driveAlias'
 
 const { driveAliasAndItem = '' } = defineProps<{
   driveAliasAndItem?: string
@@ -32,15 +33,22 @@ const personalSpace = computed(() => {
 })
 
 const itemPath = computed(() => {
-  return driveAliasAndItem.startsWith(fakePersonalDriveAlias)
+  return isFakePersonalDriveAlias(driveAliasAndItem)
     ? urlJoin(driveAliasAndItem.slice(fakePersonalDriveAlias.length))
     : '/'
 })
 
-// a link to a project space the user can't access (anymore) must not silently open another space
-const isUnknownProjectSpace = computed(
-  () => !authStore.isGuestContext && driveAliasAndItem.startsWith('project/')
-)
+// a link to a space the user can't access (anymore), e.g. a project space or another user's
+// personal space, must not silently open another space
+const isUnknownSpace = computed(() => {
+  if (authStore.isGuestContext) {
+    return false
+  }
+  if (driveAliasAndItem.startsWith('project/')) {
+    return true
+  }
+  return isOwnedPersonalDriveAlias(driveAliasAndItem)
+})
 
 function redirect() {
   if (authStore.isGuestContext) {
@@ -71,11 +79,11 @@ function redirect() {
 }
 
 // the drive resolver keeps this component while no space matches, e.g. when navigating
-// from the not found message of an unknown project space to the personal space
+// from the not found message of an unknown space to the personal space
 watch(
   () => driveAliasAndItem,
   () => {
-    if (unref(isUnknownProjectSpace)) {
+    if (unref(isUnknownSpace)) {
       return
     }
     redirect()
