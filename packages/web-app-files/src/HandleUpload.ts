@@ -29,6 +29,7 @@ import { locationSpacesGeneric, UppyService } from '@opencloud-eu/web-pkg'
 import { isPersonalSpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
 import { ClientService, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { PluginOpts } from '@uppy/core'
+import { keyBy } from 'lodash-es'
 
 export interface HandleUploadOptions {
   clientService: ClientService
@@ -95,12 +96,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     this.handleUpload = this.handleUpload.bind(this)
   }
 
-  removeFilesFromUpload(filesToUpload: OcUppyFile[]) {
-    for (const file of filesToUpload) {
-      this.uppy.removeFile(file.id)
-    }
-  }
-
   getUploadPluginName() {
     return this.uppy.getPlugin('Tus') ? 'tus' : 'xhrUpload'
   }
@@ -126,7 +121,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
   }
 
   /**
-   * Converts the input files type UppyResources and updates the uppy upload queue
+   * Converts the input files to UppyResources
    */
   prepareFiles(files: OcUppyFile[], uploadFolder: Resource): OcUppyFile[] {
     const filesToUpload: Record<string, OcUppyFile> = {}
@@ -157,7 +152,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
 
         filesToUpload[file.id] = file
       }
-      this.uppy.setState({ files: { ...this.uppy.getState().files, ...filesToUpload } })
       return Object.values(filesToUpload)
     }
     const { id: currentFolderId, path: currentFolderPath } = uploadFolder
@@ -225,7 +219,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       filesToUpload[file.id] = file
     }
 
-    this.uppy.setState({ files: { ...this.uppy.getState().files, ...filesToUpload } })
     return Object.values(filesToUpload)
   }
 
@@ -316,7 +309,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
   }
 
   /**
-   * Removes files from the upload queue whose name or folder names are too long
+   * Filters out files whose name or folder names are too long
    * for the vault they get uploaded into, since their encrypted names would be
    * rejected by the server.
    */
@@ -346,7 +339,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       return filesToUpload
     }
 
-    this.removeFilesFromUpload([...filesTooLong])
     const { $gettext, $ngettext } = this.language
     const [shownName] = namesTooLong
     const hiddenCount = namesTooLong.size - 1
@@ -369,7 +361,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
   }
 
   /**
-   * Creates the directory tree and removes files of failed directories from the upload queue.
+   * Creates the directory tree and filters out files of failed directories and folder files.
    */
   async createDirectoryTree(
     filesToUpload: OcUppyFile[],
@@ -473,29 +465,19 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
 
     await createDirectoryLevel(directoryTree)
 
-    let filesToRemove: string[] = []
-    if (failedFolders.length || folderFiles.length) {
-      // remove files of folders that could not be created and folder files
-      filesToRemove = filesToUpload
-        .filter(
-          (f) => f.meta.isFolder || failedFolders.some((r) => f.meta.relativeFolder.startsWith(r))
-        )
-        .map(({ id }) => id)
-
-      for (const fileId of filesToRemove) {
-        this.uppy.removeFile(fileId)
-      }
-    }
-
     return {
-      filesToUpload: filesToUpload.filter(({ id }) => !filesToRemove.includes(id)),
+      filesToUpload: filesToUpload.filter(
+        (f) =>
+          !folderFiles.includes(f) &&
+          !failedFolders.some((r) => f.meta.relativeFolder.startsWith(r))
+      ),
       folderFiles
     }
   }
 
   /**
-   * The handler that prepares all files to be uploaded and goes through all necessary steps.
-   * Eventually triggers to upload in Uppy.
+   * Holds the added files back from Uppy while uploadBatch prepares them, since another
+   * batch's upload() would upload them early.
    */
   async handleUpload(files: OcUppyFile[]) {
     if (!files.length) {
@@ -504,13 +486,40 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
 
     const uploadId = files[0].meta?.uploadId
     const uploadFolder = this.getUploadFolder(uploadId)
-    let filesToUpload = this.prepareFiles(files, uploadFolder)
+    const preparedFiles = this.prepareFiles(files, uploadFolder)
+
+    const cancelController = new AbortController()
+    // released on cancel right away so the files can be dropped again while preparation winds down
+    const onCancel = () => {
+      cancelController.abort()
+      this.uppyService.releaseHeldBackFiles(preparedFiles)
+    }
+    this.uppyService.holdBackFiles(preparedFiles)
+    this.uppy.on('cancel-all', onCancel)
+    try {
+      await this.uploadBatch(preparedFiles, uploadFolder, uploadId, cancelController.signal)
+    } finally {
+      this.uppy.off('cancel-all', onCancel)
+      // after a cancel, a new batch may already hold the same files
+      if (!cancelController.signal.aborted) {
+        this.uppyService.releaseHeldBackFiles(preparedFiles)
+      }
+    }
+  }
+
+  /**
+   * Prepares all files to be uploaded and goes through all necessary steps.
+   * Puts the files to upload back into Uppy and eventually triggers the upload.
+   */
+  private async uploadBatch(
+    preparedFiles: OcUppyFile[],
+    uploadFolder: Resource,
+    uploadId: string,
+    cancelSignal: AbortSignal
+  ) {
+    let filesToUpload = preparedFiles
 
     if (!this.directoryTreeCreateEnabled) {
-      // if directory tree creation is disabled, we need to remove all folder files
-      // from the upload queue (both locally and from Uppy's state to prevent upload attempts)
-      const directoryFiles = filesToUpload.filter((file) => file.type === 'directory')
-      this.removeFilesFromUpload(directoryFiles)
       filesToUpload = filesToUpload.filter((file) => file.type !== 'directory')
       if (!filesToUpload.length) {
         // if there are no files left to upload, we can clear the inputs and do nothing
@@ -528,7 +537,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     // user's current one (caller used setUploadFolder, e.g. unzip extracting into a
     // fresh folder). getConflicts only checks the current folder and would fire
     // false positives in that case.
-    const preparedFiles = filesToUpload
     let mergedFolders: string[] = []
     if (this.conflictHandlingEnabled && this.isCurrentFolder(uploadFolder)) {
       const conflictHandler = new UploadResourceConflict(this.resourcesStore, this.language)
@@ -539,13 +547,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
           ;(dashboard[0] as HTMLElement).style.display = 'none'
         }
 
-        // keep batch out of uppy while the dialog is open, another batch's upload() would upload it.
-        // kept files are re-added below.
-        const batchIds = filesToUpload.map(({ id }) => id)
-        this.uppyService.holdBackFiles(batchIds)
-        const result = await conflictHandler
-          .displayOverwriteDialog(filesToUpload, conflicts)
-          .finally(() => this.uppyService.releaseHeldBackFiles(batchIds))
+        const result = await conflictHandler.displayOverwriteDialog(filesToUpload, conflicts)
         if (result.dismissed) {
           const { $gettext } = this.language
           this.messageStore.showMessage({
@@ -560,11 +562,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
 
         filesToUpload = result.files
         mergedFolders = result.mergedFolders
-        const conflictMap = result.files.reduce<Record<string, OcUppyFile>>((acc, file) => {
-          acc[file.id] = file
-          return acc
-        }, {})
-        this.uppy.setState({ files: { ...this.uppy.getState().files, ...conflictMap } })
 
         // "keep both" appends a suffix, which can push a name past the vault limit
         filesToUpload = this.removeVaultNamesTooLong(filesToUpload, uploadFolder)
@@ -578,7 +575,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     if (this.quotaCheckEnabled) {
       const quotaExceeded = this.checkQuotaExceeded(filesToUpload, mergedFolders)
       if (quotaExceeded) {
-        this.removeFilesFromUpload(preparedFiles)
         return this.uppyService.clearInputs()
       }
     }
@@ -602,12 +598,20 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       filesToUpload = await this.applyVaultEncryption(filesToUpload, uploadFolder, vaultEngine)
     }
 
+    if (cancelSignal.aborted) {
+      return this.uppyService.clearInputs()
+    }
+
     this.uppyService.publish('uploadStarted')
     let folderFiles: OcUppyFile[] = []
     if (this.directoryTreeCreateEnabled) {
       const result = await this.createDirectoryTree(filesToUpload, uploadFolder, mergedFolders)
       filesToUpload = result.filesToUpload
       folderFiles = result.folderFiles
+    }
+
+    if (cancelSignal.aborted) {
+      return this.uppyService.clearInputs()
     }
 
     if (!filesToUpload.length) {
@@ -622,6 +626,9 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     }
 
     this.uppyService.publish('addedForUpload', filesToUpload)
+    this.uppy.setState({
+      files: { ...this.uppy.getState().files, ...keyBy(filesToUpload, 'id') }
+    })
     this.uppyService.uploadFiles()
     this.uppyService.removeUploadFolder(uploadId)
   }
@@ -642,7 +649,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     const space = unref(this.space)
     const encryptedFolderPath = await encryptVaultPath(vaultEngine, uploadFolder.path)
 
-    const updated: Record<string, OcUppyFile> = {}
     for (const file of filesToUpload) {
       if (file.type === 'directory') {
         // Folder entries don't get an HTTP payload of their own - the MKCOLs
@@ -692,9 +698,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         name: encryptedName,
         tusEndpoint: endpoint
       }
-      updated[file.id] = file
     }
-    this.uppy.setState({ files: { ...this.uppy.getState().files, ...updated } })
     return filesToUpload
   }
 
