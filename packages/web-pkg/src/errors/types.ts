@@ -18,3 +18,10 @@ export class RuntimeError extends Error {
 export class ApiError extends RuntimeError {
   name = 'ApiError'
 }
+
+/**
+ * error for resources that can't be found without the server telling so, e.g. an unknown space
+ */
+export class ResourceNotFoundError extends RuntimeError {
+  name = 'ResourceNotFoundError'
+}

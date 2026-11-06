@@ -104,6 +104,7 @@ import { DavPermission } from '@opencloud-eu/web-client/webdav'
 import { HttpError } from '@opencloud-eu/web-client'
 import { basename, dirname } from 'path'
 import { useFileActionsOpenWithApp } from '../../composables'
+import { ResourceNotFoundError } from '../../errors'
 import { UnsavedChangesModal } from '../Modals'
 import {
   decodeTextContent,
@@ -177,7 +178,10 @@ const loading = ref(!unref(noResourceLoading))
 const loadingError: Ref<Error> = ref()
 // apps that load their files themselves (e.g. the preview) report errors via the folder loading
 const error = computed(() => unref(loadingError) || unref(folderLoadingError))
-const isNotFoundError = computed(() => (unref(error) as HttpError)?.statusCode === 404)
+const isNotFoundError = computed(() => {
+  const e = unref(error)
+  return e instanceof ResourceNotFoundError || (e as HttpError)?.statusCode === 404
+})
 const isReadOnly = ref(false)
 /** The loaded text is not valid UTF-8, see `getFileContentsAsText`. */
 const isLossyContent = ref(false)
@@ -427,9 +431,16 @@ const addMissingDriveAliasAndItem = async () => {
 const loadResourceTask = useTask(function* (signal) {
   try {
     if (!unref(driveAliasAndItem)) {
+      if (!unref(fileId)) {
+        throw new ResourceNotFoundError('No file given')
+      }
       yield addMissingDriveAliasAndItem()
     }
     space.value = unref(unref(currentFileContext).space)
+    if (!unref(space)) {
+      // the space is unknown or not accessible, like the server answers for such resources
+      throw new ResourceNotFoundError('Space not found')
+    }
     const currentSpace = unref(space)
     if (isPublicSpaceResource(currentSpace) && currentSpace.publicLinkPermission === undefined) {
       // the link permission and file id are only known if the link got resolved beforehand,
