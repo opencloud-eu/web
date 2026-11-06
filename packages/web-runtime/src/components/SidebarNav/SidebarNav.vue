@@ -45,18 +45,8 @@
     </div>
     <div class="flex flex-col gap-2">
       <custom-component-target :extension-point="dynamicExtensionPointBottom" />
+      <support-card v-if="!options.disableSponsorLink" class="mx-2" />
       <div class="flex flex-col pb-4 px-4 text-xs text-role-on-surface-variant">
-        <a
-          v-if="!options.disableSponsorLink"
-          href="https://github.com/sponsors/opencloud-eu"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="oc-sidebar-nav-sponsor-link group mb-2 inline-flex self-start items-center gap-1"
-        >
-          <span v-text="$gettext('Sponsor us')" />
-          <span aria-hidden="true" class="group-hover:hidden">💜</span>
-          <span aria-hidden="true" class="hidden group-hover:inline">🤗</span>
-        </a>
         <span v-text="backendVersion" />
         <version-check />
       </div>
@@ -68,6 +58,7 @@
 import { storeToRefs } from 'pinia'
 import { computed, onBeforeUnmount, ref, unref, watchEffect } from 'vue'
 import SidebarNavItem from './SidebarNavItem.vue'
+import SupportCard from './SupportCard.vue'
 import {
   useCapabilityStore,
   VersionCheck,

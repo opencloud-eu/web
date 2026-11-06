@@ -38,17 +38,17 @@ describe('OcSidebarNav', () => {
     })
   })
 
-  describe('sponsor link', () => {
-    it('renders the sponsor link by default', () => {
+  describe('support card', () => {
+    it('renders the support card by default', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeTruthy()
+      expect(wrapper.find('support-card-stub').exists()).toBeTruthy()
     })
 
-    it('does not render the sponsor link when disabled in config', () => {
+    it('does not render the support card when the sponsor link is disabled in config', () => {
       const { wrapper } = getWrapper({
         configOptions: { disableSponsorLink: true }
       })
-      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeFalsy()
+      expect(wrapper.find('support-card-stub').exists()).toBeFalsy()
     })
   })
 })
@@ -90,7 +90,7 @@ function getWrapper({
         plugins,
         mocks,
         provide: mocks,
-        stubs: { SidebarNavItem: true }
+        stubs: { SidebarNavItem: true, SupportCard: true }
       }
     })
   }
