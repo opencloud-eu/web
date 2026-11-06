@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep an open app in place when the folder of its file gets renamed [[#4292](https://github.com/opencloud-eu/web/pull/4292)]
 - fix: don't load shares of disabled project spaces [[#4338](https://github.com/opencloud-eu/web/pull/4338)]
 - fix: list a partially duplicated space and tell the user it's incomplete [[#4290](https://github.com/opencloud-eu/web/pull/4290)]
 - fix: scroll to the current search match when the search term changes [[#4314](https://github.com/opencloud-eu/web/pull/4314)]
