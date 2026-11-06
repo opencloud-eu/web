@@ -2,9 +2,11 @@ import { onBeforeUnmount, Ref, unref } from 'vue'
 import {
   FolderViewerSlotProps,
   ProcessorType,
+  useClientService,
   useGetMatchingSpace,
   usePreviewService
 } from '@opencloud-eu/web-pkg'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { MediaFile } from '../helpers/types'
 import { useBrowserImageSupport } from './useBrowserImageSupport'
 import { usePreviewDimensions } from './usePreviewDimensions'
@@ -23,6 +25,7 @@ export const useMediaFileLoader = ({
   activeIndex,
   getUrlForResource
 }: UseMediaFileLoaderOptions) => {
+  const clientService = useClientService()
   const previewService = usePreviewService()
   const { dimensions } = usePreviewDimensions()
   const { getMatchingSpace } = useGetMatchingSpace()
@@ -40,9 +43,9 @@ export const useMediaFileLoader = ({
 
   /**
    * Only the preview-service path yields bytes worth preloading: videos and audio must
-   * not be downloaded in the background, vault images have no server-side thumbnail
-   * (loading one means downloading and decrypting the full original) and SVGs are
-   * rendered as a document via `vue-inline-svg` instead of an image.
+   * not be downloaded in the background, vault images and SVGs have no server-side
+   * thumbnail (loading one means downloading the full original, for vault images also
+   * decrypting it).
    */
   const isPreloadable = (mediaFile: MediaFile) => {
     return (
@@ -71,9 +74,9 @@ export const useMediaFileLoader = ({
     const url = mediaFile.url
 
     // only the preview-service path yields bytes worth preloading: videos and audio
-    // stream through their own element, svg files render via a document fetch and an
-    // Image can't decode any of their urls - the failed decode would be misread as
-    // a stale url and trigger a pointless re-resolution
+    // stream through their own element and an Image can't decode their urls - the
+    // failed decode would be misread as a stale url and trigger a pointless
+    // re-resolution
     if (!isPreloadable(mediaFile) || !url || url.startsWith('blob:')) {
       return Promise.resolve(true)
     }
@@ -109,7 +112,10 @@ export const useMediaFileLoader = ({
 
   const resolveUrl = (mediaFile: MediaFile, signal: AbortSignal): Promise<string | undefined> => {
     const space = getMatchingSpace(mediaFile.resource)
-    const isSvgImage = mediaFile.mimeType === 'image/svg+xml'
+
+    if (mediaFile.mimeType === 'image/svg+xml') {
+      return loadSvgDataUrl(space, mediaFile.resource, signal)
+    }
 
     // Vault images can't be thumbnailed server-side (the server only holds
     // the ciphertext blob), so skip the preview service and fetch the full
@@ -119,7 +125,7 @@ export const useMediaFileLoader = ({
     // no-thumbnail behaviour (do NOT key this off hasPreview(), or plain
     // images the server has no thumbnail for would download the full
     // original on every open).
-    const useFullImage = mediaFile.isImage && (mediaFile.resource.isInVault || isSvgImage)
+    const useFullImage = mediaFile.isImage && mediaFile.resource.isInVault
 
     if (mediaFile.isImage && !useFullImage) {
       return previewService.loadPreview(
@@ -135,11 +141,32 @@ export const useMediaFileLoader = ({
       )
     }
 
-    // Load SVGs through the authenticated client: vue-inline-svg's own request
-    // does not send guest cookies across origins.
-    return getUrlForResource(space, mediaFile.resource, {
-      signal,
-      ...(isSvgImage && { disposition: 'inline' })
+    return getUrlForResource(space, mediaFile.resource, { signal })
+  }
+
+  /**
+   * SVGs are shown via a data url, never via a blob url: a blob url belongs to the
+   * app's origin, opening it in a new tab would run the svg's scripts with access to
+   * the app's storage. A data url opens on an opaque origin instead.
+   *
+   * The bytes are fetched through the webdav client, which authenticates guests on a
+   * separate API origin and decrypts vault files.
+   */
+  const loadSvgDataUrl = async (
+    space: SpaceResource,
+    resource: Resource,
+    signal: AbortSignal
+  ): Promise<string> => {
+    const { body } = await clientService.webdav.getFileContents(space, resource, {
+      responseType: 'arraybuffer',
+      signal
+    })
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = () => reject(reader.error)
+      reader.readAsDataURL(new Blob([body], { type: 'image/svg+xml' }))
     })
   }
 
