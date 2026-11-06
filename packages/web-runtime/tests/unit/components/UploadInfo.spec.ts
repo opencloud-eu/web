@@ -335,6 +335,43 @@ describe('UploadInfo component', () => {
         expect(wrapper.find(selectors.message).text()).toBe(message)
       }
     )
+    it.each([
+      { status: 423, responseText: '', message: 'This item is locked' },
+      { status: 507, responseText: '', message: 'Quota exceeded' },
+      {
+        status: 500,
+        responseText:
+          '<?xml version="1.0" encoding="UTF-8"?><d:error xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns"><s:exception>Sabre\\DAV\\Exception</s:exception><s:message>internal server error</s:message></d:error>',
+        message: 'internal server error'
+      },
+      { status: 500, responseText: '', message: 'Unknown error' }
+    ])(
+      'shows "$message" for a failed xhr upload with status $status',
+      async ({ status, responseText, message }) => {
+        const { wrapper } = getShallowWrapper()
+        ;(wrapper.vm as any).showInfo = true
+        ;(wrapper.vm as any).infoExpanded = true
+        ;(wrapper.vm as any).uploads = {
+          '1': {
+            name: 'file',
+            path: '/',
+            type: 'file',
+            meta: { uploadId: '1' }
+          } as unknown as OcUppyFile
+        }
+        ;(wrapper.vm as any).errors = {
+          1: Object.assign(
+            new Error(
+              'This looks like a network error, the endpoint might be blocked by an internet provider or a firewall.'
+            ),
+            { request: { status, responseText } }
+          )
+        }
+        await nextTick()
+
+        expect(wrapper.find(selectors.message).text()).toBe(message)
+      }
+    )
     it('folder is clickable', async () => {
       const { wrapper } = getShallowWrapper()
       ;(wrapper.vm as any).showInfo = true

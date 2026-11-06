@@ -228,6 +228,10 @@ export class UppyService {
       timeout,
       getResponseData() {
         return {}
+      },
+      shouldRetry(xhr) {
+        // only retry network failures, the server's answer won't change on a retry
+        return xhr.status === 0
       }
     }
 
