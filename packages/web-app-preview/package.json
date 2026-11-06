@@ -6,7 +6,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@panzoom/panzoom": "^4.6.1",
-    "vue-inline-svg": "^4.0.1"
+    "vue-inline-svg": "^5.0.0"
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*"
