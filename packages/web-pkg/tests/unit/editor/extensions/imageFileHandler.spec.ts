@@ -57,6 +57,55 @@ describe('image file handler extension', () => {
     }
   })
 
+  it('keeps the order of several inline images pasted at a block position', async () => {
+    const editor = new Editor({
+      extensions: [
+        StarterKit,
+        Image.configure({ inline: true, allowBase64: true }),
+        imageFileHandlerExtension()
+      ],
+      content: '<p>a</p><hr>'
+    })
+    editor.commands.setNodeSelection(3)
+    const event = createClipboardEvent({
+      files: [
+        new File(['one'], '1.png', { type: 'image/png' }),
+        new File(['two'], '2.png', { type: 'image/png' })
+      ]
+    })
+
+    try {
+      editor.view.dom.dispatchEvent(event)
+
+      await vi.waitFor(() => expect(getImageSources(editor)).toHaveLength(2))
+      expect(getImageSources(editor).map((src) => atob(src.split(',')[1]))).toEqual(['one', 'two'])
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  it('does not paste an image file into a code block', () => {
+    const editor = createEditor()
+    editor.commands.setContent('<pre><code>ab</code></pre>')
+    editor.commands.setTextSelection(2)
+    const readAsDataURL = vi.spyOn(FileReader.prototype, 'readAsDataURL')
+    const event = createClipboardEvent({
+      files: [new File(['image'], 'image.png', { type: 'image/png' })]
+    })
+
+    try {
+      editor.view.dom.dispatchEvent(event)
+
+      expect(readAsDataURL).not.toHaveBeenCalled()
+      expect(getImageSources(editor)).toHaveLength(0)
+      expect(editor.state.doc.firstChild?.type.name).toBe('codeBlock')
+      expect(editor.state.doc.firstChild?.textContent).toBe('ab')
+    } finally {
+      readAsDataURL.mockRestore()
+      editor.destroy()
+    }
+  })
+
   it('leaves clipboard payloads without image files to the default paste handling', () => {
     const editor = createEditor()
     const file = new File(['pdf'], 'document.pdf', { type: 'application/pdf' })

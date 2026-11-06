@@ -789,9 +789,9 @@ describe('frontmatter', () => {
   })
 
   // Content reaches the block through more than the keyboard. These pin the
-  // schema level protections that keep the other routes harmless: `text*` and
-  // `marks: ''` admit nothing but plain text, and `code: true` stops input rules
-  // from firing inside it.
+  // protections that keep the other routes harmless: `text*` and `marks: ''`
+  // admit nothing but plain text, and `code: true` stops input rules from firing
+  // inside it and the image file handler from inserting there.
   describe('other input paths', () => {
     function editorWithCaretInMetadata() {
       const strategy = createStrategy()
@@ -829,18 +829,29 @@ describe('frontmatter', () => {
       editor.destroy()
     })
 
-    // The image file handler inserts at the drop position, which can land here.
-    it('refuses an image dropped onto the block', () => {
+    // An inline image would split the block, the image file handler refuses it.
+    it('refuses an image file pasted into the block', () => {
       const { strategy, editor } = editorWithCaretInMetadata()
-      editor
-        .chain()
-        .insertContentAt(2, { type: 'image', attrs: { src: 'data:image/png;base64,x' } })
-        .run()
+      const readAsDataURL = vi.spyOn(FileReader.prototype, 'readAsDataURL')
+      const event = new Event('paste', { bubbles: true, cancelable: true })
+      Object.defineProperty(event, 'clipboardData', {
+        value: {
+          files: [new File(['image'], 'image.png', { type: 'image/png' })],
+          getData: () => ''
+        }
+      })
 
-      expect(editor.state.doc.firstChild?.childCount).toBe(1)
-      expect(editor.state.doc.firstChild?.textContent).toBe('a: 1')
-      expect(serializeBody(strategy, editor)).toBe('---\na: 1\n---\n\n# Heading')
-      editor.destroy()
+      try {
+        editor.view.dom.dispatchEvent(event)
+
+        expect(readAsDataURL).not.toHaveBeenCalled()
+        expect(editor.state.doc.firstChild?.childCount).toBe(1)
+        expect(editor.state.doc.firstChild?.textContent).toBe('a: 1')
+        expect(serializeBody(strategy, editor)).toBe('---\na: 1\n---\n\n# Heading')
+      } finally {
+        readAsDataURL.mockRestore()
+        editor.destroy()
+      }
     })
   })
 

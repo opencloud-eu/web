@@ -13,7 +13,7 @@ import EmojiPickerModal from '../../components/Modals/EmojiPickerModal.vue'
 import { arrayBufferToDataUrl, withoutExtension } from '../../helpers'
 import { TextEditorState } from '../types'
 import { requestLinkPanel, printEditorContent } from '../helpers'
-import { supportedImageMimeTypes } from '../extensions/imageFileHandler'
+import { canInsertImageAt, supportedImageMimeTypes } from '../extensions/imageFileHandler'
 import TextEditorSearchAndReplacePanel from '../components/TextEditorSearchAndReplacePanel.vue'
 import TextEditorTableSizeSelector from '../components/TextEditorTableSizeSelector.vue'
 
@@ -705,12 +705,15 @@ export function useEditorActions(state: TextEditorState) {
     })
   }
 
+  const canInsertImage = (editor: Editor) => canInsertImageAt(editor.state.selection.$from)
+
   const imageUrl = (): EditorAction => ({
     id: 'image-url',
     title: $gettext('Image from URL'),
     description: $gettext('Insert an image from a web URL'),
     icon: 'link-line',
     keywords: ['image', 'picture', 'url'],
+    isEnabled: canInsertImage,
     showInToolbar: false,
     toolbarAction: (editor) => dispatchImageModal(editor),
     slashCommandAction: ({ editor, range }) => {
@@ -725,6 +728,7 @@ export function useEditorActions(state: TextEditorState) {
     description: $gettext('Upload an image from your device'),
     icon: 'image-line',
     keywords: ['image', 'picture', 'upload', 'file'],
+    isEnabled: canInsertImage,
     showInToolbar: false,
     showInSlashCommands: true,
     toolbarAction: (editor) => insertImageFromFile(editor),
@@ -740,6 +744,7 @@ export function useEditorActions(state: TextEditorState) {
     description: $gettext('Insert an image from your cloud files'),
     icon: 'cloud-line',
     keywords: ['image', 'picture', 'cloud'],
+    isEnabled: canInsertImage,
     showInSlashCommands: !unref(isPublicLinkContext),
     showInToolbar: false,
     toolbarAction: (editor) => openCloudImagePicker(editor),
@@ -754,6 +759,7 @@ export function useEditorActions(state: TextEditorState) {
     title: $gettext('Insert image'),
     icon: 'image-line',
     keywords: ['image', 'picture', 'upload', 'url', 'cloud'],
+    isEnabled: canInsertImage,
     showInSlashCommands: false,
     childActions: [imageUpload(), imageUrl(), ...(unref(isPublicLinkContext) ? [] : [imageCloud()])]
   })

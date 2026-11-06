@@ -139,20 +139,6 @@ export function registerMarkdownListTokenizer(instance: Marked): void {
   })
 }
 
-/**
- * Markdown reads an image line below text as part of that paragraph. Tiptap puts a
- * blank line before paragraphs only, so images are written as paragraphs, which
- * parse back into images. An image after an empty paragraph goes on the marker line.
- */
-function withImageParagraphs(content: JSONContent[]): JSONContent[] {
-  const wrapped = content.map((child) =>
-    child.type === 'image' ? { type: 'paragraph', content: [child] } : child
-  )
-  const [first, ...rest] = content
-  const isEmptyParagraph = first?.type === 'paragraph' && !first.content?.length
-  return isEmptyParagraph && rest[0]?.type === 'image' ? wrapped.slice(1) : wrapped
-}
-
 export const MarkdownListItem = ListItem.extend({
   parseMarkdown(token, helpers) {
     const itemToken = token.task ? keepCheckboxAsText(token) : token
@@ -171,8 +157,8 @@ export const MarkdownListItem = ListItem.extend({
   },
 
   renderMarkdown(node, h, ctx) {
-    const content = withImageParagraphs(node.content ?? [])
-    const rendered: string = this.parent?.({ ...node, content }, h, ctx) ?? ''
+    const content = node.content ?? []
+    const rendered: string = this.parent?.(node, h, ctx) ?? ''
     if (content[0]?.content?.length) {
       return rendered
     }

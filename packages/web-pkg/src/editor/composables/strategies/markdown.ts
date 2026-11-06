@@ -98,7 +98,10 @@ export const useStrategyMarkdown = (
         return title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`
       }
     }).configure({
-      inline: false,
+      // Markdown images are inline, e.g. next to text or in table cells. As blocks
+      // they make their paragraph invalid and the yjs binding drops it.
+      // FIXME: see https://github.com/ueberdosis/tiptap/issues/8714
+      inline: true,
       allowBase64: true,
       resize: {
         enabled: true,

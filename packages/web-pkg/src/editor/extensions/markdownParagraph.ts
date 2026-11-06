@@ -132,6 +132,15 @@ function stripLineIndentation(content: JSONContent[]): JSONContent[] {
  */
 export const MarkdownParagraph = Paragraph.extend({
   parseMarkdown(token, helpers) {
+    // Images are inline, tiptap unwraps a lone one, which leaves it where only
+    // blocks are allowed and the yjs binding drops it.
+    // FIXME: see https://github.com/ueberdosis/tiptap/issues/8714. Can go once
+    // tiptap creates valid content for images.
+    const tokens = token.tokens ?? []
+    if (tokens.length === 1 && tokens[0].type === 'image') {
+      return helpers.createNode('paragraph', undefined, helpers.parseInline(tokens))
+    }
+
     const result = this.parent?.(token, helpers)
 
     if (!result || Array.isArray(result) || !result.content) {

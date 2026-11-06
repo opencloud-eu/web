@@ -13,6 +13,16 @@ vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (text: string) => text })
 }))
 
+function inlineNodeTypes(editor: Editor): string[] {
+  const types: string[] = []
+  editor.state.doc.descendants((node) => {
+    if (node.isInline) {
+      types.push(node.type.name)
+    }
+  })
+  return types
+}
+
 describe('markdown raw html roundtrip', () => {
   beforeEach(() => {
     createTestingPinia()
@@ -33,8 +43,15 @@ describe('markdown raw html roundtrip', () => {
       '> <div>\n> quoted\n> </div>',
       '<img src="logo.png" alt="Logo" align="right">',
       'See <a\n   href="https://x.y">here</a>.',
+      'Badge [<img src="a.png" width="100" />](https://x.y) end',
       '<img\n  src="a.png"\n  width="100">',
-      '<img src="a.png" alt="say &quot;hi&quot;" width="100">'
+      '<img src="a.png" alt="say &quot;hi&quot;" width="100">',
+      '<img src="logo.png" width="200">\n<h1>Project</h1>',
+      '<img src="a.png" width="100" />\n<!-- comment -->\ntext',
+      '<img src="logo.png" alt="logo">\n<span>Some *text*</span>',
+      '<img src="logo.png" width="200">\n<br>',
+      'Text <img src="my pic.png"> more',
+      'Text <img src="a.png" alt="x]y"> more'
     ])('saves %j unchanged', (markdown) => {
       const { serialized, reserialized } = expectStableRoundtrip(markdown)
       expect(serialized).toBe(markdown)
@@ -50,17 +67,42 @@ describe('markdown raw html roundtrip', () => {
       const { editor, serialized } = load(
         '<img src="a.png" alt="x" title="t" width="100" height="50" />'
       )
-      expect(editor.getJSON().content?.[0]).toMatchObject({
+      expect(editor.getJSON().content?.[0].content?.[0]).toMatchObject({
         type: 'image',
         attrs: { src: 'a.png', alt: 'x', title: 't', width: 100, height: 50 }
       })
       expect(serialized).toBe('<img src="a.png" alt="x" title="t" width="100" height="50" />')
     })
 
+    it('still parses resized images next to text', () => {
+      const markdown = 'Some text <img src="a.png" width="100" /> more'
+      const { editor, serialized } = expectStableRoundtrip(markdown)
+      expect(editor.getJSON().content?.[0].content?.[1]).toMatchObject({
+        type: 'image',
+        attrs: { src: 'a.png', width: 100 }
+      })
+      expect(serialized).toBe(markdown)
+    })
+
+    it.each([
+      ['<img src="a.png" width="100" />  \ncaption', ['image', 'hardBreak', 'text']],
+      ['- <img src="a.png" width="100" />  \ncaption', ['image', 'hardBreak', 'text']],
+      ['> <img src="a.png" width="100" />  \n> caption', ['image', 'hardBreak', 'text']],
+      ['<img src="a.png" width="100" />\n![](b.png)', ['image', 'text', 'image']],
+      [
+        '<img src="a.png" width="100" />\n<img src="b.png" height="50" /> caption',
+        ['image', 'text', 'image', 'text']
+      ]
+    ])('still parses resized images starting a paragraph in %j', (markdown, expected) => {
+      const { editor, serialized } = expectStableRoundtrip(markdown)
+      expect(inlineNodeTypes(editor)).toEqual(expected)
+      expect(serialized).toBe(markdown)
+    })
+
     it('still parses resized images with a bare ampersand', () => {
       const markdown = '<img src="a.png?x=1&y=2" alt="Tom & Jerry" width="120" />'
       const { editor, serialized } = expectStableRoundtrip(markdown)
-      expect(editor.getJSON().content?.[0]).toMatchObject({
+      expect(editor.getJSON().content?.[0].content?.[0]).toMatchObject({
         type: 'image',
         attrs: { src: 'a.png?x=1&y=2', alt: 'Tom & Jerry', width: 120 }
       })
@@ -219,6 +261,15 @@ describe('markdown raw html roundtrip', () => {
           ]
         }
       ])
+    })
+
+    it.each([
+      ['<img src="a.png" width="100" />  \ncaption', ['image', 'hardBreak', 'text']],
+      ['<img src="a.png" width="100" />\n![](b.png)', ['image', 'text', 'image']]
+    ])('shows resized images starting a paragraph in %j', (markdown, expected) => {
+      const editor = createEditor(createStrategy({ renderHtml: true }), markdown)
+      expect(editor.state.doc.childCount).toBe(1)
+      expect(inlineNodeTypes(editor)).toEqual(expected)
     })
 
     it('still decodes named entities', () => {
