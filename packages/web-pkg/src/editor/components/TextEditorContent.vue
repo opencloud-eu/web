@@ -120,44 +120,8 @@ const onDragHandleNodeChange = ({ node, pos }: { node: ProseMirrorNode | null; p
   isFrontmatterNode.value = node?.type.name === 'frontmatter'
 }
 
-const openSlashMenu = () => {
-  if (!textEditor.editor.value) {
-    return
-  }
-
-  // Use the position from the drag handle's current node
-  if (currentDragHandleNodePos.value !== null) {
-    const pos = currentDragHandleNodePos.value
-    const node = textEditor.editor.value.state.doc.nodeAt(pos)
-
-    if (node) {
-      // Check if node has content
-      const hasContent = node.content.size > 0
-
-      if (hasContent) {
-        // Insert new line after the node
-        const afterPos = pos + node.nodeSize
-        textEditor.editor.value
-          .chain()
-          .focus()
-          .insertContentAt(afterPos, { type: 'paragraph' })
-          .setTextSelection(afterPos + 1)
-          .insertContent('/')
-          .run()
-      } else {
-        // Node is empty, insert at the beginning
-        textEditor.editor.value
-          .chain()
-          .focus()
-          .setTextSelection(pos + 1)
-          .insertContent('/')
-          .run()
-      }
-    }
-  } else {
-    // Fallback: insert at current position
-    textEditor.editor.value.commands.insertContent('/')
-  }
+function openSlashMenu() {
+  unref(textEditor.editor)?.commands.openSlashCommandMenu(unref(currentDragHandleNodePos))
 }
 
 function applyHljsThemeCss() {
