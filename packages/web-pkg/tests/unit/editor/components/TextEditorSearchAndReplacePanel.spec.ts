@@ -171,6 +171,86 @@ describe('TextEditorSearchAndReplacePanel', () => {
     expect(wrapper.find('[data-testid="editor-search-result-counter"]').text()).toBe('2 / 2')
   })
 
+  describe('scrolling to the current result', () => {
+    function mountPanel() {
+      const { editor, triggerTransaction } = createEditorMock()
+      const scrollIntoView = vi.fn()
+      editor.view = {
+        domAtPos: vi.fn(() => {
+          const node = document.createElement('span')
+          node.scrollIntoView = scrollIntoView
+          return { node }
+        })
+      }
+      mount(TextEditorSearchAndReplacePanel, {
+        props: {
+          editor,
+          closeMenu: vi.fn(),
+          ...createSearchProps(),
+          searchSearchTerm: 'needle'
+        },
+        global: {
+          plugins: [...defaultPlugins()],
+          stubs: { OcIcon: true }
+        }
+      })
+      function setSearch(
+        searchTerm: string,
+        results: Array<{ from: number; to: number }>,
+        currentIndex = 0
+      ) {
+        editor.storage.findAndReplace.searchTerm = searchTerm
+        editor.storage.findAndReplace.results = results
+        editor.storage.findAndReplace.currentIndex = results.length ? currentIndex : null
+        triggerTransaction()
+      }
+      return { editor, scrollIntoView, setSearch }
+    }
+
+    it('scrolls to the new current result when the search term changes but the position stays the same', () => {
+      const { editor, scrollIntoView, setSearch } = mountPanel()
+      setSearch('last', [{ from: 500, to: 504 }])
+      expect(editor.view.domAtPos).toHaveBeenLastCalledWith(500)
+      expect(scrollIntoView).toHaveBeenCalledTimes(1)
+
+      setSearch('first', [
+        { from: 1, to: 6 },
+        { from: 100, to: 105 }
+      ])
+      expect(editor.view.domAtPos).toHaveBeenLastCalledWith(1)
+      expect(scrollIntoView).toHaveBeenCalledTimes(2)
+    })
+
+    it('scrolls to the current result when a search option changes', () => {
+      const { editor, scrollIntoView, setSearch } = mountPanel()
+      setSearch('needle', [
+        { from: 1, to: 7 },
+        { from: 100, to: 106 }
+      ])
+      expect(scrollIntoView).toHaveBeenCalledTimes(1)
+
+      editor.storage.findAndReplace.caseSensitive = true
+      setSearch('needle', [{ from: 100, to: 106 }])
+      expect(editor.view.domAtPos).toHaveBeenLastCalledWith(100)
+      expect(scrollIntoView).toHaveBeenCalledTimes(2)
+    })
+
+    it('does not scroll when the document changes but the current result stays the same', () => {
+      const { scrollIntoView, setSearch } = mountPanel()
+      setSearch('needle', [
+        { from: 10, to: 16 },
+        { from: 100, to: 106 }
+      ])
+      expect(scrollIntoView).toHaveBeenCalledTimes(1)
+
+      setSearch('needle', [
+        { from: 12, to: 18 },
+        { from: 102, to: 108 }
+      ])
+      expect(scrollIntoView).toHaveBeenCalledTimes(1)
+    })
+  })
+
   describe('result announcement', () => {
     beforeEach(() => {
       vi.useFakeTimers()
