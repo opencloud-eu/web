@@ -1,6 +1,7 @@
 import {
   GraphSharePermission,
   isIncomingShareResource,
+  isProjectSpaceResource,
   isPublicSpaceResource,
   isTrashResource,
   Resource,
@@ -26,6 +27,10 @@ export const useCanListShares = () => {
       return false
     }
     if (isTrashResource(resource)) {
+      return false
+    }
+    if (isProjectSpaceResource(resource) && resource.disabled) {
+      // the server doesn't list the permissions of disabled spaces
       return false
     }
     if (isIncomingShareResource(resource)) {

@@ -314,6 +314,46 @@ describe('FileSideBar', () => {
         expect(showErrorMessage).not.toHaveBeenCalled()
       })
     })
+    describe('when a disabled project space is selected', () => {
+      it('does not load the shares and shows no error message', async () => {
+        const space = mock<SpaceResource>({
+          id: 'space-id',
+          fileId: 'space-id',
+          driveType: 'project',
+          disabled: true
+        })
+        const listPermissions = vi.fn().mockRejectedValue(new Error('not found'))
+        createWrapper({ item: space, listPermissions })
+        await flushPromises()
+
+        expect(listPermissions).not.toHaveBeenCalled()
+        const { showErrorMessage } = useMessages()
+        expect(showErrorMessage).not.toHaveBeenCalled()
+      })
+      it('loads the shares once the space gets enabled', async () => {
+        const space = mock<SpaceResource>({
+          id: 'space-id',
+          fileId: 'space-id',
+          driveType: 'project',
+          disabled: true,
+          mdate: 'Mon, 02 Nov 2026 10:00:00 GMT'
+        })
+        const listPermissions = vi
+          .fn()
+          .mockResolvedValue({ shares: [], allowedActions: [], allowedRoles: [] })
+        createWrapper({ item: space, listPermissions })
+        await flushPromises()
+        expect(listPermissions).not.toHaveBeenCalled()
+
+        const { selectedResources } = vi.mocked(useSelectedResources)()
+        selectedResources.value = [
+          { ...space, disabled: false, mdate: 'Mon, 02 Nov 2026 10:05:00 GMT' } as SpaceResource
+        ]
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalled()
+      })
+    })
     describe('loadVersionsTask', () => {
       beforeEach(() => {
         canListVersionsMock.mockReturnValue(true)
