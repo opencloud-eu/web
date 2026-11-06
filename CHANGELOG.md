@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: scroll to the current search match when the search term changes [[#4314](https://github.com/opencloud-eu/web/pull/4314)]
 - fix: keep a space when access remains after a member removal [[#4312](https://github.com/opencloud-eu/web/pull/4312)]
 - fix: keep image embeds in markdown when saving [[#4340](https://github.com/opencloud-eu/web/pull/4340)]
 - fix: copy only the selected content in the markdown editor [[#4271](https://github.com/opencloud-eu/web/pull/4271)]
