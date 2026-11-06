@@ -24,7 +24,7 @@ import {
 } from '../../../../src/container/sse'
 import { RouteLocation } from 'vue-router'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { createTestingPinia, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { Language } from 'vue3-gettext'
@@ -359,27 +359,74 @@ describe('file events', () => {
         expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
       }
     )
-    it('does not change the route of an app when the folder of its file has been renamed', async () => {
-      const resourceToRename = mock<Resource>({
-        id: 'currenFolder!currentFolder',
-        storageId: 'space1',
-        parentFolderId: 'space1'
+    it('keeps an app working with the new path when the folder of its file has been renamed', async () => {
+      const space = mock<SpaceResource>({
+        id: 'space1',
+        webDavPath: '/spaces/space1',
+        getDriveAliasAndItem: ({ path }: Resource) =>
+          urlJoin('personal/admin', path, { leadingSlash: false })
       })
-      const mocks = getMocks({ resources: [resourceToRename], currentRouteName: 'preview-media' })
+      const currentFolder = mock<Resource>({
+        id: 'space1!pics',
+        fileId: 'space1!pics',
+        storageId: 'space1',
+        path: '/pics',
+        isFolder: true
+      })
+      const files = ['1.jpg', '3.jpg'].map(
+        (name) =>
+          ({
+            id: `space1!${name}`,
+            name,
+            path: `/pics/${name}`,
+            webDavPath: `/spaces/space1/pics/${name}`,
+            downloadURL: `https://example.org/dav/spaces/space1/pics/${name}?signature`
+          }) as Resource
+      )
+      const query = {
+        fileId: 'space1!1.jpg',
+        contextRouteName: 'files-spaces-generic',
+        contextRouteParams: { driveAliasAndItem: 'personal/admin/pics' },
+        contextRouteQuery: { fileId: 'space1!pics' }
+      }
+      const mocks = getMocks({
+        currentFolder,
+        resources: files,
+        spaces: [space],
+        currentRoute: mock<RouteLocation>({
+          name: 'preview-media',
+          params: { driveAliasAndItem: 'personal/admin/pics/1.jpg' },
+          query: query as unknown as RouteLocation['query']
+        })
+      })
       mocks.clientService.webdav.getFileInfo.mockResolvedValue(
-        mock<Resource>({ ...resourceToRename, name: 'folder2', parentFolderId: 'space1' })
+        mock<Resource>({ ...currentFolder, name: 'pics2', path: '/pics2' })
       )
       const sseData = mock<EventSchemaType>({
-        itemid: resourceToRename.id,
-        spaceid: resourceToRename.storageId,
-        parentitemid: resourceToRename.parentFolderId
+        itemid: currentFolder.id,
+        spaceid: currentFolder.storageId,
+        parentitemid: 'space1'
       })
       await onSSEItemRenamedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'folder2' })
+        expect.objectContaining({ name: 'pics2' })
+      )
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledTimes(2)
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'space1!3.jpg',
+          name: '3.jpg',
+          path: '/pics2/3.jpg',
+          webDavPath: '/spaces/space1/pics2/3.jpg',
+          downloadURL: undefined
+        })
       )
       expect(mocks.router.push).not.toHaveBeenCalled()
-      expect(mocks.router.replace).not.toHaveBeenCalled()
+      expect(mocks.router.replace).toHaveBeenCalledWith({
+        name: 'preview-media',
+        params: { driveAliasAndItem: 'personal/admin/pics2/1.jpg' },
+        query: { ...query, contextRouteParams: { driveAliasAndItem: 'personal/admin/pics2' } }
+      })
     })
     it('does not trigger any action when initiator ids are identical', async () => {
       const resourceToRename = mock<Resource>({
@@ -927,13 +974,15 @@ const getMocks = ({
   resources = [],
   spaces = [mockDeep<SpaceResource>({ id: 'space1' })],
   currentSpace = undefined,
-  currentRouteName = 'files-spaces-generic'
+  currentRouteName = 'files-spaces-generic',
+  currentRoute = mock<RouteLocation>({ name: currentRouteName })
 }: {
   currentFolder?: Resource
   resources?: Resource[]
   spaces?: SpaceResource[]
   currentSpace?: SpaceResource
   currentRouteName?: string
+  currentRoute?: RouteLocation
 } = {}) => {
   createTestingPinia()
   const resourcesStore = useResourcesStore()
@@ -950,9 +999,7 @@ const getMocks = ({
   const authStore = useAuthStore()
   const clientService = mockDeep<ClientService>({ initiatorId: 'local1' })
   const previewService = mockDeep<PreviewService>()
-  const { $router: router } = defaultComponentMocks({
-    currentRoute: mock<RouteLocation>({ name: currentRouteName })
-  })
+  const { $router: router } = defaultComponentMocks({ currentRoute })
   const language = mockDeep<Language>({
     $gettext: vi.fn((m) => m)
   })
