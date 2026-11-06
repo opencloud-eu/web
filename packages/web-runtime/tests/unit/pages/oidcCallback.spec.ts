@@ -135,6 +135,20 @@ describe('oidcCallback page', () => {
 
       expect(signInCallbackSpy).not.toHaveBeenCalled()
     })
+
+    it('ignores a token update event without an access token and keeps listening', () => {
+      const { signInCallbackSpy } = mountDelegated()
+
+      expect(() => dispatchTokenMessage({ source: parentWindow })).not.toThrow()
+      dispatchTokenMessage({ source: parentWindow, data: {} })
+      expect(signInCallbackSpy).not.toHaveBeenCalled()
+
+      dispatchTokenMessage({
+        source: parentWindow,
+        data: { access_token: 'access-token', session_id: 'session-id' }
+      })
+      expect(signInCallbackSpy).toHaveBeenCalledWith('access-token', 'session-id')
+    })
   })
 })
 
@@ -147,7 +161,7 @@ function dispatchTokenMessage({
   source: unknown
   origin?: string
   name?: string
-  data: Record<string, string>
+  data?: Record<string, string>
 }) {
   const event = new MessageEvent('message', { origin, data: { name, data } })
   Object.defineProperty(event, 'source', { value: source })
