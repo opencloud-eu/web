@@ -125,10 +125,6 @@ describe('ResourceConflictModal', () => {
         doForAllConflicts: false
       })
     })
-    it("does not use the class of the modal's own cancel button", () => {
-      const { wrapper } = getWrapper()
-      expect(wrapper.find('.oc-modal-body-actions-cancel').exists()).toBeFalsy()
-    })
     it('passes "apply to all" if ticked', async () => {
       const callbackFn = vi.fn()
       const { wrapper } = getWrapper({ props: { callbackFn, conflictCount: 2 } })

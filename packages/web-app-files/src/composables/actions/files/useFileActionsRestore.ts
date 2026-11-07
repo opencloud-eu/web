@@ -154,7 +154,7 @@ export const useFileActionsRestore = ({
         resource: conflict,
         strategy: resolvedConflict.strategy
       })
-      // the dialog was closed, the whole restore gets cancelled
+      // the dialog was cancelled, the whole restore gets cancelled
       if (resolvedConflict.strategy === ResolveStrategy.CANCEL) {
         return resolvedConflicts
       }
