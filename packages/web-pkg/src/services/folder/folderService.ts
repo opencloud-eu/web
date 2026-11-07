@@ -121,7 +121,13 @@ export class FolderService {
         }
         const status = e?.statusCode || e?.response?.status
         if (status === 401) {
-          return authService.handleAuthError(unref(router.currentRoute), e)
+          // keep the load running until the auth error is handled, e.g. the token got renewed
+          try {
+            yield authService.handleAuthError(unref(router.currentRoute), e)
+          } catch (authError) {
+            console.error(authError)
+          }
+          return
         }
         // a missing resource is shown as such by the views
         if (status === 404) {

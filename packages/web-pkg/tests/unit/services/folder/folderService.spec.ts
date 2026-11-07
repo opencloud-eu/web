@@ -215,6 +215,39 @@ describe('FolderService', () => {
         }
       )
 
+      it('keeps loading until the auth error is handled', async () => {
+        const { task, resourcesStore, clientService, authService } = getWrapper(
+          new FolderLoaderSpace()
+        )
+        let finishAuthHandling: () => void
+        authService.handleAuthError.mockReturnValue(
+          new Promise<void>((resolve) => (finishAuthHandling = resolve))
+        )
+        listFiles(clientService).mockRejectedValue(davError(401))
+
+        task.perform(space, '/folder')
+        await flushPromises()
+        expect(authService.handleAuthError).toHaveBeenCalled()
+        expect(resourcesStore.resourcesLoading).toBe(true)
+
+        finishAuthHandling()
+        await flushPromises()
+        expect(resourcesStore.resourcesLoading).toBe(false)
+      })
+
+      it('finishes the load without an error message when handling the auth error fails', async () => {
+        const { task, resourcesStore, messagesStore, clientService, authService } = getWrapper(
+          new FolderLoaderSpace()
+        )
+        authService.handleAuthError.mockRejectedValue(new Error('auth handling failed'))
+        listFiles(clientService).mockRejectedValue(davError(401))
+
+        await expect(task.perform(space, '/folder')).resolves.toBeUndefined()
+
+        expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
+        expect(resourcesStore.resourcesLoading).toBe(false)
+      })
+
       it('leaves a 401 of an outdated load alone', async () => {
         const { task, messagesStore, clientService, authService } = getWrapper(
           new FolderLoaderSpace()
