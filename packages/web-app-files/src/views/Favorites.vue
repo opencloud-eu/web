@@ -257,7 +257,7 @@ const {
   fileListHeaderY,
   paginationPages,
   paginationPage,
-  loadResourcesTask,
+  loadResources,
   selectedResourceSpace,
   handleSort,
   isResourceInSelection,
@@ -280,7 +280,7 @@ const breadcrumbs = computed(() => {
     {
       id: uuidV4(),
       text: $gettext('Favorites'),
-      onClick: () => loadResourcesTask.perform(),
+      onClick: () => loadResources(),
       isStaticNav: true
     }
   ]
@@ -299,7 +299,7 @@ onMounted(async () => {
     loadAvailableTagsTask.perform()
   }
 
-  await loadResourcesTask.perform()
+  await loadResources()
   scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
 })
 
@@ -328,7 +328,7 @@ watch(selectedResourcesIds, async (ids) => {
 watch(
   [lastModifiedParam, mediaTypeParam, tagParam],
   async () => {
-    await loadResourcesTask.perform()
+    await loadResources()
   },
   { deep: true }
 )

@@ -89,12 +89,9 @@ export class FolderService {
       return
     }
 
-    // loads can overlap, only the latest one may report its failure
-    let latestLoadId = 0
-
+    // a new load cancels the running one, so an outdated load can neither write nor report anything
     return useTask(function* (...args) {
       const [signal] = args
-      const loadId = ++latestLoadId
       const context = {
         clientService,
         configStore,
@@ -116,9 +113,6 @@ export class FolderService {
           .canceledOn(signal)
       } catch (e) {
         console.error(e)
-        if (loadId !== latestLoadId) {
-          return
-        }
         const status = e?.statusCode || e?.response?.status
         if (status === 401) {
           // keep the load running until the auth error is handled, e.g. the token got renewed
@@ -137,7 +131,7 @@ export class FolderService {
       } finally {
         resourcesStore.finishResourcesLoading()
       }
-    })
+    }).restartable()
   }
 }
 
