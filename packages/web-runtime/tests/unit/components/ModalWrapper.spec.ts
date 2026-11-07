@@ -1,7 +1,13 @@
-import { Modal, useModals } from '@opencloud-eu/web-pkg'
-import { PropType, defineComponent } from 'vue'
+import { ConflictDialog, Modal, ResolveStrategy, useModals } from '@opencloud-eu/web-pkg'
+import { Resource } from '@opencloud-eu/web-client'
+import { PropType, defineComponent, nextTick } from 'vue'
 import ModalWrapper from '../../../src/components/ModalWrapper.vue'
-import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
+import {
+  defaultPlugins,
+  mount,
+  shallowMount,
+  defaultComponentMocks
+} from '@opencloud-eu/web-test-helpers'
 
 const CustomModalComponent = defineComponent({
   name: 'CustomModalComponent',
@@ -122,6 +128,46 @@ describe('ModalWrapper', () => {
       expect(onCancel).toHaveBeenCalled()
     })
   })
+  describe('resource conflict dialog', () => {
+    it.each([
+      { button: 'cancel button', selector: '.oc-modal-body-actions-cancel' },
+      { button: 'close button', selector: '.oc-modal-title-actions-cancel' }
+    ])('cancels the whole operation via the $button', async ({ selector }) => {
+      const { wrapper, promise } = await openConflictDialog()
+
+      await wrapper.find(selector).trigger('click')
+
+      await expect(promise).resolves.toEqual({
+        strategy: ResolveStrategy.CANCEL,
+        doForAllConflicts: false
+      })
+      expect(useModals().modals).toEqual([])
+    })
+    it('skips via its own skip button', async () => {
+      const { wrapper, promise } = await openConflictDialog()
+
+      await wrapper.find('.oc-modal-body-actions-skip').trigger('click')
+
+      await expect(promise).resolves.toEqual({
+        strategy: ResolveStrategy.SKIP,
+        doForAllConflicts: false
+      })
+      expect(useModals().modals).toEqual([])
+    })
+    it('renders cancel, skip, replace and keep both in this order', async () => {
+      const { wrapper } = await openConflictDialog()
+
+      const buttons = wrapper.findAll('.oc-modal-body-actions-grid button')
+
+      expect(buttons.map((button) => button.text())).toEqual([
+        'Cancel',
+        'Skip',
+        'Replace',
+        'Keep both'
+      ])
+      expect(wrapper.findAll('.oc-modal-body-actions-cancel')).toHaveLength(1)
+    })
+  })
   describe('method "onModalInput"', () => {
     it('calls the modal "onInput" if given', () => {
       const activeModal = modal({ onInput: vi.fn() })
@@ -163,4 +209,25 @@ function getShallowWrapper({ modals = [] }: { modals?: Modal[] } = {}) {
       }
     })
   }
+}
+
+async function openConflictDialog() {
+  const mocks = defaultComponentMocks()
+  const wrapper = mount(ModalWrapper, {
+    attachTo: document.body,
+    global: {
+      plugins: [...defaultPlugins({ piniaOptions: { stubActions: false } })],
+      mocks,
+      provide: mocks
+    }
+  })
+  onTestFinished(() => wrapper.unmount())
+  const conflictDialog = new ConflictDialog((s: string) => s, vi.fn())
+  const promise = conflictDialog.resolveFileExists(
+    { name: 'a.txt', isFolder: false } as Resource,
+    1
+  )
+  await nextTick()
+  await nextTick()
+  return { wrapper, promise }
 }

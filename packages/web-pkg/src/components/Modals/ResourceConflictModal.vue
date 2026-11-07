@@ -10,7 +10,7 @@
     />
   </div>
   <teleport defer :to="`#${modalActionsTarget(modal)}`">
-    <oc-button class="oc-modal-body-actions-cancel ml-2" @click="onSkip">
+    <oc-button class="oc-modal-body-actions-skip ml-2" @click="onSkip">
       {{ $gettext('Skip') }}
     </oc-button>
     <oc-button
@@ -123,7 +123,7 @@ const onSkip = () => {
   })
 }
 
-// called by the modal wrapper when the modal is closed via close button or Escape
+// called by the modal wrapper on its cancel button, close button or Escape
 const onCancel = () => {
   callbackFn({
     strategy: ResolveStrategy.CANCEL,

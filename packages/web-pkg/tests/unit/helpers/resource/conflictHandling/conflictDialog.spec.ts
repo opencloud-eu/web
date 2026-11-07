@@ -340,6 +340,15 @@ describe('conflict dialog', () => {
         expect.objectContaining({ title: 'Folder already exists' })
       )
     })
+    it('shows the close button and a cancel button to cancel the whole operation', () => {
+      setActivePinia(createMockStore())
+      const { dispatchModal } = useModals()
+      const conflictDialog = getConflictDialogInstance()
+      conflictDialog.resolveFileExists(mock<Resource>(), 1)
+      const [options] = vi.mocked(dispatchModal).mock.calls[0]
+      expect(options.showCancelAction).toBe(true)
+      expect(options.hideCancelButton).toBeFalsy()
+    })
     it.each([true, false])('hides the replace action if "hideReplace" is %s', (hideReplace) => {
       setActivePinia(createMockStore())
       const { dispatchModal } = useModals()

@@ -119,17 +119,21 @@ describe('ResourceConflictModal', () => {
     it('calls the callback with the skip strategy', async () => {
       const callbackFn = vi.fn()
       const { wrapper } = getWrapper({ props: { callbackFn } })
-      await wrapper.find('.oc-modal-body-actions-cancel').trigger('click')
+      await wrapper.find('.oc-modal-body-actions-skip').trigger('click')
       expect(callbackFn).toHaveBeenCalledExactlyOnceWith({
         strategy: ResolveStrategy.SKIP,
         doForAllConflicts: false
       })
     })
+    it("does not use the class of the modal's own cancel button", () => {
+      const { wrapper } = getWrapper()
+      expect(wrapper.find('.oc-modal-body-actions-cancel').exists()).toBeFalsy()
+    })
     it('passes "apply to all" if ticked', async () => {
       const callbackFn = vi.fn()
       const { wrapper } = getWrapper({ props: { callbackFn, conflictCount: 2 } })
       await tickApplyToAll(wrapper)
-      await wrapper.find('.oc-modal-body-actions-cancel').trigger('click')
+      await wrapper.find('.oc-modal-body-actions-skip').trigger('click')
       expect(callbackFn).toHaveBeenCalledExactlyOnceWith({
         strategy: ResolveStrategy.SKIP,
         doForAllConflicts: true

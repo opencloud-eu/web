@@ -320,6 +320,30 @@ describe('restore', () => {
     )
   })
 
+  it('should show a close button and a cancel button in the conflict dialog', async () => {
+    let instance: ReturnType<typeof useFileActionsRestore>
+    let space: SpaceResource
+    const { mocks } = getWrapper({
+      setup: (i, { space: s }) => {
+        instance = i
+        space = s
+      }
+    })
+    mocks.$clientService.webdav.listFiles.mockResolvedValue({
+      resource: mock<Resource>(),
+      children: [mock<Resource>({ name: 'dup', isFolder: false })]
+    })
+    const resource = { id: '1', path: '/dup', name: 'dup', type: 'file' } as TrashResource
+
+    unref(instance.actions)[0].handler({ space, resources: [resource] })
+    await flushPromises()
+
+    const { dispatchModal } = useModals()
+    const [options] = vi.mocked(dispatchModal).mock.calls[0]
+    expect(options.showCancelAction).toBe(true)
+    expect(options.hideCancelButton).toBeFalsy()
+  })
+
   it('should not restore a copy whose name is too long for a vault', async () => {
     let instance: ReturnType<typeof useFileActionsRestore>
     let space: SpaceResource
