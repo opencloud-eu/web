@@ -18,9 +18,11 @@ import {
   useAuthService,
   AuthServiceInterface,
   ExtensionRegistry,
-  useExtensionRegistry
+  useExtensionRegistry,
+  useMessages
 } from '../../composables'
 import { unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import { ClientService } from '../../services'
 
 import {
@@ -78,6 +80,8 @@ export class FolderService {
     const sharesStore = useSharesStore()
     const authService = useAuthService()
     const extensionRegistry = useExtensionRegistry()
+    const { showErrorMessage } = useMessages()
+    const { $gettext } = useGettext()
 
     const loader = this.loaders.find((l) => l.isEnabled() && l.isActive(unref(router)))
     if (!loader) {
@@ -85,8 +89,12 @@ export class FolderService {
       return
     }
 
+    // loads can overlap, only the latest one may report its failure
+    let latestLoadId = 0
+
     return useTask(function* (...args) {
       const [signal] = args
+      const loadId = ++latestLoadId
       const context = {
         clientService,
         configStore,
@@ -100,6 +108,7 @@ export class FolderService {
         extensionRegistry
       }
       resourcesStore.startResourcesLoading()
+      resourcesStore.setResourcesLoadFailed(false)
       try {
         // cancel inner load with outer one so the loading state matches store writes
         yield loader
@@ -108,6 +117,15 @@ export class FolderService {
           .canceledOn(signal)
       } catch (e) {
         console.error(e)
+        if (loadId !== latestLoadId) {
+          return
+        }
+        // loaders handle a missing resource themselves, everything else is a failed load
+        resourcesStore.setResourcesLoadFailed(true)
+        if (e?.statusCode === 401 || e?.response?.status === 401) {
+          return authService.handleAuthError(unref(router.currentRoute), e)
+        }
+        showErrorMessage({ title: $gettext('Failed to load files'), errors: [e] })
       } finally {
         resourcesStore.finishResourcesLoading()
       }

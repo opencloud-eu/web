@@ -40,6 +40,19 @@ describe('SharedViaLink view', () => {
       expect(wrapper.find('oc-spinner-stub').exists()).toBeFalsy()
       expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
     })
+    it('does not show the empty message when loading failed', () => {
+      const { wrapper } = getMountedWrapper({
+        viewDefaults: { resourcesLoadFailed: ref(true) }
+      })
+      expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
+    })
+    it('does not show the files table when loading failed', () => {
+      const { wrapper } = getMountedWrapper({
+        files: [mockDeep<OutgoingShareResource>()],
+        viewDefaults: { resourcesLoadFailed: ref(true) }
+      })
+      expect(wrapper.find('resource-table-stub').exists()).toBeFalsy()
+    })
     it('shows "Nothing shared, yet" when there are no shares', () => {
       const { wrapper } = getMountedWrapper()
       expect(wrapper.find('#files-shared-via-link-empty').text()).toContain('Nothing shared, yet')

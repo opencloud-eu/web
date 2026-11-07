@@ -50,6 +50,12 @@ describe('SharedWithMe view', () => {
       const { wrapper } = getMountedWrapper()
       expect(wrapper.find('#app-loading-spinner').exists()).toBeFalsy()
     })
+    it('does not show the shares section when loading failed', () => {
+      const { wrapper } = getMountedWrapper({
+        viewDefaults: { resourcesLoadFailed: ref(true) }
+      })
+      expect(wrapper.find('shared-with-me-section-stub').exists()).toBeFalsy()
+    })
   })
   describe('filter', () => {
     describe('share visibility', () => {

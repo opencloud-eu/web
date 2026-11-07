@@ -169,6 +169,11 @@ export class FolderLoaderSpace implements FolderLoader {
 
         resourcesStore.initResourceList({ currentFolder, resources })
       } catch (error) {
+        // only a missing folder or failed auth means not found, everything else is a failed load
+        if (![401, 404].includes(error.statusCode)) {
+          throw error
+        }
+
         resourcesStore.setCurrentFolder(null)
         console.error(error)
 

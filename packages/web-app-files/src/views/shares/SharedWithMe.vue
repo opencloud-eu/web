@@ -75,7 +75,7 @@
         </template>
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
-      <template v-else>
+      <template v-else-if="!resourcesLoadFailed">
         <shared-with-me-section
           id="files-shared-with-me-view"
           class="h-full"
@@ -178,6 +178,7 @@ const {
   viewSize,
   folderView,
   areResourcesLoading,
+  resourcesLoadFailed,
   sortFields,
   sortBy,
   sortDir,

@@ -98,6 +98,21 @@ describe('GenericSpace view', () => {
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
       expect(wrapper.find('resource-table-stub').exists()).toBeTruthy()
     })
+    it('shows the not found message for a missing folder', () => {
+      const { wrapper } = getMountedWrapper({ currentFolder: null })
+      expect(wrapper.find('#files-list-not-found-message').exists()).toBeTruthy()
+    })
+    it('does not show an empty folder when loading failed', () => {
+      const { wrapper } = getMountedWrapper({ loadFailed: true })
+      expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
+    })
+    it('does not show the files table when loading failed', () => {
+      const { wrapper } = getMountedWrapper({
+        files: [mock<Resource>({ name: 'file.txt' })],
+        loadFailed: true
+      })
+      expect(wrapper.find('resource-table-stub').exists()).toBeFalsy()
+    })
   })
   describe('document title', () => {
     const publishedTitles = (publishSpy: MockInstance) =>
@@ -239,6 +254,16 @@ describe('GenericSpace view', () => {
         expect(focusSpy).toHaveBeenCalledWith({ preventScroll })
       }
     )
+    it.each([
+      { loadFailed: false, hint: 'This folder has no content.' },
+      { loadFailed: true, hint: 'Failed to load files' }
+    ])('announces "$hint" with the breadcrumb after loading', async ({ loadFailed, hint }) => {
+      document.body.innerHTML =
+        '<nav id="files-breadcrumb"><ol><li><button></button></li></ol></nav>'
+      getMountedWrapper({ loadFailed })
+      await flushPromises()
+      expect(document.querySelector('.oc-breadcrumb-sr').textContent).toBe(hint)
+    })
     it('re-loads the resources on space change', async () => {
       const { wrapper, mocks } = getMountedWrapper()
       await flushPromises()
@@ -423,6 +448,7 @@ function getMountedWrapper({
   files = [],
   selectedResources = [],
   loading = false,
+  loadFailed = false,
   currentRoute = { name: 'files-spaces-generic', path: '/' },
   currentFolder = mock<Resource>(),
   space = mock<SpaceResource>({
@@ -441,6 +467,7 @@ function getMountedWrapper({
   files?: Resource[]
   selectedResources?: Resource[]
   loading?: boolean
+  loadFailed?: boolean
   currentRoute?: { name?: string; path?: string; query?: Record<string, string> }
   currentFolder?: Resource
   space?: SpaceResource
@@ -487,6 +514,7 @@ function getMountedWrapper({
     paginatedResources: ref(files.slice(0, 20)),
     selectedResources: ref(selectedResources),
     areResourcesLoading: ref(loading),
+    resourcesLoadFailed: ref(loadFailed),
     storeItems: ref(files)
   })
   vi.mocked(useResourcesViewDefaults).mockImplementation(() => resourcesViewDetailsMock)

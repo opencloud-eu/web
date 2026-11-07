@@ -126,6 +126,13 @@ export const useResourcesStore = defineStore('resources', () => {
     runningResourceLoads.value = Math.max(0, unref(runningResourceLoads) - 1)
   }
 
+  // the last load failed for another reason than a missing resource, so nothing could be listed
+  const resourcesLoadFailed = ref(false)
+
+  const setResourcesLoadFailed = (value: boolean) => {
+    resourcesLoadFailed.value = value
+  }
+
   const selectedIds = ref<string[]>([])
   const latestSelectedId = ref<string>(null)
 
@@ -366,6 +373,8 @@ export const useResourcesStore = defineStore('resources', () => {
     resourcesLoading,
     startResourcesLoading,
     finishResourcesLoading,
+    resourcesLoadFailed,
+    setResourcesLoadFailed,
 
     selectedIds,
     selectedIdsSet,

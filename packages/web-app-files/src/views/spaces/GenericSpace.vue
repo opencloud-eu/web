@@ -14,7 +14,7 @@
         @item-dropped="fileDropped"
       />
       <app-loading-spinner v-if="areResourcesLoading" />
-      <template v-else>
+      <template v-else-if="!resourcesLoadFailed">
         <not-found-message
           v-if="folderNotFound"
           :space="space"
@@ -363,6 +363,9 @@ const focusAndAnnounceBreadcrumb = (sameRoute: boolean) => {
   if (unref(folderNotFound)) {
     translatedHint = $gettext('Resource not found')
   }
+  if (unref(resourcesLoadFailed)) {
+    translatedHint = $gettext('Failed to load files')
+  }
 
   document.querySelectorAll('.oc-breadcrumb-sr').forEach((el) => el.remove())
 
@@ -381,6 +384,7 @@ const {
   paginationPage,
   paginationPages,
   areResourcesLoading,
+  resourcesLoadFailed,
   folderView,
   fileListHeaderY,
   selectedResourcesIds,
