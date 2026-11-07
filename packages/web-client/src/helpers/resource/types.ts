@@ -89,7 +89,7 @@ export interface Resource {
   isInVault?: boolean
 
   hasPreview?(): boolean
-  canCreate?(): boolean
+  canCreate?(args?: { user?: User }): boolean
   canUpload?({ user }: { user?: User }): boolean
   canDownload?(): boolean
   canShare?(args?: { user?: User; ability?: Ability }): boolean
