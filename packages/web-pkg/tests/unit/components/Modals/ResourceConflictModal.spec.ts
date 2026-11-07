@@ -115,27 +115,44 @@ describe('ResourceConflictModal', () => {
       })
     })
   })
-  describe('onCancel', () => {
-    it('should call the callback', async () => {
+  describe('skip button', () => {
+    it('calls the callback with the skip strategy', async () => {
       const callbackFn = vi.fn()
       const { wrapper } = getWrapper({ props: { callbackFn } })
-      await (wrapper.vm as any).onCancel()
-      expect(callbackFn).toHaveBeenCalledWith({
+      await wrapper.find('.oc-modal-body-actions-cancel').trigger('click')
+      expect(callbackFn).toHaveBeenCalledExactlyOnceWith({
         strategy: ResolveStrategy.SKIP,
         doForAllConflicts: false
       })
     })
-    it('is exposed so closing the modal via X or Escape skips the conflict', () => {
+    it('passes "apply to all" if ticked', async () => {
       const callbackFn = vi.fn()
-      const { wrapper } = getWrapper({ props: { callbackFn } })
-      wrapper.vm.$.exposed.onCancel()
-      expect(callbackFn).toHaveBeenCalledWith({
+      const { wrapper } = getWrapper({ props: { callbackFn, conflictCount: 2 } })
+      await tickApplyToAll(wrapper)
+      await wrapper.find('.oc-modal-body-actions-cancel').trigger('click')
+      expect(callbackFn).toHaveBeenCalledExactlyOnceWith({
         strategy: ResolveStrategy.SKIP,
+        doForAllConflicts: true
+      })
+    })
+  })
+  describe('onCancel', () => {
+    it('is exposed so closing the modal via X or Escape cancels the whole operation', async () => {
+      const callbackFn = vi.fn()
+      const { wrapper } = getWrapper({ props: { callbackFn, conflictCount: 2 } })
+      await tickApplyToAll(wrapper)
+      wrapper.vm.$.exposed.onCancel()
+      expect(callbackFn).toHaveBeenCalledExactlyOnceWith({
+        strategy: ResolveStrategy.CANCEL,
         doForAllConflicts: false
       })
     })
   })
 })
+
+async function tickApplyToAll(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
+  await wrapper.findComponent({ name: 'OcCheckbox' }).vm.$emit('update:modelValue', true)
+}
 
 function getWrapper({ props = {} } = {}) {
   const mocks = defaultComponentMocks()

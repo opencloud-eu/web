@@ -16,11 +16,13 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import {
   AppBar,
+  ConflictDialog,
   eventBus,
   ResourceTable,
   useBreadcrumbsFromPath,
   useMessages,
-  usePasteWorker
+  usePasteWorker,
+  ResolveStrategy
 } from '@opencloud-eu/web-pkg'
 import { useBreadcrumbsFromPathMock } from '../../../mocks/useBreadcrumbsFromPathMock'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
@@ -348,12 +350,20 @@ describe('GenericSpace view', () => {
       })
     }
 
-    async function dropFileOnFolder({ file, folder }: { file: Resource; folder: Resource }) {
+    async function dropFileOnFolder({
+      file,
+      folder,
+      children = []
+    }: {
+      file: Resource
+      folder: Resource
+      children?: Resource[]
+    }) {
       const { mocks, wrapper } = getMountedWrapper({
         files: [file, folder],
         selectedResources: [file]
       })
-      mocks.$clientService.webdav.listFiles.mockResolvedValue({ children: [] } as ListFilesResult)
+      mocks.$clientService.webdav.listFiles.mockResolvedValue({ children } as ListFilesResult)
       wrapper
         .findComponent<typeof ResourceTable>('resource-table-stub')
         .vm.$emit('fileDropped', 'folder')
@@ -375,6 +385,23 @@ describe('GenericSpace view', () => {
       expect(showErrorMessage).toHaveBeenCalledWith(
         expect.objectContaining({ title: 'Failed to move »f.txt«' })
       )
+    })
+    it('does not move anything when the conflict dialog is closed', async () => {
+      const startWorker = vi.fn()
+      vi.mocked(usePasteWorker).mockReturnValue({ startWorker })
+      const resolveFileExists = vi
+        .spyOn(ConflictDialog.prototype, 'resolveFileExists')
+        .mockResolvedValue({ strategy: ResolveStrategy.CANCEL, doForAllConflicts: false })
+      onTestFinished(() => resolveFileExists.mockRestore())
+
+      await dropFileOnFolder({
+        file: getFile(),
+        folder: getFolder(),
+        children: [mock<Resource>({ name: 'f.txt', path: '/x/f.txt', isFolder: false })]
+      })
+
+      expect(resolveFileExists).toHaveBeenCalledTimes(1)
+      expect(startWorker).not.toHaveBeenCalled()
     })
     it.each([
       { canUpload: false, canBeDeleted: true },
