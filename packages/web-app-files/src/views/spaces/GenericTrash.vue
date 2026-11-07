@@ -24,7 +24,7 @@
         </template>
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
-      <template v-else-if="!resourcesLoadFailed">
+      <template v-else>
         <no-content-message
           v-if="isEmpty"
           id="files-trashbin-empty"
@@ -122,7 +122,6 @@ const resourcesViewDefaults = useResourcesViewDefaults<TrashResource, any, any>(
 
 const {
   areResourcesLoading,
-  resourcesLoadFailed,
   paginatedResources,
   paginationPages,
   paginationPage,

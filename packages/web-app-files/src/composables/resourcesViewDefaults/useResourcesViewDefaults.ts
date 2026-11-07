@@ -54,7 +54,6 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   refreshFileListHeaderPosition(): void
   loadResourcesTask: Task<TT, TU>
   areResourcesLoading: ReadOnlyRef<boolean>
-  resourcesLoadFailed: ReadOnlyRef<boolean>
   storeItems: ReadOnlyRef<T[]>
   sortFields: ReadOnlyRef<SortField[]>
   sortedResources: Ref<T[]>
@@ -86,7 +85,6 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   const resourcesStore = useResourcesStore()
   const extensionRegistry = useExtensionRegistry()
   const storeItems = computed(() => resourcesStore.activeResources) as unknown as Ref<T[]>
-  const resourcesLoadFailed = computed(() => resourcesStore.resourcesLoadFailed)
 
   const { refresh: refreshFileListHeaderPosition, y: fileListHeaderY } = useFileListHeaderPosition()
 
@@ -206,7 +204,6 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     refreshFileListHeaderPosition,
     loadResourcesTask,
     areResourcesLoading,
-    resourcesLoadFailed,
     storeItems,
     sortFields,
     sortedResources: items,

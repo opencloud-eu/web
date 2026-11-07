@@ -66,21 +66,6 @@ describe('GenericTrash view', () => {
         wrapper.findComponent<typeof NoContentMessage>({ name: 'no-content-message' }).exists()
       ).toBeTruthy()
     })
-    it('does not show the empty message when loading failed', () => {
-      const { wrapper } = getMountedWrapper({
-        viewDefaults: { resourcesLoadFailed: ref(true) }
-      })
-      expect(
-        wrapper.findComponent<typeof NoContentMessage>({ name: 'no-content-message' }).exists()
-      ).toBeFalsy()
-    })
-    it('does not show the files table when loading failed', () => {
-      const { wrapper } = getMountedWrapper({
-        files: [mock<Resource>({ id: '1', getDomSelector: vi.fn(() => '') })],
-        viewDefaults: { resourcesLoadFailed: ref(true) }
-      })
-      expect(wrapper.find('resource-table-stub').exists()).toBeFalsy()
-    })
     it('shows the files table when files are available', () => {
       const { wrapper } = getMountedWrapper({
         files: [mock<Resource>({ id: '1', getDomSelector: vi.fn(() => '') })]

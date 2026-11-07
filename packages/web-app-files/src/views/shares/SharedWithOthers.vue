@@ -45,7 +45,7 @@
         </template>
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
-      <template v-else-if="!resourcesLoadFailed">
+      <template v-else>
         <template v-if="isEmpty">
           <no-content-message
             v-if="!storeItems.length"
@@ -185,7 +185,6 @@ const {
   viewMode,
   viewModes,
   areResourcesLoading,
-  resourcesLoadFailed,
   sortBy,
   sortDir,
   sortFields,

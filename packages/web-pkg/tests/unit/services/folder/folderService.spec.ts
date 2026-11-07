@@ -80,8 +80,8 @@ describe('FolderService', () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
     })
 
-    it('shows an error message and flags the load as failed', async () => {
-      const { task, resourcesStore, messagesStore, pendingLoads } = getWrapper()
+    it('shows an error message', async () => {
+      const { task, messagesStore, pendingLoads } = getWrapper()
 
       task.perform()
       await flushPromises()
@@ -93,24 +93,10 @@ describe('FolderService', () => {
         title: 'Failed to load files',
         errors: [error]
       })
-      expect(resourcesStore.resourcesLoadFailed).toBe(true)
-    })
-
-    it('resets the failed flag when the next load starts', async () => {
-      const { task, resourcesStore, pendingLoads } = getWrapper()
-
-      task.perform()
-      await flushPromises()
-      pendingLoads[0].reject(new Error('load failed'))
-      await flushPromises()
-      task.perform()
-      await flushPromises()
-
-      expect(resourcesStore.resourcesLoadFailed).toBe(false)
     })
 
     it('stays silent when the load gets canceled', async () => {
-      const { task, resourcesStore, messagesStore, pendingLoads } = getWrapper()
+      const { task, messagesStore, pendingLoads } = getWrapper()
 
       task.perform()
       await flushPromises()
@@ -119,122 +105,111 @@ describe('FolderService', () => {
       await flushPromises()
 
       expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
-      expect(resourcesStore.resourcesLoadFailed).toBe(false)
     })
 
-    it('stays silent when an older load fails after a newer one succeeded', async () => {
-      const { task, resourcesStore, messagesStore, pendingLoads } = getWrapper()
+    it.each([
+      { status: 500, error: Object.assign(new Error('load failed'), { statusCode: 500 }) },
+      { status: 401, error: Object.assign(new Error('Unauthorized'), { statusCode: 401 }) }
+    ])(
+      'stays silent when an older load fails with $status after a newer one succeeded',
+      async ({ error }) => {
+        const { task, messagesStore, authService, pendingLoads } = getWrapper()
 
-      task.perform()
-      task.perform()
-      await flushPromises()
-      pendingLoads[1].resolve()
-      await flushPromises()
-      pendingLoads[0].reject(new Error('load failed'))
-      await flushPromises()
+        task.perform()
+        task.perform()
+        await flushPromises()
+        pendingLoads[1].resolve()
+        await flushPromises()
+        pendingLoads[0].reject(error)
+        await flushPromises()
 
-      expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
-      expect(resourcesStore.resourcesLoadFailed).toBe(false)
-    })
+        expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
+        expect(authService.handleAuthError).not.toHaveBeenCalled()
+      }
+    )
   })
 
   describe('loaders', () => {
-    const serverError = Object.assign(new Error('Internal Server Error'), { statusCode: 500 })
     const space = mock<SpaceResource>({ id: 'space-id', driveType: 'personal' })
+    const davError = (statusCode: number) => Object.assign(new Error(), { statusCode })
+    const graphError = (status: number) => Object.assign(new Error(), { response: { status } })
+
+    const loaders = [
+      { loader: new FolderLoaderSpace(), request: listFiles, getError: davError },
+      { loader: new FolderLoaderTrashbin(), request: listFiles, getError: davError },
+      { loader: new FolderLoaderFavorites(), request: search, getError: davError },
+      { loader: new FolderLoaderSharedWithMe(), request: listSharedWithMe, getError: graphError },
+      {
+        loader: new FolderLoaderSharedWithOthers(),
+        request: listSharedByMe,
+        getError: graphError
+      },
+      { loader: new FolderLoaderSharedViaLink(), request: listSharedByMe, getError: graphError }
+    ]
 
     beforeEach(() => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
     })
 
-    it.each([
-      { loader: new FolderLoaderSpace(), request: listFiles },
-      { loader: new FolderLoaderTrashbin(), request: listFiles },
-      { loader: new FolderLoaderFavorites(), request: search },
-      { loader: new FolderLoaderSharedWithMe(), request: listSharedWithMe },
-      { loader: new FolderLoaderSharedWithOthers(), request: listSharedByMe },
-      { loader: new FolderLoaderSharedViaLink(), request: listSharedByMe }
-    ])(
-      '$loader.constructor.name shows an error message instead of an empty list or "not found" when $request.name fails',
-      async ({ loader, request }) => {
-        const { task, resourcesStore, messagesStore, clientService } = getWrapperWithLoader(loader)
-        request(clientService).mockRejectedValue(serverError)
+    it.each(loaders)(
+      '$loader.constructor.name shows an error message when $request.name fails',
+      async ({ loader, request, getError }) => {
+        const { task, messagesStore, clientService } = getWrapperWithLoader(loader)
+        const error = getError(500)
+        request(clientService).mockRejectedValue(error)
 
         await task.perform(space, '/folder')
 
         expect(messagesStore.showErrorMessage).toHaveBeenCalledWith({
           title: 'Failed to load files',
-          errors: [serverError]
+          errors: [error]
         })
-        expect(resourcesStore.resourcesLoadFailed).toBe(true)
-        expect(resourcesStore.currentFolder).not.toBeNull()
       }
     )
 
-    it('shows "not found" without an error message when the folder is missing', async () => {
-      const { task, resourcesStore, messagesStore, clientService } = getWrapperWithLoader(
-        new FolderLoaderSpace()
-      )
-      clientService.webdav.listFiles.mockRejectedValue(
-        Object.assign(new Error('Not Found'), { statusCode: 404 })
-      )
+    it.each(loaders)(
+      '$loader.constructor.name shows no error message when $request.name returns 404',
+      async ({ loader, request, getError }) => {
+        const { task, messagesStore, clientService } = getWrapperWithLoader(loader)
+        request(clientService).mockRejectedValue(getError(404))
 
-      await task.perform(space, '/missing')
+        await task.perform(space, '/folder')
 
-      expect(resourcesStore.currentFolder).toBeNull()
-      expect(resourcesStore.resourcesLoadFailed).toBe(false)
-      expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
-    })
+        expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
+      }
+    )
 
-    describe('failed authentication', () => {
-      const davError = Object.assign(new Error('Unauthorized'), { statusCode: 401 })
-      const graphError = Object.assign(new Error('Unauthorized'), { response: { status: 401 } })
+    it.each([
+      ...loaders,
+      { loader: new FolderLoaderSpace(), request: listFiles, getError: graphError }
+    ])(
+      '$loader.constructor.name leaves a 401 ($getError.name) of $request.name to the auth service once',
+      async ({ loader, request, getError }) => {
+        const { task, messagesStore, clientService, authService } = getWrapperWithLoader(loader)
+        const error = getError(401)
+        request(clientService).mockRejectedValue(error)
 
-      // the space loader handles a webdav 401 itself and shows the folder as not found
-      it.each([
-        {
-          loader: new FolderLoaderSpace(),
-          request: listFiles,
-          kind: 'webdav',
-          error: davError,
-          loadFailed: false
-        },
-        {
-          loader: new FolderLoaderSpace(),
-          request: listFiles,
-          kind: 'graph',
-          error: graphError,
-          loadFailed: true
-        },
-        {
-          loader: new FolderLoaderFavorites(),
-          request: search,
-          kind: 'webdav',
-          error: davError,
-          loadFailed: true
-        },
-        {
-          loader: new FolderLoaderSharedWithMe(),
-          request: listSharedWithMe,
-          kind: 'graph',
-          error: graphError,
-          loadFailed: true
-        }
-      ])(
-        '$loader.constructor.name leaves a $kind 401 to the auth service once, without an error message',
-        async ({ loader, request, error, loadFailed }) => {
-          const { task, resourcesStore, messagesStore, clientService, authService } =
-            getWrapperWithLoader(loader)
-          request(clientService).mockRejectedValue(error)
+        await task.perform(space, '/folder')
 
-          await task.perform(space, '/folder')
+        expect(authService.handleAuthError).toHaveBeenCalledTimes(1)
+        expect(authService.handleAuthError).toHaveBeenCalledWith(expect.anything(), error)
+        expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
+      }
+    )
 
-          expect(authService.handleAuthError).toHaveBeenCalledTimes(1)
-          expect(authService.handleAuthError).toHaveBeenCalledWith(expect.anything(), error)
-          expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
-          expect(resourcesStore.resourcesLoadFailed).toBe(loadFailed)
-        }
-      )
-    })
+    it.each([404, 500])(
+      'FolderLoaderSpace shows the folder as not found when listing it fails with %s',
+      async (statusCode) => {
+        const { task, resourcesStore, clientService } = getWrapperWithLoader(
+          new FolderLoaderSpace()
+        )
+        listFiles(clientService).mockRejectedValue(davError(statusCode))
+
+        await task.perform(space, '/folder')
+
+        expect(resourcesStore.currentFolder).toBeNull()
+      }
+    )
   })
 })
 
@@ -305,6 +280,7 @@ function getWrapper() {
   const folderService = new FolderService()
   Reflect.set(folderService, 'loaders', [loader])
   const mocks = defaultComponentMocks()
+  const authService = mock<AuthServiceInterface>()
 
   let task!: FolderLoaderTask
   let resourcesStore!: ReturnType<typeof useResourcesStore>
@@ -317,8 +293,12 @@ function getWrapper() {
       vi.spyOn(messagesStore, 'showErrorMessage')
       task = folderService.getTask()
     },
-    { mocks, provide: mocks, pluginOptions: { piniaOptions: { stubActions: false } } }
+    {
+      mocks,
+      provide: { ...mocks, $authService: authService },
+      pluginOptions: { piniaOptions: { stubActions: false } }
+    }
   )
 
-  return { task, resourcesStore, messagesStore, pendingLoads, innerTasks }
+  return { task, resourcesStore, messagesStore, authService, pendingLoads, innerTasks }
 }

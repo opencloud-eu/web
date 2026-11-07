@@ -35,10 +35,6 @@ describe('GuestSharedWithMe view', () => {
     expect(wrapper.find('#app-loading-spinner').exists()).toBeTruthy()
     expect(wrapper.find('shared-with-me-section-stub').exists()).toBeFalsy()
   })
-  it('does not show the shares section when loading failed', () => {
-    const { wrapper } = getMountedWrapper({ loadFailed: true })
-    expect(wrapper.find('shared-with-me-section-stub').exists()).toBeFalsy()
-  })
   it('lists all received shares including hidden ones, as guests cannot hide shares', () => {
     const files = [
       mock<IncomingShareResource>({ name: 'share1', hidden: false }),
@@ -101,12 +97,10 @@ describe('GuestSharedWithMe view', () => {
 
 function getMountedWrapper({
   loading = false,
-  loadFailed = false,
   files = []
 }: {
   files?: IncomingShareResource[]
   loading?: boolean
-  loadFailed?: boolean
 } = {}) {
   vi.mocked(useResourcesViewDefaults).mockImplementation(({ filterResources }) => {
     // like the real view defaults: filter all resources, then paginate them
@@ -115,8 +109,7 @@ function getMountedWrapper({
       storeItems: ref(files),
       sortedResources,
       paginatedResources: computed(() => unref(sortedResources).slice(0, 20)),
-      areResourcesLoading: ref(loading),
-      resourcesLoadFailed: ref(loadFailed)
+      areResourcesLoading: ref(loading)
     })
   })
 

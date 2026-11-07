@@ -108,7 +108,6 @@ export class FolderService {
         extensionRegistry
       }
       resourcesStore.startResourcesLoading()
-      resourcesStore.setResourcesLoadFailed(false)
       try {
         // cancel inner load with outer one so the loading state matches store writes
         yield loader
@@ -120,10 +119,13 @@ export class FolderService {
         if (loadId !== latestLoadId) {
           return
         }
-        // loaders handle a missing resource themselves, everything else is a failed load
-        resourcesStore.setResourcesLoadFailed(true)
-        if (e?.statusCode === 401 || e?.response?.status === 401) {
+        const status = e?.statusCode || e?.response?.status
+        if (status === 401) {
           return authService.handleAuthError(unref(router.currentRoute), e)
+        }
+        // a missing resource is shown as such by the views
+        if (status === 404) {
+          return
         }
         showErrorMessage({ title: $gettext('Failed to load files'), errors: [e] })
       } finally {

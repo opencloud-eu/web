@@ -48,14 +48,6 @@ describe('Favorites view', () => {
       expect(wrapper.find('oc-spinner-stub').exists()).toBeFalsy()
       expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
     })
-    it('does not show the empty message when loading failed', () => {
-      const { wrapper } = getMountedWrapper({ loadFailed: true })
-      expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
-    })
-    it('does not show the files table when loading failed', () => {
-      const { wrapper } = getMountedWrapper({ files: [mockDeep<Resource>()], loadFailed: true })
-      expect(wrapper.find('resource-table-stub').exists()).toBeFalsy()
-    })
     it('shows the files table when files are available', () => {
       const { wrapper } = getMountedWrapper({ files: [mockDeep<Resource>()] })
       expect(wrapper.find('.no-content-message').exists()).toBeFalsy()
@@ -222,7 +214,6 @@ function getMountedWrapper({
   mocks = {},
   files = [],
   loading = false,
-  loadFailed = false,
   capabilities = {},
   lastModifiedParam = ref<string | null>(null),
   mediaTypeParam = ref<string | null>(null),
@@ -232,7 +223,6 @@ function getMountedWrapper({
   mocks?: Record<string, unknown>
   files?: Resource[]
   loading?: boolean
-  loadFailed?: boolean
   capabilities?: Partial<Capabilities['capabilities']>
   lastModifiedParam?: ReturnType<typeof ref<string | null>>
   mediaTypeParam?: ReturnType<typeof ref<string | null>>
@@ -249,8 +239,7 @@ function getMountedWrapper({
     // like the real view defaults: all resources get sorted, only the first page is shown
     sortedResources: ref(files),
     paginatedResources: ref(files.slice(0, 20)),
-    areResourcesLoading: ref(loading),
-    resourcesLoadFailed: ref(loadFailed)
+    areResourcesLoading: ref(loading)
   })
 
   vi.mocked(useResourcesViewDefaults).mockImplementation(() => {
