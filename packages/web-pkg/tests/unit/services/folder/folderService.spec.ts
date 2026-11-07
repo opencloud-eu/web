@@ -154,7 +154,7 @@ describe('FolderService', () => {
     it.each(loaders)(
       '$loader.constructor.name shows an error message when $request.name fails',
       async ({ loader, request, getError }) => {
-        const { task, messagesStore, clientService } = getWrapperWithLoader(loader)
+        const { task, messagesStore, clientService } = getWrapper(loader)
         const error = getError(500)
         request(clientService).mockRejectedValue(error)
 
@@ -170,7 +170,7 @@ describe('FolderService', () => {
     it.each(loaders)(
       '$loader.constructor.name shows no error message when $request.name returns 404',
       async ({ loader, request, getError }) => {
-        const { task, messagesStore, clientService } = getWrapperWithLoader(loader)
+        const { task, messagesStore, clientService } = getWrapper(loader)
         request(clientService).mockRejectedValue(getError(404))
 
         await task.perform(space, '/folder')
@@ -179,13 +179,10 @@ describe('FolderService', () => {
       }
     )
 
-    it.each([
-      ...loaders,
-      { loader: new FolderLoaderSpace(), request: listFiles, getError: graphError }
-    ])(
-      '$loader.constructor.name leaves a 401 ($getError.name) of $request.name to the auth service once',
+    it.each(loaders)(
+      '$loader.constructor.name leaves a 401 of $request.name to the auth service once',
       async ({ loader, request, getError }) => {
-        const { task, messagesStore, clientService, authService } = getWrapperWithLoader(loader)
+        const { task, messagesStore, clientService, authService } = getWrapper(loader)
         const error = getError(401)
         request(clientService).mockRejectedValue(error)
 
@@ -197,19 +194,46 @@ describe('FolderService', () => {
       }
     )
 
-    it.each([404, 500])(
-      'FolderLoaderSpace shows the folder as not found when listing it fails with %s',
-      async (statusCode) => {
-        const { task, resourcesStore, clientService } = getWrapperWithLoader(
+    describe('FolderLoaderSpace', () => {
+      it.each([
+        { statusCode: 401, authErrors: 1, errorMessages: 0 },
+        { statusCode: 404, authErrors: 0, errorMessages: 0 },
+        { statusCode: 500, authErrors: 0, errorMessages: 1 }
+      ])(
+        'shows the folder as not found when listing it fails with $statusCode',
+        async ({ statusCode, authErrors, errorMessages }) => {
+          const { task, resourcesStore, messagesStore, clientService, authService } = getWrapper(
+            new FolderLoaderSpace()
+          )
+          listFiles(clientService).mockRejectedValue(davError(statusCode))
+
+          await task.perform(space, '/folder')
+
+          expect(resourcesStore.currentFolder).toBeNull()
+          expect(authService.handleAuthError).toHaveBeenCalledTimes(authErrors)
+          expect(messagesStore.showErrorMessage).toHaveBeenCalledTimes(errorMessages)
+        }
+      )
+
+      it('leaves a 401 of an outdated load alone', async () => {
+        const { task, messagesStore, clientService, authService } = getWrapper(
           new FolderLoaderSpace()
         )
-        listFiles(clientService).mockRejectedValue(davError(statusCode))
+        let rejectFirstLoad: (e: Error) => void
+        listFiles(clientService)
+          .mockReturnValueOnce(new Promise((_, reject) => (rejectFirstLoad = reject)))
+          .mockReturnValueOnce(new Promise(() => undefined))
 
-        await task.perform(space, '/folder')
+        task.perform(space, '/old')
+        task.perform(space, '/new')
+        await flushPromises()
+        rejectFirstLoad(davError(401))
+        await flushPromises()
 
-        expect(resourcesStore.currentFolder).toBeNull()
-      }
-    )
+        expect(authService.handleAuthError).not.toHaveBeenCalled()
+        expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
+      })
+    })
   })
 })
 
@@ -231,10 +255,31 @@ function listSharedByMe(clientService: ClientServiceMock) {
   return clientService.graphAuthenticated.driveItems.listSharedByMe
 }
 
-function getWrapperWithLoader(loader: FolderLoader) {
-  vi.spyOn(loader, 'isActive').mockReturnValue(true)
+function getPendingLoader() {
+  const pendingLoads: { resolve: () => void; reject: (e: Error) => void }[] = []
+  const innerTasks: FolderLoaderTask[] = []
+
+  const loader = mock<FolderLoader>({
+    isEnabled: () => true,
+    isActive: () => true,
+    getTask: () => {
+      const innerTask = useTask(function* () {
+        yield new Promise<void>((resolve, reject) => pendingLoads.push({ resolve, reject }))
+      })
+      innerTasks.push(innerTask)
+      return innerTask
+    }
+  })
+
+  return { loader, pendingLoads, innerTasks }
+}
+
+function getWrapper(loader?: FolderLoader) {
+  const pendingLoader = getPendingLoader()
+  const activeLoader = loader || pendingLoader.loader
+  vi.spyOn(activeLoader, 'isActive').mockReturnValue(true)
   const folderService = new FolderService()
-  Reflect.set(folderService, 'loaders', [loader])
+  Reflect.set(folderService, 'loaders', [activeLoader])
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocationNormalizedLoaded>({ query: {} })
   })
@@ -258,47 +303,13 @@ function getWrapperWithLoader(loader: FolderLoader) {
     }
   )
 
-  return { task, resourcesStore, messagesStore, clientService: mocks.$clientService, authService }
-}
-
-function getWrapper() {
-  const pendingLoads: { resolve: () => void; reject: (e: Error) => void }[] = []
-  const innerTasks: FolderLoaderTask[] = []
-
-  const loader = mock<FolderLoader>({
-    isEnabled: () => true,
-    isActive: () => true,
-    getTask: () => {
-      const innerTask = useTask(function* () {
-        yield new Promise<void>((resolve, reject) => pendingLoads.push({ resolve, reject }))
-      })
-      innerTasks.push(innerTask)
-      return innerTask
-    }
-  })
-
-  const folderService = new FolderService()
-  Reflect.set(folderService, 'loaders', [loader])
-  const mocks = defaultComponentMocks()
-  const authService = mock<AuthServiceInterface>()
-
-  let task!: FolderLoaderTask
-  let resourcesStore!: ReturnType<typeof useResourcesStore>
-  let messagesStore!: ReturnType<typeof useMessages>
-
-  getComposableWrapper(
-    () => {
-      resourcesStore = useResourcesStore()
-      messagesStore = useMessages()
-      vi.spyOn(messagesStore, 'showErrorMessage')
-      task = folderService.getTask()
-    },
-    {
-      mocks,
-      provide: { ...mocks, $authService: authService },
-      pluginOptions: { piniaOptions: { stubActions: false } }
-    }
-  )
-
-  return { task, resourcesStore, messagesStore, authService, pendingLoads, innerTasks }
+  return {
+    task,
+    resourcesStore,
+    messagesStore,
+    authService,
+    clientService: mocks.$clientService,
+    pendingLoads: pendingLoader.pendingLoads,
+    innerTasks: pendingLoader.innerTasks
+  }
 }
