@@ -4,7 +4,9 @@ export enum ResolveStrategy {
   SKIP,
   REPLACE,
   KEEP_BOTH,
-  MERGE
+  MERGE,
+  /** the dialog was closed, the whole operation must be cancelled */
+  CANCEL
 }
 export interface ResolveConflict {
   strategy: ResolveStrategy
