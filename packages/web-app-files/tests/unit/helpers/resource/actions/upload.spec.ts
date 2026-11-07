@@ -112,15 +112,15 @@ describe('upload helper', () => {
       const attrs = vi.mocked(dispatchModal).mock.calls[0][0].customComponentAttrs()
       expect(attrs.hideSecondaryAction).toBe(false)
     })
-    it('shows the close button and a cancel button to cancel the whole upload', () => {
+    it('shows the close button to cancel the whole upload, but no cancel button', () => {
       const instance = getResourceConflictInstance()
       const { dispatchModal } = useModals()
 
       void instance.resolveFileExists({ name: 'dup' } as Resource, 1)
 
       const [options] = vi.mocked(dispatchModal).mock.calls[0]
-      expect(options.showCancelAction).toBe(true)
       expect(options.hideCancelButton).toBeFalsy()
+      expect(options.showCancelAction).toBeFalsy()
     })
     it('resolves with the answer given in the dialog', async () => {
       const instance = getResourceConflictInstance({ stubActions: false })

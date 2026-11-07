@@ -119,7 +119,7 @@ describe('ResourceConflictModal', () => {
     it('calls the callback with the skip strategy', async () => {
       const callbackFn = vi.fn()
       const { wrapper } = getWrapper({ props: { callbackFn } })
-      await wrapper.find('.oc-modal-body-actions-skip').trigger('click')
+      await wrapper.find('.oc-modal-body-actions-cancel').trigger('click')
       expect(callbackFn).toHaveBeenCalledExactlyOnceWith({
         strategy: ResolveStrategy.SKIP,
         doForAllConflicts: false
@@ -129,7 +129,7 @@ describe('ResourceConflictModal', () => {
       const callbackFn = vi.fn()
       const { wrapper } = getWrapper({ props: { callbackFn, conflictCount: 2 } })
       await tickApplyToAll(wrapper)
-      await wrapper.find('.oc-modal-body-actions-skip').trigger('click')
+      await wrapper.find('.oc-modal-body-actions-cancel').trigger('click')
       expect(callbackFn).toHaveBeenCalledExactlyOnceWith({
         strategy: ResolveStrategy.SKIP,
         doForAllConflicts: true

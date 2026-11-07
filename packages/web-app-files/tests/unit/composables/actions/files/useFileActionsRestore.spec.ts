@@ -320,7 +320,7 @@ describe('restore', () => {
     )
   })
 
-  it('should show a close button and a cancel button in the conflict dialog', async () => {
+  it('should show a close button but no cancel button in the conflict dialog', async () => {
     let instance: ReturnType<typeof useFileActionsRestore>
     let space: SpaceResource
     const { mocks } = getWrapper({
@@ -340,8 +340,8 @@ describe('restore', () => {
 
     const { dispatchModal } = useModals()
     const [options] = vi.mocked(dispatchModal).mock.calls[0]
-    expect(options.showCancelAction).toBe(true)
     expect(options.hideCancelButton).toBeFalsy()
+    expect(options.showCancelAction).toBeFalsy()
   })
 
   it('should not restore a copy whose name is too long for a vault', async () => {

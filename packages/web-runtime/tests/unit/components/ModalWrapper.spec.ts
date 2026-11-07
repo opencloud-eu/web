@@ -129,13 +129,10 @@ describe('ModalWrapper', () => {
     })
   })
   describe('resource conflict dialog', () => {
-    it.each([
-      { button: 'cancel button', selector: '.oc-modal-body-actions-cancel' },
-      { button: 'close button', selector: '.oc-modal-title-actions-cancel' }
-    ])('cancels the whole operation via the $button', async ({ selector }) => {
+    it('cancels the whole operation via the close button', async () => {
       const { wrapper, promise } = await openConflictDialog()
 
-      await wrapper.find(selector).trigger('click')
+      await wrapper.find('.oc-modal-title-actions-cancel').trigger('click')
 
       await expect(promise).resolves.toEqual({
         strategy: ResolveStrategy.CANCEL,
@@ -143,10 +140,21 @@ describe('ModalWrapper', () => {
       })
       expect(useModals().modals).toEqual([])
     })
-    it('skips via its own skip button', async () => {
+    it('cancels the whole operation via Escape', async () => {
+      const { promise } = await openConflictDialog()
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+
+      await expect(promise).resolves.toEqual({
+        strategy: ResolveStrategy.CANCEL,
+        doForAllConflicts: false
+      })
+      expect(useModals().modals).toEqual([])
+    })
+    it('skips via the skip button', async () => {
       const { wrapper, promise } = await openConflictDialog()
 
-      await wrapper.find('.oc-modal-body-actions-skip').trigger('click')
+      await wrapper.find('.oc-modal-body-actions-cancel').trigger('click')
 
       await expect(promise).resolves.toEqual({
         strategy: ResolveStrategy.SKIP,
@@ -154,18 +162,12 @@ describe('ModalWrapper', () => {
       })
       expect(useModals().modals).toEqual([])
     })
-    it('renders cancel, skip, replace and keep both in this order', async () => {
+    it('renders skip, replace and keep both in this order, without a cancel button', async () => {
       const { wrapper } = await openConflictDialog()
 
       const buttons = wrapper.findAll('.oc-modal-body-actions-grid button')
 
-      expect(buttons.map((button) => button.text())).toEqual([
-        'Cancel',
-        'Skip',
-        'Replace',
-        'Keep both'
-      ])
-      expect(wrapper.findAll('.oc-modal-body-actions-cancel')).toHaveLength(1)
+      expect(buttons.map((button) => button.text())).toEqual(['Skip', 'Replace', 'Keep both'])
     })
   })
   describe('method "onModalInput"', () => {
