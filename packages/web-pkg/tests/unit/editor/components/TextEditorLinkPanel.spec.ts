@@ -1,6 +1,7 @@
 import { defineComponent, h, nextTick, ref, shallowRef } from 'vue'
 import { flushPromises, mount } from '@vue/test-utils'
 import { createGettext } from 'vue3-gettext'
+import { OcTextInput } from '@opencloud-eu/design-system/components'
 import { Editor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import TextEditorLinkPanel from '../../../../src/editor/components/TextEditorLinkPanel.vue'
@@ -137,7 +138,7 @@ function expectLinkFollowedByPlainText(editor: Editor, linkText: string, plainTe
   expect(paragraph.child(1).marks.some(({ type }) => type.name === 'link')).toBe(false)
 }
 
-function mountPanel(content: string) {
+function mountPanel(content: string, { realTextInput = false } = {}) {
   const tiptapEditor = createEditor(content)
   const state: TextEditorState = {
     sourceMode: ref(false),
@@ -152,12 +153,14 @@ function mountPanel(content: string) {
   } as unknown as TextEditorInstance
   const wrapper = mount(TextEditorLinkPanel, {
     props: { editor: textEditor },
+    attachTo: realTextInput ? document.body : undefined,
     global: {
       plugins: [createGettext({ translations: {}, silent: true })],
       directives: { 'oc-tooltip': () => {} },
+      components: realTextInput ? { OcTextInput } : {},
       stubs: {
         OcDrop: DropStub,
-        OcTextInput: TextInputStub,
+        ...(!realTextInput && { OcTextInput: TextInputStub }),
         OcButton: ButtonStub,
         OcIcon: IconStub
       }
@@ -221,6 +224,23 @@ describe('TextEditorLinkPanel', () => {
     const icons = context.wrapper.findAll('[data-icon]')
     expect(icons.map((icon) => icon.attributes('data-icon'))).toEqual(['link', 'text'])
     expect(icons[1].attributes('data-fill-type')).toBe('none')
+    context.tiptapEditor.destroy()
+  })
+
+  it('selects the existing URL when the panel opens', async () => {
+    const context = mountPanel('<p><a href="https://opencloud.eu">OpenCloud</a></p>', {
+      realTextInput: true
+    })
+    await openPanel(context, 2)
+    await flushPromises()
+
+    const urlInput = context.wrapper.findAll<HTMLInputElement>('input')[0].element
+    expect(document.activeElement).toBe(urlInput)
+    expect([urlInput.selectionStart, urlInput.selectionEnd]).toEqual([
+      0,
+      'https://opencloud.eu'.length
+    ])
+    context.wrapper.unmount()
     context.tiptapEditor.destroy()
   })
 

@@ -1,4 +1,5 @@
 import { mock } from 'vitest-mock-extended'
+import { flushPromises } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 import CreateFolderModal from '../../../../src/components/Modals/CreateFolderModal.vue'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
@@ -186,6 +187,19 @@ describe('CreateFolderModal', () => {
   })
 
   describe('suggested name', () => {
+    it('gets preselected when the input is focused on open', async () => {
+      const { wrapper } = getWrapper()
+      const input = wrapper.find<HTMLInputElement>('#create-folder-input')
+
+      await input.trigger('focus')
+      await flushPromises()
+
+      expect([input.element.selectionStart, input.element.selectionEnd]).toEqual([
+        0,
+        'New folder'.length
+      ])
+    })
+
     it('numbers up when the plain name is taken', () => {
       const { wrapper } = getWrapper({ resources: [resource('New folder')] })
 

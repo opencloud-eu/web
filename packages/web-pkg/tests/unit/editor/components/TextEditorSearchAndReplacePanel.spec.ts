@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick } from 'vue'
 import { vi } from 'vitest'
 import TextEditorSearchAndReplacePanel from '../../../../src/editor/components/TextEditorSearchAndReplacePanel.vue'
@@ -143,6 +143,29 @@ describe('TextEditorSearchAndReplacePanel', () => {
 
     expect(editor.commands.clearSearch).toHaveBeenCalled()
     expect(closeMenu).toHaveBeenCalled()
+  })
+
+  it('selects the previous search term when the panel opens', async () => {
+    const { editor } = createEditorMock()
+    const wrapper = mount(TextEditorSearchAndReplacePanel, {
+      props: {
+        editor,
+        closeMenu: vi.fn(),
+        ...createSearchProps(),
+        searchSearchTerm: 'needle'
+      },
+      global: {
+        plugins: [...defaultPlugins()],
+        stubs: { OcIcon: true }
+      },
+      attachTo: document.body
+    })
+    await flushPromises()
+
+    const input = wrapper.find<HTMLInputElement>('#editor-search-input').element
+    expect(document.activeElement).toBe(input)
+    expect([input.selectionStart, input.selectionEnd]).toEqual([0, 'needle'.length])
+    wrapper.unmount()
   })
 
   it('renders the current result position from editor storage updates', async () => {

@@ -26,6 +26,7 @@
             :id="urlInputId"
             ref="urlInputRef"
             v-model="url"
+            preselect
             class="w-full min-w-0 max-w-full overflow-hidden"
             :label="$gettext('URL')"
             :placeholder="$gettext('Paste link')"

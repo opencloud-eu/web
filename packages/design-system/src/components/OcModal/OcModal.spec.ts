@@ -247,6 +247,42 @@ describe('OcModal', () => {
       expect(document.activeElement).toBe(wrapper.find('.oc-modal-body-input input').element)
     })
 
+    it.each([
+      { inputSelectionRange: undefined, expected: [0, 'New folder'.length] },
+      { inputSelectionRange: [0, 3] as [number, number], expected: [0, 3] }
+    ])(
+      'preselects the input value when opened (range: $inputSelectionRange)',
+      async ({ inputSelectionRange, expected }) => {
+        await mountModal({ props: { ...inputProps, inputSelectionRange } })
+        const input = wrapper.find<HTMLInputElement>('.oc-modal-body-input input').element
+        expect([input.selectionStart, input.selectionEnd]).toEqual(expected)
+      }
+    )
+
+    it('preselects the input value on its first focus without relying on the focus trap', async () => {
+      await mountModal({ props: { ...inputProps, focusTrapInitial: false } })
+      const input = wrapper.find<HTMLInputElement>('.oc-modal-body-input input').element
+      input.setSelectionRange(5, 5)
+
+      input.focus()
+      await settle()
+
+      expect([input.selectionStart, input.selectionEnd]).toEqual([0, 'New folder'.length])
+    })
+
+    it('does not preselect the input value again when the user clicks into it later', async () => {
+      await mountModal({ props: { ...inputProps, inputSelectionRange: [0, 3] } })
+      const input = wrapper.find<HTMLInputElement>('.oc-modal-body-input input').element
+      input.blur()
+      input.setSelectionRange(5, 5)
+
+      input.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+      input.focus()
+      await settle()
+
+      expect([input.selectionStart, input.selectionEnd]).toEqual([5, 5])
+    })
+
     it('focuses the element matching the initial focus selector inside the own modal', async () => {
       const elementBefore = document.createElement('input')
       elementBefore.classList.add('initial-target')

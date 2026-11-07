@@ -76,6 +76,7 @@
               :description-message="inputDescription"
               :required-mark="inputRequiredMark"
               :fix-message-line="true"
+              preselect
               :selection-range="inputSelectionRange"
               @update:model-value="inputOnInput"
               @keydown.enter.prevent="onInputKeydownEnter"
