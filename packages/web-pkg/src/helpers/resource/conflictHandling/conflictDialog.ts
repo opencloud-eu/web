@@ -2,6 +2,7 @@ import { markRaw } from 'vue'
 import { join } from 'path'
 import { Resource } from '@opencloud-eu/web-client'
 import { ResolveConflict, ResolveStrategy } from './types'
+import { isSameResource } from '../sameResource'
 import { useModals } from '../../../composables'
 import SpaceMoveInfoModal from '../../../components/Modals/SpaceMoveInfoModal.vue'
 import ResourceConflictModal from '../../../components/Modals/ResourceConflictModal.vue'
@@ -19,51 +20,74 @@ export class ConflictDialog {
     protected $ngettext: Language['$ngettext']
   ) {}
 
+  /**
+   * Asks the user how to resolve each name clash of the given resources in the target folder.
+   * A resource clashes with an existing item of the target folder or with an earlier resource
+   * of the same batch, because all of them end up in the same folder. Replacing is not offered
+   * if it would overwrite another resource of the batch.
+   * Closing a dialog stops asking, the last conflict then has the strategy CANCEL.
+   */
   async resolveAllConflicts(
     resourcesToMove: Resource[],
     targetFolder: Resource,
     targetFolderResources: Resource[]
   ): Promise<FileConflict[]> {
-    // Collect all conflicting resources
-    const allConflicts: FileConflict[] = []
-    for (const resource of resourcesToMove) {
+    function findExistingResource(resource: Resource) {
       const targetFilePath = join(targetFolder.path, resource.name)
-      const existingResource = targetFolderResources.find((r) => r.path === targetFilePath)
-      if (existingResource) {
-        allConflicts.push({ resource, existingResource, strategy: null })
-      }
+      return targetFolderResources.find((r) => r.path === targetFilePath)
     }
-    let count = 0
+
+    // names that resources of this batch will take in the target folder, a resource without
+    // a conflict is always the first one with its name
+    const claimedNames = new Map<string, Resource>()
+    const conflictingResources: Resource[] = []
+    const batchNames = new Set<string>()
+    for (const resource of resourcesToMove) {
+      if (batchNames.has(resource.name) || findExistingResource(resource)) {
+        conflictingResources.push(resource)
+      } else {
+        claimedNames.set(resource.name, resource)
+      }
+      batchNames.add(resource.name)
+    }
+
     let doForAllConflicts = false
-    let doForAllConflictsStrategy = null
+    let doForAllConflictsStrategy: ResolveStrategy = null
     const resolvedConflicts: FileConflict[] = []
-    for (const conflict of allConflicts) {
-      // Resolve conflicts accordingly
-      if (doForAllConflicts) {
-        conflict.strategy = doForAllConflictsStrategy
-        resolvedConflicts.push(conflict)
-        continue
-      }
-
-      // Resolve next conflict
-      const conflictsLeft = allConflicts.length - count
-      const result: ResolveConflict = await this.resolveFileExists(
-        conflict.resource,
-        conflictsLeft,
-        false,
-        false,
-        conflict.existingResource.isFolder
+    for (const [index, resource] of conflictingResources.entries()) {
+      const existingResource = claimedNames.get(resource.name) || findExistingResource(resource)
+      // replacing would overwrite another resource of this batch
+      const canReplace = !resourcesToMove.some(
+        (r) => r !== resource && isSameResource(r, existingResource)
       )
-      conflict.strategy = result.strategy
-      resolvedConflicts.push(conflict)
-      count += 1
 
-      // User checked 'do for all x conflicts'
-      if (!result.doForAllConflicts) {
-        continue
+      let strategy = doForAllConflictsStrategy
+      if (!doForAllConflicts || (strategy === ResolveStrategy.REPLACE && !canReplace)) {
+        const result: ResolveConflict = await this.resolveFileExists(
+          resource,
+          conflictingResources.length - index,
+          false,
+          false,
+          existingResource.isFolder,
+          false,
+          !canReplace
+        )
+        strategy = result.strategy
+
+        // User checked 'do for all x conflicts'
+        if (result.doForAllConflicts) {
+          doForAllConflicts = true
+          doForAllConflictsStrategy = result.strategy
+        }
       }
-      doForAllConflicts = true
-      doForAllConflictsStrategy = result.strategy
+
+      resolvedConflicts.push({ resource, existingResource, strategy })
+      if (strategy === ResolveStrategy.CANCEL) {
+        return resolvedConflicts
+      }
+      if (strategy === ResolveStrategy.REPLACE) {
+        claimedNames.set(resource.name, resource)
+      }
     }
     return resolvedConflicts
   }
@@ -74,7 +98,8 @@ export class ConflictDialog {
     suggestMerge = false,
     separateSkipHandling = false, // separate skip-handling between files and folders
     existingIsFolder = resource.isFolder,
-    hideKeepBoth = false
+    hideKeepBoth = false,
+    hideReplace = false
   ): Promise<ResolveConflict> {
     const { dispatchModal } = useModals()
 
@@ -93,6 +118,7 @@ export class ConflictDialog {
           separateSkipHandling,
           existingIsFolder,
           hideKeepBoth,
+          hideSecondaryAction: hideReplace,
           callbackFn: (conflict: ResolveConflict) => {
             resolve(conflict)
           }

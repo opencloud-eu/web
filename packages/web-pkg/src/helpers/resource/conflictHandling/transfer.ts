@@ -121,6 +121,9 @@ export class ResourceTransfer extends ConflictDialog {
       this.targetFolder,
       targetFolderResources
     )
+    if (resolvedConflicts.some(({ strategy }) => strategy === ResolveStrategy.CANCEL)) {
+      return []
+    }
 
     const result: TransferData[] = []
     // new names must not collide with existing items nor with other items of this batch
