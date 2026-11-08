@@ -1,5 +1,11 @@
 import FileSideBar from '../../../../src/components/SideBar/FileSideBar.vue'
-import { CollaboratorShare, LinkShare, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  CollaboratorShare,
+  LinkShare,
+  Resource,
+  ShareRole,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import {
   defaultComponentMocks,
@@ -20,6 +26,7 @@ import {
   useSideBar
 } from '../../../../src/composables/piniaStores'
 import { AncestorMetaDataValue } from '../../../../src'
+import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 
 const InnerSideBarComponent = defineComponent({
   props: { availablePanels: { type: Array, required: true } },
@@ -354,6 +361,263 @@ describe('FileSideBar', () => {
         expect(listPermissions).toHaveBeenCalled()
       })
     })
+    describe('when another client changes the shares', () => {
+      const emptyPermissions = {
+        shares: [] as CollaboratorShare[],
+        allowedActions: [] as string[],
+        allowedRoles: [] as ShareRole[]
+      }
+      const collaboratorShare = {
+        id: 'share-id',
+        role: {},
+        resourceId: 'file-id'
+      } as unknown as CollaboratorShare
+
+      function setup({
+        items = [mock<Resource>({ id: 'file-id', fileId: 'file-id' })],
+        isOpen = true,
+        listPermissions = vi.fn().mockResolvedValue(emptyPermissions)
+      } = {}) {
+        return { ...createWrapper({ items, isOpen, listPermissions }), listPermissions }
+      }
+
+      it('loads the shares of the shown resource again', async () => {
+        const { emitSseEvent, listPermissions } = setup()
+        await flushPromises()
+        expect(listPermissions).toHaveBeenCalledTimes(1)
+
+        listPermissions.mockResolvedValue({ ...emptyPermissions, shares: [collaboratorShare] })
+        emitSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalledTimes(2)
+        expect(useSharesStore().setCollaboratorShares).toHaveBeenLastCalledWith([
+          expect.objectContaining({ id: 'share-id' })
+        ])
+      })
+      it.each([
+        MESSAGE_TYPE.SHARE_CREATED,
+        MESSAGE_TYPE.SHARE_UPDATED,
+        MESSAGE_TYPE.SHARE_REMOVED,
+        MESSAGE_TYPE.LINK_CREATED,
+        MESSAGE_TYPE.LINK_UPDATED,
+        MESSAGE_TYPE.LINK_REMOVED
+      ])('reloads the shares on %s', async (topic) => {
+        const { emitSseEvent, listPermissions } = setup()
+        await flushPromises()
+
+        emitSseEvent(topic, { itemid: 'file-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalledTimes(2)
+      })
+      it('keeps the panel content in place while reloading', async () => {
+        const { emitSseEvent } = setup()
+        await flushPromises()
+        const { setLoading } = useSharesStore()
+        vi.mocked(setLoading).mockClear()
+
+        emitSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(setLoading).not.toHaveBeenCalled()
+      })
+      it('restarts a running load including its loading state', async () => {
+        const listPermissions = vi
+          .fn()
+          .mockReturnValueOnce(new Promise(() => {}))
+          .mockResolvedValue(emptyPermissions)
+        const { emitSseEvent } = setup({ listPermissions })
+        await flushPromises()
+        const sharesStore = useSharesStore()
+        sharesStore.loading = true
+
+        emitSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalledTimes(2)
+        expect(sharesStore.setLoading).toHaveBeenLastCalledWith(false)
+      })
+      it('shows an error when a reload that replaced a running load fails', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => undefined)
+        const listPermissions = vi
+          .fn()
+          .mockReturnValueOnce(new Promise(() => {}))
+          .mockRejectedValue(new Error('failed'))
+        const { emitSseEvent } = setup({ listPermissions })
+        await flushPromises()
+        useSharesStore().loading = true
+
+        emitSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+          expect.objectContaining({ title: 'Failed to load shares' })
+        )
+      })
+      it('loads the shares of a parent folder again instead of taking them from the cache', async () => {
+        const { emitSseEvent, listPermissions } = setup()
+        await flushPromises()
+        useResourcesStore().ancestorMetaData = {
+          '/parent': mock<AncestorMetaDataValue>({ id: 'parent-id', path: '/parent' })
+        }
+        useSharesStore().collaboratorShares = [{ ...collaboratorShare, resourceId: 'parent-id' }]
+        listPermissions.mockClear()
+
+        emitSseEvent(MESSAGE_TYPE.LINK_CREATED, { itemid: 'parent-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalledWith(
+          undefined,
+          'parent-id',
+          expect.anything(),
+          {},
+          expect.anything()
+        )
+      })
+      it('drops a removed share of a resource that is also a parent folder', async () => {
+        const { emitSseEvent } = setup()
+        await flushPromises()
+        useResourcesStore().ancestorMetaData = {
+          '/folder': mock<AncestorMetaDataValue>({ id: 'file-id', path: '/folder' })
+        }
+        const sharesStore = useSharesStore()
+        sharesStore.collaboratorShares = [collaboratorShare]
+        vi.mocked(sharesStore.setCollaboratorShares).mockClear()
+
+        emitSseEvent(MESSAGE_TYPE.SHARE_REMOVED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(sharesStore.setCollaboratorShares).toHaveBeenCalledExactlyOnceWith([])
+      })
+      it('reloads the shares of a project space on an event with the server id of its root', async () => {
+        const space = mock<SpaceResource>({
+          id: 'storage$space',
+          fileId: 'storage$space',
+          driveType: 'project',
+          disabled: false
+        })
+        const { emitSseEvent, listPermissions } = setup({ items: [space] })
+        await flushPromises()
+
+        emitSseEvent(MESSAGE_TYPE.LINK_CREATED, {
+          itemid: 'storage$space!space',
+          initiatorid: 'other-tab'
+        })
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalledTimes(2)
+      })
+      it('reloads the shares of an item inside a project space when the space links change', async () => {
+        const { emitSseEvent, listPermissions } = setup({
+          items: [mock<Resource>({ id: 'storage$space!file-id', fileId: 'storage$space!file-id' })]
+        })
+        await flushPromises()
+        useResourcesStore().ancestorMetaData = {
+          '/': mock<AncestorMetaDataValue>({ id: 'storage$space', path: '/' })
+        }
+
+        emitSseEvent(MESSAGE_TYPE.LINK_CREATED, {
+          itemid: 'storage$space!space',
+          initiatorid: 'other-tab'
+        })
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalledWith(
+          undefined,
+          'storage$space',
+          expect.anything(),
+          {},
+          expect.anything()
+        )
+      })
+      it('keeps the shown shares and shows no error when reloading fails', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => undefined)
+        const resource = mock<Resource>({ id: 'file-id', fileId: 'file-id' })
+        const { wrapper, emitSseEvent, listPermissions } = setup({ items: [resource] })
+        await flushPromises()
+        const sharesStore = useSharesStore()
+        vi.mocked(sharesStore.setCollaboratorShares).mockClear()
+        listPermissions.mockRejectedValueOnce(new Error('access revoked'))
+
+        emitSseEvent(MESSAGE_TYPE.SHARE_REMOVED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
+        expect(sharesStore.setCollaboratorShares).not.toHaveBeenCalled()
+
+        // a regular load works again afterwards
+        ;(wrapper.vm as any).loadShares(resource)
+        await flushPromises()
+        expect(listPermissions).toHaveBeenCalledTimes(3)
+      })
+      it('drops the reloaded shares once the sidebar got closed meanwhile', async () => {
+        const { emitSseEvent, listPermissions } = setup()
+        await flushPromises()
+        let resolvePermissions: (value: typeof emptyPermissions) => void
+        listPermissions.mockReturnValueOnce(
+          new Promise((resolve) => {
+            resolvePermissions = resolve
+          })
+        )
+        emitSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        useSideBar().isSideBarOpen = false
+        await flushPromises()
+        const sharesStore = useSharesStore()
+        vi.mocked(sharesStore.setCollaboratorShares).mockClear()
+        resolvePermissions({ ...emptyPermissions, shares: [collaboratorShare] })
+        await flushPromises()
+
+        expect(sharesStore.setCollaboratorShares).not.toHaveBeenCalled()
+      })
+      it.each([
+        ['another item', { itemid: 'other-id', initiatorid: 'other-tab' }],
+        ['this tab', { itemid: 'file-id', initiatorid: 'own-tab' }]
+      ])('ignores an event of %s', async (_, data) => {
+        const { emitSseEvent, listPermissions } = setup()
+        await flushPromises()
+
+        emitSseEvent(MESSAGE_TYPE.SHARE_CREATED, data)
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalledTimes(1)
+      })
+      it('ignores events while the sidebar is closed', async () => {
+        const { emitSseEvent, listPermissions } = setup({ isOpen: false })
+        await flushPromises()
+
+        emitSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(listPermissions).not.toHaveBeenCalled()
+      })
+      it('ignores events while multiple resources are selected', async () => {
+        const { emitSseEvent, listPermissions } = setup({
+          items: [
+            mock<Resource>({ id: 'file-id', fileId: 'file-id' }),
+            mock<Resource>({ id: 'other-id', fileId: 'other-id' })
+          ]
+        })
+        await flushPromises()
+
+        emitSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(listPermissions).not.toHaveBeenCalled()
+      })
+      it('stops listening on unmount', async () => {
+        const { wrapper, emitSseEvent, listPermissions } = setup()
+        await flushPromises()
+
+        wrapper.unmount()
+        emitSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalledTimes(1)
+      })
+    })
     describe('loadVersionsTask', () => {
       beforeEach(() => {
         canListVersionsMock.mockReturnValue(true)
@@ -394,6 +658,7 @@ describe('FileSideBar', () => {
 
 function createWrapper({
   item = undefined,
+  items = item ? [item] : [],
   isOpen = true,
   currentRouteName = 'files-spaces-generic',
   currentFolder = undefined,
@@ -401,13 +666,19 @@ function createWrapper({
   listPermissions = undefined
 }: {
   item?: Resource
+  items?: Resource[]
   isOpen?: boolean
   currentRouteName?: string
   currentFolder?: Resource
   space?: SpaceResource
   listPermissions?: Mock
 } = {}) {
-  const plugins = defaultPlugins()
+  const plugins = defaultPlugins({
+    piniaOptions: {
+      authState: { accessToken: 'token' },
+      capabilityState: { capabilities: { core: { 'support-sse': true } as any } }
+    }
+  })
 
   const resourcesStore = useResourcesStore()
   resourcesStore.currentFolder = currentFolder
@@ -419,7 +690,7 @@ function createWrapper({
   sideBarStore.isSideBarOpen = isOpen
 
   const useSelectedResourcesMock = mock<ReturnType<typeof useSelectedResources>>()
-  useSelectedResourcesMock.selectedResources = item ? ref([item]) : ref([])
+  useSelectedResourcesMock.selectedResources = ref(items)
   vi.mocked(useSelectedResources).mockReturnValue(useSelectedResourcesMock)
 
   const mocks = defaultComponentMocks({
@@ -430,8 +701,25 @@ function createWrapper({
       listPermissions
     )
   }
+
+  const sseListeners = new Map<string, (msg: MessageEvent) => void>()
+  Object.assign(mocks.$clientService, {
+    initiatorId: 'own-tab',
+    sseAuthenticated: {
+      addEventListener: (topic: string, listener: (msg: MessageEvent) => void) => {
+        sseListeners.set(topic, listener)
+      },
+      removeEventListener: (topic: string) => {
+        sseListeners.delete(topic)
+      }
+    }
+  })
+
   return {
     mocks,
+    emitSseEvent(topic: MESSAGE_TYPE, data: Record<string, string>) {
+      sseListeners.get(topic)?.({ data: JSON.stringify(data) } as MessageEvent)
+    },
     wrapper: shallowMount(FileSideBar, {
       props: {
         space

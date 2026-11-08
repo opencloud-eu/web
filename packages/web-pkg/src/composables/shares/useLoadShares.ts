@@ -35,6 +35,8 @@ interface LoadSharesOptions {
   resource: Resource
   updateStore?: boolean
   includeInheritedShares?: boolean
+  /** Loads the shares of all ancestors again instead of reusing the ones in the store. */
+  skipCache?: boolean
 }
 
 export const useLoadShares = () => {
@@ -78,7 +80,13 @@ export const useLoadShares = () => {
 
   const loadSharesTask = useTask(function* (
     signal,
-    { space, resource, updateStore = true, includeInheritedShares = false }: LoadSharesOptions
+    {
+      space,
+      resource,
+      updateStore = true,
+      includeInheritedShares = false,
+      skipCache = false
+    }: LoadSharesOptions
   ) {
     if (updateStore) {
       sharesStore.setLoading(true)
@@ -145,8 +153,8 @@ export const useLoadShares = () => {
       }
 
       // use cache for indirect shares
-      const useCache =
-        !includeInheritedShares && !unref(isFlatFileList) && !unref(isProjectsLocation)
+      const isCacheAllowed = !includeInheritedShares && !skipCache
+      const useCache = isCacheAllowed && !unref(isFlatFileList) && !unref(isProjectsLocation)
       if (useCache) {
         collaboratorCache.forEach((share) => {
           if (loadedCollaboratorShares.some((s) => s.id === share.id)) {
@@ -178,7 +186,7 @@ export const useLoadShares = () => {
       const cachedIds = [...collaboratorCache, ...linkCache].map(({ resourceId }) => resourceId)
       const ancestorIds = Object.values(resourcesStore.ancestorMetaData)
         .filter(({ id, path }) => {
-          if (id === resource.id || (!includeInheritedShares && cachedIds.includes(id))) {
+          if (id === resource.id || (isCacheAllowed && cachedIds.includes(id))) {
             // share already cached
             return false
           }
