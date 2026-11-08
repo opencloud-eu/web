@@ -51,13 +51,43 @@ describe('OcSidebarNav', () => {
       expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeFalsy()
     })
   })
+
+  describe('footer', () => {
+    const backendStatus = { productversion: '3.5.0', versionstring: '3.5.0' }
+
+    it('renders the sponsor link, backend version and version check by default', () => {
+      const { wrapper } = getWrapper({ backendStatus })
+      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeTruthy()
+      expect(wrapper.text()).toContain('OpenCloud 3.5.0')
+      expect(wrapper.findComponent({ name: 'VersionCheck' }).exists()).toBeTruthy()
+    })
+
+    it('does not render the sponsor link, backend version and version check in embed mode', () => {
+      const { wrapper } = getWrapper({
+        backendStatus,
+        configOptions: { embed: { enabled: true } }
+      })
+      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeFalsy()
+      expect(wrapper.text()).not.toContain('OpenCloud 3.5.0')
+      expect(wrapper.findComponent({ name: 'VersionCheck' }).exists()).toBeFalsy()
+    })
+
+    it('keeps the bottom extension point in embed mode', () => {
+      const { wrapper } = getWrapper({
+        configOptions: { embed: { enabled: true } },
+        extensions: [createExtensionMock('test-bottom-extension', 'app.files.sidebar-nav.bottom')]
+      })
+      expect(wrapper.find('[data-testid="extension-bottom"]').exists()).toBeTruthy()
+    })
+  })
 })
 
 function getWrapper({
   closed = false,
   route = '/files/spaces',
   extensions = [] as Extension[],
-  configOptions = {}
+  configOptions = {},
+  backendStatus = { productversion: '3.5.0' }
 } = {}) {
   const mocks = defaultComponentMocks({ currentRoute: mock({ path: route }) })
 
@@ -66,7 +96,7 @@ function getWrapper({
       capabilityState: {
         capabilities: {
           core: {
-            status: { productversion: '3.5.0' }
+            status: backendStatus
           }
         }
       },
