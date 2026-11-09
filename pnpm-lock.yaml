@@ -556,6 +556,9 @@ importers:
       axios:
         specifier: 1.13.1
         version: 1.13.1
+      dompurify:
+        specifier: ^3.2.3
+        version: 3.3.0
       email-validator:
         specifier: ^2.0.4
         version: 2.0.4
