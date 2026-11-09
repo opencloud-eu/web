@@ -4,7 +4,9 @@ import { join } from 'path'
 import { computed, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import { Router } from 'vue-router'
+import type { MockInstance } from 'vitest'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { eventBus } from '@opencloud-eu/web-pkg'
 import {
   createRouter,
   defaultPlugins,
@@ -14,6 +16,12 @@ import {
   RouteLocation,
   writable
 } from '@opencloud-eu/web-test-helpers'
+
+function publishedTitles(publishSpy: MockInstance) {
+  return publishSpy.mock.calls
+    .filter(([topic]) => topic === 'runtime.documentTitle.changed')
+    .map(([, payload]) => payload.shortDocumentTitle)
+}
 
 const selectors = {
   notFoundMessage: '#files-list-not-found-message',
@@ -58,6 +66,12 @@ describe('DriveRedirect view', () => {
       expect(wrapper.find(selectors.notFoundMessage).exists()).toBeFalsy()
     }
   )
+
+  it('leaves the title to the view it redirects to', () => {
+    const publishSpy = vi.spyOn(eventBus, 'publish')
+    getMountedWrapper({ driveAliasAndItem: 'personal/home', spaces: [getPersonalSpace()] })
+    expect(publishedTitles(publishSpy)).toEqual([])
+  })
 
   it('keeps the item path of the static personal drive alias', () => {
     const { mocks } = getMountedWrapper({
@@ -135,6 +149,19 @@ describe('DriveRedirect view', () => {
       expect(mocks.$router.replace).not.toHaveBeenCalled()
       expect(wrapper.find(selectors.notFoundMessage).exists()).toBeTruthy()
       expect(wrapper.find(selectors.goToSpacesButton).exists()).toBeTruthy()
+    })
+
+    it('titles the page as not found', async () => {
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+      const { mocks, wrapper } = getMountedWrapper({
+        driveAliasAndItem: 'project/unknown',
+        spaces: [getPersonalSpace()]
+      })
+      expect(publishedTitles(publishSpy)).toEqual(['Resource not found'])
+
+      setRoute(mocks, 'personal')
+      await wrapper.setProps({ driveAliasAndItem: 'personal' })
+      expect(publishedTitles(publishSpy)).toEqual(['Resource not found'])
     })
 
     it('shows a not found message without a personal space', () => {
