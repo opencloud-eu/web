@@ -1,4 +1,4 @@
-import { flushPromises } from '@vue/test-utils'
+import { ref } from 'vue'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { useExternalShareUpdates } from '../../../../src/composables/sse'
@@ -16,7 +16,7 @@ function setup({
   supportSSE = true,
   accessToken = 'token',
   publicLinkContextReady = false,
-  itemIds = ['file-id', 'parent-id']
+  itemIds = ref(['file-id', 'parent-id'])
 } = {}) {
   const listeners = new Map<string, (msg: MessageEvent) => void>()
   const sseAuthenticated = {
@@ -55,6 +55,13 @@ function setup({
 }
 
 describe('useExternalShareUpdates', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('subscribes to the share and link topics and unsubscribes on unmount', () => {
     const s = setup()
 
@@ -77,21 +84,22 @@ describe('useExternalShareUpdates', () => {
     expect(s.sseAuthenticated.addEventListener).not.toHaveBeenCalled()
   })
 
-  it.each(['file-id', 'parent-id'])('reports a change of %s by another client', async (itemid) => {
+  it.each(['file-id', 'parent-id'])('reports a change of %s by another client', (itemid) => {
     const s = setup()
 
     s.emit(MESSAGE_TYPE.LINK_UPDATED, { itemid, initiatorid: 'other-tab' })
-    await flushPromises()
+    vi.runAllTimers()
 
     expect(s.onExternalShareUpdate).toHaveBeenCalledTimes(1)
   })
 
-  it('matches the server id of a space root with the space id', async () => {
-    const s = setup({ itemIds: ['storage$space'] })
+  it('matches the server id of a space root with the space id', () => {
+    const s = setup({ itemIds: ref(['storage$space']) })
 
     s.emit(MESSAGE_TYPE.LINK_CREATED, { itemid: 'storage$space!space', initiatorid: 'other-tab' })
+    vi.runAllTimers()
     s.emit(MESSAGE_TYPE.LINK_CREATED, { itemid: 'storage$space!file', initiatorid: 'other-tab' })
-    await flushPromises()
+    vi.runAllTimers()
 
     expect(s.onExternalShareUpdate).toHaveBeenCalledTimes(1)
   })
@@ -101,12 +109,84 @@ describe('useExternalShareUpdates', () => {
     ['this tab', { itemid: 'file-id', initiatorid: 'own-tab' }],
     ['no item id', { initiatorid: 'other-tab' }],
     ['malformed json', '{not json']
-  ])('ignores %s', async (_, data) => {
+  ])('ignores %s', (_, data) => {
     const s = setup()
 
     s.emit(MESSAGE_TYPE.SHARE_CREATED, data)
-    await flushPromises()
+    vi.runAllTimers()
 
     expect(s.onExternalShareUpdate).not.toHaveBeenCalled()
+  })
+
+  it('reports a burst of changes once after the last one', () => {
+    const s = setup()
+
+    s.emit(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+    vi.advanceTimersByTime(200)
+    s.emit(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+    s.emit(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+    vi.advanceTimersByTime(200)
+    s.emit(MESSAGE_TYPE.LINK_CREATED, { itemid: 'parent-id', initiatorid: 'other-tab' })
+    vi.advanceTimersByTime(299)
+
+    expect(s.onExternalShareUpdate).not.toHaveBeenCalled()
+
+    vi.advanceTimersByTime(1)
+
+    expect(s.onExternalShareUpdate).toHaveBeenCalledTimes(1)
+  })
+
+  it('reports changes that are further apart one by one', () => {
+    const s = setup()
+
+    s.emit(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+    vi.advanceTimersByTime(300)
+    s.emit(MESSAGE_TYPE.SHARE_REMOVED, { itemid: 'file-id', initiatorid: 'other-tab' })
+    vi.advanceTimersByTime(300)
+
+    expect(s.onExternalShareUpdate).toHaveBeenCalledTimes(2)
+  })
+
+  it('does not extend a pending report with a change of another item', () => {
+    const s = setup()
+
+    s.emit(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+    vi.advanceTimersByTime(200)
+    s.emit(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'other-id', initiatorid: 'other-tab' })
+    vi.advanceTimersByTime(100)
+
+    expect(s.onExternalShareUpdate).toHaveBeenCalledTimes(1)
+  })
+
+  it('drops a pending report on unmount', () => {
+    const s = setup()
+
+    s.emit(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+    s.wrapper.unmount()
+    vi.runAllTimers()
+
+    expect(s.onExternalShareUpdate).not.toHaveBeenCalled()
+  })
+
+  it('drops a pending report once the changed item is no longer shown', () => {
+    const itemIds = ref(['file-id', 'parent-id'])
+    const s = setup({ itemIds })
+
+    s.emit(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+    itemIds.value = ['other-id', 'parent-id']
+    vi.runAllTimers()
+
+    expect(s.onExternalShareUpdate).not.toHaveBeenCalled()
+  })
+
+  it('keeps a pending report when more items get shown', () => {
+    const itemIds = ref(['file-id'])
+    const s = setup({ itemIds })
+
+    s.emit(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+    itemIds.value = ['file-id', 'parent-id']
+    vi.runAllTimers()
+
+    expect(s.onExternalShareUpdate).toHaveBeenCalledTimes(1)
   })
 })

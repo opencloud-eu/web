@@ -1,5 +1,6 @@
 import { onBeforeUnmount, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
 import { extractNodeId, extractStorageId } from '@opencloud-eu/web-client'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { useClientService } from '../clientService'
@@ -8,9 +9,15 @@ import { parseSseEventData, useIsSseEnabled } from './helpers'
 export interface ExternalShareUpdatesOptions {
   /** The file ids of the items whose shares are shown, e.g. a file and its parent folders. */
   itemIds: MaybeRefOrGetter<string[]>
-  /** Called when another client created, changed or removed a share or link of one of the items. */
+  /**
+   * Called when another client created, changed or removed a share or link of one of the items.
+   * A burst of events, e.g. when sharing with several users at once, results in a single call.
+   */
   onExternalShareUpdate: () => void
 }
+
+/** Time in ms after the last event of a burst until the update. */
+const UPDATE_DELAY = 300
 
 const SHARE_TOPICS = [
   MESSAGE_TYPE.SHARE_CREATED,
@@ -44,6 +51,32 @@ export function useExternalShareUpdates({
   const clientService = useClientService()
   const isEnabled = useIsSseEnabled()
 
+  /** The shown items that changed since the last update. */
+  const pendingItemIds = new Set<string>()
+
+  function update() {
+    const shownItemIds = toValue(itemIds)
+    const isStillShown = [...pendingItemIds].some((id) => shownItemIds.includes(id))
+    pendingItemIds.clear()
+    if (!isStillShown) {
+      // the shown items changed meanwhile
+      return
+    }
+    onExternalShareUpdate()
+  }
+  const debouncedUpdate = useDebounceFn(update, UPDATE_DELAY)
+
+  function scheduleUpdate(changedItemIds: string[]) {
+    for (const id of changedItemIds) {
+      pendingItemIds.add(id)
+    }
+    debouncedUpdate()
+  }
+  function cancelUpdate() {
+    debouncedUpdate.cancel()
+    pendingItemIds.clear()
+  }
+
   function onMessage(msg: MessageEvent) {
     const data = parseSseEventData(msg.data)
     if (!data?.itemid) {
@@ -54,10 +87,11 @@ export function useExternalShareUpdates({
       return
     }
     const shownItemIds = toValue(itemIds)
-    if (!getMatchingItemIds(data.itemid).some((id) => shownItemIds.includes(id))) {
+    const changedItemIds = getMatchingItemIds(data.itemid).filter((id) => shownItemIds.includes(id))
+    if (!changedItemIds.length) {
       return
     }
-    onExternalShareUpdate()
+    scheduleUpdate(changedItemIds)
   }
 
   let stream: EventSource | null = null
@@ -78,6 +112,7 @@ export function useExternalShareUpdates({
       stream.removeEventListener(topic, onMessage)
     }
     stream = null
+    cancelUpdate()
   }
 
   watch(

@@ -378,8 +378,24 @@ describe('FileSideBar', () => {
         isOpen = true,
         listPermissions = vi.fn().mockResolvedValue(emptyPermissions)
       } = {}) {
-        return { ...createWrapper({ items, isOpen, listPermissions }), listPermissions }
+        const { emitSseEvent, ...rest } = createWrapper({ items, isOpen, listPermissions })
+        return {
+          ...rest,
+          listPermissions,
+          queueSseEvent: emitSseEvent,
+          emitSseEvent(...args: Parameters<typeof emitSseEvent>) {
+            emitSseEvent(...args)
+            vi.runOnlyPendingTimers()
+          }
+        }
       }
+
+      beforeEach(() => {
+        vi.useFakeTimers()
+      })
+      afterEach(() => {
+        vi.useRealTimers()
+      })
 
       it('loads the shares of the shown resource again', async () => {
         const { emitSseEvent, listPermissions } = setup()
@@ -474,6 +490,54 @@ describe('FileSideBar', () => {
           {},
           expect.anything()
         )
+      })
+      it('loads the shares once for a burst of changes', async () => {
+        const { queueSseEvent, listPermissions } = setup()
+        await flushPromises()
+        useResourcesStore().ancestorMetaData = {
+          '/parent': mock<AncestorMetaDataValue>({ id: 'parent-id', path: '/parent' })
+        }
+        listPermissions.mockClear()
+
+        queueSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        queueSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        queueSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        queueSseEvent(MESSAGE_TYPE.LINK_CREATED, { itemid: 'parent-id', initiatorid: 'other-tab' })
+        await flushPromises()
+
+        expect(listPermissions).not.toHaveBeenCalled()
+
+        vi.runOnlyPendingTimers()
+        await flushPromises()
+
+        expect(listPermissions).toHaveBeenCalledTimes(2)
+        expect(listPermissions).toHaveBeenCalledWith(
+          undefined,
+          'file-id',
+          expect.anything(),
+          expect.anything(),
+          expect.anything()
+        )
+        expect(listPermissions).toHaveBeenCalledWith(
+          undefined,
+          'parent-id',
+          expect.anything(),
+          {},
+          expect.anything()
+        )
+      })
+      it('does not reload once another resource is shown when the changes settle', async () => {
+        const { queueSseEvent, listPermissions, selectedResources } = setup()
+        await flushPromises()
+
+        queueSseEvent(MESSAGE_TYPE.SHARE_CREATED, { itemid: 'file-id', initiatorid: 'other-tab' })
+        selectedResources.value = [mock<Resource>({ id: 'other-id', fileId: 'other-id' })]
+        await flushPromises()
+        listPermissions.mockClear()
+        vi.runOnlyPendingTimers()
+        await flushPromises()
+
+        expect(listPermissions).not.toHaveBeenCalled()
       })
       it('drops a removed share of a resource that is also a parent folder', async () => {
         const { emitSseEvent } = setup()
@@ -717,6 +781,7 @@ function createWrapper({
 
   return {
     mocks,
+    selectedResources: useSelectedResourcesMock.selectedResources,
     emitSseEvent(topic: MESSAGE_TYPE, data: Record<string, string>) {
       sseListeners.get(topic)?.({ data: JSON.stringify(data) } as MessageEvent)
     },
