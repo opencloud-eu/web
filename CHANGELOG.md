@@ -14,6 +14,7 @@
 
 ### 🐛 Bug Fixes
 
+- feat: make the support card stand out in the sidebar [[#4346](https://github.com/opencloud-eu/web/pull/4346)]
 - fix: wrap long resource names when truncation is disabled [[#4381](https://github.com/opencloud-eu/web/pull/4381)]
 - fix: show an error message when loading a folder or list fails [[#4356](https://github.com/opencloud-eu/web/pull/4356)]
 - fix: handle name clashes inside a move or copy batch and cancel on closing the conflict dialog [[#4355](https://github.com/opencloud-eu/web/pull/4355)]
@@ -146,6 +147,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency license-checker-rseidelsohn to v5 [[#3386](https://github.com/opencloud-eu/web/pull/3386)]
 - chore(deps): update devdependencies (non-major) [[#4351](https://github.com/opencloud-eu/web/pull/4351)]
 - chore(deps): update shumc/imagor docker tag to v1.10.1 [[#4350](https://github.com/opencloud-eu/web/pull/4350)]
 - chore(deps): update axllent/mailpit docker tag to v1.33.1 [[#4372](https://github.com/opencloud-eu/web/pull/4372)]
