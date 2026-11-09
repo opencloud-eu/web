@@ -314,6 +314,36 @@ describe('EmbedActions', () => {
       expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:cancel', null)
     })
 
+    it('should not emit cancel event on Escape while resources are selected', () => {
+      const { mocks } = getWrapper({ selectedIds: ['1', '2'] })
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+    })
+
+    it('should not emit cancel event on the Escape keypress that clears the selection', () => {
+      // the file list binds its Escape handler before the embed actions get mounted
+      function clearSelection(event: KeyboardEvent) {
+        if (event.key === 'Escape') {
+          useResourcesStore().selectedIds = []
+        }
+      }
+      document.addEventListener('keydown', clearSelection)
+      const { mocks } = getWrapper({ selectedIds: ['1', '2'] })
+
+      document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+
+      expect(useResourcesStore().selectedIds).toEqual([])
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+
+      document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+
+      expect(mocks.postMessageMock).toHaveBeenCalledTimes(1)
+      expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:cancel', null)
+      document.removeEventListener('keydown', clearSelection)
+    })
+
     it('should not emit cancel event on Escape while a modal is open', () => {
       const { mocks } = getWrapper()
       const modal = document.createElement('div')
