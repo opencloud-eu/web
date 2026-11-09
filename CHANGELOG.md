@@ -13,6 +13,11 @@
 
 ### 🐛 Bug Fixes
 
+- fix: don't return to redirect-only routes when cancelling a vault unlock [[#4294](https://github.com/opencloud-eu/web/pull/4294)]
+- fix: use the shared sorting and pagination in the spaces and trash overviews [[#4270](https://github.com/opencloud-eu/web/pull/4270)]
+- fix: resolve links into another user's personal space via the file id [[#4315](https://github.com/opencloud-eu/web/pull/4315)]
+- fix: don't throw when the list refresh after a failed upload fails [[#4336](https://github.com/opencloud-eu/web/pull/4336)]
+- fix: enforce the password policy when setting a vault password on the unlock page [[#4335](https://github.com/opencloud-eu/web/pull/4335)]
 - fix: skip the access revoked message when access to a share remains [[#4313](https://github.com/opencloud-eu/web/pull/4313)]
 - fix: fall back to shared with me when a share's mount point is gone [[#4345](https://github.com/opencloud-eu/web/pull/4345)]
 - fix: keep an open app in place when the folder of its file gets renamed [[#4292](https://github.com/opencloud-eu/web/pull/4292)]
