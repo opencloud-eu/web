@@ -132,6 +132,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#4351](https://github.com/opencloud-eu/web/pull/4351)]
+- chore(deps): update shumc/imagor docker tag to v1.10.1 [[#4350](https://github.com/opencloud-eu/web/pull/4350)]
+- chore(deps): update axllent/mailpit docker tag to v1.33.1 [[#4372](https://github.com/opencloud-eu/web/pull/4372)]
 - chore(deps): update pnpm to v11.28.11 [[#4310](https://github.com/opencloud-eu/web/pull/4310)]
 - chore(deps): update devdependencies (non-major) [[#4324](https://github.com/opencloud-eu/web/pull/4324)]
 - chore(deps): update dependency filesize to v11.0.30 [[#4275](https://github.com/opencloud-eu/web/pull/4275)]
