@@ -6,14 +6,16 @@
     :src="file.url"
     :alt="file.name"
     :data-id="file.id"
-    class="size-full object-contain"
+    class="object-contain"
+    :class="isQuarterTurn ? 'w-[100cqh] h-[100cqw] shrink-0' : 'size-full'"
     @error="emit('error')"
   />
   <div
     v-else-if="$slots.overlay"
     ref="img"
     :key="`media-image-wrapper-${file.id}`"
-    class="relative grid size-full grid-cols-[100%] grid-rows-[100%] place-items-center pt-4 [&>*]:[grid-area:1/1]"
+    class="relative grid grid-cols-[100%] grid-rows-[100%] place-items-center pt-4 [&>*]:[grid-area:1/1]"
+    :class="isQuarterTurn ? 'w-[100cqh] h-[100cqw] shrink-0' : 'size-full'"
     :data-id="file.id"
   >
     <img :src="file.url" :alt="file.name" class="max-w-full max-h-full" @error="emit('error')" />
@@ -26,7 +28,8 @@
     :src="file.url"
     :alt="file.name"
     :data-id="file.id"
-    class="max-w-full max-h-full pt-4"
+    class="pt-4"
+    :class="isQuarterTurn ? 'max-w-[100cqh] max-h-[100cqw]' : 'max-w-full max-h-full'"
     @error="emit('error')"
   />
 </template>
@@ -45,8 +48,6 @@ import {
 import type { PanzoomObject, PanzoomOptions } from '@panzoom/panzoom'
 import Panzoom from '@panzoom/panzoom'
 import { useEventBus } from '@opencloud-eu/web-pkg'
-import { useResizeObserver } from '@vueuse/core'
-import { useRotatedFit } from '../../composables'
 
 const { file, currentImageRotation } = defineProps<{
   file: MediaFile
@@ -70,8 +71,9 @@ const panzoom = ref<PanzoomObject>()
 // scaled to fit, svgs without an intrinsic size (viewBox only) would otherwise
 // render at the browser's default of 300x150.
 const isSvgImage = computed(() => file.mimeType === 'image/svg+xml')
-
-const { getFitScale } = useRotatedFit({ element: img, isSvg: isSvgImage })
+// a quarter turn swaps the width and height of the image, so its size limits are
+// swapped as well: the rotated image then fits the stage (a size container)
+const isQuarterTurn = computed(() => currentImageRotation % 180 !== 0)
 
 const onWheelEvent = (e: WheelEvent) => {
   e.preventDefault()
@@ -116,24 +118,10 @@ const setTransform = ({ scale, x, y }: { scale: number; x: number; y: number }) 
       v = y
   }
 
-  // the translation is scaled as well, dividing it by the fit scale keeps panning with the pointer
-  const fitScale = getFitScale(currentImageRotation)
   unref(panzoom).setStyle(
     'transform',
-    `rotate(${currentImageRotation}deg) scale(${scale * fitScale}) translate(${h / fitScale}px, ${v / fitScale}px)`
+    `rotate(${currentImageRotation}deg) scale(${scale}) translate(${h}px, ${v}px)`
   )
-}
-
-function applyTransform() {
-  if (!unref(panzoom)) {
-    return
-  }
-
-  setTransform({
-    scale: unref(panzoom).getScale(),
-    x: unref(panzoom).getPan().x,
-    y: unref(panzoom).getPan().y
-  })
 }
 
 const destroyPanzoom = () => {
@@ -151,7 +139,8 @@ const initPanzoom = async () => {
   panzoom.value = Panzoom(unref(img), {
     animate: false,
     duration: 300,
-    overflow: 'auto',
+    // the layout box of a quarter-turned image overflows the stage, which must not scroll to it
+    overflow: 'hidden',
     // an unzoomed image can't be dragged out of view, a swipe switches the file instead
     panOnlyWhenZoomed: true,
     minScale: 0.5,
@@ -169,10 +158,20 @@ defineExpose({ isZoomed })
 
 watch(() => file, initPanzoom, { immediate: true, deep: true })
 
-watch(() => currentImageRotation, applyTransform)
+watch(
+  () => currentImageRotation,
+  () => {
+    if (!unref(panzoom)) {
+      return
+    }
 
-// a rotated image has to fit the stage again when it changes size
-useResizeObserver(() => unref(img)?.parentElement, applyTransform)
+    setTransform({
+      scale: unref(panzoom).getScale(),
+      x: unref(panzoom).getPan().x,
+      y: unref(panzoom).getPan().y
+    })
+  }
+)
 
 let resetEventToken: string
 let zoomToken: string
