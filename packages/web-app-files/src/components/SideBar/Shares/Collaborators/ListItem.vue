@@ -54,6 +54,7 @@
                 :existing-share-permissions="share.permissions"
                 :is-locked="isLocked"
                 :is-external="isExternalShare"
+                :is-guest="isGuestShare"
                 class="files-collaborators-collaborator-role max-w-full"
                 mode="edit"
                 @option-change="shareRoleChanged"
@@ -170,6 +171,7 @@ const shareDate = computed(() => {
 })
 
 const isExternalShare = computed(() => share.shareType === ShareTypes.remote.value)
+const isGuestShare = computed(() => share.shareType === ShareTypes.guest.value)
 
 const sharedViaTooltip = computed(() =>
   $gettext('Shared via the parent folder "%{sharedParentDir}"', {

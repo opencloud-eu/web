@@ -98,6 +98,7 @@
         mode="create"
         class="max-w-40"
         :is-external="isExternalShareRoleType"
+        :is-guest="hasGuestRecipient"
         @option-change="collaboratorRoleChanged"
       />
       <div class="flex items-center">
@@ -530,6 +531,10 @@ function announceResults(query: string, results: CollaboratorAutoCompleteItem[])
 
 const showShareTypeFilter = computed(
   () => unref(shareRoleTypes).length > 1 && !isProjectSpaceResource(unref(resource))
+)
+
+const hasGuestRecipient = computed(() =>
+  unref(selectedCollaborators).some(({ shareType }) => shareType === ShareTypes.guest.value)
 )
 
 const isValid = computed(() => {

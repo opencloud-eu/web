@@ -67,7 +67,7 @@ import RoleItem from '../Shared/RoleItem.vue'
 import { v4 as uuidV4 } from 'uuid'
 import { inject, computed, ref, unref, Ref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { ShareRole } from '@opencloud-eu/web-client'
+import { ShareRole, UNIFIED_ROLE_DENIED_ID } from '@opencloud-eu/web-client'
 
 const {
   existingShareRole = undefined,
@@ -75,7 +75,8 @@ const {
   domSelector = undefined,
   mode = 'create',
   isLocked = false,
-  isExternal = false
+  isExternal = false,
+  isGuest = false
 } = defineProps<{
   existingShareRole?: ShareRole
   existingSharePermissions?: string[]
@@ -83,6 +84,7 @@ const {
   mode?: 'create' | 'edit'
   isLocked?: boolean
   isExternal?: boolean
+  isGuest?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -108,6 +110,11 @@ const availableRoles = computed(() => {
   let roles = availableInternalRoles
   if (isExternal) {
     roles = availableExternalRoles
+  }
+
+  if (isGuest) {
+    // guests can't be denied access
+    return unref(roles).filter(({ id }) => id !== UNIFIED_ROLE_DENIED_ID)
   }
 
   return unref(roles)
