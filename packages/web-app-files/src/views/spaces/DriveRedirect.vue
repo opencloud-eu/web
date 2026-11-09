@@ -100,7 +100,7 @@ watch(
 )
 
 // only the not found message gets a title, a redirect leaves it to the view it redirects to
-if (unref(isUnknownProjectSpace)) {
+if (unref(isUnknownSpace)) {
   useDocumentTitle({ titleSegments: computed(() => [$gettext('Resource not found')]) })
 }
 </script>
