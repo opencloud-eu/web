@@ -1,6 +1,6 @@
 import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
-import { Task } from 'vue-concurrency'
+import { Task, useTask } from 'vue-concurrency'
 import { unref } from 'vue'
 import { Router } from 'vue-router'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
@@ -193,6 +193,29 @@ describe('useResourcesViewDefaults', () => {
       expect(unref(result.sortedResources).map(({ id }) => id)).toEqual(['2', '3', '1'])
     })
   })
+
+  describe('loadResources', () => {
+    it('resolves when the load gets canceled by a newer one', async () => {
+      const loadResourcesTask = useTask(function* () {
+        yield new Promise(() => undefined)
+      }).restartable()
+      const { result } = getWrapper({ loadResourcesTask })
+
+      const olderLoad = result.loadResources()
+      result.loadResources()
+
+      await expect(olderLoad).resolves.toBeUndefined()
+    })
+
+    it('rejects when the load fails', async () => {
+      const loadResourcesTask = useTask(function* () {
+        yield Promise.reject(new Error('load failed'))
+      })
+      const { result } = getWrapper({ loadResourcesTask })
+
+      await expect(result.loadResources()).rejects.toThrow('load failed')
+    })
+  })
 })
 
 function getWrapper({
@@ -200,10 +223,12 @@ function getWrapper({
   resources = [],
   filterResources,
   sortFields,
-  router
+  router,
+  loadResourcesTask = mock<Task<unknown, unknown[]>>()
 }: {
   query?: Record<string, string>
   resources?: Resource[]
+  loadResourcesTask?: Task<unknown, unknown[]>
   filterResources?: (resources: Resource[]) => Resource[]
   sortFields?: SortField[]
   router?: Router
@@ -220,7 +245,7 @@ function getWrapper({
       useResourcesStore().initResourceList({ currentFolder: null, resources })
       result = useResourcesViewDefaults({
         folderViewExtensionPoint: mock<ExtensionPoint<FolderViewExtension>>(),
-        loadResourcesTask: mock<Task<unknown, unknown[]>>(),
+        loadResourcesTask,
         filterResources,
         sortFields
       })

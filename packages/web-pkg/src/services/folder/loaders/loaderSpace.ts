@@ -45,15 +45,7 @@ export class FolderLoaderSpace implements FolderLoader {
   }
 
   public getTask(context: TaskContext): FolderLoaderTask {
-    const {
-      router,
-      clientService,
-      resourcesStore,
-      authService,
-      spacesStore,
-      sharesStore,
-      configStore
-    } = context
+    const { router, clientService, resourcesStore, spacesStore, sharesStore, configStore } = context
     const { webdav, graphAuthenticated: graphClient } = clientService
     const { replaceInvalidFileRoute } = useFileRouteReplace({ router })
 
@@ -170,11 +162,8 @@ export class FolderLoaderSpace implements FolderLoader {
         resourcesStore.initResourceList({ currentFolder, resources })
       } catch (error) {
         resourcesStore.setCurrentFolder(null)
-        console.error(error)
-
-        if (error.statusCode === 401) {
-          return authService.handleAuthError(unref(router.currentRoute), error)
-        }
+        // the folder service handles the error
+        throw error
       }
     }).restartable()
   }

@@ -188,7 +188,7 @@ useDocumentTitle({ titleSegments })
 
 const performLoaderTask = async () => {
   if (!props.space) return
-  await resourcesViewDefaults.loadResourcesTask.perform(props.space)
+  await resourcesViewDefaults.loadResources(props.space)
   resourcesViewDefaults.refreshFileListHeaderPosition()
   resourcesViewDefaults.scrollToResourceFromRoute(
     unref(resourcesViewDefaults.sortedResources),

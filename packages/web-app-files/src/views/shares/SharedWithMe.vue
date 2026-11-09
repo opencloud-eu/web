@@ -183,7 +183,7 @@ const {
   sortDir,
   handleSort,
   fileListHeaderY,
-  loadResourcesTask,
+  loadResources,
   selectedResources,
   storeItems,
   sortedResources,
@@ -203,7 +203,7 @@ const breadcrumbs = computed(() => {
     {
       id: uuidV4(),
       text: $gettext('Shares'),
-      onClick: () => loadResourcesTask.perform(),
+      onClick: () => loadResources(),
       isStaticNav: true
     }
   ]
@@ -261,7 +261,7 @@ async function showVisibilityOfScrollToShare() {
 }
 
 const performLoaderTask = async ({ showScrollToShare = false } = {}) => {
-  await loadResourcesTask.perform()
+  await loadResources()
   if (showScrollToShare) {
     await showVisibilityOfScrollToShare()
   }

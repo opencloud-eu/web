@@ -18,9 +18,11 @@ import {
   useAuthService,
   AuthServiceInterface,
   ExtensionRegistry,
-  useExtensionRegistry
+  useExtensionRegistry,
+  useMessages
 } from '../../composables'
 import { unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import { ClientService } from '../../services'
 
 import {
@@ -78,6 +80,8 @@ export class FolderService {
     const sharesStore = useSharesStore()
     const authService = useAuthService()
     const extensionRegistry = useExtensionRegistry()
+    const { showErrorMessage } = useMessages()
+    const { $gettext } = useGettext()
 
     const loader = this.loaders.find((l) => l.isEnabled() && l.isActive(unref(router)))
     if (!loader) {
@@ -85,6 +89,7 @@ export class FolderService {
       return
     }
 
+    // a new load cancels the running one, so an outdated load can neither write nor report anything
     return useTask(function* (...args) {
       const [signal] = args
       const context = {
@@ -108,10 +113,25 @@ export class FolderService {
           .canceledOn(signal)
       } catch (e) {
         console.error(e)
+        const status = e?.statusCode || e?.response?.status
+        if (status === 401) {
+          // keep the load running until the auth error is handled, e.g. the token got renewed
+          try {
+            yield authService.handleAuthError(unref(router.currentRoute), e)
+          } catch (authError) {
+            console.error(authError)
+          }
+          return
+        }
+        // a missing resource is shown as such by the views
+        if (status === 404) {
+          return
+        }
+        showErrorMessage({ title: $gettext('Failed to load files'), errors: [e] })
       } finally {
         resourcesStore.finishResourcesLoading()
       }
-    })
+    }).restartable()
   }
 }
 

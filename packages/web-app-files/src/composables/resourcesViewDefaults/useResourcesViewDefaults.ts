@@ -53,6 +53,7 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   fileListHeaderY: Ref<number>
   refreshFileListHeaderPosition(): void
   loadResourcesTask: Task<TT, TU>
+  loadResources(...args: TU): Promise<void>
   areResourcesLoading: ReadOnlyRef<boolean>
   storeItems: ReadOnlyRef<T[]>
   sortFields: ReadOnlyRef<SortField[]>
@@ -80,6 +81,17 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   const areResourcesLoading = computed(() => {
     return loadResourcesTask.isRunning || !loadResourcesTask.last
   })
+
+  async function loadResources(...args: TU) {
+    try {
+      await loadResourcesTask.perform(...args)
+    } catch (e) {
+      // a newer load or leaving the view cancels the running load
+      if (e !== 'cancel') {
+        throw e
+      }
+    }
+  }
 
   const language = useGettext()
   const resourcesStore = useResourcesStore()
@@ -203,6 +215,7 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     fileListHeaderY,
     refreshFileListHeaderPosition,
     loadResourcesTask,
+    loadResources,
     areResourcesLoading,
     storeItems,
     sortFields,
