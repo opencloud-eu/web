@@ -45,6 +45,7 @@
         id="editor-search-input"
         ref="searchInputRef"
         v-model="searchTerm"
+        preselect
         class="w-full"
         :label="$gettext('Search')"
         :placeholder="$gettext('Search')"

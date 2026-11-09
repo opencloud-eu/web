@@ -147,7 +147,7 @@ describe('EmbedActions', () => {
       expect(input.props('selectionRange')).toEqual([0, 4])
     })
 
-    it('hides the file extension in the input when file extensions are turned off', () => {
+    it('hides the file extension in the input and preselects the whole name when file extensions are turned off', () => {
       const { wrapper } = getWrapper({
         currentFolder,
         isLocationPicker: true,
@@ -157,6 +157,7 @@ describe('EmbedActions', () => {
       const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
 
       expect(input.props('modelValue')).toBe('file')
+      expect(input.props('preselect')).toBe(true)
       expect(input.props('selectionRange')).toBeNull()
     })
 

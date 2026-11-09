@@ -81,6 +81,19 @@ describe('CreateSpaceModal', () => {
     expect(nameValue(wrapper)).toBe('New space (2)')
   })
 
+  it('preselects the suggested name when the input is focused on open', async () => {
+    const { wrapper } = getWrapper()
+    const input = wrapper.find<HTMLInputElement>('#create-space-input')
+
+    await input.trigger('focus')
+    await flushPromises()
+
+    expect([input.element.selectionStart, input.element.selectionEnd]).toEqual([
+      0,
+      'New space'.length
+    ])
+  })
+
   it('suggests a name and never marks it, encrypted or not', async () => {
     const { wrapper } = getWrapper()
     expect(nameValue(wrapper)).toBe('New space')
