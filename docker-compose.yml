@@ -344,7 +344,7 @@ services:
       start_period: 5s
 
   imagor:
-    image: shumc/imagor:1.9.14
+    image: shumc/imagor:1.10.1
     container_name: web_imagor
     restart: unless-stopped
     environment:
