@@ -128,13 +128,11 @@ const readonly = computed(
 )
 
 const selectedTags = ref<TagOption[]>([])
+// the panels may get a copy of the resource that the store doesn't update, so keep the saved tags here
+const savedTags = ref<string[]>([])
 const availableTags = ref<TagOption[]>([])
 let allTags: string[] = []
 const tagSelect: VNodeRef = ref(null)
-
-const currentTags = computed<TagOption[]>(() => {
-  return [...unref(resource).tags.map((t) => ({ label: t }))]
-})
 
 const loadAvailableTagsTask = useTask(function* (signal) {
   const tags = yield* call(clientService.graphAuthenticated.tags.listTags({ signal }))
@@ -146,9 +144,11 @@ const loadAvailableTagsTask = useTask(function* (signal) {
     .map((t) => ({ label: t }))
 })
 
-const revertChanges = () => {
-  selectedTags.value = unref(currentTags)
+function resetTags() {
+  savedTags.value = [...unref(resource).tags]
+  selectedTags.value = unref(savedTags).map((label) => ({ label }))
 }
+
 const createOption = (label: string): TagOption => {
   if (!label.trim().length) {
     return {
@@ -170,7 +170,8 @@ function setSelectedTags(labels: string[]) {
 }
 
 const save = async (e: TagOption[] | string[]) => {
-  const { id, tags, fileId } = unref(resource)
+  const { id, fileId } = unref(resource)
+  const tags = unref(savedTags)
   let assignedTags: string[] = []
   let savedSelection: TagOption[]
 
@@ -204,6 +205,10 @@ const save = async (e: TagOption[] | string[]) => {
     }
 
     updateResourceField({ id: id, field: 'tags', value: [...selectedTagLabels] })
+    // skip if a resource switch or a newer save has replaced the selection meanwhile
+    if (unref(selectedTags) === savedSelection) {
+      savedTags.value = [...selectedTagLabels]
+    }
 
     if (unref(tagSelect) !== null) {
       unref(tagSelect).$refs.search.focus()
@@ -218,6 +223,7 @@ const save = async (e: TagOption[] | string[]) => {
     }
     // skip if a resource switch or a newer save has replaced the selection meanwhile
     if (unref(selectedTags) === savedSelection) {
+      savedTags.value = actualTags
       setSelectedTags(actualTags)
     }
 
@@ -230,14 +236,14 @@ const save = async (e: TagOption[] | string[]) => {
 
 watch(resource, () => {
   if (unref(resource)?.tags) {
-    revertChanges()
+    resetTags()
     loadAvailableTagsTask.perform()
   }
 })
 
 onMounted(() => {
   if (unref(resource)?.tags) {
-    selectedTags.value = unref(currentTags)
+    resetTags()
   }
 
   /**
