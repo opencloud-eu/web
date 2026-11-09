@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { computed, ref, unref, watch } from 'vue'
-import { Resource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
+import { isShareSpaceResource, Resource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import {
   Modal,
   useClientService,
@@ -120,6 +120,9 @@ async function onConfirm() {
       path: urlJoin(unref(currentFolder).path, `${unref(inputFilename)}.url`),
       content: `[InternetShortcut]\nURL=${unref(shortcutUrl)}`
     })
+    if (isShareSpaceResource(space)) {
+      resource.remoteItemId = space.id
+    }
     resourcesStore.upsertResource(resource)
     showMessage({ title: $gettext('Shortcut was created successfully') })
   } catch (error) {

@@ -7,7 +7,7 @@ import {
   RouteLocation,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { FileResource, SpaceResource } from '@opencloud-eu/web-client'
+import { FileResource, ShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { useMessages, useResourcesStore } from '../../../src/composables/piniaStores'
 
@@ -208,6 +208,16 @@ describe('CreateShortcutModal', () => {
       })
     })
 
+    it('adds the remoteItemId if the current space is a share space', async () => {
+      const space = mock<ShareSpaceResource>({ id: 'share-space-id', driveType: 'share' })
+      const { wrapper, input } = getWrapper({ space })
+      await input('example.org')
+      await wrapper.vm.onConfirm()
+      expect(useResourcesStore().upsertResource).toHaveBeenCalledWith(
+        expect.objectContaining({ remoteItemId: 'share-space-id' })
+      )
+    })
+
     it('shows an error when saving fails', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       const { wrapper, input, mocks } = getWrapper()
@@ -225,13 +235,16 @@ describe('CreateShortcutModal', () => {
   })
 })
 
-function getWrapper({ names = [] }: { names?: string[] } = {}) {
+function getWrapper({
+  names = [],
+  space = mock<SpaceResource>()
+}: { names?: string[]; space?: SpaceResource } = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
   })
   mocks.$clientService.webdav.putFileContents.mockResolvedValue(mock<FileResource>())
   const wrapper = shallowMount(CreateShortcutModal, {
-    props: { space: mock<SpaceResource>(), modal: undefined },
+    props: { space, modal: undefined },
     global: {
       plugins: defaultPlugins({
         piniaOptions: {
