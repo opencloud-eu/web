@@ -4,6 +4,7 @@ import {
   Resource,
   isProjectSpaceResource,
   extractExtensionFromFile,
+  extractNodeId,
   SpaceResource,
   isTrashResource,
   urlJoin
@@ -53,6 +54,8 @@ export const useFileActionsRestore = ({
   const collectConflicts = async (space: SpaceResource, sortedResources: Resource[]) => {
     const existingResourcesCache: Record<string, Resource[]> = {}
     const conflicts: Resource[] = []
+    // restored elsewhere already, e.g. in another tab
+    const alreadyRestored: Resource[] = []
     // same path as an earlier resource of the batch, the user wants both restored
     const batchDuplicates: Resource[] = []
     const collectedPaths = new Set<string>()
@@ -79,14 +82,19 @@ export const useFileActionsRestore = ({
         }
         existingResourcesCache[parentPath] = existingResources
       }
+      // Compare by path segment, it matches the listing for locked vaults where the name stays cleartext
+      const existingResource = existingResources.find((r) => r.name === basename(resource.path))
+      // a restored resource keeps its id, the trash item id is its node id
+      if (existingResource && extractNodeId(existingResource.id) === resource.id) {
+        alreadyRestored.push(resource)
+        continue
+      }
       if (collectedPaths.has(resource.path)) {
         batchDuplicates.push(resource)
         continue
       }
       collectedPaths.add(resource.path)
-      // Compare by path segment, it matches the listing for locked vaults where the name stays cleartext
-      const hasConflict = existingResources.some((r) => r.name === basename(resource.path))
-      if (hasConflict) {
+      if (existingResource) {
         conflicts.push(resource)
       } else {
         resolvedResources.push(resource)
@@ -95,6 +103,7 @@ export const useFileActionsRestore = ({
     return {
       existingResourcesByPath: existingResourcesCache,
       conflicts,
+      alreadyRestored,
       batchDuplicates,
       resolvedResources,
       // a folder restored by the same batch must not be created as a new empty one
@@ -228,10 +237,28 @@ export const useFileActionsRestore = ({
     const {
       existingResourcesByPath,
       conflicts,
+      alreadyRestored,
       batchDuplicates,
       resolvedResources,
       missingFolderPaths
     } = await collectConflicts(space, sortedResources)
+
+    if (alreadyRestored.length) {
+      const alreadyRestoredIds = new Set(alreadyRestored.map(({ id }) => id))
+      resourcesStore.removeResources(alreadyRestored)
+      // selections only cover visible rows
+      resourcesStore.setSelection(
+        resourcesStore.selectedIds.filter((id) => !alreadyRestoredIds.has(id))
+      )
+      showErrorMessage({
+        title: $ngettext(
+          '»%{name}« is no longer in the trash bin',
+          '%{count} items are no longer in the trash bin',
+          alreadyRestored.length,
+          { name: alreadyRestored[0].name, count: alreadyRestored.length.toString() }
+        )
+      })
+    }
 
     // iterate through conflicts and collect resolve strategies
     const resolvedConflicts = await collectResolveStrategies(

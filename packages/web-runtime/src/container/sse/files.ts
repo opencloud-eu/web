@@ -4,18 +4,20 @@ import {
   ImageDimension,
   isItemInCurrentFolder,
   isLocationCommonActive,
+  isLocationTrashActive,
   ProcessorType,
   queryItemAsString,
   renameResource
 } from '@opencloud-eu/web-pkg'
 import {
   buildSpace,
+  extractNodeId,
   isShareSpaceResource,
   Resource,
   SpaceResource,
   urlJoin
 } from '@opencloud-eu/web-client'
-import { DavProperty } from '@opencloud-eu/web-client/webdav'
+import { DavProperties, DavProperty } from '@opencloud-eu/web-client/webdav'
 import { until } from '@vueuse/core'
 import { unref } from 'vue'
 import { LocationQueryValue, RouteParams } from 'vue-router'
@@ -313,12 +315,68 @@ export const onSSEProcessingFinishedEvent = async ({
   }
 }
 
+function isEventSpaceTrashActive({
+  sseData,
+  spacesStore,
+  router
+}: Pick<SSEEventOptions, 'sseData' | 'spacesStore' | 'router'>) {
+  return (
+    !!sseData.spaceid &&
+    isLocationTrashActive(router, 'files-trash-generic') &&
+    spacesStore.currentSpace?.id === sseData.spaceid
+  )
+}
+
+/**
+ * Trash items are identified by the node id of the deleted resource, without the space prefix.
+ */
+function upsertTrashItem({
+  sseData,
+  resourcesStore,
+  spacesStore,
+  clientService,
+  router,
+  resourceQueue
+}: Pick<
+  SSEEventOptions,
+  'sseData' | 'resourcesStore' | 'spacesStore' | 'clientService' | 'router' | 'resourceQueue'
+>) {
+  const trashItemId = extractNodeId(sseData.itemid)
+  if (!trashItemId) {
+    return
+  }
+
+  return resourceQueue.add(async () => {
+    let resource: Resource
+    try {
+      resource = await clientService.webdav.getFileInfo(
+        spacesStore.currentSpace,
+        { path: trashItemId },
+        { davProperties: DavProperties.Trashbin, isTrash: true }
+      )
+    } catch {
+      // the item might have been restored or deleted permanently in the meantime
+      return
+    }
+
+    // check again in case the user has navigated away in the meantime
+    if (!isEventSpaceTrashActive({ sseData, spacesStore, router })) {
+      return
+    }
+
+    resourcesStore.upsertResource(resource)
+  })
+}
+
 export const onSSEItemTrashedEvent = async ({
   sseData,
   language,
   messageStore,
   resourcesStore,
-  clientService
+  spacesStore,
+  clientService,
+  router,
+  resourceQueue
 }: SSEEventOptions) => {
   if (sseData.initiatorid === clientService.initiatorId) {
     // If initiated by current client (browser tab), action unnecessary. Web manages its own logic, return early.
@@ -326,6 +384,25 @@ export const onSSEItemTrashedEvent = async ({
   }
 
   await waitForResourcesLoad(resourcesStore)
+
+  if (isLocationTrashActive(router, 'files-trash-overview')) {
+    return spacesStore.updateSpaceField({
+      id: sseData.spaceid,
+      field: 'hasTrashedItems',
+      value: true
+    })
+  }
+
+  if (isEventSpaceTrashActive({ sseData, spacesStore, router })) {
+    return upsertTrashItem({
+      sseData,
+      resourcesStore,
+      spacesStore,
+      clientService,
+      router,
+      resourceQueue
+    })
+  }
 
   const { $gettext } = language
 
@@ -353,7 +430,8 @@ export const onSSEItemRestoredEvent = async ({
   sseData,
   resourcesStore,
   spacesStore,
-  clientService
+  clientService,
+  router
 }: SSEEventOptions) => {
   if (sseData.initiatorid === clientService.initiatorId) {
     // If initiated by current client (browser tab), action unnecessary. Web manages its own logic, return early.
@@ -361,6 +439,20 @@ export const onSSEItemRestoredEvent = async ({
   }
 
   await waitForResourcesLoad(resourcesStore)
+
+  if (isEventSpaceTrashActive({ sseData, spacesStore, router })) {
+    const trashItemId = extractNodeId(sseData.itemid)
+    const trashItem = resourcesStore.resources.find(({ id }) => id === trashItemId)
+    if (!trashItem) {
+      return
+    }
+
+    resourcesStore.removeResources([trashItem])
+    // selections only cover visible rows
+    return resourcesStore.setSelection(
+      resourcesStore.selectedIds.filter((id) => id !== trashItemId)
+    )
+  }
 
   const space = getEventSpace({ spacesStore, resourcesStore }, sseData.spaceid)
   if (!space) {
