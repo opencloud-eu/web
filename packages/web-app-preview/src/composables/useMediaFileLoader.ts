@@ -113,7 +113,7 @@ export const useMediaFileLoader = ({
   const resolveUrl = (mediaFile: MediaFile, signal: AbortSignal): Promise<string | undefined> => {
     const space = getMatchingSpace(mediaFile.resource)
 
-    if (mediaFile.mimeType === 'image/svg+xml') {
+    if (mediaFile.mimeType?.toLowerCase() === 'image/svg+xml') {
       return loadSvgDataUrl(space, mediaFile.resource, signal)
     }
 
