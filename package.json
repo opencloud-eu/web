@@ -58,7 +58,7 @@
     "franc-min": "^6.2.0",
     "happy-dom": "21.0.4",
     "knip": "6.44.2",
-    "license-checker-rseidelsohn": "4.4.2",
+    "license-checker-rseidelsohn": "5.0.1",
     "node-fetch": "3.3.2",
     "playwright": "^1.61.1",
     "playwright-bdd": "^9.2.0",
