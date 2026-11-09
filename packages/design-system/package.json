@@ -105,7 +105,7 @@
     "fuse.js": "^7.1.0",
     "lodash-es": "^4.17.23",
     "luxon": "^3.7.2",
-    "vue-inline-svg": "^4.0.1",
+    "vue-inline-svg": "^5.0.0",
     "vue-router": "^5.0.4",
     "vue-select": "4.0.0-beta.6",
     "vue3-gettext": "4.0.1"
