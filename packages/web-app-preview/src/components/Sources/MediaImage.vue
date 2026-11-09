@@ -45,6 +45,8 @@ import {
 import type { PanzoomObject, PanzoomOptions } from '@panzoom/panzoom'
 import Panzoom from '@panzoom/panzoom'
 import { useEventBus } from '@opencloud-eu/web-pkg'
+import { useResizeObserver } from '@vueuse/core'
+import { useRotatedFit } from '../../composables'
 
 const { file, currentImageRotation } = defineProps<{
   file: MediaFile
@@ -68,6 +70,8 @@ const panzoom = ref<PanzoomObject>()
 // scaled to fit, svgs without an intrinsic size (viewBox only) would otherwise
 // render at the browser's default of 300x150.
 const isSvgImage = computed(() => file.mimeType === 'image/svg+xml')
+
+const { getFitScale } = useRotatedFit({ element: img, isSvg: isSvgImage })
 
 const onWheelEvent = (e: WheelEvent) => {
   e.preventDefault()
@@ -112,10 +116,24 @@ const setTransform = ({ scale, x, y }: { scale: number; x: number; y: number }) 
       v = y
   }
 
+  // the translation is scaled as well, dividing it by the fit scale keeps panning with the pointer
+  const fitScale = getFitScale(currentImageRotation)
   unref(panzoom).setStyle(
     'transform',
-    `rotate(${currentImageRotation}deg) scale(${scale}) translate(${h}px, ${v}px)`
+    `rotate(${currentImageRotation}deg) scale(${scale * fitScale}) translate(${h / fitScale}px, ${v / fitScale}px)`
   )
+}
+
+function applyTransform() {
+  if (!unref(panzoom)) {
+    return
+  }
+
+  setTransform({
+    scale: unref(panzoom).getScale(),
+    x: unref(panzoom).getPan().x,
+    y: unref(panzoom).getPan().y
+  })
 }
 
 const destroyPanzoom = () => {
@@ -151,20 +169,10 @@ defineExpose({ isZoomed })
 
 watch(() => file, initPanzoom, { immediate: true, deep: true })
 
-watch(
-  () => currentImageRotation,
-  () => {
-    if (!unref(panzoom)) {
-      return
-    }
+watch(() => currentImageRotation, applyTransform)
 
-    setTransform({
-      scale: unref(panzoom).getScale(),
-      x: unref(panzoom).getPan().x,
-      y: unref(panzoom).getPan().y
-    })
-  }
-)
+// a rotated image has to fit the stage again when it changes size
+useResizeObserver(() => unref(img)?.parentElement, applyTransform)
 
 let resetEventToken: string
 let zoomToken: string

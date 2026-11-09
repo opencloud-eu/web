@@ -1,6 +1,6 @@
 import MediaImage from '../../../src/components/Sources/MediaImage.vue'
 import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
-import { flushPromises } from '@vue/test-utils'
+import { flushPromises, VueWrapper } from '@vue/test-utils'
 import { Resource } from '@opencloud-eu/web-client'
 import { MediaFile } from '../../../src/helpers/types'
 import Panzoom, { PanzoomOptions } from '@panzoom/panzoom'
@@ -11,8 +11,8 @@ const panzoom = {
   setStyle: vi.fn(),
   zoomIn: vi.fn(),
   zoomOut: vi.fn(),
-  getScale: () => 1,
-  getPan: () => ({ x: 0, y: 0 })
+  getScale: vi.fn(() => 1),
+  getPan: vi.fn(() => ({ x: 0, y: 0 }))
 }
 vi.mock('@panzoom/panzoom', () => ({ default: vi.fn(() => panzoom) }))
 
@@ -46,6 +46,8 @@ function wheelEvent(deltaY: number, modifier: Partial<WheelEventInit> = {}) {
 describe('MediaImage component', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    panzoom.getScale.mockReturnValue(1)
+    panzoom.getPan.mockReturnValue({ x: 0, y: 0 })
   })
 
   describe('svg', () => {
@@ -78,6 +80,112 @@ describe('MediaImage component', () => {
 
     const img = wrapper.find('img')
     expect(img.classes()).toEqual(expect.arrayContaining(['max-w-full', 'max-h-full']))
+  })
+
+  describe('rotation', () => {
+    const stageSize = { width: 1000, height: 600 }
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    // the test DOM has no layout: the stage and the image get their sizes by hand
+    function setStageSize(wrapper: VueWrapper, size: { width: number; height: number }) {
+      Object.defineProperties(wrapper.element.parentElement, {
+        clientWidth: { value: size.width, configurable: true },
+        clientHeight: { value: size.height, configurable: true }
+      })
+    }
+
+    function getRotatedWrapper(mimeType: string, imageSize: { width: number; height: number }) {
+      const { wrapper } = getWrapper(mimeType)
+      setStageSize(wrapper, stageSize)
+      Object.defineProperties(wrapper.find('img').element, {
+        offsetWidth: { value: imageSize.width },
+        offsetHeight: { value: imageSize.height },
+        // a viewBox-only svg of 4:3 reports its default natural size
+        naturalWidth: { value: 200 },
+        naturalHeight: { value: 150 }
+      })
+      return wrapper
+    }
+
+    function lastTransform() {
+      const [, transform] = panzoom.setStyle.mock.calls.at(-1)
+      const [, rotation, scale, x, y] = transform.match(
+        /rotate\((.+)deg\) scale\((.+)\) translate\((.+)px, (.+)px\)/
+      )
+      return { rotation: Number(rotation), scale: Number(scale), x: Number(x), y: Number(y) }
+    }
+
+    it.each([
+      ['a landscape raster image', 'image/png', { width: 800, height: 600 }],
+      // the svg element fills the stage, its drawing is 800x600
+      ['a landscape svg', 'image/svg+xml', stageSize]
+    ])('fits %s into the stage after a quarter turn', async (_, mimeType, imageSize) => {
+      const wrapper = getRotatedWrapper(mimeType, imageSize)
+      await flushPromises()
+
+      await wrapper.setProps({ currentImageRotation: 90 })
+
+      const { rotation, scale } = lastTransform()
+      expect(rotation).toBe(90)
+      // turned, the 800x600 drawing is 600 wide and 800 high, the stage only 600 high
+      expect(800 * scale).toBeCloseTo(stageSize.height)
+      expect(600 * scale).toBeLessThanOrEqual(stageSize.width)
+    })
+
+    it('keeps the zoom and pan of a rotated image', async () => {
+      const wrapper = getRotatedWrapper('image/png', { width: 800, height: 600 })
+      await flushPromises()
+      panzoom.getScale.mockReturnValue(2)
+      panzoom.getPan.mockReturnValue({ x: 30, y: 0 })
+
+      await wrapper.setProps({ currentImageRotation: 90 })
+
+      const { scale, x, y } = lastTransform()
+      expect(scale).toBeCloseTo(2 * 0.75)
+      // the translation is scaled too, it still moves the image by the pan times the zoom
+      expect(x * scale).toBeCloseTo(0)
+      expect(y * scale).toBeCloseTo(-30 * 2)
+    })
+
+    it('does not scale an image that is turned back', async () => {
+      const wrapper = getRotatedWrapper('image/png', { width: 800, height: 600 })
+      await flushPromises()
+
+      await wrapper.setProps({ currentImageRotation: 90 })
+      await wrapper.setProps({ currentImageRotation: 180 })
+
+      expect(lastTransform()).toEqual({ rotation: 180, scale: 1, x: 0, y: 0 })
+    })
+
+    it('fits a rotated image again when the stage changes size', async () => {
+      // the test DOM has no ResizeObserver
+      let onResize: ResizeObserverCallback
+      const observe = vi.fn()
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(callback: ResizeObserverCallback) {
+            onResize = callback
+          }
+          observe = observe
+          unobserve = vi.fn()
+          disconnect = vi.fn()
+        }
+      )
+      const wrapper = getRotatedWrapper('image/png', { width: 800, height: 600 })
+      await flushPromises()
+      expect(observe).toHaveBeenCalledWith(wrapper.element.parentElement, expect.anything())
+
+      await wrapper.setProps({ currentImageRotation: 90 })
+      setStageSize(wrapper, { width: 500, height: 400 })
+      onResize([], undefined)
+
+      // turned, the 800px wide image has to fit the 400px high stage
+      expect(lastTransform().scale).toBeCloseTo(400 / 800)
+    })
   })
 
   describe('mouse wheel zoom', () => {
