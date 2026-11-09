@@ -88,20 +88,23 @@ describe('OcResourceName', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
 
-  it('does not truncate a very long name when disabled', () => {
+  it('allows the basename to wrap anywhere when truncation is disabled', () => {
     const wrapper = shallowMount(Name, {
       props: {
-        fullPath:
-          'super-long-file-name-which-will-be-truncated-when-exceeding-the-screen-space-while-still-preserving-the-file-extension-at-the-end.txt',
-        name: '.super-long-file-name-which-will-be-truncated-when-exceeding-the-screen-space-while-still-preserving-the-file-extension-at-the-end.txt',
-        extension: 'txt',
+        fullPath: 'photos/PXL_20260703_163401420.jpg',
+        name: 'PXL_20260703_163401420.jpg',
+        extension: 'jpg',
         type: 'file',
         truncateName: false
       },
       global: { stubs: { OcFilterHighlight: false } }
     })
 
-    expect(wrapper.html()).toMatchSnapshot()
+    const basename = wrapper.find('.oc-resource-basename')
+    expect(basename.text()).toBe('PXL_20260703_163401420.jpg')
+    expect(basename.classes()).toContain('wrap-anywhere')
+    expect(wrapper.find('.truncate').exists()).toBeFalsy()
+    expect(wrapper.find('.oc-resource-extension').text()).toBe('.jpg')
   })
 
   it('shows the name as HTML title if the path is not displayed', () => {
