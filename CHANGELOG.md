@@ -14,6 +14,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: wrap long resource names when truncation is disabled [[#4381](https://github.com/opencloud-eu/web/pull/4381)]
+- fix: show an error message when loading a folder or list fails [[#4356](https://github.com/opencloud-eu/web/pull/4356)]
 - fix: handle name clashes inside a move or copy batch and cancel on closing the conflict dialog [[#4355](https://github.com/opencloud-eu/web/pull/4355)]
 - fix: keep deleted files up to date and don't restore items restored elsewhere [[#4283](https://github.com/opencloud-eu/web/pull/4283)]
 - fix: show hidden shares when a link points to a hidden share [[#4349](https://github.com/opencloud-eu/web/pull/4349)]
