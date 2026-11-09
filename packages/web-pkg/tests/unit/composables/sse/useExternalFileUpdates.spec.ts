@@ -15,6 +15,7 @@ const FILE = {
 function setup({
   supportSSE = true,
   accessToken = 'token',
+  guestContextReady = false,
   publicLinkContextReady = false,
   isActive = true,
   resource = FILE as Resource | undefined
@@ -48,7 +49,7 @@ function setup({
       provide: { $clientService: clientService },
       pluginOptions: {
         piniaOptions: {
-          authState: { accessToken, publicLinkContextReady },
+          authState: { accessToken, guestContextReady, publicLinkContextReady },
           capabilityState: { capabilities: { core: { 'support-sse': supportSSE } as any } }
         }
       }
@@ -95,6 +96,17 @@ describe('useExternalFileUpdates', () => {
     )
 
     s.wrapper.unmount()
+
+    expect(s.sseAuthenticated.removeEventListener).toHaveBeenCalledTimes(2)
+  })
+
+  it('subscribes for a guest, who has no access token, until the guest context ends', async () => {
+    const s = setup({ accessToken: '', guestContextReady: true })
+
+    expect(s.sseAuthenticated.addEventListener).toHaveBeenCalledTimes(2)
+
+    useAuthStore().guestContextReady = false
+    await nextTick()
 
     expect(s.sseAuthenticated.removeEventListener).toHaveBeenCalledTimes(2)
   })
