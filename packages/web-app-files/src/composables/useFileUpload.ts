@@ -13,7 +13,7 @@ import {
   isPublicSpaceResource,
   isShareSpaceResource
 } from '@opencloud-eu/web-client'
-import { useService, useUpload, UppyService, UploadResult } from '@opencloud-eu/web-pkg'
+import { useService, useUpload, UppyService, UploadResult, OcUppyMeta } from '@opencloud-eu/web-pkg'
 import { HandleUpload } from '../HandleUpload'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
@@ -62,7 +62,15 @@ export const useFileUpload = (space: Ref<SpaceResource>) => {
       return
     }
 
-    const { spaceId, driveType } = file.meta
+    try {
+      await refreshAfterUpload(file.meta)
+    } catch (e) {
+      // the refresh fails if e.g. the upload target folder has been deleted in the meantime
+      console.error(e)
+    }
+  }
+
+  async function refreshAfterUpload({ spaceId, driveType }: OcUppyMeta) {
     if (!isPublicSpaceResource(unref(space))) {
       const isOwnSpace = spacesStore.spaces
         .find(({ id }) => id === spaceId)

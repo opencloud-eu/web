@@ -53,7 +53,7 @@
         </no-content-message>
         <template v-else>
           <no-content-message
-            v-if="!items.length"
+            v-if="!sortedResources.length"
             id="files-spaces-empty"
             img-src="images/illustrations/spaces.svg"
           >
@@ -68,7 +68,7 @@
             :is="folderView.component"
             v-else
             resource-type="space"
-            :resources="paginatedItems"
+            :resources="paginatedResources"
             :fields-displayed="tableDisplayFields"
             :sort-fields="sortFields"
             :sort-by="sortBy"
@@ -137,7 +137,7 @@
               />
             </template>
             <template #footer>
-              <pagination :pages="totalPages" :current-page="currentPage" />
+              <pagination :pages="paginationPages" :current-page="paginationPage" />
               <div class="text-center w-full my-2">
                 <p data-testid="files-list-footer-info" class="text-role-on-surface-variant">
                   {{ footerTextTotal }}
@@ -174,8 +174,6 @@ import {
   ContextActions,
   FolderViewModeConstants,
   ProcessorType,
-  useSort,
-  usePagination,
   useRouter,
   useRoute,
   Pagination,
@@ -239,10 +237,20 @@ const {
   areResourcesLoading,
   selectedResourcesIds,
   selectedResources,
-  isResourceInSelection
-} = useResourcesViewDefaults({
+  isResourceInSelection,
+  sortFields,
+  sortBy,
+  sortDir,
+  handleSort,
+  sortedResources,
+  paginatedResources,
+  paginationPages,
+  paginationPage
+} = useResourcesViewDefaults<SpaceResource, any, any[]>({
   loadResourcesTask,
-  folderViewExtensionPoint: folderViewsProjectSpacesExtensionPoint
+  folderViewExtensionPoint: folderViewsProjectSpacesExtensionPoint,
+  filterResources: filter,
+  sortFields: translateSortFields(spaceTilesSortFields, language)
 })
 
 let loadPreviewToken: string = null
@@ -270,38 +278,18 @@ const tableDisplayFields = [
   'mdate'
 ]
 
-const filter = (spaces: Array<ProjectSpaceResource>, filterTerm: string) => {
+function filter(spaces: SpaceResource[]) {
   if (!unref(areDisabledSpacesShown)) {
     spaces = spaces.filter((space) => space.disabled !== true)
   }
 
-  if (!(filterTerm || '').trim()) {
+  if (!(unref(filterTerm) || '').trim()) {
     return spaces
   }
 
   const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
-  return searchEngine.search(filterTerm).map((r) => r.item)
+  return searchEngine.search(unref(filterTerm)).map((r) => r.item)
 }
-
-const filteredSpaces = computed(() => {
-  return filter(unref(runtimeSpaces), unref(filterTerm))
-})
-
-const sortFields = translateSortFields(spaceTilesSortFields, language)
-const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
-  items: filteredSpaces,
-  fields: sortFields
-})
-
-const {
-  items: paginatedItems,
-  page: currentPage,
-  total: totalPages
-} = usePagination({
-  items,
-  perPageDefault: '50',
-  perPageStoragePrefix: 'files'
-})
 
 const batchActionsLoading = computed(() => {
   const selectedSpaces = unref(selectedResources) as SpaceResource[]
@@ -325,7 +313,7 @@ watch(selectedResourcesIds, async (ids) => {
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
 const keyActions = useKeyboardActions()
-useKeyboardFileNavigation(keyActions, items, viewMode)
+useKeyboardFileNavigation(keyActions, sortedResources, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 useKeyboardFileActions(keyActions)
 
@@ -362,7 +350,7 @@ onMounted(async () => {
       loadPreview({ space, resource: space, processor: ProcessorType.enum.fit })
     }
   )
-  scrollToResourceFromRoute(unref(items), 'files-app-bar')
+  scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
 })
 
 onBeforeUnmount(() => {
@@ -395,7 +383,7 @@ const footerTextTotal = computed(() => {
 })
 const footerTextFilter = computed(() => {
   return $gettext('%{spaceCount} matching spaces', {
-    spaceCount: unref(items).length.toString()
+    spaceCount: unref(sortedResources).length.toString()
   })
 })
 

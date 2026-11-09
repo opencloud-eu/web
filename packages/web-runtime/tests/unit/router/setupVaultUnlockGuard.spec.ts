@@ -320,11 +320,20 @@ describe('setupVaultUnlockGuard', () => {
   })
 
   it.each([
+    { name: 'oidcCallback', fullPath: '/web-oidc-callback?code=used-code&state=state' },
     { name: 'resolvePrivateLink', fullPath: '/f/file-1' },
+    {
+      name: 'resolvePublicLink',
+      fullPath: '/s/token?redirectUrl=/files/link/public/token/my.vault'
+    },
+    {
+      name: 'resolvePublicOcmLink',
+      fullPath: '/o/token?redirectUrl=/files/link/public/token/my.vault'
+    },
     { name: 'resolveGuestLink', fullPath: '/g/token' },
     { name: 'renewGuestLink', fullPath: '/g/renew/permission-1' }
   ])(
-    'omits the cancel URL when the user came from $name, which would resolve into the vault again',
+    'omits the cancel URL when the user came from $name, a route that only redirects and cannot be returned to',
     async (from) => {
       const guard = installGuard({
         spaces: [space],

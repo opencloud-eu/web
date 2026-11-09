@@ -30,7 +30,10 @@
               :is-rounded="false"
             />
           </div>
-          <no-content-message v-if="!displaySpaces.length" img-src="images/illustrations/trash.svg">
+          <no-content-message
+            v-if="!sortedResources.length"
+            img-src="images/illustrations/trash.svg"
+          >
             <template #message>
               <span v-text="$gettext('No trash bins found')" />
             </template>
@@ -42,11 +45,11 @@
             :is="folderView.component"
             v-else
             class="trash-table"
-            :resources="paginatedSpaces"
+            :resources="paginatedResources"
             :fields-displayed="['name']"
             :sort-by="sortBy"
             :sort-dir="sortDir"
-            :sort-fields="sortFields.filter((field) => field.name === 'name')"
+            :sort-fields="sortFields"
             :header-position="fileListHeaderY"
             :are-thumbnails-displayed="false"
             :are-paths-displayed="false"
@@ -86,7 +89,7 @@
               />
             </template>
             <template #footer>
-              <pagination :pages="totalPages" :current-page="currentPage" />
+              <pagination :pages="paginationPages" :current-page="paginationPage" />
               <div class="text-center w-full my-2">
                 <p data-testid="files-list-footer-info" class="text-role-on-surface-variant">
                   {{ footerTextTotal }}
@@ -117,7 +120,7 @@ import {
   NoContentMessage,
   Pagination,
   ProcessorType,
-  usePagination,
+  translateSortFields,
   useClientService,
   useGetMatchingSpace,
   useLoadPreview,
@@ -126,7 +129,8 @@ import {
   useSpacesStore,
   useUserStore,
   ResourceIndicator,
-  ResourceStatusIndicators
+  ResourceStatusIndicators,
+  spaceTilesSortFields
 } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import {
@@ -145,25 +149,56 @@ import { SortDir } from '@opencloud-eu/design-system/helpers'
 const userStore = useUserStore()
 const spacesStore = useSpacesStore()
 const router = useRouter()
-const { $gettext, $ngettext } = useGettext()
+const language = useGettext()
+const { $gettext, $ngettext } = language
 const clientService = useClientService()
 const resourcesStore = useResourcesStore()
 const { getMatchingSpace } = useGetMatchingSpace()
 
-const resourcesViewDefaults = useResourcesViewDefaults<SpaceResource, any, any>({
-  folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint
+const { areEmptyTrashesShown } = storeToRefs(resourcesStore)
+const filterTerm = ref('')
+
+const {
+  fileListHeaderY,
+  viewMode,
+  viewModes,
+  viewSize,
+  sortFields,
+  folderView,
+  sortBy,
+  sortDir,
+  handleSort,
+  sortedResources,
+  paginatedResources,
+  paginationPages,
+  paginationPage
+} = useResourcesViewDefaults<SpaceResource, any, any[]>({
+  folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint,
+  filterResources: filter,
+  sortFields: [
+    ...translateSortFields(
+      spaceTilesSortFields.filter(({ name }) => name === 'name'),
+      language
+    ),
+    {
+      label: $gettext('Contains deleted items first'),
+      name: 'indicators',
+      prop: 'hasTrashedItems',
+      sortable: sortableHasTrashedItems,
+      sortDir: SortDir.Asc
+    },
+    {
+      label: $gettext('Empty first'),
+      name: 'indicators',
+      prop: 'hasTrashedItems',
+      sortable: sortableHasTrashedItems,
+      sortDir: SortDir.Desc
+    }
+  ],
+  pinFirst: isPersonalSpaceResource
 })
 
-const { fileListHeaderY, viewMode, viewModes, viewSize, sortFields, folderView } =
-  resourcesViewDefaults
-
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
-
-const { areEmptyTrashesShown } = storeToRefs(resourcesStore)
-
-const sortBy = ref<keyof SpaceResource>('name')
-const sortDir = ref<SortDir>(SortDir.Asc)
-const filterTerm = ref('')
 
 const spaces = computed(() =>
   spacesStore.spaces.filter(
@@ -242,9 +277,9 @@ const footerTextFilter = computed(() =>
   $ngettext(
     '%{spaceCount} matching trash bin',
     '%{spaceCount} matching trash bins',
-    unref(displaySpaces).length,
+    unref(sortedResources).length,
     {
-      spaceCount: unref(displaySpaces).length.toString()
+      spaceCount: unref(sortedResources).length.toString()
     }
   )
 )
@@ -259,40 +294,19 @@ const breadcrumbs = computed(() => [
   { text: $gettext('Deleted files'), onClick: () => loadResourcesTask.perform() }
 ])
 
-const sort = (list: SpaceResource[], propName: keyof SpaceResource, desc: boolean) => {
-  return [...list].sort((s1, s2) => {
-    if (isPersonalSpaceResource(s1)) return -1
-    if (isPersonalSpaceResource(s2)) return 1
-    const a = s1[propName].toString()
-    const b = s2[propName].toString()
-    return desc ? b.localeCompare(a) : a.localeCompare(b)
-  })
+function sortableHasTrashedItems(hasTrashedItems: boolean) {
+  return Number(!hasTrashedItems)
 }
 
-const filter = (spaces: SpaceResource[], filterTerm: string) => {
+function filter(spaces: SpaceResource[]) {
   if (!unref(areEmptyTrashesShown)) {
     spaces = spaces.filter((space) => space.hasTrashedItems !== false)
   }
-  if (!(filterTerm || '').trim()) return spaces
+  if (!(unref(filterTerm) || '').trim()) {
+    return spaces
+  }
   const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
-  return searchEngine.search(filterTerm).map((r) => r.item)
-}
-
-const displaySpaces = computed(() =>
-  sort(filter(unref(spaces), unref(filterTerm)), unref(sortBy), unref(sortDir) === 'desc')
-)
-const {
-  items: paginatedSpaces,
-  page: currentPage,
-  total: totalPages
-} = usePagination({
-  items: displaySpaces,
-  perPageStoragePrefix: 'files'
-})
-
-const handleSort = (event: { sortBy: keyof SpaceResource; sortDir: SortDir }) => {
-  sortBy.value = event.sortBy
-  sortDir.value = event.sortDir
+  return searchEngine.search(unref(filterTerm)).map((r) => r.item)
 }
 
 const getTrashLink = (space: SpaceResource) =>

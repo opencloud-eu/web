@@ -98,6 +98,24 @@ describe('useFileUpload', () => {
     expect(resourcesStore.upsertResources).toHaveBeenCalledWith([createdFolder])
   })
 
+  it('does not throw when the folder of a failed upload has been deleted', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const space = mock<SpaceResource>({ id: 'space-1', driveType: 'personal' })
+    const { mocks, resourcesStore, completeUpload } = setup({ space, existing: [], children: [] })
+    const error = new Error('Resource not found')
+    mocks.$clientService.webdav.listFiles.mockRejectedValue(error)
+
+    await expect(
+      completeUpload({
+        successful: [],
+        failed: [{ meta: { spaceId: space.id, driveType: space.driveType } }]
+      } as UploadResult)
+    ).resolves.toBeUndefined()
+
+    expect(resourcesStore.upsertResources).not.toHaveBeenCalled()
+    expect(consoleErrorSpy).toHaveBeenCalledWith(error)
+  })
+
   it('keeps the share id of resources in a share space', async () => {
     const replaced = { id: 'file', path: '/folder/file.txt', etag: 'new' } as Resource
     const { resourcesStore, completeUpload } = setup({

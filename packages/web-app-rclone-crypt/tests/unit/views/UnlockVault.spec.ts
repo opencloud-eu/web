@@ -22,6 +22,7 @@ type Space = {
   driveAlias?: string
   name?: string
   contentType?: string
+  getDriveAliasAndItem?: (resource: { path: string }) => string
 }
 
 function mountUnlockVault({
@@ -199,6 +200,36 @@ describe('UnlockVault', () => {
       expect(vm.submitDisabled).toBe(false)
     })
 
+    it('does not set a password that misses the password policy', async () => {
+      const { wrapper } = await mountProbed({ needsSetup: true })
+      const setup = wrapper.findComponent({ name: 'VaultSetup' })
+      setup.vm.$emit('update:modelValue', 'ab')
+      setup.vm.$emit('update:valid', false)
+      await flushPromises()
+
+      expect(wrapper.find('#vault-unlock-submit').attributes('disabled')).toBeDefined()
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(unlockVault).not.toHaveBeenCalled()
+
+      setup.vm.$emit('update:valid', true)
+      await flushPromises()
+      expect(wrapper.find('#vault-unlock-submit').attributes('disabled')).toBeUndefined()
+    })
+
+    it('does not apply the password policy when unlocking an existing vault', async () => {
+      const { wrapper } = await mountProbed()
+      ;(wrapper.vm as any).password = 'ab'
+      await flushPromises()
+
+      expect(wrapper.find('#vault-unlock-submit').attributes('disabled')).toBeUndefined()
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(unlockVault).toHaveBeenCalledWith(expect.anything(), 'ab')
+    })
+
     it('keeps the submit button name and marks it busy while the password is checked', async () => {
       const { wrapper } = await mountProbed()
       vi.mocked(unlockVault).mockReturnValue(new Promise(() => undefined))
@@ -273,6 +304,29 @@ describe('UnlockVault', () => {
 
       expect(mocks.$router.push).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'files-guest-shares' })
+      )
+    })
+
+    it('stays on the public link route when leaving a vault in a public link', async () => {
+      // The spaces route needs a user, an anonymous visitor would be asked to log in.
+      const { wrapper, mocks } = await mountProbed({
+        spaces: [
+          {
+            id: spaceId,
+            driveType: 'public',
+            driveAlias: 'public/token',
+            getDriveAliasAndItem: ({ path }) => `public/token${path}`
+          }
+        ],
+        query: { spaceId, vaultRoot: '/docs/my.vault' }
+      })
+      await (wrapper.vm as any).onCancel()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'files-public-link',
+          params: { driveAliasAndItem: 'public/token/docs' }
+        })
       )
     })
 
