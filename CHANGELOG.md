@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep deleted files up to date and don't restore items restored elsewhere [[#4283](https://github.com/opencloud-eu/web/pull/4283)]
 - fix: show hidden shares when a link points to a hidden share [[#4349](https://github.com/opencloud-eu/web/pull/4349)]
 - fix: remove just added tags in the shares views [[#4347](https://github.com/opencloud-eu/web/pull/4347)]
 - fix: title the not found page for inaccessible project spaces [[#4337](https://github.com/opencloud-eu/web/pull/4337)]
