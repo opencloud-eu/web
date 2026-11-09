@@ -9,7 +9,8 @@ import { FileAction, useEmbedMode, useResourcesStore } from '@opencloud-eu/web-p
 import { useFileActionsCreateLink } from '../../../../src/composables/actions/files'
 import { mock } from 'vitest-mock-extended'
 import { defineComponent, h, nextTick, ref } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
+import { buildSpace, GraphSharePermission, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Drive } from '@opencloud-eu/web-client/graph/generated'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -64,6 +65,24 @@ describe('EmbedActions', () => {
 
       expect(wrapper.find(selectors.btnSelect).attributes()).not.toHaveProperty('disabled')
     })
+
+    it.each([
+      { graphPermissions: [GraphSharePermission.createUpload], disabled: false },
+      { graphPermissions: [GraphSharePermission.readBasic], disabled: true }
+    ])(
+      'should set the select action disabled to $disabled at a space root with the permissions $graphPermissions',
+      ({ graphPermissions, disabled }) => {
+        const space = buildSpace({ id: '1', driveType: 'project' } as Drive)
+        const { wrapper } = getWrapper({
+          isLocationPicker: true,
+          currentFolder: { ...space, graphPermissions } as SpaceResource
+        })
+
+        expect(wrapper.find(selectors.btnSelect).attributes('disabled') !== undefined).toBe(
+          disabled
+        )
+      }
+    )
 
     it('should emit select event with currentFolder as selected resource when select action is triggered', async () => {
       const { wrapper, mocks } = getWrapper({

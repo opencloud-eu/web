@@ -306,8 +306,8 @@ export function buildSpace(
     canListVersions: function () {
       return false
     },
-    canCreate: function () {
-      return true
+    canCreate: function ({ user }: { user?: User } = {}) {
+      return this.canUpload({ user })
     },
     canEditTags: function () {
       return false
