@@ -147,6 +147,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.12.0 [[#4253](https://github.com/opencloud-eu/web/pull/4253)]
+- chore(deps): update uppy monorepo [[#4254](https://github.com/opencloud-eu/web/pull/4254)]
 - chore(deps): update dependency license-checker-rseidelsohn to v5 [[#3386](https://github.com/opencloud-eu/web/pull/3386)]
 - chore(deps): update devdependencies (non-major) [[#4351](https://github.com/opencloud-eu/web/pull/4351)]
 - chore(deps): update shumc/imagor docker tag to v1.10.1 [[#4350](https://github.com/opencloud-eu/web/pull/4350)]
