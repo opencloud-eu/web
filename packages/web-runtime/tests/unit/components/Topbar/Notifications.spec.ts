@@ -264,7 +264,36 @@ describe('Notification component', () => {
       expect(messageEl.text()).toEqual(notification.message)
     })
     it('does not interpolate placeholders inside the inserted values', async () => {
-      const resourceName = 'test-{virus}.txt'
+      const notification = mock<Notification>({
+        messageRich: '{user} shared {resource} with you',
+        messageRichParameters: {
+          user: { displayname: '{resource}' },
+          resource: { name: 'someFile.txt' }
+        },
+        computedMessage: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await flushPromises()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.findAll('strong').map((el) => el.text())).toEqual([
+        '{resource}',
+        'someFile.txt'
+      ])
+    })
+    it('escapes the rich message', async () => {
+      const notification = mock<Notification>({
+        messageRich: '{user} shared <img src=x onerror=alert(1)> with you',
+        messageRichParameters: { user: { displayname: 'mary' } },
+        computedMessage: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await flushPromises()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.find('img').exists()).toBeFalsy()
+      expect(messageEl.text()).toEqual('mary shared <img src=x onerror=alert(1)> with you')
+    })
+    it('escapes the inserted values', async () => {
+      const resourceName = '<img src=x onerror=alert(1)>.txt'
       const notification = mock<Notification>({
         messageRich: '{user} shared {resource} with you',
         messageRichParameters: {
@@ -276,7 +305,19 @@ describe('Notification component', () => {
       const { wrapper } = getWrapper({ notifications: [notification] })
       await flushPromises()
       const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.find('img').exists()).toBeFalsy()
       expect(messageEl.findAll('strong').map((el) => el.text())).toEqual(['mary', resourceName])
+    })
+    it('interpolates repeated placeholders and keeps unknown ones', async () => {
+      const notification = mock<Notification>({
+        messageRich: '{user} and {user} {constructor}',
+        messageRichParameters: { user: { displayname: 'mary' } },
+        computedMessage: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await flushPromises()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.text()).toEqual('mary and mary {constructor}')
     })
     it('escapes the simple message if a rich parameter is missing', async () => {
       const notification = mock<Notification>({
