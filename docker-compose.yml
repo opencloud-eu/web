@@ -344,7 +344,7 @@ services:
       start_period: 5s
 
   imagor:
-    image: shumc/imagor:1.9.14
+    image: shumc/imagor:1.10.1
     container_name: web_imagor
     restart: unless-stopped
     environment:
@@ -359,7 +359,7 @@ services:
       - default
 
   mailpit:
-    image: axllent/mailpit:v1.33.0
+    image: axllent/mailpit:v1.33.1
     container_name: web_mailpit
     ports:
       - '127.0.0.1:8025:8025' # web UI and REST API
