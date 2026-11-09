@@ -30,7 +30,7 @@
             tabindex="-1"
             class="fixed inset-y-0 left-0 sm:max-w-[85%] w-[85%] xs:w-[320px] bg-role-surface-container overflow-x-hidden"
           >
-            <div class="flex flex-col h-full">
+            <div class="flex flex-col h-full pb-2">
               <div class="flex items-center justify-between p-4">
                 <h2 id="sidebar-nav-mobile-title" class="text-base m-0" v-text="$gettext('Menu')" />
                 <oc-button
