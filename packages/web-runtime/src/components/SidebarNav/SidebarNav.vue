@@ -45,7 +45,10 @@
     </div>
     <div class="flex flex-col gap-2">
       <custom-component-target :extension-point="dynamicExtensionPointBottom" />
-      <div class="flex flex-col pb-4 px-4 text-xs text-role-on-surface-variant">
+      <div
+        v-if="!isEmbedModeEnabled"
+        class="flex flex-col pb-4 px-4 text-xs text-role-on-surface-variant"
+      >
         <a
           v-if="!options.disableSponsorLink"
           href="https://github.com/sponsors/opencloud-eu"
@@ -79,7 +82,8 @@ import {
   useActiveApp,
   useExtensionRegistry,
   FloatingActionButtonExtension,
-  useConfigStore
+  useConfigStore,
+  useEmbedMode
 } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
@@ -95,6 +99,7 @@ const { isTablet } = useIsMobile()
 
 const configStore = useConfigStore()
 const { options } = storeToRefs(configStore)
+const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 
 const dynamicExtensionPointMain = computed<ExtensionPoint<CustomComponentExtension>>(() => ({
   id: `app.${unref(activeApp)}.sidebar-nav.main`,
