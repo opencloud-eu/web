@@ -39,6 +39,25 @@ describe('OcMobileDrop', () => {
     wrapper.unmount()
   })
 
+  it('opens without a toggle, e.g. as manual drop, and takes the focus', async () => {
+    const plugins = defaultPlugins()
+    const drawer = { id: '1' }
+    const bottomDrawerStore = useBottomDrawer()
+    vi.mocked(bottomDrawerStore.showDrawer).mockReturnValue(drawer)
+    bottomDrawerStore.drawers = [drawer]
+    const wrapper = mount(BottomDrawer, {
+      props: { drawerId: 'manual-drawer', title: 'Manual Drawer', registerClickHandler: false },
+      attachTo: document.body,
+      global: { renderStubDefaultSlot: true, plugins, stubs: { Teleport: true } }
+    })
+
+    wrapper.vm.show()
+    await nextTick()
+    await nextTick()
+    expect(document.activeElement).toBe(document.getElementById('manual-drawer'))
+    wrapper.unmount()
+  })
+
   it('names the close button after the drawer title', async () => {
     const { wrapper } = getWrapper()
     await wrapper.find(selectors.toggle).trigger('click')

@@ -197,7 +197,7 @@ watch(bottomDrawerCardBodyRef, (dropElement, previousDropElement) => {
 
   dropElement.addEventListener('click', onChildClicked)
   registerOpenDrop(dropElement, {
-    getAnchor: () => document.querySelector<HTMLElement>(toggle),
+    getAnchor: () => (toggle ? document.querySelector<HTMLElement>(toggle) : null),
     hide
   })
   // Like the drop on larger screens, so keys (e.g. Escape) go to the drawer, not to the page
