@@ -10,9 +10,14 @@
 
 <script setup lang="ts">
 import { computed, ref, unref } from 'vue'
-import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
+import { useGettext } from 'vue3-gettext'
+import { useTask } from 'vue-concurrency'
+import { call } from '@opencloud-eu/web-client'
+import { queryItemAsString, useMessages, useRouteQuery } from '@opencloud-eu/web-pkg'
 import { useAvailableProviders } from '../composables'
 
+const { $gettext } = useGettext()
+const { showErrorMessage } = useMessages()
 const availableProviders = useAvailableProviders()
 const providerId = useRouteQuery('provider')
 
@@ -32,11 +37,12 @@ const searchResult = ref({
   totalResults: null
 })
 
-const search = async (term: string) => {
+const searchTask = useTask(function* (signal, term: string) {
   loading.value = true
   try {
-    searchResult.value = await unref(listSearch).search(term || '')
+    searchResult.value = yield* call(unref(listSearch).search(term || ''))
   } catch (e) {
+    // a newer search or leaving the page cancels this one
     if (e === 'cancel') {
       return
     }
@@ -45,8 +51,13 @@ const search = async (term: string) => {
       totalResults: null
     }
     console.error(e)
+    showErrorMessage({ title: $gettext('Failed to search'), errors: [e] })
   }
 
   loading.value = false
+}).restartable()
+
+function search(term: string) {
+  searchTask.perform(term)
 }
 </script>

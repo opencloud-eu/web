@@ -1,9 +1,14 @@
 import { merge } from 'lodash-es'
-import { flushPromises, shallowMount } from '@vue/test-utils'
+import { enableAutoUnmount, flushPromises, shallowMount } from '@vue/test-utils'
 import List from '../../../../src/components/Search/List.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
-import { createRouter, createMemoryHistory, RouteLocationNormalizedLoaded } from 'vue-router'
+import {
+  createRouter,
+  createMemoryHistory,
+  RouteLocationNormalizedLoaded,
+  Router
+} from 'vue-router'
 
 import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 import {
@@ -13,6 +18,7 @@ import {
   ResourceTiles,
   SearchResult,
   SortField,
+  eventBus,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { Component, computed, defineComponent, h, Ref, ref, unref } from 'vue'
@@ -26,6 +32,8 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useAppDefaults: vi.fn(),
   useFileActions: () => ({ triggerDefaultAction: vi.fn() })
 }))
+
+enableAutoUnmount(afterEach)
 
 const AppBarStub = defineComponent({
   props: AppBar.props,
@@ -224,6 +232,53 @@ describe('List component', () => {
     })
     await flushPromises()
     expect(wrapper.emitted('search').at(-1)[0]).toBe('name:"*albert*" AND scope:second-folder')
+  })
+  describe('submitted search', () => {
+    async function getSearchResultsWrapper() {
+      const $router = createRouter({
+        routes: [{ name: 'files-common-search', path: '/files-common-search', redirect: null }],
+        history: createMemoryHistory()
+      })
+      const { wrapper } = getWrapper({
+        mocks: { $router },
+        filesTags: false,
+        fullTextSearchEnabled: false
+      })
+      await $router.replace({
+        name: 'files-common-search',
+        query: { term: 'albert', useScope: 'false', provider: 'files.sdk', page: '2' }
+      })
+      await flushPromises()
+      return { wrapper, $router }
+    }
+
+    // the search bar publishes the submitted query and navigates to it afterwards
+    async function submitSearch($router: Router, query: Record<string, string>) {
+      eventBus.publish('app.search.submit', query)
+      await $router.push({ name: 'files-common-search', query })
+      await flushPromises()
+    }
+
+    it('searches again when the same search gets submitted', async () => {
+      const { wrapper, $router } = await getSearchResultsWrapper()
+      const searchCount = wrapper.emitted('search').length
+
+      const query = { term: 'albert', useScope: 'false', provider: 'files.sdk' }
+      await submitSearch($router, query)
+      expect(wrapper.emitted('search').length).toBe(searchCount + 1)
+      expect(wrapper.emitted('search').at(-1)[0]).toBe('name:"*albert*"')
+
+      await submitSearch($router, query)
+      expect(wrapper.emitted('search').length).toBe(searchCount + 2)
+    })
+    it('searches only once when a changed search gets submitted', async () => {
+      const { wrapper, $router } = await getSearchResultsWrapper()
+      const searchCount = wrapper.emitted('search').length
+
+      await submitSearch($router, { term: 'marie', useScope: 'false', provider: 'files.sdk' })
+      expect(wrapper.emitted('search').length).toBe(searchCount + 1)
+      expect(wrapper.emitted('search').at(-1)[0]).toBe('name:"*marie*"')
+    })
   })
   describe('breadcrumbs', () => {
     it('show "Search" when no search term given', () => {

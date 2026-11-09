@@ -169,7 +169,7 @@ import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { ContextActions, FileSideBar } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { AppBar } from '@opencloud-eu/web-pkg'
-import { computed, nextTick, onMounted, ref, unref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import ListInfo from '../FilesList/ListInfo.vue'
 import { Pagination } from '@opencloud-eu/web-pkg'
 import { useFileActions } from '@opencloud-eu/web-pkg'
@@ -188,7 +188,8 @@ import {
   useRoute,
   useRouteQuery,
   useRouter,
-  useLoadPreview
+  useLoadPreview,
+  LocationQuery
 } from '@opencloud-eu/web-pkg'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useTask } from 'vue-concurrency'
@@ -319,6 +320,18 @@ const hasFilter = computed(() => {
   )
 })
 
+function isSameSearch(query: LocationQuery, otherQuery: LocationQuery) {
+  return [
+    'term',
+    'q_titleOnly',
+    'q_tags',
+    'q_lastModified',
+    'q_mediaType',
+    'scope',
+    'useScope'
+  ].every((key) => query?.[key] === otherQuery?.[key])
+}
+
 const doSearch = () => {
   return buildSearchTermFromQuery(unref(route).query)
 }
@@ -387,25 +400,27 @@ watch(
     }
 
     // return early if the search term or filter has not changed, no search needed
-    {
-      const isSameTerm = newVal?.term === oldVal?.term
-      const isSameFilter = [
-        'q_titleOnly',
-        'q_tags',
-        'q_lastModified',
-        'q_mediaType',
-        'scope',
-        'useScope'
-      ].every((key) => newVal[key] === oldVal[key])
-      if (isSameTerm && isSameFilter) {
-        return
-      }
+    if (isSameSearch(newVal, oldVal)) {
+      return
     }
 
     emit('search', doSearch())
   },
   { deep: true }
 )
+
+// submitting the current search again doesn't change the search query of the route,
+// so the watcher above doesn't search again
+const submitSearchEvent = eventBus.subscribe('app.search.submit', (query: LocationQuery) => {
+  if (!isSameSearch(query, unref(route).query)) {
+    return
+  }
+  emit('search', doSearch())
+})
+
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('app.search.submit', submitSearchEvent)
+})
 
 watch(
   () => searchResult,
