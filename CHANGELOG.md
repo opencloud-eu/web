@@ -8,11 +8,13 @@
 
 ### 🔒 Security
 
+- fix: render svg previews as images instead of inlining them [[#4298](https://github.com/opencloud-eu/web/pull/4298)]
 - fix: only accept delegated tokens from the embedding host [[#4297](https://github.com/opencloud-eu/web/pull/4297)]
 - fix: verify the sender of postMessage events in picker modals and external apps [[#4289](https://github.com/opencloud-eu/web/pull/4289)]
 
 ### 🐛 Bug Fixes
 
+- fix: handle name clashes inside a move or copy batch and cancel on closing the conflict dialog [[#4355](https://github.com/opencloud-eu/web/pull/4355)]
 - fix: keep deleted files up to date and don't restore items restored elsewhere [[#4283](https://github.com/opencloud-eu/web/pull/4283)]
 - fix: show hidden shares when a link points to a hidden share [[#4349](https://github.com/opencloud-eu/web/pull/4349)]
 - fix: remove just added tags in the shares views [[#4347](https://github.com/opencloud-eu/web/pull/4347)]
