@@ -130,6 +130,100 @@ describe('Notification component', () => {
         'Albert Einstein shared someFile.txt with you'
       )
     })
+    it('escapes the simple message', async () => {
+      const notification = mock<Notification>({
+        messageRich: undefined,
+        message: 'mary shared <img src=x onerror=alert(1)>.txt with you',
+        computedMessage: undefined,
+        computedLink: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await wrapper.vm.fetchNotificationsTask.last
+      await wrapper.vm.$nextTick()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.find('img').exists()).toBeFalsy()
+      expect(messageEl.text()).toEqual(notification.message)
+    })
+    it('does not interpolate placeholders inside the inserted values', async () => {
+      const notification = mock<Notification>({
+        messageRich: '{user} shared {resource} with you',
+        messageRichParameters: {
+          user: { displayname: '{resource}' },
+          resource: { name: 'someFile.txt' }
+        },
+        computedMessage: undefined,
+        computedLink: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await wrapper.vm.fetchNotificationsTask.last
+      await wrapper.vm.$nextTick()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.findAll('strong').map((el) => el.text())).toEqual([
+        '{resource}',
+        'someFile.txt'
+      ])
+    })
+    it('escapes the rich message', async () => {
+      const notification = mock<Notification>({
+        messageRich: '{user} shared <img src=x onerror=alert(1)> with you',
+        messageRichParameters: { user: { displayname: 'mary' } },
+        computedMessage: undefined,
+        computedLink: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await wrapper.vm.fetchNotificationsTask.last
+      await wrapper.vm.$nextTick()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.find('img').exists()).toBeFalsy()
+      expect(messageEl.text()).toEqual('mary shared <img src=x onerror=alert(1)> with you')
+    })
+    it('escapes the inserted values', async () => {
+      const resourceName = '<img src=x onerror=alert(1)>.txt'
+      const notification = mock<Notification>({
+        messageRich: '{user} shared {resource} with you',
+        messageRichParameters: {
+          user: { displayname: 'mary' },
+          resource: { name: resourceName }
+        },
+        computedMessage: undefined,
+        computedLink: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await wrapper.vm.fetchNotificationsTask.last
+      await wrapper.vm.$nextTick()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.find('img').exists()).toBeFalsy()
+      expect(messageEl.findAll('strong').map((el) => el.text())).toEqual(['mary', resourceName])
+    })
+    it('interpolates repeated placeholders and keeps unknown ones', async () => {
+      const notification = mock<Notification>({
+        messageRich: '{user} and {user} {constructor}',
+        messageRichParameters: { user: { displayname: 'mary' } },
+        computedMessage: undefined,
+        computedLink: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await wrapper.vm.fetchNotificationsTask.last
+      await wrapper.vm.$nextTick()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.text()).toEqual('mary and mary {constructor}')
+    })
+    it('escapes the simple message if a rich parameter is missing', async () => {
+      const notification = mock<Notification>({
+        message: 'mary shared <img src=x onerror=alert(1)>.txt with you',
+        messageRich: '{user} shared {resource} with you',
+        // explicitly null, the deep mock would provide a missing parameter otherwise
+        messageRichParameters: { user: { displayname: 'mary' }, resource: null },
+        computedMessage: undefined,
+        computedLink: undefined
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await wrapper.vm.fetchNotificationsTask.last
+      await wrapper.vm.$nextTick()
+      const messageEl = wrapper.find(selectors.notificationMessage)
+      expect(messageEl.find('img').exists()).toBeFalsy()
+      expect(messageEl.text()).toEqual(notification.message)
+    })
   })
   describe('link', () => {
     it('displays if given directly', async () => {
