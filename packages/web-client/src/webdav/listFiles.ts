@@ -127,7 +127,7 @@ export const ListFilesFactory = (
       try {
         let webDavPath = ''
         if (isTrash) {
-          webDavPath = buildWebDavSpacesTrashPath(space.id)
+          webDavPath = buildWebDavSpacesTrashPath(space.id, path)
         } else {
           webDavPath = getWebDavPath(space, { fileId, path })
         }
@@ -139,9 +139,11 @@ export const ListFilesFactory = (
           ...opts
         })
         if (isTrash) {
+          const [root, ...children] = webDavResources
           return {
-            resource: buildResource(webDavResources[0], extraPropNames),
-            children: webDavResources.slice(1).map(buildDeletedResource)
+            // with a path, the response starts with that trash item instead of the trash bin
+            resource: path ? buildDeletedResource(root) : buildResource(root, extraPropNames),
+            children: children.map(buildDeletedResource)
           } as ListFilesResult
         }
 
