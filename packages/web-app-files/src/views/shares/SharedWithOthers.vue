@@ -194,6 +194,7 @@ const {
   paginationPages,
   paginationPage,
   loadResourcesTask,
+  loadResources,
   selectedResourceSpace,
   handleSort,
   isResourceInSelection,
@@ -212,7 +213,7 @@ const breadcrumbs = computed(() => {
     {
       id: uuidV4(),
       text: $gettext('Shares'),
-      onClick: () => loadResourcesTask.perform(),
+      onClick: () => loadResources(),
       isStaticNav: true
     }
   ]
@@ -265,7 +266,7 @@ resourcesStore.$onAction(async (action) => {
   })
   if (!match) return
 
-  await loadResourcesTask.perform()
+  await loadResources()
 
   const matchedNewResource = unref(paginatedResources).find((r) => r.fileId === match.fileId)
   if (!matchedNewResource) return
@@ -282,7 +283,7 @@ onMounted(async () => {
   loadResourcesEventToken = eventBus.subscribe('app.files.list.load', () =>
     loadResourcesTask.perform()
   )
-  await loadResourcesTask.perform()
+  await loadResources()
   scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
 })
 

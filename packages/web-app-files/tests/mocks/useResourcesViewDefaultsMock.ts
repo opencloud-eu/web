@@ -18,7 +18,7 @@ export const useResourcesViewDefaultsMock = (
     component: ResourceTable
   } satisfies FolderView
 
-  return {
+  const viewDefaults: ReturnType<typeof useResourcesViewDefaults<any, any, any>> = {
     fileListHeaderY: ref(0),
     refreshFileListHeaderPosition: vi.fn(),
     loadResourcesTask: mockDeep<Task<any, any>>({
@@ -44,6 +44,11 @@ export const useResourcesViewDefaultsMock = (
     viewSize: ref(1),
     viewModes: computed(() => [folderView]),
     folderView: computed(() => folderView),
+    // like the real view defaults, so specs can assert on the task
+    loadResources: vi.fn(async (...args: any[]) => {
+      await viewDefaults.loadResourcesTask.perform(...args)
+    }),
     ...options
   }
+  return viewDefaults
 }

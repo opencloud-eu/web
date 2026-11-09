@@ -18,10 +18,14 @@
       /></span>
     </template>
     <span v-else class="min-w-0 leading-snug"
-      ><span class="oc-resource-basename break-normal text-role-on-surface"
-        ><oc-filter-highlight :text="displayName" :term="term" /></span
-      ><span v-if="showExtension" class="oc-resource-extension whitespace-pre text-role-on-surface"
-        ><oc-filter-highlight :text="displayExtension" :term="term" /></span
+      ><span class="oc-resource-basename wrap-anywhere text-role-on-surface"
+        ><template v-if="showExtension"
+          ><oc-filter-highlight :text="displayNameHead" :term="term" /><span
+            class="whitespace-nowrap"
+            ><oc-filter-highlight :text="displayNameTail" :term="term" /><span
+              class="oc-resource-extension text-role-on-surface"
+              ><oc-filter-highlight :text="displayExtension" :term="term" /></span></span></template
+        ><oc-filter-highlight v-else :text="displayName" :term="term" /></span
     ></span>
     <oc-icon
       v-if="isFavoriteDisplayed && isFavorite"
@@ -76,6 +80,11 @@ const displayName = computed(() => {
   }
   return name
 })
+
+// last char of the basename is kept together with the extension so it never wraps alone
+const displayNameChars = computed(() => Array.from(unref(displayName)))
+const displayNameHead = computed(() => unref(displayNameChars).slice(0, -1).join(''))
+const displayNameTail = computed(() => unref(displayNameChars).slice(-1).join(''))
 
 const showExtension = computed(() => {
   return unref(isFile) && extension && isExtensionDisplayed && !name.startsWith('.')

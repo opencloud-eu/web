@@ -94,7 +94,7 @@ const {
   sortDir,
   handleSort,
   fileListHeaderY,
-  loadResourcesTask,
+  loadResources,
   selectedResources,
   storeItems,
   sortedResources,
@@ -111,7 +111,7 @@ const breadcrumbs = computed(() => [
   {
     id: uuidV4(),
     text: $gettext('Shares'),
-    onClick: () => loadResourcesTask.perform(),
+    onClick: () => loadResources(),
     isStaticNav: true
   }
 ])
@@ -132,7 +132,7 @@ const selectedShareSpace = computed(() => {
 })
 
 async function performLoaderTask() {
-  await loadResourcesTask.perform()
+  await loadResources()
   scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
 }
 
