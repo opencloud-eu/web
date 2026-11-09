@@ -16,11 +16,13 @@ const panzoom = {
 }
 vi.mock('@panzoom/panzoom', () => ({ default: vi.fn(() => panzoom) }))
 
+const svgDataUrl = 'data:image/svg+xml;base64,PHN2Zy8+'
+
 const mediaFile = (mimeType: string): MediaFile =>
   ({
     id: 'img1',
     name: 'image',
-    url: 'blob:image',
+    url: mimeType === 'image/svg+xml' ? svgDataUrl : 'blob:image',
     ext: 'svg',
     mimeType,
     isVideo: false,
@@ -46,17 +48,29 @@ describe('MediaImage component', () => {
     vi.clearAllMocks()
   })
 
-  it('fits an svg to the stage: stage-sized wrapper and a size-full svg', () => {
-    // the wrapper must have a size so the svg can scale to it instead of
-    // overflowing (large svg) or collapsing to 0x0 (viewBox-only svg)
-    const { wrapper } = getWrapper('image/svg+xml')
+  describe('svg', () => {
+    it('renders only an image of the svg, never its markup', () => {
+      // inlined markup would share the page's document: scripts, global styles and
+      // external loads. As an image the browser renders it in isolation.
+      const { wrapper } = getWrapper('image/svg+xml')
 
-    const svgWrapper = wrapper.find(`[data-id="img1"]`)
-    expect(svgWrapper.classes()).toContain('size-full')
+      expect(wrapper.findAll('img')).toHaveLength(1)
+      expect(wrapper.find('svg').exists()).toBe(false)
+      const img = wrapper.find('img')
+      expect(img.attributes('src')).toBe(svgDataUrl)
+      expect(img.attributes('alt')).toBe('image')
+      expect(img.attributes('data-id')).toBe('img1')
+      // svgs without an intrinsic size (viewBox only) would otherwise render at the
+      // browser's default size instead of fitting the stage
+      expect(img.classes()).toEqual(expect.arrayContaining(['size-full', 'object-contain']))
+    })
 
-    const svg = wrapper.find('inline-svg-stub')
-    expect(svg.exists()).toBe(true)
-    expect(svg.classes()).toContain('size-full')
+    it('can be zoomed and panned', async () => {
+      const { wrapper } = getWrapper('image/svg+xml')
+      await flushPromises()
+
+      expect(Panzoom).toHaveBeenCalledWith(wrapper.find('img').element, expect.anything())
+    })
   })
 
   it('leaves a raster image constrained to the stage via max-w/max-h', () => {
@@ -106,13 +120,16 @@ describe('MediaImage component', () => {
     expect(panzoom.setStyle).not.toHaveBeenCalled()
   })
 
-  it('reports an image the browser cannot decode', async () => {
-    const { wrapper } = getWrapper('image/heic')
+  it.each(['image/svg+xml', 'image/heic'])(
+    'reports a %s the browser cannot render',
+    async (mimeType) => {
+      const { wrapper } = getWrapper(mimeType)
 
-    await wrapper.find('img').trigger('error')
+      await wrapper.find('img').trigger('error')
 
-    expect(wrapper.emitted('error')).toHaveLength(1)
-  })
+      expect(wrapper.emitted('error')).toHaveLength(1)
+    }
+  )
 })
 
 function getWrapper(mimeType: string) {

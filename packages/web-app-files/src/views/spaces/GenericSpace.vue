@@ -531,6 +531,9 @@ const fileDropped = async (fileTarget: string | RouteLocationRaw) => {
   )
 
   const transferData = await resourceTransfer.getTransferData(TransferType.MOVE)
+  if (!transferData.length) {
+    return
+  }
 
   startWorker(transferData, ({ successful, failed }) => {
     resourceTransfer.showResultMessage(failed, successful, TransferType.MOVE)
