@@ -153,6 +153,8 @@ watch(
       return
     }
 
+    // the preview cache revokes the url of a replaced image, so it must not be rendered again
+    spaceImage.value = null
     spaceImage.value = await loadPreview({
       space: unref(resource),
       resource: unref(resource).spaceImageData
