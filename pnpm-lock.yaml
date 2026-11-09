@@ -661,6 +661,10 @@ importers:
       zod:
         specifier: 4.4.3
         version: 4.4.3
+    devDependencies:
+      '@opencloud-eu/web-test-helpers':
+        specifier: workspace:*
+        version: link:../web-test-helpers
 
   packages/web-app-pdf-viewer:
     dependencies:
