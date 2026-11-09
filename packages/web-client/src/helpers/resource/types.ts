@@ -29,6 +29,7 @@ export type AbilitySubjects =
   | 'Announcement'
   | 'Drive'
   | 'Favorite'
+  | 'Font'
   | 'Group'
   | 'GuestInvite'
   | 'Language'
