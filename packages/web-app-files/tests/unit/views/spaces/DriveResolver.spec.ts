@@ -32,7 +32,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 describe('DriveResolver view', () => {
   it('renders the "drive-redirect"-component when no space is given', async () => {
-    const { wrapper } = getMountedWrapper()
+    const { wrapper } = getMountedWrapper({ fileId: '' })
     await wrapper.vm.$nextTick()
     expect(wrapper.find('drive-redirect-stub').exists()).toBeTruthy()
   })
@@ -158,11 +158,43 @@ describe('DriveResolver view', () => {
     const { wrapper, mocks } = getMountedWrapper({ driveAliasAndItem: '' })
     await wrapper.vm.$nextTick()
 
-    expect(mocks.$router.push).toHaveBeenCalledWith(
+    expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'resolvePrivateLink'
       })
     )
+  })
+  it("resolves the fileId via private link for another user's personal space", async () => {
+    const { wrapper, mocks } = getMountedWrapper({
+      driveAliasAndItem: 'personal/other-user/folder/sub',
+      fileId: 'storage$space!sub'
+    })
+    await wrapper.vm.$nextTick()
+
+    expect(mocks.$router.replace).toHaveBeenCalledWith({
+      name: 'resolvePrivateLink',
+      params: { fileId: 'storage$space!sub' }
+    })
+    expect(wrapper.find('drive-redirect-stub').exists()).toBeFalsy()
+  })
+  it('keeps the details query when resolving the fileId via private link', async () => {
+    const { wrapper, mocks } = getMountedWrapper({
+      driveAliasAndItem: 'personal/other-user/folder',
+      query: { details: 'sharing' }
+    })
+    await wrapper.vm.$nextTick()
+
+    expect(mocks.$router.replace).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'resolvePrivateLink', query: { details: 'sharing' } })
+    )
+  })
+  it('renders the "drive-redirect"-component for an unknown project space with a fileId', async () => {
+    const { wrapper, mocks } = getMountedWrapper({ driveAliasAndItem: 'project/unknown/folder' })
+    await wrapper.vm.$nextTick()
+
+    expect(mocks.$router.replace).not.toHaveBeenCalled()
+    expect(mocks.$router.push).not.toHaveBeenCalled()
+    expect(wrapper.find('drive-redirect-stub').exists()).toBeTruthy()
   })
 })
 
@@ -173,7 +205,8 @@ function getMountedWrapper({
   currentRouteName = 'files-spaces-generic',
   userContextReady = false,
   driveAliasAndItem = 'personal/einstein/file',
-  fileId = '1'
+  fileId = '1',
+  query = {}
 }: {
   mocks?: Record<string, unknown>
   space?: SpaceResource
@@ -182,6 +215,7 @@ function getMountedWrapper({
   userContextReady?: boolean
   driveAliasAndItem?: string
   fileId?: string
+  query?: Record<string, string>
 } = {}) {
   vi.mocked(useRouteParam).mockReturnValue(ref(driveAliasAndItem))
   vi.mocked(queryItemAsString).mockReturnValue(fileId)
@@ -197,13 +231,14 @@ function getMountedWrapper({
     })
   )
 
+  const currentRoute = mock<RouteLocation>({
+    name: currentRouteName,
+    params: { driveAliasAndItem: '/' }
+  })
+  // a mocked query would return a mock for every missing query item
+  currentRoute.query = query
   const defaultMocks = {
-    ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({
-        name: currentRouteName,
-        params: { driveAliasAndItem: '/' }
-      })
-    }),
+    ...defaultComponentMocks({ currentRoute }),
     ...(mocks && mocks)
   }
 

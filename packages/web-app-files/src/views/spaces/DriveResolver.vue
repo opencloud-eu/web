@@ -33,6 +33,7 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { dirname } from 'path'
+import { isOwnedPersonalDriveAlias } from '../../helpers/driveAlias'
 
 const authStore = useAuthStore()
 const clientService = useClientService()
@@ -50,6 +51,7 @@ const fileIdQueryItem = useRouteQuery('fileId')
 const fileId = computed(() => {
   return queryItemAsString(unref(fileIdQueryItem))
 })
+const details = useRouteQuery('details')
 
 const getSpaceResource = async (): Promise<SpaceResource> => {
   try {
@@ -85,11 +87,15 @@ const resolveToInternalLocation = async (path: string) => {
 }
 
 onMounted(async () => {
-  if (!unref(driveAliasAndItem) && unref(fileId)) {
-    // necessary for urls like `/files/spaces?fileId=<id>`
-    return router.push({
+  const isUnknownPersonalSpace =
+    !unref(space) && isOwnedPersonalDriveAlias(unref(driveAliasAndItem) || '')
+  if ((!unref(driveAliasAndItem) || isUnknownPersonalSpace) && unref(fileId)) {
+    // necessary for urls like `/files/spaces?fileId=<id>` or links into another user's
+    // personal space, e.g. to a folder they shared with the current user
+    return router.replace({
       name: 'resolvePrivateLink',
-      params: { fileId: unref(fileId) }
+      params: { fileId: unref(fileId) },
+      ...(unref(details) && { query: { details: unref(details) } })
     })
   }
 
