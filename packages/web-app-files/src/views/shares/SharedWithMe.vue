@@ -129,7 +129,7 @@ import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { useGettext } from 'vue3-gettext'
 import { defaultFuseOptions } from '@opencloud-eu/web-pkg'
 import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
-import { uniq } from 'lodash-es'
+import { omit, uniq } from 'lodash-es'
 import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
 import { v4 as uuidV4 } from 'uuid'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
@@ -143,6 +143,7 @@ const areHiddenFilesShown = ref(false)
 const filterTerm = ref('')
 const selectedShareTypesQuery = useRouteQuery('q_shareType')
 const selectedSharedByQuery = useRouteQuery('q_sharedBy')
+const scrollToQuery = useRouteQuery('scrollTo')
 
 function filterShares(shares: IncomingShareResource[]) {
   let result = shares.filter(({ hidden }) => !!hidden === unref(areHiddenFilesShown))
@@ -240,8 +241,30 @@ const selectedShareSpace = computed(() => {
   return getMatchingSpace(resource)
 })
 
-const performLoaderTask = async () => {
+// a link to a share (e.g. from a notification) needs the visibility filter the share is listed in
+async function showVisibilityOfScrollToShare() {
+  const scrollTo = queryItemAsString(unref(scrollToQuery))
+  if (!scrollTo) {
+    return
+  }
+  const share = unref(storeItems).find(({ remoteItemId }) => remoteItemId === scrollTo)
+  if (!share || !!share.hidden === unref(areHiddenFilesShown)) {
+    return
+  }
+
+  await router.replace({
+    query: {
+      ...omit(unref(route).query, 'page'),
+      'q_share-visibility': share.hidden ? 'hidden' : 'visible'
+    }
+  })
+}
+
+const performLoaderTask = async ({ showScrollToShare = false } = {}) => {
   await loadResourcesTask.perform()
+  if (showScrollToShare) {
+    await showVisibilityOfScrollToShare()
+  }
   scrollToResourceFromRoute(unref(sortedResources), 'files-app-bar')
 }
 
@@ -274,8 +297,8 @@ const fileOwners = computed(() => {
 
 let loadResourcesEventToken: string
 onMounted(() => {
-  performLoaderTask()
-  loadResourcesEventToken = eventBus.subscribe('app.files.list.load', performLoaderTask)
+  performLoaderTask({ showScrollToShare: true })
+  loadResourcesEventToken = eventBus.subscribe('app.files.list.load', () => performLoaderTask())
 })
 
 onBeforeUnmount(() => {
