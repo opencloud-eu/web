@@ -174,6 +174,50 @@ describe('useKeyboardFileNavigation', () => {
     })
   })
 
+  describe('escape', () => {
+    function setup(selectedIds: string[]) {
+      const resources = [createResource('1'), createResource('2')]
+      const { vm } = getComposableWrapper(
+        () => {
+          const store = useResourcesStore()
+          store.setSelection(selectedIds)
+          const keyActions = useKeyboardActions()
+          useKeyboardFileNavigation(
+            keyActions,
+            ref(resources),
+            ref(FolderViewModeConstants.name.table)
+          )
+          return { store }
+        },
+        { pluginOptions: { piniaOptions: { stubActions: false, resourcesStore: { resources } } } }
+      )
+      return { store: vm.store }
+    }
+
+    function pressEscape() {
+      const event = new KeyboardEvent('keydown', { key: Key.Esc, bubbles: true, cancelable: true })
+      document.body.dispatchEvent(event)
+      return event
+    }
+
+    it('clears the selection and prevents the default action', () => {
+      const { store } = setup(['1', '2'])
+
+      const event = pressEscape()
+
+      expect(store.selectedIds).toEqual([])
+      expect(event.defaultPrevented).toBe(true)
+    })
+
+    it('leaves the event unprevented without a selection to clear', () => {
+      setup([])
+
+      const event = pressEscape()
+
+      expect(event.defaultPrevented).toBe(false)
+    })
+  })
+
   describe('without a selected resource', () => {
     beforeEach(() => {
       document.body.innerHTML =

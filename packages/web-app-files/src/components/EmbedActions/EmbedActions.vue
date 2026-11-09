@@ -74,7 +74,6 @@ import { extractExtensionFromFile, Resource } from '@opencloud-eu/web-client'
 import { join } from 'path'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
-import { useEventListener } from '@vueuse/core'
 import { useFileActionsCreateLink } from '../../composables'
 
 const { $gettext } = useGettext()
@@ -214,19 +213,10 @@ const emitCancel = (): void => {
   postMessage<null>('opencloud-embed:cancel', null)
 }
 
-// Escape clears the selection first, the file list might do that before the handler below runs.
-// hence the selection gets checked in the capture phase, before any keydown handler.
-let hadSelectionOnEscape = false
-function checkSelectionOnEscape(event: KeyboardEvent) {
-  if (event.key !== Key.Esc) {
-    return
-  }
-  hadSelectionOnEscape = unref(selectedResources).length > 0
-}
-useEventListener(document, 'keydown', checkSelectionOnEscape, { capture: true })
-
-function cancelOnEscape() {
-  if (hadSelectionOnEscape) {
+// the files view sets up its keyboard actions before this child component, so its document listener
+// runs first. Escape counts as handled there (prevented) when it clears a selection.
+function cancelOnEscape(event: KeyboardEvent) {
+  if (event.defaultPrevented) {
     return
   }
   emitCancel()

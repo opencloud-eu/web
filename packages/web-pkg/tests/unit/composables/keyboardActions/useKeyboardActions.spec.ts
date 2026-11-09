@@ -123,6 +123,41 @@ describe('useKeyboardActions', () => {
     wrapper.unmount()
   })
 
+  it.each([
+    { result: undefined, defaultPrevented: true },
+    { result: true, defaultPrevented: true },
+    { result: false, defaultPrevented: false }
+  ])(
+    'prevents the default action if the callback returns $result: $defaultPrevented',
+    ({ result, defaultPrevented }) => {
+      const wrapper = getWrapper()
+      wrapper.vm.keyboardActions.bindKeyAction({ primary: Key.Esc }, () => result)
+      const event = new KeyboardEvent('keydown', { key: Key.Esc, cancelable: true })
+
+      document.dispatchEvent(event)
+
+      expect(event.defaultPrevented).toBe(defaultPrevented)
+
+      wrapper.unmount()
+    }
+  )
+
+  it('calls the callback before preventing the event, so it can check if an earlier handler did', () => {
+    const wrapper = getWrapper()
+    let defaultPreventedInCallback: boolean
+    wrapper.vm.keyboardActions.bindKeyAction({ primary: Key.Esc }, (event) => {
+      defaultPreventedInCallback = event.defaultPrevented
+    })
+    const event = new KeyboardEvent('keydown', { key: Key.Esc, cancelable: true })
+
+    document.dispatchEvent(event)
+
+    expect(defaultPreventedInCallback).toBe(false)
+    expect(event.defaultPrevented).toBe(true)
+
+    wrapper.unmount()
+  })
+
   it('still handles arrow keys on a focused checkbox', () => {
     const wrapper = getWrapper()
     const callback = vi.fn()
