@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: hide sponsor link and version in the sidebar in embed mode [[#4370](https://github.com/opencloud-eu/web/pull/4370)]
 - fix: don't return to redirect-only routes when cancelling a vault unlock [[#4294](https://github.com/opencloud-eu/web/pull/4294)]
 - fix: use the shared sorting and pagination in the spaces and trash overviews [[#4270](https://github.com/opencloud-eu/web/pull/4270)]
 - fix: resolve links into another user's personal space via the file id [[#4315](https://github.com/opencloud-eu/web/pull/4315)]
