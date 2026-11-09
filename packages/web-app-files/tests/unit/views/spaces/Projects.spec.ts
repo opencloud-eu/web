@@ -6,7 +6,8 @@ import {
   useExtensionRegistry,
   FolderViewExtension,
   ResourceTable,
-  FileSideBar
+  FileSideBar,
+  eventBus
 } from '@opencloud-eu/web-pkg'
 
 import {
@@ -113,6 +114,52 @@ describe('Projects view', () => {
       expect(wrapper.findAll('tbody tr').length).toEqual(3)
     })
   })
+  describe('sorting', () => {
+    it('renders the filtered spaces sorted by name', async () => {
+      const { wrapper } = getMountedWrapper({
+        spaces: spacesResources,
+        query: { 'sort-by': 'name', 'sort-dir': 'asc' }
+      })
+      await flushPromises()
+      const resources = wrapper.findComponent(ResourceTable).props('resources')
+      expect(resources.map(({ id }) => id)).toEqual(['2', '1'])
+    })
+    it('sorts unrestricted spaces as the largest total quota', async () => {
+      const spaces = [
+        { ...spacesResources[0], id: 'small', spaceQuota: { total: 10 } },
+        { ...spacesResources[0], id: 'unrestricted', spaceQuota: { total: 0 } },
+        { ...spacesResources[0], id: 'large', spaceQuota: { total: 1000 } }
+      ] as unknown as SpaceResource[]
+      const { wrapper } = getMountedWrapper({
+        spaces,
+        query: { 'sort-by': 'totalQuota', 'sort-dir': 'desc' }
+      })
+      await flushPromises()
+      const resources = wrapper.findComponent(ResourceTable).props('resources')
+      expect(resources.map(({ id }) => id)).toEqual(['unrestricted', 'large', 'small'])
+    })
+  })
+  it('switches only once to the page of a space that is on another page', async () => {
+    const spaces = Array.from({ length: 130 }, (_, i) => {
+      const id = String(i + 1).padStart(3, '0')
+      return { ...spacesResources[0], id, name: `Space ${id}`, getDriveAliasAndItem: () => id }
+    }) as unknown as SpaceResource[]
+    const { mocks } = getMountedWrapper({ spaces, query: {} })
+    await flushPromises()
+    mocks.$router.push.mockClear()
+    mocks.$router.push.mockReturnValue(new Promise(() => undefined))
+
+    eventBus.publish('app.files.navigate.page', {
+      resourceId: '121',
+      forceScroll: true,
+      topbarElement: 'files-app-bar'
+    })
+
+    expect(mocks.$router.push).toHaveBeenCalledTimes(1)
+    expect(mocks.$router.push).toHaveBeenCalledWith(
+      expect.objectContaining({ query: expect.objectContaining({ page: 2 }) })
+    )
+  })
   it('should not pass selected resource as space to sidebar when driveType is not "project"', () => {
     const resource = mock<SpaceResource>({ id: 'selected-resource', driveType: 'personal' })
     const { wrapper } = getMountedWrapper({
@@ -139,6 +186,7 @@ function getMountedWrapper({
   abilities = [],
   stubAppBar = true,
   includeDisabled = false,
+  query,
   store = {}
 }: {
   mocks?: Record<string, unknown>
@@ -146,13 +194,14 @@ function getMountedWrapper({
   abilities?: AbilityRule[]
   stubAppBar?: boolean
   includeDisabled?: boolean
+  query?: Record<string, string>
   store?: PiniaMockOptions
 } = {}) {
   const plugins = defaultPlugins({
     abilities,
     piniaOptions: {
       spacesState: { spaces },
-      resourcesStore: { areDisabledSpacesShown: includeDisabled },
+      resourcesStore: { resources: spaces, areDisabledSpacesShown: includeDisabled },
       ...store
     }
   })
@@ -183,7 +232,11 @@ function getMountedWrapper({
 
   const defaultMocks = {
     ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({ name: 'files-spaces-projects', path: '/' })
+      currentRoute: mock<RouteLocation>({
+        name: 'files-spaces-projects',
+        path: '/',
+        ...(query && { query })
+      })
     }),
     ...(mocks && mocks)
   }
