@@ -13,6 +13,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show hidden shares when a link points to a hidden share [[#4349](https://github.com/opencloud-eu/web/pull/4349)]
+- fix: remove just added tags in the shares views [[#4347](https://github.com/opencloud-eu/web/pull/4347)]
 - fix: title the not found page for inaccessible project spaces [[#4337](https://github.com/opencloud-eu/web/pull/4337)]
 - fix: hide sponsor link and version in the sidebar in embed mode [[#4370](https://github.com/opencloud-eu/web/pull/4370)]
 - fix: don't return to redirect-only routes when cancelling a vault unlock [[#4294](https://github.com/opencloud-eu/web/pull/4294)]
