@@ -1,17 +1,14 @@
 <template>
-  <div v-if="isSvgImage" ref="img" class="size-full" :data-id="file.id">
-    <!-- the wrapper fills the stage so the svg's size-full has a basis; the svg's
-      preserveAspectRatio then scales the drawing to fit, like a raster image -->
-    <inline-svg
-      :key="`media-svg-${file.id}`"
-      :src="file.url"
-      :transform-source="sanitizeSvgElement"
-      role="img"
-      :aria-label="file.name"
-      class="size-full"
-      @loaded="initPanzoom"
-    />
-  </div>
+  <img
+    v-if="isSvgImage"
+    ref="img"
+    :key="`media-svg-${file.id}`"
+    :src="file.url"
+    :alt="file.name"
+    :data-id="file.id"
+    class="size-full object-contain"
+    @error="emit('error')"
+  />
   <div
     v-else-if="$slots.overlay"
     ref="img"
@@ -47,11 +44,7 @@ import {
 } from 'vue'
 import type { PanzoomObject, PanzoomOptions } from '@panzoom/panzoom'
 import Panzoom from '@panzoom/panzoom'
-import DOMPurify from 'dompurify'
 import { useEventBus } from '@opencloud-eu/web-pkg'
-import InlineSvg from 'vue-inline-svg'
-
-InlineSvg.name = 'inline-svg'
 
 const { file, currentImageRotation } = defineProps<{
   file: MediaFile
@@ -68,16 +61,13 @@ const eventBus = useEventBus()
 // content-sized wrapper would void the percentage max-w/max-h of its children
 const img = useTemplateRef<HTMLElement>('img')
 const panzoom = ref<PanzoomObject>()
+// an svg is rendered as an image and never inlined into the page: the browser then
+// runs no scripts, loads no external resources and keeps its styles scoped to the
+// image. Its url is a data url (see useMediaFileLoader), so opening the image in a
+// new tab doesn't run it on the app's origin either. It fills the stage and gets
+// scaled to fit, svgs without an intrinsic size (viewBox only) would otherwise
+// render at the browser's default of 300x150.
 const isSvgImage = computed(() => file.mimeType === 'image/svg+xml')
-
-function sanitizeSvgElement(svg: SVGElement) {
-  DOMPurify.sanitize(svg, {
-    IN_PLACE: true,
-    USE_PROFILES: { svg: true, svgFilters: true }
-  })
-
-  return svg
-}
 
 const onWheelEvent = (e: WheelEvent) => {
   e.preventDefault()
