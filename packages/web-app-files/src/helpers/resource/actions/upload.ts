@@ -37,8 +37,6 @@ function renameUploadFolderInEndpoint(endpoint: string, segments: string[], newF
 
 export class UploadResourceConflict extends ConflictDialog {
   resourcesStore: ResourcesStore
-  // a dialog was closed without an answer, e.g. on route change
-  private dismissed = false
 
   constructor(resourcesStore: ResourcesStore, language: Language) {
     const { $gettext, $ngettext } = language
@@ -86,9 +84,9 @@ export class UploadResourceConflict extends ConflictDialog {
           if (isOpen) {
             return
           }
+          // removed without an answer, e.g. on route change
           stop()
-          this.dismissed = true
-          resolve({ strategy: ResolveStrategy.SKIP, doForAllConflicts: true })
+          resolve({ strategy: ResolveStrategy.CANCEL, doForAllConflicts: false })
         }
       )
     })
@@ -170,7 +168,7 @@ export class UploadResourceConflict extends ConflictDialog {
         true,
         conflict.existingIsFolder
       )
-      if (this.dismissed) {
+      if (resolvedConflict.strategy === ResolveStrategy.CANCEL) {
         return { files: [], mergedFolders: [], dismissed: true }
       }
       if (resolvedConflict.doForAllConflicts) {

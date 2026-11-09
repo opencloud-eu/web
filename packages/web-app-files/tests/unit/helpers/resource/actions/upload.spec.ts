@@ -112,6 +112,16 @@ describe('upload helper', () => {
       const attrs = vi.mocked(dispatchModal).mock.calls[0][0].customComponentAttrs()
       expect(attrs.hideSecondaryAction).toBe(false)
     })
+    it('shows the close button to cancel the whole upload, but no cancel button', () => {
+      const instance = getResourceConflictInstance()
+      const { dispatchModal } = useModals()
+
+      void instance.resolveFileExists({ name: 'dup' } as Resource, 1)
+
+      const [options] = vi.mocked(dispatchModal).mock.calls[0]
+      expect(options.hideCancelButton).toBeFalsy()
+      expect(options.showCancelAction).toBeFalsy()
+    })
     it('resolves with the answer given in the dialog', async () => {
       const instance = getResourceConflictInstance({ stubActions: false })
 
@@ -124,7 +134,7 @@ describe('upload helper', () => {
         doForAllConflicts: false
       })
     })
-    it('skips all conflicts if the dialog is closed without an answer', async () => {
+    it('cancels if the dialog is removed without an answer', async () => {
       const instance = getResourceConflictInstance({ stubActions: false })
       const modalStore = useModals()
 
@@ -132,8 +142,8 @@ describe('upload helper', () => {
       modalStore.removeAllModals()
 
       await expect(promise).resolves.toEqual({
-        strategy: ResolveStrategy.SKIP,
-        doForAllConflicts: true
+        strategy: ResolveStrategy.CANCEL,
+        doForAllConflicts: false
       })
     })
   })
@@ -888,6 +898,28 @@ describe('upload helper', () => {
         await expect(promise).resolves.toEqual({ files: [], mergedFolders: [], dismissed: true })
         expect(modalStore.modals).toEqual([])
       })
+      it('drops the whole batch if the first dialog is closed via close button or Escape', async () => {
+        const instance = getResourceConflictInstance({ currentFiles, stubActions: false })
+        const modalStore = useModals()
+
+        const promise = instance.displayOverwriteDialog(files, conflicts)
+        closeDialog()
+
+        await expect(promise).resolves.toEqual({ files: [], mergedFolders: [], dismissed: true })
+        expect(modalStore.modals).toEqual([])
+      })
+      it('drops the whole batch if a later dialog is closed via close button or Escape', async () => {
+        const instance = getResourceConflictInstance({ currentFiles, stubActions: false })
+        const modalStore = useModals()
+
+        const promise = instance.displayOverwriteDialog(files, conflicts)
+        answerDialog({ strategy: ResolveStrategy.KEEP_BOTH, doForAllConflicts: false })
+        await vi.waitFor(() => expect(modalStore.modals).toHaveLength(1))
+        closeDialog()
+
+        await expect(promise).resolves.toEqual({ files: [], mergedFolders: [], dismissed: true })
+        expect(modalStore.modals).toEqual([])
+      })
       it('keeps asking for the remaining conflicts after a dialog is answered', async () => {
         const instance = getResourceConflictInstance({ currentFiles, stubActions: false })
         const modalStore = useModals()
@@ -937,6 +969,17 @@ function answerDialog(conflict: ResolveConflict) {
   }
   modalStore.removeModal(modal.id)
   callbackFn(conflict)
+}
+
+// mimics the modal wrapper closing ResourceConflictModal via close button or Escape
+function closeDialog() {
+  const modalStore = useModals()
+  const modal = modalStore.activeModal
+  const { callbackFn } = modal.customComponentAttrs() as {
+    callbackFn: (conflict: ResolveConflict) => void
+  }
+  callbackFn({ strategy: ResolveStrategy.CANCEL, doForAllConflicts: false })
+  modalStore.removeModal(modal.id)
 }
 
 function createUploadFile(name: string, relativeFolder = '', transport: 'xhr' | 'tus' = 'xhr') {

@@ -163,6 +163,10 @@ export const useFileActionsRestore = ({
         resource: conflict,
         strategy: resolvedConflict.strategy
       })
+      // the dialog was cancelled, the whole restore gets cancelled
+      if (resolvedConflict.strategy === ResolveStrategy.CANCEL) {
+        return resolvedConflicts
+      }
     }
     return resolvedConflicts
   }
@@ -266,6 +270,9 @@ export const useFileActionsRestore = ({
       conflicts,
       existingResourcesByPath
     )
+    if (resolvedConflicts.some(({ strategy }) => strategy === ResolveStrategy.CANCEL)) {
+      return
+    }
 
     // iterate through conflicts and behave according to strategy
     const filesToOverwrite = resolvedConflicts

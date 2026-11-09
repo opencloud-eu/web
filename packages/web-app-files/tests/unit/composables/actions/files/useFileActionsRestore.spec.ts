@@ -251,6 +251,51 @@ describe('restore', () => {
     expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
   })
 
+  it.each([
+    { description: 'the first dialog', answers: [] },
+    {
+      description: 'a later dialog after "Replace"',
+      answers: [{ strategy: ResolveStrategy.REPLACE, doForAllConflicts: false }]
+    },
+    {
+      description: 'a later dialog after "Keep both"',
+      answers: [{ strategy: ResolveStrategy.KEEP_BOTH, doForAllConflicts: false }]
+    }
+  ])('should restore nothing when $description is closed', async ({ answers }) => {
+    let instance: ReturnType<typeof useFileActionsRestore>
+    let space: SpaceResource
+    const { mocks } = getWrapper({
+      setup: (i, { space: s }) => {
+        instance = i
+        space = s
+      }
+    })
+    mocks.$clientService.webdav.listFiles.mockResolvedValue({
+      resource: mock<Resource>(),
+      children: [mock<Resource>({ name: 'a.txt' }), mock<Resource>({ name: 'b.txt' })]
+    })
+    const resolveFileExists = vi.spyOn(ConflictDialog.prototype, 'resolveFileExists')
+    for (const answer of answers) {
+      resolveFileExists.mockResolvedValueOnce(answer)
+    }
+    resolveFileExists.mockResolvedValueOnce({
+      strategy: ResolveStrategy.CANCEL,
+      doForAllConflicts: false
+    })
+    onTestFinished(() => resolveFileExists.mockRestore())
+    const resources = [
+      { id: '1', path: '/a.txt', name: 'a.txt' },
+      { id: '2', path: '/b.txt', name: 'b.txt' },
+      { id: '3', path: '/c.txt', name: 'c.txt' }
+    ] as TrashResource[]
+
+    unref(instance.actions)[0].handler({ space, resources })
+    await flushPromises()
+
+    expect(resolveFileExists).toHaveBeenCalledTimes(answers.length + 1)
+    expect(useRestoreWorker().startWorker).not.toHaveBeenCalled()
+  })
+
   it('should name the type of the existing resource in the conflict dialog', async () => {
     let instance: ReturnType<typeof useFileActionsRestore>
     let space: SpaceResource
@@ -273,6 +318,30 @@ describe('restore', () => {
     expect(dispatchModal).toHaveBeenCalledWith(
       expect.objectContaining({ title: 'Folder already exists' })
     )
+  })
+
+  it('should show a close button but no cancel button in the conflict dialog', async () => {
+    let instance: ReturnType<typeof useFileActionsRestore>
+    let space: SpaceResource
+    const { mocks } = getWrapper({
+      setup: (i, { space: s }) => {
+        instance = i
+        space = s
+      }
+    })
+    mocks.$clientService.webdav.listFiles.mockResolvedValue({
+      resource: mock<Resource>(),
+      children: [mock<Resource>({ name: 'dup', isFolder: false })]
+    })
+    const resource = { id: '1', path: '/dup', name: 'dup', type: 'file' } as TrashResource
+
+    unref(instance.actions)[0].handler({ space, resources: [resource] })
+    await flushPromises()
+
+    const { dispatchModal } = useModals()
+    const [options] = vi.mocked(dispatchModal).mock.calls[0]
+    expect(options.hideCancelButton).toBeFalsy()
+    expect(options.showCancelAction).toBeFalsy()
   })
 
   it('should not restore a copy whose name is too long for a vault', async () => {
