@@ -31,7 +31,7 @@
     >
       <div
         ref="stageMedia"
-        class="stage_media size-full flex justify-center items-center grow overflow-hidden"
+        class="stage_media @container-size size-full flex justify-center items-center grow overflow-hidden"
       >
         <div v-if="!activeMediaFile || activeMediaFile.isLoading" class="w-full">
           <div class="absolute top-[50%] left-[50%]">
