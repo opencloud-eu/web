@@ -17,7 +17,7 @@ export const useKeyboardFileNavigation = (
 ) => {
   const { scrollToResource } = useScrollTo()
   const resourcesStore = useResourcesStore()
-  const { latestSelectedId } = storeToRefs(resourcesStore)
+  const { latestSelectedId, selectedIds } = storeToRefs(resourcesStore)
 
   const bindKeyActionsIds: Ref<string[]> = ref([])
   const tileViewStart = ref<string>(null)
@@ -37,6 +37,10 @@ export const useKeyboardFileNavigation = (
   keyActions.bindKeyAction({ primary: Key.Esc }, () => {
     keyActions.resetSelectionCursor()
     tileViewStart.value = null
+    // nothing to clear, leave Escape to other handlers, e.g. the cancel of the embed mode
+    if (!unref(selectedIds).length) {
+      return false
+    }
     resourcesStore.resetSelection()
   })
 

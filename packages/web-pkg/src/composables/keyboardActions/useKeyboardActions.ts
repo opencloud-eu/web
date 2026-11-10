@@ -32,6 +32,9 @@ export enum Modifier {
   Shift = 'Shift'
 }
 
+// returning false marks the event as not handled, it then stays unprevented for later handlers
+export type KeyActionCallback = (event: KeyboardEvent) => boolean | void | Promise<void>
+
 export interface KeyboardActions {
   actions: Ref<Array<KeyboardAction>>
   selectionCursor: Ref<number>
@@ -39,7 +42,7 @@ export interface KeyboardActions {
   resetSelectionCursor: () => void
   bindKeyAction: (
     keys: { primary: Key; modifier?: Modifier },
-    callback: (event: KeyboardEvent) => void,
+    callback: KeyActionCallback,
     options?: { preventDefault?: boolean }
   ) => string
 }
@@ -49,7 +52,7 @@ export interface KeyboardAction {
   primary: Key
   modifier: Modifier | null
   preventDefault: boolean
-  callback: (event: KeyboardEvent) => void
+  callback: KeyActionCallback
 }
 
 const areCustomKeyBindingsDisabled = (event: KeyboardEvent) => {
@@ -157,15 +160,15 @@ export const useKeyboardActions = (options?: KeyboardActionsOptions): KeyboardAc
         return action.primary === key && action.modifier === modifier
       })
       .forEach((action) => {
-        if (action.preventDefault) {
+        const handled = action.callback(event) !== false
+        if (handled && action.preventDefault) {
           event.preventDefault()
         }
-        action.callback(event)
       })
   }
   const bindKeyAction = (
     keys: { primary: Key; modifier?: Modifier },
-    callback: (event: KeyboardEvent) => void,
+    callback: KeyActionCallback,
     { preventDefault = true }: { preventDefault?: boolean } = {}
   ): string => {
     const id = uuidV4()

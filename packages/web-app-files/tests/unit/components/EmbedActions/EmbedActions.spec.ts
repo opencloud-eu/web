@@ -5,13 +5,21 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import EmbedActions from '../../../../src/components/EmbedActions/EmbedActions.vue'
-import { FileAction, useEmbedMode, useResourcesStore } from '@opencloud-eu/web-pkg'
+import {
+  FileAction,
+  FolderViewModeConstants,
+  useEmbedMode,
+  useKeyboardActions,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
 import { useFileActionsCreateLink } from '../../../../src/composables/actions/files'
+import { useKeyboardFileNavigation } from '../../../../src/composables/keyboardActions/useKeyboardFileNavigation'
 import { mock } from 'vitest-mock-extended'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { buildSpace, GraphSharePermission, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { Drive } from '@opencloud-eu/web-client/graph/generated'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
+import { enableAutoUnmount } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -22,6 +30,9 @@ vi.mock('../../../../src/composables/actions/files', async (importOriginal) => (
   ...(await importOriginal<any>()),
   useFileActionsCreateLink: vi.fn()
 }))
+
+// mounted components keep their document keydown listeners otherwise
+enableAutoUnmount(afterEach)
 
 const selectors = Object.freeze({
   btnSelect: '[data-testid="button-select"]',
@@ -314,6 +325,50 @@ describe('EmbedActions', () => {
       expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:cancel', null)
     })
 
+    describe('within the file list', () => {
+      function pressEscape() {
+        document.body.dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+        )
+      }
+
+      it('should only clear the selection on the first Escape and emit cancel event on the second', () => {
+        const { mocks } = getWrapper({ selectedIds: ['1', '2'], withFileNavigation: true })
+
+        pressEscape()
+
+        expect(useResourcesStore().selectedIds).toEqual([])
+        expect(mocks.postMessageMock).not.toHaveBeenCalled()
+
+        pressEscape()
+
+        expect(mocks.postMessageMock).toHaveBeenCalledTimes(1)
+        expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:cancel', null)
+      })
+
+      it('should emit cancel event on Escape without a selection', () => {
+        const { mocks } = getWrapper({ withFileNavigation: true })
+
+        pressEscape()
+
+        expect(mocks.postMessageMock).toHaveBeenCalledTimes(1)
+        expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:cancel', null)
+      })
+    })
+
+    it('should not emit cancel event on Escape that an earlier handler already handled', () => {
+      function preventEscape(event: KeyboardEvent) {
+        event.preventDefault()
+      }
+      document.addEventListener('keydown', preventEscape)
+      const { mocks } = getWrapper()
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }))
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+      document.removeEventListener('keydown', preventEscape)
+    })
+
     it('should not emit cancel event on Escape while a modal is open', () => {
       const { mocks } = getWrapper()
       const modal = document.createElement('div')
@@ -426,7 +481,8 @@ function getWrapper(
     chooseFileName = false,
     areFileExtensionsShown = true,
     folderResources = [],
-    fileNameSuggestion = 'file.txt'
+    fileNameSuggestion = 'file.txt',
+    withFileNavigation = false
   }: {
     selectedIds?: string[]
     currentFolder?: Resource
@@ -437,6 +493,7 @@ function getWrapper(
     areFileExtensionsShown?: boolean
     folderResources?: Resource[]
     fileNameSuggestion?: string
+    withFileNavigation?: boolean
   } = {
     selectedIds: []
   }
@@ -480,14 +537,19 @@ function getWrapper(
 
   return {
     mocks,
-    wrapper: shallowMount(EmbedActions, {
+    wrapper: shallowMount(withFileNavigation ? FileListWithEmbedActions : EmbedActions, {
       global: {
         mocks,
         provide: mocks,
-        stubs: { OcButton: false, OcTextInput: getOcTextInputStub(focusMock) },
+        stubs: {
+          EmbedActions: false,
+          OcButton: false,
+          OcTextInput: getOcTextInputStub(focusMock)
+        },
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
+              stubActions: false,
               resourcesStore: { currentFolder, selectedIds, resources, areFileExtensionsShown }
             }
           })
@@ -496,6 +558,15 @@ function getWrapper(
     })
   }
 }
+
+// like the files views, which bind their keyboard actions before rendering the embed actions
+const FileListWithEmbedActions = defineComponent({
+  setup() {
+    const keyActions = useKeyboardActions()
+    useKeyboardFileNavigation(keyActions, ref([]), ref(FolderViewModeConstants.name.table))
+    return () => h(EmbedActions)
+  }
+})
 
 function getOcTextInputStub(focusMock: () => void) {
   return defineComponent({

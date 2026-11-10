@@ -5,7 +5,6 @@ import { enableAutoUnmount, flushPromises } from '@vue/test-utils'
 import { useRouteParam, useRouteQuery } from '@opencloud-eu/web-pkg'
 import { ShareSpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationResolved } from 'vue-router'
-import { Settings } from 'luxon'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import RenewGuestLink from '../../../src/pages/renewGuestLink.vue'
 import { authService } from '../../../src/services/auth'
@@ -44,9 +43,8 @@ const guestRedirectUrl = '/files/guest/share/folder/sub?permissionId=permission-
 
 enableAutoUnmount(afterEach)
 
-const defaultNow = Settings.now
 afterEach(() => {
-  Settings.now = defaultNow
+  vi.useRealTimers()
 })
 
 describe('renewGuestLink', () => {
@@ -148,9 +146,11 @@ describe('renewGuestLink', () => {
   })
 
   it('tells how long to wait when too many renewals were requested', async () => {
-    // time passes between receiving the error and rendering the wait time
-    Settings.now = () => Date.now() + 1000
+    vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'] })
     const { wrapper } = getWrapper({ renewError: guestLinkError('tooManyRequests', 300) })
+    await flushPromises()
+    // the remaining 299 seconds round up
+    vi.advanceTimersByTime(1000)
     await flushPromises()
 
     expect(wrapper.find(selectors.errorMessage).text()).toEqual(
@@ -158,8 +158,82 @@ describe('renewGuestLink', () => {
     )
   })
 
+  it('counts down the wait time and disables the retry until it has passed', async () => {
+    vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'] })
+    const { wrapper } = getWrapper({ renewError: guestLinkError('tooManyRequests', 54) })
+    await flushPromises()
+
+    expect(wrapper.find(selectors.errorMessage).text()).toEqual(
+      'Too many new invitations were requested. Please try again in 54 seconds.'
+    )
+    expect(wrapper.find(selectors.retryButton).attributes('disabled')).toBeDefined()
+
+    vi.advanceTimersByTime(30 * 1000)
+    await flushPromises()
+
+    expect(wrapper.find(selectors.errorMessage).text()).toEqual(
+      'Too many new invitations were requested. Please try again in 24 seconds.'
+    )
+    expect(wrapper.find(selectors.retryButton).attributes('disabled')).toBeDefined()
+
+    vi.advanceTimersByTime(24 * 1000)
+    await flushPromises()
+
+    expect(wrapper.find(selectors.errorMessage).text()).toEqual(
+      'Too many new invitations were requested. Please try again later.'
+    )
+    expect(wrapper.find(selectors.retryButton).attributes('disabled')).toBeUndefined()
+  })
+
+  it.each([500, 995])(
+    'still asks to wait a second when the retry is %i ms away',
+    async (remainingMs) => {
+      vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'] })
+      // the countdown ticks don't line up with the retry time, e.g. because of latency
+      const { wrapper } = getWrapper({
+        renewError: guestLinkError('tooManyRequests', (1000 + remainingMs) / 1000)
+      })
+      await flushPromises()
+      vi.advanceTimersByTime(1000)
+      await flushPromises()
+
+      expect(wrapper.find(selectors.errorMessage).text()).toEqual(
+        'Too many new invitations were requested. Please try again in 1 second.'
+      )
+      expect(wrapper.find(selectors.retryButton).attributes('disabled')).toBeDefined()
+
+      vi.advanceTimersByTime(1000)
+      await flushPromises()
+
+      expect(wrapper.find(selectors.errorMessage).text()).toEqual(
+        'Too many new invitations were requested. Please try again later.'
+      )
+      expect(wrapper.find(selectors.retryButton).attributes('disabled')).toBeUndefined()
+    }
+  )
+
+  it('stops counting down once another tab renewed the link', async () => {
+    vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'] })
+    const { wrapper, setPendingRenewal } = getWrapper({
+      renewError: guestLinkError('tooManyRequests', 60)
+    })
+    await flushPromises()
+    expect(vi.getTimerCount()).toBe(1)
+
+    setPendingRenewal({ withPin: true })
+    window.dispatchEvent(new StorageEvent('storage'))
+    await flushPromises()
+    vi.advanceTimersByTime(1000)
+
+    expect(wrapper.find(selectors.pinInput).exists()).toBeTruthy()
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
   it('renews again on retry after too many renewals were requested', async () => {
+    vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'] })
     const { wrapper } = getWrapper({ renewError: guestLinkError('tooManyRequests', 60) })
+    await flushPromises()
+    vi.advanceTimersByTime(60 * 1000)
     await flushPromises()
 
     vi.mocked(authService.ensureGuestLinkRenewal).mockResolvedValue({ withPin: false })
