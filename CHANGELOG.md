@@ -14,6 +14,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: only show the office settings to users who can manage fonts [[#4398](https://github.com/opencloud-eu/web/pull/4398)]
 - fix: escape link and image targets and titles when saving markdown [[#4316](https://github.com/opencloud-eu/web/pull/4316)]
 - fix: use object-cover for space overview images [[#4413](https://github.com/opencloud-eu/web/pull/4413)]
 - fix: don't select a row when its link starts a navigation [[#4408](https://github.com/opencloud-eu/web/pull/4408)]
