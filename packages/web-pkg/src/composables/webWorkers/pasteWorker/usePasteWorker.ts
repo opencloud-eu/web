@@ -1,10 +1,11 @@
 import { unref } from 'vue'
+import { join } from 'path'
 import { useWebWorkersStore } from '../../piniaStores/webWorkers'
-import { useAuthStore, useConfigStore } from '../../piniaStores'
+import { useAuthStore, useConfigStore, useVaultStore } from '../../piniaStores'
 import { useLoadingService } from '../../loadingService'
 import { useRequestHeaders } from '../../requestHeaders'
 import { createHttpError, type HttpError, type Resource } from '@opencloud-eu/web-client'
-import type { TransferData } from '../../../helpers/resource/conflictHandling'
+import { TransferType, type TransferData } from '../../../helpers/resource/conflictHandling/types'
 import PasteWorker from './worker?worker'
 
 export type PasteWorkerReturnData = {
@@ -26,6 +27,7 @@ export const usePasteWorker = () => {
   const loadingService = useLoadingService()
   const { headers } = useRequestHeaders()
   const { createWorker, terminateWorker } = useWebWorkersStore()
+  const vaultStore = useVaultStore()
 
   const startWorker = (
     transferData: TransferData[],
@@ -48,6 +50,7 @@ export const usePasteWorker = () => {
         return { resourceName, error: createHttpError(errorData) }
       })
 
+      syncVaultEngines(transferData, successful)
       callback({ successful, failed: failedWithErrors })
     }
 
@@ -59,6 +62,39 @@ export const usePasteWorker = () => {
     )
 
     worker.post(getWorkerData(transferData))
+  }
+
+  /**
+   * Unlocked vault engines are keyed by path, so re-file those of moved folders
+   * under the new path. Engines of an overwritten target are stale and dropped.
+   */
+  function syncVaultEngines(transferData: TransferData[], successful: Resource[]) {
+    // the worker drops ids of copies, so match those by their target path
+    const movedIds = new Set(successful.map(({ id }) => id).filter(Boolean))
+    const targetPaths = new Set(successful.map(({ path }) => path))
+    for (const {
+      resource,
+      sourceSpace,
+      targetSpace,
+      targetFolder,
+      path,
+      overwrite,
+      transferType
+    } of transferData) {
+      const isMove = transferType === TransferType.MOVE
+      const succeeded = isMove
+        ? movedIds.has(resource.id)
+        : targetPaths.has(join(targetFolder.path, resource.name))
+      if (!succeeded) {
+        continue
+      }
+      if (overwrite || isMove) {
+        vaultStore.clearEnginesUnder(targetSpace.id, path)
+      }
+      if (isMove) {
+        vaultStore.moveEngine(sourceSpace.id, resource.path, path)
+      }
+    }
   }
 
   const getWorkerData = (transferData: TransferData[]) => {

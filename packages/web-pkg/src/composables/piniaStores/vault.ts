@@ -21,7 +21,7 @@ import type { VaultEngine } from './extensionRegistry'
  * resolvers free of an extra path→id lookup. The key material doesn't depend on
  * the path, so a renamed vault root needs no re-unlock - but its store key and
  * the engine's `vaultRoot` (which maps clear-text paths) do, which `moveEngine`
- * updates from the rename handler.
+ * updates on rename and move.
  */
 export const useVaultStore = defineStore('vault', () => {
   // shallowRef, not ref: only the Map *reference* is reactive (every mutator
@@ -92,7 +92,8 @@ export const useVaultStore = defineStore('vault', () => {
 
   /**
    * Drop every unlocked engine whose vault root sits at - or below -
-   * `pathPrefix` inside the given space. Called when a resource gets deleted:
+   * `pathPrefix` inside the given space. Called when a resource gets deleted
+   * or overwritten by a move or copy:
    * if the vault itself or any of its ancestors is gone, the cached engine is
    * now stale and would unlock content that no longer exists (or, worse,
    * content a different user re-created at the same name later).
