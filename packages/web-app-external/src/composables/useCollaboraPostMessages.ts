@@ -1,6 +1,13 @@
 import { onMounted, onBeforeUnmount, unref, type Ref, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { Resource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
+import { dirname, join, relative } from 'path'
+import {
+  extractExtensionFromFile,
+  extractNameWithoutExtension,
+  Resource,
+  SpaceResource,
+  urlJoin
+} from '@opencloud-eu/web-client'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 import {
   useRoute,
@@ -10,11 +17,12 @@ import {
   useFolderLink,
   useMentionUsers,
   useConfigStore,
-  queryItemAsString,
+  useMessages,
+  resolveFileNameDuplicate,
   FilePickerModal,
+  LocationPickerModal,
   isMessageFromIframe
 } from '@opencloud-eu/web-pkg'
-import FileNameModal from '../components/FileNameModal.vue'
 
 interface CollaboraMessage {
   MessageId: string
@@ -37,6 +45,7 @@ export function useCollaboraPostMessages({
   const router = useRouter()
   const { webdav } = useClientService()
   const { dispatchModal } = useModals()
+  const { showErrorMessage } = useMessages()
   const { getParentFolderLink } = useFolderLink()
   const configStore = useConfigStore()
   const {
@@ -83,40 +92,63 @@ export function useCollaboraPostMessages({
 
   function handleUiSaveAs(message: CollaboraMessage): void {
     const currentResource = unref(resource)
-    const currentSpace = unref(space)
+    const format = message.Values?.format as string | undefined
 
-    if (Object.hasOwn(message.Values ?? {}, 'format')) {
-      dispatchModal({
-        title: $gettext('Export »%{name}« as %{format}', {
-          name: currentResource.name,
-          format: message.Values.format as string
-        }),
-        customComponent: markRaw(FileNameModal),
-        customComponentAttrs: () => ({
-          space: currentSpace,
-          resource: currentResource,
-          fileExtension: message.Values.format,
-          callbackFn: (newFileName: string) => {
-            postMessageToCollabora('Action_SaveAs', { Filename: newFileName, Notify: true })
-          }
-        }),
-        focusTrapInitial: '#file-name-input'
+    dispatchModal({
+      elementClass: 'location-picker-modal',
+      title: format
+        ? $gettext('Export »%{name}« as %{format}', { name: currentResource.name, format })
+        : $gettext('Save »%{name}« as', { name: currentResource.name }),
+      customComponent: markRaw(LocationPickerModal),
+      hideActions: true,
+      customComponentAttrs: () => ({
+        parentFolderLink: getParentFolderLink(currentResource),
+        submitButtonTitle: format ? $gettext('Export') : $gettext('Save'),
+        chooseFileName: true,
+        chooseFileNameSuggestion: format
+          ? `${extractNameWithoutExtension(currentResource)}.${format}`
+          : currentResource.name,
+        callbackFn: ([targetFolder]: Resource[], { fileName }: { fileName?: string }) =>
+          saveAs(targetFolder, fileName)
+      }),
+      focusTrapInitial: false
+    })
+  }
+
+  async function saveAs(targetFolder: Resource, fileName: string): Promise<void> {
+    const currentResource = unref(resource)
+    const errorTitle = $gettext('Unable to save »%{fileName}«', { fileName })
+
+    // Collabora saves relative to the folder of the current file and can't leave it
+    const targetPath = relative(dirname(currentResource.path), targetFolder.path)
+    if (
+      targetFolder.storageId !== currentResource.storageId ||
+      targetPath === '..' ||
+      targetPath.startsWith('../')
+    ) {
+      showErrorMessage({
+        title: errorTitle,
+        desc: $gettext('Documents can only be saved in the current folder or its subfolders.')
       })
       return
     }
 
-    dispatchModal({
-      title: $gettext('Save »%{name}« with new name', { name: currentResource.name }),
-      customComponent: markRaw(FileNameModal),
-      customComponentAttrs: () => ({
-        space: currentSpace,
-        resource: currentResource,
-        callbackFn: (newFileName: string) => {
-          postMessageToCollabora('Action_SaveAs', { Filename: newFileName, Notify: true })
-        }
-      }),
-      focusTrapInitial: '#file-name-input'
-    })
+    try {
+      // an existing file can't be overwritten, so pick a free name like the file list does
+      const { children } = await webdav.listFiles(unref(space), targetFolder, {
+        davProperties: [DavProperty.Name]
+      })
+      if (children.some(({ name }) => name === fileName)) {
+        const extension = extractExtensionFromFile({ name: fileName } as Resource)
+        fileName = resolveFileNameDuplicate(fileName, extension, children)
+      }
+    } catch (e) {
+      console.error(e)
+      showErrorMessage({ title: errorTitle, errors: [e] })
+      return
+    }
+
+    postMessageToCollabora('Action_SaveAs', { Filename: join(targetPath, fileName), Notify: true })
   }
 
   async function handleActionSaveResp(message: CollaboraMessage): Promise<void> {
@@ -128,22 +160,16 @@ export function useCollaboraPostMessages({
     const currentSpace = unref(space)
 
     // FIXME: when we move to id based propfinds we magically need a fileId for the new file. Collabora doesn't provide that.
+    // the file name is relative to the folder of the current file and may contain subfolders
     const newFile = await webdav.getFileInfo(currentSpace, {
-      path:
-        currentResource.path.substring(
-          0,
-          currentResource.path.length - currentResource.name.length
-        ) + (message.Values.fileName as string),
+      path: join(dirname(currentResource.path), message.Values.fileName as string),
       fileId: undefined
     })
     await router.push({
       name: unref(route).name,
       params: {
         ...unref(route).params,
-        driveAliasAndItem: queryItemAsString(unref(route).params.driveAliasAndItem).replace(
-          currentResource.name,
-          newFile.name
-        )
+        driveAliasAndItem: currentSpace.getDriveAliasAndItem(newFile)
       },
       query: {
         ...unref(route).query,

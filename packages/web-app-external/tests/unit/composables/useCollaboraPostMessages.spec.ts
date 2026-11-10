@@ -7,7 +7,13 @@ import {
   type RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useMentionUsers, useFolderLink, useModals } from '@opencloud-eu/web-pkg'
+import {
+  useMentionUsers,
+  useFolderLink,
+  useModals,
+  useMessages,
+  LocationPickerModal
+} from '@opencloud-eu/web-pkg'
 import { useCollaboraPostMessages } from '../../../src/composables/useCollaboraPostMessages'
 import { Mock } from 'vitest'
 
@@ -88,15 +94,21 @@ describe('useCollaboraPostMessages', () => {
     it('logs an error when the iframe is not available', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const appIframeRef = ref<HTMLIFrameElement | null>(createMockIframe())
-      const { instance } = getWrapper({ appIframeRef })
+      const { instance, mocks } = getWrapper({ appIframeRef })
+      mocks.$clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>(),
+        children: []
+      })
 
       await instance.handlePostMessagesCollabora(
         createMessageEvent({ MessageId: 'UI_SaveAs', Values: {} })
       )
       appIframeRef.value = null
       const { dispatchModal } = useModals()
-      const { callbackFn } = vi.mocked(dispatchModal).mock.calls[0][0].customComponentAttrs()
-      ;(callbackFn as (fileName: string) => void)('new.odt')
+      const { callbackFn } = (dispatchModal as Mock).mock.calls[0][0].customComponentAttrs()
+      await callbackFn([mock<Resource>({ storageId: 'storage-1', path: '/folder' })], {
+        fileName: 'new.odt'
+      })
 
       expect(consoleError).toHaveBeenCalledWith('Collabora iframe not found')
     })
@@ -232,54 +244,134 @@ describe('useCollaboraPostMessages', () => {
   })
 
   describe('UI_SaveAs message', () => {
-    it('dispatches FileNameModal with format name in title when format is provided', async () => {
+    const getModalOptions = async (
+      instance: ReturnType<typeof useCollaboraPostMessages>,
+      values = {}
+    ) => {
+      await instance.handlePostMessagesCollabora(
+        createMessageEvent({ MessageId: 'UI_SaveAs', Values: values })
+      )
+      const { dispatchModal } = useModals()
+      return (dispatchModal as Mock).mock.calls[0][0]
+    }
+
+    const pickLocation = async (
+      { instance, mocks }: ReturnType<typeof getWrapper>,
+      targetFolder: Partial<Resource>,
+      fileName: string,
+      existingNames: string[] = []
+    ) => {
+      mocks.$clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>(),
+        children: existingNames.map((name) => mock<Resource>({ name }))
+      })
+      const { customComponentAttrs } = await getModalOptions(instance)
+      await customComponentAttrs().callbackFn(
+        [mock<Resource>({ storageId: 'storage-1', fileId: 'target-id', ...targetFolder })],
+        { fileName }
+      )
+      await flushPromises()
+    }
+
+    it('dispatches the location picker in the folder of the current file', async () => {
       const { instance } = getWrapper()
 
-      await instance.handlePostMessagesCollabora(
-        createMessageEvent({ MessageId: 'UI_SaveAs', Values: { format: 'docx' } })
-      )
+      const modalOptions = await getModalOptions(instance)
 
-      const { dispatchModal } = useModals()
-      expect(dispatchModal).toHaveBeenCalledOnce()
+      expect(modalOptions.customComponent).toBe(LocationPickerModal)
+      expect(modalOptions.customComponentAttrs()).toMatchObject({
+        submitButtonTitle: 'Save',
+        chooseFileName: true,
+        chooseFileNameSuggestion: 'test.odt'
+      })
+      expect(useFolderLink().getParentFolderLink).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'test.odt' })
+      )
     })
 
-    it('passes the format as fileExtension to the modal component attrs when format is provided', async () => {
+    it('suggests the file name with the export format', async () => {
       const { instance } = getWrapper()
 
-      await instance.handlePostMessagesCollabora(
-        createMessageEvent({ MessageId: 'UI_SaveAs', Values: { format: 'docx' } })
-      )
+      const modalOptions = await getModalOptions(instance, { format: 'pdf' })
 
-      const { dispatchModal } = useModals()
-      expect(dispatchModal).toHaveBeenCalled()
+      expect(modalOptions.title).toBe('Export »test.odt« as pdf')
+      expect(modalOptions.customComponentAttrs()).toMatchObject({
+        submitButtonTitle: 'Export',
+        chooseFileNameSuggestion: 'test.pdf'
+      })
     })
 
-    it('dispatches FileNameModal with save-as title when no format is provided', async () => {
-      const { instance } = getWrapper()
+    it.each([
+      { targetPath: '/folder', expected: 'copy.odt' },
+      { targetPath: '/folder/sub/deeper', expected: 'sub/deeper/copy.odt' }
+    ])(
+      'saves into $targetPath relative to the folder of the current file',
+      async ({ targetPath, expected }) => {
+        const postMessage = vi.fn()
+        const wrapper = getWrapper({ appIframeRef: ref(createMockIframe(postMessage)) })
 
-      await instance.handlePostMessagesCollabora(
-        createMessageEvent({ MessageId: 'UI_SaveAs', Values: {} })
-      )
+        await pickLocation(wrapper, { path: targetPath }, 'copy.odt')
 
-      const { dispatchModal } = useModals()
-      expect(dispatchModal).toHaveBeenCalled()
-    })
-
-    it.each([{ format: 'docx' }, {}])(
-      'focuses the file name input initially (values: %o)',
-      async (values) => {
-        const { instance } = getWrapper()
-
-        await instance.handlePostMessagesCollabora(
-          createMessageEvent({ MessageId: 'UI_SaveAs', Values: values })
+        expect(wrapper.mocks.$clientService.webdav.listFiles).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({ fileId: 'target-id', path: targetPath }),
+          expect.anything()
         )
-
-        const { dispatchModal } = useModals()
-        expect(dispatchModal).toHaveBeenCalledWith(
-          expect.objectContaining({ focusTrapInitial: '#file-name-input' })
+        expect(getParsedPostMessageCalls(postMessage)).toContainEqual(
+          expect.objectContaining({
+            MessageId: 'Action_SaveAs',
+            Values: { Filename: expected, Notify: true }
+          })
         )
       }
     )
+
+    it('picks a free name when the file already exists', async () => {
+      const postMessage = vi.fn()
+      const wrapper = getWrapper({ appIframeRef: ref(createMockIframe(postMessage)) })
+
+      await pickLocation(wrapper, { path: '/folder/sub' }, 'copy.odt', ['copy.odt'])
+
+      expect(getParsedPostMessageCalls(postMessage)).toContainEqual(
+        expect.objectContaining({ Values: { Filename: 'sub/copy (1).odt', Notify: true } })
+      )
+    })
+
+    it('shows an error when the target folder cannot be listed', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const postMessage = vi.fn()
+      const { instance, mocks } = getWrapper({ appIframeRef: ref(createMockIframe(postMessage)) })
+      mocks.$clientService.webdav.listFiles.mockRejectedValue(new Error('offline'))
+
+      const { customComponentAttrs } = await getModalOptions(instance)
+      await customComponentAttrs().callbackFn(
+        [mock<Resource>({ storageId: 'storage-1', path: '/folder' })],
+        { fileName: 'copy.odt' }
+      )
+
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledOnce()
+      expect(getParsedPostMessageCalls(postMessage)).not.toContainEqual(
+        expect.objectContaining({ MessageId: 'Action_SaveAs' })
+      )
+    })
+
+    it.each([
+      { path: '/', storageId: 'storage-1' },
+      { path: '/other', storageId: 'storage-1' },
+      { path: '/folder', storageId: 'storage-2' }
+    ])('shows an error for a location outside of the current folder (%o)', async (targetFolder) => {
+      const postMessage = vi.fn()
+      const wrapper = getWrapper({ appIframeRef: ref(createMockIframe(postMessage)) })
+
+      await pickLocation(wrapper, targetFolder, 'copy.odt')
+
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledOnce()
+      expect(getParsedPostMessageCalls(postMessage)).not.toContainEqual(
+        expect.objectContaining({ MessageId: 'Action_SaveAs' })
+      )
+    })
   })
 
   describe('Action_Save_Resp message', () => {
@@ -295,28 +387,49 @@ describe('useCollaboraPostMessages', () => {
     })
 
     it('fetches the new file info and navigates to it', async () => {
-      const newFile = mock<Resource>({ name: 'renamed.docx', fileId: 'new-file-id' })
+      const newFile = mock<Resource>({
+        name: 'renamed.docx',
+        path: '/folder/sub/renamed.docx',
+        fileId: 'new-file-id'
+      })
       const mocks = defaultComponentMocks({
         currentRoute: mock<RouteLocation>({
           name: 'external',
-          params: { driveAliasAndItem: 'personal/original.odt' },
+          params: { driveAliasAndItem: 'share/folder/original.odt' },
           query: {}
         })
       })
       mocks.$clientService.webdav.getFileInfo.mockResolvedValue(newFile)
+      const space = ref(
+        mock<SpaceResource>({
+          getDriveAliasAndItem: ({ path }: Resource) => `share${path}`
+        })
+      )
 
       const { instance } = getWrapper({
         mocks,
+        space,
         resource: ref(mock<Resource>({ name: 'original.odt', path: '/folder/original.odt' }))
       })
 
       await instance.handlePostMessagesCollabora(
-        createMessageEvent({ MessageId: 'Action_Save_Resp', Values: { fileName: 'renamed.docx' } })
+        createMessageEvent({
+          MessageId: 'Action_Save_Resp',
+          Values: { fileName: 'sub/renamed.docx' }
+        })
       )
       await flushPromises()
 
-      expect(mocks.$clientService.webdav.getFileInfo).toHaveBeenCalledOnce()
-      expect(mocks.$router.push).toHaveBeenCalledOnce()
+      expect(mocks.$clientService.webdav.getFileInfo).toHaveBeenCalledWith(space.value, {
+        path: '/folder/sub/renamed.docx',
+        fileId: undefined
+      })
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: expect.objectContaining({ driveAliasAndItem: 'share/folder/sub/renamed.docx' }),
+          query: expect.objectContaining({ fileId: 'new-file-id' })
+        })
+      )
     })
   })
 
@@ -502,7 +615,14 @@ describe('useCollaboraPostMessages', () => {
 function getWrapper({
   appIframeRef = ref<HTMLIFrameElement | null>(createMockIframe()),
   space = ref(mock<SpaceResource>()),
-  resource = ref(mock<Resource>({ name: 'test.odt', path: '/folder/test.odt' })),
+  resource = ref(
+    mock<Resource>({
+      name: 'test.odt',
+      extension: 'odt',
+      path: '/folder/test.odt',
+      storageId: 'storage-1'
+    })
+  ),
   mocks = defaultComponentMocks()
 }: {
   appIframeRef?: Ref<HTMLIFrameElement | null>
