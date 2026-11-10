@@ -1,4 +1,5 @@
 import { useGettext } from 'vue3-gettext'
+import { DateTime } from 'luxon'
 import { formatRelativeDateFromJSDate } from '@opencloud-eu/web-pkg'
 import { GuestLinkErrorErrorTypeEnum } from '@opencloud-eu/web-client/graph/generated'
 import { GuestLinkErrorType } from '../../services/auth/guestSessionManager'
@@ -46,17 +47,22 @@ export function useGuestLinkErrorMessages() {
     }
   }
 
-  function formatRetryTime(retryAt: Date): string {
-    // round up, an early retry would be rejected again
-    return formatRelativeDateFromJSDate(retryAt, currentLanguage, { rounding: 'ceil' })
+  function formatRetryTime(retryAt: Date, now = new Date()): string {
+    // round up, an early retry would be rejected again. whole seconds, because luxon
+    // shows less than one second as "in 0 seconds" even when rounding up
+    const seconds = Math.ceil((retryAt.getTime() - now.getTime()) / 1000)
+    return formatRelativeDateFromJSDate(retryAt, currentLanguage, {
+      rounding: 'ceil',
+      base: DateTime.fromJSDate(retryAt).minus({ seconds })
+    })
   }
 
-  function getRateLimitMessage(retryAt: Date | undefined): string {
+  function getRateLimitMessage(retryAt: Date | undefined, now?: Date): string {
     if (!retryAt) {
       return $gettext('Too many new invitations were requested. Please try again later.')
     }
     return $gettext('Too many new invitations were requested. Please try again %{time}.', {
-      time: formatRetryTime(retryAt)
+      time: formatRetryTime(retryAt, now)
     })
   }
 

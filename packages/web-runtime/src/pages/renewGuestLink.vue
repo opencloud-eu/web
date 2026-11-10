@@ -12,6 +12,7 @@
         appearance="filled"
         size="large"
         class="w-full p-2"
+        :disabled="isRetryBlocked"
         data-testid="retry-button"
         @click="retry"
       >
@@ -43,8 +44,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
+import { useIntervalFn } from '@vueuse/core'
 import { useGettext } from 'vue3-gettext'
 import { call } from '@opencloud-eu/web-client'
 import { GuestLinkErrorErrorTypeEnum } from '@opencloud-eu/web-client/graph/generated'
@@ -114,6 +116,25 @@ const isRateLimited = computed(
 )
 const canRetry = computed(() => unref(isRetryable) || unref(isRateLimited))
 
+// refreshed every second while rate limited, so the wait time counts down
+const currentTime = ref(Date.now())
+// an early retry would be rejected again
+const isRetryBlocked = computed(
+  () => unref(isRateLimited) && unref(renewRetryAt)?.getTime() > unref(currentTime)
+)
+
+const { pause: stopRateLimitTimer, resume: startRateLimitTimer } = useIntervalFn(
+  () => {
+    currentTime.value = Date.now()
+    if (!unref(isRetryBlocked)) {
+      stopRateLimitTimer()
+    }
+  },
+  1000,
+  { immediate: false, immediateCallback: true }
+)
+watch(renewRetryAt, () => startRateLimitTimer())
+
 const errorMessage = computed(() => {
   if (unref(resumeErrorType)) {
     if (unref(isRetryable)) {
@@ -128,7 +149,10 @@ const errorMessage = computed(() => {
     return $gettext('A new invitation could not be requested. Please try again later.')
   }
   if (unref(isRateLimited)) {
-    return getRateLimitMessage(unref(renewRetryAt))
+    if (!unref(isRetryBlocked)) {
+      return getRateLimitMessage(undefined)
+    }
+    return getRateLimitMessage(unref(renewRetryAt), new Date(unref(currentTime)))
   }
   return (
     getShareErrorMessage(unref(renewErrorType)) ||
