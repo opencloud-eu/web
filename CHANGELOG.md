@@ -14,6 +14,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: escape link and image targets and titles when saving markdown [[#4316](https://github.com/opencloud-eu/web/pull/4316)]
 - fix: use object-cover for space overview images [[#4413](https://github.com/opencloud-eu/web/pull/4413)]
 - fix: don't select a row when its link starts a navigation [[#4408](https://github.com/opencloud-eu/web/pull/4408)]
 - fix: wrap long values in share access details [[#4382](https://github.com/opencloud-eu/web/pull/4382)]
