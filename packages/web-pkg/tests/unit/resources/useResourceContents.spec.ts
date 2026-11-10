@@ -106,6 +106,20 @@ describe('resourceContents', () => {
       })
     })
   })
+  it('should summarize the given resources instead of the ones of the store', () => {
+    getWrapper({
+      resources: [
+        mock<Resource>({ isFolder: false, size: 3, type: 'file', name: 'file1' }),
+        mock<Resource>({ isFolder: true, type: 'folder', name: 'folder1' })
+      ],
+      options: {
+        resources: [mock<Resource>({ isFolder: false, size: 5, type: 'file', name: 'file2' })]
+      },
+      setup: ({ resourceContentsText }) => {
+        expect(unref(resourceContentsText)).toBe('1 item with 5 B in total (1 file, 0 folders)')
+      }
+    })
+  })
   it('should sum up the resources instead of using the possibly stale size of the current folder', () => {
     getWrapper({
       currentFolder: mock<Resource>({ size: 3 }),
@@ -176,12 +190,14 @@ function getWrapper({
   currentRouteName = 'files-spaces-generic',
   currentFolder = null,
   resources = [],
+  options = {},
   setup
 }: {
   areHiddenFilesShown?: boolean
   currentFolder?: Resource
   currentRouteName?: string
   resources: Resource[]
+  options?: Parameters<typeof useResourceContents>[0]
   setup: (instance: ReturnType<typeof useResourceContents>) => void
 }) {
   const mocks = {
@@ -193,7 +209,7 @@ function getWrapper({
   return {
     wrapper: getComposableWrapper(
       () => {
-        const instance = useResourceContents()
+        const instance = useResourceContents(options)
         setup(instance)
       },
       {

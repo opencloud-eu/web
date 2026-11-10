@@ -87,7 +87,12 @@
             <oc-icon :name="'arrow-' + (showMore ? 'up' : 'down') + '-s'" fill-type="line" />
           </oc-button>
         </div>
-        <list-info v-else class="w-full my-2" />
+        <list-info
+          v-else
+          class="w-full my-2"
+          :resources="tabItems"
+          :matching-count="matchingCount"
+        />
       </template>
     </component>
   </div>
@@ -130,7 +135,9 @@ const {
   viewMode,
   viewSize,
   sortFields,
-  term = ''
+  term = '',
+  tabItems = undefined,
+  matchingCount = undefined
 } = defineProps<{
   title: string
   items: IncomingShareResource[]
@@ -156,6 +163,14 @@ const {
    * The filter term whose occurrences get highlighted in the resource names.
    */
   term?: string
+  /**
+   * All shares of the current tab, regardless of the search term and the filters.
+   */
+  tabItems?: IncomingShareResource[]
+  /**
+   * Number of shares matching an active search or filter. Leave undefined if none is active.
+   */
+  matchingCount?: number
 }>()
 
 const { $gettext } = useGettext()

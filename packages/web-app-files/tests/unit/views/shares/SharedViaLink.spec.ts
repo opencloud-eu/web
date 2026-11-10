@@ -93,6 +93,24 @@ describe('SharedViaLink view', () => {
     })
   })
 
+  describe('matching count', () => {
+    const files = [
+      mock<OutgoingShareResource>({ name: 'share1' }),
+      mock<OutgoingShareResource>({ name: 'share2' })
+    ]
+
+    it('is undefined without search', () => {
+      const { wrapper } = getMountedWrapper({ files })
+      expect((wrapper.vm as any).matchingCount).toBeUndefined()
+    })
+    it('counts the shares matching the search', async () => {
+      const { wrapper } = getMountedWrapper({ files })
+      ;(wrapper.vm as any).filterTerm = 'share1'
+      await wrapper.vm.$nextTick()
+      expect((wrapper.vm as any).matchingCount).toBe(1)
+    })
+  })
+
   describe('resource field updates', () => {
     async function setup() {
       const paginatedResources = ref([
