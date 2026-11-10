@@ -1,6 +1,6 @@
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, ShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { RouteLocation } from '@opencloud-eu/web-test-helpers'
 import { ApplicationFileExtension } from '@opencloud-eu/web-pkg'
@@ -46,6 +46,33 @@ describe('useFileActionsCreateNewFile', () => {
           expect(dispatchModal).toHaveBeenCalled()
         }
       })
+    })
+  })
+
+  describe('creating a file', () => {
+    it('adds the remoteItemId if the current space is a share space', async () => {
+      const space = mock<ShareSpaceResource>({ id: '1', driveType: 'share' })
+      let instance: ReturnType<typeof useFileActionsCreateNewFile>
+      getWrapper({
+        space,
+        fileExtensions: [
+          mock<ApplicationFileExtension>({
+            app: 'text-editor',
+            extension: '.txt',
+            createFileHandler: undefined,
+            newFileMenu: { menuTitle: vi.fn() }
+          })
+        ],
+        setup: (i) => (instance = i)
+      })
+
+      await unref(instance.actions)[0].handler({ space, resources: [] })
+      const { dispatchModal } = useModals()
+      await vi.mocked(dispatchModal).mock.calls[0][0].onConfirm('new.txt')
+
+      expect(useResourcesStore().upsertResource).toHaveBeenCalledWith(
+        expect.objectContaining({ remoteItemId: '1' })
+      )
     })
   })
 
