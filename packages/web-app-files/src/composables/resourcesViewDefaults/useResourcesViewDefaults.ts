@@ -1,15 +1,19 @@
-import { nextTick, computed, unref, Ref } from 'vue'
+import { nextTick, computed, unref, Ref, watch, MaybeRef } from 'vue'
 import { fileList } from '../../helpers/ui'
 import {
   usePagination,
+  useInfiniteScroll,
   useSort,
   SortField,
+  PaginationConstants,
   useResourcesStore,
   folderService,
   useExtensionRegistry,
   ExtensionPoint,
   FolderViewExtension,
-  FolderView
+  FolderView,
+  useRouter,
+  useRouteQueryPersisted
 } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
 import {
@@ -47,6 +51,16 @@ interface ResourcesViewDefaultsOptions<T, U extends any[], R extends Resource = 
    * When folders are sorted first, this applies within the folder and the file group.
    */
   pinFirst?: (resource: R) => boolean
+  /**
+   * Resets the rendered items in infinite scroll mode to one chunk whenever this value
+   * changes, e.g. when the view component is reused to render another folder.
+   */
+  infiniteScrollResetKey?: MaybeRef<unknown>
+  /**
+   * Resets the rendered items in infinite scroll mode to one chunk whenever any of
+   * these values change, e.g. when a filter within the view changes.
+   */
+  infiniteScrollResetOn?: MaybeRef<Array<Ref<unknown> | (() => unknown)>>
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
@@ -61,6 +75,12 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   paginatedResources: Ref<T[]>
   paginationPages: ReadOnlyRef<number>
   paginationPage: ReadOnlyRef<number>
+  /** Whether the items per page selector is set to infinite scrolling. */
+  isInfiniteScrollEnabled: ReadOnlyRef<boolean>
+  /** Whether the complete list is rendered already (infinite scroll mode only). */
+  allLoaded: ReadOnlyRef<boolean>
+  /** Appends the next item chunk to the rendered items (infinite scroll mode only). */
+  loadMore(): void
   handleSort({ sortBy, sortDir }: { sortBy: string; sortDir: SortDir }): void
   sortBy: ReadOnlyRef<string>
   sortDir: ReadOnlyRef<SortDir>
@@ -146,11 +166,96 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     foldersFirst: computed(() => resourcesStore.areFoldersSortedFirst),
     pinFirst: options.pinFirst
   })
+  const router = useRouter()
+  const perPageSelection = useRouteQueryPersisted({
+    name: PaginationConstants.perPageQueryName,
+    defaultValue: PaginationConstants.perPageDefault,
+    storagePrefix: 'files'
+  })
+  const isInfiniteScrollEnabled = computed(
+    () => queryItemAsString(unref(perPageSelection)) === PaginationConstants.infiniteScrollValue
+  )
+
   const {
-    items: paginatedResources,
+    items: legacyPaginatedItems,
     total: paginationPages,
     page: paginationPage
-  } = usePagination<T>({ items, perPageStoragePrefix: 'files' })
+  } = usePagination<T>({
+    items,
+    perPageStoragePrefix: 'files',
+    enabled: computed(() => !unref(isInfiniteScrollEnabled))
+  })
+
+  const {
+    items: infiniteScrollItems,
+    renderedCount,
+    total: infiniteScrollTotal,
+    allLoaded,
+    loadMore
+  } = useInfiniteScroll<T>({
+    items,
+    enabled: isInfiniteScrollEnabled,
+    resetKey: options.infiniteScrollResetKey,
+    resetOn: options.infiniteScrollResetOn
+  })
+
+  const paginatedResources = computed(() =>
+    unref(isInfiniteScrollEnabled) ? unref(infiniteScrollItems) : unref(legacyPaginatedItems)
+  )
+
+  // whether a legacy `?page=` param was already honored in this view
+  let legacyPageHandled = false
+  // routing all page writes through the same hook keeps them serialized
+  const pageQuery = useRouteQuery('page')
+
+  watch(perPageSelection, (newVal, oldVal) => {
+    const newSelection = queryItemAsString(unref(newVal))
+    const oldSelection = queryItemAsString(unref(oldVal))
+    const isInfinite = (selection: string) => selection === PaginationConstants.infiniteScrollValue
+
+    if (isInfinite(newSelection) && !isInfinite(oldSelection)) {
+      // handing over from numbered pagination: keep rendering everything
+      // the user had already scrolled to. The render count then already covers
+      // the visible part, so the legacy page param must not expand further.
+      legacyPageHandled = true
+      const page = parseInt(queryItemAsString(unref(router.currentRoute).query.page)) || 1
+      const wasPerPage = parseInt(oldSelection) || parseInt(PaginationConstants.perPageDefault)
+      renderedCount.value = Math.max(unref(renderedCount), page * wasPerPage)
+    }
+
+    if (!isInfinite(newSelection) && isInfinite(oldSelection)) {
+      // handing over to numbered pagination: write back the equivalent last-viewed
+      // page (ceil keeps the last viewed chunk visible instead of an empty boundary)
+      const perPage = parseInt(newSelection) || parseInt(PaginationConstants.perPageDefault)
+      const page = Math.max(1, Math.ceil(unref(renderedCount) / perPage))
+      pageQuery.value = String(page)
+    }
+  })
+
+  watch(
+    isInfiniteScrollEnabled,
+    (isInfiniteScroll) => {
+      // legacy deep links that carry ?page=N still point to the resource the
+      // user wants to see: honor them once, then strip the superfluous param
+      if (!isInfiniteScroll) {
+        legacyPageHandled = true
+        return
+      }
+      if (legacyPageHandled) {
+        return
+      }
+      legacyPageHandled = true
+      const page = parseInt(queryItemAsString(unref(router.currentRoute).query.page))
+      if (page > 1) {
+        renderedCount.value = Math.max(
+          unref(renderedCount),
+          Math.min(page * PaginationConstants.infiniteScrollChunk, unref(infiniteScrollTotal))
+        )
+        pageQuery.value = undefined
+      }
+    },
+    { immediate: true }
+  )
 
   const scrollToParam = useRouteQuery('scrollTo')
   function resetScrollToParam() {
@@ -227,6 +332,9 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     paginatedResources,
     paginationPages,
     paginationPage,
+    isInfiniteScrollEnabled,
+    allLoaded,
+    loadMore,
     handleSort,
     sortBy,
     sortDir,

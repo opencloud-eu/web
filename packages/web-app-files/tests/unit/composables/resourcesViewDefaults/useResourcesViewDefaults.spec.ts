@@ -1,7 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
 import { Task, useTask } from 'vue-concurrency'
-import { unref } from 'vue'
+import { nextTick, Ref, ref, unref } from 'vue'
 import { Router } from 'vue-router'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
@@ -194,6 +194,111 @@ describe('useResourcesViewDefaults', () => {
     })
   })
 
+  describe('infinite scroll mode', () => {
+    const resources = Array.from(
+      { length: 250 },
+      (_, i) => ({ id: `${i + 1}`, name: `file-${i + 1}`, type: 'file' }) as Resource
+    )
+    const routes = [{ path: '/files', component: {} }]
+
+    const mountWithRoute = async (url: string) => {
+      const $router = createRouter({ routes })
+      await $router.push(url)
+      const { wrapper, result } = getWrapper({ router: $router, resources })
+      // let the pending navigation writes from the initial mount settle
+      await flushPromises()
+      return { $router, result, wrapper }
+    }
+
+    it('renders one chunk cumulatively when infinite scrolling is enabled', async () => {
+      const { result } = await mountWithRoute('/files?items-per-page=∞')
+      expect(unref(result.isInfiniteScrollEnabled)).toBe(true)
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(0, 100))
+      expect(unref(result.allLoaded)).toBe(false)
+    })
+    it('keeps numbered pagination for numeric items per page values', async () => {
+      const { result } = await mountWithRoute('/files?page=2&items-per-page=100')
+      expect(unref(result.isInfiniteScrollEnabled)).toBe(false)
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(100, 200))
+    })
+    it('appends chunks via loadMore until everything is rendered', async () => {
+      const { result } = await mountWithRoute('/files?items-per-page=∞')
+
+      result.loadMore()
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(0, 200))
+
+      result.loadMore()
+      expect(unref(result.paginatedResources)).toEqual(resources)
+      expect(unref(result.allLoaded)).toBe(true)
+    })
+    it('honors a legacy page param once and strips it from the url', async () => {
+      const { $router, result } = await mountWithRoute('/files?page=3&items-per-page=∞')
+
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+      expect(unref(result.paginatedResources)).toEqual(resources)
+      expect(unref(result.allLoaded)).toBe(true)
+    })
+    it('keeps the rendered items when handing over from numbered pagination', async () => {
+      const { $router, result } = await mountWithRoute('/files?page=3&items-per-page=50')
+
+      await $router.push('/files?page=3&items-per-page=∞')
+      await flushPromises()
+
+      expect(unref(result.isInfiniteScrollEnabled)).toBe(true)
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(0, 150))
+    })
+    it('writes the equivalent page back when handing over to numbered pagination', async () => {
+      const { $router, result } = await mountWithRoute('/files?items-per-page=∞')
+
+      result.loadMore()
+      result.loadMore()
+      expect(unref(result.paginatedResources)).toEqual(resources)
+
+      await $router.push('/files?items-per-page=50')
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBe('5')
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(200, 250))
+    })
+    it('resets the rendered items when the reset key changes', async () => {
+      const $router = createRouter({ routes })
+      await $router.push('/files?items-per-page=∞')
+      const infiniteScrollResetKey = ref('folder-1')
+      const { result } = getWrapper({
+        router: $router,
+        resources,
+        infiniteScrollResetKey
+      })
+
+      result.loadMore()
+      expect(unref(result.paginatedResources).length).toBe(200)
+
+      infiniteScrollResetKey.value = 'folder-2'
+      await nextTick()
+
+      expect(unref(result.paginatedResources).length).toBe(100)
+    })
+    it('resets the rendered items when a resetOn value changes', async () => {
+      const $router = createRouter({ routes })
+      await $router.push('/files?items-per-page=∞')
+      const filterTerm = ref('')
+      const { result } = getWrapper({
+        router: $router,
+        resources,
+        infiniteScrollResetOn: [filterTerm]
+      })
+
+      result.loadMore()
+      expect(unref(result.paginatedResources).length).toBe(200)
+
+      filterTerm.value = 'test'
+      await nextTick()
+
+      expect(unref(result.paginatedResources).length).toBe(100)
+    })
+  })
   describe('loadResources', () => {
     it('resolves when the load gets canceled by a newer one', async () => {
       const loadResourcesTask = useTask(function* () {
@@ -224,7 +329,9 @@ function getWrapper({
   filterResources,
   sortFields,
   router,
-  loadResourcesTask = mock<Task<unknown, unknown[]>>()
+  loadResourcesTask = mock<Task<unknown, unknown[]>>(),
+  infiniteScrollResetKey = undefined,
+  infiniteScrollResetOn = undefined
 }: {
   query?: Record<string, string>
   resources?: Resource[]
@@ -232,6 +339,8 @@ function getWrapper({
   filterResources?: (resources: Resource[]) => Resource[]
   sortFields?: SortField[]
   router?: Router
+  infiniteScrollResetKey?: Ref<unknown>
+  infiniteScrollResetOn?: Array<Ref<unknown>>
 } = {}) {
   const mocks = {
     ...defaultComponentMocks({
@@ -247,7 +356,9 @@ function getWrapper({
         folderViewExtensionPoint: mock<ExtensionPoint<FolderViewExtension>>(),
         loadResourcesTask,
         filterResources,
-        sortFields
+        sortFields,
+        infiniteScrollResetKey,
+        infiniteScrollResetOn
       })
       return result
     },
