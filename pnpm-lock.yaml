@@ -223,8 +223,8 @@ importers:
         specifier: ^5.0.0
         version: 5.1.0(@types/node@25.9.9)(@vitest/coverage-v8@5.1.0)(happy-dom@21.0.4)(vite@8.3.6(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.1))
       vitest-mock-extended:
-        specifier: 5.1.1
-        version: 5.1.1(typescript@6.0.3)(vitest@5.1.0)
+        specifier: 6.0.0
+        version: 6.0.0(typescript@6.0.3)(vitest@5.1.0)
       vue:
         specifier: ^3.5.31
         version: 3.5.45(typescript@6.0.3)
@@ -1223,8 +1223,8 @@ importers:
         specifier: ^4.0.0
         version: 4.1.0(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.45(typescript@6.0.3))
       vitest-mock-extended:
-        specifier: ^5.0.0
-        version: 5.1.1(typescript@6.0.3)(vitest@5.1.0)
+        specifier: ^6.0.0
+        version: 6.0.0(typescript@6.0.3)(vitest@5.1.0)
       vue:
         specifier: ^3.5.10
         version: 3.5.45(typescript@6.0.3)
@@ -5318,8 +5318,8 @@ packages:
       postcss:
         optional: true
 
-  vitest-mock-extended@5.1.1:
-    resolution: {integrity: sha512-k5Ji2+t4+nsdepXeakCkilyKydtgaULtP0HsjwQGIZsYr5hDTqrwCtC0+Sh0YBKUS7cY/Wxplf7SVjcZstTIMQ==}
+  vitest-mock-extended@6.0.0:
+    resolution: {integrity: sha512-hVdWq7UDWTTfhcgQIrzZ2V8P3JkWugTAO3qHhC8wZYDXFEZHlrvDdew4gkPCbRV2rdEjhwqvKcNx6gZRTLpjXg==}
     peerDependencies:
       typescript: 3.x || 4.x || 5.x || 6.x || 7.x
       vitest: '>=4.0.0'
@@ -9839,7 +9839,7 @@ snapshots:
       - universal-cookie
       - yaml
 
-  vitest-mock-extended@5.1.1(typescript@6.0.3)(vitest@5.1.0):
+  vitest-mock-extended@6.0.0(typescript@6.0.3)(vitest@5.1.0):
     dependencies:
       ts-essentials: 10.2.1(typescript@6.0.3)
       typescript: 6.0.3
