@@ -14,6 +14,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: only cancel the embedded picker on Escape without a selection [[#4399](https://github.com/opencloud-eu/web/pull/4399)]
+- fix: count down the rate limit wait on the guest link renew page [[#4387](https://github.com/opencloud-eu/web/pull/4387)]
 - fix: support card wrap buttons when they exceed the card [[#4415](https://github.com/opencloud-eu/web/pull/4415)]
 - fix: pick the target folder when saving or exporting from Collabora [[#4374](https://github.com/opencloud-eu/web/pull/4374)]
 - fix: don't render a revoked space image url after the image changed [[#4404](https://github.com/opencloud-eu/web/pull/4404)]
