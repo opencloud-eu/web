@@ -68,7 +68,7 @@ describe('ViewOptions component', () => {
         })
       )
     })
-    it('does not reset the page when infinite scrolling is selected', () => {
+    it('does not reset the page while handing over to infinite scrolling', () => {
       const perPage = '100'
       const newItemsPerPage = '∞'
       const { wrapper, mocks } = getWrapper({
@@ -79,13 +79,9 @@ describe('ViewOptions component', () => {
       ;(wrapper.vm as any).setItemsPerPage(newItemsPerPage)
       expect(mocks.$router.replace).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: expect.objectContaining({ 'items-per-page': newItemsPerPage })
+          query: expect.objectContaining({ 'items-per-page': newItemsPerPage, page: '2' })
         })
       )
-      const replaceArg = mocks.$router.replace.mock.calls[0][0] as unknown as {
-        query: Record<string, string>
-      }
-      expect(replaceArg.query).not.toHaveProperty('page')
     })
     it('offers the infinite scrolling option when enabled', () => {
       const { wrapper } = getWrapper({ props: { hasInfiniteScroll: true } })
@@ -271,7 +267,11 @@ function getWrapper({
 
   const mocks = {
     ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({ name: 'files', path: '/files' })
+      currentRoute: mock<RouteLocation>({
+        name: 'files',
+        path: '/files',
+        query: { page: currentPage }
+      })
     }),
     viewModeQueryMock,
     tileSizeQueryMock

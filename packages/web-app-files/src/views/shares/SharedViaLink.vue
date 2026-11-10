@@ -178,6 +178,9 @@ const { triggerDefaultAction } = useFileActions()
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
 watch(filterTerm, async () => {
+  if (unref(isInfiniteScrollEnabled)) {
+    return
+  }
   await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
 

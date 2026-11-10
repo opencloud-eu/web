@@ -12,8 +12,10 @@ Feature: check infinite scrolling in the files views
     When "Alice" changes the items per page to "∞"
     And "Alice" should not see the pagination in the files list
     And "Alice" should see 100 resources in the files list
+    And "Alice" should not see the page parameter in the files view url
     And "Alice" scrolls down the files list
     And "Alice" should see 120 resources in the files list
+    And "Alice" should not see the page parameter in the files view url
     # everything fits, so the load indicator disappears
     And "Alice" scrolls down the files list until all items are loaded
     And "Alice" should see 120 resources in the files list
@@ -21,6 +23,7 @@ Feature: check infinite scrolling in the files views
     And "Alice" changes the items per page to "100"
     And "Alice" should see the pagination in the files list
     And "Alice" should see 20 resources in the files list
+    And "Alice" should see the page parameter be "2"
     And "Alice" logs out
 
   Scenario: infinite scrolling in the trashbin

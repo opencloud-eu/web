@@ -185,7 +185,7 @@ const {
 } = useResourcesViewDefaults<SpaceResource, any, any[]>({
   folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint,
   filterResources: filter,
-  infiniteScrollResetOn: [filterTerm],
+  infiniteScrollResetOn: [filterTerm, areEmptyTrashesShown],
   sortFields: [
     ...translateSortFields(
       spaceTilesSortFields.filter(({ name }) => name === 'name'),

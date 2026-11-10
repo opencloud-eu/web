@@ -359,6 +359,14 @@ export class Resource {
     await po.expectPageNumberToBeVisible({ page: this.#page })
   }
 
+  async expectNoPageParam(): Promise<void> {
+    await po.expectNoPageParam({ page: this.#page })
+  }
+
+  async expectPageParamToBe(args: { value: string }): Promise<void> {
+    await po.expectPageParamToBe({ page: this.#page, value: args.value })
+  }
+
   async scrollDownListToEnd(): Promise<void> {
     await po.scrollDownListToEnd({ page: this.#page })
   }

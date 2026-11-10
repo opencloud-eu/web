@@ -242,6 +242,12 @@ const { initResourceList, clearResourceList, setAncestorMetaData } = resourcesSt
 const { totalResourcesCount, areHiddenFilesShown } = storeToRefs(resourcesStore)
 
 const searchTermQuery = useRouteQuery('term')
+const tagParam = useRouteQuery('q_tags')
+const lastModifiedParam = useRouteQuery('q_lastModified')
+const mediaTypeParam = useRouteQuery('q_mediaType')
+const titleOnlyParam = useRouteQuery('q_titleOnly')
+const scopeParam = useRouteQuery('scope')
+const useScopeParam = useRouteQuery('useScope')
 
 const { triggerDefaultAction } = useFileActions()
 
@@ -268,7 +274,15 @@ const {
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<SearchResource, any, any[]>({
   folderViewExtensionPoint: folderViewsSearchExtensionPoint,
-  infiniteScrollResetOn: [searchTermQuery]
+  infiniteScrollResetOn: [
+    searchTermQuery,
+    tagParam,
+    lastModifiedParam,
+    mediaTypeParam,
+    titleOnlyParam,
+    scopeParam,
+    useScopeParam
+  ]
 })
 
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
@@ -283,11 +297,7 @@ const searchTerm = computed(() => {
 
 const availableTags = ref<Tag[]>([])
 
-const tagParam = useRouteQuery('q_tags')
 const selectedTags = computed(() => queryItemAsString(unref(tagParam))?.split('+') || [])
-const lastModifiedParam = useRouteQuery('q_lastModified')
-const mediaTypeParam = useRouteQuery('q_mediaType')
-const titleOnlyParam = useRouteQuery('q_titleOnly')
 
 const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enabled)
 

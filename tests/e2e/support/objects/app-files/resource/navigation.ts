@@ -237,6 +237,24 @@ export const expectPageNumberToBeVisible = async ({ page }: { page: Page }): Pro
   await expect(page.locator(filesPaginationNavSelector)).toBeVisible()
 }
 
+export const expectNoPageParam = async ({ page }: { page: Page }): Promise<void> => {
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get('page'), { timeout: 5000, intervals: [200] })
+    .toBeNull()
+}
+
+export const expectPageParamToBe = async ({
+  page,
+  value
+}: {
+  page: Page
+  value: string
+}): Promise<void> => {
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get('page'), { timeout: 5000, intervals: [200] })
+    .toBe(value)
+}
+
 export const scrollDownListToEnd = async ({ page }: { page: Page }): Promise<void> => {
   await page.locator(filesViewWrapperSelector).evaluate((viewWrapper: HTMLElement) => {
     viewWrapper.scrollTop = viewWrapper.scrollHeight

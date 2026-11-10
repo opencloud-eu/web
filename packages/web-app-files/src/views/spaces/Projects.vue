@@ -265,7 +265,7 @@ const {
   loadResourcesTask,
   folderViewExtensionPoint: folderViewsProjectSpacesExtensionPoint,
   filterResources: filter,
-  infiniteScrollResetOn: [filterTerm],
+  infiniteScrollResetOn: [filterTerm, areDisabledSpacesShown],
   sortFields: translateSortFields(spaceTilesSortFields, language)
 })
 
@@ -313,6 +313,9 @@ const batchActionsLoading = computed(() => {
 })
 
 watch(filterTerm, async () => {
+  if (unref(isInfiniteScrollEnabled)) {
+    return
+  }
   await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
 

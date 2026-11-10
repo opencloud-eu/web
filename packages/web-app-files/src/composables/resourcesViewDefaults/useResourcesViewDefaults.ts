@@ -203,10 +203,22 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     unref(isInfiniteScrollEnabled) ? unref(infiniteScrollItems) : unref(legacyPaginatedItems)
   )
 
-  // whether a legacy `?page=` param was already honored in this view
-  let legacyPageHandled = false
   // routing all page writes through the same hook keeps them serialized
   const pageQuery = useRouteQuery('page')
+
+  /**
+   * The number of items a legacy `?page=N` deep link asked for. The list can still
+   * be empty when the link is opened, so the target is kept as the number of items
+   * and applied once resources are available, instead of being clamped to the
+   * current total right away.
+   */
+  let pendingLegacyPageCount: number | null = null
+
+  const clearPageQuery = () => {
+    if (queryItemAsString(unref(router.currentRoute).query.page)) {
+      pageQuery.value = undefined
+    }
+  }
 
   watch(perPageSelection, (newVal, oldVal) => {
     const newSelection = queryItemAsString(unref(newVal))
@@ -214,18 +226,19 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     const isInfinite = (selection: string) => selection === PaginationConstants.infiniteScrollValue
 
     if (isInfinite(newSelection) && !isInfinite(oldSelection)) {
-      // handing over from numbered pagination: keep rendering everything
-      // the user had already scrolled to. The render count then already covers
-      // the visible part, so the legacy page param must not expand further.
-      legacyPageHandled = true
+      // handing over from numbered pagination: keep rendering everything the user
+      // had already scrolled to, then strip the no longer relevant page param
       const page = parseInt(queryItemAsString(unref(router.currentRoute).query.page)) || 1
       const wasPerPage = parseInt(oldSelection) || parseInt(PaginationConstants.perPageDefault)
       renderedCount.value = Math.max(unref(renderedCount), page * wasPerPage)
+      clearPageQuery()
+      pendingLegacyPageCount = null
     }
 
     if (!isInfinite(newSelection) && isInfinite(oldSelection)) {
       // handing over to numbered pagination: write back the equivalent last-viewed
       // page (ceil keeps the last viewed chunk visible instead of an empty boundary)
+      pendingLegacyPageCount = null
       const perPage = parseInt(newSelection) || parseInt(PaginationConstants.perPageDefault)
       const page = Math.max(1, Math.ceil(unref(renderedCount) / perPage))
       pageQuery.value = String(page)
@@ -235,26 +248,37 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   watch(
     isInfiniteScrollEnabled,
     (isInfiniteScroll) => {
-      // legacy deep links that carry ?page=N still point to the resource the
-      // user wants to see: honor them once, then strip the superfluous param
-      if (!isInfiniteScroll) {
-        legacyPageHandled = true
-        return
-      }
-      if (legacyPageHandled) {
-        return
-      }
-      legacyPageHandled = true
-      const page = parseInt(queryItemAsString(unref(router.currentRoute).query.page))
-      if (page > 1) {
-        renderedCount.value = Math.max(
-          unref(renderedCount),
-          Math.min(page * PaginationConstants.infiniteScrollChunk, unref(infiniteScrollTotal))
-        )
-        pageQuery.value = undefined
+      // legacy deep links that carry ?page=N still point to the resource the user
+      // wants to see: retain how many items they refer to and strip the param,
+      // which has no meaning in infinite scroll mode
+      pendingLegacyPageCount = null
+      if (isInfiniteScroll) {
+        const page = parseInt(queryItemAsString(unref(router.currentRoute).query.page)) || 1
+        if (page > 1) {
+          pendingLegacyPageCount = page * PaginationConstants.infiniteScrollChunk
+        }
+        clearPageQuery()
       }
     },
     { immediate: true }
+  )
+
+  watch(
+    () => unref(infiniteScrollTotal),
+    (total) => {
+      if (pendingLegacyPageCount === null || total <= 0) {
+        return
+      }
+      // the rendered count may only grow, so an earlier mode switch is not undone
+      renderedCount.value = Math.max(unref(renderedCount), pendingLegacyPageCount)
+      pendingLegacyPageCount = null
+    },
+    {
+      // post flush so that a resetKey that is initialized together with the resources
+      // (e.g. the current folder) resets first, before the legacy target is applied
+      immediate: true,
+      flush: 'post'
+    }
   )
 
   const scrollToParam = useRouteQuery('scrollTo')

@@ -277,7 +277,8 @@ const {
   isResourceInSelection,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<Resource, any, any[]>({
-  folderViewExtensionPoint: folderViewsFavoritesExtensionPoint
+  folderViewExtensionPoint: folderViewsFavoritesExtensionPoint,
+  infiniteScrollResetOn: [lastModifiedParam, mediaTypeParam, tagParam]
 })
 
 const keyActions = useKeyboardActions()

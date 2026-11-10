@@ -201,10 +201,10 @@ describe('useResourcesViewDefaults', () => {
     )
     const routes = [{ path: '/files', component: {} }]
 
-    const mountWithRoute = async (url: string) => {
+    const mountWithRoute = async (url: string, list: Resource[] = resources) => {
       const $router = createRouter({ routes })
       await $router.push(url)
-      const { wrapper, result } = getWrapper({ router: $router, resources })
+      const { wrapper, result } = getWrapper({ router: $router, resources: list })
       // let the pending navigation writes from the initial mount settle
       await flushPromises()
       return { $router, result, wrapper }
@@ -240,12 +240,63 @@ describe('useResourcesViewDefaults', () => {
       expect(unref(result.paginatedResources)).toEqual(resources)
       expect(unref(result.allLoaded)).toBe(true)
     })
+    it('honors a legacy page param after resources have been loaded', async () => {
+      const $router = createRouter({ routes })
+      await $router.push('/files?page=3&items-per-page=∞')
+      const initialResources: Resource[] = []
+      const { result } = getWrapper({ router: $router, resources: initialResources })
+      await flushPromises()
+
+      useResourcesStore().initResourceList({ currentFolder: null, resources })
+      await nextTick()
+
+      expect(unref(result.paginatedResources)).toEqual(resources)
+      expect(unref(result.allLoaded)).toBe(true)
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+    })
+    it('honors a legacy page param across an asynchronously changing reset key', async () => {
+      const $router = createRouter({ routes })
+      await $router.push('/files?page=3&items-per-page=∞')
+      const infiniteScrollResetKey = ref<unknown>(undefined)
+      const { result } = getWrapper({
+        router: $router,
+        resources: [] as Resource[],
+        infiniteScrollResetKey
+      })
+      await flushPromises()
+
+      useResourcesStore().initResourceList({
+        currentFolder: { id: 'folder-1' } as unknown as Resource,
+        resources
+      })
+      infiniteScrollResetKey.value = 'folder-1'
+      await nextTick()
+
+      expect(unref(result.paginatedResources)).toEqual(resources)
+      expect(unref(result.allLoaded)).toBe(true)
+    })
+    it('honors a legacy page param for an initially empty list', async () => {
+      const { $router, result } = await mountWithRoute('/files?page=3&items-per-page=∞', [])
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+      expect(unref(result.paginatedResources)).toEqual([])
+      expect(unref(result.allLoaded)).toBe(true)
+    })
+    it('strips a legacy page param of 1', async () => {
+      const { $router, result } = await mountWithRoute('/files?page=1&items-per-page=∞')
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(0, 100))
+    })
     it('keeps the rendered items when handing over from numbered pagination', async () => {
       const { $router, result } = await mountWithRoute('/files?page=3&items-per-page=50')
 
       await $router.push('/files?page=3&items-per-page=∞')
       await flushPromises()
 
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
       expect(unref(result.isInfiniteScrollEnabled)).toBe(true)
       expect(unref(result.paginatedResources)).toEqual(resources.slice(0, 150))
     })
@@ -296,6 +347,31 @@ describe('useResourcesViewDefaults', () => {
       filterTerm.value = 'test'
       await nextTick()
 
+      expect(unref(result.paginatedResources).length).toBe(100)
+    })
+    it('resets the rendered items when any of several resetOn values changes', async () => {
+      const $router = createRouter({ routes })
+      await $router.push('/files?items-per-page=∞')
+      const filterTerm = ref('')
+      const shareType = ref('')
+      const { result } = getWrapper({
+        router: $router,
+        resources,
+        infiniteScrollResetOn: [filterTerm, shareType]
+      })
+
+      result.loadMore()
+      expect(unref(result.paginatedResources).length).toBe(200)
+
+      filterTerm.value = 'test'
+      await nextTick()
+      expect(unref(result.paginatedResources).length).toBe(100)
+
+      result.loadMore()
+      expect(unref(result.paginatedResources).length).toBe(200)
+
+      shareType.value = 'user'
+      await nextTick()
       expect(unref(result.paginatedResources).length).toBe(100)
     })
   })

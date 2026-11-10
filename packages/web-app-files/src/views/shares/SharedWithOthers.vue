@@ -212,7 +212,7 @@ const {
 } = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
   folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint,
   filterResources: filterShares,
-  infiniteScrollResetOn: [filterTerm]
+  infiniteScrollResetOn: [filterTerm, selectedShareTypesQuery]
 })
 
 const { triggerDefaultAction } = useFileActions()
@@ -252,6 +252,9 @@ const showShareTypeFilter = computed(
 )
 
 watch(filterTerm, async () => {
+  if (unref(isInfiniteScrollEnabled)) {
+    return
+  }
   await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
 
