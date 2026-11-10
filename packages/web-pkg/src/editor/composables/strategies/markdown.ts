@@ -17,6 +17,8 @@ import {
   createLinkExtension,
   createTableOfContentsExtension,
   createMarkdownClipboardExtension,
+  escapeImageHtmlAttribute,
+  formatMarkdownLinkTarget,
   Frontmatter,
   HtmlBlock,
   HtmlInline,
@@ -90,12 +92,12 @@ export const useStrategyMarkdown = (
           ]
             .filter(Boolean)
             .join(' ')
-          const titleAttribute = title ? ` title="${title}"` : ''
-          const altAttribute = alt ? ` alt="${alt}"` : ''
-          return `<img src="${src}"${altAttribute}${titleAttribute} ${sizeAttributes} />`
+          const titleAttribute = title ? ` title="${escapeImageHtmlAttribute(title)}"` : ''
+          const altAttribute = alt ? ` alt="${escapeImageHtmlAttribute(alt)}"` : ''
+          return `<img src="${escapeImageHtmlAttribute(src)}"${altAttribute}${titleAttribute} ${sizeAttributes} />`
         }
 
-        return title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`
+        return `![${alt.replace(/[[\]]/g, '\\$&')}](${formatMarkdownLinkTarget(src, title)})`
       }
     }).configure({
       // Markdown images are inline, e.g. next to text or in table cells. As blocks
