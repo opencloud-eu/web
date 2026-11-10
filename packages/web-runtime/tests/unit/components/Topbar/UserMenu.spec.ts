@@ -8,7 +8,7 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Quota } from '@opencloud-eu/web-client/graph/generated'
-import { WebThemeType } from '@opencloud-eu/web-pkg'
+import { AuthServiceInterface, WebThemeType } from '@opencloud-eu/web-pkg'
 import { OcButton } from '@opencloud-eu/design-system/components'
 
 const totalQuota = 1000
@@ -172,7 +172,6 @@ describe('User Menu component', () => {
         wrapper.find('.oc-topbar-guest-avatar .avatar-initials').attributes('data-initials')
       ).toBe('AA')
       expect(wrapper.find('#oc-topbar-account-login').exists()).toBeFalsy()
-      expect(wrapper.find('#oc-topbar-account-logout').exists()).toBeFalsy()
     })
     it('falls back to the guest label and user icon without an email', () => {
       const wrapper = getMountedWrapper({}, noEmail, true, false, true)
@@ -180,6 +179,14 @@ describe('User Menu component', () => {
       expect(wrapper.find('#oc-topbar-account-guest').text()).toBe('Guest')
       expect(wrapper.find('#oc-topbar-account-guest .text-sm').exists()).toBeFalsy()
       expect(wrapper.find('.oc-topbar-guest-avatar').exists()).toBeFalsy()
+    })
+    it('logs the guest out via the logout button', async () => {
+      const { wrapper, mocks } = getWrapper({}, noEmail, true, false, true)
+
+      await wrapper.findComponent<typeof OcButton>('#oc-topbar-account-logout').trigger('click')
+
+      expect(mocks.$authService.logoutGuest).toHaveBeenCalled()
+      expect(mocks.$authService.logoutUser).not.toHaveBeenCalled()
     })
     it('links to account-preferences in the guest context', () => {
       const wrapper = getMountedWrapper({}, noEmail, true, false, true)
@@ -193,7 +200,9 @@ describe('User Menu component', () => {
   })
 })
 
-const getMountedWrapper = (
+const getMountedWrapper = (...args: Parameters<typeof getWrapper>) => getWrapper(...args).wrapper
+
+const getWrapper = (
   quota: Quota,
   userEmail: string,
   noUser = false,
@@ -203,10 +212,11 @@ const getMountedWrapper = (
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ path: '/files', fullPath: '/files' })
-    })
+    }),
+    $authService: mock<AuthServiceInterface>()
   }
 
-  return shallowMount(UserMenu, {
+  const wrapper = shallowMount(UserMenu, {
     global: {
       provide: mocks,
       renderStubDefaultSlot: true,
@@ -258,4 +268,6 @@ const getMountedWrapper = (
       mocks
     }
   })
+
+  return { wrapper, mocks }
 }

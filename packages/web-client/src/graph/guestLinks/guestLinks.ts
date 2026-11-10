@@ -34,6 +34,9 @@ export const GuestLinksFactory = ({
     },
     async renewGuestLink(permissionId, requestOptions) {
       await guestLinksApiFactory.renewGuestLink({ permissionId }, requestOptions)
+    },
+    async logoutGuestLink(requestOptions) {
+      await guestLinksApiFactory.logoutGuestLink(requestOptions)
     }
   }
 }

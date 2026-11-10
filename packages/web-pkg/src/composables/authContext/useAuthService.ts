@@ -11,6 +11,7 @@ export interface AuthServiceInterface {
    */
   renewToken(): Promise<boolean>
   logoutUser(): Promise<void | NavigationFailure>
+  logoutGuest(): Promise<void | NavigationFailure>
   getRefreshToken(): Promise<string>
 }
 
