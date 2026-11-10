@@ -14,6 +14,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: pick up external file updates in a guest's open editor [[#4385](https://github.com/opencloud-eu/web/pull/4385)]
+- fix: keep positioned content inside the sidebar panel body [[#4401](https://github.com/opencloud-eu/web/pull/4401)]
 - fix: only show the office settings to users who can manage fonts [[#4398](https://github.com/opencloud-eu/web/pull/4398)]
 - fix: escape link and image targets and titles when saving markdown [[#4316](https://github.com/opencloud-eu/web/pull/4316)]
 - fix: use object-cover for space overview images [[#4413](https://github.com/opencloud-eu/web/pull/4413)]
