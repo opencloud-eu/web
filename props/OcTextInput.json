@@ -21,9 +21,16 @@
     "type": "string"
   },
   {
+    "name": "preselect",
+    "required": false,
+    "description": "Determines if the value gets selected when the input gets focused before the user interacted with it, e.g. so a suggested name can be typed over right away when a modal opens. Once the user clicked, tapped or typed into it, focus changes keep the browser default.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
     "name": "selectionRange",
     "required": false,
-    "description": "The selection range of the input.",
+    "description": "The part of the value to preselect, also applied whenever it changes. Implies `preselect`.",
     "default": "",
     "type": "[number, number]"
   },
