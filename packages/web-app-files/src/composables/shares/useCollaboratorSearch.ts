@@ -52,15 +52,19 @@ export const useCollaboratorSearch = () => {
     collaborators: CollaboratorAutoCompleteItem[]
   ): CollaboratorAutoCompleteItem[] {
     const trimmedQuery = (query || '').trim()
+    const email = getCanonicalEmail(trimmedQuery)
     if (
       !capabilityStore.sharingGuestLinksEnabled ||
       !can('create-all', 'GuestInvite') ||
-      !EmailValidator.validate(trimmedQuery) ||
-      emailBelongsToAccount(trimmedQuery, collaborators)
+      !email ||
+      emailBelongsToAccount(trimmedQuery, collaborators) ||
+      emailBelongsToAccount(email, collaborators)
     ) {
       return []
     }
-    return [{ id: trimmedQuery, displayName: trimmedQuery, shareType: ShareTypes.guest.value }]
+    return [
+      { id: email, displayName: trimmedQuery.toLowerCase(), shareType: ShareTypes.guest.value }
+    ]
   }
 
   function emailBelongsToAccount(email: string, collaborators: CollaboratorAutoCompleteItem[]) {
@@ -76,6 +80,31 @@ export const useCollaboratorSearch = () => {
   }
 
   return { searchCollaborators, getGuestCandidates }
+}
+
+/**
+ * `email` the way the server stores guest addresses: domain in punycode and
+ * lower-cased. Undefined if it isn't a plain mail address.
+ */
+function getCanonicalEmail(email: string) {
+  const at = email.lastIndexOf('@')
+  const domain = email.slice(at + 1)
+  // the URL parser would drop or reinterpret anything like a port or path
+  if (at < 0 || !/^([a-z0-9.-]|\P{ASCII})+$/iu.test(domain)) {
+    return undefined
+  }
+  let asciiDomain: string
+  try {
+    asciiDomain = new URL(`http://${domain}`).hostname
+  } catch {
+    return undefined
+  }
+  const address = `${email.slice(0, at)}@${asciiDomain}`
+  // the validator doesn't allow `--` in the top-level domain, so punycode ones would fail
+  if (!EmailValidator.validate(address.replace(/\.xn--([a-z0-9-]+)$/i, '.xn$1'))) {
+    return undefined
+  }
+  return address.toLowerCase()
 }
 
 /**
