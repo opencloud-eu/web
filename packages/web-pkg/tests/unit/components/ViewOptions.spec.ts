@@ -68,6 +68,48 @@ describe('ViewOptions component', () => {
         })
       )
     })
+    it('does not reset the page when infinite scrolling is selected', () => {
+      const perPage = '100'
+      const newItemsPerPage = '∞'
+      const { wrapper, mocks } = getWrapper({
+        perPage,
+        currentPage: '2',
+        props: { hasInfiniteScroll: true }
+      })
+      ;(wrapper.vm as any).setItemsPerPage(newItemsPerPage)
+      expect(mocks.$router.replace).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: expect.objectContaining({ 'items-per-page': newItemsPerPage })
+        })
+      )
+      const replaceArg = mocks.$router.replace.mock.calls[0][0] as unknown as {
+        query: Record<string, string>
+      }
+      expect(replaceArg.query).not.toHaveProperty('page')
+    })
+    it('offers the infinite scrolling option when enabled', () => {
+      const { wrapper } = getWrapper({ props: { hasInfiniteScroll: true } })
+      const options = wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props()
+        .options as string[]
+      expect(options).toContain('∞')
+    })
+    it('does not offer the infinite scrolling option when disabled', () => {
+      const { wrapper } = getWrapper()
+      const options = wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props()
+        .options as string[]
+      expect(options).not.toContain('∞')
+    })
+    it('does not offer the infinite scrolling option twice when the options contain it already', () => {
+      const { wrapper } = getWrapper({
+        props: {
+          hasInfiniteScroll: true,
+          paginationOptions: ['20', '50', '100', '250', '500', '∞']
+        }
+      })
+      const options = wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props()
+        .options as string[]
+      expect(options).toEqual(['20', '50', '100', '250', '500', '∞'])
+    })
   })
   describe('hidden files toggle', () => {
     it('does not show when disabled', () => {

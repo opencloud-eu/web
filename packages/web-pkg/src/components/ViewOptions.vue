@@ -57,7 +57,7 @@
             :selected="queryItemAsString(itemsPerPageQuery)"
             data-testid="files-pagination-size"
             :label="$gettext('Items per page')"
-            :options="paginationOptions"
+            :options="paginationOptionsList"
             class="files-pagination-size"
             @change="setItemsPerPage"
           />
@@ -127,6 +127,7 @@ const {
   hasFileExtensions = true,
   hasFoldersFirst = true,
   hasPagination = true,
+  hasInfiniteScroll = false,
   paginationOptions = PaginationConstants.options,
   perPageQueryName = PaginationConstants.perPageQueryName,
   perPageDefault = PaginationConstants.perPageDefault,
@@ -138,6 +139,11 @@ const {
   hasFileExtensions?: boolean
   hasFoldersFirst?: boolean
   hasPagination?: boolean
+  /**
+   * Offers an option that switches the files views to infinite scrolling, which
+   * makes numbered pagination superfluous. Only views that support it may enable it.
+   */
+  hasInfiniteScroll?: boolean
   paginationOptions?: string[]
   perPageQueryName?: string
   perPageDefault?: string
@@ -202,12 +208,21 @@ const viewSizeQuery = unref(hasViewModes)
     })
   : ref<QueryValue>()
 
+const paginationOptionsList = computed(() =>
+  unref(hasInfiniteScroll) &&
+  !unref(paginationOptions).includes(PaginationConstants.infiniteScrollValue)
+    ? [...unref(paginationOptions), PaginationConstants.infiniteScrollValue]
+    : unref(paginationOptions)
+)
+
 const setItemsPerPage = (itemsPerPage: PageSizeOption) => {
+  const infiniteScrollSelected = itemsPerPage.toString() === PaginationConstants.infiniteScrollValue
   return router.replace({
     query: {
       ...unref(currentRoute).query,
       [perPageQueryName]: itemsPerPage.toString(),
-      ...(unref(currentPage) > 1 && { page: '1' })
+      // there is no page to reset to when infinite scrolling is enabled
+      ...(!infiniteScrollSelected && unref(currentPage) > 1 && { page: '1' })
     }
   })
 }

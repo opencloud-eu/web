@@ -39,6 +39,7 @@
             :has-file-extensions="hasFileExtensions"
             :has-folders-first="hasFoldersFirst"
             :has-pagination="hasPagination"
+            :has-infinite-scroll="hasInfiniteScroll"
             per-page-storage-prefix="files"
             :view-mode-default="viewModeDefault"
           />
@@ -131,6 +132,7 @@ const {
   hasFileExtensions = true,
   hasFoldersFirst = true,
   hasPagination = true,
+  hasInfiniteScroll = true,
   showActionsBar = true,
   batchActionsLoading = false,
   space = undefined
@@ -145,6 +147,8 @@ const {
   hasFileExtensions?: boolean
   hasFoldersFirst?: boolean
   hasPagination?: boolean
+  /** Offers the infinite scrolling option in the view options, defaults to true. */
+  hasInfiniteScroll?: boolean
   showActionsBar?: boolean
   showActionsOnSelection?: boolean
   batchActionsLoading?: boolean
