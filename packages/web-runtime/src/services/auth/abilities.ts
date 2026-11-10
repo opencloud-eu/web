@@ -15,6 +15,10 @@ export const getAbilities = (
       { action: 'read-all', subject: 'Announcement' },
       { action: 'update-all', subject: 'Announcement' }
     ],
+    'Collaboration.Fonts.Manage.all': [
+      { action: 'create-all', subject: 'Font' },
+      { action: 'delete-all', subject: 'Font' }
+    ],
     'Favorites.List.own': [{ action: 'read', subject: 'Favorite' }],
     'Favorites.Write.own': [
       { action: 'create', subject: 'Favorite' },

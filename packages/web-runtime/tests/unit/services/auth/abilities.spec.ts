@@ -22,6 +22,11 @@ describe('getAbilities', () => {
     const expectedActions = ['create-all', 'delete-all', 'read-all', 'update-all']
     expect(abilities).toEqual(expectedActions.map((action) => ({ action, subject: 'Group' })))
   })
+  it('gets correct abilities for subject "Font"', function () {
+    const abilities = getAbilities(['Collaboration.Fonts.Manage.all'])
+    const expectedActions = ['create-all', 'delete-all']
+    expect(abilities).toEqual(expectedActions.map((action) => ({ action, subject: 'Font' })))
+  })
   it.each([
     { permissions: [''], expectedActions: [] },
     { permissions: ['Favorites.List.own'], expectedActions: ['read'] },
