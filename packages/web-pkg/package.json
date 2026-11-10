@@ -107,7 +107,7 @@
     "qs": "^6.15.0",
     "uuid": "^14.0.0",
     "vue-concurrency": "^5.0.3",
-    "vue-inline-svg": "^4.0.1",
+    "vue-inline-svg": "^5.0.0",
     "vue-router": "^5.0.4",
     "vue3-gettext": "4.0.1",
     "y-protocols": "^1.0.7",
