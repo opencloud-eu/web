@@ -9,7 +9,16 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { RouteLocation } from 'vue-router'
-import { User } from '@opencloud-eu/web-client/graph/generated'
+import { DriveItem, User } from '@opencloud-eu/web-client/graph/generated'
+import { flushPromises } from '@vue/test-utils'
+import { nextTick, Ref, ref } from 'vue'
+import { useLoadPreview } from '../../../../../../src/composables/resources'
+import { useSpacesStore } from '../../../../../../src/composables/piniaStores'
+
+vi.mock('../../../../../../src/composables/resources', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useLoadPreview: vi.fn()
+}))
 
 const spaceMock = {
   type: 'space',
@@ -22,6 +31,9 @@ const spaceMock = {
     total: 1000
   }
 } as unknown as SpaceResource
+
+const getSpaceImageData = (eTag: string) =>
+  ({ id: 'image', name: 'image.png', eTag, file: { mimeType: 'image/png' } }) as DriveItem
 
 const spaceShare = {
   id: '1',
@@ -87,6 +99,39 @@ describe('Details SideBar Panel', () => {
       expect(wrapper.findAll('dd').at(sizeIndex).text()).toContain(`${expected},`)
     }
   )
+  it('does not render the replaced image url when the image changes', async () => {
+    const resource = ref<SpaceResource>({
+      ...spaceMock,
+      webDavPath: '/spaces/1',
+      spaceImageData: getSpaceImageData('old')
+    })
+    const imageSourcesAfterLoading: string[] = []
+    const loadPreview = vi.fn().mockResolvedValueOnce('blob:old')
+    const { wrapper } = createWrapper({ resource, loadPreview })
+    await flushPromises()
+    expect(wrapper.find('img').attributes('src')).toBe('blob:old')
+
+    // like useLoadPreview: the loading flag is cleared before the new url is returned,
+    // while the old url has already been revoked by the preview cache
+    loadPreview.mockImplementationOnce(async () => {
+      const spacesStore = useSpacesStore()
+      spacesStore.addToImagesLoading(spaceMock.id)
+      await nextTick()
+      spacesStore.removeFromImagesLoading(spaceMock.id)
+      await nextTick()
+      const img = wrapper.find('img')
+      if (img.exists()) {
+        imageSourcesAfterLoading.push(img.attributes('src'))
+      }
+      return 'blob:new'
+    })
+    resource.value = { ...resource.value, spaceImageData: getSpaceImageData('new') }
+    await flushPromises()
+
+    expect(loadPreview).toHaveBeenCalledTimes(2)
+    expect(imageSourcesAfterLoading).not.toContain('blob:old')
+    expect(wrapper.find('img').attributes('src')).toBe('blob:new')
+  })
   it('does not render the size if the space is not the current folder', () => {
     const { wrapper } = createWrapper({ currentFolder: null })
     expect(wrapper.findAll('dt').map((dt) => dt.text())).not.toContain('Size')
@@ -96,8 +141,19 @@ describe('Details SideBar Panel', () => {
 function createWrapper({
   spaceResource = spaceMock,
   props = {},
-  currentFolder = spaceResource as Resource
+  currentFolder = spaceResource as Resource,
+  resource = undefined as Ref<SpaceResource>,
+  loadPreview = vi.fn().mockResolvedValue(null)
+}: {
+  spaceResource?: SpaceResource
+  props?: Record<string, unknown>
+  currentFolder?: Resource
+  resource?: Ref<SpaceResource>
+  loadPreview?: ReturnType<typeof useLoadPreview>['loadPreview']
 } = {}) {
+  vi.mocked(useLoadPreview).mockReturnValue(
+    mock<ReturnType<typeof useLoadPreview>>({ loadPreview })
+  )
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
@@ -122,7 +178,7 @@ function createWrapper({
           })
         ],
         mocks,
-        provide: { resource: spaceResource, ...mocks }
+        provide: { resource: resource || spaceResource, ...mocks }
       }
     })
   }
