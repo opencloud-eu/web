@@ -34,7 +34,7 @@
         />
       </div>
     </div>
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
       <oc-button
         type="a"
         :href="donateUrl"
