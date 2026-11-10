@@ -105,7 +105,8 @@ function trapFocus(event: KeyboardEvent) {
 function handleNavClick(event: MouseEvent) {
   const target = event.target as HTMLElement
   const button = target.closest('button, a')
-  if (button) {
+  // a toggle for a drop (e.g. the support card menu) keeps the menu open
+  if (button && !button.hasAttribute('aria-haspopup')) {
     isMenuOpen.value = false
   }
 }

@@ -66,6 +66,17 @@ describe('SidebarNavMobile component', () => {
   })
 
   it.each([
+    { selector: 'a[href="/files"]', isOpen: false },
+    { selector: '.popup-toggle', isOpen: true }
+  ])('menu stays open after a click on $selector: $isOpen', async ({ selector, isOpen }) => {
+    const { wrapper } = getWrapper()
+    await wrapper.get(selectors.mobileNavBtn).trigger('click')
+
+    await wrapper.get(selector).trigger('click')
+    expect(wrapper.find('#sidebar-nav-mobile-panel').exists()).toBe(isOpen)
+  })
+
+  it.each([
     { shiftKey: false, targets: ['button', 'a[href="/files"]', 'a[href="/favorites"]', 'button'] },
     {
       shiftKey: true,
@@ -118,6 +129,7 @@ function getWrapper({ isTablet = true, navItems: items = navItems } = {}) {
               <a href="/skipped" tabindex="-1">Skipped</a>
               <button style="display: none">Hidden</button>
               <a href="/favorites">Favorites</a>
+              <button class="popup-toggle" aria-haspopup="true" tabindex="-1">Support</button>
             </aside>`
           },
           Teleport: true
