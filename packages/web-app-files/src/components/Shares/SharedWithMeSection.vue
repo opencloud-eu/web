@@ -73,7 +73,12 @@
         </oc-button>
       </template>
       <template #footer>
-        <pagination :pages="paginationPages" :current-page="paginationPage" />
+        <more-items-spacer
+          v-if="isInfiniteScrollEnabled"
+          :all-loaded="allLoaded"
+          @load-more="emit('loadMore')"
+        />
+        <pagination v-else :pages="paginationPages" :current-page="paginationPage" />
         <div v-if="showMoreToggle && hasMore" class="w-full text-center mt-4">
           <oc-button
             id="files-shared-with-me-show-all"
@@ -96,6 +101,7 @@
 <script setup lang="ts">
 import {
   FolderView,
+  MoreItemsSpacer,
   Pagination,
   SortField,
   useAuthStore,
@@ -122,6 +128,8 @@ const {
   sortHandler,
   paginationPages,
   paginationPage,
+  isInfiniteScrollEnabled = false,
+  allLoaded = false,
   folderView,
   showMoreToggle = false,
   showMoreToggleCount = 3,
@@ -144,6 +152,10 @@ const {
   sortHandler: ({ sortBy, sortDir }: { sortBy: string; sortDir: SortDir }) => void
   paginationPages: number
   paginationPage: number
+  /** Whether the view is in infinite scroll mode (instead of numbered pagination). */
+  isInfiniteScrollEnabled?: boolean
+  /** Whether the complete list is rendered already (infinite scroll mode only). */
+  allLoaded?: boolean
   folderView: FolderView
   showMoreToggle?: boolean
   showMoreToggleCount?: number
@@ -161,6 +173,10 @@ const {
 const { $gettext } = useGettext()
 const authStore = useAuthStore()
 const { getMatchingSpace } = useGetMatchingSpace()
+
+const emit = defineEmits<{
+  (e: 'loadMore'): void
+}>()
 
 const { loadPreview, dropPreview } = useLoadPreview(computed(() => viewMode))
 
