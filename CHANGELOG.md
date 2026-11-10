@@ -14,6 +14,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show topbar logo on account page for public links and guests [[#4417](https://github.com/opencloud-eu/web/pull/4417)]
 - fix: remove the slash when the editor block menu is dismissed [[#4334](https://github.com/opencloud-eu/web/pull/4334)]
 - fix: only cancel the embedded picker on Escape without a selection [[#4399](https://github.com/opencloud-eu/web/pull/4399)]
 - fix: count down the rate limit wait on the guest link renew page [[#4387](https://github.com/opencloud-eu/web/pull/4387)]
