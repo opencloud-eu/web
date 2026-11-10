@@ -141,6 +141,7 @@ import {
   useAuthStore,
   useIsAppActive,
   useKeyboardActions,
+  useMessages,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
@@ -175,6 +176,7 @@ const { isMobile } = useIsMobile()
 const scopeQueryValue = useRouteQuery('scope')
 const availableProviders = useAvailableProviders()
 const isAppActive = useIsAppActive()
+const { showErrorMessage } = useMessages()
 
 const authStore = useAuthStore()
 const { userContextReady, publicLinkContextReady } = storeToRefs(authStore)
@@ -299,6 +301,7 @@ async function search() {
 
   loading.value = true
 
+  let searchError: Error
   for (const availableProvider of unref(availableProviders)) {
     if (!availableProvider.previewSearch?.available) {
       continue
@@ -308,6 +311,7 @@ async function search() {
       result = await availableProvider.previewSearch.search(query)
     } catch (e) {
       console.error(e)
+      searchError = e
     }
     if (searchId !== latestSearchId) {
       // a newer search has started, its results must not be mixed with this one
@@ -316,16 +320,19 @@ async function search() {
     searchResults.value.push({ providerId: availableProvider.id, result })
   }
   loading.value = false
-  announceResults()
-}
 
-function announceResults() {
-  // only announce the preview the user is looking at, not searches in the background
+  // only report the preview the user is looking at, not searches in the background
   // or searches that settle after the preview got closed (e.g. by opening the results page)
   if (!unref(isPreviewOpen) || !unref(searchBarRef)?.contains(document.activeElement)) {
     return
   }
-  unref(resultsAnnouncer)?.announce(getResultsAnnouncement())
+  if (searchError) {
+    showErrorMessage({ title: $gettext('Failed to search'), errors: [searchError] })
+  }
+  // "No results" would be misleading if the search failed
+  if (!searchError || !unref(showNoResults)) {
+    unref(resultsAnnouncer)?.announce(getResultsAnnouncement())
+  }
 }
 
 function getResultsAnnouncement() {
@@ -357,7 +364,10 @@ function onKeyUpEnter() {
   }
 
   if (unref(activePreviewIndex) === null) {
-    router.push(getSearchResultLocation('files.sdk'))
+    const location = getSearchResultLocation('files.sdk')
+    // lets the results page search again if the search doesn't change, e.g. to retry it
+    eventBus.publish('app.search.submit', location.query)
+    router.push(location)
   }
   if (unref(activePreviewIndex) !== null) {
     const previewEls = getFocusableElements()

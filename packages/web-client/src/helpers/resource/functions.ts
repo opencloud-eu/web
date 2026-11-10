@@ -61,7 +61,12 @@ export const extractExtensionFromFile = (resource: Resource): string => {
   if (parts.length < 2) {
     return ''
   }
-  return parts[parts.length - 1]
+  const extension = parts[parts.length - 1]
+  // text with whitespace after the last dot is part of the name, e.g. "v1.2 final"
+  if (/\s/.test(extension)) {
+    return ''
+  }
+  return extension
 }
 
 export const extractParentFolderName = (resource: Resource): string | null => {

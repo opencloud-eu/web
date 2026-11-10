@@ -8,6 +8,7 @@ import OcTextInput from './OcTextInput.vue'
 import OcHiddenAnnouncer from '../OcHiddenAnnouncer/OcHiddenAnnouncer.vue'
 import { PasswordPolicy } from '../../helpers'
 import { mock } from 'vitest-mock-extended'
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('lodash-es', () => ({
   debounce: (fn: any) => fn,
@@ -365,6 +366,153 @@ describe('OcTextInput', () => {
       expect((input.element as HTMLInputElement).value).toEqual('non-empty-value')
       expect(document.activeElement.id).toBe(input.element.id)
     })
+  })
+
+  describe('selection on focus', () => {
+    async function focusInput(input: HTMLInputElement) {
+      input.focus()
+      await flushPromises()
+    }
+
+    it('keeps the caret in place without preselect', async () => {
+      const wrapper = getMountedWrapper({
+        props: { modelValue: 'some value' },
+        attachTo: document.body
+      })
+      const input = wrapper.find<HTMLInputElement>(selectors.inputField).element
+      input.setSelectionRange(4, 4)
+
+      await focusInput(input)
+
+      expect(input.selectionStart).toBe(4)
+      expect(input.selectionEnd).toBe(4)
+      wrapper.unmount()
+    })
+
+    it('selects the whole value on the first focus with preselect', async () => {
+      const wrapper = getMountedWrapper({
+        props: { modelValue: 'some value', preselect: true },
+        attachTo: document.body
+      })
+      const input = wrapper.find<HTMLInputElement>(selectors.inputField).element
+
+      await focusInput(input)
+
+      expect(input.selectionStart).toBe(0)
+      expect(input.selectionEnd).toBe('some value'.length)
+      wrapper.unmount()
+    })
+
+    it('applies the selection range again when tabbing out and back before any interaction', async () => {
+      const wrapper = getMountedWrapper({
+        props: { modelValue: 'file.txt', selectionRange: [0, 4] },
+        attachTo: document.body
+      })
+      const input = wrapper.find<HTMLInputElement>(selectors.inputField).element
+      await focusInput(input)
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }))
+      input.blur()
+
+      // browsers select the whole value when tabbing into an input
+      input.focus()
+      input.select()
+      await flushPromises()
+
+      expect(input.selectionStart).toBe(0)
+      expect(input.selectionEnd).toBe(4)
+      wrapper.unmount()
+    })
+
+    it.each(['pointerdown', 'input'])(
+      'does not select the value again once the user interacted (%s)',
+      async (eventName) => {
+        const wrapper = getMountedWrapper({
+          props: { modelValue: 'some value', preselect: true },
+          attachTo: document.body
+        })
+        const input = wrapper.find<HTMLInputElement>(selectors.inputField).element
+        await focusInput(input)
+        input.dispatchEvent(new Event(eventName, { bubbles: true }))
+        input.blur()
+        input.setSelectionRange(4, 4)
+
+        await focusInput(input)
+
+        expect(input.selectionStart).toBe(4)
+        expect(input.selectionEnd).toBe(4)
+        wrapper.unmount()
+      }
+    )
+
+    it('places the caret when the first focus comes from a click or tap', async () => {
+      const wrapper = getMountedWrapper({
+        props: { modelValue: 'some value', preselect: true },
+        attachTo: document.body
+      })
+      const input = wrapper.find<HTMLInputElement>(selectors.inputField).element
+      input.setSelectionRange(4, 4)
+
+      input.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+      await focusInput(input)
+
+      expect(input.selectionStart).toBe(4)
+      expect(input.selectionEnd).toBe(4)
+      wrapper.unmount()
+    })
+
+    it('applies the selection range again when a focus trap returns the focus before any interaction', async () => {
+      const wrapper = getMountedWrapper({
+        props: { modelValue: 'file.txt', selectionRange: [0, 4] },
+        attachTo: document.body
+      })
+      const input = wrapper.find<HTMLInputElement>(selectors.inputField).element
+      await focusInput(input)
+      input.blur()
+
+      // what focus-trap does when it returns the focus to an input
+      input.focus()
+      input.select()
+      await flushPromises()
+
+      expect(input.selectionStart).toBe(0)
+      expect(input.selectionEnd).toBe(4)
+      wrapper.unmount()
+    })
+
+    it('selects the given selection range on the first focus', async () => {
+      const wrapper = getMountedWrapper({
+        props: { modelValue: 'file.txt', selectionRange: [0, 4] },
+        attachTo: document.body
+      })
+      const input = wrapper.find<HTMLInputElement>(selectors.inputField).element
+      input.setSelectionRange(8, 8)
+
+      await focusInput(input)
+
+      expect(input.selectionStart).toBe(0)
+      expect(input.selectionEnd).toBe(4)
+      wrapper.unmount()
+    })
+
+    it.each([
+      { preselect: false, expected: [4, 4] },
+      { preselect: true, expected: [0, 'password'.length] }
+    ])(
+      'selects a password only with preselect (preselect: $preselect)',
+      async ({ preselect, expected }) => {
+        const wrapper = getMountedWrapper({
+          props: { type: 'password', modelValue: 'password', preselect },
+          attachTo: document.body
+        })
+        const input = wrapper.find<HTMLInputElement>(selectors.inputField).element
+        input.setSelectionRange(4, 4)
+
+        await focusInput(input)
+
+        expect([input.selectionStart, input.selectionEnd]).toEqual(expected)
+        wrapper.unmount()
+      }
+    )
   })
 
   describe('required mark', () => {

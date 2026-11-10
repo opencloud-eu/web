@@ -24,6 +24,25 @@ describe('buildSpace', () => {
     )
   })
 
+  describe('canCreate', () => {
+    it.each([
+      { permissions: [GraphSharePermission.createUpload], expectedResult: true },
+      { permissions: [GraphSharePermission.readBasic], expectedResult: false },
+      { permissions: [], expectedResult: false }
+    ])(
+      'is $expectedResult with the permissions $permissions',
+      ({ permissions, expectedResult }) => {
+        const space = getSpace({ permissions })
+        expect(space.canCreate({ user: mock<User>({ id, memberOf: [] }) })).toBe(expectedResult)
+      }
+    )
+
+    it('is true for the owner of a personal space', () => {
+      const space = buildSpace({ driveType: 'personal', owner: { user: { id } } } as Drive)
+      expect(space.canCreate({ user: mock<User>({ id }) })).toBe(true)
+    })
+  })
+
   describe('isOwner', () => {
     it('is true for the owner', () => {
       const space = buildSpace({ owner: { user: { id } } } as Drive)

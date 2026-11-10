@@ -35,6 +35,7 @@
         @password-challenge-completed="$emit('passwordChallengeCompleted')"
         @password-challenge-failed="$emit('passwordChallengeFailed')"
         @focus="onFocus($event.target)"
+        @pointerdown="onUserInteraction"
       />
       <oc-button
         v-if="showClearButton"
@@ -112,7 +113,12 @@ export interface Props {
    */
   modelValue?: string
   /**
-   * @docs The selection range of the input.
+   * @docs Determines if the value gets selected when the input gets focused before the user interacted with it, e.g. so a suggested name can be typed over right away when a modal opens. Once the user clicked, tapped or typed into it, focus changes keep the browser default.
+   * @default false
+   */
+  preselect?: boolean
+  /**
+   * @docs The part of the value to preselect, also applied whenever it changes. Implies `preselect`.
    */
   selectionRange?: [number, number]
   /**
@@ -223,6 +229,7 @@ const {
   id = uniqueId('oc-textinput-'),
   type = 'text',
   modelValue = '',
+  preselect = false,
   selectionRange,
   clearButtonEnabled = false,
   clearButtonAccessibleLabel = '',
@@ -319,13 +326,22 @@ const onChange = (value: string) => {
 }
 
 const onInput = (value: string) => {
+  onUserInteraction()
   emit('update:modelValue', value)
 }
 
+// re-applied on every focus until the user interacts, because a focus trap can return the focus
+// later on and select the whole value
+let hasUserInteracted = false
+function onUserInteraction() {
+  hasUserInteracted = true
+}
 const onFocus = async (target: HTMLInputElement) => {
-  await nextTick()
-  unref(inputRef).select()
-  setSelectionRange()
+  if ((preselect || selectionRange) && !hasUserInteracted) {
+    await nextTick()
+    unref(inputRef).select()
+    setSelectionRange()
+  }
   emit('focus', target.value)
 }
 const setSelectionRange = () => {

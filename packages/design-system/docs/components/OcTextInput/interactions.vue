@@ -1,11 +1,12 @@
 <template>
   <oc-button class="my-4" @click="focus">Focus input below</oc-button>
   <oc-text-input ref="inputForFocusRef" label="Focus field" />
-  <oc-button class="my-4" @click="focusAndSelect">Focus and select input below</oc-button>
+  <oc-button class="my-4" @click="focusAndSelect">Focus preselecting input below</oc-button>
   <oc-text-input
     ref="inputForFocusSelectRef"
-    label="Select field"
-    model-value="Text to be selected"
+    label="Preselect field"
+    model-value="Selected until you click or type in here"
+    preselect
   />
   <oc-text-input v-model="inputValueForClearing" label="Clear input" :clear-button-enabled="true" />
   <oc-text-input

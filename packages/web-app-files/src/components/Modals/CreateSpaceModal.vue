@@ -37,6 +37,7 @@
         <oc-text-input
           id="create-space-input"
           v-model="spaceName"
+          preselect
           class="min-w-0 grow"
           :label="$gettext('Space name')"
           required-mark

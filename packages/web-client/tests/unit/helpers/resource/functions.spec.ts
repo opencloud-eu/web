@@ -72,6 +72,27 @@ describe('filterResources', () => {
       expect(extractExtensionFromFile({ name: 'test' } as Resource)).toEqual('')
     })
     it.each([
+      { name: 'photo.JPG', expected: 'JPG' },
+      { name: 'report.final.docx', expected: 'docx' },
+      { name: 'Release notes v1.2.pdf', expected: 'pdf' },
+      { name: 'drawing.excalidraw', expected: 'excalidraw' }
+    ])('should return the last dot segment of "$name" as extension', ({ name, expected }) => {
+      expect(extractExtensionFromFile({ name } as Resource)).toEqual(expected)
+    })
+    it.each([
+      'Release notes v1.2 for customers',
+      'Release notes v1.2 for customers and partners final draft',
+      'Version 1. final',
+      'Total\t1.5\tEUR'
+    ])('should return no file extension when "%s" has whitespace after the last dot', (name) => {
+      expect(extractExtensionFromFile({ name } as Resource)).toEqual('')
+    })
+    it('should return no file extension for a folder with whitespace after the last dot', () => {
+      expect(extractExtensionFromFile({ name: 'v1.2 docs', type: 'folder' } as Resource)).toEqual(
+        ''
+      )
+    })
+    it.each([
       { name: 'afolder', isFolder: true },
       { name: 'afolder', type: 'folder' },
       { name: 'afolder', type: 'directory' }
@@ -131,6 +152,21 @@ describe('buildResource', () => {
       ability.can.mockReturnValue(true)
       expect(resource.canShare({ ability })).toBeFalsy()
       expect(ability.can).toHaveBeenCalledWith('create-all', 'Share')
+    })
+  })
+
+  describe('extension', () => {
+    it('is empty when the text after the last dot is no extension', () => {
+      const name = 'Release notes v1.2 for customers and partners final draft'
+      const webDavResponse = mockDeep<WebDavResponseResource>({
+        filename: `/files/admin/${name}`,
+        type: 'file',
+        props: {
+          [DavProperty.Name]: name,
+          [DavProperty.Tags]: undefined
+        }
+      })
+      expect(buildResource(webDavResponse).extension).toBe('')
     })
   })
 

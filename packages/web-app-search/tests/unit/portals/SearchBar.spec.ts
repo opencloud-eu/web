@@ -17,12 +17,14 @@ import {
   SearchLocationFilterConstants,
   SearchResult,
   useAuthStore,
+  useMessages,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
 import { Resource } from '@opencloud-eu/web-client'
 import { Router, RouteLocationNormalizedLoaded } from 'vue-router'
 import { debounce } from 'lodash-es'
+import type { MockInstance } from 'vitest'
 
 const component = defineComponent({
   emits: ['click', 'keyup'],
@@ -492,6 +494,105 @@ describe('Search Bar portal component', () => {
       expect(providerFiles.previewSearch.search).toHaveBeenCalled()
       expect(announceMock).toHaveBeenCalledTimes(1)
     })
+  })
+  describe('failed preview search', () => {
+    afterEach(() => {
+      announceMock.mockReset()
+    })
+
+    type Wrapper = ReturnType<typeof getMountedWrapper>['wrapper']
+
+    async function typeTerm(wrapper: Wrapper, term: string) {
+      const input = wrapper.find<HTMLInputElement>(selectors.searchInput)
+      input.element.focus()
+      await input.setValue(term)
+      await flushPromises()
+    }
+
+    beforeEach(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    })
+
+    test('shows an error message instead of announcing "No results"', async () => {
+      const { wrapper } = getMountedWrapper({ providers: [providerFiles], attachTo: document.body })
+      providerFiles.previewSearch.search.mockRejectedValueOnce(new Error('500'))
+      await typeTerm(wrapper, 'albert')
+      expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to search' })
+      )
+      expect(announceMock).not.toHaveBeenCalledWith('No results')
+    })
+    test('shows no error message if the preview got closed by opening the results page before the search failed', async () => {
+      const { wrapper } = getMountedWrapper({ providers: [providerFiles], attachTo: document.body })
+      let failSearch: (e: Error) => void
+      providerFiles.previewSearch.search.mockImplementationOnce(
+        () => new Promise((_, reject) => (failSearch = reject))
+      )
+      await typeTerm(wrapper, 'albert')
+      await wrapper.find(selectors.searchInput).trigger('keyup.enter')
+
+      failSearch(new Error('500'))
+      await flushPromises()
+      expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
+    })
+    test('shows no error message for an outdated search', async () => {
+      const { wrapper } = getMountedWrapper({ providers: [providerFiles], attachTo: document.body })
+      let failFirstSearch: (e: Error) => void
+      providerFiles.previewSearch.search.mockImplementationOnce(
+        () => new Promise((_, reject) => (failFirstSearch = reject))
+      )
+      await typeTerm(wrapper, 'kiwi')
+      await typeTerm(wrapper, 'kiwis')
+
+      failFirstSearch(new Error('500'))
+      await flushPromises()
+      expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
+      expect(announceMock).toHaveBeenLastCalledWith('Results found')
+    })
+  })
+  describe('submitting the search', () => {
+    let publishSpy: MockInstance
+    beforeEach(() => {
+      publishSpy = vi.spyOn(eventBus, 'publish')
+    })
+    afterEach(() => {
+      publishSpy.mockRestore()
+    })
+
+    test.each([
+      {
+        submittedBy: 'pressing Enter',
+        submit: (wrapper: ReturnType<typeof getMountedWrapper>['wrapper']) =>
+          wrapper.find(selectors.searchInput).trigger('keyup.enter')
+      },
+      {
+        submittedBy: 'clicking the search icon',
+        submit: (wrapper: ReturnType<typeof getMountedWrapper>['wrapper']) =>
+          wrapper.find('button[aria-label="Search"]').trigger('click')
+      }
+    ])(
+      'lets the results page search again by $submittedBy, also for the same search',
+      async ({ submit }) => {
+        const query = { term: 'albert', provider: 'files.sdk', useScope: 'false' }
+        const { wrapper, mocks } = getMountedWrapper({ route: 'files-common-search', query })
+        await flushPromises()
+
+        await submit(wrapper)
+        await submit(wrapper)
+
+        expect(mocks.$router.push).toHaveBeenCalledTimes(2)
+        expect(mocks.$router.push).toHaveBeenLastCalledWith({
+          name: 'files-common-search',
+          query: expect.objectContaining(query)
+        })
+        expect(publishSpy).toHaveBeenCalledTimes(2)
+        expect(publishSpy).toHaveBeenLastCalledWith(
+          'app.search.submit',
+          expect.objectContaining(query)
+        )
+      }
+    )
   })
   describe('mobile search overlay', () => {
     function mountInTopBar() {

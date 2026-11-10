@@ -4,6 +4,7 @@
       <oc-text-input
         id="create-folder-input"
         v-model="folderName"
+        preselect
         :label="$gettext('Folder name')"
         required-mark
         :error-message="errorMessage"
