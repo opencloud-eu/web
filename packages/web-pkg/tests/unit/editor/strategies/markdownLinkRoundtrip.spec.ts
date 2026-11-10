@@ -69,9 +69,12 @@ describe('markdown link and image roundtrip', () => {
 
   it('keeps an image with special characters in its attributes an image', () => {
     const attrs = { src: 'my image (1.png', alt: 'a [b', title: 'say "hi" \\' }
-    const markdown = serialize([{ type: 'image', attrs }])
+    const markdown = serialize([{ type: 'paragraph', content: [{ type: 'image', attrs }] }])
 
-    expect(load(markdown).editor.getJSON().content?.[0]).toMatchObject({ type: 'image', attrs })
+    expect(load(markdown).editor.getJSON().content?.[0]).toMatchObject({
+      type: 'paragraph',
+      content: [{ type: 'image', attrs }]
+    })
   })
 
   it('escapes quotes in the attributes of a resized image', () => {
