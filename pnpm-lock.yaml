@@ -111,7 +111,7 @@ patchedDependencies:
   '@tiptap/y-tiptap@3.0.10': 142e9b3bcc552bcd98d6274d511a32c02fab4cbe64278644dc3818fc5277061e
   caf@15.0.1: b09bdde8a1f7e834af8677123b32ceb4f485966fdb476facf5b6c64157c9fc14
   vite-plugin-static-copy@4.1.1: b4b816bcbbbd46a52560de210fc39a55df2f65d64cc8b1ac8dcc6e097258ad1c
-  vue-inline-svg@4.0.1: 29bc386a6e932912ee46485a87911f6ff5409dca9ed70ba0ff32c52d6f56986b
+  vue-inline-svg@5.0.0: d1c5cde0a0a2a04601217ca3396c2b36dbd41f9e1f93fa5a2ae83ba41a08f0db
 
 importers:
 
@@ -268,8 +268,8 @@ importers:
         specifier: ^3.0.3 || ^4.0.0
         version: 4.1.0(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.45(typescript@6.0.3))
       vue-inline-svg:
-        specifier: ^4.0.1
-        version: 4.0.1(patch_hash=29bc386a6e932912ee46485a87911f6ff5409dca9ed70ba0ff32c52d6f56986b)(vue@3.5.45(typescript@6.0.3))
+        specifier: ^5.0.0
+        version: 5.0.0(patch_hash=d1c5cde0a0a2a04601217ca3396c2b36dbd41f9e1f93fa5a2ae83ba41a08f0db)(vue@3.5.45(typescript@6.0.3))
       vue-router:
         specifier: ^5.0.4
         version: 5.4.0(@vue/compiler-sfc@3.5.45)(pinia@4.1.0(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.45(typescript@6.0.3)))(rolldown@1.2.16)(vite@8.3.6(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.1))(vue@3.5.45(typescript@6.0.3))
@@ -1086,8 +1086,8 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3(vue@3.5.45(typescript@6.0.3))
       vue-inline-svg:
-        specifier: ^4.0.1
-        version: 4.0.1(patch_hash=29bc386a6e932912ee46485a87911f6ff5409dca9ed70ba0ff32c52d6f56986b)(vue@3.5.45(typescript@6.0.3))
+        specifier: ^5.0.0
+        version: 5.0.0(patch_hash=d1c5cde0a0a2a04601217ca3396c2b36dbd41f9e1f93fa5a2ae83ba41a08f0db)(vue@3.5.45(typescript@6.0.3))
       vue-router:
         specifier: ^5.0.4
         version: 5.4.0(@vue/compiler-sfc@3.5.45)(pinia@4.1.0(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.45(typescript@6.0.3)))(rolldown@1.2.16)(vite@8.3.6(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.1))(vue@3.5.45(typescript@6.0.3))
@@ -5135,8 +5135,8 @@ packages:
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
 
-  vue-inline-svg@4.0.1:
-    resolution: {integrity: sha512-yh92MOcTpL/yXj0MjI9JqQpI33nj5ewdddt6enunU8pBpy6JqrMXF+O4WI1DbckhLIoXzp6hSxkeqXDqpqtKXw==}
+  vue-inline-svg@5.0.0:
+    resolution: {integrity: sha512-oP4FmRxpwL3oNsq/17JHLEwkgVyRSmvZeTVnsnT7PSz5TdZeL1eq20/WKl/d66OsViCZAKOoZ6wu8FqP8r80yQ==}
     peerDependencies:
       vue: ^3
 
@@ -9268,7 +9268,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vue-inline-svg@4.0.1(patch_hash=29bc386a6e932912ee46485a87911f6ff5409dca9ed70ba0ff32c52d6f56986b)(vue@3.5.45(typescript@6.0.3)):
+  vue-inline-svg@5.0.0(patch_hash=d1c5cde0a0a2a04601217ca3396c2b36dbd41f9e1f93fa5a2ae83ba41a08f0db)(vue@3.5.45(typescript@6.0.3)):
     dependencies:
       vue: 3.5.45(typescript@6.0.3)
 
