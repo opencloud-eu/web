@@ -107,7 +107,7 @@ async function onConfirm() {
 
     const title =
       failed.length === 1 && affectedUsers.length === 1
-        ? $gettext('Failed edit login for user "%{user}"', {
+        ? $gettext('Failed to edit login for user "%{user}"', {
             user: affectedUsers[0].displayName
           })
         : $ngettext(
