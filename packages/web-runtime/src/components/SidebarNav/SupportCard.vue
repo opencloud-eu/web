@@ -34,30 +34,55 @@
         />
       </div>
     </div>
-    <div class="flex gap-2">
-      <oc-button
-        type="a"
-        :href="donateUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        appearance="outline"
-        color-role="tertiary"
-        class="oc-support-card-donate flex-1"
-      >
-        <span v-text="$gettext('Donate')" />
-      </oc-button>
-      <oc-button
-        type="a"
-        :href="buySupportUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        appearance="filled"
-        color-role="tertiary"
-        class="oc-support-card-buy-support flex-1 whitespace-nowrap"
-      >
-        <span v-text="$gettext('Buy support')" />
-      </oc-button>
-    </div>
+    <oc-button
+      :id="toggleId"
+      appearance="filled"
+      color-role="tertiary"
+      class="oc-support-card-toggle w-full"
+    >
+      <span v-text="$gettext('Support us')" />
+      <oc-icon name="arrow-down-s" fill-type="line" />
+    </oc-button>
+    <oc-drop
+      :toggle="`#${toggleId}`"
+      mode="click"
+      position="top-start"
+      padding-size="small"
+      close-on-click
+      enforce-drop-on-mobile
+      class="w-auto min-w-48"
+    >
+      <oc-list>
+        <li>
+          <oc-button
+            type="a"
+            :href="donateUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            appearance="raw"
+            justify-content="left"
+            class="oc-support-card-donate"
+          >
+            <oc-icon name="heart" fill-type="line" />
+            <span v-text="$gettext('Donate')" />
+          </oc-button>
+        </li>
+        <li>
+          <oc-button
+            type="a"
+            :href="buySupportUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            appearance="raw"
+            justify-content="left"
+            class="oc-support-card-buy-support"
+          >
+            <oc-icon name="customer-service" fill-type="line" />
+            <span v-text="$gettext('Buy support')" />
+          </oc-button>
+        </li>
+      </oc-list>
+    </oc-drop>
   </section>
 </template>
 
@@ -68,8 +93,11 @@ let hasAnimated = false
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import { uniqueId } from '@opencloud-eu/design-system/helpers'
 
 const language = useGettext()
+
+const toggleId = uniqueId('oc-support-card-toggle-')
 
 const donateUrl = 'https://github.com/sponsors/opencloud-eu'
 
