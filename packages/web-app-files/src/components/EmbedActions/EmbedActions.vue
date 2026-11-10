@@ -213,6 +213,15 @@ const emitCancel = (): void => {
   postMessage<null>('opencloud-embed:cancel', null)
 }
 
+// the files view sets up its keyboard actions before this child component, so its document listener
+// runs first. Escape counts as handled there (prevented) when it clears a selection.
+function cancelOnEscape(event: KeyboardEvent) {
+  if (event.defaultPrevented) {
+    return
+  }
+  emitCancel()
+}
+
 const { bindKeyAction } = useKeyboardActions()
-bindKeyAction({ primary: Key.Esc }, emitCancel)
+bindKeyAction({ primary: Key.Esc }, cancelOnEscape)
 </script>
