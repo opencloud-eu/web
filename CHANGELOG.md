@@ -14,6 +14,13 @@
 
 ### 🐛 Bug Fixes
 
+- fix: use object-cover for space overview images [[#4413](https://github.com/opencloud-eu/web/pull/4413)]
+- fix: don't select a row when its link starts a navigation [[#4408](https://github.com/opencloud-eu/web/pull/4408)]
+- fix: wrap long values in share access details [[#4382](https://github.com/opencloud-eu/web/pull/4382)]
+- fix: set remoteItemId on shortcuts and files created in a share [[#4384](https://github.com/opencloud-eu/web/pull/4384)]
+- fix: don't query an empty toggle selector when opening a mobile drop [[#4400](https://github.com/opencloud-eu/web/pull/4400)]
+- fix: fit rotated preview images into the stage [[#4405](https://github.com/opencloud-eu/web/pull/4405)]
+- fix: normalize guest addresses like the server stores them [[#4403](https://github.com/opencloud-eu/web/pull/4403)]
 - fix: grammar [[#4409](https://github.com/opencloud-eu/web/pull/4409)]
 - fix: keep unlocked vaults in sync when moving their parent folder [[#4383](https://github.com/opencloud-eu/web/pull/4383)]
 - fix: show an error when the search fails and search again on resubmit [[#4365](https://github.com/opencloud-eu/web/pull/4365)]
