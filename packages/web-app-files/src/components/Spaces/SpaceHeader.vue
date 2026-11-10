@@ -305,6 +305,8 @@ const imageToggleAttributes = computed(() => {
 watch(
   computed(() => space.spaceImageData),
   async () => {
+    // the preview cache revokes the url of a replaced image, so it must not be rendered again
+    imageContent.value = null
     imageContent.value = await loadPreview({
       space,
       resource: space.spaceImageData ? buildSpaceImageResource(space) : space,

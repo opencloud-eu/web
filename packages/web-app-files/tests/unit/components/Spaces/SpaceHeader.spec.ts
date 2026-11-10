@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, nextTick } from 'vue'
 import SpaceHeader from '../../../../src/components/Spaces/SpaceHeader.vue'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { SpaceResource, Resource, buildSpaceImageResource } from '@opencloud-eu/web-client'
@@ -6,7 +6,7 @@ import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-
 import { mock } from 'vitest-mock-extended'
 import { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
 import { flushPromises } from '@vue/test-utils'
-import { useLoadPreview, useSideBar } from '@opencloud-eu/web-pkg'
+import { useLoadPreview, useSideBar, useSpacesStore } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -90,6 +90,35 @@ describe('SpaceHeader', () => {
         'space-header-image-expanded'
       )
     })
+    it('does not render the replaced image url when the image changes', async () => {
+      const space = getSpaceMock({ webDavUrl: '/', eTag: 'old' })
+      const imageSourcesAfterLoading: string[] = []
+      const loadPreview = vi.fn().mockResolvedValueOnce('blob:old')
+      const wrapper = getWrapper({ space, loadPreview })
+      await flushPromises()
+      expect(wrapper.find('.space-header-image img').attributes('src')).toBe('blob:old')
+
+      // like useLoadPreview: the loading flag is cleared before the new url is returned,
+      // while the old url has already been revoked by the preview cache
+      loadPreview.mockImplementationOnce(async () => {
+        const spacesStore = useSpacesStore()
+        spacesStore.addToImagesLoading(space.id)
+        await nextTick()
+        spacesStore.removeFromImagesLoading(space.id)
+        await nextTick()
+        const img = wrapper.find('.space-header-image img')
+        if (img.exists()) {
+          imageSourcesAfterLoading.push(img.attributes('src'))
+        }
+        return 'blob:new'
+      })
+      await wrapper.setProps({ space: getSpaceMock({ webDavUrl: '/', eTag: 'new' }) })
+      await flushPromises()
+
+      expect(loadPreview).toHaveBeenCalledTimes(2)
+      expect(imageSourcesAfterLoading).not.toContain('blob:old')
+      expect(wrapper.find('.space-header-image img').attributes('src')).toBe('blob:new')
+    })
     it('shows a loading spinner when the image is loading', () => {
       const space = getSpaceMock()
       const wrapper = getWrapper({ space, imagesLoading: [space.id] })
@@ -160,7 +189,8 @@ function getWrapper({
   imagesLoading = [],
   readmesLoading = [],
   memberCount = 0,
-  imgBlob
+  imgBlob,
+  loadPreview = vi.fn().mockResolvedValue(imgBlob)
 }: {
   space?: SpaceResource
   isSideBarOpen?: boolean
@@ -169,12 +199,11 @@ function getWrapper({
   readmesLoading?: string[]
   memberCount?: number
   imgBlob?: string
+  loadPreview?: ReturnType<typeof useLoadPreview>['loadPreview']
 }) {
   const mocks = defaultComponentMocks()
   vi.mocked(useLoadPreview).mockReturnValue(
-    mock<ReturnType<typeof useLoadPreview>>({
-      loadPreview: vi.fn().mockResolvedValue(imgBlob)
-    })
+    mock<ReturnType<typeof useLoadPreview>>({ loadPreview })
   )
   vi.mocked(buildSpaceImageResource).mockReturnValue(mock<Resource>())
 
