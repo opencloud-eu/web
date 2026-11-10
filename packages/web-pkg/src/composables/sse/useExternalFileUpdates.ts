@@ -41,7 +41,7 @@ function parseEventData(data: unknown) {
  * Listens for server-sent file events about one resource and hands the ones
  * that mean "someone else wrote this file" to the caller, one at a time.
  *
- * Only a signed-in user has an SSE stream.
+ * Signed-in users and guests have an SSE stream, public links don't.
  */
 export function useExternalFileUpdates({
   resource,
@@ -56,7 +56,7 @@ export function useExternalFileUpdates({
   const isEnabled = computed(
     () =>
       Boolean(unref(capabilityStore.supportSSE)) &&
-      Boolean(authStore.accessToken) &&
+      (Boolean(authStore.accessToken) || authStore.isGuestContext) &&
       !authStore.publicLinkContextReady
   )
 
