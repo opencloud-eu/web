@@ -6,6 +6,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { mock } from 'vitest-mock-extended'
 import { computed } from 'vue'
+import { RouteLocationNormalizedLoaded } from 'vue-router'
 import TopBar from '../../../../src/components/Topbar/TopBar.vue'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 
@@ -28,6 +29,35 @@ describe('Top Bar component', () => {
   it('links the logo of a guest to their shares', () => {
     const { wrapper } = getWrapper({ userContextReady: false, guestContextReady: true })
     expect((wrapper.vm as any).homeLink).toEqual({ name: 'files-guest-shares' })
+  })
+  describe('logo', () => {
+    it('shows by default', () => {
+      const { wrapper } = getWrapper()
+      expect(wrapper.find('router-link-stub').exists()).toBeTruthy()
+    })
+    it('hides when an app is active', () => {
+      const { wrapper } = getWrapper({
+        currentRoute: getRoute({ name: 'text-editor', contextRouteName: 'files-spaces-generic' })
+      })
+      expect(wrapper.find('router-link-stub').exists()).toBeFalsy()
+    })
+    it.each(['files-public-link', 'files-guest-link'])(
+      'shows on the account page with an app context (%s)',
+      (contextRouteName) => {
+        const { wrapper } = getWrapper({
+          currentRoute: getRoute({
+            name: 'account-preferences',
+            parentName: 'account',
+            contextRouteName
+          })
+        })
+        expect(wrapper.find('router-link-stub').exists()).toBeTruthy()
+      }
+    )
+    it('hides when disabled via config', () => {
+      const { wrapper } = getWrapper({ hideLogo: true })
+      expect(wrapper.find('router-link-stub').exists()).toBeFalsy()
+    })
   })
   describe('notifications bell', () => {
     it('should display in authenticated context if announced via capabilities', () => {
@@ -82,22 +112,43 @@ describe('Top Bar component', () => {
   )
 })
 
+function getRoute({
+  name,
+  parentName,
+  contextRouteName
+}: {
+  name: string
+  parentName?: string
+  contextRouteName?: string
+}) {
+  const matched = [parentName, name].filter(Boolean).map((n) => ({ name: n }))
+  return mock<RouteLocationNormalizedLoaded>({
+    name,
+    matched,
+    query: contextRouteName ? { contextRouteName } : {}
+  })
+}
+
 const getWrapper = ({
   capabilities = {},
   userContextReady = true,
-  guestContextReady = false
+  guestContextReady = false,
+  hideLogo = false,
+  currentRoute = undefined
 }: {
   capabilities?: Partial<Capabilities['capabilities']>
   userContextReady?: boolean
   guestContextReady?: boolean
+  hideLogo?: boolean
+  currentRoute?: RouteLocationNormalizedLoaded
 } = {}) => {
-  const mocks = { ...defaultComponentMocks() }
+  const mocks = { ...defaultComponentMocks({ currentRoute }) }
 
   const plugins = defaultPlugins({
     piniaOptions: {
       authState: { userContextReady, guestContextReady },
       capabilityState: { capabilities },
-      configState: { options: { disableFeedbackLink: false } }
+      configState: { options: { disableFeedbackLink: false, hideLogo } }
     }
   })
 

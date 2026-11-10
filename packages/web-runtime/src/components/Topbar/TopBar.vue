@@ -69,7 +69,7 @@ import {
   topBarLeftExtensionPoint,
   topBarRightExtensionPoint
 } from '../../extensionPoints'
-import { RouteLocationNormalizedLoaded } from 'vue-router'
+import { RouteRecordNormalized } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 import ApplicationsMenu from './ApplicationsMenu.vue'
 
@@ -90,7 +90,18 @@ const appMenuExtensions = computed(() => {
   return extensionRegistry.requestExtensions(appMenuExtensionPoint)
 })
 
-const hideLogo = computed(() => unref(configOptions).hideLogo || unref(isAppActive))
+const isRuntimeRoute = (route: Pick<RouteRecordNormalized, 'name'>) => {
+  return Object.values(routeNames).includes(route.name?.toString())
+}
+
+// runtime pages (e.g. account) keep the app context in the query but are no app themselves
+const isRuntimePageActive = computed(() => {
+  return unref(router.currentRoute).matched.some(isRuntimeRoute)
+})
+
+const hideLogo = computed(() => {
+  return unref(configOptions).hideLogo || (unref(isAppActive) && !unref(isRuntimePageActive))
+})
 
 const isNotificationBellEnabled = computed(() => {
   return authStore.userContextReady && capabilityStore.notificationsOcsEndpoints.includes('list')
@@ -112,9 +123,6 @@ const homeLink = computed(() => {
   return '/'
 })
 
-const isRuntimeRoute = (route: RouteLocationNormalizedLoaded) => {
-  return Object.values(routeNames).includes(route.name.toString())
-}
 const isSideBarToggleVisible = computed(() => {
   return authStore.userContextReady || authStore.publicLinkContextReady || authStore.isGuestContext
 })
