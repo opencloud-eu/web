@@ -1,5 +1,5 @@
 import { EventSourceMessage, fetchEventSource } from '@microsoft/fetch-event-source'
-import { SSEAdapter, sse, MESSAGE_TYPE, RetriableError } from '../../src/sse'
+import { SSEAdapter, sse, resetSSE, MESSAGE_TYPE, RetriableError } from '../../src/sse'
 import { Mock } from 'vitest'
 
 vi.mock('@microsoft/fetch-event-source', () => ({
@@ -23,7 +23,7 @@ describe('SSEAdapter', () => {
   })
 
   test('it should initialize the SSEAdapter', () => {
-    const fetchOptions = { method: 'GET' }
+    const fetchOptions = { method: 'GET', headers: { Authorization: 'Bearer xy' } }
 
     const sseAdapter = new SSEAdapter(url, fetchOptions)
 
@@ -33,7 +33,7 @@ describe('SSEAdapter', () => {
   })
 
   test('it should call connect and set up event listeners', () => {
-    const fetchOptions = { method: 'GET' }
+    const fetchOptions = { method: 'GET', headers: { Authorization: 'Bearer xy' } }
     const sseAdapter = new SSEAdapter(url, fetchOptions)
 
     const fetchEventSourceMock = vi.mocked(fetchEventSource)
@@ -46,7 +46,7 @@ describe('SSEAdapter', () => {
   })
 
   test('it should handle onmessage events', () => {
-    const fetchOptions = { method: 'GET' }
+    const fetchOptions = { method: 'GET', headers: { Authorization: 'Bearer xy' } }
     const sseAdapter = new SSEAdapter(url, fetchOptions)
     const message = { data: 'Message data', event: MESSAGE_TYPE.NOTIFICATION } as EventSourceMessage
 
@@ -59,7 +59,7 @@ describe('SSEAdapter', () => {
   })
 
   test('it should handle onclose events and throw RetriableError', () => {
-    const fetchOptions = { method: 'GET' }
+    const fetchOptions = { method: 'GET', headers: { Authorization: 'Bearer xy' } }
     new SSEAdapter(url, fetchOptions)
     const fetchEventSourceMock = vi.mocked(fetchEventSource)
     expect(() => {
@@ -87,8 +87,37 @@ describe('SSEAdapter', () => {
     expect(sseAdapter.fetchOptions.headers.Authorization).toBe(`Bearer ${token}`)
   })
 
+  test('it should not connect without an access token or credentials', () => {
+    new SSEAdapter(url, { headers: {} })
+
+    expect(fetchEventSource).not.toHaveBeenCalled()
+  })
+
+  test('it should connect with credentials but without an access token', () => {
+    new SSEAdapter(url, { headers: {}, credentials: 'include' })
+
+    expect(fetchEventSource).toHaveBeenCalledTimes(1)
+  })
+
+  test('it should connect on the first access token only', () => {
+    const sseAdapter = new SSEAdapter(url, { headers: {} })
+
+    sseAdapter.updateAccessToken('token')
+    sseAdapter.updateAccessToken('other-token')
+
+    expect(fetchEventSource).toHaveBeenCalledTimes(1)
+  })
+
+  test('it should not connect on a language change without an access token', () => {
+    const sseAdapter = new SSEAdapter(url, { headers: {} })
+
+    sseAdapter.updateLanguage('de')
+
+    expect(fetchEventSource).not.toHaveBeenCalled()
+  })
+
   test('it should close the SSEAdapter', () => {
-    const fetchOptions = { method: 'GET' }
+    const fetchOptions = { method: 'GET', headers: { Authorization: 'Bearer xy' } }
     const sseAdapter = new SSEAdapter(url, fetchOptions)
 
     sseAdapter.close()
@@ -98,8 +127,12 @@ describe('SSEAdapter', () => {
 })
 
 describe('sse', () => {
+  afterEach(() => {
+    resetSSE()
+  })
+
   test('it should create and return an SSEAdapter instance', () => {
-    const fetchOptions = { method: 'GET' }
+    const fetchOptions = { method: 'GET', headers: { Authorization: 'Bearer xy' } }
     const eventSource = sse(url, fetchOptions)
 
     expect(eventSource).toBeInstanceOf(SSEAdapter)

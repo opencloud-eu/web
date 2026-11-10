@@ -169,6 +169,20 @@ describe('Notification component', () => {
       await wrapper.vm.$nextTick()
       expect(wrapper.findAll(selectors.notificationItem).length).toBe(1)
     })
+    it('unsubscribes from the SSE stream it subscribed to on unmount', async () => {
+      const { wrapper, mocks } = getWrapper({ supportSSE: true })
+      await flushPromises()
+      const stream = mocks.$clientService.sseAuthenticated
+      const newStream = mock<EventSource>()
+      ;(mocks.$clientService as { sseAuthenticated: EventSource }).sseAuthenticated = newStream
+
+      wrapper.unmount()
+      expect(stream.removeEventListener).toHaveBeenCalledWith(
+        MESSAGE_TYPE.NOTIFICATION,
+        expect.any(Function)
+      )
+      expect(newStream.removeEventListener).not.toHaveBeenCalled()
+    })
     it('does not restore notifications marked as read while refetching', async () => {
       const notifications = [getNotification({ notification_id: '1' })]
       const { wrapper, mocks } = getWrapper({ notifications })
