@@ -517,6 +517,14 @@ describe('ResourceTable', () => {
       expect(wrapper.emitted('update:selectedIds')).toBeTruthy()
     })
 
+    it('does not emit select event when a link in the row already handled the click', async () => {
+      const { wrapper } = getMountedWrapper()
+      const tableCell = wrapper.find('.oc-tbody-tr-forest .oc-table-data-cell-size')
+      tableCell.element.addEventListener('click', (event) => event.preventDefault())
+      await tableCell.trigger('click')
+      expect(wrapper.emitted('update:selectedIds')).toBeUndefined()
+    })
+
     it('does not emit select event when clicking on the row of a disabled resource', async () => {
       const { wrapper } = getMountedWrapper({ addProcessingResources: true })
       const tableRow = await wrapper.find('.oc-tbody-tr-rainforest .oc-table-data-cell-size')

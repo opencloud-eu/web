@@ -129,6 +129,12 @@ export const useResourceViewHelpers = ({
       })
     }
 
+    // a link inside the row/tile already started a navigation. Selecting now would update
+    // the URL and cancel that navigation if it's still pending (e.g. lazy loaded app routes)
+    if (event.defaultPrevented) {
+      return
+    }
+
     if (!event.shiftKey && !event.metaKey && !event.ctrlKey) {
       eventBus.publish('app.files.shiftAnchor.reset')
     }

@@ -152,6 +152,22 @@ describe('ResourceTiles component', () => {
       await wrapper.find('.oc-tiles-item .oc-resource-name').trigger('click')
       expect(wrapper.emitted().fileClick).toBeUndefined()
     })
+
+    it.each([
+      { defaultPrevented: false, selects: true },
+      { defaultPrevented: true, selects: false }
+    ])(
+      'selects the tile on click only if no link handled it (defaultPrevented: $defaultPrevented)',
+      async ({ defaultPrevented, selects }) => {
+        const { wrapper } = getWrapper({ props: { resources } })
+        const tileName = wrapper.find('.oc-tiles-item .resource-name-wrapper')
+        if (defaultPrevented) {
+          tileName.element.addEventListener('click', (event) => event.preventDefault())
+        }
+        await tileName.trigger('click')
+        expect(!!wrapper.emitted('update:selectedIds')).toBe(selects)
+      }
+    )
   })
 
   it('reflects the store selection on the resource tile', async () => {
