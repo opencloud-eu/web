@@ -1,4 +1,4 @@
-import { defineWebApplication, SidebarNavExtension } from '@opencloud-eu/web-pkg'
+import { defineWebApplication, SidebarNavExtension, useAbility } from '@opencloud-eu/web-pkg'
 import translations from 'virtual:l10n/web-app-office-settings'
 import { useGettext } from 'vue3-gettext'
 import { computed } from 'vue'
@@ -7,7 +7,13 @@ import App from './App.vue'
 export default defineWebApplication({
   setup() {
     const { $gettext } = useGettext()
+    const { can } = useAbility()
     const appId = 'admin-settings/office'
+
+    function canManageFonts() {
+      return can('create-all', 'Font')
+    }
+
     const appInfo = {
       name: $gettext('Office Settings'),
       id: appId
@@ -18,7 +24,7 @@ export default defineWebApplication({
         extensionPointIds: ['app.admin-settings.navItems'],
         type: 'sidebarNav',
         navItem: {
-          isVisible: () => true,
+          isVisible: canManageFonts,
           name: $gettext('Office'),
           icon: 'attachment',
           route: {
@@ -32,6 +38,11 @@ export default defineWebApplication({
         path: '/',
         name: 'office',
         component: App,
+        beforeEnter: () => {
+          if (!canManageFonts()) {
+            return { path: '/' }
+          }
+        },
         meta: {
           title: $gettext('Office Settings'),
           authContext: 'user'
