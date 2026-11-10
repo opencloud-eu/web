@@ -14,6 +14,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: don't render a revoked space image url after the image changed [[#4404](https://github.com/opencloud-eu/web/pull/4404)]
 - fix: pick up external file updates in a guest's open editor [[#4385](https://github.com/opencloud-eu/web/pull/4385)]
 - fix: keep positioned content inside the sidebar panel body [[#4401](https://github.com/opencloud-eu/web/pull/4401)]
 - fix: only show the office settings to users who can manage fonts [[#4398](https://github.com/opencloud-eu/web/pull/4398)]
