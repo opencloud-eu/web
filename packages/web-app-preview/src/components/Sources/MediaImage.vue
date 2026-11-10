@@ -139,8 +139,6 @@ const initPanzoom = async () => {
   panzoom.value = Panzoom(unref(img), {
     animate: false,
     duration: 300,
-    // the layout box of a quarter-turned image overflows the stage, which must not scroll to it
-    overflow: 'hidden',
     // an unzoomed image can't be dragged out of view, a swipe switches the file instead
     panOnlyWhenZoomed: true,
     minScale: 0.5,
