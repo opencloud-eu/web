@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @andrewyager, @kulmann, @saw-jan, @v-scharf
+@AlexAndBear, @JammingBen, @andrewyager, @kulmann, @saw-jan, @tammi-23, @v-scharf
 
 ### 🔒 Security
 
@@ -14,6 +14,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: support card wrap buttons when they exceed the card [[#4415](https://github.com/opencloud-eu/web/pull/4415)]
+- fix: pick the target folder when saving or exporting from Collabora [[#4374](https://github.com/opencloud-eu/web/pull/4374)]
 - fix: don't render a revoked space image url after the image changed [[#4404](https://github.com/opencloud-eu/web/pull/4404)]
 - fix: pick up external file updates in a guest's open editor [[#4385](https://github.com/opencloud-eu/web/pull/4385)]
 - fix: keep positioned content inside the sidebar panel body [[#4401](https://github.com/opencloud-eu/web/pull/4401)]
