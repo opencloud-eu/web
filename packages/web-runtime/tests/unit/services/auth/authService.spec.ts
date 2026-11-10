@@ -392,8 +392,8 @@ describe('AuthService', () => {
 
       const promise = authService.handleAuthError(userContextRoute)
       await vi.runAllTimersAsync()
-      await promise
 
+      await expect(promise).resolves.toBe(false)
       expect(signinSilent).toHaveBeenCalledTimes(5)
       expect(removeUser).toHaveBeenCalledWith('authError')
     })
@@ -415,8 +415,8 @@ describe('AuthService', () => {
 
       const promise = authService.handleAuthError(userContextRoute)
       await vi.runAllTimersAsync()
-      await promise
 
+      await expect(promise).resolves.toBe(true)
       expect(signinSilent).toHaveBeenCalledTimes(1)
       expect(removeUser).not.toHaveBeenCalled()
     })
@@ -570,7 +570,7 @@ describe('AuthService', () => {
         status: 401,
         data: { error_type: 'session_expired', permissionId: 'expired-permission-id' }
       } as AxiosResponse)
-      await authService.handleAuthError(guestLinkRoute, error)
+      await expect(authService.handleAuthError(guestLinkRoute, error)).resolves.toBe(false)
 
       expect(replace).toHaveBeenCalledWith({
         name: 'renewGuestLink',
@@ -768,16 +768,18 @@ describe('AuthService', () => {
       authStore.setGuestContext('permission-id', 'share-id')
       localStorage.setItem('oc.guestPermissionId', 'permission-id')
 
-      await authService.handleAuthError(
-        {
-          name: 'files-public-link',
-          fullPath: '/s/token',
-          meta: { authContext: 'publicLink' },
-          params: { token: 'token' },
-          query: {}
-        } as unknown as RouteLocation,
-        new DavHttpError('', undefined, undefined, 401)
-      )
+      await expect(
+        authService.handleAuthError(
+          {
+            name: 'files-public-link',
+            fullPath: '/s/token',
+            meta: { authContext: 'publicLink' },
+            params: { token: 'token' },
+            query: {}
+          } as unknown as RouteLocation,
+          new DavHttpError('', undefined, undefined, 401)
+        )
+      ).resolves.toBe(false)
 
       expect(clear).toHaveBeenCalledWith('token')
       expect(push).toHaveBeenCalledWith({

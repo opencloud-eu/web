@@ -362,41 +362,48 @@ export class AuthService implements AuthServiceInterface {
     return '/?' + new URLSearchParams(currentQuery as Record<string, string>).toString()
   }
 
-  public async handleAuthError(route: RouteLocation, error?: unknown) {
+  /**
+   * Handles an auth error for the given route. Resolves to `true` if the token got renewed,
+   * so the caller can retry its request.
+   */
+  public async handleAuthError(route: RouteLocation, error?: unknown): Promise<boolean> {
     if (
       !this.authStore.userContextReady &&
       !isPublicLinkContextRequired(this.router, route) &&
       (isGuestContextRequired(this.router, route) || isGuestSessionInvalidError(error))
     ) {
       if (!isGuestSessionInvalidError(error)) {
-        return
+        return false
       }
       const permissionId =
         getGuestLinkError(error)?.permissionId || this.authStore.guestPermissionId
       this.guestSessionManager.expire()
       // a private link only resolves for an active guest session, anything else needs a user
       if (isGuestContextAllowed(route)) {
-        return this.router.replace({ path: '/login', query: { redirectUrl: route.fullPath } })
+        await this.router.replace({ path: '/login', query: { redirectUrl: route.fullPath } })
+        return false
       }
       if (!permissionId) {
-        return
+        return false
       }
-      return this.router.replace({
+      await this.router.replace({
         name: 'renewGuestLink',
         params: { permissionId },
         ...(isGuestContextRequired(this.router, route) && {
           query: { redirectUrl: route.fullPath }
         })
       })
+      return false
     }
     if (isPublicLinkContextRequired(this.router, route)) {
       const token = extractPublicLinkToken(route)
       this.publicLinkManager.clear(token)
-      return this.router.push({
+      await this.router.push({
         name: 'resolvePublicLink',
         params: { token },
         query: { redirectUrl: route.fullPath }
       })
+      return false
     }
     if (isUserContextRequired(this.router, route) || isIdpContextRequired(this.router, route)) {
       const user = await this.userManager.getUser()
@@ -410,17 +417,18 @@ export class AuthService implements AuthServiceInterface {
       // exhausted), so a brief interruption doesn't kill an otherwise-valid
       // session.
       if (user && (await this.renewToken())) {
-        return
+        return true
       }
 
       await this.userManager.removeUser('authError')
       this.tokenTimerWorker?.resetTokenTimer()
-      return
+      return false
     }
     // authGuard is taking care of redirecting the user to the
     // accessDenied page if hasAuthErrorOccurred is set to true
     // we can't push the route ourselves, see authGuard for details.
     this.hasAuthErrorOccurred = true
+    return false
   }
 
   /**
