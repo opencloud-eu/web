@@ -14,6 +14,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: grammar [[#4409](https://github.com/opencloud-eu/web/pull/4409)]
 - fix: keep unlocked vaults in sync when moving their parent folder [[#4383](https://github.com/opencloud-eu/web/pull/4383)]
 - fix: show an error when the search fails and search again on resubmit [[#4365](https://github.com/opencloud-eu/web/pull/4365)]
 - fix: don't treat text after a dot as file extension when it contains spaces [[#4369](https://github.com/opencloud-eu/web/pull/4369)]
