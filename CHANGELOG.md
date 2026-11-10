@@ -1,6 +1,6 @@
 # Changelog
 
-## [8.2.2](https://github.com/opencloud-eu/web/releases/tag/v8.2.2) - 2026-11-09
+## [8.2.2](https://github.com/opencloud-eu/web/releases/tag/v8.2.2) - 2026-11-10
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -14,6 +14,10 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show an error when the search fails and search again on resubmit [[#4365](https://github.com/opencloud-eu/web/pull/4365)]
+- fix: don't treat text after a dot as file extension when it contains spaces [[#4369](https://github.com/opencloud-eu/web/pull/4369)]
+- fix: don't select the whole text field value on click [[#4362](https://github.com/opencloud-eu/web/pull/4362)]
+- fix: don't offer creating or copying into a view-only space root [[#4360](https://github.com/opencloud-eu/web/pull/4360)]
 - feat: make the support card stand out in the sidebar [[#4346](https://github.com/opencloud-eu/web/pull/4346)]
 - fix: wrap long resource names when truncation is disabled [[#4381](https://github.com/opencloud-eu/web/pull/4381)]
 - fix: show an error message when loading a folder or list fails [[#4356](https://github.com/opencloud-eu/web/pull/4356)]
