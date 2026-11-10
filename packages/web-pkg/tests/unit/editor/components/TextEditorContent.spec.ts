@@ -47,42 +47,19 @@ function mountEditorContent({
   showTableOfContents?: boolean
 } = {}) {
   const setContent = vi.fn()
-  const insertContent = vi.fn()
+  const openSlashCommandMenu = vi.fn()
   const registerPlugin = vi.fn()
   const unregisterPlugin = vi.fn()
-  const run = vi.fn()
-
-  const chain = vi.fn(() => ({
-    focus: vi.fn(() => ({
-      insertContentAt: vi.fn(() => ({
-        setTextSelection: vi.fn(() => ({
-          insertContent: vi.fn(() => ({ run }))
-        }))
-      })),
-      setTextSelection: vi.fn(() => ({
-        insertContent: vi.fn(() => ({ run }))
-      }))
-    }))
-  }))
 
   const textEditor = {
     editor: ref({
-      commands: { setContent, insertContent },
+      commands: { setContent, openSlashCommandMenu },
       on: vi.fn(),
       off: vi.fn(),
       registerPlugin,
       unregisterPlugin,
       getAttributes: vi.fn(() => ({})),
       isActive: vi.fn(() => false),
-      chain,
-      state: {
-        doc: {
-          nodeAt: vi.fn((pos: number) => ({
-            content: { size: pos > 0 ? 10 : 0 },
-            nodeSize: 10
-          }))
-        }
-      },
       extensionManager: {
         extensions: hasSlashCommands ? [{ name: 'slashCommands' }] : []
       }
@@ -115,7 +92,7 @@ function mountEditorContent({
     }
   })
 
-  return { wrapper, textEditor, setContent, chain, run }
+  return { wrapper, textEditor, setContent, openSlashCommandMenu }
 }
 
 describe('TextEditorContent', () => {
@@ -202,20 +179,15 @@ describe('TextEditorContent', () => {
   })
 
   it('opens slash menu when plus button is clicked', async () => {
-    const { wrapper, chain, run } = mountEditorContent({ hasSlashCommands: true })
+    const { wrapper, openSlashCommandMenu } = mountEditorContent({ hasSlashCommands: true })
 
-    // Simulate the drag handle node change event that sets the current position
     const dragHandle = wrapper.findComponent({ name: 'DragHandle' })
-    dragHandle.vm.$emit('node-change', { pos: 0 })
+    dragHandle.vm.$emit('node-change', { pos: 4 })
     await nextTick()
 
-    const plusButton = wrapper.find('.drag-handle-plus-button')
-    expect(plusButton.exists()).toBe(true)
+    await wrapper.find('.drag-handle-plus-button').trigger('click')
 
-    await plusButton.trigger('click')
-
-    expect(chain).toHaveBeenCalled()
-    expect(run).toHaveBeenCalled()
+    expect(openSlashCommandMenu).toHaveBeenCalledWith(4)
   })
 })
 
