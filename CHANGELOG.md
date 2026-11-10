@@ -153,6 +153,9 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency vitest-mock-extended to v6 [[#4402](https://github.com/opencloud-eu/web/pull/4402)]
+- chore(deps): update typescript-eslint monorepo to v8.72.2 [[#4411](https://github.com/opencloud-eu/web/pull/4411)]
+- chore(deps): update dependency axios to v1.21.1 [[#4410](https://github.com/opencloud-eu/web/pull/4410)]
 - chore(deps): update dependency fast-xml-parser to v5.12.0 [[#4253](https://github.com/opencloud-eu/web/pull/4253)]
 - chore(deps): update uppy monorepo [[#4254](https://github.com/opencloud-eu/web/pull/4254)]
 - chore(deps): update dependency license-checker-rseidelsohn to v5 [[#3386](https://github.com/opencloud-eu/web/pull/3386)]
