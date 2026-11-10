@@ -180,6 +180,22 @@ When(
   }
 )
 
+When(
+  '{string} scrolls down the files list',
+  async ({ world }: { world: World }, stepUser: string) => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.scrollDownListToEnd()
+  }
+)
+
+When(
+  '{string} scrolls down the files list until all items are loaded',
+  async ({ world }: { world: World }, stepUser: string) => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.scrollDownListUntilAllItemsAreLoaded()
+  }
+)
+
 Then(
   '{string} should see {int} resource(s) in the files/spaces list',
   async ({ world }: { world: World }, stepUser: string, expectedNumberOfResources: number) => {

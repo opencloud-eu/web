@@ -47,6 +47,8 @@ const fileDetailsTimestamp = '#oc-file-details-sidebar [data-testid="timestamp"]
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
 const tilesSlider = '#tiles-size-slider'
+const filesViewWrapperSelector = '#files-view-wrapper'
+const infiniteScrollSentinelSelector = '[data-testid="files-infinite-scroll-sentinel"]'
 const previewFavoriteButton = '.preview-controls-favorite'
 const filesContextMenu = 'div[id^="context-menu-drop"]'
 // actions with a route are rendered as links, so match on the action handler instead of buttons
@@ -233,6 +235,33 @@ export const expectPageNumberNotToBeVisible = async ({ page }: { page: Page }): 
 
 export const expectPageNumberToBeVisible = async ({ page }: { page: Page }): Promise<void> => {
   await expect(page.locator(filesPaginationNavSelector)).toBeVisible()
+}
+
+export const scrollDownListToEnd = async ({ page }: { page: Page }): Promise<void> => {
+  await page.locator(filesViewWrapperSelector).evaluate((viewWrapper: HTMLElement) => {
+    viewWrapper.scrollTop = viewWrapper.scrollHeight
+  })
+}
+
+export const scrollDownListUntilAllItemsAreLoaded = async ({
+  page
+}: {
+  page: Page
+}): Promise<void> => {
+  /**
+   * With infinite scrolling, the next chunk gets appended when the user gets close to
+   * the end of the list. Scroll repeatedly until the load indicator is gone, which
+   * means everything from the list is rendered.
+   */
+  await expect
+    .poll(
+      async () => {
+        await scrollDownListToEnd({ page })
+        return page.locator(infiniteScrollSentinelSelector).count()
+      },
+      { timeout: 20000, intervals: [500] }
+    )
+    .toBe(0)
 }
 
 export const createShotcut = async (args: shortcutArgs): Promise<void> => {
