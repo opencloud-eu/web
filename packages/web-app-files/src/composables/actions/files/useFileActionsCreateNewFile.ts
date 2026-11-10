@@ -113,6 +113,10 @@ export const useFileActionsCreateNewFile = () => {
             })
           }
 
+          if (isShareSpaceResource(space)) {
+            resource.remoteItemId = space.id
+          }
+
           markVaultStatus(extensionRegistry, space, [resource])
 
           resourcesStore.upsertResource(resource)

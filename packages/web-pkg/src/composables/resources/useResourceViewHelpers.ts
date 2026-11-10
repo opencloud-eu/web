@@ -129,6 +129,11 @@ export const useResourceViewHelpers = ({
       })
     }
 
+    // a link in the row already navigates, selecting would cancel that navigation
+    if (event.defaultPrevented) {
+      return
+    }
+
     if (!event.shiftKey && !event.metaKey && !event.ctrlKey) {
       eventBus.publish('app.files.shiftAnchor.reset')
     }

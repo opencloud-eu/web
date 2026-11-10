@@ -293,6 +293,71 @@ describe('InviteCollaboratorForm', () => {
         )
       ).toBe(false)
     })
+    it.each([
+      { query: 'Guest@Example.ORG', id: 'guest@example.org', displayName: 'guest@example.org' },
+      { query: 'x@Müller.de', id: 'x@xn--mller-kva.de', displayName: 'x@müller.de' },
+      { query: 'x@xn--mller-kva.de', id: 'x@xn--mller-kva.de', displayName: 'x@xn--mller-kva.de' },
+      { query: 'x@пример.рф', id: 'x@xn--e1afmkfd.xn--p1ai', displayName: 'x@пример.рф' }
+    ])(
+      'offers $query as a guest with the address the server stores',
+      async ({ query, id, displayName }) => {
+        const { wrapper } = getWrapper()
+        await search(wrapper, query)
+
+        const guest = (wrapper.vm as any).autocompleteResults.find(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+        expect(guest?.id).toBe(id)
+        expect(guest?.displayName).toBe(displayName)
+      }
+    )
+    it.each(['x@exa／mple.org', 'x@example.org:25', 'x@example.org/path', 'ü@example.org'])(
+      'does not offer a guest suggestion for %s',
+      async (query) => {
+        const { wrapper } = getWrapper()
+        await search(wrapper, query)
+
+        expect(
+          (wrapper.vm as any).autocompleteResults.some(
+            (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+          )
+        ).toBe(false)
+      }
+    )
+    it.each([
+      { query: 'Guest@Example.org', sharedWith: 'guest@example.org' },
+      { query: 'Guest@Müller.de', sharedWith: 'guest@xn--mller-kva.de' },
+      { query: 'x@Пример.РФ', sharedWith: 'x@xn--e1afmkfd.xn--p1ai' }
+    ])(
+      'does not offer $query as a guest when it is shared already',
+      async ({ query, sharedWith }) => {
+        const { wrapper } = getWrapper({
+          existingCollaborators: [
+            mock<CollaboratorShare>({ sharedWith: { id: sharedWith }, indirect: false })
+          ]
+        })
+        await search(wrapper, query)
+
+        expect(
+          (wrapper.vm as any).autocompleteResults.some(
+            (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+          )
+        ).toBe(false)
+      }
+    )
+    it('does not offer a guest suggestion for another spelling of a selected guest', async () => {
+      const { wrapper } = getWrapper()
+      await search(wrapper, 'guest@example.org')
+      ;(wrapper.vm as any).selectedCollaborators = [...(wrapper.vm as any).autocompleteResults]
+      await search(wrapper, 'GUEST@Example.org')
+
+      expect((wrapper.vm as any).selectedCollaborators.length).toBe(1)
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
   })
   describe('screen reader announcements', () => {
     const resultAnnouncements = () =>
@@ -615,6 +680,21 @@ describe('InviteCollaboratorForm', () => {
           options: expect.objectContaining({
             recipients: [{ email: 'guest@example.com' }]
           })
+        })
+      )
+    })
+    it('invites a guest picked from the suggestions with the address the server stores', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+      await search(wrapper, 'x@Müller.de')
+      ;(wrapper.vm as any).selectedCollaborators = [...(wrapper.vm as any).autocompleteResults]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      expect(addShare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({ recipients: [{ email: 'x@xn--mller-kva.de' }] })
         })
       )
     })

@@ -6,14 +6,16 @@
     :src="file.url"
     :alt="file.name"
     :data-id="file.id"
-    class="size-full object-contain"
+    class="object-contain"
+    :class="isQuarterTurn ? 'w-[100cqh] h-[100cqw] shrink-0' : 'size-full'"
     @error="emit('error')"
   />
   <div
     v-else-if="$slots.overlay"
     ref="img"
     :key="`media-image-wrapper-${file.id}`"
-    class="relative grid size-full grid-cols-[100%] grid-rows-[100%] place-items-center pt-4 [&>*]:[grid-area:1/1]"
+    class="relative grid grid-cols-[100%] grid-rows-[100%] place-items-center pt-4 [&>*]:[grid-area:1/1]"
+    :class="isQuarterTurn ? 'w-[100cqh] h-[100cqw] shrink-0' : 'size-full'"
     :data-id="file.id"
   >
     <img :src="file.url" :alt="file.name" class="max-w-full max-h-full" @error="emit('error')" />
@@ -26,7 +28,8 @@
     :src="file.url"
     :alt="file.name"
     :data-id="file.id"
-    class="max-w-full max-h-full pt-4"
+    class="pt-4"
+    :class="isQuarterTurn ? 'max-w-[100cqh] max-h-[100cqw]' : 'max-w-full max-h-full'"
     @error="emit('error')"
   />
 </template>
@@ -68,6 +71,9 @@ const panzoom = ref<PanzoomObject>()
 // scaled to fit, svgs without an intrinsic size (viewBox only) would otherwise
 // render at the browser's default of 300x150.
 const isSvgImage = computed(() => file.mimeType === 'image/svg+xml')
+// a quarter turn swaps the width and height of the image, so its size limits are
+// swapped as well: the rotated image then fits the stage (a size container)
+const isQuarterTurn = computed(() => currentImageRotation % 180 !== 0)
 
 const onWheelEvent = (e: WheelEvent) => {
   e.preventDefault()
@@ -133,7 +139,6 @@ const initPanzoom = async () => {
   panzoom.value = Panzoom(unref(img), {
     animate: false,
     duration: 300,
-    overflow: 'auto',
     // an unzoomed image can't be dragged out of view, a swipe switches the file instead
     panOnlyWhenZoomed: true,
     minScale: 0.5,
