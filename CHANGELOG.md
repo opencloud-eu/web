@@ -167,6 +167,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency eslint-plugin-vue to v10.12.1 [[#4414](https://github.com/opencloud-eu/web/pull/4414)]
 - fix(deps): update dependency vitest-mock-extended to v6 [[#4402](https://github.com/opencloud-eu/web/pull/4402)]
 - chore(deps): update typescript-eslint monorepo to v8.72.2 [[#4411](https://github.com/opencloud-eu/web/pull/4411)]
 - chore(deps): update dependency axios to v1.21.1 [[#4410](https://github.com/opencloud-eu/web/pull/4410)]
