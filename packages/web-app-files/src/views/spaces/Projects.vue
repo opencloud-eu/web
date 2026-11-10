@@ -97,7 +97,7 @@
                 />
                 <img
                   v-else-if="resource.thumbnail"
-                  class="tile-preview rounded-t-sm size-full"
+                  class="tile-preview rounded-t-sm size-full object-cover"
                   :class="{
                     'rounded-sm': isResourceInSelection(resource)
                   }"
