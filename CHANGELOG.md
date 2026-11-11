@@ -1,13 +1,14 @@
 # Changelog
 
-## [7.1.6](https://github.com/opencloud-eu/web/releases/tag/v7.1.6) - 2026-11-05
+## [7.1.6](https://github.com/opencloud-eu/web/releases/tag/v7.1.6) - 2026-11-11
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @v-scharf
+@AlexAndBear, @kulmann, @v-scharf
 
 ### 🔒 Security
 
+- [stable-7.1] fix: port security fixes from web-internal [[#4432](https://github.com/opencloud-eu/web/pull/4432)]
 - [stable-7.1] fix: verify the sender of postMessage events in picker modals and external apps (#4289) [[#4295](https://github.com/opencloud-eu/web/pull/4295)]
 
 ### 🐛 Bug Fixes
