@@ -10,7 +10,7 @@ APACHE_TIKA = "apache/tika:4.3.0-SNAPSHOT"
 IMAGOR = "shumc/imagor:1.10.1"
 
 # renovate: datasource=docker depName=collabora/code
-COLLABORA_CODE = "collabora/code:26.04.5.2.1"
+COLLABORA_CODE = "collabora/code:26.04.6.1.1"
 
 # renovate: datasource=docker depName=quay.io/keycloak/keycloak
 KEYCLOAK = "quay.io/keycloak/keycloak:26.7.3"
