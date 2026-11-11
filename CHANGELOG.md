@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: add logout for guests [[#4416](https://github.com/opencloud-eu/web/pull/4416)]
 - fix: match filter terms literally instead of as fuse operators [[#4437](https://github.com/opencloud-eu/web/pull/4437)]
 - fix: sort tag lists for display [[#4430](https://github.com/opencloud-eu/web/pull/4430)]
 
