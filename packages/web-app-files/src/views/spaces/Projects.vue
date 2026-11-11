@@ -189,7 +189,13 @@ import {
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { spaceTilesSortFields, translateSortFields } from '@opencloud-eu/web-pkg'
-import { defaultFuseOptions, formatFileSize, ResourceIcon, SpaceImage } from '@opencloud-eu/web-pkg'
+import {
+  defaultFuseOptions,
+  escapeFuseQuery,
+  formatFileSize,
+  ResourceIcon,
+  SpaceImage
+} from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { useKeyboardActions } from '@opencloud-eu/web-pkg'
 import {
@@ -288,7 +294,7 @@ function filter(spaces: SpaceResource[]) {
   }
 
   const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
-  return searchEngine.search(unref(filterTerm)).map((r) => r.item)
+  return searchEngine.search(escapeFuseQuery(unref(filterTerm))).map((r) => r.item)
 }
 
 const batchActionsLoading = computed(() => {

@@ -98,7 +98,7 @@ import { useContextualHelpers } from '../../../composables/contextualHelpers'
 import { ProjectSpaceResource, CollaboratorShare } from '@opencloud-eu/web-client'
 import { useClientService } from '@opencloud-eu/web-pkg'
 import Fuse from 'fuse.js'
-import { defaultFuseOptions, useLocalPagination } from '@opencloud-eu/web-pkg'
+import { defaultFuseOptions, escapeFuseQuery, useLocalPagination } from '@opencloud-eu/web-pkg'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
 
@@ -136,7 +136,7 @@ const filter = (collection: CollaboratorShare[], term: string) => {
     keys: ['sharedWith.displayName', 'sharedWith.name']
   })
 
-  return searchEngine.search(term).map((r) => r.item)
+  return searchEngine.search(escapeFuseQuery(term)).map((r) => r.item)
 }
 
 const toggleFilter = async () => {

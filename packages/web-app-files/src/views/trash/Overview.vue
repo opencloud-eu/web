@@ -116,6 +116,7 @@ import {
   createFileRouteOptions,
   createLocationTrash,
   defaultFuseOptions,
+  escapeFuseQuery,
   FileSideBar,
   NoContentMessage,
   Pagination,
@@ -306,7 +307,7 @@ function filter(spaces: SpaceResource[]) {
     return spaces
   }
   const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
-  return searchEngine.search(unref(filterTerm)).map((r) => r.item)
+  return searchEngine.search(escapeFuseQuery(unref(filterTerm))).map((r) => r.item)
 }
 
 const getTrashLink = (space: SpaceResource) =>

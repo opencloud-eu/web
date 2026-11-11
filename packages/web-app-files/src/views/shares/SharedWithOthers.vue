@@ -111,6 +111,7 @@
 <script setup lang="ts">
 import {
   defaultFuseOptions,
+  escapeFuseQuery,
   queryItemAsString,
   useAppsStore,
   useFileActions,
@@ -162,7 +163,7 @@ function filterShares(shares: OutgoingShareResource[]) {
   let result = shares
   if (unref(filterTerm)) {
     const searchEngine = new Fuse(result, { ...defaultFuseOptions, keys: ['name'] })
-    result = searchEngine.search(unref(filterTerm)).map((r) => r.item)
+    result = searchEngine.search(escapeFuseQuery(unref(filterTerm))).map((r) => r.item)
   }
 
   const selectedShareTypes = queryItemAsString(unref(selectedShareTypesQuery))?.split('+')

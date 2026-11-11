@@ -86,6 +86,7 @@
 <script setup lang="ts">
 import {
   defaultFuseOptions,
+  escapeFuseQuery,
   FileSideBar,
   useFileActions,
   useLoadPreview,
@@ -131,7 +132,7 @@ function filterShares(shares: OutgoingShareResource[]) {
     return shares
   }
   const searchEngine = new Fuse(shares, { ...defaultFuseOptions, keys: ['name'] })
-  return searchEngine.search(unref(filterTerm)).map((r) => r.item)
+  return searchEngine.search(escapeFuseQuery(unref(filterTerm))).map((r) => r.item)
 }
 
 const {

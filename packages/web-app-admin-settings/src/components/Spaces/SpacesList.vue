@@ -115,6 +115,7 @@ import {
   formatRelativeDateFromJSDate,
   formatFileSize,
   defaultFuseOptions,
+  escapeFuseQuery,
   useKeyboardActions,
   useIsTopBarSticky,
   useSharesStore,
@@ -179,7 +180,7 @@ function filter(spaces: SpaceResource[], filterTerm: string) {
     return spaces
   }
   const searchEngine = new Fuse(spaces, { ...defaultFuseOptions, keys: ['name'] })
-  return searchEngine.search(filterTerm).map((r) => r.item)
+  return searchEngine.search(escapeFuseQuery(filterTerm)).map((r) => r.item)
 }
 
 const filteredSpaces = computed(() => filter(unref(spaces), filterTerm))

@@ -3,6 +3,7 @@ import Fuse from 'fuse.js'
 import { omit } from 'lodash-es'
 import {
   defaultFuseOptions,
+  escapeFuseQuery,
   queryItemAsString,
   useRouteQuery,
   useRouter
@@ -27,7 +28,7 @@ export function useAppFilter(apps: Ref<App[]>) {
       return unref(apps)
     }
     return unref(searchEngine)
-      .search(term)
+      .search(escapeFuseQuery(term))
       .map((result) => result.item)
   })
 

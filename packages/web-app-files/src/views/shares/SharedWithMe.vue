@@ -127,7 +127,7 @@ import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { useGettext } from 'vue3-gettext'
-import { defaultFuseOptions } from '@opencloud-eu/web-pkg'
+import { defaultFuseOptions, escapeFuseQuery } from '@opencloud-eu/web-pkg'
 import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { omit, uniq } from 'lodash-es'
 import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
@@ -166,7 +166,7 @@ function filterShares(shares: IncomingShareResource[]) {
 
   if (unref(filterTerm).trim()) {
     const usersSearchEngine = new Fuse(result, { ...defaultFuseOptions, keys: ['name'] })
-    result = usersSearchEngine.search(unref(filterTerm)).map((r) => r.item)
+    result = usersSearchEngine.search(escapeFuseQuery(unref(filterTerm))).map((r) => r.item)
   }
 
   return result
