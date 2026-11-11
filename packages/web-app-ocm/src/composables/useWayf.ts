@@ -55,9 +55,28 @@ export function useWayf() {
 
   const buildProviderUrl = (baseUrl: string, token: string, providerDomain?: string): string => {
     const url = new URL(baseUrl)
+    if (!['https:', 'http:'].includes(url.protocol)) {
+      throw new Error(`Unsupported protocol in provider url: ${url.protocol}`)
+    }
     if (providerDomain) url.searchParams.set('providerDomain', providerDomain)
     if (token) url.searchParams.set('token', token)
     return url.toString()
+  }
+
+  const redirectToProvider = (baseUrl: string, token: string, providerDomain?: string) => {
+    let finalUrl: string
+    try {
+      finalUrl = buildProviderUrl(baseUrl, token, providerDomain)
+    } catch (err) {
+      console.error('Invalid provider url:', err)
+      showErrorMessage({
+        title: $gettext('Invalid Provider'),
+        desc: $gettext('The provider returned an invalid invite URL'),
+        errors: [err]
+      })
+      return
+    }
+    window.location.href = finalUrl
   }
 
   const navigateToProvider = async (
@@ -92,8 +111,7 @@ export function useWayf() {
       }
 
       // Build final URL with query parameters and redirect
-      const finalUrl = buildProviderUrl(inviteDialogUrl, token, providerDomain)
-      window.location.href = finalUrl
+      redirectToProvider(inviteDialogUrl, token, providerDomain)
     } catch (err) {
       console.error('Failed to navigate to provider:', err)
       // Error is already shown by discoverProvider, do not use showErrorMessage here
@@ -123,8 +141,7 @@ export function useWayf() {
     try {
       loading.value = true
       const inviteDialogUrl = await discoverProvider(trimmedInput)
-      const finalUrl = buildProviderUrl(inviteDialogUrl, token, providerDomain)
-      window.location.href = finalUrl
+      redirectToProvider(inviteDialogUrl, token, providerDomain)
     } catch (err) {
       console.error('Failed to navigate to manual provider:', err)
       // Error is already shown by discoverProvider, do not use showErrorMessage here

@@ -112,7 +112,7 @@
             <span
               v-if="resource.highlights"
               class="truncate block text-sm [&_mark]:bg-yellow-200 [&_mark]:font-semibold"
-              v-html="resource.highlights"
+              v-html="sanitizeHighlights(resource.highlights)"
             />
             <!--eslint-enable-->
           </template>
@@ -192,6 +192,7 @@ import {
   useKeyboardFileActions
 } from '../../composables/keyboardActions'
 import { storeToRefs } from 'pinia'
+import DOMPurify from 'dompurify'
 import { folderViewsSearchExtensionPoint } from '../../extensionPoints'
 
 type Tag = {
@@ -336,6 +337,10 @@ const availableMediaTypeValues = computed(() => {
 
 const getFakeResourceForIcon = (item: { label: string; icon: string }) => {
   return { type: 'file', extension: item.icon, isFolder: item.icon == 'folder' } as Resource
+}
+
+function sanitizeHighlights(highlights: string) {
+  return DOMPurify.sanitize(highlights, { ALLOWED_TAGS: ['mark'], ALLOWED_ATTR: [] })
 }
 
 const hasFilter = computed(() => {
