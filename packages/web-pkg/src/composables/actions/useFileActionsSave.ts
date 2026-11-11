@@ -11,19 +11,25 @@ export function useFileActionsSave({
   isDirty,
   isEditor,
   isReadOnly,
-  onSave
+  onSave,
+  flushContent
 }: {
   content: Ref<unknown>
   isDirty: Ref<boolean>
   isEditor: Ref<boolean>
   isReadOnly: Ref<boolean>
   onSave: () => Promise<void>
+  /** Brings `content` up to date before "Save as". Resolving to false cancels it. */
+  flushContent?: () => Promise<boolean>
 }) {
   const { $gettext } = useGettext()
   const { dispatchModal } = useModals()
   const { getParentFolderLink } = useFolderLink()
 
-  function saveAsHandler({ resources }: FileActionOptions) {
+  async function saveAsHandler({ resources }: FileActionOptions) {
+    if (flushContent && !(await flushContent())) {
+      return
+    }
     dispatchModal({
       elementClass: 'save-as-modal',
       title: $gettext('Save as'),
