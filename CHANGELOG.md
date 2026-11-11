@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @v-scharf
+@AlexAndBear, @JammingBen, @v-scharf
 
 ### 🐛 Bug Fixes
 
+- fix: update the open shares panel when another session changes shares [[#4371](https://github.com/opencloud-eu/web/pull/4371)]
 - fix: add logout for guests [[#4416](https://github.com/opencloud-eu/web/pull/4416)]
 - fix: match filter terms literally instead of as fuse operators [[#4437](https://github.com/opencloud-eu/web/pull/4437)]
 - fix: sort tag lists for display [[#4430](https://github.com/opencloud-eu/web/pull/4430)]
