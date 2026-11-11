@@ -8,6 +8,6 @@
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "vue-router": "5.4.0"
+    "vue-router": "5.5.0"
   }
 }
