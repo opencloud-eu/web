@@ -165,7 +165,8 @@ import {
   getLastModifiedFilterOptions,
   getMediaTypeFilterOptions,
   SearchMediaTypeFilterOption,
-  useKeyboardActions
+  useKeyboardActions,
+  sortTags
 } from '@opencloud-eu/web-pkg'
 import QuickActions from '../components/FilesList/QuickActions.vue'
 import ListInfo from '../components/FilesList/ListInfo.vue'
@@ -183,7 +184,8 @@ import { v4 as uuidV4 } from 'uuid'
 const { getMatchingSpace } = useGetMatchingSpace()
 const { loadGraphPermissions } = useSpacesStore()
 const clientService = useClientService()
-const { $gettext } = useGettext()
+const language = useGettext()
+const { $gettext } = language
 const capabilityStore = useCapabilityStore()
 
 const resourcesStore = useResourcesStore()
@@ -199,7 +201,10 @@ const tagParam = useRouteQuery('q_tags')
 
 const availableTags = ref<{ id: string; label: string }[]>([])
 const loadAvailableTagsTask = useTask(function* (signal) {
-  const tags = yield* call(clientService.graphAuthenticated.tags.listTags({ signal }))
+  const tags = sortTags(
+    yield* call(clientService.graphAuthenticated.tags.listTags({ signal })),
+    language.current
+  )
   availableTags.value = tags.map((tag) => ({ id: tag, label: tag }))
 })
 

@@ -82,7 +82,8 @@ import {
   useMessages,
   useResourcesStore,
   useRouter,
-  useSideBar
+  useSideBar,
+  sortTags
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { useTask } from 'vue-concurrency'
@@ -119,7 +120,8 @@ const { publicLinkContextReady } = storeToRefs(authStore)
 
 const type = unref(publicLinkContextReady) ? 'span' : 'router-link'
 const resource = toRef(props, 'resource')
-const { $gettext } = useGettext()
+const language = useGettext()
+const { $gettext } = language
 const readonly = computed(
   () =>
     unref(resource).locked === true ||
@@ -135,7 +137,10 @@ let allTags: string[] = []
 const tagSelect: VNodeRef = ref(null)
 
 const loadAvailableTagsTask = useTask(function* (signal) {
-  const tags = yield* call(clientService.graphAuthenticated.tags.listTags({ signal }))
+  const tags = sortTags(
+    yield* call(clientService.graphAuthenticated.tags.listTags({ signal })),
+    language.current
+  )
 
   allTags = tags
   const selectedLabels = new Set(unref(selectedTags).map((o) => o.label))
@@ -145,7 +150,7 @@ const loadAvailableTagsTask = useTask(function* (signal) {
 })
 
 function resetTags() {
-  savedTags.value = [...unref(resource).tags]
+  savedTags.value = sortTags(unref(resource).tags, language.current)
   selectedTags.value = unref(savedTags).map((label) => ({ label }))
 }
 
@@ -166,7 +171,9 @@ const isOptionSelectable = (option: TagOption) => {
 function setSelectedTags(labels: string[]) {
   selectedTags.value = labels.map((label) => ({ label }))
   const allAvailableTags = new Set([...allTags, ...unref(availableTags).map((t) => t.label)])
-  availableTags.value = diff(Array.from(allAvailableTags), labels).map((label) => ({ label }))
+  availableTags.value = sortTags(diff(Array.from(allAvailableTags), labels), language.current).map(
+    (label) => ({ label })
+  )
 }
 
 const save = async (e: TagOption[] | string[]) => {

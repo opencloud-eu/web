@@ -13,8 +13,13 @@ describe('Tag Select', () => {
     expect(wrapper.find('.tags-select').exists()).toBeTruthy()
   })
 
-  it('all available tags are selectable', async () => {
-    const tags = 'a,b,c'
+  it('shows the assigned tags in sorted order', () => {
+    const { wrapper } = createWrapper(mock<Resource>({ tags: ['b', 'C', 'a'] }))
+    expect(getLabels((wrapper.vm as any).selectedTags)).toEqual(['a', 'b', 'C'])
+  })
+
+  it('all available tags are selectable in sorted order', async () => {
+    const tags = 'c,B,a'
     const resource = mock<Resource>({ tags: [] })
     const clientService = mockDeep<ClientService>()
     clientService.graphAuthenticated.tags.listTags.mockResolvedValueOnce(tags.split(','))
@@ -23,7 +28,7 @@ describe('Tag Select', () => {
     await flushPromises()
     expect(
       (wrapper.findComponent(OcSelect).findComponent({ ref: 'selectRef' }).props() as any).options
-    ).toEqual([{ label: 'a' }, { label: 'b' }, { label: 'c' }])
+    ).toEqual([{ label: 'a' }, { label: 'B' }, { label: 'c' }])
   })
 
   test.each<[string[], { label: string }[], string[]]>([
@@ -98,6 +103,21 @@ describe('Tag Select', () => {
     await (wrapper.vm as any).save([{ label: 'a' }])
     await (wrapper.vm as any).save([])
     expect(unassignTagsStub).toHaveBeenCalledWith(expect.objectContaining({ tags: ['a'] }))
+  })
+
+  it('keeps available tags sorted after a new tag was added and removed again', async () => {
+    const clientService = mockDeep<ClientService>()
+    clientService.graphAuthenticated.tags.assignTags.mockResolvedValue(undefined)
+    clientService.graphAuthenticated.tags.unassignTags.mockResolvedValue(undefined)
+    const { wrapper } = createWrapper(mock<Resource>({ id: '1', tags: [] }), clientService, [
+      'beta',
+      'gamma'
+    ])
+    await flushPromises()
+
+    await (wrapper.vm as any).save([{ label: 'alpha' }])
+    await (wrapper.vm as any).save([])
+    expect(getLabels((wrapper.vm as any).availableTags)).toEqual(['alpha', 'beta', 'gamma'])
   })
 
   it('keeps the tags of a newer save when an older save finishes after it', async () => {
