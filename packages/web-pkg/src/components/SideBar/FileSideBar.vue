@@ -38,7 +38,8 @@ import {
   useCanListVersions,
   useSideBar,
   useLoadShares,
-  useMessages
+  useMessages,
+  useExternalShareUpdates
 } from '../../composables'
 import {
   isProjectSpaceResource,
@@ -68,7 +69,7 @@ const { canListShares } = useCanListShares()
 const { canListVersions } = useCanListVersions()
 
 const resourcesStore = useResourcesStore()
-const { currentFolder } = storeToRefs(resourcesStore)
+const { currentFolder, ancestorMetaData } = storeToRefs(resourcesStore)
 
 const sidebarStore = useSideBar()
 const { isSideBarOpen: isOpen } = storeToRefs(sidebarStore)
@@ -194,27 +195,47 @@ function loadVersions(resource: Resource) {
   }
 }
 
-async function loadShares(resource: Resource) {
+/**
+ * Loads the shares of the given resource. A refresh loads them again, e.g. after
+ * another client changed them, and keeps the panel content in place meanwhile.
+ */
+async function loadShares(resource: Resource, { refresh = false } = {}) {
   if (!canListShares({ space, resource })) {
     // check again next time, e.g. when a disabled space gets enabled
     loadedSharesResourceId.value = undefined
     return
   }
 
-  if (resource.id === unref(loadedSharesResourceId)) {
+  if (!refresh && resource.id === unref(loadedSharesResourceId)) {
     // don't load shares if already loaded
     return
   }
 
   loadedSharesResourceId.value = resource.id
 
+  // a load that is still running shows the loading state, its replacement has to end it
+  const updateStore = !refresh || sharesStore.loading
+
   if (loadSharesTask.isRunning) {
     loadSharesTask.cancelAll()
   }
 
-  const taskInstance = loadSharesTask.perform({ space, resource })
+  const taskInstance = loadSharesTask.perform({
+    space,
+    resource,
+    updateStore,
+    skipCache: refresh
+  })
   try {
-    await taskInstance
+    const { collaboratorShares, linkShares } = await taskInstance
+    if (!updateStore) {
+      if (unref(loadedSharesResourceId) !== resource.id) {
+        // the sidebar shows something else by now
+        return
+      }
+      sharesStore.setCollaboratorShares(collaboratorShares)
+      sharesStore.setLinkShares(linkShares)
+    }
   } catch (e) {
     if (taskInstance.isCanceled) {
       return
@@ -224,9 +245,34 @@ async function loadShares(resource: Resource) {
       // allow loading the shares of this resource again
       loadedSharesResourceId.value = undefined
     }
+    if (!updateStore) {
+      // a failed background refresh keeps the shown shares, e.g. when the access was revoked meanwhile.
+      // a refresh that replaced a running load cleared them, hence it reports the error like that load
+      return
+    }
     showErrorMessage({ title: $gettext('Failed to load shares'), errors: [e] })
   }
 }
+
+// the shown shares include the ones of the parent folders
+const sharesItemIds = computed(() => {
+  if (!unref(isOpen) || unref(panelContext).items?.length !== 1) {
+    return []
+  }
+  const ancestorIds = Object.values(unref(ancestorMetaData)).map(({ id }) => id)
+  return [unref(panelContext).items[0].fileId, ...ancestorIds]
+})
+
+function refreshShares() {
+  const resource = unref(panelContext).items[0]
+  if (unref(loadedSharesResourceId) !== resource.id) {
+    // the shares are not loaded (yet)
+    return
+  }
+  loadShares(resource, { refresh: true })
+}
+
+useExternalShareUpdates({ itemIds: sharesItemIds, onExternalShareUpdate: refreshShares })
 
 /**
  * Sets the loaded resource that gets injected into the sidebar panels.

@@ -46,6 +46,42 @@ describe('RoleDropdown', () => {
     await wrapper.find(selectors.roleButton).trigger('click')
     expect(wrapper.emitted('optionChange')).toBeTruthy()
   })
+  describe('when the existing share role changes', () => {
+    const canView = mock<ShareRole>({ id: 'view', displayName: 'Can view', description: '' })
+    const canEdit = mock<ShareRole>({ id: 'edit', displayName: 'Can edit', description: '' })
+
+    it('shows and selects the new role', async () => {
+      const { wrapper } = getWrapper({
+        mountType: shallowMount,
+        existingShareRole: canView,
+        availableInternalShareRoles: [canView, canEdit]
+      })
+
+      await wrapper.setProps({ existingShareRole: canEdit })
+
+      expect(wrapper.find(`${selectors.recipientRoleBtn} span`).text()).toEqual('Can edit')
+      expect(wrapper.find(`#files-recipient-role-drop-btn-${canEdit.id}`).classes()).toContain(
+        'selected'
+      )
+      expect(wrapper.find(`#files-recipient-role-drop-btn-${canView.id}`).classes()).not.toContain(
+        'selected'
+      )
+    })
+    it('keeps the role selected in this tab once the share got updated', async () => {
+      const { wrapper } = getWrapper({
+        mountType: shallowMount,
+        existingShareRole: canView,
+        availableInternalShareRoles: [canView, canEdit]
+      })
+
+      await wrapper.find(`#files-recipient-role-drop-btn-${canEdit.id}`).trigger('click')
+      expect(wrapper.emitted('optionChange')).toEqual([[canEdit]])
+
+      await wrapper.setProps({ existingShareRole: { ...canEdit } })
+
+      expect(wrapper.find(`${selectors.recipientRoleBtn} span`).text()).toEqual('Can edit')
+    })
+  })
   describe('resetSelectedRole', () => {
     it('reverts to the existing share role', async () => {
       const canView = mock<ShareRole>({ id: 'view', displayName: 'Can view', description: '' })
