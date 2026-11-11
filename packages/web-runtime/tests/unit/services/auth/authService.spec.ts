@@ -7,7 +7,12 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { mock } from 'vitest-mock-extended'
 import { DavHttpError } from '@opencloud-eu/web-client'
-import { Router } from 'vue-router'
+import {
+  createMemoryHistory,
+  createRouter as createVueRouter,
+  isNavigationFailure,
+  Router
+} from 'vue-router'
 import { AxiosError, AxiosResponse } from 'axios'
 import { ErrorResponse, ErrorTimeout } from 'oidc-client-ts'
 import { AuthService } from '../../../../src/services/auth/authService'
@@ -814,6 +819,59 @@ describe('AuthService', () => {
 
       expect(authStore.guestContextReady).toBeFalsy()
       expect(localStorage.getItem('oc.guestPermissionId')).toBeNull()
+    })
+  })
+
+  describe('guest logout', () => {
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    function getGuestLogout({ abortNavigation = false } = {}) {
+      const authService = new AuthService()
+      const router = createVueRouter({
+        history: createMemoryHistory(),
+        routes: [{ path: '/logout', name: 'logout', component: {} }]
+      })
+      if (abortNavigation) {
+        router.beforeEach(() => false)
+      }
+      const push = vi.spyOn(router, 'push')
+      initAuthService({ authService, router })
+      const logout = vi.spyOn(GuestSessionManager.prototype, 'logout').mockResolvedValue(undefined)
+      return { authService, push, logout }
+    }
+
+    it('navigates to the guest variant of the logout page before ending the session', async () => {
+      const { authService, push, logout } = getGuestLogout()
+
+      await authService.logoutGuest()
+
+      expect(push).toHaveBeenCalledWith({ name: 'logout', query: { guest: 'true' } })
+      expect(logout).toHaveBeenCalled()
+      expect(push.mock.invocationCallOrder[0]).toBeLessThan(logout.mock.invocationCallOrder[0])
+    })
+
+    it('shows the failure on the logout page if the session could not be ended', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const { authService, logout } = getGuestLogout()
+      const router = (authService as any).router
+      const replace = vi.spyOn(router, 'replace')
+      logout.mockRejectedValueOnce(new Error('500'))
+
+      await authService.logoutGuest()
+
+      expect(replace).toHaveBeenCalledWith({
+        name: 'logout',
+        query: { guest: 'true', failed: 'true' }
+      })
+    })
+
+    it('keeps the session when the navigation is aborted', async () => {
+      const { authService, logout } = getGuestLogout({ abortNavigation: true })
+
+      expect(isNavigationFailure(await authService.logoutGuest())).toBeTruthy()
+      expect(logout).not.toHaveBeenCalled()
     })
   })
 

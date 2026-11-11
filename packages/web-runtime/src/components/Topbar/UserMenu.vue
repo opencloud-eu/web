@@ -79,7 +79,18 @@
               <span v-text="$gettext('Preferences')" />
             </oc-button>
           </li>
-          <li v-if="!authStore.isGuestContext" class="flex items-center">
+          <li v-if="authStore.isGuestContext" class="flex items-center">
+            <oc-button
+              id="oc-topbar-account-logout"
+              appearance="raw"
+              justify-content="left"
+              @click="authService.logoutGuest()"
+            >
+              <oc-icon name="logout-box-r" fill-type="line" class="p-1" />
+              <span v-text="$gettext('Log out')" />
+            </oc-button>
+          </li>
+          <li v-else class="flex items-center">
             <oc-button
               id="oc-topbar-account-login"
               appearance="raw"
