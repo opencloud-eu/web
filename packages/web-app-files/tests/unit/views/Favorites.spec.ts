@@ -140,10 +140,10 @@ describe('Favorites view', () => {
         { id: 'folder', label: 'Folder', icon: 'folder' }
       ])
     })
-    it('shows a tag filter with the available tags if tags are supported', async () => {
+    it('shows a tag filter with the available tags sorted if tags are supported', async () => {
       const { wrapper, mocks } = getMountedWrapper({
         capabilities: { files: { tags: true } } as Partial<Capabilities['capabilities']>,
-        tags: ['work', 'private']
+        tags: ['Zebra', 'work', 'private']
       })
       await flushPromises()
 
@@ -153,8 +153,9 @@ describe('Favorites view', () => {
 
       expect(mocks.$clientService.graphAuthenticated.tags.listTags).toHaveBeenCalled()
       expect(tagFilter.props('items')).toEqual([
+        { id: 'private', label: 'private' },
         { id: 'work', label: 'work' },
-        { id: 'private', label: 'private' }
+        { id: 'Zebra', label: 'Zebra' }
       ])
     })
     it('shows the tag filter with a hint if no tags exist yet', async () => {

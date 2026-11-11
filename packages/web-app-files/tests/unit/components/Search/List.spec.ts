@@ -309,14 +309,17 @@ describe('List component', () => {
         expect(tagFilter.exists()).toBeTruthy()
         expect(tagFilter.props('noItemsMessage')).toBeTruthy()
       })
-      it('should show all available tags', async () => {
-        const tag = 'tag1'
-        const { wrapper } = getWrapper({ availableTags: [tag] })
+      it('should show all available tags sorted', async () => {
+        const { wrapper } = getWrapper({ availableTags: ['tag2', 'Tag10', 'tag1'] })
         await flushPromises()
         expect(wrapper.find(selectors.tagFilter).exists()).toBeTruthy()
         expect(
           wrapper.findComponent<typeof ItemFilter>(selectors.tagFilter).props('items')
-        ).toEqual([{ label: tag, id: tag }])
+        ).toEqual([
+          { label: 'tag1', id: 'tag1' },
+          { label: 'tag2', id: 'tag2' },
+          { label: 'Tag10', id: 'Tag10' }
+        ])
       })
       it('should set initial filter when tags are given via query param', async () => {
         const searchTerm = 'term'

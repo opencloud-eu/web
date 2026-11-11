@@ -631,6 +631,15 @@ describe('ResourceTable', () => {
         const resourceRow = wrapper.find(`[data-item-id="${resource.id}"]`)
         expect(resourceRow.findAll('.resource-table-tag').length).toBe(tagCount)
       })
+      it('renders the first 2 tags in sorted order', () => {
+        const resource = mock<Resource>({ id: '1', tags: ['moon', 'Space', 'apple'] })
+        const { wrapper } = getMountedWrapper({ props: { resources: [resource] } })
+        const resourceRow = wrapper.find(`[data-item-id="${resource.id}"]`)
+        expect(resourceRow.findAll('.resource-table-tag').map((t) => t.text())).toEqual([
+          'apple',
+          'moon'
+        ])
+      })
       it('render router link if user is authenticated', () => {
         const resource = mock<Resource>({ id: '1', tags: ['1'] })
         const { wrapper } = getMountedWrapper({ props: { resources: [resource] } })

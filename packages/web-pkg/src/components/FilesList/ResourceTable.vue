@@ -139,7 +139,7 @@
     </template>
     <template #tags="{ item }">
       <oc-tag
-        v-for="tag in item.tags.slice(0, 2)"
+        v-for="tag in getDisplayedTags(item)"
         :key="tag"
         v-oc-tooltip="getTagToolTip(tag)"
         :type="userContextReady ? 'router-link' : 'span'"
@@ -315,7 +315,7 @@ import ResourceListItem from './ResourceListItem.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
 import ResourceSize from './ResourceSize.vue'
 import ResourceTableSelectAll from './ResourceTableSelectAll.vue'
-import { formatDateFromJSDate, formatRelativeDateFromJSDate } from '../../helpers'
+import { formatDateFromJSDate, formatRelativeDateFromJSDate, sortTags } from '../../helpers'
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { determineResourceTableSortFields } from '../../helpers/ui/resourceTable'
@@ -472,6 +472,10 @@ const resourceTableActions = computed(() =>
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 
 const getTagToolTip = (tag: string) => $gettext(`Search for tag %{tag}`, { tag })
+
+function getDisplayedTags(resource: Resource) {
+  return sortTags(resource.tags, currentLanguage).slice(0, 2)
+}
 
 const fields = computed(() => {
   if (resources.length === 0) {

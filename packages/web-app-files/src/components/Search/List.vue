@@ -168,7 +168,7 @@ import {
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { ContextActions, FileSideBar } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
-import { AppBar } from '@opencloud-eu/web-pkg'
+import { AppBar, sortTags } from '@opencloud-eu/web-pkg'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import ListInfo from '../FilesList/ListInfo.vue'
 import { Pagination } from '@opencloud-eu/web-pkg'
@@ -225,7 +225,8 @@ const capabilityStore = useCapabilityStore()
 const { loadGraphPermissions } = useSpacesStore()
 const router = useRouter()
 const route = useRoute()
-const { $gettext } = useGettext()
+const language = useGettext()
+const { $gettext } = language
 const { y: fileListHeaderY } = useFileListHeaderPosition()
 const clientService = useClientService()
 const { getMatchingSpace } = useGetMatchingSpace()
@@ -290,8 +291,11 @@ const displayFilter = computed(() => {
 })
 
 const loadAvailableTagsTask = useTask(function* (signal) {
-  const tags = yield* call(clientService.graphAuthenticated.tags.listTags({ signal }))
-  availableTags.value = [...tags.map((t) => ({ id: t, label: t }))]
+  const tags = sortTags(
+    yield* call(clientService.graphAuthenticated.tags.listTags({ signal })),
+    language.current
+  )
+  availableTags.value = tags.map((t) => ({ id: t, label: t }))
 })
 
 onBeforeRouteLeave(() => {
