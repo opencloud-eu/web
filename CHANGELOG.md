@@ -8,6 +8,7 @@
 
 ### 🔒 Security
 
+- [main] fix: port security fixes from web-internal [[#4433](https://github.com/opencloud-eu/web/pull/4433)]
 - fix: render svg previews as images instead of inlining them [[#4298](https://github.com/opencloud-eu/web/pull/4298)]
 - fix: only accept delegated tokens from the embedding host [[#4297](https://github.com/opencloud-eu/web/pull/4297)]
 - fix: verify the sender of postMessage events in picker modals and external apps [[#4289](https://github.com/opencloud-eu/web/pull/4289)]
