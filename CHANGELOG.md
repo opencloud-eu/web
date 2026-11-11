@@ -171,6 +171,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @casl/ability to v7.1.2 [[#4423](https://github.com/opencloud-eu/web/pull/4423)]
 - fix(deps): update dependency vue-inline-svg to v5 [[#4326](https://github.com/opencloud-eu/web/pull/4326)]
 - chore(deps): update dependency eslint-plugin-vue to v10.12.1 [[#4414](https://github.com/opencloud-eu/web/pull/4414)]
 - fix(deps): update dependency vitest-mock-extended to v6 [[#4402](https://github.com/opencloud-eu/web/pull/4402)]
