@@ -134,27 +134,25 @@ export default {
       { name: 'virus', labelAttribute: 'name' }
     ]
     const getMessage = ({ message, messageRich, messageRichParameters }: Notification): string => {
-      if (messageRich && !isEmpty(messageRichParameters)) {
-        let interpolatedMessage = messageRich
-        for (const param of messageParameters) {
-          if (interpolatedMessage.includes(`{${param.name}}`)) {
-            const richParam = messageRichParameters[param.name] ?? undefined
-            if (!richParam) {
-              return message
-            }
-            const label = richParam[param.labelAttribute] ?? undefined
-            if (!label) {
-              return message
-            }
-            interpolatedMessage = interpolatedMessage.replace(
-              `{${param.name}}`,
-              `<strong>${escape(label)}</strong>`
-            )
-          }
-        }
-        return interpolatedMessage
+      if (!messageRich || isEmpty(messageRichParameters)) {
+        return escape(message)
       }
-      return message
+      const labels: Record<string, string> = {}
+      for (const param of messageParameters) {
+        if (!messageRich.includes(`{${param.name}}`)) {
+          continue
+        }
+        const label = messageRichParameters[param.name]?.[param.labelAttribute]
+        if (!label) {
+          return escape(message)
+        }
+        labels[param.name] = label
+      }
+      // the result is rendered as HTML, so everything is escaped. interpolate in a single pass,
+      // so placeholders inside the inserted labels (e.g. a file named "{virus}") are not interpolated again
+      return escape(messageRich).replace(/\{(\w+)\}/g, (placeholder, name: string) =>
+        Object.hasOwn(labels, name) ? `<strong>${escape(labels[name])}</strong>` : placeholder
+      )
     }
     const getLink = ({ messageRichParameters, object_type }: Notification) => {
       if (!messageRichParameters) {
