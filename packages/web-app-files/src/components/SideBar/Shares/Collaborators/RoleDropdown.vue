@@ -153,6 +153,17 @@ const resetSelectedRole = () => {
 defineExpose({ resetSelectedRole })
 
 watch(
+  () => existingShareRole,
+  (role) => {
+    if (!role) {
+      return
+    }
+    // follow the share, e.g. when another client changed its role
+    selectedRole.value = role
+  }
+)
+
+watch(
   () => isExternal,
   () => {
     if (!unref(hasExistingShareRole)) {

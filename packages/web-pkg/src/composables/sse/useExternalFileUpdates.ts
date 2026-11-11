@@ -1,9 +1,9 @@
-import { computed, onBeforeUnmount, toValue, unref, watch } from 'vue'
+import { onBeforeUnmount, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import type { Resource } from '@opencloud-eu/web-client'
-import { MESSAGE_TYPE, sseEventSchema } from '@opencloud-eu/web-client/sse'
+import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { useClientService } from '../clientService'
-import { useAuthStore, useCapabilityStore } from '../piniaStores'
+import { parseSseEventData, useIsSseEnabled } from './helpers'
 
 /** A write to the open file that did not come from this tab. */
 export interface ExternalFileEvent {
@@ -27,21 +27,9 @@ export interface ExternalFileUpdatesOptions {
 /** SSE topics that mean the file body may have changed. */
 const CONTENT_TOPICS = [MESSAGE_TYPE.POSTPROCESSING_FINISHED, MESSAGE_TYPE.FILE_TOUCHED]
 
-function parseEventData(data: unknown) {
-  if (typeof data !== 'string') return null
-  try {
-    const parsed = sseEventSchema.safeParse(JSON.parse(data))
-    return parsed.success ? parsed.data : null
-  } catch {
-    return null
-  }
-}
-
 /**
  * Listens for server-sent file events about one resource and hands the ones
  * that mean "someone else wrote this file" to the caller, one at a time.
- *
- * Signed-in users and guests have an SSE stream, public links don't.
  */
 export function useExternalFileUpdates({
   resource,
@@ -50,15 +38,7 @@ export function useExternalFileUpdates({
   onExternalEvent
 }: ExternalFileUpdatesOptions) {
   const clientService = useClientService()
-  const capabilityStore = useCapabilityStore()
-  const authStore = useAuthStore()
-
-  const isEnabled = computed(
-    () =>
-      Boolean(unref(capabilityStore.supportSSE)) &&
-      (Boolean(authStore.accessToken) || authStore.isGuestContext) &&
-      !authStore.publicLinkContextReady
-  )
+  const isEnabled = useIsSseEnabled()
 
   /** The event that arrived while a handler ran; only the newest is kept. */
   let pending: ExternalFileEvent | null = null
@@ -83,7 +63,7 @@ export function useExternalFileUpdates({
   }
 
   function onMessage(msg: MessageEvent) {
-    const data = parseEventData(msg.data)
+    const data = parseSseEventData(msg.data)
     if (!data) return
     const current = toValue(resource)
     // The composite id all peers share; a share recipient's `id` differs.
