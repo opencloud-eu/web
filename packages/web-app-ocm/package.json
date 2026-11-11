@@ -15,5 +15,8 @@
     "uuid": "14.0.0",
     "vue-router": "5.1.0",
     "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@opencloud-eu/web-test-helpers": "workspace:*"
   }
 }
