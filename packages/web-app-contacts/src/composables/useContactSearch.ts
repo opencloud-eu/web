@@ -1,6 +1,6 @@
 import { computed, ref, unref, type ComputedRef, type Ref } from 'vue'
 import Fuse from 'fuse.js'
-import { defaultFuseOptions } from '@opencloud-eu/web-pkg'
+import { defaultFuseOptions, escapeFuseQuery } from '@opencloud-eu/web-pkg'
 import { Contact } from '../types'
 import { getContactDisplayName } from '../helpers'
 
@@ -19,7 +19,7 @@ const filterContacts = (contacts: Contact[], searchTerm: string) => {
     keys: ['displayName', 'emails', 'phones']
   })
 
-  const resultIndices = new Set(searchEngine.search(term).map((r) => r.refIndex))
+  const resultIndices = new Set(searchEngine.search(escapeFuseQuery(term)).map((r) => r.refIndex))
   return contacts.filter((_, index) => resultIndices.has(index))
 }
 

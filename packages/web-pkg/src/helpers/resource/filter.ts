@@ -1,5 +1,5 @@
 import Fuse from 'fuse.js'
-import { defaultFuseOptions } from '../fuse'
+import { defaultFuseOptions, escapeFuseQuery } from '../fuse'
 import { Resource } from '@opencloud-eu/web-client'
 
 export const filterResources = <T extends Resource>(
@@ -12,5 +12,5 @@ export const filterResources = <T extends Resource>(
     keys: ['name', 'type', 'icon', 'extension', 'tags']
   })
 
-  return engine.search(term, { limit }).map((result) => result.item)
+  return engine.search(escapeFuseQuery(term), { limit }).map((result) => result.item)
 }
