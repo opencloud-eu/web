@@ -1661,7 +1661,7 @@ def cacheBrowsers():
                 "if $BROWSER_CACHE_FOUND; then exit 0; fi",
                 "playwright_version=$(bash tests/woodpecker/script.sh get_playwright_version)",
                 "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
-                "mc cp -r -a %s s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/" % dir["playwrightBrowsersArchive"],
+                "mc cp -r -a %s s3/$CACHE_BUCKET/web/browsers-cache-v2/$playwright_version/" % dir["playwrightBrowsersArchive"],
                 "mc ls --recursive s3/$CACHE_BUCKET/web",
             ],
         },
@@ -1688,7 +1688,7 @@ def restoreBrowsersCache(browser):
             "commands": [
                 "playwright_version=$(bash tests/woodpecker/script.sh get_playwright_version)",
                 "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
-                "mc cp -r -a s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/playwright-browsers.tar.gz %s" % dir["web"],
+                "mc cp -r -a s3/$CACHE_BUCKET/web/browsers-cache-v2/$playwright_version/playwright-browsers.tar.gz %s" % dir["web"],
             ],
         },
         {
