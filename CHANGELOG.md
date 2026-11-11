@@ -1,5 +1,15 @@
 # Changelog
 
+## [8.2.3](https://github.com/opencloud-eu/web/releases/tag/v8.2.3) - 2026-11-11
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen
+
+### 🐛 Bug Fixes
+
+- fix: sort tag lists for display [[#4430](https://github.com/opencloud-eu/web/pull/4430)]
+
 ## [8.2.2](https://github.com/opencloud-eu/web/releases/tag/v8.2.2) - 2026-11-11
 
 ### ❤️ Thanks to all contributors! ❤️
