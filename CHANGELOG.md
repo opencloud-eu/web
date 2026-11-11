@@ -4,12 +4,16 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen
+@JammingBen, @v-scharf
 
 ### 🐛 Bug Fixes
 
 - fix: match filter terms literally instead of as fuse operators [[#4437](https://github.com/opencloud-eu/web/pull/4437)]
 - fix: sort tag lists for display [[#4430](https://github.com/opencloud-eu/web/pull/4430)]
+
+### 📦️ Dependencies
+
+- [full-ci] chore: bump opencloud for tests to v9.1.0 [[#4438](https://github.com/opencloud-eu/web/pull/4438)]
 
 ## [8.2.2](https://github.com/opencloud-eu/web/releases/tag/v8.2.2) - 2026-11-11
 
