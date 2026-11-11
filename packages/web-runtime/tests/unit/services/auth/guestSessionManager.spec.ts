@@ -8,7 +8,8 @@ import {
   GuestSessionManager,
   GuestShareNotFoundError,
   isGuestSessionExpiredError,
-  isGuestSessionInvalidError
+  isGuestSessionInvalidError,
+  renewalStorageKey
 } from '../../../../src/services/auth/guestSessionManager'
 
 vi.mock('@opencloud-eu/web-client/sse', async (importOriginal) => ({
@@ -18,6 +19,7 @@ vi.mock('@opencloud-eu/web-client/sse', async (importOriginal) => ({
 
 const storageKey = 'oc.guestPermissionId'
 const expiryStorageKey = 'oc.guestSessionExpiry'
+const logoutStorageKey = 'oc.guestLogout'
 const now = new Date('2026-10-22T12:00:00Z')
 const expirationDateTime = '2026-10-23T12:00:00Z'
 const refreshedExpirationDateTime = '2026-10-24T12:00:00Z'
@@ -657,6 +659,85 @@ describe('GuestSessionManager', () => {
     })
   })
 
+  describe('logout', () => {
+    it('clears the session cookie with credentials and drops the session', async () => {
+      const { manager, logoutGuestLink } = getManager()
+      await manager.redeem('magic-token')
+      localStorage.setItem(renewalStorageKey, 'renewal')
+
+      await manager.logout()
+
+      expect(logoutGuestLink).toHaveBeenCalledWith({ withCredentials: true })
+      expect(useAuthStore().guestContextReady).toBeFalsy()
+      expect(localStorage.getItem(storageKey)).toBeNull()
+      expect(localStorage.getItem(expiryStorageKey)).toBeNull()
+      expect(localStorage.getItem(renewalStorageKey)).toBeNull()
+    })
+
+    it('drops the session and throws if the session cookie could not be cleared', async () => {
+      const setItem = vi.spyOn(localStorage, 'setItem')
+      const { manager, logoutGuestLink } = getManager()
+      await manager.redeem('magic-token')
+      logoutGuestLink.mockRejectedValueOnce(new Error('500'))
+
+      await expect(manager.logout()).rejects.toThrow('500')
+
+      expect(useAuthStore().guestContextReady).toBeFalsy()
+      expect(localStorage.getItem(storageKey)).toBeNull()
+      expect(setItem).not.toHaveBeenCalledWith(logoutStorageKey, expect.any(String))
+    })
+
+    it('notifies other tabs', async () => {
+      const setItem = vi.spyOn(localStorage, 'setItem')
+      const { manager } = getManager()
+      await manager.redeem('magic-token')
+
+      await manager.logout()
+
+      expect(setItem).toHaveBeenCalledWith(logoutStorageKey, expect.any(String))
+      expect(localStorage.getItem(logoutStorageKey)).toBeNull()
+    })
+  })
+
+  describe('logout in another tab', () => {
+    function logoutInOtherTab() {
+      window.dispatchEvent(
+        new StorageEvent('storage', { key: logoutStorageKey, newValue: String(Date.now()) })
+      )
+    }
+
+    it('calls the logout callback and leaves deactivating the context to the logout route', async () => {
+      const onLogoutInOtherTab = vi.fn()
+      const { manager } = getManager({ onLogoutInOtherTab })
+      await manager.redeem('magic-token')
+
+      logoutInOtherTab()
+
+      expect(useAuthStore().guestContextReady).toBeTruthy()
+      expect(onLogoutInOtherTab).toHaveBeenCalledTimes(1)
+    })
+
+    it('ignores the removal of the logout marker', async () => {
+      const onLogoutInOtherTab = vi.fn()
+      const { manager } = getManager({ onLogoutInOtherTab })
+      await manager.redeem('magic-token')
+
+      window.dispatchEvent(new StorageEvent('storage', { key: logoutStorageKey, newValue: null }))
+
+      expect(useAuthStore().guestContextReady).toBeTruthy()
+      expect(onLogoutInOtherTab).not.toHaveBeenCalled()
+    })
+
+    it('ignores it without a guest context', () => {
+      const onLogoutInOtherTab = vi.fn()
+      getManager({ onLogoutInOtherTab })
+
+      logoutInOtherTab()
+
+      expect(onLogoutInOtherTab).not.toHaveBeenCalled()
+    })
+  })
+
   describe('clear', () => {
     it('resets the SSE connection of an active guest context', () => {
       useAuthStore().setGuestContext('permission-id', 'share-id')
@@ -907,12 +988,14 @@ function getManager({
   driveItems = [sharedDriveItem],
   redeemError = null,
   pinError = null,
-  listError = null
+  listError = null,
+  onLogoutInOtherTab = undefined
 }: {
   driveItems?: unknown[]
   redeemError?: Error
   pinError?: Error
   listError?: Error
+  onLogoutInOtherTab?: () => void
 } = {}) {
   const verifyGuestLinkToken = redeemError
     ? vi.fn().mockRejectedValue(redeemError)
@@ -924,13 +1007,14 @@ function getManager({
         expirationDateTime: refreshedExpirationDateTime
       })
   const renewGuestLink = vi.fn().mockResolvedValue(undefined)
+  const logoutGuestLink = vi.fn().mockResolvedValue(undefined)
   const listSharedWithMe = listError
     ? vi.fn().mockRejectedValue(listError)
     : vi.fn().mockResolvedValue(driveItems)
 
   const clientService = mock<ClientService>({
     graphAuthenticated: {
-      guestLinks: { verifyGuestLinkToken, verifyGuestLinkPin, renewGuestLink },
+      guestLinks: { verifyGuestLinkToken, verifyGuestLinkPin, renewGuestLink, logoutGuestLink },
       driveItems: { listSharedWithMe }
     }
   } as any)
@@ -938,9 +1022,17 @@ function getManager({
   const manager = new GuestSessionManager({
     clientService,
     authStore: useAuthStore(),
-    spacesStore: useSpacesStore()
+    spacesStore: useSpacesStore(),
+    onLogoutInOtherTab
   })
   managers.push(manager)
 
-  return { manager, verifyGuestLinkToken, verifyGuestLinkPin, renewGuestLink, listSharedWithMe }
+  return {
+    manager,
+    verifyGuestLinkToken,
+    verifyGuestLinkPin,
+    renewGuestLink,
+    logoutGuestLink,
+    listSharedWithMe
+  }
 }

@@ -16,4 +16,5 @@ export interface GraphGuestLinks {
     requestOptions?: GraphRequestOptions
   ) => Promise<GuestLinkSession>
   renewGuestLink: (permissionId: string, requestOptions?: GraphRequestOptions) => Promise<void>
+  logoutGuestLink: (requestOptions?: GraphRequestOptions) => Promise<void>
 }

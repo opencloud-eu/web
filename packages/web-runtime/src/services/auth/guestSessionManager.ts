@@ -11,6 +11,8 @@ import { resetSSE } from '@opencloud-eu/web-client/sse'
 const storageKey = 'oc.guestPermissionId'
 // the expiry of the persisted session, other tabs pick up a refreshed session from it
 const expiryStorageKey = 'oc.guestSessionExpiry'
+// set and removed right away on logout, only to notify other tabs
+const logoutStorageKey = 'oc.guestLogout'
 
 // marks a renewal whose PIN is still valid, so the renew page doesn't request another one
 export const renewalStorageKey = 'oc.guestLinkRenewal'
@@ -182,12 +184,15 @@ export interface GuestSessionManagerOptions {
   clientService: ClientService
   authStore: AuthStore
   spacesStore: SpacesStore
+  // called when the guest logged out in another tab
+  onLogoutInOtherTab?: () => void
 }
 
 export class GuestSessionManager {
   private clientService: ClientService
   private authStore: AuthStore
   private spacesStore: SpacesStore
+  private onLogoutInOtherTab: (() => void) | undefined
 
   private restorePromises = new Map<string, Promise<void>>()
   // only the most recently requested restore may change the guest context
@@ -200,6 +205,7 @@ export class GuestSessionManager {
     this.clientService = options.clientService
     this.authStore = options.authStore
     this.spacesStore = options.spacesStore
+    this.onLogoutInOtherTab = options.onLogoutInOtherTab
     window.addEventListener('storage', this.storageListener)
   }
 
@@ -362,8 +368,17 @@ export class GuestSessionManager {
   }
 
   // another tab might have refreshed the session, e.g. by redeeming the link of a renewal
-  private onStorage({ key }: StorageEvent): void {
-    if (key !== expiryStorageKey || !this.authStore.guestContextReady) {
+  private onStorage({ key, newValue }: StorageEvent): void {
+    if (!this.authStore.guestContextReady) {
+      return
+    }
+    // the session cookie is shared, so a logout in another tab ends the session here as well
+    // the logout route deactivates the context, so a navigation aborted e.g. by unsaved changes keeps it
+    if (key === logoutStorageKey && newValue) {
+      this.onLogoutInOtherTab?.()
+      return
+    }
+    if (key !== expiryStorageKey) {
       return
     }
     const expirationDateTime = this.getStoredExpirationDateTime(this.authStore.guestPermissionId)
@@ -481,6 +496,22 @@ export class GuestSessionManager {
       return
     }
     this.unavailablePermissionId = permissionId
+  }
+
+  /**
+   * Ends the session by letting the server clear the session cookie, local state is cleared regardless.
+   * Throws if the cookie couldn't be cleared, the session is still valid server-side then.
+   */
+  public async logout(): Promise<void> {
+    try {
+      await this.clientService.graphAuthenticated.guestLinks.logoutGuestLink({
+        withCredentials: true
+      })
+    } finally {
+      this.clear()
+    }
+    localStorage.setItem(logoutStorageKey, String(Date.now()))
+    localStorage.removeItem(logoutStorageKey)
   }
 
   public clear(): void {

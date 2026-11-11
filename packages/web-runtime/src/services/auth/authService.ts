@@ -19,7 +19,7 @@ import {
   queryItemAsString,
   isMessageFromParent
 } from '@opencloud-eu/web-pkg'
-import { RouteLocation, Router } from 'vue-router'
+import { isNavigationFailure, RouteLocation, Router } from 'vue-router'
 import {
   extractPublicLinkToken,
   isAnonymousContext,
@@ -96,7 +96,10 @@ export class AuthService implements AuthServiceInterface {
     this.guestSessionManager = new GuestSessionManager({
       clientService,
       authStore,
-      spacesStore
+      spacesStore,
+      onLogoutInOtherTab: () => {
+        this.router.push({ name: 'logout', query: { guest: 'true' } })
+      }
     })
   }
 
@@ -528,6 +531,20 @@ export class AuthService implements AuthServiceInterface {
     }
 
     return await this.userManager.removeUser()
+  }
+
+  public async logoutGuest() {
+    // leave first, e.g. an app might still save unsaved changes with the session
+    const failure = await this.router.push({ name: 'logout', query: { guest: 'true' } })
+    if (isNavigationFailure(failure)) {
+      return failure
+    }
+    try {
+      await this.guestSessionManager.logout()
+    } catch (error) {
+      console.error('guest session could not be ended', error)
+      await this.router.replace({ name: 'logout', query: { guest: 'true', failed: 'true' } })
+    }
   }
 
   private resetStateAfterUserLogout() {
