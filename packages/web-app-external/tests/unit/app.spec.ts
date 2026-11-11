@@ -90,7 +90,92 @@ describe('The app provider extension', () => {
       expect(uiDefaultsInput.attributes('value')).toBe(`UITheme=${expected}`)
     })
   })
+  describe('message sender verification', () => {
+    it.each([
+      { description: 'another window', source: {} },
+      { description: 'no window', source: null }
+    ])('ignores "UI_Edit" messages sent by $description', async ({ source }) => {
+      const makeRequest = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        data: providerSuccessResponseGet
+      })
+      const { wrapper } = createShallowMountWrapper({ makeRequest })
+      await flushPromises()
+      mockIframeContentWindow(wrapper)
+
+      window.dispatchEvent(createMessageEvent({ MessageId: 'UI_Edit' }, source))
+      await flushPromises()
+
+      expect(makeRequest).toHaveBeenCalledTimes(1)
+      wrapper.unmount()
+    })
+    it('switches to write mode on "UI_Edit" sent by the app iframe', async () => {
+      const makeRequest = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        data: providerSuccessResponseGet
+      })
+      const { wrapper } = createShallowMountWrapper({ makeRequest })
+      await flushPromises()
+      const contentWindow = mockIframeContentWindow(wrapper)
+
+      window.dispatchEvent(createMessageEvent({ MessageId: 'UI_Edit' }, contentWindow))
+      await flushPromises()
+
+      expect(makeRequest).toHaveBeenCalledTimes(2)
+      expect(makeRequest.mock.calls[1][1]).toContain('view_mode=write')
+      wrapper.unmount()
+    })
+    it.each([
+      { description: 'another window', source: {} },
+      { description: 'no window', source: null }
+    ])('ignores collabora messages sent by $description', async ({ source }) => {
+      const makeRequest = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        data: providerSuccessResponsePost
+      })
+      const { wrapper } = createShallowMountWrapper({ makeRequest, appName: 'collabora' })
+      await flushPromises()
+      const contentWindow = mockIframeContentWindow(wrapper)
+
+      window.dispatchEvent(createMessageEvent({ MessageId: 'App_LoadingStatus' }, source))
+      await flushPromises()
+
+      expect(contentWindow.postMessage).not.toHaveBeenCalled()
+      wrapper.unmount()
+    })
+    it('handles collabora messages sent by the app iframe', async () => {
+      const makeRequest = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        data: providerSuccessResponsePost
+      })
+      const { wrapper } = createShallowMountWrapper({ makeRequest, appName: 'collabora' })
+      await flushPromises()
+      const contentWindow = mockIframeContentWindow(wrapper)
+
+      window.dispatchEvent(createMessageEvent({ MessageId: 'App_LoadingStatus' }, contentWindow))
+      await flushPromises()
+
+      expect(contentWindow.postMessage).toHaveBeenCalled()
+      wrapper.unmount()
+    })
+  })
 })
+
+function mockIframeContentWindow(wrapper: ReturnType<typeof createShallowMountWrapper>['wrapper']) {
+  const contentWindow = { postMessage: vi.fn() }
+  Object.defineProperty(wrapper.find('iframe').element, 'contentWindow', { value: contentWindow })
+  return contentWindow
+}
+
+function createMessageEvent(data: Record<string, unknown>, source: unknown) {
+  const event = new MessageEvent('message', { data: JSON.stringify(data) })
+  Object.defineProperty(event, 'source', { value: source })
+  return event
+}
 
 function createShallowMountWrapper({
   makeRequest = vi.fn().mockResolvedValue({ status: 200 }),

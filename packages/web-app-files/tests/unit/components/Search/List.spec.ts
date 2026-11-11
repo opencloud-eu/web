@@ -8,11 +8,14 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 import { AppBar, ItemFilter, queryItemAsString, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { ref } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, SearchResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
+import DOMPurify from 'dompurify'
 
 vi.mock('../../../../src/composables')
+// DOMPurify doesn't sanitize correctly in happy-dom, the sanitizing itself is DOMPurify's job
+vi.mock('dompurify', () => ({ default: { sanitize: vi.fn((html: string) => html) } }))
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn(),
@@ -81,6 +84,27 @@ describe('List component', () => {
     await flushPromises()
     expect(replacementCounter).toBe(queries.length)
     expect(wrapper.emitted('search').length).toBe(4)
+  })
+  it('sanitizes search highlights and only allows the mark of the match', () => {
+    const highlights = 'some <mark>found</mark> content'
+    vi.mocked(DOMPurify.sanitize).mockReturnValue('sanitized <mark>found</mark>')
+    const { wrapper } = getWrapper({
+      resources: [mock<SearchResource>({ highlights })],
+      stubs: {
+        ResourceTable: {
+          props: ['resources'],
+          template:
+            '<div class="resource-table-stub"><slot name="additionalResourceContent" :resource="resources[0]" /></div>'
+        }
+      }
+    })
+    expect(DOMPurify.sanitize).toHaveBeenCalledWith(highlights, {
+      ALLOWED_TAGS: ['mark'],
+      ALLOWED_ATTR: []
+    })
+    expect(wrapper.find('.resource-table-stub span').html()).toContain(
+      'sanitized <mark>found</mark>'
+    )
   })
   describe('breadcrumbs', () => {
     it('show "Search" when no search term given', () => {
@@ -213,7 +237,8 @@ function getWrapper({
   fullTextSearchEnabled = true,
   availableLastModifiedValues = {},
   lastModifiedFilterQuery = null,
-  mocks = {}
+  mocks = {},
+  stubs = {}
 }: {
   availableTags?: string[]
   resources?: Resource[]
@@ -224,6 +249,7 @@ function getWrapper({
   availableLastModifiedValues?: Record<string, string[]>
   lastModifiedFilterQuery?: string
   mocks?: Record<string, unknown>
+  stubs?: Record<string, unknown>
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => searchTerm)
   vi.mocked(queryItemAsString).mockImplementationOnce(() => titleOnlyFilterQuery)
@@ -259,7 +285,8 @@ function getWrapper({
         mocks: localMocks,
         provide: localMocks,
         stubs: {
-          FilesViewWrapper: false
+          FilesViewWrapper: false,
+          ...stubs
         },
         plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })]
       }

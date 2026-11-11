@@ -50,7 +50,7 @@ get_playwright_version() {
 check_browsers_cache() {
     get_playwright_version
 
-    playwright_cache=$(mc find s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/playwright-browsers.tar.gz 2>&1 | grep 'Object does not exist')
+    playwright_cache=$(mc find s3/$CACHE_BUCKET/web/browsers-cache-v2/$playwright_version/playwright-browsers.tar.gz 2>&1 | grep 'Object does not exist')
 
     if [[ "$playwright_cache" != "" ]]
     then
