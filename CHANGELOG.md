@@ -171,6 +171,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency vue-router to v5.5.0 [[#4424](https://github.com/opencloud-eu/web/pull/4424)]
 - chore(deps): update devdependencies (non-major) [[#4406](https://github.com/opencloud-eu/web/pull/4406)]
 - fix(deps): update dependency @casl/ability to v7.1.2 [[#4423](https://github.com/opencloud-eu/web/pull/4423)]
 - fix(deps): update dependency vue-inline-svg to v5 [[#4326](https://github.com/opencloud-eu/web/pull/4326)]
