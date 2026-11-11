@@ -39,6 +39,7 @@ import Fuse from 'fuse.js'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import {
   defaultFuseOptions,
+  escapeFuseQuery,
   useClientService,
   useLocalPagination,
   useMessages
@@ -59,7 +60,7 @@ function filterMembers(collection: User[], term: string) {
   }
 
   const searchEngine = new Fuse(collection, { ...defaultFuseOptions, keys: ['displayName'] })
-  return searchEngine.search(term).map((r) => r.item)
+  return searchEngine.search(escapeFuseQuery(term)).map((r) => r.item)
 }
 
 const filteredGroupMembers = computed(() => {

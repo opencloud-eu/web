@@ -42,7 +42,12 @@ import { computed, inject, Ref, ref, unref } from 'vue'
 import { ShareRole, SpaceResource } from '@opencloud-eu/web-client'
 import MembersRoleSection from './MembersRoleSection.vue'
 import Fuse from 'fuse.js'
-import { defaultFuseOptions, useLocalPagination, useSharesStore } from '@opencloud-eu/web-pkg'
+import {
+  defaultFuseOptions,
+  escapeFuseQuery,
+  useLocalPagination,
+  useSharesStore
+} from '@opencloud-eu/web-pkg'
 import { Permission } from '@opencloud-eu/web-client/graph/generated'
 
 const sharesStore = useSharesStore()
@@ -59,7 +64,7 @@ function filterMembers(collection: Permission[], term: string) {
     ...defaultFuseOptions,
     keys: ['grantedToV2.user.displayName', 'grantedToV2.group.displayName']
   })
-  return searchEngine.search(term).map((r) => r.item)
+  return searchEngine.search(escapeFuseQuery(term)).map((r) => r.item)
 }
 
 const permissions = computed(() => {

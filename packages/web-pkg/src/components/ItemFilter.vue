@@ -76,7 +76,7 @@ import omit from 'lodash-es/omit'
 import isEqual from 'lodash-es/isEqual'
 import uniq from 'lodash-es/uniq'
 import { useRoute, useRouteQuery, useRouter } from '../composables'
-import { defaultFuseOptions } from '../helpers'
+import { defaultFuseOptions, escapeFuseQuery } from '../helpers'
 import { queryItemAsString } from '../composables/appDefaults'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
@@ -189,7 +189,7 @@ const filter = (items: Item[], filterTerm: string) => {
     keys: filterableAttributes
   })
 
-  const results = fuse.search(filterTerm).map((r) => r.item)
+  const results = fuse.search(escapeFuseQuery(filterTerm)).map((r) => r.item)
   return items.filter((item) => results.includes(item))
 }
 const clearFilter = () => {

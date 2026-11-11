@@ -53,6 +53,7 @@ import {
   AppLoadingSpinner,
   FileSideBar,
   defaultFuseOptions,
+  escapeFuseQuery,
   eventBus,
   useGetMatchingSpace,
   useKeyboardActions,
@@ -80,7 +81,7 @@ function filterShares(shares: IncomingShareResource[]) {
     return shares
   }
   const searchEngine = new Fuse(shares, { ...defaultFuseOptions, keys: ['name'] })
-  return searchEngine.search(unref(filterTerm)).map(({ item }) => item)
+  return searchEngine.search(escapeFuseQuery(unref(filterTerm))).map(({ item }) => item)
 }
 
 const {

@@ -121,6 +121,7 @@ import {
   ContextMenuQuickAction,
   createVirtualCursorElement,
   defaultFuseOptions,
+  escapeFuseQuery,
   eventBus,
   NoContentMessage,
   Pagination,
@@ -170,7 +171,7 @@ const filteredGroups = computed(() => {
     return unref(groups)
   }
   const searchEngine = new Fuse(unref(groups), { ...defaultFuseOptions, keys: ['displayName'] })
-  return searchEngine.search(filterTerm).map((r) => r.item)
+  return searchEngine.search(escapeFuseQuery(filterTerm)).map((r) => r.item)
 })
 
 const sortFields: SortField[] = [{ name: 'displayName', sortable: true, sortDir: SortDir.Asc }]
