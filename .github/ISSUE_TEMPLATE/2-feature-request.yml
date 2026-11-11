@@ -1,5 +1,5 @@
 name: 🚀 Feature request
-labels: Type:Feature
+labels: Type:Feature-Request
 description: Share an idea for the Web UI
 body:
   - type: checkboxes

@@ -112,15 +112,17 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 ## GitHub Issues, Pull Requests and Commits
 
 - **Language requirement** – GitHub content MUST be written in English only.
-- **AI attributions** – NEVER add AI tool attributions or co-authorship credits in any GitHub content (issues, pull requests, commit messages, comments).
+- **AI assistance** – follow the org's [AI guideline](https://github.com/opencloud-eu/.github/blob/main/profile/AI_GUIDELINE.md). Authorship is for humans: never add `Co-authored-by` or similar trailers, or "Generated with ..." footers, for an AI tool. Instead, add an `Assisted-by: AGENT_NAME:MODEL_VERSION` trailer to commit messages, naming the agent and the model that were actually used (e.g. `Assisted-by: Claude Code:claude-opus-5-5`), and say in the pull request description which AI was used and how.
 
 ### Creating Issues
 
 When creating GitHub issues, use the appropriate issue template from `.github/ISSUE_TEMPLATE/`:
 
-- **Bug reports** (`1-bug-report.yml`) – for reporting bugs. Add label `Type:Bug`.
-- **Feature requests** (`2-feature-request.yml`) – for proposing new features. Add label `Type:Feature-Request`.
-- **User stories** (`3-user-story.yml`) – for describing features with clear user value. Add label `Type:Story`.
+- **Bug reports** (`1-bug-report.yml`) – for reporting bugs. Add label `Type:Bug` and issue type `Bug`.
+- **Feature requests** (`2-feature-request.yml`) – for proposing new features. Add label `Type:Feature-Request` and issue type `Feature`.
+- **User stories** (`3-user-story.yml`) – for describing features with clear user value. Add label `Type:Story` and issue type `Feature`.
+
+Set the issue type with `gh issue create --type <type>`; the types of the organization are `Bug`, `Feature` and `Task`.
 
 Use templates exactly as provided. Fill in all required fields without removing any sections or options. Issue titles MUST be descriptive, human-readable, and without any prefix. Do not use prefixes like "feat:", "fix:", "User story:", "Bug:", "Type:Story", or similar in issue titles. Prefix-based conventions are only for commit messages.
 
@@ -130,7 +132,7 @@ Follow the pull request template in `.github/PULL_REQUEST_TEMPLATE.md` exactly a
 
 - **Description** – explain what changed and why, in a few sentences or bullets. Leave out implementation details the diff already shows (add screenshots if appropriate).
 - **Related Issue** – link related issues using `Fixes #issue_number`.
-- **Assignee** – assign the responsible person to the pull request.
+- **Assignee** – assign the pull request to its author (`gh pr create --assignee @me`).
 - **How Has This Been Tested** – specify test environment and list all test cases.
 - **Labels** – set exactly one appropriate `Type:*` label, which decides the changelog section of the release.
 
