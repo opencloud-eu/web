@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.1.7](https://github.com/opencloud-eu/web/releases/tag/v7.1.7) - 2026-11-12
+
+### ❤️ Thanks to all contributors! ❤️
+
+@v-scharf
+
+### 📦️ Dependencies
+
+- [full-ci] chore: bump opencloud for tests to v7.2.5 [[#4441](https://github.com/opencloud-eu/web/pull/4441)]
+
 ## [7.1.6](https://github.com/opencloud-eu/web/releases/tag/v7.1.6) - 2026-11-11
 
 ### ❤️ Thanks to all contributors! ❤️
