@@ -145,6 +145,26 @@ describe('SharedWithOthers view', () => {
     })
   })
 
+  describe('selection', () => {
+    it('deselects the resources a filter hides, also when it hides all of them', async () => {
+      const files = [
+        mock<IncomingShareResource>({
+          id: '1',
+          name: 'file.txt',
+          shareTypes: [ShareTypes.user.value]
+        })
+      ]
+      const { wrapper } = getMountedWrapper({ files })
+      const resourcesStore = useResourcesStore()
+      resourcesStore.setSelection(['1'])
+
+      await wrapper.find('.search-filter input').setValue('no match')
+
+      expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
+      expect(resourcesStore.selectedIds).toEqual([])
+    })
+  })
+
   describe('resource field updates', () => {
     async function setup() {
       const paginatedResources = ref([

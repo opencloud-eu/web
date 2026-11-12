@@ -7,7 +7,7 @@ import {
   useCanBeOpenedWithSecureView,
   ResourceIndicator
 } from '../../../../src/composables/resources'
-import { OcFilterChip } from '@opencloud-eu/design-system/components'
+import { OcCheckbox, OcFilterChip } from '@opencloud-eu/design-system/components'
 import { useResourcesStore } from '../../../../src'
 
 vi.mock('../../../../src/helpers/contextMenuDropdown')
@@ -321,6 +321,32 @@ describe('ResourceTiles component', () => {
       expect(document.documentElement.style.getPropertyValue('--oc-size-tiles-actual')).toBe('24px')
     })
   })
+  describe('resources that are not shown', () => {
+    it('do not count for the select-all checkbox', () => {
+      const { wrapper } = getWrapper({
+        props: { resources: spacesResources },
+        // as many selected resources as tiles, but none of them is shown
+        selectedIds: spacesResources.map(({ id }) => `other-page-${id}`)
+      })
+      // the select-all checkbox comes first, before the ones of the tiles
+      const selectAll = wrapper.findAllComponents(OcCheckbox).at(0)
+      expect(selectAll.find('#tiles-view-select-all').exists()).toBe(true)
+      expect(selectAll.props('modelValue')).toBe(false)
+    })
+    it('get deselected when they leave the view, e.g. on page change or sorting', async () => {
+      const [first, second] = spacesResources
+      const { wrapper } = getWrapper({
+        props: { resources: [first, second] },
+        selectedIds: [first.id, second.id],
+        stubActions: false
+      })
+
+      await wrapper.setProps({ resources: [second, ...resources] })
+
+      const resourcesStore = useResourcesStore()
+      expect(resourcesStore.selectedIds).toEqual([second.id])
+    })
+  })
   describe('delete queue', () => {
     it('sets resources that are in the delete queue in a loading state', () => {
       const { wrapper } = getWrapper({ props: { resources }, deleteQueue: [resources[0].id] })
@@ -351,7 +377,8 @@ describe('ResourceTiles component', () => {
     stubs = {},
     canBeOpenedWithSecureView = true,
     deleteQueue = [],
-    selectedIds = []
+    selectedIds = [],
+    stubActions = true
   }: {
     props?: Record<string, unknown>
     slots?: Record<string, string>
@@ -359,6 +386,7 @@ describe('ResourceTiles component', () => {
     canBeOpenedWithSecureView?: boolean
     deleteQueue?: string[]
     selectedIds?: string[]
+    stubActions?: boolean
   } = {}) {
     const mocks = defaultComponentMocks()
 
@@ -380,6 +408,7 @@ describe('ResourceTiles component', () => {
           plugins: [
             ...defaultPlugins({
               piniaOptions: {
+                stubActions,
                 resourcesStore: { deleteQueue, selectedIds },
                 spacesState: { spaces: spacesResources }
               }

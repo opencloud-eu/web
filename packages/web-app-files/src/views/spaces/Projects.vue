@@ -179,7 +179,8 @@ import {
   Pagination,
   FileSideBar,
   NoContentMessage,
-  useSideBar
+  useSideBar,
+  useResourcesSelectionVisibilityGuard
 } from '@opencloud-eu/web-pkg'
 import {
   isProjectSpaceResource,
@@ -297,6 +298,9 @@ function filter(spaces: SpaceResource[]) {
   return searchEngine.search(escapeFuseQuery(unref(filterTerm))).map((r) => r.item)
 }
 
+// the folder view gets replaced when nothing is left to show, its guard can't deselect then
+useResourcesSelectionVisibilityGuard(paginatedResources)
+
 const batchActionsLoading = computed(() => {
   const selectedSpaces = unref(selectedResources) as SpaceResource[]
   return selectedSpaces.some(({ graphPermissions }) => graphPermissions === undefined)
@@ -319,7 +323,7 @@ watch(selectedResourcesIds, async (ids) => {
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
 const keyActions = useKeyboardActions()
-useKeyboardFileNavigation(keyActions, sortedResources, viewMode)
+useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 useKeyboardFileActions(keyActions)
 

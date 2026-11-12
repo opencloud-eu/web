@@ -133,6 +133,7 @@ import {
   useRouter,
   useSideBar,
   useSort,
+  useSelectionVisibilityGuard,
   SortField
 } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
@@ -196,7 +197,17 @@ const { setSelectionStart } = useKeyboardTableMouseActions(
 )
 
 const readOnlyLabel = computed(() => $gettext("This group is read-only and can't be edited"))
-// the selection is kept across pages, so only the groups of the current page count
+// groups that leave the current page (paging, sorting, filtering) leave the selection
+useSelectionVisibilityGuard({
+  visibleIds: () => unref(paginatedItems).map(({ id }) => id),
+  selectedIds: () => unref(selectedGroups).map(({ id }) => id),
+  deselect: (ids) => {
+    groupSettingsStore.setSelectedGroups(
+      unref(selectedGroups).filter(({ id }) => !ids.includes(id))
+    )
+  }
+})
+
 const allGroupsSelected = computed(
   () => unref(paginatedItems).length > 0 && unref(paginatedItems).every(isGroupSelected)
 )

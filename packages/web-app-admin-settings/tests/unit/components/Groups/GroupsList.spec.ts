@@ -11,7 +11,7 @@ import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { OcCheckbox, OcTable } from '@opencloud-eu/design-system/components'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
-import { nextTick } from 'vue'
+import { nextTick, reactive } from 'vue'
 import { enableAutoUnmount } from '@vue/test-utils'
 
 const getGroupMocks = () =>
@@ -108,7 +108,7 @@ describe('GroupsList', () => {
   })
 
   describe('toggle selection', () => {
-    it('does not check the header checkbox if only groups of another page are selected', () => {
+    it('does not check the header checkbox if only groups that are not shown are selected', () => {
       const groups = getGroupMocks()
       const { wrapper } = getWrapper({
         mountType: mount,
@@ -148,6 +148,42 @@ describe('GroupsList', () => {
       getCheckboxes(wrapper).at(1).vm.$emit('click', checkboxClickEvent())
       const { setSelectedGroups } = useGroupSettingsStore()
       expect(setSelectedGroups).toHaveBeenCalledWith([])
+    })
+  })
+
+  describe('groups that leave the view', () => {
+    const groups = ['admins', 'admins2', 'users'].map((displayName, i) => ({
+      id: String(i + 1),
+      displayName
+    })) as Group[]
+
+    it('get deselected on page change', async () => {
+      const query = reactive({ page: '1', 'items-per-page': '2' })
+      const { wrapper } = getWrapper({
+        groups,
+        selectedGroups: [groups[0], groups[1]],
+        query,
+        realCheckboxes: true
+      })
+      expect(getTableData(wrapper).map(({ id }) => id)).toEqual(['1', '2'])
+
+      query.page = '2'
+      await nextTick()
+
+      expect(getTableData(wrapper).map(({ id }) => id)).toEqual(['3'])
+      expect(getSelectedIds()).toEqual([])
+    })
+    it('get deselected when they are filtered out, the ones still shown stay selected', async () => {
+      const { wrapper } = getWrapper({
+        groups,
+        selectedGroups: [groups[1], groups[2]],
+        realCheckboxes: true
+      })
+
+      await wrapper.setProps({ filterTerm: 'users' })
+
+      expect(getTableData(wrapper).map(({ id }) => id)).toEqual(['3'])
+      expect(getSelectedIds()).toEqual(['3'])
     })
   })
 
