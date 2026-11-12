@@ -359,6 +359,22 @@ export class Resource {
     await po.expectPageNumberToBeVisible({ page: this.#page })
   }
 
+  async expectNoPageParam(): Promise<void> {
+    await po.expectNoPageParam({ page: this.#page })
+  }
+
+  async expectPageParamToBe(args: { value: string }): Promise<void> {
+    await po.expectPageParamToBe({ page: this.#page, value: args.value })
+  }
+
+  async scrollDownListToEnd(): Promise<void> {
+    await po.scrollDownListToEnd({ page: this.#page })
+  }
+
+  async scrollDownListUntilAllItemsAreLoaded(): Promise<void> {
+    await po.scrollDownListUntilAllItemsAreLoaded({ page: this.#page })
+  }
+
   async createShotcut(args: Omit<po.shortcutArgs, 'page'>): Promise<void> {
     const startUrl = this.#page.url()
     await po.createShotcut({ ...args, page: this.#page })

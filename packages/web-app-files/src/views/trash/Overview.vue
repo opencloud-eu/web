@@ -89,7 +89,12 @@
               />
             </template>
             <template #footer>
-              <pagination :pages="paginationPages" :current-page="paginationPage" />
+              <more-items-spacer
+                v-if="isInfiniteScrollEnabled"
+                :all-loaded="allLoaded"
+                @load-more="loadMore"
+              />
+              <pagination v-else :pages="paginationPages" :current-page="paginationPage" />
               <div class="text-center w-full my-2">
                 <p data-testid="files-list-footer-info" class="text-role-on-surface-variant">
                   {{ footerTextTotal }}
@@ -118,6 +123,7 @@ import {
   defaultFuseOptions,
   escapeFuseQuery,
   FileSideBar,
+  MoreItemsSpacer,
   NoContentMessage,
   Pagination,
   ProcessorType,
@@ -172,10 +178,14 @@ const {
   sortedResources,
   paginatedResources,
   paginationPages,
-  paginationPage
+  paginationPage,
+  isInfiniteScrollEnabled,
+  allLoaded,
+  loadMore
 } = useResourcesViewDefaults<SpaceResource, any, any[]>({
   folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint,
   filterResources: filter,
+  infiniteScrollResetOn: [filterTerm, areEmptyTrashesShown],
   sortFields: [
     ...translateSortFields(
       spaceTilesSortFields.filter(({ name }) => name === 'name'),

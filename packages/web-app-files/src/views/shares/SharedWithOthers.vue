@@ -98,7 +98,12 @@
             />
           </template>
           <template #footer>
-            <pagination :pages="paginationPages" :current-page="paginationPage" />
+            <more-items-spacer
+              v-if="isInfiniteScrollEnabled"
+              :all-loaded="allLoaded"
+              @load-more="loadMore"
+            />
+            <pagination v-else :pages="paginationPages" :current-page="paginationPage" />
             <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
           </template>
         </component>
@@ -122,6 +127,7 @@ import {
   useRouter,
   FileSideBar,
   AppLoadingSpinner,
+  MoreItemsSpacer,
   NoContentMessage,
   AppBar,
   Pagination,
@@ -194,6 +200,9 @@ const {
   fileListHeaderY,
   paginationPages,
   paginationPage,
+  isInfiniteScrollEnabled,
+  allLoaded,
+  loadMore,
   loadResourcesTask,
   loadResources,
   selectedResourceSpace,
@@ -202,7 +211,8 @@ const {
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
   folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint,
-  filterResources: filterShares
+  filterResources: filterShares,
+  infiniteScrollResetOn: [filterTerm, selectedShareTypesQuery]
 })
 
 const { triggerDefaultAction } = useFileActions()
@@ -242,6 +252,9 @@ const showShareTypeFilter = computed(
 )
 
 watch(filterTerm, async () => {
+  if (unref(isInfiniteScrollEnabled)) {
+    return
+  }
   await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
 

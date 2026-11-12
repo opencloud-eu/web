@@ -119,7 +119,12 @@
             />
           </template>
           <template #footer>
-            <pagination :pages="paginationPages" :current-page="paginationPage" />
+            <more-items-spacer
+              v-if="isInfiniteScrollEnabled"
+              :all-loaded="allLoaded"
+              @load-more="loadMore"
+            />
+            <pagination v-else :pages="paginationPages" :current-page="paginationPage" />
             <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
           </template>
         </component>
@@ -150,6 +155,7 @@ import {
   useLoadPreview,
   AppLoadingSpinner,
   FileSideBar,
+  MoreItemsSpacer,
   NoContentMessage,
   Pagination,
   eventBus,
@@ -262,13 +268,17 @@ const {
   fileListHeaderY,
   paginationPages,
   paginationPage,
+  isInfiniteScrollEnabled,
+  allLoaded,
+  loadMore,
   loadResources,
   selectedResourceSpace,
   handleSort,
   isResourceInSelection,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<Resource, any, any[]>({
-  folderViewExtensionPoint: folderViewsFavoritesExtensionPoint
+  folderViewExtensionPoint: folderViewsFavoritesExtensionPoint,
+  infiniteScrollResetOn: [lastModifiedParam, mediaTypeParam, tagParam]
 })
 
 const keyActions = useKeyboardActions()

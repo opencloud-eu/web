@@ -180,12 +180,32 @@ When(
   }
 )
 
+When(
+  '{string} scrolls down the files list',
+  async ({ world }: { world: World }, stepUser: string) => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.scrollDownListToEnd()
+  }
+)
+
+When(
+  '{string} scrolls down the files list until all items are loaded',
+  async ({ world }: { world: World }, stepUser: string) => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.scrollDownListUntilAllItemsAreLoaded()
+  }
+)
+
 Then(
   '{string} should see {int} resource(s) in the files/spaces list',
   async ({ world }: { world: World }, stepUser: string, expectedNumberOfResources: number) => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
-    const actualNumberOfResources = await resourceObject.countNumberOfResourcesInThePage()
-    expect(actualNumberOfResources).toBe(expectedNumberOfResources)
+    await expect
+      .poll(() => resourceObject.countNumberOfResourcesInThePage(), {
+        timeout: 5000,
+        intervals: [200]
+      })
+      .toBe(expectedNumberOfResources)
   }
 )
 
@@ -194,6 +214,22 @@ Then(
   async ({ world }: { world: World }, stepUser: string) => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     await resourceObject.expectPageNumberToBeVisible()
+  }
+)
+
+Then(
+  '{string} should not see the page parameter in the files view url',
+  async ({ world }: { world: World }, stepUser: string) => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.expectNoPageParam()
+  }
+)
+
+Then(
+  '{string} should see the page parameter be {string}',
+  async ({ world }: { world: World }, stepUser: string, expectedPage: string) => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.expectPageParamToBe({ value: expectedPage })
   }
 )
 

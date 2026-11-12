@@ -1,4 +1,4 @@
-import { ref, unref } from 'vue'
+import { nextTick, ref, unref } from 'vue'
 import { usePagination } from '../../../../src/composables'
 import { eventBus } from '../../../../src/services'
 import { createRouter, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
@@ -178,6 +178,83 @@ describe('usePagination', () => {
       await flushPromises()
 
       expect(unref(router.currentRoute).path).toBe('/files/link/public/token/Doc%23A')
+      expect(unref(router.currentRoute).query.page).toBe('2')
+      wrapper.unmount()
+    })
+  })
+  describe('enabled option', () => {
+    it('does not subscribe to the page navigation event when disabled', async () => {
+      const router = createRouter({ routes: [{ path: '/', redirect: null }] })
+      router.push('/')
+      await router.isReady()
+      const subscribeSpy = vi.spyOn(eventBus, 'subscribe')
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+
+      const mocks = { $router: router }
+      const items = Array.from({ length: 25 }, (_, i) => ({ id: `${i + 1}` }))
+      const enabled = ref(false)
+      const wrapper = getComposableWrapper(
+        () =>
+          usePagination({
+            items: ref(items),
+            perPage: 20,
+            perPageStoragePrefix: 'unit-tests',
+            enabled
+          }),
+        { mocks, provide: mocks }
+      )
+
+      expect(subscribeSpy).not.toHaveBeenCalledWith('app.files.navigate.page', expect.anything())
+
+      eventBus.publish('app.files.navigate.page', {
+        resourceId: '25',
+        forceScroll: true,
+        topbarElement: 'files-app-bar'
+      })
+      await flushPromises()
+
+      expect(publishSpy).not.toHaveBeenCalledWith('app.files.navigate.scrollTo', expect.anything())
+      expect(unref(router.currentRoute).query.page).toBeUndefined()
+      wrapper.unmount()
+    })
+    it('subscribes once the enabled option flips to true', async () => {
+      const router = createRouter({ routes: [{ path: '/', redirect: null }] })
+      router.push('/')
+      await router.isReady()
+      const subscribeSpy = vi.spyOn(eventBus, 'subscribe')
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+
+      const mocks = { $router: router }
+      const items = Array.from({ length: 25 }, (_, i) => ({ id: `${i + 1}` }))
+      const enabled = ref(false)
+      const wrapper = getComposableWrapper(
+        () =>
+          usePagination({
+            items: ref(items),
+            perPage: 20,
+            perPageStoragePrefix: 'unit-tests',
+            enabled
+          }),
+        { mocks, provide: mocks }
+      )
+
+      enabled.value = true
+      await nextTick()
+
+      expect(subscribeSpy).toHaveBeenCalledWith('app.files.navigate.page', expect.anything())
+
+      eventBus.publish('app.files.navigate.page', {
+        resourceId: '25',
+        forceScroll: true,
+        topbarElement: 'files-app-bar'
+      })
+      await flushPromises()
+
+      expect(publishSpy).toHaveBeenCalledWith('app.files.navigate.scrollTo', {
+        resourceId: '25',
+        forceScroll: true,
+        topbarElement: 'files-app-bar'
+      })
       expect(unref(router.currentRoute).query.page).toBe('2')
       wrapper.unmount()
     })

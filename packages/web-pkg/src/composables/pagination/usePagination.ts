@@ -1,4 +1,4 @@
-import { computed, ComputedRef, onBeforeUnmount, unref, MaybeRef } from 'vue'
+import { computed, ComputedRef, onBeforeUnmount, unref, MaybeRef, ref, Ref, watch } from 'vue'
 import { queryItemAsString } from '../appDefaults'
 import { useRouteQuery, useRouteQueryPersisted, useRouter } from '../router'
 import { PaginationConstants } from './constants'
@@ -13,6 +13,11 @@ interface PaginationOptions<T> {
   perPageDefault?: string
   perPageQueryName?: string
   perPageStoragePrefix: string
+  /**
+   * Gates the `app.files.navigate.page` subscription, e.g. so that infinite
+   * scrolling does not interfere with the numbered pagination. Defaults to true.
+   */
+  enabled?: MaybeRef<boolean>
 }
 
 interface PaginationResult<T> {
@@ -23,7 +28,6 @@ interface PaginationResult<T> {
 }
 
 export function usePagination<T>(options: PaginationOptions<T>): PaginationResult<T> {
-  const router = useRouter()
   const requestedPage = createPageRef<T>(options)
   const perPage = createPerPageRef<T>(options)
   const total = computed(() => {
@@ -44,34 +48,11 @@ export function usePagination<T>(options: PaginationOptions<T>): PaginationResul
     return unref(options.items).slice(start, end)
   })
 
-  const navigatePageToken = eventBus.subscribe(
-    'app.files.navigate.page',
-    ({
-      resourceId,
-      forceScroll,
-      topbarElement
-    }: {
-      resourceId: string
-      forceScroll: boolean
-      topbarElement: string
-    }) => {
-      const index = findIndex(unref(options.items), (item: Item) => item.id === resourceId)
-      if (index >= 0) {
-        const page = Math.ceil((index + 1) / Number(unref(perPage)))
-        const route = unref(router.currentRoute)
-        router.push({ path: route.path, query: { ...route.query, page } }).then(() => {
-          eventBus.publish('app.files.navigate.scrollTo', {
-            resourceId,
-            forceScroll,
-            topbarElement
-          })
-        })
-      }
-    }
-  )
-
+  const navigatePageToken = createNavigatePageSubscription<T>(options, perPage)
   onBeforeUnmount(() => {
-    eventBus.unsubscribe('app.files.navigate.page', navigatePageToken)
+    if (unref(navigatePageToken)) {
+      eventBus.unsubscribe('app.files.navigate.page', unref(navigatePageToken))
+    }
   })
 
   return {
@@ -80,6 +61,57 @@ export function usePagination<T>(options: PaginationOptions<T>): PaginationResul
     page,
     perPage
   }
+}
+
+/**
+ * The subscription to the page navigation event lives and dies with the `enabled`
+ * option, so that the numbered pagination hands over cleanly to e.g. infinite
+ * scrolling during the lifetime of the view.
+ */
+function createNavigatePageSubscription<T>(
+  options: PaginationOptions<T>,
+  perPage: ComputedRef<number>
+): Ref<string> {
+  const navigatePageToken = ref<string | null>(null)
+  const router = useRouter()
+
+  function pageEventHandler({
+    resourceId,
+    forceScroll,
+    topbarElement
+  }: {
+    resourceId: string
+    forceScroll: boolean
+    topbarElement: string
+  }) {
+    const index = findIndex(unref(options.items), (item: Item) => item.id === resourceId)
+    if (index >= 0) {
+      const page = Math.ceil((index + 1) / Number(unref(perPage)))
+      const route = unref(router.currentRoute)
+      router.push({ path: route.path, query: { ...route.query, page } }).then(() => {
+        eventBus.publish('app.files.navigate.scrollTo', {
+          resourceId,
+          forceScroll,
+          topbarElement
+        })
+      })
+    }
+  }
+
+  watch(
+    () => Boolean(unref(options.enabled ?? true)),
+    (isEnabled) => {
+      if (isEnabled && !unref(navigatePageToken)) {
+        navigatePageToken.value = eventBus.subscribe('app.files.navigate.page', pageEventHandler)
+      } else if (!isEnabled && unref(navigatePageToken)) {
+        eventBus.unsubscribe('app.files.navigate.page', unref(navigatePageToken))
+        navigatePageToken.value = null
+      }
+    },
+    { immediate: true }
+  )
+
+  return navigatePageToken
 }
 
 function createPageRef<T>(options: PaginationOptions<T>): ComputedRef<number> {
