@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: don't reopen the notifications stream without a token on logout [[#4420](https://github.com/opencloud-eu/web/pull/4420)]
 - fix: update the open shares panel when another session changes shares [[#4371](https://github.com/opencloud-eu/web/pull/4371)]
 - fix: add logout for guests [[#4416](https://github.com/opencloud-eu/web/pull/4416)]
 - fix: match filter terms literally instead of as fuse operators [[#4437](https://github.com/opencloud-eu/web/pull/4437)]
@@ -15,6 +16,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.7.18 [[#4444](https://github.com/opencloud-eu/web/pull/4444)]
+- chore(deps): update node.js to v24.22.3 [[#4443](https://github.com/opencloud-eu/web/pull/4443)]
 - [full-ci] chore: bump opencloud for tests to v9.1.0 [[#4438](https://github.com/opencloud-eu/web/pull/4438)]
 
 ## [8.2.2](https://github.com/opencloud-eu/web/releases/tag/v8.2.2) - 2026-11-11
