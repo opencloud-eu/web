@@ -257,6 +257,41 @@ describe('SharedWithMe view', () => {
       })
     })
   })
+  describe('footer counts', () => {
+    const files = [
+      mock<IncomingShareResource>({ name: 'share1', hidden: false, shareTypes: [] }),
+      mock<IncomingShareResource>({ name: 'share2', hidden: false, shareTypes: [] }),
+      mock<IncomingShareResource>({ name: 'hidden1', hidden: true, shareTypes: [] })
+    ]
+
+    it('passes the shares of the current tab without a matching count', () => {
+      const { wrapper } = getMountedWrapper({ files })
+      const section = wrapper.findComponent<typeof SharedWithMeSection>(
+        'shared-with-me-section-stub'
+      )
+      expect(section.props('tabItems').map(({ name }) => name)).toEqual(['share1', 'share2'])
+      expect(section.props('matchingCount')).toBeUndefined()
+    })
+    it('passes the hidden shares on the hidden shares tab', async () => {
+      const { wrapper } = getMountedWrapper({ files })
+      ;(wrapper.vm as any).setAreHiddenFilesShown(mock<InlineFilterOption>({ name: 'hidden' }))
+      await wrapper.vm.$nextTick()
+      const section = wrapper.findComponent<typeof SharedWithMeSection>(
+        'shared-with-me-section-stub'
+      )
+      expect(section.props('tabItems').map(({ name }) => name)).toEqual(['hidden1'])
+    })
+    it('passes the matching count while searching', async () => {
+      const { wrapper } = getMountedWrapper({ files })
+      ;(wrapper.vm as any).filterTerm = 'share1'
+      await wrapper.vm.$nextTick()
+      const section = wrapper.findComponent<typeof SharedWithMeSection>(
+        'shared-with-me-section-stub'
+      )
+      expect(section.props('tabItems')).toHaveLength(2)
+      expect(section.props('matchingCount')).toBe(1)
+    })
+  })
   describe('pagination', () => {
     it('passes the pagination to the shares section', () => {
       const { wrapper } = getMountedWrapper({
@@ -368,7 +403,7 @@ function getMountedWrapper({
   scrollTo?: string
   viewDefaults?: Partial<ReturnType<typeof useResourcesViewDefaults>>
 } = {}) {
-  const plugins = [...defaultPlugins()]
+  const plugins = [...defaultPlugins({ piniaOptions: { resourcesStore: { resources: files } } })]
 
   vi.mocked(useResourcesViewDefaults).mockImplementation(({ filterResources }) => {
     // like the real view defaults: filter all resources, then paginate them

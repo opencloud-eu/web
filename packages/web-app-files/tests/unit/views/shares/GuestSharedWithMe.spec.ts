@@ -85,6 +85,32 @@ describe('GuestSharedWithMe view', () => {
     expect(section.props('items')).toEqual([])
     expect(section.props('hasShares')).toBe(true)
   })
+  it('passes all shares and the matching count of the search for the footer', async () => {
+    const { wrapper } = getMountedWrapper({
+      files: [
+        mock<IncomingShareResource>({ name: 'share1' }),
+        mock<IncomingShareResource>({ name: 'share2' })
+      ]
+    })
+    const section = wrapper.findComponent<typeof SharedWithMeSection>('shared-with-me-section-stub')
+    expect(section.props('tabItems')).toHaveLength(2)
+    expect(section.props('matchingCount')).toBeUndefined()
+
+    ;(wrapper.vm as any).filterTerm = 'share1'
+    await nextTick()
+    expect(section.props('tabItems')).toHaveLength(2)
+    expect(section.props('matchingCount')).toBe(1)
+  })
+  it('includes hidden dotfiles in the footer shares', () => {
+    const { wrapper } = getMountedWrapper({
+      files: [
+        mock<IncomingShareResource>({ name: 'share1' }),
+        mock<IncomingShareResource>({ name: '.env' })
+      ]
+    })
+    const section = wrapper.findComponent<typeof SharedWithMeSection>('shared-with-me-section-stub')
+    expect(section.props('tabItems').map(({ name }) => name)).toEqual(['share1', '.env'])
+  })
   it('resets the pagination to the first page', async () => {
     const { wrapper, mocks } = getMountedWrapper()
     ;(wrapper.vm as any).filterTerm = 'share'
@@ -121,7 +147,7 @@ function getMountedWrapper({
     mocks,
     wrapper: mount(GuestSharedWithMe, {
       global: {
-        plugins: [...defaultPlugins()],
+        plugins: [...defaultPlugins({ piniaOptions: { resourcesStore: { resources: files } } })],
         mocks,
         provide: mocks,
         stubs: {

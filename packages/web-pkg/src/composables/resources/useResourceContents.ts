@@ -1,21 +1,30 @@
-import { computed, unref } from 'vue'
+import { computed, MaybeRefOrGetter, toValue, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
+import { Resource } from '@opencloud-eu/web-client'
 import { useResourcesStore } from '../piniaStores'
 import { useRouter } from '../router'
 import { isLocationSharesActive } from '../../router'
-import { formatFileSize } from '../../helpers'
+import { countResources, formatFileSize } from '../../helpers'
 
 export const useResourceContents = ({
-  showSizeInformation = true
+  showSizeInformation = true,
+  resources: resourcesOverride
 }: {
   showSizeInformation?: boolean
+  /**
+   * Resources to summarize instead of all resources of the store, e.g. the ones of the current tab.
+   */
+  resources?: MaybeRefOrGetter<Resource[] | undefined>
 } = {}) => {
   const resourcesStore = useResourcesStore()
   const { current: currentLanguage, $gettext, $ngettext } = useGettext()
   const router = useRouter()
 
-  const { resources, totalResourcesCount, areHiddenFilesShown } = storeToRefs(resourcesStore)
+  const { areHiddenFilesShown } = storeToRefs(resourcesStore)
+
+  const resources = computed(() => toValue(resourcesOverride) ?? resourcesStore.resources)
+  const totalResourcesCount = computed(() => countResources(unref(resources)))
 
   const itemSize = computed(() => {
     const accumulatedSize = unref(resources)

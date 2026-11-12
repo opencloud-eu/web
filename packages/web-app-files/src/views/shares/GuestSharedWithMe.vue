@@ -35,6 +35,8 @@
           :view-size="viewSize"
           :sort-fields="sortFields"
           :term="filterTerm"
+          :tab-items="tabItems"
+          :matching-count="matchingCount"
         />
       </template>
     </files-view-wrapper>
@@ -57,6 +59,7 @@ import {
   eventBus,
   useGetMatchingSpace,
   useKeyboardActions,
+  useResourcesStore,
   useRoute,
   useRouter
 } from '@opencloud-eu/web-pkg'
@@ -73,6 +76,7 @@ const { $gettext } = useGettext()
 const router = useRouter()
 const route = useRoute()
 const { getMatchingSpace } = useGetMatchingSpace()
+const resourcesStore = useResourcesStore()
 
 const filterTerm = ref('')
 
@@ -107,6 +111,11 @@ const {
   folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint,
   filterResources: filterShares
 })
+
+const tabItems = computed(() => resourcesStore.resources as IncomingShareResource[])
+const matchingCount = computed(() =>
+  unref(filterTerm).trim() ? unref(sortedResources).length : undefined
+)
 
 const breadcrumbs = computed(() => [
   {

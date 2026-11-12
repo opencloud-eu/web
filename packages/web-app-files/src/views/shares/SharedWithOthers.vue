@@ -99,7 +99,11 @@
           </template>
           <template #footer>
             <pagination :pages="paginationPages" :current-page="paginationPage" />
-            <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
+            <list-info
+              v-if="paginatedResources.length > 0"
+              class="w-full my-2"
+              :matching-count="matchingCount"
+            />
           </template>
         </component>
       </template>
@@ -203,6 +207,11 @@ const {
 } = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
   folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint,
   filterResources: filterShares
+})
+
+const matchingCount = computed(() => {
+  const isFiltered = !!unref(filterTerm) || !!queryItemAsString(unref(selectedShareTypesQuery))
+  return isFiltered ? unref(sortedResources).length : undefined
 })
 
 const { triggerDefaultAction } = useFileActions()
