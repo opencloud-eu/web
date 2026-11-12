@@ -2,7 +2,10 @@ import { useService } from '../service'
 import { NavigationFailure } from 'vue-router'
 
 export interface AuthServiceInterface {
-  handleAuthError(route: any, error?: unknown): any
+  /**
+   * Resolves to `true` if the token got renewed, so the caller can retry its request.
+   */
+  handleAuthError(route: any, error?: unknown): Promise<boolean>
   signinSilent(): Promise<unknown>
   /**
    * Silent renewal that retries network errors. Resolves to whether it succeeded.

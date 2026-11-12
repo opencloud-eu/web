@@ -134,7 +134,8 @@ export function useAppFolderHandling({
       }
     } catch (error) {
       if (error.statusCode === 401) {
-        return authService.handleAuthError(unref(currentRoute), error)
+        await authService.handleAuthError(unref(currentRoute), error)
+        return
       }
       resourcesStore.setCurrentFolder(null)
       folderLoadingError.value = error
