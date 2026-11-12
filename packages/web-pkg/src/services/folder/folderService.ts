@@ -106,28 +106,38 @@ export class FolderService {
       }
       resourcesStore.startResourcesLoading()
       try {
-        // cancel inner load with outer one so the loading state matches store writes
-        yield loader
-          .getTask(context)
-          .perform(...args)
-          .canceledOn(signal)
-      } catch (e) {
-        console.error(e)
-        const status = e?.statusCode || e?.response?.status
-        if (status === 401) {
-          // keep the load running until the auth error is handled, e.g. the token got renewed
+        // retry once after a token renewal
+        for (const isRetry of [false, true]) {
           try {
-            yield authService.handleAuthError(unref(router.currentRoute), e)
-          } catch (authError) {
-            console.error(authError)
+            // cancel inner load with outer one so the loading state matches store writes
+            yield loader
+              .getTask(context)
+              .perform(...args)
+              .canceledOn(signal)
+            return
+          } catch (e) {
+            console.error(e)
+            const status = e?.statusCode || e?.response?.status
+            if (status !== 401) {
+              // a missing resource is shown as such by the views
+              if (status !== 404) {
+                showErrorMessage({ title: $gettext('Failed to load files'), errors: [e] })
+              }
+              return
+            }
+
+            // keep the load running until the auth error is handled, e.g. the token got renewed
+            let renewed = false
+            try {
+              renewed = yield authService.handleAuthError(unref(router.currentRoute), e)
+            } catch (authError) {
+              console.error(authError)
+            }
+            if (!renewed || isRetry) {
+              return
+            }
           }
-          return
         }
-        // a missing resource is shown as such by the views
-        if (status === 404) {
-          return
-        }
-        showErrorMessage({ title: $gettext('Failed to load files'), errors: [e] })
       } finally {
         resourcesStore.finishResourcesLoading()
       }
