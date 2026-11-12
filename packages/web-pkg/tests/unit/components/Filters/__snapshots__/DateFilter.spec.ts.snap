@@ -80,36 +80,38 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button></div>
-        <div data-v-e73bd97a="" class="mt-2">
-          <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-5">From
-              <!--v-if-->
-            </label>
-            <div class="relative">
-              <!--v-if--> <input id="oc-textinput-5" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-0" value="">
-              <!--v-if-->
+        <form data-v-e73bd97a="" autocomplete="off">
+          <div data-v-e73bd97a="" class="mt-2">
+            <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-5">From
+                <!--v-if-->
+              </label>
+              <div class="relative">
+                <!--v-if--> <input id="oc-textinput-5" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-0" value="">
+                <!--v-if-->
+              </div>
+              <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
+                <!--v-if-->
+              </div>
+              <div id="v-0"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
             </div>
-            <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
-              <!--v-if-->
+            <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-6">To
+                <!--v-if-->
+              </label>
+              <div class="relative">
+                <!--v-if--> <input id="oc-textinput-6" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-1" value="">
+                <!--v-if-->
+              </div>
+              <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
+                <!--v-if-->
+              </div>
+              <div id="v-1"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
             </div>
-            <div id="v-0"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
           </div>
-          <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-6">To
+          <div data-v-e73bd97a="" class="date-filter-apply-btn text-end"><button data-v-e73bd97a="" type="submit" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
               <!--v-if-->
-            </label>
-            <div class="relative">
-              <!--v-if--> <input id="oc-textinput-6" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-1" value="">
-              <!--v-if-->
-            </div>
-            <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
-              <!--v-if-->
-            </div>
-            <div id="v-1"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
-          </div>
-        </div>
-        <div data-v-e73bd97a="" class="date-filter-apply-btn text-end"><button data-v-e73bd97a="" type="button" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
-            <!--v-if-->
-            <!-- @slot Content of the button --> Apply
-          </button></div>
+              <!-- @slot Content of the button --> Apply
+            </button></div>
+        </form>
       </div>
     </div>
     <!--v-if-->
@@ -197,36 +199,38 @@ exports[`DateFilter > renders all items 1`] = `
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button></div>
-        <div data-v-e73bd97a="" class="mt-2">
-          <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-2">From
-              <!--v-if-->
-            </label>
-            <div class="relative">
-              <!--v-if--> <input id="oc-textinput-2" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-0" value="">
-              <!--v-if-->
+        <form data-v-e73bd97a="" autocomplete="off">
+          <div data-v-e73bd97a="" class="mt-2">
+            <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-2">From
+                <!--v-if-->
+              </label>
+              <div class="relative">
+                <!--v-if--> <input id="oc-textinput-2" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-0" value="">
+                <!--v-if-->
+              </div>
+              <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
+                <!--v-if-->
+              </div>
+              <div id="v-0"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
             </div>
-            <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
-              <!--v-if-->
+            <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-3">To
+                <!--v-if-->
+              </label>
+              <div class="relative">
+                <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-1" value="">
+                <!--v-if-->
+              </div>
+              <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
+                <!--v-if-->
+              </div>
+              <div id="v-1"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
             </div>
-            <div id="v-0"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
           </div>
-          <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-3">To
+          <div data-v-e73bd97a="" class="date-filter-apply-btn text-end"><button data-v-e73bd97a="" type="submit" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
               <!--v-if-->
-            </label>
-            <div class="relative">
-              <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-1" value="">
-              <!--v-if-->
-            </div>
-            <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
-              <!--v-if-->
-            </div>
-            <div id="v-1"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
-          </div>
-        </div>
-        <div data-v-e73bd97a="" class="date-filter-apply-btn text-end"><button data-v-e73bd97a="" type="button" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
-            <!--v-if-->
-            <!-- @slot Content of the button --> Apply
-          </button></div>
+              <!-- @slot Content of the button --> Apply
+            </button></div>
+        </form>
       </div>
     </div>
     <!--v-if-->

@@ -337,6 +337,8 @@ function mapKeydown(map: Record<number, (e: KeyboardEvent) => void>) {
     ...map,
     [enterKeyCode]: (e: KeyboardEvent) => {
       if (!unref(dropdownEnabled)) {
+        // only opens the list, must not submit a surrounding form
+        e.preventDefault()
         dropdownEnabled.value = true
         return
       }

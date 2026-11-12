@@ -166,6 +166,26 @@ describe('OcSelect', () => {
       wrapper.unmount()
     })
   })
+  describe('enter key', () => {
+    it('prevents the default of the Enter that only enables the list, so a surrounding form does not submit', async () => {
+      const events: KeyboardEvent[] = []
+      const onKeydown = (event: KeyboardEvent) => events.push(event)
+      document.body.addEventListener('keydown', onKeydown)
+      const wrapper = getWrapper(
+        { options: [{ label: 'label1' }, { label: 'label2' }] },
+        { attachTo: document.body }
+      )
+      const input = wrapper.find(selectors.searchInput)
+      ;(input.element as HTMLInputElement).focus()
+
+      await input.trigger('keydown', { key: 'Enter', keyCode: 13 })
+
+      expect(events).toHaveLength(1)
+      expect(events[0].defaultPrevented).toBe(true)
+      document.body.removeEventListener('keydown', onKeydown)
+      wrapper.unmount()
+    })
+  })
   describe('focus after picking an option', () => {
     const options = [{ label: 'label1' }, { label: 'label2' }]
 

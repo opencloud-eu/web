@@ -90,32 +90,34 @@
               <oc-icon name="close" />
             </oc-button>
           </div>
-          <div class="mt-2">
-            <oc-datepicker
-              :label="$gettext('From')"
-              :is-clearable="true"
-              :current-date="fromDate"
-              :is-dark="currentTheme.isDark"
-              @date-changed="
-                (value: { date: DateTime; error: boolean }) => setDateRangeDate(value, 'from')
-              "
-            />
-            <oc-datepicker
-              :label="$gettext('To')"
-              :is-clearable="true"
-              :current-date="toDate"
-              :min-date="fromDate ? fromDate : undefined"
-              :is-dark="currentTheme.isDark"
-              @date-changed="
-                (value: { date: DateTime; error: boolean }) => setDateRangeDate(value, 'to')
-              "
-            />
-          </div>
-          <div class="date-filter-apply-btn text-end">
-            <oc-button size="small" :disabled="!dateRangeValid" @click="applyDateRangeFilter">
-              {{ $gettext('Apply') }}
-            </oc-button>
-          </div>
+          <form autocomplete="off" @submit.prevent="applyDateRangeFilter">
+            <div class="mt-2">
+              <oc-datepicker
+                :label="$gettext('From')"
+                :is-clearable="true"
+                :current-date="fromDate"
+                :is-dark="currentTheme.isDark"
+                @date-changed="
+                  (value: { date: DateTime; error: boolean }) => setDateRangeDate(value, 'from')
+                "
+              />
+              <oc-datepicker
+                :label="$gettext('To')"
+                :is-clearable="true"
+                :current-date="toDate"
+                :min-date="fromDate ? fromDate : undefined"
+                :is-dark="currentTheme.isDark"
+                @date-changed="
+                  (value: { date: DateTime; error: boolean }) => setDateRangeDate(value, 'to')
+                "
+              />
+            </div>
+            <div class="date-filter-apply-btn text-end">
+              <oc-button size="small" :disabled="!dateRangeValid" submit="submit">
+                {{ $gettext('Apply') }}
+              </oc-button>
+            </div>
+          </form>
         </div>
       </template>
     </oc-filter-chip>
@@ -270,6 +272,9 @@ const dateRangeOption = computed(() => {
 })
 
 const applyDateRangeFilter = async () => {
+  if (!unref(dateRangeValid)) {
+    return
+  }
   selectedItem.value = unref(dateRangeOption)
   await setRouteQuery()
   unref(filterChip).hideDrop()

@@ -138,6 +138,23 @@ describe('AppTokenModal component', () => {
       expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalled()
       expect(wrapper.emitted('created')).toBeTruthy()
     })
+    it('should create a token on form submit', async () => {
+      const { wrapper, mocks } = getWrapper()
+      emitNoteInput(wrapper, 'someNote')
+      emitDateInput(wrapper, DateTime.now())
+      await wrapper.vm.$nextTick()
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalled()
+    })
+    it('should not create a token on form submit with incomplete data', async () => {
+      const { wrapper, mocks } = getWrapper()
+      emitNoteInput(wrapper, 'someNote')
+      await wrapper.vm.$nextTick()
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(mocks.$clientService.httpAuthenticated.post).not.toHaveBeenCalled()
+    })
     it('should not create a second token when confirm is clicked twice in a row', async () => {
       const { wrapper, mocks } = getWrapper({ pendingPost: true })
       emitNoteInput(wrapper, 'someNote')

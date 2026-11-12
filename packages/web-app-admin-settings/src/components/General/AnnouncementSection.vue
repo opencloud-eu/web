@@ -7,21 +7,24 @@
     "
     icon="megaphone"
   >
-    <oc-text-input :id="bannerInputId" v-model="bannerText" :label="$gettext('Banner')">
-      <template #label>
-        <span class="mb-0.5 flex items-center gap-1">
-          <label :for="bannerInputId">{{ $gettext('Banner') }}</label>
-          <oc-contextual-helper
-            :title="$gettext('Banner')"
-            :text="
-              $gettext(
-                'Displayed text in the banner. Clicking it opens the details dialog. Visible only when Show banner is enabled. Users can dismiss it until the page is reloaded.'
-              )
-            "
-          />
-        </span>
-      </template>
-    </oc-text-input>
+    <form autocomplete="off" @submit.prevent="save">
+      <oc-text-input :id="bannerInputId" v-model="bannerText" :label="$gettext('Banner')">
+        <template #label>
+          <span class="mb-0.5 flex items-center gap-1">
+            <label :for="bannerInputId">{{ $gettext('Banner') }}</label>
+            <oc-contextual-helper
+              :title="$gettext('Banner')"
+              :text="
+                $gettext(
+                  'Displayed text in the banner. Clicking it opens the details dialog. Visible only when Show banner is enabled. Users can dismiss it until the page is reloaded.'
+                )
+              "
+            />
+          </span>
+        </template>
+      </oc-text-input>
+      <input type="submit" class="hidden" />
+    </form>
     <div>
       <span class="mb-0.5 flex items-center gap-1">
         {{ $gettext('Banner details') }}
@@ -68,7 +71,7 @@
           appearance="filled"
           :disabled="!isDirty || isBusy"
           :show-spinner="saveTask.isRunning"
-          @click="saveTask.perform()"
+          @click="save"
         >
           {{ $gettext('Save') }}
         </oc-button>
@@ -242,6 +245,13 @@ function preview() {
 }
 
 const isBusy = computed(() => loadTask.isRunning || saveTask.isRunning || toggleTask.isRunning)
+
+function save() {
+  if (!unref(isDirty) || unref(isBusy)) {
+    return
+  }
+  saveTask.perform()
+}
 
 onMounted(() => {
   loadTask.perform()
