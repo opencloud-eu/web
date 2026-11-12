@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: use space id for vault indicator unlock state [[#4448](https://github.com/opencloud-eu/web/pull/4448)]
 - fix: don't reopen the notifications stream without a token on logout [[#4420](https://github.com/opencloud-eu/web/pull/4420)]
 - fix: update the open shares panel when another session changes shares [[#4371](https://github.com/opencloud-eu/web/pull/4371)]
 - fix: add logout for guests [[#4416](https://github.com/opencloud-eu/web/pull/4416)]
