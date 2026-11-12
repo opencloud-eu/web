@@ -1,13 +1,16 @@
 import { useVaultIndicator } from '../../../../src/composables/extensions/useVaultIndicator'
 
 let unlocked = false
+let unlockedSpaceId = 'space-1'
 let claim: any = null
 let matchedSpace: any = { id: 'space-1' }
 
 vi.mock('@opencloud-eu/web-pkg', () => ({
   getVaultClaim: vi.fn(() => claim),
   useExtensionRegistry: () => ({}),
-  useVaultStore: () => ({ isUnlocked: () => unlocked }),
+  useVaultStore: () => ({
+    isUnlocked: (spaceId: string) => unlocked && spaceId === unlockedSpaceId
+  }),
   useGetMatchingSpace: () => ({ getMatchingSpace: () => matchedSpace })
 }))
 
@@ -20,6 +23,7 @@ const resource = (overrides: Record<string, unknown> = {}) =>
 beforeEach(() => {
   vi.clearAllMocks()
   unlocked = false
+  unlockedSpaceId = 'space-1'
   claim = { vaultRoot }
   matchedSpace = { id: 'space-1' }
 })
@@ -62,6 +66,22 @@ describe('vault resource indicator', () => {
   it('does not annotate content while the vault is locked', () => {
     unlocked = false
     expect(getIndicators(resource({ path: '/my.vault/sub/file.txt' }))).toBeUndefined()
+  })
+
+  describe('share spaces', () => {
+    const shareSpaceId = 'provider$space!node'
+
+    beforeEach(() => {
+      matchedSpace = { id: shareSpaceId }
+      unlockedSpaceId = shareSpaceId
+      unlocked = true
+    })
+
+    it('checks the unlock state by space id instead of storage id', () => {
+      const indicators = getIndicators(resource({ storageId: 'provider$space' })) as any[]
+      expect(indicators).toHaveLength(1)
+      expect(indicators[0].type).toBe('vault-unlocked')
+    })
   })
 
   describe('vault spaces', () => {
