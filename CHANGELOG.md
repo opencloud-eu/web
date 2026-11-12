@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.2.4](https://github.com/opencloud-eu/web/releases/tag/v4.2.4) - 2026-11-12
+
+### ❤️ Thanks to all contributors! ❤️
+
+@v-scharf
+
+### 📦️ Dependencies
+
+- [full-ci] chore: bump opencloud for tests to v4.0.9 [[#4439](https://github.com/opencloud-eu/web/pull/4439)]
+
 ## [4.2.3](https://github.com/opencloud-eu/web/releases/tag/v4.2.3) - 2026-11-11
 
 ### ❤️ Thanks to all contributors! ❤️
