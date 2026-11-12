@@ -123,6 +123,8 @@ const { showErrorMessage } = useMessages()
 const notificationsDrop = useTemplateRef<InstanceType<typeof OcDrop>>('notificationsDrop')
 const notifications: Ref<Notification[]> = ref([])
 const notificationsInterval = ref<ReturnType<typeof setInterval>>()
+// the getter would open a new stream after logout reset the old one
+let sseStream: EventSource | undefined
 
 const loading = computed(() => {
   const initialFetchRunning =
@@ -282,10 +284,8 @@ useEventListener(document, 'visibilitychange', onVisibilityChange)
 onMounted(() => {
   fetchNotificationsTask.perform()
   if (unref(capabilityStore.supportSSE)) {
-    clientService.sseAuthenticated.addEventListener(
-      MESSAGE_TYPE.NOTIFICATION,
-      onSSENotificationEvent
-    )
+    sseStream = clientService.sseAuthenticated
+    sseStream.addEventListener(MESSAGE_TYPE.NOTIFICATION, onSSENotificationEvent)
   } else {
     notificationsInterval.value = setInterval(() => {
       fetchNotificationsTask.perform()
@@ -294,13 +294,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (unref(capabilityStore.supportSSE)) {
-    clientService.sseAuthenticated.removeEventListener(
-      MESSAGE_TYPE.NOTIFICATION,
-      onSSENotificationEvent
-    )
-  } else {
-    clearInterval(unref(notificationsInterval))
-  }
+  sseStream?.removeEventListener(MESSAGE_TYPE.NOTIFICATION, onSSENotificationEvent)
+  sseStream = undefined
+  clearInterval(unref(notificationsInterval))
 })
 </script>
