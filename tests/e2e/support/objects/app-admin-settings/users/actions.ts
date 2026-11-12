@@ -268,7 +268,6 @@ export const changeUser = async (args: {
   await input.fill(value)
 
   if (attribute === 'role') {
-    await input.press('Enter')
     await page.locator(util.format(roleValueDropDown, value)).click()
     return Promise.all([
       page.waitForResponse(

@@ -97,6 +97,28 @@ describe('EditPanel', () => {
       expect(getInput(wrapper, selectors.displayNameInput).props('errorMessage')).toBe('')
       expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeFalsy()
     })
+    it('reverts the changes on Escape without passing it on', async () => {
+      const { wrapper } = getWrapper()
+      const onParentKeydown = vi.fn()
+      wrapper.element.parentElement.addEventListener('keydown', onParentKeydown)
+      await setInput(wrapper, selectors.displayNameInput, 'jana')
+
+      const event = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true, bubbles: true })
+      wrapper.element.dispatchEvent(event)
+      await nextTick()
+
+      expect(getInput(wrapper, selectors.displayNameInput).props('modelValue')).toBe('jan')
+      expect(event.defaultPrevented).toBe(true)
+      expect(onParentKeydown).not.toHaveBeenCalled()
+    })
+    it('leaves Escape to others without changes', () => {
+      const { wrapper } = getWrapper()
+
+      const event = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true, bubbles: true })
+      wrapper.element.dispatchEvent(event)
+
+      expect(event.defaultPrevented).toBe(false)
+    })
   })
 
   describe('user name validation', () => {

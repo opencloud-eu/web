@@ -25,12 +25,10 @@ describe('OcSelect', () => {
       wrapper.findComponent<typeof OcSelect>(selectors.ocSelect).props('options' as any)
     ).toEqual(options)
   })
-  it('lets consumers override the default vue-select handlers', () => {
-    const mapKeydown = vi.fn()
+  it('lets consumers override dropdownShouldOpen', () => {
     const dropdownShouldOpen = vi.fn(() => false)
-    const wrapper = getWrapper({ mapKeydown, dropdownShouldOpen } as any)
+    const wrapper = getWrapper({ dropdownShouldOpen } as any)
     const vueSelect = wrapper.findComponent<typeof OcSelect>(selectors.ocSelect)
-    expect(vueSelect.props('mapKeydown' as any)).toBe(mapKeydown)
     expect(vueSelect.props('dropdownShouldOpen' as any)).toBe(dropdownShouldOpen)
   })
   it('shows ocSpinner component when loading', () => {
@@ -127,6 +125,14 @@ describe('OcSelect', () => {
       expect(wrapper.find(selectors.deselectLockIcon).exists()).toBeTruthy()
     })
   })
+  it('opens the list on search input without a keydown, e.g. a paste', async () => {
+    const wrapper = getWrapper({ options: [{ label: 'label1' }] }, { attachTo: document.body })
+    const input = wrapper.find(selectors.searchInput)
+    ;(input.element as HTMLInputElement).focus()
+    await input.setValue('label')
+    expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(true)
+    wrapper.unmount()
+  })
   describe('escape key', () => {
     const options = [{ label: 'label1' }, { label: 'label2' }]
 
@@ -163,6 +169,26 @@ describe('OcSelect', () => {
       await pressEscape(input)
       expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(false)
       expect(document.activeElement).toBe(input.element)
+      wrapper.unmount()
+    })
+    it('keeps closing an open list without blurring if a custom keydown map is given', async () => {
+      const onBackspace = vi.fn()
+      const mapKeydown = (map: Record<number, (e: KeyboardEvent) => void>) => ({
+        ...map,
+        8: onBackspace
+      })
+      const wrapper = getWrapper({ options, mapKeydown }, { attachTo: document.body })
+      const input = wrapper.find(selectors.searchInput)
+      ;(input.element as HTMLInputElement).focus()
+      await input.trigger('keydown', { key: 'ArrowDown', keyCode: 40 })
+
+      await pressEscape(input)
+
+      expect(wrapper.find('.vs__dropdown-menu').exists()).toBe(false)
+      expect(document.activeElement).toBe(input.element)
+
+      await input.trigger('keydown', { key: 'Backspace', keyCode: 8 })
+      expect(onBackspace).toHaveBeenCalled()
       wrapper.unmount()
     })
   })

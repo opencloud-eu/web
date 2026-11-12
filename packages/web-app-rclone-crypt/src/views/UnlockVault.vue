@@ -20,7 +20,7 @@
       <div v-if="needsSetup === null" class="flex justify-center py-8">
         <oc-spinner size="large" :aria-label="$gettext('Loading vault')" />
       </div>
-      <form v-else @submit.prevent="onSubmit">
+      <form v-else @submit.prevent="onSubmit" @keydown.esc.prevent="onCancel">
         <vault-setup
           v-if="needsSetup"
           v-model="password"

@@ -261,12 +261,12 @@ onMounted(() => {
   }
 })
 
-const keydownMethods = (map: Record<string, (e: Event) => void>) => {
+const keydownMethods = (map: Record<number, (e: KeyboardEvent) => void>) => {
   const objectMapping = {
     ...map
   }
   for (const keyCode of [KeyCode.Enter, KeyCode[',']]) {
-    objectMapping[keyCode] = (e: Event) => {
+    objectMapping[keyCode] = (e: KeyboardEvent) => {
       const value = (e.target as HTMLInputElement).value
       if (value.length && !value.trim().length) {
         e.preventDefault()
@@ -275,7 +275,7 @@ const keydownMethods = (map: Record<string, (e: Event) => void>) => {
       map[keyCode](e)
     }
   }
-  objectMapping[KeyCode.Backspace] = async (e: Event) => {
+  objectMapping[KeyCode.Backspace] = async (e: KeyboardEvent) => {
     if ((e.target as HTMLInputElement).value || selectedTags.value.length === 0) {
       return
     }

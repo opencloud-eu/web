@@ -69,6 +69,8 @@
     :hide-actions="true"
     hide-cancel-button
     element-class="mail-compose-modal"
+    :active="!activeModal"
+    @cancel="requestClose"
   >
     <template #headerActions>
       <oc-button
@@ -141,7 +143,10 @@ import type { Mail, Mailbox, MailAddress } from '../types'
 type ComposeAttachment = ComposeFormState['attachments'][number]
 
 const { $gettext } = useGettext()
-const { dispatchModal } = useModals()
+const modalsStore = useModals()
+const { dispatchModal } = modalsStore
+// dispatched modals (e.g. unsaved changes) sit on top and must get the Escape
+const { activeModal } = storeToRefs(modalsStore)
 const router = useRouter()
 const appliedDraftId = ref<string | null>(null)
 

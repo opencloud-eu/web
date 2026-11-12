@@ -1,5 +1,5 @@
 <template>
-  <div id="group-edit-panel" class="flex-1 flex flex-col p-2">
+  <div id="group-edit-panel" class="flex-1 flex flex-col p-2" @keydown.esc="onEscape">
     <form
       id="group-edit-form"
       class="flex-1 flex flex-col"
@@ -137,6 +137,16 @@ function revertChanges() {
     formDataValue.valid = true
     formDataValue.errorMessage = ''
   })
+}
+
+function onEscape(event: KeyboardEvent) {
+  if (isEqual(group, unref(editGroup))) {
+    return
+  }
+  // keeps the table navigation from deselecting the item, the next Escape does that
+  event.preventDefault()
+  event.stopPropagation()
+  revertChanges()
 }
 
 watch(
