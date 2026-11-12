@@ -11,6 +11,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import SharedWithMeSection from '../../../../src/components/Shares/SharedWithMeSection.vue'
 import { useFileActionsToggleHideShare } from '../../../../src/composables/actions/files'
+import ListInfo from '../../../../src/components/FilesList/ListInfo.vue'
 
 vi.mock('../../../../src/composables/actions/files', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -57,6 +58,13 @@ describe('SharedWithMeSection', () => {
     const pagination = wrapper.findComponent(Pagination)
     expect(pagination.exists()).toBeTruthy()
     expect(pagination.props()).toEqual({ pages: 3, currentPage: 2 })
+  })
+  it('passes the shares of the tab and the matching count to the list info', () => {
+    const tabItems = [mock<IncomingShareResource>({ id: '1' }), mock<IncomingShareResource>()]
+    const { wrapper } = getWrapper({ props: { tabItems, matchingCount: 1 } })
+    const listInfo = wrapper.findComponent(ListInfo)
+    expect(listInfo.props('resources')).toEqual(tabItems)
+    expect(listInfo.props('matchingCount')).toBe(1)
   })
   it('shows "Nothing shared, yet" when there are no shares', () => {
     const { wrapper } = getWrapper({ props: { items: [] } })

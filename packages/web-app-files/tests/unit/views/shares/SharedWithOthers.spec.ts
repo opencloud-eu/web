@@ -10,7 +10,13 @@ import { IncomingShareResource } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ShareTypes } from '@opencloud-eu/web-client'
 import { useSortMock } from '../../../mocks/useSortMock'
-import { AppBar, ResourceTable, useResourcesStore, useRouteQuery } from '@opencloud-eu/web-pkg'
+import {
+  AppBar,
+  queryItemAsString,
+  ResourceTable,
+  useResourcesStore,
+  useRouteQuery
+} from '@opencloud-eu/web-pkg'
 
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -145,6 +151,33 @@ describe('SharedWithOthers view', () => {
     })
   })
 
+  describe('matching count', () => {
+    const files = [
+      mock<IncomingShareResource>({ name: 'share1', shareTypes: [ShareTypes.user.value] }),
+      mock<IncomingShareResource>({ name: 'share2', shareTypes: [ShareTypes.link.value] })
+    ]
+
+    afterEach(() => {
+      vi.mocked(queryItemAsString).mockReset()
+    })
+
+    it('is undefined without search or filter', () => {
+      const { wrapper } = getMountedWrapper({ files })
+      expect((wrapper.vm as any).matchingCount).toBeUndefined()
+    })
+    it('counts the shares matching the search', async () => {
+      const { wrapper } = getMountedWrapper({ files })
+      ;(wrapper.vm as any).filterTerm = 'share1'
+      await wrapper.vm.$nextTick()
+      expect((wrapper.vm as any).matchingCount).toBe(1)
+    })
+    it('counts the shares matching the share type filter', () => {
+      vi.mocked(useRouteQuery).mockReturnValueOnce(ref('link'))
+      vi.mocked(queryItemAsString).mockImplementation((value) => value as string)
+      const { wrapper } = getMountedWrapper({ files })
+      expect((wrapper.vm as any).matchingCount).toBe(1)
+    })
+  })
   describe('resource field updates', () => {
     async function setup() {
       const paginatedResources = ref([

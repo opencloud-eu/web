@@ -93,6 +93,8 @@
           :view-size="viewSize"
           :sort-fields="sortFields"
           :term="filterTerm"
+          :tab-items="tabItems"
+          :matching-count="matchingCount"
         />
       </template>
     </files-view-wrapper>
@@ -145,8 +147,12 @@ const selectedShareTypesQuery = useRouteQuery('q_shareType')
 const selectedSharedByQuery = useRouteQuery('q_sharedBy')
 const scrollToQuery = useRouteQuery('scrollTo')
 
+function isInVisibilityTab({ hidden }: IncomingShareResource) {
+  return !!hidden === unref(areHiddenFilesShown)
+}
+
 function filterShares(shares: IncomingShareResource[]) {
-  let result = shares.filter(({ hidden }) => !!hidden === unref(areHiddenFilesShown))
+  let result = shares.filter(isInVisibilityTab)
 
   const selectedShareTypes = queryItemAsString(unref(selectedShareTypesQuery))?.split('+')
   if (selectedShareTypes?.length) {
@@ -197,6 +203,17 @@ const {
 })
 
 const { $gettext } = useGettext()
+
+const tabItems = computed(() =>
+  (resourcesStore.resources as IncomingShareResource[]).filter(isInVisibilityTab)
+)
+const matchingCount = computed(() => {
+  const isFiltered =
+    !!unref(filterTerm).trim() ||
+    !!queryItemAsString(unref(selectedShareTypesQuery)) ||
+    !!queryItemAsString(unref(selectedSharedByQuery))
+  return isFiltered ? unref(sortedResources).length : undefined
+})
 
 const breadcrumbs = computed(() => {
   return [
