@@ -29,7 +29,7 @@
       <oc-tag
         v-if="showCritical"
         class="version-check-critical !bg-red-200 !text-red-900 border-0 ml-1"
-        size="small"
+        size="xsmall"
       >
         <span v-text="$gettext('Critical')" />
       </oc-tag>
