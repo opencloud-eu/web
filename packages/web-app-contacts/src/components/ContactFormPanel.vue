@@ -52,6 +52,8 @@
     :title="$gettext('New contact')"
     :hide-actions="true"
     hide-cancel-button
+    :active="!activeModal"
+    @cancel="requestClose"
   >
     <template #headerActions>
       <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="requestClose">
@@ -85,7 +87,8 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useGroupwareAccountsStore, useMessages } from '@opencloud-eu/web-pkg'
+import { storeToRefs } from 'pinia'
+import { useGroupwareAccountsStore, useMessages, useModals } from '@opencloud-eu/web-pkg'
 import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { useContactsStore } from '../composables/piniaStores/contacts'
 import { useContactEditor } from '../composables/useContactEditor'
@@ -103,6 +106,8 @@ defineProps<{
 
 const { $gettext } = useGettext()
 const { showErrorMessage } = useMessages()
+// dispatched modals (e.g. discard confirmation) sit on top and must get the Escape
+const { activeModal } = storeToRefs(useModals())
 
 const accountsStore = useGroupwareAccountsStore()
 const addressBooksStore = useAddressBooksStore()

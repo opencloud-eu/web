@@ -256,6 +256,16 @@ describe('UnlockVault', () => {
       expect(mocks.$router.push).toHaveBeenCalledWith('/files/search?term=secret')
     })
 
+    it('cancels on Escape', async () => {
+      const { wrapper, mocks } = await mountProbed({
+        query: { spaceId, vaultRoot, cancelUrl: '/files/search?term=secret' }
+      })
+      await wrapper.find('form').trigger('keydown', { key: 'Escape' })
+      await flushPromises()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith('/files/search?term=secret')
+    })
+
     it('lands the user in the folder above the vault', async () => {
       // Not inside the vault itself - clicking it would just kick them back here.
       const { wrapper, mocks } = await mountProbed({

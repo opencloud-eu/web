@@ -14,6 +14,7 @@
         :placeholder="placeholder"
         type="search"
         @keydown.enter="onSearch"
+        @keydown.esc="onEscape"
         @keyup="$emit('keyup', $event)"
       />
       <slot name="locationFilter" />
@@ -231,12 +232,31 @@ const onSearch = () => {
   emit('search', trimQuery ? unref(model).trim() : unref(model))
 }
 
-const onCancel = () => {
+const clearSearch = () => {
   model.value = ''
   if (!typeAhead) {
     onSearch()
   }
+}
+
+const onCancel = () => {
+  clearSearch()
   cancelHandler()
+}
+
+// browsers differ on Escape in search inputs (Firefox doesn't clear), so handle it consistently
+const onEscape = (event: KeyboardEvent) => {
+  if (!showCancelButton && !unref(model)) {
+    return
+  }
+  // a surrounding modal stays open, the next Escape closes it
+  event.preventDefault()
+  event.stopPropagation()
+  if (showCancelButton) {
+    onCancel()
+    return
+  }
+  clearSearch()
 }
 </script>
 
