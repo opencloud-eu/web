@@ -6,7 +6,11 @@
         <h2 class="px-2" v-text="$gettext('Accept invitations')" />
         <oc-contextual-helper class="pl-1" v-bind="helperContent" />
       </div>
-      <div class="flex flex-col items-center justify-center p-4">
+      <form
+        class="flex flex-col items-center justify-center p-4"
+        autocomplete="off"
+        @submit.prevent="acceptInvite"
+      >
         <div class="w-[50%]">
           <oc-text-input
             v-model="token"
@@ -31,12 +35,12 @@
           size="small"
           :disabled="acceptInvitationButtonDisabled"
           class="mt-2"
-          @click="acceptInvite"
+          submit="submit"
         >
           <oc-icon name="add" />
           <span v-text="$gettext('Accept invitation')" />
         </oc-button>
-      </div>
+      </form>
     </div>
   </div>
 </template>
@@ -71,11 +75,17 @@ const helperContent = computed(() => {
   }
 })
 
+const isAccepting = ref(false)
+
 const acceptInvitationButtonDisabled = computed(() => {
-  return !unref(decodedToken) || !unref(provider)
+  return !unref(decodedToken) || !unref(provider) || unref(isAccepting)
 })
 
 const acceptInvite = async () => {
+  if (unref(acceptInvitationButtonDisabled)) {
+    return
+  }
+  isAccepting.value = true
   try {
     // Use shared invitation acceptance logic
     await acceptInvitation(unref(decodedToken), unref(provider))
@@ -92,6 +102,8 @@ const acceptInvite = async () => {
     emit('highlightNewConnections')
   } catch (error) {
     // Error handling is already done in the shared logic, do not use showErrorMessage here
+  } finally {
+    isAccepting.value = false
   }
 }
 

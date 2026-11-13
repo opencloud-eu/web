@@ -138,10 +138,38 @@ describe('EditPanel', () => {
         expect.objectContaining({ displayName: 'administrators' })
       )
     })
+    it('saves valid changes on form submit', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { groups } = mocks.$clientService.graphAuthenticated
+      groups.getGroup.mockRejectedValueOnce(new Error(''))
+      await setDisplayName(wrapper, 'administrators')
+      groups.getGroup.mockResolvedValue(mock<Group>({ id: '1', displayName: 'administrators' }))
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(groups.editGroup).toHaveBeenCalledTimes(1)
+    })
+    it('does not save on form submit without changes', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(mocks.$clientService.graphAuthenticated.groups.editGroup).not.toHaveBeenCalled()
+    })
+    it('does not save on form submit with invalid data', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await setDisplayName(wrapper, '')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(mocks.$clientService.graphAuthenticated.groups.editGroup).not.toHaveBeenCalled()
+    })
     it('shows an error message on failure', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper, mocks } = getWrapper()
-      mocks.$clientService.graphAuthenticated.groups.editGroup.mockRejectedValue(new Error(''))
+      const { groups } = mocks.$clientService.graphAuthenticated
+      groups.getGroup.mockRejectedValueOnce(new Error(''))
+      await setDisplayName(wrapper, 'administrators')
+      groups.editGroup.mockRejectedValue(new Error(''))
 
       getCompareSaveDialog(wrapper).vm.$emit('confirm')
       await flushPromises()

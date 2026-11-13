@@ -631,6 +631,34 @@ describe('InviteCollaboratorForm', () => {
       expect(showMessage).toHaveBeenCalledWith({ title: 'Share was added successfully' })
       expect((wrapper.vm as any).saving).toBe(false)
     })
+    describe('Enter in the invite input', () => {
+      async function pressEnter({ inputValue = '', searchQuery = '' } = {}) {
+        const { wrapper } = getWrapper({ shallow: false })
+        const { addShare } = useSharesStore()
+        vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+        ;(wrapper.vm as any).selectedCollaborators = [mock<CollaboratorAutoCompleteItem>()]
+        ;(wrapper.vm as any).searchQuery = searchQuery
+        await wrapper.vm.$nextTick()
+        const input = wrapper.find<HTMLInputElement>('#files-share-invite-input')
+        input.element.value = inputValue
+        await input.trigger('keydown', { key: 'Enter' })
+        await flushPromises()
+        return { addShare }
+      }
+
+      it('shares with the selected collaborators when nothing is searched', async () => {
+        const { addShare } = await pressEnter()
+        expect(addShare).toHaveBeenCalledTimes(1)
+      })
+      it('does not share while a search term is entered', async () => {
+        const { addShare } = await pressEnter({ inputValue: 'jan', searchQuery: 'jan' })
+        expect(addShare).not.toHaveBeenCalled()
+      })
+      it('shares when the input was cleared without updating the search query', async () => {
+        const { addShare } = await pressEnter({ searchQuery: 'jan' })
+        expect(addShare).toHaveBeenCalledTimes(1)
+      })
+    })
     it('clicking the invite-sharees button calls the "share"-action', async () => {
       const { wrapper } = getWrapper()
       const shareSpy = vi.spyOn(wrapper.vm as any, 'share')

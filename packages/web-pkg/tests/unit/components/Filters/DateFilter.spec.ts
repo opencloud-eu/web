@@ -113,13 +113,30 @@ describe('DateFilter', () => {
         expect(wrapper.emitted('selectionChange')).not.toBeDefined()
       })
       it('emits a selection change on click with today entered as date', async () => {
-        const { wrapper } = getWrapper()
+        // the button submits the form, which only happens while it is part of the document
+        const { wrapper } = getWrapper({ attachTo: document.body })
         ;(wrapper.vm as any).fromDate = DateTime.now()
         ;(wrapper.vm as any).toDate = DateTime.now()
         await wrapper.vm.$nextTick()
         const applyBtn = wrapper.find(selectors.customDateRangeApplyBtn)
         await applyBtn.trigger('click')
         expect(wrapper.emitted('selectionChange')).toBeDefined()
+        wrapper.unmount()
+      })
+    })
+    describe('form submit', () => {
+      it('applies a valid date range', async () => {
+        const { wrapper } = getWrapper()
+        ;(wrapper.vm as any).fromDate = DateTime.now()
+        ;(wrapper.vm as any).toDate = DateTime.now()
+        await wrapper.vm.$nextTick()
+        await wrapper.find(`${selectors.customDateRangePanel} form`).trigger('submit')
+        expect(wrapper.emitted('selectionChange')).toHaveLength(1)
+      })
+      it('is ignored without a valid date range', async () => {
+        const { wrapper } = getWrapper()
+        await wrapper.find(`${selectors.customDateRangePanel} form`).trigger('submit')
+        expect(wrapper.emitted('selectionChange')).not.toBeDefined()
       })
     })
   })
@@ -127,14 +144,20 @@ describe('DateFilter', () => {
 
 function getWrapper({
   props = {},
-  initialQuery = ''
-}: { props?: PartialComponentProps<typeof DateFilter>; initialQuery?: string } = {}) {
+  initialQuery = '',
+  attachTo = undefined
+}: {
+  props?: PartialComponentProps<typeof DateFilter>
+  initialQuery?: string
+  attachTo?: HTMLElement
+} = {}) {
   vi.mocked(queryItemAsString).mockImplementation(() => initialQuery)
   const mocks = defaultComponentMocks()
 
   return {
     mocks,
     wrapper: mount(DateFilter, {
+      attachTo,
       props: {
         filterLabel: 'Users',
         filterName: 'users',

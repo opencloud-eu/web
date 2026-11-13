@@ -173,6 +173,21 @@ describe('CreateLinkModal', () => {
       })
     })
   })
+  describe('form submit', () => {
+    it('emits confirm', async () => {
+      const { wrapper } = getWrapper()
+      await wrapper.find('form').trigger('submit')
+      expect(wrapper.emitted('confirm')).toHaveLength(1)
+    })
+    it('marks confirm as disabled when the password policy is not fulfilled', () => {
+      const { wrapper } = getWrapper({ passwordPolicyFulfilled: false })
+      expect(wrapper.emitted('update:confirmDisabled')).toEqual([[true]])
+    })
+    it('marks confirm as enabled when the form is valid', () => {
+      const { wrapper } = getWrapper()
+      expect(wrapper.emitted('update:confirmDisabled')).toEqual([[false]])
+    })
+  })
 })
 
 function getWrapper({

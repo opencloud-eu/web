@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!createdToken">
+  <form v-if="!createdToken" autocomplete="off" @submit.prevent="createAppToken">
     <oc-text-input
       id="app-token-note-input"
       v-model="tokenLabel"
@@ -17,6 +17,7 @@
       required-mark
       @date-changed="onDateChanged"
     />
+    <input type="submit" class="hidden" />
     <teleport defer :to="`#${modalActionsTarget(modal)}`">
       <oc-button
         :disabled="isConfirmDisabled"
@@ -28,7 +29,7 @@
         {{ $gettext('Confirm') }}
       </oc-button>
     </teleport>
-  </div>
+  </form>
   <div v-else>
     <span
       v-text="

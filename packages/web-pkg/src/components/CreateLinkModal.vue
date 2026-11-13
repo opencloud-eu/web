@@ -27,7 +27,7 @@
       <span v-text="$gettext('Options')" />
     </oc-button>
   </div>
-  <div class="mb-4 ml-[30px]">
+  <form autocomplete="off" class="mb-4 ml-[30px]" @submit.prevent="$emit('confirm')">
     <oc-text-input
       v-if="isAdvancedMode"
       :key="passwordInputKey"
@@ -54,7 +54,8 @@
       :is-dark="currentTheme.isDark"
       @date-changed="onExpiryDateChanged"
     />
-  </div>
+    <input type="submit" class="hidden" />
+  </form>
   <teleport defer :to="`#${modalActionsTarget(modal)}`">
     <div class="ml-2" :class="{ 'oc-button-group': password.value }">
       <oc-button
@@ -106,7 +107,7 @@ import { DateTime } from 'luxon'
 import { v4 as uuidV4 } from 'uuid'
 import { upperFirst } from 'lodash-es'
 import { useGettext } from 'vue3-gettext'
-import { ComponentPublicInstance, computed, ref, reactive, unref, onMounted } from 'vue'
+import { ComponentPublicInstance, computed, ref, reactive, unref, onMounted, watch } from 'vue'
 import {
   usePasswordPolicyService,
   useEmbedMode,
@@ -140,9 +141,10 @@ const {
   space?: SpaceResource
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'cancel'): void
   (e: 'confirm', options?: { copyPassword?: boolean }): void
+  (e: 'update:confirmDisabled', value: boolean): void
 }>()
 
 const clientService = useClientService()
@@ -236,8 +238,15 @@ const passwordPolicyFulfilled = computed(() => {
   return passwordPolicy.check(unref(password).value)
 })
 
+const isFormInvalid = computed(() => {
+  return !unref(passwordPolicyFulfilled) || unref(isInvalidExpiryDate)
+})
+
+// lets the modal wrapper ignore a confirm on Enter while the form is invalid
+watch(isFormInvalid, (invalid) => emit('update:confirmDisabled', invalid), { immediate: true })
+
 const confirmButtonDisabled = computed(() => {
-  return !unref(passwordPolicyFulfilled) || unref(isInvalidExpiryDate) || modal.isLoading
+  return unref(isFormInvalid) || modal.isLoading
 })
 
 const createLinkHandler = async () => {

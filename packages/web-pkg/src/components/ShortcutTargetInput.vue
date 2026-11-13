@@ -194,6 +194,11 @@ function onKeydown(event: KeyboardEvent) {
   if (!['ArrowUp', 'ArrowDown', 'Enter', 'Escape'].includes(event.key)) {
     return
   }
+  if (event.key === 'Enter' && unref(activeIndex) < 0) {
+    // nothing highlighted, the typed value is taken and the surrounding form submits
+    unref(dropRef)?.hide()
+    return
+  }
   event.stopPropagation()
   if (event.key === 'Escape') {
     unref(dropRef)?.hide()

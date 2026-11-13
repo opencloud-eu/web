@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test'
+import { Page, Locator, expect } from '@playwright/test'
 import util from 'util'
 import { UsersEnvironment } from '../../../environment'
 
@@ -264,10 +264,11 @@ export const changeUser = async (args: {
   value: string
 }): Promise<unknown> => {
   const { page, attribute, value, uuid } = args
-  await page.locator(util.format(userInput, attribute)).fill(value)
-  await page.locator(util.format(userInput, attribute)).press('Enter')
+  const input = page.locator(util.format(userInput, attribute))
+  await input.fill(value)
 
   if (attribute === 'role') {
+    await input.press('Enter')
     await page.locator(util.format(roleValueDropDown, value)).click()
     return Promise.all([
       page.waitForResponse(
@@ -280,6 +281,8 @@ export const changeUser = async (args: {
     ])
   }
 
+  // async validation (e.g. user name check) must finish before Enter submits
+  await expect(page.locator(compareDialogConfirm)).toBeEnabled()
   return Promise.all([
     page.waitForResponse(
       (resp) =>
@@ -287,7 +290,7 @@ export const changeUser = async (args: {
         resp.status() === 200 &&
         resp.request().method() === 'PATCH'
     ),
-    page.locator(compareDialogConfirm).click()
+    input.press('Enter')
   ])
 }
 
