@@ -26,7 +26,7 @@ describe('SaveAsModal', () => {
     it('sets the iframe src correctly', () => {
       const { wrapper } = getWrapper()
       expect((wrapper.vm as any).iframeUrl.href).toEqual(
-        'http://localhost:3000/files-spaces-generic?hide-logo=true&embed=true&embed-target=location&embed-choose-file-name=true&embed-delegate-authentication=false&embed-choose-file-name-suggestion=test.txt'
+        'http://localhost:3000/files-spaces-generic?hide-logo=true&embed=true&embed-target=location&embed-choose-file-name=true&embed-allow-vault=true&embed-delegate-authentication=false&embed-choose-file-name-suggestion=test.txt'
       )
     })
     it('sets the iframe title correctly', () => {
