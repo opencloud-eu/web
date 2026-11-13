@@ -984,7 +984,7 @@ describe('AppWrapper - renaming the open file', () => {
     await s.rejectResource(new HttpError('Resource not found', undefined, 404))
     s.currentFileContext.value = fileContext('/folder/a.md')
     await nextTick()
-    await s.resolveResource(fileA)
+    await s.resolveResource({ ...fileA })
     await s.resolveContent('content of a')
 
     expect(s.getFileInfo).toHaveBeenCalledTimes(3)

@@ -15,7 +15,8 @@ export default defineWebApplication({
         component: AppWrapperRoute(PdfViewer, {
           applicationId: appId,
           urlForResourceOptions: {
-            disposition: 'inline'
+            disposition: 'inline',
+            mimeType: 'application/pdf'
           }
         }),
         name: 'pdf-viewer',
