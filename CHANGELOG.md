@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep shared with me items that are still shared through another share [[#4339](https://github.com/opencloud-eu/web/pull/4339)]
 - fix: align the critical tag with the version check line [[#4457](https://github.com/opencloud-eu/web/pull/4457)]
 - fix: keep upload inputs working after a failed upload [[#4260](https://github.com/opencloud-eu/web/pull/4260)]
 - fix: confirm forms and modals with enter [[#4449](https://github.com/opencloud-eu/web/pull/4449)]
