@@ -438,6 +438,10 @@ export const onSSEShareRemovedEvent = async ({
       graphRoles: sharesStore.graphRoles,
       serverUrl: configStore.serverUrl
     })
+    // the server derives the id from the oldest share, so it changes if that one has been removed
+    if (resource.id !== removedShareResource.id) {
+      resourcesStore.removeResources([removedShareResource])
+    }
     return resourcesStore.upsertResource(resource)
   }
 }

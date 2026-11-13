@@ -738,7 +738,11 @@ describe('shares events', () => {
         affecteduserids: ['1']
       })
       mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
-        getSharedWithMeDriveItem({ id: sharedResource.id, roleId: viewerRole.id })
+        getSharedWithMeDriveItem({
+          id: sharedResource.id,
+          fileId: sharedResource.fileId,
+          roleId: viewerRole.id
+        })
       ])
       await onSSEShareRemovedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
@@ -749,6 +753,31 @@ describe('shares events', () => {
           sharePermissions: [GraphSharePermission.readContent],
           sharedWith: [expect.objectContaining({ id: 'group1' })]
         })
+      )
+    })
+    it('replaces the resource on a shared with me route when its id changed because the oldest share has been removed', async () => {
+      const sharedResource = mock<Resource>({
+        id: 'shareJail!direct',
+        fileId: 'sharedResource',
+        storageId: 'space1'
+      })
+      const mocks = getMocks({
+        currentRouteFilesSharesWithMe: true,
+        currentFolder: null,
+        resources: [sharedResource]
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: sharedResource.fileId,
+        spaceid: sharedResource.storageId,
+        affecteduserids: ['1']
+      })
+      mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
+        getSharedWithMeDriveItem({ id: 'shareJail!group', fileId: sharedResource.fileId })
+      ])
+      await onSSEShareRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([sharedResource])
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'shareJail!group', fileId: sharedResource.fileId })
       )
     })
     it('does not call "removeResources" on a shared with me route when the resource is still shared with the current user', async () => {
@@ -768,7 +797,7 @@ describe('shares events', () => {
         affecteduserids: ['2']
       })
       mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
-        getSharedWithMeDriveItem({ id: sharedResource.id })
+        getSharedWithMeDriveItem({ id: sharedResource.id, fileId: sharedResource.fileId })
       ])
       await onSSEShareRemovedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
@@ -872,7 +901,7 @@ describe('shares events', () => {
             affecteduserids: ['1']
           })
           mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
-            getSharedWithMeDriveItem({ id: sharedResource.id })
+            getSharedWithMeDriveItem({ id: sharedResource.id, fileId: sharedResource.fileId })
           ])
           await onSSEShareRemovedEvent({ sseData, ...mocks })
           expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
@@ -1072,12 +1101,20 @@ describe('shares events', () => {
   })
 })
 
-const getSharedWithMeDriveItem = ({ id, roleId = 'viewer' }: { id: string; roleId?: string }) =>
+const getSharedWithMeDriveItem = ({
+  id,
+  fileId,
+  roleId = 'viewer'
+}: {
+  id: string
+  fileId: string
+  roleId?: string
+}) =>
   ({
-    id: `shareJail!${id}`,
+    id,
     name: 'file.txt',
     remoteItem: {
-      id,
+      id: fileId,
       permissions: [
         {
           roles: [roleId],
