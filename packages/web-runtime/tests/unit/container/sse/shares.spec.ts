@@ -582,7 +582,7 @@ describe('shares events', () => {
       expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
     })
-    it('does not call "showMessage" or reload the file list when access remains, e.g. through a group share', async () => {
+    it('reloads the file list and the share space permissions instead of calling "showMessage" when access remains, e.g. through a group share', async () => {
       const shareSpace = mock<SpaceResource>({ id: 'sharedResource', driveType: 'share' })
       const mocks = getMocks({
         currentRouteFilesSpacesGeneric: true,
@@ -602,8 +602,12 @@ describe('shares events', () => {
         path: mocks.resourcesStore.currentFolder.path
       })
       expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
-      expect(mocks.spacesStore.updateSpaceField).not.toHaveBeenCalled()
-      expect(busStub).not.toHaveBeenCalled()
+      expect(mocks.spacesStore.updateSpaceField).toHaveBeenCalledWith({
+        id: shareSpace.id,
+        field: 'graphPermissions',
+        value: undefined
+      })
+      expect(busStub).toHaveBeenCalledWith('app.files.list.load')
     })
 
     it('calls "upsertResource" when share has been removed and current user is not affected and share is located in current folder', async () => {

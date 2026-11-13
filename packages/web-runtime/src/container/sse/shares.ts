@@ -110,6 +110,15 @@ async function hasAccessToCurrentFolder({
   }
 }
 
+// the space loader only derives the permissions of a share space if they are unset
+function reloadSpaceFolderWithPermissions({
+  sseData,
+  spacesStore
+}: Pick<SSEEventOptions, 'sseData' | 'spacesStore'>) {
+  spacesStore.updateSpaceField({ id: sseData.itemid, field: 'graphPermissions', value: undefined })
+  eventBus.publish('app.files.list.load')
+}
+
 export const onSSESpaceMemberAddedEvent = async ({
   sseData,
   resourcesStore,
@@ -361,9 +370,10 @@ export const onSSEShareRemovedEvent = async ({
     isAffected &&
     isCurrentSpaceAffected({ sseData, spacesStore, resourcesStore })
   ) {
-    // the user may still have access, e.g. through a group share of the same item
+    // the user may still have access, e.g. through a group share of the same item,
+    // but the remaining share may come with a different role
     if (await hasAccessToCurrentFolder({ spacesStore, resourcesStore, clientService })) {
-      return
+      return reloadSpaceFolderWithPermissions({ sseData, spacesStore })
     }
 
     return messageStore.showMessage({
