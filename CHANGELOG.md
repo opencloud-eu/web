@@ -22,6 +22,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#4442](https://github.com/opencloud-eu/web/pull/4442)]
 - chore(deps): update dependency filesize to v11.0.31 [[#4456](https://github.com/opencloud-eu/web/pull/4456)]
 - chore(deps): update traefik docker tag to v3.7.18 [[#4444](https://github.com/opencloud-eu/web/pull/4444)]
 - chore(deps): update node.js to v24.22.3 [[#4443](https://github.com/opencloud-eu/web/pull/4443)]
