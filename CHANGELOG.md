@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep upload inputs working after a failed upload [[#4260](https://github.com/opencloud-eu/web/pull/4260)]
 - fix: confirm forms and modals with enter [[#4449](https://github.com/opencloud-eu/web/pull/4449)]
 - fix: count only the current tab and matching items in share view footers [[#4447](https://github.com/opencloud-eu/web/pull/4447)]
 - fix: reload the folder after a silent token renewal [[#4419](https://github.com/opencloud-eu/web/pull/4419)]
