@@ -512,6 +512,27 @@ describe('UploadInfo component', () => {
       expect(vm.uploads.folder.status).toBe('success')
     })
   })
+  describe('failed files of earlier uploads', () => {
+    it('removes them when an upload starts while nothing is uploading', () => {
+      const { mocks, handlers } = getWrapperWithHandlers()
+      handlers.uploadStarted()
+      handlers.uploadCompleted()
+      mocks.$uppyService.removeFailedFiles.mockClear()
+
+      handlers.uploadStarted()
+
+      expect(mocks.$uppyService.removeFailedFiles).toHaveBeenCalledTimes(1)
+    })
+    it('keeps them when an upload starts while another one is still running or being prepared', () => {
+      const { mocks, handlers } = getWrapperWithHandlers()
+      handlers.uploadStarted()
+      mocks.$uppyService.removeFailedFiles.mockClear()
+
+      handlers.uploadStarted()
+
+      expect(mocks.$uppyService.removeFailedFiles).not.toHaveBeenCalled()
+    })
+  })
   describe('pause and resume', () => {
     it('does not count the paused duration as upload time', () => {
       vi.useFakeTimers()
