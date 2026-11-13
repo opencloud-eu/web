@@ -19,7 +19,7 @@ function serializeParagraph(text: string): string {
     type: 'doc',
     content: [{ type: 'paragraph', content: [{ type: 'text', text }] }]
   })
-  return strategy.serialize(editor.state.doc)
+  return strategy.serialize(editor.state.doc, { finalNewline: false })
 }
 
 describe('markdown paragraph roundtrip', () => {

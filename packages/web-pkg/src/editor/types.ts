@@ -124,6 +124,12 @@ export interface TextEditorInstance {
   actionGroups(): EditorActionGroup[]
   getContent(): string
   setContent(value: string): void
+  /**
+   * Whether the content ends with a newline, for formats whose document can't
+   * hold it (e.g. markdown). For edits that bypass {@link setContent}, like
+   * the source view. Shared with all peers when bound to a Y.Doc.
+   */
+  setFinalNewline(value: boolean): void
   isEmpty: Ref<boolean>
   isFocused: Ref<boolean>
   focus(): void
