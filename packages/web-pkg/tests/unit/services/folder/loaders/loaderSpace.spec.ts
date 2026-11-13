@@ -71,7 +71,7 @@ describe('FolderLoaderSpace', () => {
       })
     })
 
-    it('keeps the webdav permissions, favorite state and tags on the share root', async () => {
+    it('keeps the webdav permissions, favorite state, tags and vault status on the share root', async () => {
       vi.mocked(getSharedDriveItem).mockResolvedValueOnce({
         id: 'mount-id',
         name: 'f1',
@@ -99,7 +99,8 @@ describe('FolderLoaderSpace', () => {
         isFolder: true,
         permissions: 'SNVCK',
         starred: true,
-        tags: ['important']
+        tags: ['important'],
+        isInVault: true
       }
 
       const { resourcesStore } = await loadFolder({ space, path: '/', resource: root as Resource })
@@ -110,7 +111,8 @@ describe('FolderLoaderSpace', () => {
             id: 'mount-id',
             permissions: 'SNVCK',
             starred: true,
-            tags: ['important']
+            tags: ['important'],
+            isInVault: true
           })
         })
       )

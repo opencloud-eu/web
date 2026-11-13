@@ -85,6 +85,7 @@ const {
   postMessage,
   chooseFileName,
   chooseFileNameSuggestion,
+  allowVault,
   submitButtonTitle
 } = useEmbedMode()
 const spacesStore = useSpacesStore()
@@ -176,6 +177,8 @@ const isChooseButtonDisabled = computed<boolean>(() => {
     selectedFiles.value.length < 1 ||
     !unref(currentFolder) ||
     !unref(currentFolder)?.canCreate() ||
+    // callers write unencrypted unless they opt in as vault-aware
+    (!unref(allowVault) && unref(currentFolder).isInVault) ||
     !!unref(fileNameErrorMessage)
   )
 })
