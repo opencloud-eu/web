@@ -659,6 +659,11 @@ uppyService.subscribe('uploadStarted', () => {
     remainingTime.value = $gettext('Calculating estimated time...')
   }
 
+  if (!unref(runningUploads)) {
+    // the info starts over, so drop failed files. uppy would silently re-send them with the new batch otherwise
+    uppyService.removeFailedFiles()
+  }
+
   // No upload in progress -> clean overlay
   if (!unref(runningUploads) && unref(showInfo)) {
     cleanOverlay()

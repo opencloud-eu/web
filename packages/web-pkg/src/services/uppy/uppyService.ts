@@ -321,15 +321,11 @@ export class UppyService {
     const listenerRegistered = el.getAttribute('listener')
     if (listenerRegistered !== 'true') {
       el.setAttribute('listener', 'true')
-      el.addEventListener(
-        'change',
-        (event) => {
-          const target = event.target as HTMLInputElement
-          const files = Array.from(target.files)
-          this.addFiles(files)
-        },
-        { once: true }
-      )
+      el.addEventListener('change', (event) => {
+        const target = event.target as HTMLInputElement
+        const files = Array.from(target.files)
+        this.addFiles(files)
+      })
       this.uploadInputs.push(el)
     }
   }
