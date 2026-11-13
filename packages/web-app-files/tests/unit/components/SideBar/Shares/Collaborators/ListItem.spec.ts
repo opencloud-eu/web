@@ -3,7 +3,8 @@ import {
   CollaboratorShare,
   GraphSharePermission,
   ShareRole,
-  ShareTypes
+  ShareTypes,
+  UNIFIED_ROLE_DENIED_ID
 } from '@opencloud-eu/web-client'
 import {
   defaultPlugins,
@@ -321,6 +322,37 @@ describe('Collaborator ListItem component', () => {
 
       expect(roleDropDown.props('isExternal')).toBeFalsy()
       expect(wrapper.find(selectors.externalContextHelper).exists()).toBeFalsy()
+    })
+  })
+  describe('deny role', () => {
+    const viewerRole = mock<ShareRole>({ id: 'viewer', displayName: 'Can view', description: '' })
+    const editorRole = mock<ShareRole>({ id: 'editor', displayName: 'Can edit', description: '' })
+    const deniedRole = mock<ShareRole>({
+      id: UNIFIED_ROLE_DENIED_ID,
+      displayName: 'Cannot access',
+      description: ''
+    })
+
+    it('is not offered in the role dropdown of a guest share', () => {
+      const share = getShareMock({ shareType: ShareTypes.guest.value })
+      share.role = viewerRole
+      const { wrapper } = createWrapper({
+        share,
+        stubRoleDropdown: false,
+        availableInternalShareRoles: [viewerRole, editorRole, deniedRole]
+      })
+      expect(wrapper.find(`#files-recipient-role-drop-btn-${viewerRole.id}`).exists()).toBeTruthy()
+      expect(wrapper.find(`#files-recipient-role-drop-btn-${deniedRole.id}`).exists()).toBeFalsy()
+    })
+    it('is offered in the role dropdown of a user share', () => {
+      const share = getShareMock({ shareType: ShareTypes.user.value })
+      share.role = viewerRole
+      const { wrapper } = createWrapper({
+        share,
+        stubRoleDropdown: false,
+        availableInternalShareRoles: [viewerRole, editorRole, deniedRole]
+      })
+      expect(wrapper.find(`#files-recipient-role-drop-btn-${deniedRole.id}`).exists()).toBeTruthy()
     })
   })
 })

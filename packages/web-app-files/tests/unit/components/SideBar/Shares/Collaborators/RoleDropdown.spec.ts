@@ -1,5 +1,5 @@
 import RoleDropdown from '../../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
-import { ShareRole } from '@opencloud-eu/web-client'
+import { ShareRole, UNIFIED_ROLE_DENIED_ID } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
@@ -138,6 +138,32 @@ describe('RoleDropdown', () => {
       wrapper.find(`oc-button-stub#files-recipient-role-drop-btn-${externalShareRole1.id}`).exists()
     ).toBeTruthy()
   })
+  describe('deny role', () => {
+    const viewerRole = mock<ShareRole>({ id: 'viewer', displayName: 'Can view', description: '' })
+    const editorRole = mock<ShareRole>({ id: 'editor', displayName: 'Can edit', description: '' })
+    const deniedRole = mock<ShareRole>({
+      id: UNIFIED_ROLE_DENIED_ID,
+      displayName: 'Cannot access',
+      description: ''
+    })
+
+    it('is not offered for guests', () => {
+      const { wrapper } = getWrapper({
+        mountType: shallowMount,
+        isGuest: true,
+        availableInternalShareRoles: [viewerRole, editorRole, deniedRole]
+      })
+      expect(wrapper.find(`#files-recipient-role-drop-btn-${viewerRole.id}`).exists()).toBeTruthy()
+      expect(wrapper.find(`#files-recipient-role-drop-btn-${deniedRole.id}`).exists()).toBeFalsy()
+    })
+    it('is offered for other recipients', () => {
+      const { wrapper } = getWrapper({
+        mountType: shallowMount,
+        availableInternalShareRoles: [viewerRole, editorRole, deniedRole]
+      })
+      expect(wrapper.find(`#files-recipient-role-drop-btn-${deniedRole.id}`).exists()).toBeTruthy()
+    })
+  })
 })
 
 function getWrapper({
@@ -145,6 +171,7 @@ function getWrapper({
   existingShareRole = null,
   existingSharePermissions = null,
   isExternal = false,
+  isGuest = false,
   availableInternalShareRoles = [
     mock<ShareRole>({ displayName: 'Can view', description: '' }),
     mock<ShareRole>({ displayName: 'Can edit', description: '' })
@@ -155,6 +182,7 @@ function getWrapper({
   existingShareRole?: ShareRole
   existingSharePermissions?: string[]
   isExternal?: boolean
+  isGuest?: boolean
   availableInternalShareRoles?: ShareRole[]
   availableExternalShareRoles?: ShareRole[]
 } = {}) {
@@ -163,7 +191,8 @@ function getWrapper({
       props: {
         existingShareRole,
         existingSharePermissions: existingSharePermissions ?? [],
-        isExternal
+        isExternal,
+        isGuest
       },
       global: {
         plugins: [

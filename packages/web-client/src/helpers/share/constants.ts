@@ -1,3 +1,5 @@
+export const UNIFIED_ROLE_DENIED_ID = '63e64e19-8d43-42ec-a738-2b6af2610efa'
+
 /** @deprecated */
 export abstract class SharePermissionBit {
   static readonly Read: number = 1

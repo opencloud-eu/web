@@ -884,6 +884,32 @@ describe('InviteCollaboratorForm', () => {
       expect(wrapper.find('.invite-form-share-role-type').exists()).toBeFalsy()
     })
   })
+  describe('guest recipients', () => {
+    it('lets the role dropdown know whether a guest is among the selected recipients', async () => {
+      const { wrapper } = getWrapper()
+      const roleDropdown = wrapper.findComponent<typeof RoleDropdown>('role-dropdown-stub')
+      const user = mock<CollaboratorAutoCompleteItem>({
+        id: 'user-id',
+        shareType: ShareTypes.user.value
+      })
+      const guest = mock<CollaboratorAutoCompleteItem>({
+        id: 'guest@example.com',
+        shareType: ShareTypes.guest.value
+      })
+
+      ;(wrapper.vm as any).selectedCollaborators = [user]
+      await wrapper.vm.$nextTick()
+      expect(roleDropdown.props('isGuest')).toBe(false)
+
+      ;(wrapper.vm as any).selectedCollaborators = [user, guest]
+      await wrapper.vm.$nextTick()
+      expect(roleDropdown.props('isGuest')).toBe(true)
+
+      ;(wrapper.vm as any).selectedCollaborators = [user]
+      await wrapper.vm.$nextTick()
+      expect(roleDropdown.props('isGuest')).toBe(false)
+    })
+  })
 })
 
 async function search(wrapper: ReturnType<typeof getWrapper>['wrapper'], query = 'test') {
