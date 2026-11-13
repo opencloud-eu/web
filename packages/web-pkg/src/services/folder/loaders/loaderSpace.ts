@@ -115,7 +115,9 @@ export class FolderLoaderSpace implements FolderLoader {
                 // graph doesn't expose the webdav permissions, favorite state and tags of the share root
                 permissions: currentFolder.permissions,
                 starred: currentFolder.starred,
-                tags: currentFolder.tags
+                tags: currentFolder.tags,
+                // set client-side by the vault webdav listing
+                isInVault: currentFolder.isInVault
               }
             }
           } else if (!isPersonalSpaceResource(space) && !isPublicSpaceResource(space)) {
