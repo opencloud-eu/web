@@ -251,6 +251,31 @@ describe('EditPanel', () => {
       expect(mocks.$authService.signinSilent).not.toHaveBeenCalled()
     })
 
+    it('saves valid changes on form submit', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { getUser, editUser } = mocks.$clientService.graphAuthenticated.users
+      await setInput(wrapper, selectors.displayNameInput, 'jana')
+      getUser.mockResolvedValue(mock<User>({ id: '2', displayName: 'jana' }))
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(editUser).toHaveBeenCalledWith('2', { displayName: 'jana' })
+    })
+    it('does not save on form submit without changes', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(mocks.$clientService.graphAuthenticated.users.editUser).not.toHaveBeenCalled()
+    })
+    it('does not save on form submit with invalid data', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await setInput(wrapper, selectors.emailInput, '')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(mocks.$clientService.graphAuthenticated.users.editUser).not.toHaveBeenCalled()
+    })
+
     describe('when a part of the changes fails to save', () => {
       function setupPartialFailure() {
         const user = reactive({

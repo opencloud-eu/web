@@ -4,7 +4,7 @@
     data-testid="new-collaborators-form"
     class="[&_.vs\_\_actions]:!flex-nowrap [&_.vs\_\_search]:min-w-40 mb-4"
   >
-    <div>
+    <div @keydown.enter.capture="onInviteInputEnter">
       <div class="flex justify-between mb-1">
         <div class="flex items-center">
           <label :aria-hidden="true" for="files-share-invite-input" class="inline-block">
@@ -191,7 +191,7 @@ import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { DriveRecipient } from '@opencloud-eu/web-client/graph/generated'
 import ExpirationDateIndicator from '../../ExpirationDateIndicator.vue'
-import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
+import { ContextualHelper, isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
 import {
   useInviteContactViaEmail,
@@ -535,6 +535,21 @@ const showShareTypeFilter = computed(
 const isValid = computed(() => {
   return unref(selectedCollaborators).length > 0
 })
+
+// captured before the select handles Enter, so an Enter that picks a typed recipient doesn't share
+function onInviteInputEnter(event: KeyboardEvent) {
+  if (
+    (event.target as HTMLElement).id !== 'files-share-invite-input' ||
+    isComposingEvent(event) ||
+    (event.target as HTMLInputElement).value.trim() ||
+    !unref(isValid) ||
+    unref(saving)
+  ) {
+    return
+  }
+  event.preventDefault()
+  share()
+}
 const selectedCollaboratorsPlaceholder = computed(() => {
   return inviteLabel || $gettext('Search')
 })

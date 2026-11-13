@@ -18,6 +18,12 @@ describe('EditPasswordModal', () => {
     )
   })
 
+  it('emits confirm on form submit', async () => {
+    const { wrapper } = getWrapper()
+    await wrapper.find('form').trigger('submit')
+    expect(wrapper.emitted('confirm')).toHaveLength(1)
+  })
+
   describe('computed method "confirmButtonDisabled"', () => {
     it('should be true if any data set is invalid', () => {
       const { wrapper } = getWrapper()

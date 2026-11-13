@@ -13,6 +13,7 @@
       :error-message="fileNameErrorMessage"
       :fix-message-line="true"
       @keydown.esc="emitCancel"
+      @keydown.enter="onFileNameEnter"
     />
 
     <div class="flex items-center ml-auto">
@@ -71,6 +72,7 @@ import {
   withoutExtension
 } from '@opencloud-eu/web-pkg'
 import { extractExtensionFromFile, Resource } from '@opencloud-eu/web-client'
+import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import { join } from 'path'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
@@ -207,6 +209,19 @@ const emitSelect = (): void => {
 
   // TODO: adjust type to embedModeLocationPickMessageData later (breaking)
   postMessage<Resource[]>('opencloud-embed:select', JSON.parse(JSON.stringify(selectedFiles.value)))
+}
+
+function onFileNameEnter(event: KeyboardEvent) {
+  // a held key repeats, which must not post several selections to the host
+  if (
+    event.repeat ||
+    isComposingEvent(event) ||
+    !unref(isLocationPicker) ||
+    unref(isChooseButtonDisabled)
+  ) {
+    return
+  }
+  emitSelect()
 }
 
 const emitCancel = (): void => {

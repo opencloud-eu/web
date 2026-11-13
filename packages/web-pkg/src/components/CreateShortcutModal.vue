@@ -1,35 +1,38 @@
 <template>
-  <shortcut-target-input
-    :model-value="inputUrl"
-    @update:model-value="onInputUrl"
-    @select="onSelectTarget"
-  />
-  <div v-show="inputUrl || inputFilename" class="flex w-full mt-4">
-    <oc-text-input
-      id="create-shortcut-modal-filename-input"
-      :model-value="inputFilename"
-      :label="$gettext('Shortcut name')"
-      aria-required="true"
-      class="w-full"
-      :error-message="inputFileNameErrorMessage"
-      :fix-message-line="true"
-      @update:model-value="onInputFilename"
-    >
-      <template #label>
-        <div class="flex items-center mb-1">
-          <label for="create-shortcut-modal-filename-input">
-            {{ $gettext('Shortcut name') }}
-            <span class="text-role-error" aria-hidden="true">*</span>
-          </label>
-          <oc-contextual-helper
-            :text="$gettext('Shortcut name as it will appear in the file list.')"
-            :title="$gettext('Shortcut name')"
-            class="ml-1"
-          />
-        </div>
-      </template>
-    </oc-text-input>
-  </div>
+  <form autocomplete="off" @submit.prevent="emit('confirm')">
+    <shortcut-target-input
+      :model-value="inputUrl"
+      @update:model-value="onInputUrl"
+      @select="onSelectTarget"
+    />
+    <div v-show="inputUrl || inputFilename" class="flex w-full mt-4">
+      <oc-text-input
+        id="create-shortcut-modal-filename-input"
+        :model-value="inputFilename"
+        :label="$gettext('Shortcut name')"
+        aria-required="true"
+        class="w-full"
+        :error-message="inputFileNameErrorMessage"
+        :fix-message-line="true"
+        @update:model-value="onInputFilename"
+      >
+        <template #label>
+          <div class="flex items-center mb-1">
+            <label for="create-shortcut-modal-filename-input">
+              {{ $gettext('Shortcut name') }}
+              <span class="text-role-error" aria-hidden="true">*</span>
+            </label>
+            <oc-contextual-helper
+              :text="$gettext('Shortcut name as it will appear in the file list.')"
+              :title="$gettext('Shortcut name')"
+              class="ml-1"
+            />
+          </div>
+        </template>
+      </oc-text-input>
+    </div>
+    <input type="submit" class="hidden" />
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -53,6 +56,7 @@ const { space } = defineProps<{
 }>()
 
 const emit = defineEmits<{
+  (e: 'confirm'): void
   (e: 'update:confirmDisabled', value: boolean): void
 }>()
 

@@ -1,6 +1,11 @@
 <template>
   <div id="user-edit-panel" class="flex-1 flex flex-col p-2">
-    <form id="user-edit-form" class="flex-1 flex flex-col" autocomplete="off">
+    <form
+      id="user-edit-form"
+      class="flex-1 flex flex-col"
+      autocomplete="off"
+      @submit.prevent="onSubmit"
+    >
       <section class="bg-role-surface-container rounded-xl px-4 pt-3 pb-1">
         <h3 class="font-semibold text-sm mt-0 mb-1" v-text="$gettext('Profile')" />
         <oc-text-input
@@ -97,6 +102,7 @@
           @selected-option-change="changeSelectedGroupOption"
         />
       </section>
+      <input type="submit" class="hidden" />
       <compare-save-dialog
         v-model:saved="saved"
         class="mt-auto pt-4"
@@ -104,7 +110,7 @@
         :compare-object="editUser"
         :confirm-button-disabled="invalidFormData"
         @revert="revertChanges"
-        @confirm="onEditUser({ user, editUser })"
+        @confirm="onSubmit"
       ></compare-save-dialog>
     </form>
   </div>
@@ -332,6 +338,21 @@ const selectedRoleValue = computed(() => {
 const invalidFormData = computed(() => {
   return Object.values(unref(formData)).some((v) => !v.valid)
 })
+
+// guards against overlapping saves, e.g. a held Enter key or Enter plus a Save click
+let isSubmitting = false
+
+async function onSubmit() {
+  if (isSubmitting || unref(invalidFormData) || isEqual(user, unref(editUser))) {
+    return
+  }
+  isSubmitting = true
+  try {
+    await onEditUser({ user, editUser: unref(editUser) })
+  } finally {
+    isSubmitting = false
+  }
+}
 
 const showQuota = computed(() => {
   return unref(editUser).drive?.quota

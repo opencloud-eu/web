@@ -188,6 +188,69 @@ describe('EmbedActions', () => {
       )
     })
 
+    it('selects on Enter in the file name input', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+
+      await wrapper.find(selectors.fileNameInput).trigger('keydown', { key: 'Enter' })
+
+      expect(mocks.postMessageMock).toHaveBeenCalledWith(
+        'opencloud-embed:select',
+        expect.objectContaining({ fileName: 'file.txt' })
+      )
+    })
+
+    it('does not select on Enter for an invalid name', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+      await input.vm.$emit('update:modelValue', '')
+
+      await wrapper.find(selectors.fileNameInput).trigger('keydown', { key: 'Enter' })
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+    })
+
+    it('does not select on Enter during composition', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+
+      await wrapper
+        .find(selectors.fileNameInput)
+        .trigger('keydown', { key: 'Enter', isComposing: true })
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+    })
+
+    it('does not select on a repeated Enter of a held key', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+
+      await wrapper.find(selectors.fileNameInput).trigger('keydown', { key: 'Enter', repeat: true })
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+    })
+
+    it('does not select on Enter outside of the location picker', async () => {
+      const { wrapper, mocks } = getWrapper({ currentFolder, chooseFileName: true })
+
+      await wrapper.find(selectors.fileNameInput).trigger('keydown', { key: 'Enter' })
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+    })
+
     it('disables the select action for an empty name when file extensions are turned off', async () => {
       const { wrapper } = getWrapper({
         currentFolder,

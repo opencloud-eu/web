@@ -1,6 +1,11 @@
 <template>
   <div id="group-edit-panel" class="flex-1 flex flex-col p-2">
-    <form id="group-edit-form" class="flex-1 flex flex-col" autocomplete="off">
+    <form
+      id="group-edit-form"
+      class="flex-1 flex flex-col"
+      autocomplete="off"
+      @submit.prevent="onSubmit"
+    >
       <section class="bg-role-surface-container rounded-xl px-4 pt-3 pb-1">
         <h3 class="font-semibold text-sm mt-0 mb-1" v-text="$gettext('Group')" />
         <oc-text-input
@@ -13,6 +18,7 @@
           @update:model-value="validateDisplayName"
         />
       </section>
+      <input type="submit" class="hidden" />
       <compare-save-dialog
         v-model:saved="saved"
         class="mt-auto pt-4"
@@ -20,7 +26,7 @@
         :compare-object="editGroup"
         :confirm-button-disabled="invalidFormData"
         @revert="revertChanges"
-        @confirm="onEditGroup(editGroup)"
+        @confirm="onSubmit"
       ></compare-save-dialog>
     </form>
   </div>
@@ -31,6 +37,7 @@ import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { CompareSaveDialog, useClientService, useMessages } from '@opencloud-eu/web-pkg'
 import { useGroupSettingsStore } from '../../../composables'
 import { useGettext } from 'vue3-gettext'
+import { isEqual } from 'lodash-es'
 
 const { group = null } = defineProps<{ group?: Group }>()
 
@@ -51,6 +58,21 @@ const formData = ref({
 const invalidFormData = computed(() => {
   return Object.values(unref(formData)).some((v) => !v.valid)
 })
+
+// guards against overlapping saves, e.g. a held Enter key or Enter plus a Save click
+let isSubmitting = false
+
+async function onSubmit() {
+  if (isSubmitting || unref(invalidFormData) || isEqual(group, unref(editGroup))) {
+    return
+  }
+  isSubmitting = true
+  try {
+    await onEditGroup(unref(editGroup))
+  } finally {
+    isSubmitting = false
+  }
+}
 
 async function onEditGroup(editGroup: Group) {
   try {
