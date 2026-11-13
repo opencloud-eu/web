@@ -37,13 +37,15 @@ function isCurrentUserAffected({
   return !!userId && !!sseData.affecteduserids?.includes(userId)
 }
 
-async function isSharedWithCurrentUser({
+async function getSharedWithMeDriveItem({
   sseData,
   clientService
 }: Pick<SSEEventOptions, 'sseData' | 'clientService'>) {
   // FIXME: get drive item by id as soon as server supports it
-  const driveItems = await clientService.graphAuthenticated.driveItems.listSharedWithMe()
-  return driveItems.some(({ remoteItem }) => remoteItem?.id === sseData.itemid)
+  const driveItems = await clientService.graphAuthenticated.driveItems.listSharedWithMe({
+    expand: new Set(['thumbnails'])
+  })
+  return driveItems.find(({ remoteItem }) => remoteItem?.id === sseData.itemid)
 }
 
 // a share space is identified by its shared item. other spaces may contain multiple shares,
@@ -338,8 +340,10 @@ export const onSSEShareRemovedEvent = async ({
   sseData,
   resourcesStore,
   spacesStore,
+  sharesStore,
   userStore,
   authStore,
+  configStore,
   clientService,
   messageStore,
   language,
@@ -414,10 +418,17 @@ export const onSSEShareRemovedEvent = async ({
       return
     }
     // the user may still have access through another share of the same item, e.g. a group share
-    if (await isSharedWithCurrentUser({ sseData, clientService })) {
-      return
+    const driveItem = await getSharedWithMeDriveItem({ sseData, clientService })
+    if (!driveItem) {
+      return resourcesStore.removeResources([removedShareResource])
     }
-    return resourcesStore.removeResources([removedShareResource])
+    // the remaining share may come with a different role
+    const resource = buildIncomingShareResource({
+      driveItem,
+      graphRoles: sharesStore.graphRoles,
+      serverUrl: configStore.serverUrl
+    })
+    return resourcesStore.upsertResource(resource)
   }
 }
 

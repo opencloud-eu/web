@@ -23,7 +23,13 @@ import {
 } from '../../../../src/container/sse'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { DriveItem, User } from '@opencloud-eu/web-client/graph/generated'
-import { ShareTypes, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  GraphSharePermission,
+  ShareRole,
+  ShareTypes,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { createTestingPinia, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { Language } from 'vue3-gettext'
 import PQueue from 'p-queue'
@@ -706,7 +712,7 @@ describe('shares events', () => {
         expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
       }
     )
-    it('does not call "removeResources" on a shared with me route when the current user is affected but the resource is still shared with them (e.g. through a group)', async () => {
+    it('updates the resource with the remaining share on a shared with me route when the current user is affected but the resource is still shared with them (e.g. through a group)', async () => {
       const sharedResource = mock<Resource>({
         id: 'sharedResource',
         fileId: 'sharedResource',
@@ -717,16 +723,29 @@ describe('shares events', () => {
         currentFolder: null,
         resources: [sharedResource]
       })
+      const viewerRole = mock<ShareRole>({
+        id: 'viewer',
+        rolePermissions: [{ allowedResourceActions: [GraphSharePermission.readContent] }]
+      })
+      mocks.sharesStore.graphRoles = { [viewerRole.id]: viewerRole }
       const sseData = mock<EventSchemaType>({
         itemid: sharedResource.id,
         spaceid: sharedResource.storageId,
         affecteduserids: ['1']
       })
       mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
-        mock<DriveItem>({ remoteItem: { id: sharedResource.id } })
+        getSharedWithMeDriveItem({ id: sharedResource.id, roleId: viewerRole.id })
       ])
       await onSSEShareRemovedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fileId: sharedResource.id,
+          shareRoles: [viewerRole],
+          sharePermissions: [GraphSharePermission.readContent],
+          sharedWith: [expect.objectContaining({ id: 'group1' })]
+        })
+      )
     })
     it('does not call "removeResources" on a shared with me route when the resource is still shared with the current user', async () => {
       const sharedResource = mock<Resource>({
@@ -745,7 +764,7 @@ describe('shares events', () => {
         affecteduserids: ['2']
       })
       mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
-        mock<DriveItem>({ remoteItem: { id: sharedResource.id } })
+        getSharedWithMeDriveItem({ id: sharedResource.id })
       ])
       await onSSEShareRemovedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
@@ -849,7 +868,7 @@ describe('shares events', () => {
             affecteduserids: ['1']
           })
           mocks.clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
-            mock<DriveItem>({ remoteItem: { id: sharedResource.id } })
+            getSharedWithMeDriveItem({ id: sharedResource.id })
           ])
           await onSSEShareRemovedEvent({ sseData, ...mocks })
           expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
@@ -1048,6 +1067,22 @@ describe('shares events', () => {
     })
   })
 })
+
+const getSharedWithMeDriveItem = ({ id, roleId = 'viewer' }: { id: string; roleId?: string }) =>
+  ({
+    id: `shareJail!${id}`,
+    name: 'file.txt',
+    remoteItem: {
+      id,
+      permissions: [
+        {
+          roles: [roleId],
+          grantedToV2: { group: { id: 'group1', displayName: 'Group 1' } },
+          invitation: { invitedBy: { user: { id: 'owner', displayName: 'Owner' } } }
+        }
+      ]
+    }
+  }) as DriveItem
 
 const getMocks = ({
   currentFolder = mockDeep<Resource>({
