@@ -31,6 +31,7 @@ exports[`account information page > account information section > displays basic
         <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">Group memberships</td>
         <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td" data-testid="group-names"><span data-testid="group-names-empty">You are not part of any group</span></td>
       </tr>
+      <!--v-if-->
       <tr data-v-98c4aba8="" class="account-page-logout-all-devices">
         <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">Logout from active devices</td>
         <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td" data-testid="logout"><a href="https://account-manager/logout" target="_blank" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-logout-url-btn">
@@ -112,6 +113,7 @@ exports[`account information page > public link context > should render a limite
           <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">Group memberships</td>
           <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td" data-testid="group-names"><span data-testid="group-names-empty">You are not part of any group</span></td>
         </tr>
+        <!--v-if-->
         <!--v-if-->
       </tbody>
     </table>

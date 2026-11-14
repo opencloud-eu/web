@@ -70,6 +70,30 @@
           />
         </oc-table-td>
       </oc-table-tr>
+      <oc-table-tr v-if="twoFactorState" class="account-page-two-factor">
+        <oc-table-td>{{ $gettext('Two-factor authentication') }}</oc-table-td>
+        <oc-table-td data-testid="two-factor">
+          <oc-switch
+            v-if="twoFactorState !== 'unknown'"
+            :checked="twoFactorState === 'on'"
+            :label="twoFactorState === 'on' ? $gettext('On') : $gettext('Off')"
+            class="inline-flex"
+            data-testid="account-page-two-factor-switch"
+            @update:checked="openTwoFactorPage"
+          />
+          <oc-button
+            v-else
+            appearance="raw"
+            type="a"
+            :href="twoFactorUrl"
+            target="_blank"
+            data-testid="account-page-two-factor-btn"
+            no-hover
+          >
+            <span v-text="$gettext('Manage')" />
+          </oc-button>
+        </oc-table-td>
+      </oc-table-tr>
       <oc-table-tr v-if="showLogout" class="account-page-logout-all-devices">
         <oc-table-td>{{ $gettext('Logout from active devices') }}</oc-table-td>
         <oc-table-td data-testid="logout">
@@ -107,7 +131,8 @@ import QuotaInformation from '../../components/Account/QuotaInformation.vue'
 import { computed, onMounted, ref, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useTask } from 'vue-concurrency'
-import { call } from '@opencloud-eu/web-client'
+import { call, urlJoin } from '@opencloud-eu/web-client'
+import { useEventListener } from '@vueuse/core'
 
 const { $gettext } = useGettext()
 const configStore = useConfigStore()
@@ -144,9 +169,50 @@ const loadGroupNamesTask = useTask(function* (signal) {
   }
 })
 
+// Two-factor authentication is a feature of the builtin IDP. Users turn it on and off on a
+// page of the IDP, the state is requested with the session of the IDP. The row is not shown when
+// the IDP does not offer it, e.g. when an external IDP is used.
+type TwoFactorState = 'on' | 'off' | 'unknown'
+const twoFactorState = ref<TwoFactorState>(null)
+const twoFactorUrl = computed(() => urlJoin(configStore.serverUrl, 'signin/v1/mfa'))
+
+const loadTwoFactorStateTask = useTask(function* (signal) {
+  try {
+    const { status, data } = yield clientService.httpUnAuthenticated.get<{ enabled: boolean }>(
+      urlJoin(configStore.serverUrl, 'signin/v1/identifier/_/mfa/status'),
+      { headers: { 'Kopano-Konnect-XSRF': '1' }, validateStatus: () => true, signal }
+    )
+    if (status === 200) {
+      twoFactorState.value = data?.enabled ? 'on' : 'off'
+      return
+    }
+    // without a session at the IDP the state is not known, the page of the IDP asks to log in
+    twoFactorState.value = status === 401 ? 'unknown' : null
+  } catch (e) {
+    console.error(e)
+    twoFactorState.value = null
+  }
+}).restartable()
+
+function openTwoFactorPage() {
+  // The switch does not change the state itself. Turning two-factor authentication on
+  // needs an authenticator app to be set up, turning it off needs a code. Both happen on
+  // the page of the IDP, the switch follows when the user comes back.
+  window.open(unref(twoFactorUrl), '_blank', 'noopener')
+}
+
+function onVisibilityChange() {
+  // the user comes back from the page of the IDP, which opens in another tab
+  if (document.visibilityState === 'visible' && authStore.userContextReady) {
+    loadTwoFactorStateTask.perform()
+  }
+}
+useEventListener(document, 'visibilitychange', onVisibilityChange)
+
 onMounted(() => {
   if (authStore.userContextReady) {
     loadGroupNamesTask.perform()
+    loadTwoFactorStateTask.perform()
   }
 })
 </script>
