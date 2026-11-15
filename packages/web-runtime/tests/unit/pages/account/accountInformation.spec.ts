@@ -10,7 +10,7 @@ import {
   useUserStore
 } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { AxiosResponse } from 'axios'
+import type { AxiosResponse } from 'axios'
 
 const $route = {
   meta: {
