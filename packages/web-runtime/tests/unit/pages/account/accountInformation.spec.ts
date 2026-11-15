@@ -5,7 +5,7 @@ import { mock } from 'vitest-mock-extended'
 import { OptionsConfig, useMessages, useUserStore } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { Graph } from '@opencloud-eu/web-client/graph'
-import { AxiosResponse } from 'axios'
+import type { AxiosResponse } from 'axios'
 
 const $route = {
   meta: {
