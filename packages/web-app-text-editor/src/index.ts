@@ -40,8 +40,8 @@ export default defineWebApplication({
     const fileExtensions = () => {
       const extensions: ApplicationFileExtension[] = [
         { extension: 'ocnote', label: () => $gettext('Note') },
-        { extension: 'txt', label: () => $gettext('Plain text file') },
         { extension: 'md', label: () => $gettext('Markdown file') },
+        { extension: 'txt', label: () => $gettext('Plain text file') },
         { extension: 'markdown', label: () => $gettext('Markdown file') },
         { extension: 'js', label: () => $gettext('JavaScript file') },
         { extension: 'jsx', label: () => $gettext('JSX file') },
@@ -189,7 +189,7 @@ export default defineWebApplication({
       const config = applicationConfig || {}
       extensions.push(...(config.extraExtensions || []).map((ext: string) => ({ extension: ext })))
 
-      let primaryExtensions: string[] = config.primaryExtensions || ['ocnote', 'md']
+      let primaryExtensions: string[] = config.primaryExtensions || ['md', 'txt']
 
       if (typeof primaryExtensions === 'string') {
         primaryExtensions = [primaryExtensions]
