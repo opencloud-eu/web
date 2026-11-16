@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: remove ocnote from 'New'-menu, re-add txt [[#4474](https://github.com/opencloud-eu/web/pull/4474)]
+- fix: keep the final newline of markdown files on save [[#4220](https://github.com/opencloud-eu/web/pull/4220)]
 - fix: cancel modals, forms, search inputs and apps with escape [[#4458](https://github.com/opencloud-eu/web/pull/4458)]
 - fix: prevent nested vaults and copy/move into received vault shares [[#4460](https://github.com/opencloud-eu/web/pull/4460)]
 - fix: keep shared with me items that are still shared through another share [[#4339](https://github.com/opencloud-eu/web/pull/4339)]
