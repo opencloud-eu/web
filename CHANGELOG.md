@@ -25,6 +25,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v11.28.12 [[#4469](https://github.com/opencloud-eu/web/pull/4469)]
+- chore(deps): update traefik docker tag to v3.7.19 [[#4470](https://github.com/opencloud-eu/web/pull/4470)]
 - chore(deps): update devdependencies (non-major) [[#4442](https://github.com/opencloud-eu/web/pull/4442)]
 - chore(deps): update dependency filesize to v11.0.31 [[#4456](https://github.com/opencloud-eu/web/pull/4456)]
 - chore(deps): update traefik docker tag to v3.7.18 [[#4444](https://github.com/opencloud-eu/web/pull/4444)]
