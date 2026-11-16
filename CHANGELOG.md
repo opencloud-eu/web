@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: disable create space from selection when exceeding default quota [[#4475](https://github.com/opencloud-eu/web/pull/4475)]
 - fix: remove ocnote from 'New'-menu, re-add txt [[#4474](https://github.com/opencloud-eu/web/pull/4474)]
 - fix: keep the final newline of markdown files on save [[#4220](https://github.com/opencloud-eu/web/pull/4220)]
 - fix: cancel modals, forms, search inputs and apps with escape [[#4458](https://github.com/opencloud-eu/web/pull/4458)]
