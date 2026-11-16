@@ -25,6 +25,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.12.1 [[#4463](https://github.com/opencloud-eu/web/pull/4463)]
 - fix(deps): update dependency @casl/ability to v7.1.3 [[#4466](https://github.com/opencloud-eu/web/pull/4466)]
 - chore(deps): update dependency filesize to v11.0.32 [[#4465](https://github.com/opencloud-eu/web/pull/4465)]
 - chore(deps): update shumc/imagor docker tag to v1.10.4 [[#4464](https://github.com/opencloud-eu/web/pull/4464)]
