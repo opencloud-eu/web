@@ -41,6 +41,7 @@ function onSourceInput(event: Event) {
 
   const value = (event.target as HTMLTextAreaElement).value
   sourceContent.value = value
+  textEditor.setFinalNewline(!value || value.endsWith('\n'))
 
   const contentType = unref(textEditor.contentType)
 

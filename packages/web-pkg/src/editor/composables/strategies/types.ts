@@ -17,6 +17,15 @@ export interface ContentTypeStrategyOptions {
   renderHtml?: boolean
 }
 
+export interface SerializeOptions {
+  /**
+   * End the output with a newline, for formats whose document can't hold it.
+   * Defaults to what the last deserialized content had. Set when the content
+   * was deserialized elsewhere, e.g. by another Yjs peer.
+   */
+  finalNewline?: boolean
+}
+
 export interface ContentTypeStrategy {
   editorContentType?(): string
   /**
@@ -26,7 +35,7 @@ export interface ContentTypeStrategy {
    * document that no editor is mounted on (e.g. relevant for the Yjs
    * adapter). A mounted editor passes `editor.state.doc`.
    */
-  serialize(doc: ProseMirrorNode): string
+  serialize(doc: ProseMirrorNode, options?: SerializeOptions): string
   deserialize(content: string): Record<string, unknown> | string
   extensions(options?: ExtensionsOptions): Extension[]
   editorActionGroups(): EditorActionGroup[]
