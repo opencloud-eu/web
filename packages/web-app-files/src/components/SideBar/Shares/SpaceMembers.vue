@@ -17,6 +17,7 @@
         <div class="flex">
           <h3 class="font-semibold text-base my-0" v-text="$gettext('Members')" />
           <oc-button
+            ref="openFilterButton"
             v-oc-tooltip="$gettext('Filter members')"
             class="open-filter-btn ml-2"
             :aria-label="$gettext('Filter members')"
@@ -41,13 +42,14 @@
           class="space-members-filter mr-2 w-full overflow-hidden [&_label]:text-sm"
           :label="$gettext('Filter members')"
           :clear-button-enabled="true"
+          @keydown.esc.stop="closeFilter"
         />
         <oc-button
           v-oc-tooltip="$gettext('Close filter')"
           class="close-filter-btn mt-4 raw-hover-surface"
           :aria-label="$gettext('Close filter')"
           appearance="raw"
-          @click="toggleFilter"
+          @click="closeFilter"
         >
           <oc-icon name="arrow-up-s" fill-type="line" />
         </oc-button>
@@ -93,7 +95,17 @@ import {
   useSpacesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
-import { computed, inject, nextTick, ref, Ref, unref, useTemplateRef, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  inject,
+  nextTick,
+  ref,
+  Ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { useContextualHelpers } from '../../../composables/contextualHelpers'
 import { ProjectSpaceResource, CollaboratorShare } from '@opencloud-eu/web-client'
 import { useClientService } from '@opencloud-eu/web-pkg'
@@ -103,6 +115,7 @@ import { OcTextInput } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
 
 const filterInput = useTemplateRef<typeof OcTextInput>('filterInput')
+const openFilterButton = useTemplateRef<ComponentPublicInstance>('openFilterButton')
 
 const userStore = useUserStore()
 const clientService = useClientService()
@@ -145,6 +158,12 @@ const toggleFilter = async () => {
     await nextTick()
     unref(filterInput).focus()
   }
+}
+
+// the input becomes invisible, so the focus goes back to the toggle
+const closeFilter = () => {
+  isFilterOpen.value = false
+  unref(openFilterButton)?.$el.focus()
 }
 
 const isModifiable = (share: CollaboratorShare) => {

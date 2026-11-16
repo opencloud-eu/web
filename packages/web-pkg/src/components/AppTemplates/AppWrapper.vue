@@ -47,6 +47,7 @@ import { DateTime } from 'luxon'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
+import { useEventListener } from '@vueuse/core'
 
 import AppTopBar from '../AppTopBar.vue'
 import ErrorScreen from './PartialViews/ErrorScreen.vue'
@@ -268,6 +269,24 @@ const {
 } = useAppDefaults({
   applicationId
 })
+
+// Escape within <main> is handled there. The top bar lives in the runtime header outside of it,
+// and a click on non focusable content (e.g. a preview) leaves the focus on the body.
+function onDocumentKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Escape' || event.defaultPrevented) {
+    return
+  }
+  if (document.querySelector("[aria-modal='true']")) {
+    return
+  }
+  const target = event.target as Element
+  if (target !== document.body && !target.closest?.('.oc-app-top-bar')) {
+    return
+  }
+  closeApp()
+}
+
+useEventListener(document, 'keydown', onDocumentKeydown)
 
 /**
  * Loads text as raw bytes and decodes it here: the browser would replace bytes that are not valid

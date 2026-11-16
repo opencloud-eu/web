@@ -33,7 +33,7 @@
         'oc-select-keyboard-navigation': keyboardNavigation
       }"
       :dropdown-should-open="dropdownShouldOpen"
-      :map-keydown="mapKeydown"
+      :map-keydown="composeKeydownMap"
       v-bind="$attrs"
       @update:model-value="emit('update:modelValue', $event)"
       @click="dropdownEnabled = true"
@@ -52,7 +52,7 @@
           :aria-required="requiredMark ? 'true' : undefined"
           :aria-describedby="selectedOptionId"
           :aria-label="accessibleLabel"
-          @input="emit('search:input', ($event.target as HTMLInputElement).value)"
+          @input="onSearchInput"
           v-on="events"
         />
       </template>
@@ -235,7 +235,13 @@ export interface Props {
    * @default true
    */
   hasBorder?: boolean
+  /**
+   * @docs Customizes the keydown handlers of `vue-select`, keyed by key code. Enter is wrapped (the list opens first), Escape is always handled by this component, so a mapping for it is ignored.
+   */
+  mapKeydown?: (map: KeydownMap) => KeydownMap
 }
+
+type KeydownMap = Record<number, (e: KeyboardEvent) => void>
 
 export interface Emits {
   /**
@@ -292,7 +298,8 @@ const {
   readOnly = false,
   positionFixed = false,
   requiredMark = false,
-  hasBorder = true
+  hasBorder = true,
+  mapKeydown: mapKeydownProp = null
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -332,7 +339,8 @@ const keyboardNavigation = ref(false)
 const enterKeyCode = 13
 const escapeKeyCode = 27
 
-function mapKeydown(map: Record<number, (e: KeyboardEvent) => void>) {
+function composeKeydownMap(defaultMap: KeydownMap) {
+  const map = mapKeydownProp ? mapKeydownProp(defaultMap) : defaultMap
   return {
     ...map,
     [enterKeyCode]: (e: KeyboardEvent) => {
@@ -387,6 +395,12 @@ function syncOpenState(e: MouseEvent) {
     return
   }
   unref(selectRef).open = false
+}
+
+// covers input without a keydown, e.g. a paste from the context menu
+function onSearchInput(e: Event) {
+  dropdownEnabled.value = true
+  emit('search:input', (e.target as HTMLInputElement).value)
 }
 
 function onKeydown(e: KeyboardEvent) {
