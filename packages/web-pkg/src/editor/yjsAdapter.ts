@@ -9,6 +9,27 @@ import type { YjsAdapter } from '../composables/yjs/types'
 import type { ContentTypeStrategy } from './composables/strategies'
 import { DEFAULT_YDOC_FRAGMENT } from './types'
 
+// Whether the file ends with a newline. Shared through the doc, because only
+// the hydrating peer ever sees the file.
+function metaFor(ydoc: Y.Doc, fragment: string): Y.Map<boolean> {
+  return ydoc.getMap<boolean>(`${fragment}-meta`)
+}
+
+export function getYdocFinalNewline(ydoc: Y.Doc, fragment = DEFAULT_YDOC_FRAGMENT): boolean {
+  return metaFor(ydoc, fragment).get('finalNewline') ?? true
+}
+
+export function setYdocFinalNewline(
+  ydoc: Y.Doc,
+  value: boolean,
+  fragment = DEFAULT_YDOC_FRAGMENT
+): void {
+  const meta = metaFor(ydoc, fragment)
+  // every set is a doc update, which peers sync and the session reports
+  if (meta.get('finalNewline') === value) return
+  meta.set('finalNewline', value)
+}
+
 /**
  * Bridges the `web-pkg/editor` strategy contract to the
  * {@link YjsAdapter} contract that `useYjsSession`
@@ -76,12 +97,15 @@ export function makeTiptapYjsAdapter(
       if (!content) return
       const editor = makeHeadlessEditor(ydoc)
       try {
-        editor.commands.setContent(
-          toValue(strategy).deserialize(content) as Parameters<
-            typeof editor.commands.setContent
-          >[0],
-          setContentOptions()
-        )
+        ydoc.transact(() => {
+          editor.commands.setContent(
+            toValue(strategy).deserialize(content) as Parameters<
+              typeof editor.commands.setContent
+            >[0],
+            setContentOptions()
+          )
+          setYdocFinalNewline(ydoc, content.endsWith('\n'), fragment)
+        })
       } finally {
         editor.destroy()
       }
@@ -93,7 +117,7 @@ export function makeTiptapYjsAdapter(
         ydoc.getXmlFragment(fragment),
         schemaFor(current)
       )
-      return current.serialize(doc)
+      return current.serialize(doc, { finalNewline: getYdocFinalNewline(ydoc, fragment) })
     },
 
     hasContent(ydoc) {
@@ -101,6 +125,7 @@ export function makeTiptapYjsAdapter(
     },
 
     reset(ydoc) {
+      metaFor(ydoc, fragment).delete('finalNewline')
       const frag = ydoc.getXmlFragment(fragment)
       if (frag.length === 0) return
       frag.delete(0, frag.length)

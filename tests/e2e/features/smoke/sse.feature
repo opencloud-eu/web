@@ -230,15 +230,15 @@ Feature: server sent events
     # postprocessing-finished - create file
     # file-touched -create file
     When "Alice" creates the following resource
-      | resource       | type     | content   |
-      | example.ocnote | noteFile | some text |
+      | resource    | type    | content   |
+      | example.txt | txtFile | some text |
     Then "Alice" should get "postprocessing-finished" SSE event
     And "Alice" should get "file-touched" SSE event
     And "Brian" should get "postprocessing-finished" SSE event
     And "Brian" should get "file-touched" SSE event
     And following resource should be displayed in the files list for user "Brian"
-      | resource       |
-      | example.ocnote |
+      | resource    |
+      | example.txt |
 
     # item-renamed
     When "Brian" renames the following resource
@@ -252,25 +252,25 @@ Feature: server sent events
 
     # item-trashed
     When "Alice" deletes the following resource using the context menu
-      | resource       |
-      | example.ocnote |
+      | resource    |
+      | example.txt |
     Then "Alice" should get "item-trashed" SSE event
     And "Brian" should get "item-trashed" SSE event
     And following resource should not be displayed in the files list for user "Brian"
-      | resource       |
-      | example.ocnote |
+      | resource    |
+      | example.txt |
 
     # item-restored
     When "Brian" navigates to the trashbin
     When "Brian" opens trashbin of the project space "Marketing"
     And "Brian" restores the following resource from trashbin
-      | resource       |
-      | example.ocnote |
+      | resource    |
+      | example.txt |
     Then "Brian" should get "item-restored" SSE event
     And "Alice" should get "item-restored" SSE event
     And following resource should be displayed in the files list for user "Alice"
-      | resource       |
-      | example.ocnote |
+      | resource    |
+      | example.txt |
 
     # item-moved
     When "Brian" navigates to the project space "Marketing"

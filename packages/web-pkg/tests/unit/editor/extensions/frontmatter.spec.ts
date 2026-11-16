@@ -639,7 +639,7 @@ describe('frontmatter', () => {
       const editor = boundEditor(strategy, ydoc)
 
       expect(editor.isEditable).toBe(true)
-      expect(strategy.serialize(editor.state.doc)).toBe('---\ntitle: first\n---\n\nSome text.')
+      expect(strategy.serialize(editor.state.doc)).toBe('---\ntitle: first\n---\n\nSome text.\n')
       editor.destroy()
     })
 
@@ -689,7 +689,7 @@ describe('frontmatter', () => {
       editor.setEditable(true)
 
       expect(editor.isEditable).toBe(true)
-      expect(strategy.serialize(editor.state.doc)).toBe('---\ntitle: X\n---\n\nTop')
+      expect(strategy.serialize(editor.state.doc)).toBe('---\ntitle: X\n---\n\nTop\n')
       editor.destroy()
     })
 
