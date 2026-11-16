@@ -2,7 +2,7 @@
   <div
     id="new-collaborators-form"
     data-testid="new-collaborators-form"
-    class="[&_.vs\_\_actions]:!flex-nowrap [&_.vs\_\_search]:min-w-40 mb-4"
+    class="[&_.vs\_\_actions]:!flex-nowrap [&_.vs\_\_search]:min-w-40 [--vs-state-disabled-bg:transparent] [--vs-state-disabled-color:var(--oc-role-on-surface)] [&_.vs\_\_dropdown-option--disabled]:opacity-60 mb-4"
   >
     <div @keydown.enter.capture="onInviteInputEnter">
       <div class="flex justify-between mb-1">
@@ -25,6 +25,7 @@
         :placeholder="selectedCollaboratorsPlaceholder"
         :model-value="selectedCollaborators"
         :options="autocompleteResults"
+        :selectable="isRecipientSelectable"
         :loading="searchInProgress"
         :multiple="true"
         :filterable="false"
@@ -40,7 +41,11 @@
         @close="onClose"
       >
         <template #option="option">
-          <autocomplete-item :item="option" :term="searchQuery" />
+          <autocomplete-item
+            :item="option"
+            :term="searchQuery"
+            :hint="getExistingShareHint(option)"
+          />
         </template>
         <template #no-options>
           <span v-text="noOptionsLabel" />
@@ -321,12 +326,13 @@ const { autocompleteResults, minSearchLength, onSearch, searchInProgress, search
       throw error
     })
 
-    const isSpace = !unref(resource) || isSpaceResource(unref(resource))
-    const contacts = isSpace ? [] : await searchOpenXchangeContacts(query.trim(), signal)
+    const contacts = unref(isSpace) ? [] : await searchOpenXchangeContacts(query.trim(), signal)
 
     // guests can't be invited to spaces yet
     const guests =
-      isSpace || unref(isExternalShareRoleType) ? [] : getGuestCandidates(query, collaborators)
+      unref(isSpace) || unref(isExternalShareRoleType)
+        ? []
+        : getGuestCandidates(query, collaborators)
 
     const results = [...collaborators, ...contacts, ...guests].filter(
       (collaborator: CollaboratorAutoCompleteItem) => {
@@ -334,11 +340,7 @@ const { autocompleteResults, minSearchLength, onSearch, searchInProgress, search
           return false
         }
 
-        const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
-        const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
-        const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
-
-        return !selected && !exists
+        return !unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
       }
     )
     // a newer search replaced this one, even if a source swallowed the abort
@@ -347,6 +349,54 @@ const { autocompleteResults, minSearchLength, onSearch, searchInProgress, search
     }
     return results
   })
+
+const isSpace = computed(() => !unref(resource) || isSpaceResource(unref(resource)))
+
+// ordered by precedence, a recipient with several shares gets the first matching kind
+const existingShareKindOrder = ['direct', 'spaceMember', 'folder'] as const
+type ExistingShareKind = (typeof existingShareKindOrder)[number]
+
+// existing recipients stay in the results, so searching for them doesn't come back empty
+const existingShareKinds = computed(() => {
+  const kinds = new Map<string, ExistingShareKind>()
+  unref(collaboratorShares).forEach(({ sharedWith, indirect, resourceId }) => {
+    let kind: ExistingShareKind = 'direct'
+    if (indirect) {
+      // members of a project space are loaded as shares on the space root
+      kind = resourceId === unref(space)?.id ? 'spaceMember' : 'folder'
+    }
+    const current = kinds.get(sharedWith.id)
+    if (
+      !current ||
+      existingShareKindOrder.indexOf(kind) < existingShareKindOrder.indexOf(current)
+    ) {
+      kinds.set(sharedWith.id, kind)
+    }
+  })
+  return kinds
+})
+
+function getExistingShareKind({ id }: CollaboratorAutoCompleteItem) {
+  return unref(existingShareKinds).get(id)
+}
+
+function getExistingShareHint(collaborator: CollaboratorAutoCompleteItem) {
+  switch (getExistingShareKind(collaborator)) {
+    case 'direct':
+      return unref(isSpace) ? $gettext('already a member') : $gettext('already shared')
+    case 'spaceMember':
+      return $gettext('space member')
+    case 'folder':
+      return $gettext('shared via folder')
+    default:
+      return ''
+  }
+}
+
+// recipients with indirect access can still get a direct share, e.g. with another role
+function isRecipientSelectable(collaborator: CollaboratorAutoCompleteItem) {
+  return getExistingShareKind(collaborator) !== 'direct'
+}
 
 function onSearchInput(query: string) {
   // a pending announcement belongs to a search that is outdated now
@@ -520,11 +570,16 @@ function announceResults(query: string, results: CollaboratorAutoCompleteItem[])
   ) {
     return
   }
-  const count = results.length
+  // the keyboard skips unselectable results, so they are named here instead of counted
+  const count = results.filter(isRecipientSelectable).length
+  const unselectable = results
+    .filter((r) => !isRecipientSelectable(r))
+    .map((r) => `${r.displayName} (${getExistingShareHint(r)})`)
+  const countLabel = count
+    ? $ngettext('%{count} result', '%{count} results', count, { count: count.toString() })
+    : ''
   unref(announcer)?.announce(
-    count
-      ? $ngettext('%{count} result', '%{count} results', count, { count: count.toString() })
-      : unref(noOptionsLabel)
+    [countLabel, ...unselectable].filter(Boolean).join(', ') || unref(noOptionsLabel)
   )
 }
 

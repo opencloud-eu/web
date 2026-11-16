@@ -61,6 +61,16 @@ describe('AutocompleteItem component', () => {
       const { wrapper } = createWrapper({ shareType: ShareTypes.guest.value })
       expect(wrapper.find('.files-collaborators-autocomplete-share-type').text()).toEqual('(Guest)')
     })
+    it('shows the hint', () => {
+      const { wrapper } = createWrapper({}, 'already shared')
+      expect(wrapper.find('.files-collaborators-autocomplete-hint').text()).toEqual(
+        '(already shared)'
+      )
+    })
+    it('hides the hint if not given', () => {
+      const { wrapper } = createWrapper({})
+      expect(wrapper.find('.files-collaborators-autocomplete-hint').exists()).toBeFalsy()
+    })
   })
   describe('additional info', () => {
     it('shows the email for a user if given', () => {
@@ -88,17 +98,21 @@ describe('AutocompleteItem component', () => {
   })
 })
 
-function createWrapper({
-  shareType = ShareTypes.user.value,
-  id = '',
-  displayName = '',
-  mail = '',
-  onPremisesSamAccountName = ''
-}: Partial<CollaboratorAutoCompleteItem>) {
+function createWrapper(
+  {
+    shareType = ShareTypes.user.value,
+    id = '',
+    displayName = '',
+    mail = '',
+    onPremisesSamAccountName = ''
+  }: Partial<CollaboratorAutoCompleteItem>,
+  hint?: string
+) {
   return {
     wrapper: shallowMount(AutocompleteItem, {
       props: {
-        item: { shareType, id, displayName, mail, onPremisesSamAccountName }
+        item: { shareType, id, displayName, mail, onPremisesSamAccountName },
+        hint
       },
       global: {
         renderStubDefaultSlot: true,

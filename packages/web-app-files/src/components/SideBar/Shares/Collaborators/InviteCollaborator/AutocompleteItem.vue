@@ -28,6 +28,7 @@
           v-text="`(${$gettext(shareType.label)})`"
         />
       </template>
+      <span v-if="hint" class="files-collaborators-autocomplete-hint ml-1" v-text="`(${hint})`" />
       <div
         v-if="additionalInfo"
         class="files-collaborators-autocomplete-additionalInfo text-sm truncate"
@@ -52,9 +53,14 @@ import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-clie
 import { UserAvatar } from '@opencloud-eu/web-pkg'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
-const { item, term = '' } = defineProps<{
+const {
+  item,
+  term = '',
+  hint = ''
+} = defineProps<{
   item: CollaboratorAutoCompleteItem
   term?: string
+  hint?: string
 }>()
 
 const additionalInfo = computed(() => {

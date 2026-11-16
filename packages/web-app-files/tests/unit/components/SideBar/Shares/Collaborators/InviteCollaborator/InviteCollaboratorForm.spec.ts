@@ -140,7 +140,7 @@ describe('InviteCollaboratorForm', () => {
 
       expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
     })
-    it('filters out existing direct shares', async () => {
+    it('keeps existing direct shares as unselectable results with a hint', async () => {
       const { wrapper } = getWrapper({
         users: [{ id: '2' } as User],
         groups: [{ id: '3' }],
@@ -151,7 +151,93 @@ describe('InviteCollaboratorForm', () => {
 
       await search(wrapper)
 
-      expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
+      const [user, group] = (wrapper.vm as any).autocompleteResults
+      expect(isSelectable(wrapper, user)).toBe(false)
+      expect((wrapper.vm as any).getExistingShareHint(user)).toBe('already shared')
+      expect(isSelectable(wrapper, group)).toBe(true)
+      expect((wrapper.vm as any).getExistingShareHint(group)).toBe('')
+    })
+    it('keeps existing indirect shares selectable with a hint', async () => {
+      const { wrapper } = getWrapper({
+        users: [{ id: '2' } as User],
+        existingCollaborators: [
+          mock<CollaboratorShare>({ sharedWith: { id: '2' }, indirect: true })
+        ]
+      })
+
+      await search(wrapper)
+
+      const [user] = (wrapper.vm as any).autocompleteResults
+      expect(isSelectable(wrapper, user)).toBe(true)
+      expect((wrapper.vm as any).getExistingShareHint(user)).toBe('shared via folder')
+    })
+    it('keeps members of the surrounding project space selectable with a hint', async () => {
+      const { wrapper } = getWrapper({
+        users: [{ id: '2' } as User],
+        space: mock<SpaceResource>({ id: 'space-id' }),
+        existingCollaborators: [
+          mock<CollaboratorShare>({
+            sharedWith: { id: '2' },
+            indirect: true,
+            resourceId: 'space-id'
+          })
+        ]
+      })
+
+      await search(wrapper)
+
+      const [user] = (wrapper.vm as any).autocompleteResults
+      expect(isSelectable(wrapper, user)).toBe(true)
+      expect((wrapper.vm as any).getExistingShareHint(user)).toBe('space member')
+    })
+    it('prefers a space membership over a folder share of the same recipient', async () => {
+      const { wrapper } = getWrapper({
+        users: [{ id: '2' } as User],
+        space: mock<SpaceResource>({ id: 'space-id' }),
+        existingCollaborators: [
+          mock<CollaboratorShare>({ sharedWith: { id: '2' }, indirect: true, resourceId: 'f' }),
+          mock<CollaboratorShare>({
+            sharedWith: { id: '2' },
+            indirect: true,
+            resourceId: 'space-id'
+          })
+        ]
+      })
+
+      await search(wrapper)
+
+      const [user] = (wrapper.vm as any).autocompleteResults
+      expect((wrapper.vm as any).getExistingShareHint(user)).toBe('space member')
+    })
+    it('prefers a direct over an indirect share of the same recipient', async () => {
+      const { wrapper } = getWrapper({
+        users: [{ id: '2' } as User],
+        existingCollaborators: [
+          mock<CollaboratorShare>({ sharedWith: { id: '2' }, indirect: false }),
+          mock<CollaboratorShare>({ sharedWith: { id: '2' }, indirect: true })
+        ]
+      })
+
+      await search(wrapper)
+
+      const [user] = (wrapper.vm as any).autocompleteResults
+      expect(isSelectable(wrapper, user)).toBe(false)
+      expect((wrapper.vm as any).getExistingShareHint(user)).toBe('already shared')
+    })
+    it('hints existing space members', async () => {
+      const { wrapper } = getWrapper({
+        users: [{ id: '2' } as User],
+        resource: mock<SpaceResource>(spaceMock),
+        existingCollaborators: [
+          mock<CollaboratorShare>({ sharedWith: { id: '2' }, indirect: false })
+        ]
+      })
+
+      await search(wrapper)
+
+      const [user] = (wrapper.vm as any).autocompleteResults
+      expect(isSelectable(wrapper, user)).toBe(false)
+      expect((wrapper.vm as any).getExistingShareHint(user)).toBe('already a member')
     })
     it('does not query Open-Xchange when the capability is disabled', async () => {
       const { wrapper, mocks } = getWrapper({ users: [{ id: '2' } as User] })
@@ -329,7 +415,7 @@ describe('InviteCollaboratorForm', () => {
       { query: 'Guest@Müller.de', sharedWith: 'guest@xn--mller-kva.de' },
       { query: 'x@Пример.РФ', sharedWith: 'x@xn--e1afmkfd.xn--p1ai' }
     ])(
-      'does not offer $query as a guest when it is shared already',
+      'offers $query as an unselectable guest when it is shared already',
       async ({ query, sharedWith }) => {
         const { wrapper } = getWrapper({
           existingCollaborators: [
@@ -338,11 +424,13 @@ describe('InviteCollaboratorForm', () => {
         })
         await search(wrapper, query)
 
-        expect(
-          (wrapper.vm as any).autocompleteResults.some(
-            (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
-          )
-        ).toBe(false)
+        const guest = (wrapper.vm as any).autocompleteResults.find(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+        expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
+        expect(guest?.id).toBe(sharedWith)
+        expect(isSelectable(wrapper, guest)).toBe(false)
+        expect((wrapper.vm as any).getExistingShareHint(guest)).toBe('already shared')
       }
     )
     it('does not offer a guest suggestion for another spelling of a selected guest', async () => {
@@ -397,6 +485,31 @@ describe('InviteCollaboratorForm', () => {
       await flushPromises()
 
       expect(resultAnnouncements()).toEqual(['2 results'])
+    })
+    it('names unselectable results instead of counting them', async () => {
+      const { input } = getTypingWrapper({
+        users: [{ id: '2', displayName: 'Marie' } as User],
+        groups: [{ id: '3', displayName: 'Marketing' }],
+        existingCollaborators: [
+          mock<CollaboratorShare>({ sharedWith: { id: '2' }, indirect: false })
+        ]
+      })
+      await input.setValue('mar')
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual(['1 result, Marie (already shared)'])
+    })
+    it('names the only result when it is unselectable', async () => {
+      const { input } = getTypingWrapper({
+        users: [{ id: '2', displayName: 'Marie' } as User],
+        existingCollaborators: [
+          mock<CollaboratorShare>({ sharedWith: { id: '2' }, indirect: false })
+        ]
+      })
+      await input.setValue('mar')
+      await flushPromises()
+
+      expect(resultAnnouncements()).toEqual(['Marie (already shared)'])
     })
     it('shows users the server matched by a field it does not return', async () => {
       const { wrapper, input } = getTypingWrapper({
@@ -891,9 +1004,20 @@ async function search(wrapper: ReturnType<typeof getWrapper>['wrapper'], query =
   await flushPromises()
 }
 
+function isSelectable(
+  wrapper: ReturnType<typeof getWrapper>['wrapper'],
+  option: CollaboratorAutoCompleteItem
+) {
+  const selectable = wrapper.findComponent(OcSelect).vm.$attrs.selectable as (
+    option: CollaboratorAutoCompleteItem
+  ) => boolean
+  return selectable(option)
+}
+
 function getWrapper({
   storageId = 'fake-storage-id',
   resource = mock<Resource>(folderMock),
+  space = undefined,
   users = [],
   groups = [],
   existingCollaborators = [],
@@ -911,6 +1035,7 @@ function getWrapper({
 }: {
   storageId?: string
   resource?: Resource
+  space?: SpaceResource
   users?: User[]
   groups?: Group[]
   existingCollaborators?: CollaboratorShare[]
@@ -973,6 +1098,7 @@ function getWrapper({
         provide: {
           ...mocks,
           resource,
+          ...(space && { space }),
           availableExternalShareRoles: externalShareRoles,
           availableInternalShareRoles: internalShareRoles
         },
