@@ -138,6 +138,11 @@ const getEmbedConfigFromQuery = (
     config.chooseFileNameSuggestion = embedChooseFileNameSuggestion
   }
 
+  // internal, for vault-aware callers that encrypt what they write
+  if (getQueryParam('embed-allow-vault') === 'true') {
+    config.allowVault = true
+  }
+
   const embedSubmitButtonTitle = getQueryParam('embed-submit-button-title')
   if (embedSubmitButtonTitle) {
     config.submitButtonTitle = embedSubmitButtonTitle

@@ -77,6 +77,35 @@ describe('EmbedActions', () => {
       expect(wrapper.find(selectors.btnSelect).attributes()).not.toHaveProperty('disabled')
     })
 
+    it('should disable select action when the current folder is in a vault', () => {
+      const { wrapper } = getWrapper({
+        isLocationPicker: true,
+        currentFolder: { canCreate: () => true, isInVault: true } as Resource
+      })
+
+      expect(wrapper.find(selectors.btnSelect).attributes()).toHaveProperty('disabled')
+    })
+
+    it('should disable select action in a vault when only chooseFileName is configured', () => {
+      const { wrapper } = getWrapper({
+        isLocationPicker: true,
+        chooseFileName: true,
+        currentFolder: { path: '/', canCreate: () => true, isInVault: true } as Resource
+      })
+
+      expect(wrapper.find(selectors.btnSelect).attributes()).toHaveProperty('disabled')
+    })
+
+    it('should enable select action in a vault when allowVault is configured', () => {
+      const { wrapper } = getWrapper({
+        isLocationPicker: true,
+        allowVault: true,
+        currentFolder: { canCreate: () => true, isInVault: true } as Resource
+      })
+
+      expect(wrapper.find(selectors.btnSelect).attributes()).not.toHaveProperty('disabled')
+    })
+
     it.each([
       { graphPermissions: [GraphSharePermission.createUpload], disabled: false },
       { graphPermissions: [GraphSharePermission.readBasic], disabled: true }
@@ -542,6 +571,7 @@ function getWrapper(
     isLocationPicker = false,
     isFilePicker = false,
     chooseFileName = false,
+    allowVault = false,
     areFileExtensionsShown = true,
     folderResources = [],
     fileNameSuggestion = 'file.txt',
@@ -553,6 +583,7 @@ function getWrapper(
     isLocationPicker?: boolean
     isFilePicker?: boolean
     chooseFileName?: boolean
+    allowVault?: boolean
     areFileExtensionsShown?: boolean
     folderResources?: Resource[]
     fileNameSuggestion?: string
@@ -569,6 +600,7 @@ function getWrapper(
       isFilePicker: ref(isFilePicker),
       chooseFileName: ref(chooseFileName),
       chooseFileNameSuggestion: ref(fileNameSuggestion),
+      allowVault: ref(allowVault),
       postMessage: postMessageMock
     })
   )
