@@ -138,5 +138,12 @@
     "description": "Determines if the select input field has a surrounding border.",
     "default": "true",
     "type": "boolean"
+  },
+  {
+    "name": "mapKeydown",
+    "required": false,
+    "description": "Customizes the keydown handlers of `vue-select`, keyed by key code. Enter is wrapped (the list opens first), Escape is always handled by this component, so a mapping for it is ignored.",
+    "default": "",
+    "type": "(map: KeydownMap) => KeydownMap"
   }
 ]
