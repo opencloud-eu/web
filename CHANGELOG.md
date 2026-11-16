@@ -27,6 +27,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#4462](https://github.com/opencloud-eu/web/pull/4462)]
 - chore(deps): update node.js to v26 [[#4046](https://github.com/opencloud-eu/web/pull/4046)]
 - chore(deps): update dependency focus-trap to v8.2.5 [[#4473](https://github.com/opencloud-eu/web/pull/4473)]
 - chore(deps): update dependency dompurify to v3.4.18 [[#4472](https://github.com/opencloud-eu/web/pull/4472)]
