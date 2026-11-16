@@ -344,6 +344,24 @@ describe('announceConfiguration', () => {
     expect(configStore.options.embed.submitButtonTitle).toStrictEqual('Move here')
   })
 
+  it('should allow vault locations from URL query', async () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '?embed-allow-vault=true'
+      },
+      writable: true
+    })
+    vi.spyOn(global, 'fetch').mockResolvedValue(
+      mock<Response>({
+        status: 200,
+        json: () => Promise.resolve({ theme: '', server: '', options: {} })
+      })
+    )
+    const configStore = useConfigStore()
+    await announceConfiguration({ path: '/config.json', configStore })
+    expect(configStore.options.embed.allowVault).toStrictEqual(true)
+  })
+
   it('should trim embed file types from URL query and drop empty ones', async () => {
     Object.defineProperty(window, 'location', {
       value: {

@@ -31,6 +31,8 @@ export const useEmbedMode = () => {
     return configStore.options.embed?.chooseFileNameSuggestion
   })
 
+  const allowVault = computed(() => !!configStore.options.embed?.allowVault)
+
   const submitButtonTitle = computed(() => {
     return configStore.options.embed?.submitButtonTitle
   })
@@ -76,6 +78,7 @@ export const useEmbedMode = () => {
     isLocationPicker,
     chooseFileName,
     chooseFileNameSuggestion,
+    allowVault,
     submitButtonTitle,
     isFilePicker,
     messagesTargetOrigin,
