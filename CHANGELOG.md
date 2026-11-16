@@ -25,6 +25,9 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @casl/ability to v7.1.3 [[#4466](https://github.com/opencloud-eu/web/pull/4466)]
+- chore(deps): update dependency filesize to v11.0.32 [[#4465](https://github.com/opencloud-eu/web/pull/4465)]
+- chore(deps): update shumc/imagor docker tag to v1.10.4 [[#4464](https://github.com/opencloud-eu/web/pull/4464)]
 - chore(deps): update pnpm to v11.28.12 [[#4469](https://github.com/opencloud-eu/web/pull/4469)]
 - chore(deps): update traefik docker tag to v3.7.19 [[#4470](https://github.com/opencloud-eu/web/pull/4470)]
 - chore(deps): update devdependencies (non-major) [[#4442](https://github.com/opencloud-eu/web/pull/4442)]
