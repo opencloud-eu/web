@@ -25,6 +25,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency vue-router to v5.5.1 [[#4468](https://github.com/opencloud-eu/web/pull/4468)]
 - chore(deps): update dependency fast-xml-parser to v5.12.1 [[#4463](https://github.com/opencloud-eu/web/pull/4463)]
 - fix(deps): update dependency @casl/ability to v7.1.3 [[#4466](https://github.com/opencloud-eu/web/pull/4466)]
 - chore(deps): update dependency filesize to v11.0.32 [[#4465](https://github.com/opencloud-eu/web/pull/4465)]
