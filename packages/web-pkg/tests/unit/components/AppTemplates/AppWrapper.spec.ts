@@ -427,6 +427,54 @@ describe('AppWrapper — ESC close behavior', () => {
       document.removeEventListener('keydown', documentKeydownSpy)
     }
   })
+
+  function pressEscapeOn(el: Element) {
+    el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+  }
+
+  it('closes the app on Escape from the top bar outside of the app', () => {
+    const s = setup({ yjsEnabled: false })
+    const topBar = document.createElement('div')
+    topBar.className = 'oc-app-top-bar'
+    const saveButton = topBar.appendChild(document.createElement('button'))
+    document.body.appendChild(topBar)
+    try {
+      pressEscapeOn(saveButton)
+      expect(s.closeApp).toHaveBeenCalledTimes(1)
+    } finally {
+      topBar.remove()
+      s.wrapper.unmount()
+    }
+  })
+  it('closes the app on Escape while the focus is on the body', () => {
+    const s = setup({ yjsEnabled: false })
+    pressEscapeOn(document.body)
+    expect(s.closeApp).toHaveBeenCalledTimes(1)
+    s.wrapper.unmount()
+  })
+  it('ignores Escape from other elements outside of the app', () => {
+    const s = setup({ yjsEnabled: false })
+    const other = document.body.appendChild(document.createElement('button'))
+    try {
+      pressEscapeOn(other)
+      expect(s.closeApp).not.toHaveBeenCalled()
+    } finally {
+      other.remove()
+      s.wrapper.unmount()
+    }
+  })
+  it('ignores Escape while a modal is open', () => {
+    const s = setup({ yjsEnabled: false })
+    const modal = document.body.appendChild(document.createElement('div'))
+    modal.setAttribute('aria-modal', 'true')
+    try {
+      pressEscapeOn(document.body)
+      expect(s.closeApp).not.toHaveBeenCalled()
+    } finally {
+      modal.remove()
+      s.wrapper.unmount()
+    }
+  })
 })
 
 describe('AppWrapper — missing drive alias', () => {

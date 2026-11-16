@@ -166,6 +166,35 @@ describe('SpaceMembers', () => {
       await wrapper.find('.open-filter-btn').trigger('click')
       expect(wrapper.find('.space-members-filter-container-expanded').exists()).toBeTruthy()
     })
+    it('closes the filter on Escape without passing it on, e.g. to close the app', async () => {
+      const space = mock<ProjectSpaceResource>()
+      const wrapper = getWrapper({ mountType: mount, space, attachTo: document.body })
+      const onParentKeydown = vi.fn()
+      wrapper.element.parentElement.addEventListener('keydown', onParentKeydown)
+      await wrapper.find('.open-filter-btn').trigger('click')
+      await wrapper.find('.space-members-filter input').setValue('User')
+
+      await wrapper.find('.space-members-filter input').trigger('keydown', { key: 'Escape' })
+
+      expect(wrapper.find('.space-members-filter-container-expanded').exists()).toBeFalsy()
+      expect((wrapper.find('.space-members-filter input').element as HTMLInputElement).value).toBe(
+        ''
+      )
+      expect(document.activeElement).toBe(wrapper.find('.open-filter-btn').element)
+      expect(onParentKeydown).not.toHaveBeenCalled()
+      wrapper.unmount()
+    })
+    it('focuses the toggle when closed via the close button', async () => {
+      const space = mock<ProjectSpaceResource>()
+      const wrapper = getWrapper({ mountType: mount, space, attachTo: document.body })
+      await wrapper.find('.open-filter-btn').trigger('click')
+
+      await wrapper.find('.close-filter-btn').trigger('click')
+
+      expect(wrapper.find('.space-members-filter-container-expanded').exists()).toBeFalsy()
+      expect(document.activeElement).toBe(wrapper.find('.open-filter-btn').element)
+      wrapper.unmount()
+    })
   })
 })
 
@@ -175,7 +204,8 @@ function getWrapper({
   spaceMembers = memberMocks,
   user = mock<User>(),
   currentRouteName = 'files-spaces-generic',
-  canShare = true
+  canShare = true,
+  attachTo = undefined as HTMLElement
 } = {}) {
   vi.mocked(useCanShare).mockReturnValue({ canShare: () => canShare })
 
@@ -196,6 +226,7 @@ function getWrapper({
   vi.mocked(spacesStore).getSpaceMembers.mockReturnValue(spaceMembers)
 
   return mountType(SpaceMembers, {
+    attachTo,
     global: {
       plugins,
       mocks,
