@@ -6,12 +6,15 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { computed, unref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import PQueue from 'p-queue'
 import {
   FileAction,
   FileActionOptions,
+  formatFileSize,
   useAbility,
+  useCapabilityStore,
   useClientService,
   useConfigStore,
   useCreateSpace,
@@ -25,7 +28,7 @@ import {
 export const useFileActionsCreateSpaceFromResource = () => {
   const { showMessage, showErrorMessage } = useMessages()
   const { can } = useAbility()
-  const { $gettext, $ngettext } = useGettext()
+  const { $gettext, $ngettext, current } = useGettext()
   const { createSpace } = useCreateSpace()
   const clientService = useClientService()
   const hasCreatePermission = computed(() => can('create-all', 'Drive'))
@@ -34,6 +37,18 @@ export const useFileActionsCreateSpaceFromResource = () => {
   const spacesStore = useSpacesStore()
   const resourcesStore = useResourcesStore()
   const { isSpaceNameValid } = useIsResourceNameValid()
+  const { spacesDefaultQuota } = storeToRefs(useCapabilityStore())
+
+  // A default quota of 0 means unlimited.
+  function exceedsDefaultQuota(resources: Resource[]) {
+    const defaultQuota = unref(spacesDefaultQuota)
+    if (!defaultQuota) {
+      return false
+    }
+
+    const size = resources.reduce((total, { size }) => total + (Number(size) || 0), 0)
+    return size > defaultQuota
+  }
 
   async function copyResourcesToSpace({
     resources,
@@ -148,6 +163,11 @@ export const useFileActionsCreateSpaceFromResource = () => {
       label: () => {
         return $gettext('Create Space from selection')
       },
+      isDisabled: ({ resources }) => exceedsDefaultQuota(resources),
+      disabledTooltip: () =>
+        $gettext('The selection exceeds the default space quota (max. %{quota})', {
+          quota: formatFileSize(unref(spacesDefaultQuota), current)
+        }),
       isVisible: ({ resources, space }) => {
         if (!resources.length) {
           return false
