@@ -45,7 +45,8 @@ export const waitForSSEEvent = (user: string, event: string) => {
     const startTime = Date.now()
     const interval = setInterval(function () {
       const events = getSSEEvents(user)
-      if (Date.now() - startTime > appConfig.minTimeout * 1000) {
+      // some events arrive delayed, e.g. Collabora unlocks files ~5s after the editor is closed
+      if (Date.now() - startTime > appConfig.minTimeout * 3 * 1000) {
         reject(new Error(`SSE event ${event} was not obtained in the events list:[${events}]`))
         clearInterval(interval)
       }
