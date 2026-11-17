@@ -3,7 +3,7 @@
     class="app-list-item relative bg-role-surface-container hover:bg-role-surface-container-highest flex flex-col items-start sm:flex-row sm:items-center gap-4 border rounded-lg p-3 overflow-hidden"
   >
     <div class="relative shrink-0 pointer-events-none">
-      <app-official-badge :app="app" class="absolute top-1 left-1" />
+      <app-official-badge :app="app" class="absolute top-1 inset-s-1" />
       <app-preview-image :app="app" icon-size-class="size-8" class="w-24 rounded-sm" />
     </div>
     <div

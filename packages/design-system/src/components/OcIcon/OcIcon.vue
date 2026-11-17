@@ -128,8 +128,6 @@ const emit = defineEmits<Emits>()
 const directionalIcons =
   /^(arrow-(left|right)|arrow-drop-(left|right)|arrow-go-(back|forward)|share-forward|reply|logout-box|login-box)/
 
-const isDirectional = computed(() => directionalIcons.test(name))
-
 const svgTitleId = computed(() => uniqueId('oc-icon-title-'))
 
 const isDark = inject<MaybeRefOrGetter<boolean>>(iconIsDarkInjectionKey, false)
@@ -161,6 +159,8 @@ const namedIcon = computed(() => {
     color: icon?.color ?? color
   }
 })
+
+const isDirectional = computed(() => directionalIcons.test(unref(namedIcon).name ?? ''))
 
 const nameWithFillType = computed(() => {
   const prefix = getIconUrlPrefix()

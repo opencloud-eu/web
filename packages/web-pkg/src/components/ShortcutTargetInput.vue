@@ -27,7 +27,7 @@
             )
           "
           :title="$gettext('Webpage or file')"
-          class="ml-1"
+          class="ms-1"
         />
       </div>
     </template>

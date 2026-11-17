@@ -23,6 +23,10 @@ describe('OcIcon', () => {
         expect(wrapper.find('span').classes()).toContain('rtl:-scale-x-100')
       }
     )
+    it('mirrors a directional icon passed via the icon prop', () => {
+      const { wrapper } = getWrapper({ icon: { name: 'arrow-left-s', fillType: 'line' } })
+      expect(wrapper.find('span').classes()).toContain('rtl:-scale-x-100')
+    })
     it.each(['info', 'arrow-up-s', 'align-left'])(
       'does not mirror the icon "%s" in right-to-left layouts',
       (name) => {

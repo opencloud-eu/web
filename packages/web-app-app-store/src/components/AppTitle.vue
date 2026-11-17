@@ -10,7 +10,7 @@
         <oc-filter-highlight class="block" :class="nameClass" :text="app.name" :term="term" />
       </router-link>
     </h3>
-    <span class="ml-2 shrink-0 text-role-on-surface-variant text-sm">
+    <span class="ms-2 shrink-0 text-role-on-surface-variant text-sm">
       v{{ app.mostRecentVersion.version }}
     </span>
   </div>
