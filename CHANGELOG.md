@@ -1,5 +1,15 @@
 # Changelog
 
+## [8.2.4](https://github.com/opencloud-eu/web/releases/tag/v8.2.4) - 2026-11-17
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen
+
+### 🐛 Bug Fixes
+
+- fix: show existing recipients in share invite search [[#4477](https://github.com/opencloud-eu/web/pull/4477)]
+
 ## [8.2.3](https://github.com/opencloud-eu/web/releases/tag/v8.2.3) - 2026-11-17
 
 ### ❤️ Thanks to all contributors! ❤️
