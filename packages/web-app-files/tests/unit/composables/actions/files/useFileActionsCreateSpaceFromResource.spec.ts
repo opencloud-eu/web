@@ -51,6 +51,21 @@ describe('useFileActionsCreateSpaceFromResource', () => {
     })
   })
 
+  it('prefills the space name and creates the space with it on confirm', async () => {
+    const resources = [mock<Resource>({ name: 'a.txt' })]
+    const { action, space, createSpace } = getWrapper({ resources })
+
+    action.handler({ space, resources })
+
+    const { dispatchModal } = useModals()
+    const { inputValue, onConfirm } = vi.mocked(dispatchModal).mock.calls[0][0]
+    expect(inputValue).toBe('New space')
+
+    await onConfirm(inputValue)
+
+    expect(createSpace).toHaveBeenCalledWith('New space')
+  })
+
   it('shows a success message when the space was created and all files were copied', async () => {
     const resources = [mock<Resource>({ name: 'a.txt' }), mock<Resource>({ name: 'b.txt' })]
     const { confirm, mocks, createdSpace } = getWrapper({ resources })

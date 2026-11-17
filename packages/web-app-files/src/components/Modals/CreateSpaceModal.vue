@@ -112,23 +112,22 @@
 import { computed, ref, unref, useId, watch } from 'vue'
 import { useObjectUrl } from '@vueuse/core'
 import { useGettext } from 'vue3-gettext'
-import { isProjectSpaceResource, type SpaceResource } from '@opencloud-eu/web-client'
+import { type SpaceResource } from '@opencloud-eu/web-client'
 import {
   getVaultCreator,
   modalActionsTarget,
   ResourceIcon,
-  resolveFileNameDuplicate,
   useAbility,
   useCreateSpace,
   useExtensionRegistry,
   useIsResourceNameValid,
   useModals,
-  useSpacesStore,
   type Modal,
   type SpaceMemberInvite,
   type VaultFinalize
 } from '@opencloud-eu/web-pkg'
 import CreateSpaceOptions from './CreateSpace/CreateSpaceOptions.vue'
+import { useSuggestedSpaceName } from '../../composables/spaces'
 
 const { modal } = defineProps<{
   modal: Modal
@@ -152,14 +151,8 @@ const setupComponent = ref<{ finalize: VaultFinalize }>()
 const step = ref<'name' | 'setup'>('name')
 const encrypt = ref(false)
 const setupValid = ref(false)
-// Spaces may share a name, so counting up is a suggestion, not a constraint.
-const suggestedName = $gettext('New space')
-const projectSpaces = useSpacesStore().spaces.filter(isProjectSpaceResource)
-const spaceName = ref(
-  projectSpaces.some(({ name }) => name === suggestedName)
-    ? resolveFileNameDuplicate(suggestedName, '', projectSpaces)
-    : suggestedName
-)
+const { getSuggestedSpaceName } = useSuggestedSpaceName()
+const spaceName = ref(getSuggestedSpaceName())
 
 const showOptions = ref(false)
 const quota = ref<number | null>(null)
