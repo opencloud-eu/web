@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show full chapter titles in the epub reader [[#4495](https://github.com/opencloud-eu/web/pull/4495)]
 - fix: keep preview video inside the stage when its size changes [[#4500](https://github.com/opencloud-eu/web/pull/4500)]
 - fix: show an error message when the spaces or trash overview fails to load [[#4521](https://github.com/opencloud-eu/web/pull/4521)]
 - fix: shorten duplicate names to fit into 255 bytes [[#4520](https://github.com/opencloud-eu/web/pull/4520)]
