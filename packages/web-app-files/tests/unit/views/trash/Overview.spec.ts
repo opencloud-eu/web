@@ -10,12 +10,14 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { nextTick } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
+import { Graph } from '@opencloud-eu/web-client/graph'
 import {
   eventBus,
   FolderViewExtension,
   ResourceTable,
   ResourceTiles,
-  useExtensionRegistry
+  useExtensionRegistry,
+  useMessages
 } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { flushPromises } from '@vue/test-utils'
@@ -78,6 +80,49 @@ describe('TrashOverview', () => {
       name: 'files-trash-generic',
       params: { driveAliasAndItem: spaceMocks[0].getDriveAliasAndItem(undefined) },
       query: { fileId: spaceMocks[0].fileId }
+    })
+  })
+  describe('failed load', () => {
+    beforeEach(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    })
+
+    it('shows an error message', async () => {
+      const error = new Error('Request failed with status code 500')
+      getWrapper({ listMyDrives: () => Promise.reject(error) })
+      await flushPromises()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith({
+        title: 'Failed to load trash bins',
+        errors: [error]
+      })
+    })
+    it('still navigates to the single space trash', async () => {
+      const { mocks } = getWrapper({
+        spaces: [spaceMocks[0]],
+        listMyDrives: () => Promise.reject(new Error('Network Error'))
+      })
+      await flushPromises()
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'files-trash-generic' })
+      )
+    })
+    it('stays silent when leaving the view cancels the load', async () => {
+      const { wrapper, mocks } = getWrapper({
+        spaces: [spaceMocks[0]],
+        listMyDrives: (_, { signal }) =>
+          new Promise((_, reject) => {
+            signal.addEventListener('abort', () =>
+              reject(new DOMException('The operation was aborted.', 'AbortError'))
+            )
+          })
+      })
+      await flushPromises()
+      wrapper.unmount()
+      await flushPromises()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).not.toHaveBeenCalled()
+      expect(mocks.$router.push).not.toHaveBeenCalled()
     })
   })
   describe('view states', () => {
@@ -251,12 +296,14 @@ function getWrapper({
   spaces = spaceMocks,
   stubResourceTable = true,
   areEmptyTrashesShown = true,
-  query = {}
+  query = {},
+  listMyDrives
 }: {
   spaces?: SpaceResource[]
   stubResourceTable?: boolean
   areEmptyTrashesShown?: boolean
   query?: Record<string, string>
+  listMyDrives?: Graph['drives']['listMyDrives']
 } = {}) {
   const mocks = {
     ...defaultComponentMocks({
@@ -302,6 +349,9 @@ function getWrapper({
   )
 
   mocks.$clientService.graphAuthenticated.drives.listMyDrives.mockResolvedValue(spaceMocks)
+  if (listMyDrives) {
+    mocks.$clientService.graphAuthenticated.drives.listMyDrives.mockImplementation(listMyDrives)
+  }
 
   return {
     mocks,

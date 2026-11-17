@@ -179,7 +179,8 @@ import {
   Pagination,
   FileSideBar,
   NoContentMessage,
-  useSideBar
+  useSideBar,
+  useMessages
 } from '@opencloud-eu/web-pkg'
 import {
   isProjectSpaceResource,
@@ -219,6 +220,7 @@ const filterTerm = ref('')
 const resourcesStore = useResourcesStore()
 const { imagesLoading } = storeToRefs(spacesStore)
 const { openSideBarPanel } = useSideBar()
+const { showErrorMessage } = useMessages()
 
 const { setSelection, initResourceList, clearResourceList, setAncestorMetaData } = resourcesStore
 const { areDisabledSpacesShown } = storeToRefs(resourcesStore)
@@ -226,10 +228,16 @@ const { areDisabledSpacesShown } = storeToRefs(resourcesStore)
 const loadResourcesTask = useTask(function* (signal) {
   clearResourceList()
   setAncestorMetaData({})
-  yield spacesStore.reloadProjectSpaces({
-    graphClient: clientService.graphAuthenticated,
-    signal
-  })
+  try {
+    yield spacesStore.reloadProjectSpaces({
+      graphClient: clientService.graphAuthenticated,
+      signal
+    })
+  } catch (e) {
+    console.error(e)
+    showErrorMessage({ title: $gettext('Failed to load spaces'), errors: [e] })
+  }
+  // on failure, the spaces known so far are still listed
   initResourceList({ currentFolder: null, resources: unref(runtimeSpaces) })
 })
 
@@ -347,7 +355,15 @@ const getRemainingQuota = (space: SpaceResource) => {
 }
 
 onMounted(async () => {
-  await loadResourcesTask.perform()
+  try {
+    await loadResourcesTask.perform()
+  } catch (e) {
+    // leaving the view cancels the load
+    if (e === 'cancel') {
+      return
+    }
+    throw e
+  }
 
   loadPreviewToken = eventBus.subscribe(
     'app.files.spaces.uploaded-image',
