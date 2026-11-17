@@ -1,10 +1,14 @@
 # Changelog
 
-## [4.2.4](https://github.com/opencloud-eu/web/releases/tag/v4.2.4) - 2026-11-12
+## [4.2.4](https://github.com/opencloud-eu/web/releases/tag/v4.2.4) - 2026-11-17
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@v-scharf
+@kulmann, @v-scharf
+
+### 🔒 Security
+
+- [stable-4.2] fix: port security fixes from web-internal [[#4504](https://github.com/opencloud-eu/web/pull/4504)]
 
 ### 📦️ Dependencies
 
