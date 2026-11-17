@@ -1,4 +1,9 @@
-import { QueryValue, useResourcesStore, FolderViewModeConstants } from '@opencloud-eu/web-pkg'
+import {
+  QueryValue,
+  useResourcesStore,
+  FolderViewModeConstants,
+  useIsResourceDisabled
+} from '@opencloud-eu/web-pkg'
 import { useScrollTo } from '@opencloud-eu/web-pkg'
 import { Ref, ref, unref, nextTick, watchEffect } from 'vue'
 import { Key, KeyboardActions, Modifier, focusCheckbox } from '@opencloud-eu/web-pkg'
@@ -18,6 +23,7 @@ export const useKeyboardFileNavigation = (
   const { scrollToResource } = useScrollTo()
   const resourcesStore = useResourcesStore()
   const { latestSelectedId, selectedIds } = storeToRefs(resourcesStore)
+  const { isResourceDisabled } = useIsResourceDisabled()
 
   const bindKeyActionsIds: Ref<string[]> = ref([])
   const tileViewStart = ref<string>(null)
@@ -182,7 +188,7 @@ export const useKeyboardFileNavigation = (
     keyActions.resetSelectionCursor()
     resourcesStore.setSelection(
       unref(paginatedResources)
-        .filter((resource) => resource.processing !== true)
+        .filter((resource) => resource.processing !== true && !isResourceDisabled(resource))
         .map(({ id }) => id)
     )
   }

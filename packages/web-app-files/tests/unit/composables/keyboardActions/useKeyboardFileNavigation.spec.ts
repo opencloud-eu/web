@@ -4,6 +4,7 @@ import { Resource } from '@opencloud-eu/web-client'
 import {
   Key,
   KeyboardActions,
+  Modifier,
   useKeyboardActions,
   useResourcesStore,
   FolderViewModeConstants
@@ -215,6 +216,67 @@ describe('useKeyboardFileNavigation', () => {
       const event = pressEscape()
 
       expect(event.defaultPrevented).toBe(false)
+    })
+  })
+
+  describe('select all', () => {
+    function createFile(id: string, extension: string, processing = false): Resource {
+      return mock<Resource>({
+        id,
+        extension,
+        mimeType: 'application/octet-stream',
+        isFolder: false,
+        isInVault: false,
+        processing
+      })
+    }
+
+    it('selects only resources that are not disabled', () => {
+      const resources = [
+        mock<Resource>({
+          id: 'sub',
+          extension: '',
+          mimeType: 'httpd/unix-directory',
+          isFolder: true,
+          isInVault: false,
+          processing: false
+        }),
+        createFile('a.txt', 'txt'),
+        createFile('B.TXT', 'TXT'),
+        createFile('c.md', 'md'),
+        createFile('d.pdf', 'pdf'),
+        createFile('e.txt', 'txt', true)
+      ]
+      createMockStore({
+        stubActions: false,
+        resourcesStore: { resources },
+        configState: { options: { embed: { enabled: true, fileTypes: ['txt'] } } }
+      })
+      const store = useResourcesStore()
+
+      const keyActions = createKeyActions()
+      useKeyboardFileNavigation(keyActions, ref(resources), ref(FolderViewModeConstants.name.table))
+
+      triggerAction(keyActions, Key.A, Modifier.Ctrl)
+
+      expect(store.selectedIds).toEqual(['sub', 'a.txt', 'B.TXT'])
+    })
+
+    it('skips resources in the delete queue', () => {
+      const resources = [createFile('a.txt', 'txt'), createFile('b.txt', 'txt')]
+      createMockStore({
+        stubActions: false,
+        resourcesStore: { resources, deleteQueue: ['b.txt'] },
+        configState: { options: { embed: { enabled: false } } }
+      })
+      const store = useResourcesStore()
+
+      const keyActions = createKeyActions()
+      useKeyboardFileNavigation(keyActions, ref(resources), ref(FolderViewModeConstants.name.table))
+
+      triggerAction(keyActions, Key.A, Modifier.Ctrl)
+
+      expect(store.selectedIds).toEqual(['a.txt'])
     })
   })
 
