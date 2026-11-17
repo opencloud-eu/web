@@ -13,23 +13,30 @@ Feature: Upload
 
   Scenario: Upload files in personal space
     Given "Alice" creates the following resources
-      | resource          | type    | content             |
-      | new-lorem-big.txt | txtFile | new lorem big file  |
-      | lorem.txt         | txtFile | lorem file          |
-      | textfile.txt      | txtFile | some random content |
-      | comma,.txt        | txtFile | comma               |
-      | test#file.txt     | txtFile | some content        |
-      | test#folder       | folder  |                     |
+      | resource             | type     | content             |
+      | new-lorem-big.ocnote | noteFile | new lorem big file  |
+      | lorem.ocnote         | noteFile | lorem file          |
+      | textfile.ocnote      | noteFile | some random content |
+      | comma,.ocnote        | noteFile | comma               |
+      | test#file.ocnote     | noteFile | some content        |
+      | test#folder          | folder   |                     |
+    And "Alice" creates the following files into personal space using API
+      | pathToFile        | content             |
+      | new-lorem-big.txt | new lorem big file  |
+      | lorem.txt         | lorem file          |
+      | textfile.txt      | some random content |
+      | comma,.txt        | comma               |
+      | test#file.txt     | some content        |
     When "Alice" uploads the following resources
       | resource          | option    |
       | new-lorem-big.txt | replace   |
       | lorem.txt         | skip      |
       | textfile.txt      | keep both |
     And "Alice" creates the following resources
-      | resource           | type    | content      |
-      | PARENT             | folder  |              |
-      | PARENT/parent.txt  | txtFile | some text    |
-      | PARENT/example.txt | txtFile | example text |
+      | resource              | type     | content      |
+      | PARENT                | folder   |              |
+      | PARENT/parent.ocnote  | noteFile | some text    |
+      | PARENT/example.ocnote | noteFile | example text |
     And "Alice" uploads the following resources via drag-n-drop
       | resource       |
       | simple.pdf     |
@@ -80,8 +87,11 @@ Feature: Upload
 
     And "Alice" opens the "files" app
     And "Alice" creates the following resource
-      | resource          | type    | content            |
-      | new-lorem-big.txt | txtFile | new lorem big file |
+      | resource             | type     | content            |
+      | new-lorem-big.ocnote | noteFile | new lorem big file |
+    And "Alice" creates the following file into personal space using API
+      | pathToFile        | content            |
+      | new-lorem-big.txt | new lorem big file |
     When "Alice" tries to upload the following resource
       | resource      | error              |
       | lorem-big.txt | Insufficient quota |

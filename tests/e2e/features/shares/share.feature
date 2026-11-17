@@ -79,14 +79,14 @@ Feature: share
   Scenario: file
     Given "Alice" logs in
     And "Alice" creates the following resources
-      | resource         | type    | content   |
-      | shareToBrian.txt | txtFile | some text |
-      | shareToBrian.md  | mdFile  | readme    |
-      | sharedFile.txt   | txtFile | some text |
+      | resource            | type     | content   |
+      | shareToBrian.ocnote | noteFile | some text |
+      | shareToBrian.md     | mdFile   | readme    |
+      | sharedFile.ocnote   | noteFile | some text |
     And "Alice" edits the following resources
-      | resource         | content                   |
-      | shareToBrian.txt | new content edited        |
-      | shareToBrian.md  | new readme content edited |
+      | resource            | content                   |
+      | shareToBrian.ocnote | new content edited        |
+      | shareToBrian.md     | new readme content edited |
     And "Alice" uploads the following resources
       | resource        |
       | simple.pdf      |
@@ -139,12 +139,12 @@ Feature: share
       | test_video.mp4 | file |
     And "Alice" closes the file viewer
     And "Alice" shares the following resources using the sidebar panel
-      | resource         | recipient | type | role     | resourceType |
-      | shareToBrian.txt | Brian     | user | Can edit | file         |
-      | shareToBrian.md  | Brian     | user | Can edit | file         |
-      | testavatar.jpeg  | Brian     | user | Can view | file         |
-      | simple.pdf       | Brian     | user | Can edit | file         |
-      | sharedFile.txt   | Brian     | user | Can edit | file         |
+      | resource            | recipient | type | role     | resourceType |
+      | shareToBrian.ocnote | Brian     | user | Can edit | file         |
+      | shareToBrian.md     | Brian     | user | Can edit | file         |
+      | testavatar.jpeg     | Brian     | user | Can view | file         |
+      | simple.pdf          | Brian     | user | Can edit | file         |
+      | sharedFile.ocnote   | Brian     | user | Can edit | file         |
     And "Alice" navigates to the shared with others page
     # regression check for https://github.com/opencloud-eu/web/pull/3098:
     And "Alice" opens the right sidebar of the resource "testavatar.jpeg"
@@ -158,20 +158,20 @@ Feature: share
     When "Brian" logs in
     And "Brian" navigates to the shared with me page
     # regression check for https://github.com/opencloud-eu/web/pull/3098:
-    And "Brian" opens the right sidebar of the resource "sharedFile.txt"
+    And "Brian" opens the right sidebar of the resource "sharedFile.ocnote"
     Then "Brian" should see the file details in the sidebar
     And "Brian" disables the sync for the following share
-      | name           |
-      | sharedFile.txt |
+      | name              |
+      | sharedFile.ocnote |
     # user should have access to unsynced shares
     And "Brian" opens the following file in texteditor
-      | resource       |
-      | sharedFile.txt |
+      | resource          |
+      | sharedFile.ocnote |
     And "Brian" closes the file viewer
     And "Brian" edits the following resources
-      | resource         | content            |
-      | shareToBrian.txt | new content        |
-      | shareToBrian.md  | new readme content |
+      | resource            | content            |
+      | shareToBrian.ocnote | new content        |
+      | shareToBrian.md     | new readme content |
     And "Brian" opens the following file in mediaviewer
       | resource        |
       | testavatar.jpeg |
@@ -183,14 +183,14 @@ Feature: share
     And "Brian" closes the file viewer
     And "Alice" navigates to the personal space page
     And "Alice" removes following sharees
-      | resource         | recipient |
-      | shareToBrian.txt | Brian     |
-      | shareToBrian.md  | Brian     |
+      | resource            | recipient |
+      | shareToBrian.ocnote | Brian     |
+      | shareToBrian.md     | Brian     |
     And "Alice" logs out
     Then "Brian" should not be able to see the following shares
-      | resource         | owner        |
-      | shareToBrian.txt | Alice Hansen |
-      | shareToBrian.md  | Alice Hansen |
+      | resource            | owner        |
+      | shareToBrian.ocnote | Alice Hansen |
+      | shareToBrian.md     | Alice Hansen |
     And "Brian" logs out
 
 

@@ -26,7 +26,7 @@ import { enterVault, vaultSetupPassphraseInput } from './vault'
 import { editTextDocument, fillContentOfDocument, getLockLocator } from './viewer'
 
 const deleteButtonBatchAction = '.oc-files-actions-delete-trigger'
-const createNewTxtFileButton = '.new-file-btn-txt'
+const createNewNoteFileButton = '.new-file-btn-ocnote'
 const createNewMdFileButton = '.new-file-btn-md'
 const createNewOfficeDocumentFileBUtton = '//div[@id="create-or-upload-drop"]//span[text()="%s"]'
 const fileRenameInput = '.oc-text-input'
@@ -34,7 +34,7 @@ const undoBtn = 'action-handler'
 const encryptFolderSwitch = '[data-testid="create-folder-encrypt"] [data-testid="oc-switch-btn"]'
 
 export type createResourceTypes =
-  'folder' | 'txtFile' | 'mdFile' | 'Document' | 'OpenDocument' | 'Microsoft Word' | 'vault'
+  'folder' | 'noteFile' | 'mdFile' | 'Document' | 'OpenDocument' | 'Microsoft Word' | 'vault'
 
 export interface createResourceArgs {
   page: Page
@@ -73,8 +73,8 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
       await createNewFolder({ page, resource: name })
       break
     }
-    case 'txtFile': {
-      await page.locator(createNewTxtFileButton).click()
+    case 'noteFile': {
+      await page.locator(createNewNoteFileButton).click()
       const resourceInput = page.locator(resourceNameInput)
       // Clear the field and fill in the name without the extension.
       await resourceInput.clear()
