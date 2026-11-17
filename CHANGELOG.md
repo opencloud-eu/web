@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep preview video inside the stage when its size changes [[#4500](https://github.com/opencloud-eu/web/pull/4500)]
 - fix: show an error message when the spaces or trash overview fails to load [[#4521](https://github.com/opencloud-eu/web/pull/4521)]
 - fix: shorten duplicate names to fit into 255 bytes [[#4520](https://github.com/opencloud-eu/web/pull/4520)]
 - fix: wrap long group names in the user groups field [[#4494](https://github.com/opencloud-eu/web/pull/4494)]
