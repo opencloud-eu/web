@@ -189,7 +189,7 @@ export default defineWebApplication({
       const config = applicationConfig || {}
       extensions.push(...(config.extraExtensions || []).map((ext: string) => ({ extension: ext })))
 
-      let primaryExtensions: string[] = config.primaryExtensions || ['md', 'txt']
+      let primaryExtensions: string[] = config.primaryExtensions || ['ocnote', 'md', 'txt']
 
       if (typeof primaryExtensions === 'string') {
         primaryExtensions = [primaryExtensions]

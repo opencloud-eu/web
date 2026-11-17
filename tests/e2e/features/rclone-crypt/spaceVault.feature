@@ -20,22 +20,22 @@ Feature: Work with an rclone-crypt encrypted vault space
     And "Alice" creates the vault space "vaultspace" with password "Vault-Pa55word"
     And "Alice" enters the vault space "vaultspace" with passphrase "Vault-Pa55word"
     And "Alice" creates the following resources
-      | resource  | type    | content     | password       |
-      | hello.txt | txtFile | hello world | Vault-Pa55word |
+      | resource     | type     | content     | password       |
+      | hello.ocnote | noteFile | hello world | Vault-Pa55word |
     And "Alice" uploads the following resource
       | resource       | password       |
       | testavatar.png | Vault-Pa55word |
     Then following resources should be displayed in the files list for user "Alice"
       | resource       |
-      | hello.txt      |
+      | hello.ocnote   |
       | testavatar.png |
     And "Alice" should not be able to share following resources from the space "vaultspace"
       | resource       |
-      | hello.txt      |
+      | hello.ocnote   |
       | testavatar.png |
     When "Alice" opens the following file in texteditor
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     Then "Alice" should see the content "hello world" in editor "TextEditor"
     And "Alice" closes the file viewer
     When "Alice" opens the following file in mediaviewer
@@ -53,15 +53,15 @@ Feature: Work with an rclone-crypt encrypted vault space
     And "Brian" enters the vault space "vaultspace" with passphrase "Vault-Pa55word"
     Then following resources should be displayed in the files list for user "Brian"
       | resource       |
-      | hello.txt      |
+      | hello.ocnote   |
       | testavatar.png |
     And "Brian" should not be able to share following resources from the space "vaultspace"
       | resource       |
-      | hello.txt      |
+      | hello.ocnote   |
       | testavatar.png |
     When "Brian" opens the following file in texteditor
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     Then "Brian" should see the content "hello world" in editor "TextEditor"
     And "Brian" closes the file viewer
     When "Brian" opens the following file in mediaviewer
@@ -78,12 +78,12 @@ Feature: Work with an rclone-crypt encrypted vault space
     And "Alice" creates the vault space "vaultspace" with password "Vault-Pa55word"
     And "Alice" enters the vault space "vaultspace" with passphrase "Vault-Pa55word"
     And "Alice" creates the following resources
-      | resource  | type    | content     | password       |
-      | hello.txt | txtFile | hello world | Vault-Pa55word |
+      | resource     | type     | content     | password       |
+      | hello.ocnote | noteFile | hello world | Vault-Pa55word |
     And "Alice" reloads the page
     Then "Alice" should see the unlock page of the vault space "vaultspace"
     When "Alice" unlocks the vault space with passphrase "Vault-Pa55word"
     Then following resource should be displayed in the files list for user "Alice"
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     And "Alice" logs out

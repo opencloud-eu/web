@@ -13,28 +13,28 @@ Feature: Work with an rclone-crypt encrypted vault
   Scenario: create and upload a file into a vault encrypts it on the server
     When "Alice" logs in
     And "Alice" creates the following resources
-      | resource                | type    | content             | password       |
-      | my.vault                | vault   |                     | Vault-Pa55word |
-      | my.vault/sub            | folder  |                     | Vault-Pa55word |
-      | my.vault/sub/nested.txt | txtFile | nested file content | Vault-Pa55word |
-      | my.vault/hello.txt      | txtFile | hello world         | Vault-Pa55word |
+      | resource                   | type     | content             | password       |
+      | my.vault                   | vault    |                     | Vault-Pa55word |
+      | my.vault/sub               | folder   |                     | Vault-Pa55word |
+      | my.vault/sub/nested.ocnote | noteFile | nested file content | Vault-Pa55word |
+      | my.vault/hello.ocnote      | noteFile | hello world         | Vault-Pa55word |
     And "Alice" uploads the following resource
       | resource          | to           | password       |
       | PARENT/parent.txt | my.vault/sub | Vault-Pa55word |
       | testavatar.png    | my.vault/sub | Vault-Pa55word |
     And "Alice" enters the vault "my.vault" with passphrase "Vault-Pa55word"
     Then following resources should be displayed in the files list for user "Alice"
-      | resource  |
-      | hello.txt |
-      | sub       |
+      | resource     |
+      | hello.ocnote |
+      | sub          |
     When "Alice" opens folder "sub"
     And following resources should be displayed in the files list for user "Alice"
-      | resource   |
-      | nested.txt |
-      | parent.txt |
+      | resource      |
+      | nested.ocnote |
+      | parent.txt    |
     And "Alice" opens the following file in texteditor
-      | resource   |
-      | nested.txt |
+      | resource      |
+      | nested.ocnote |
     Then "Alice" should see the content "nested file content" in editor "TextEditor"
     And "Alice" closes the file viewer
     When "Alice" opens the following file in texteditor
@@ -145,9 +145,9 @@ Feature: Work with an rclone-crypt encrypted vault
       | Brian |
     When "Alice" logs in
     And "Alice" creates the following resources
-      | resource              | type    | content     | password       |
-      | share.vault           | vault   |             | Vault-Pa55word |
-      | share.vault/hello.txt | txtFile | hello world | Vault-Pa55word |
+      | resource                 | type     | content     | password       |
+      | share.vault              | vault    |             | Vault-Pa55word |
+      | share.vault/hello.ocnote | noteFile | hello world | Vault-Pa55word |
     And "Alice" shares the following resource using the sidebar panel
       | resource    | recipient | type | role     | resourceType |
       | share.vault | Brian     | user | Can edit | folder       |
@@ -156,11 +156,11 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Brian" navigates to the shared with me page
     And "Brian" enters the vault "share.vault" with passphrase "Vault-Pa55word"
     And following resource should be displayed in the files list for user "Brian"
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     And "Brian" opens the following file in texteditor
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     And "Brian" should see the content "hello world" in editor "TextEditor"
     And "Brian" logs out
 
@@ -168,20 +168,20 @@ Feature: Work with an rclone-crypt encrypted vault
   Scenario: Rename and download a vault file
     When "Alice" logs in
     And "Alice" creates the following resources
-      | resource           | type    | content     | password       |
-      | my.vault           | vault   |             | Vault-Pa55word |
-      | my.vault/hello.txt | txtFile | hello world | Vault-Pa55word |
+      | resource              | type     | content     | password       |
+      | my.vault              | vault    |             | Vault-Pa55word |
+      | my.vault/hello.ocnote | noteFile | hello world | Vault-Pa55word |
     And "Alice" navigates to the personal space page
     When "Alice" renames the following resource
       | resource | as            |
       | my.vault | renamed.vault |
     And "Alice" enters the vault "renamed.vault" with passphrase "Vault-Pa55word"
     Then following resource should be displayed in the files list for user "Alice"
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     And "Alice" downloads the following resource using the context menu
-      | resource  | type |
-      | hello.txt | file |
+      | resource     | type |
+      | hello.ocnote | file |
     And "Alice" logs out
 
   @rclone-crypt
@@ -209,8 +209,8 @@ Feature: Work with an rclone-crypt encrypted vault
       | vaultTwo       | folder |                |
     And "Alice" enters the vault "vaultOne.vault" with passphrase "Vault-Pa55word"
     And "Alice" creates the following resources
-      | resource  | type    | content       |
-      | lorem.txt | txtFile | hello content |
+      | resource     | type     | content       |
+      | lorem.ocnote | noteFile | hello content |
     And "Alice" opens the "files" app
     And "Alice" renames the following resource
       | resource       | as       |
@@ -219,16 +219,16 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" navigates to the personal space page
     And "Alice" opens folder "vaultTwo"
     Then following resource should not be displayed in the files list for user "Alice"
-      | resource  |
-      | lorem.txt |
+      | resource     |
+      | lorem.ocnote |
     When "Alice" navigates to the personal space page
     And "Alice" renames the following resource
       | resource | as             |
       | vaultTwo | vaultTwo.vault |
     And "Alice" enters the vault "vaultTwo.vault" with passphrase "Vault-Pa55word"
     And "Alice" opens the following file in texteditor
-      | resource  |
-      | lorem.txt |
+      | resource     |
+      | lorem.ocnote |
     Then "Alice" should see the content "hello content" in editor "TextEditor"
     And "Alice" closes the file viewer
     And "Alice" logs out
@@ -245,22 +245,22 @@ Feature: Work with an rclone-crypt encrypted vault
     When "Alice" logs in
     And "Alice" navigates to the project space "ourspace"
     And "Alice" creates the following resources
-      | resource           | type    | content     | password       |
-      | my.vault           | vault   |             | Vault-Pa55word |
-      | my.vault/sub       | folder  |             | Vault-Pa55word |
-      | my.vault/hello.txt | txtFile | hello world | Vault-Pa55word |
+      | resource              | type     | content     | password       |
+      | my.vault              | vault    |             | Vault-Pa55word |
+      | my.vault/sub          | folder   |             | Vault-Pa55word |
+      | my.vault/hello.ocnote | noteFile | hello world | Vault-Pa55word |
     And "Alice" uploads the following resource
       | resource          | to           | password       |
       | PARENT/parent.txt | my.vault/sub | Vault-Pa55word |
       | testavatar.png    | my.vault/sub | Vault-Pa55word |
     And "Alice" enters the vault "my.vault" with passphrase "Vault-Pa55word"
     Then following resources should be displayed in the files list for user "Alice"
-      | resource  |
-      | hello.txt |
-      | sub       |
+      | resource     |
+      | hello.ocnote |
+      | sub          |
     When "Alice" opens the following file in texteditor
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     Then "Alice" should see the content "hello world" in editor "TextEditor"
     And "Alice" closes the file viewer
     When "Alice" opens folder "sub"
@@ -289,8 +289,8 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Brian" navigates to the project space "ourspace"
     And "Brian" enters the vault "my.vault" with passphrase "Vault-Pa55word"
     And "Brian" opens the following file in texteditor
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     Then "Brian" should see the content "hello world" in editor "TextEditor"
     And "Brian" closes the file viewer
     When "Brian" opens folder "sub"

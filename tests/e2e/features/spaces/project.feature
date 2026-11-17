@@ -41,12 +41,12 @@ Feature: spaces.project
     And "Alice" creates the project space using API "team"
     And "Alice" navigates to the project space "team"
     And "Alice" creates the following resources
-      | resource            | type    | content             |
-      | parent              | folder  |                     |
-      | parent/textfile.txt | txtFile | some random content |
+      | resource               | type     | content             |
+      | parent                 | folder   |                     |
+      | parent/textfile.ocnote | noteFile | some random content |
     When "Alice" uploads the following resource
-      | resource     | to     | option  |
-      | textfile.txt | parent | replace |
+      | resource        | to     | option  |
+      | textfile.ocnote | parent | replace |
     And "Alice" adds following users to the project space
       | user  | role     | kind |
       | Carol | Can view | user |
@@ -56,18 +56,18 @@ Feature: spaces.project
     When "Carol" logs in
     And "Carol" navigates to the project space "team"
     And "Carol" should not see the version panel for the file
-      | resource     | to     |
-      | textfile.txt | parent |
+      | resource        | to     |
+      | textfile.ocnote | parent |
     And "Carol" logs out
 
     When "Brian" logs in
     And "Brian" navigates to the project space "team"
     And "Brian" downloads old version of the following resource
-      | resource     | to     |
-      | textfile.txt | parent |
+      | resource        | to     |
+      | textfile.ocnote | parent |
     And "Brian" restores following resource version
-      | resource     | to     | version | openDetailsPanel |
-      | textfile.txt | parent | 1       | true             |
+      | resource        | to     | version | openDetailsPanel |
+      | textfile.ocnote | parent | 1       | true             |
     And "Brian" logs out
 
   
