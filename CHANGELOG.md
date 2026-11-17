@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.3.1](https://github.com/opencloud-eu/web/releases/tag/v8.3.1) - 2026-11-17
+
+### 📦️ Dependencies
+
+- chore(deps): update pnpm to v12 [[#3314](https://github.com/opencloud-eu/web/pull/3314)]
+
 ## [8.3.0](https://github.com/opencloud-eu/web/releases/tag/v8.3.0) - 2026-11-17
 
 ### ❤️ Thanks to all contributors! ❤️
