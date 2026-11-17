@@ -14,6 +14,11 @@
 
 - fix: show existing recipients in share invite search [[#4477](https://github.com/opencloud-eu/web/pull/4477)]
 
+### 📦️ Dependencies
+
+- chore(deps): update typescript-eslint monorepo to v8.73.0 [[#4492](https://github.com/opencloud-eu/web/pull/4492)]
+- chore(deps): update dependency filesize to v11.0.33 [[#4491](https://github.com/opencloud-eu/web/pull/4491)]
+
 ## [8.2.3](https://github.com/opencloud-eu/web/releases/tag/v8.2.3) - 2026-11-17
 
 ### ❤️ Thanks to all contributors! ❤️
