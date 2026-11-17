@@ -7,7 +7,7 @@
       :id="id"
       ref="chipButtonRef"
       :gap-size="filterActive ? 'small' : 'none'"
-      class="oc-filter-chip-button oc-pill py-1 rounded-md h-[32px] max-w-40 focus:z-90 transition-[gap]"
+      class="oc-filter-chip-button oc-pill py-1 rounded-md h-[32px] max-w-40 focus:z-1 transition-[gap]"
       :class="{
         'oc-filter-chip-button-selected rounded-l-md rounded-r-none pr-2 pl-3': filterActive,
         'px-3': !filterActive
@@ -60,7 +60,7 @@
     <oc-button
       v-if="filterActive"
       v-oc-tooltip="$gettext('Clear filter')"
-      class="oc-filter-chip-clear px-1 rounded-l-none rounded-r-md h-[32px] not-[.oc-filter-chip-toggle_.oc-filter-chip-clear]:ml-[1px] focus:z-90"
+      class="oc-filter-chip-clear px-1 rounded-l-none rounded-r-md h-[32px] not-[.oc-filter-chip-toggle_.oc-filter-chip-clear]:ml-[1px] focus:z-1"
       appearance="filled"
       color-role="secondaryContainer"
       :aria-label="$gettext('Clear filter %{filterLabel}', { filterLabel })"

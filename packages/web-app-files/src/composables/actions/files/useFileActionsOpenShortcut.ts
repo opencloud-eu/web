@@ -36,7 +36,7 @@ export function useFileActionsOpenShortcut() {
         return
       }
 
-      window.open(url)
+      window.open(url, '_blank', 'noopener,noreferrer')
     } catch (e) {
       console.error(e)
       showErrorMessage({
