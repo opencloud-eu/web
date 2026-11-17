@@ -9,7 +9,12 @@ import { mock, mockDeep } from 'vitest-mock-extended'
 import { GraphSharePermission, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ProjectSpaceResource, ShareSpaceResource } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-helpers'
-import { useDownloadFile, useMessages, useResourcesStore } from '@opencloud-eu/web-pkg'
+import {
+  SideBarNoSelection,
+  useDownloadFile,
+  useMessages,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
 import { computed } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 
@@ -51,9 +56,12 @@ const selectors = {
 describe('FileVersions', () => {
   it('should show no versions message if there are no versions', () => {
     const { wrapper } = getMountedWrapper({ mountType: shallowMount, versions: [] })
-    const noVersionsMessageElement = wrapper.find(selectors.noVersionsMessage)
+    const noVersionsMessage = wrapper.findComponent<typeof SideBarNoSelection>(
+      selectors.noVersionsMessage
+    )
 
-    expect(noVersionsMessageElement.text()).toBe('No versions available for this file')
+    expect(noVersionsMessage.props('message')).toBe('No versions available for this file')
+    expect(noVersionsMessage.props('imgSrc')).toBe('images/illustrations/versions.svg')
   })
 
   describe('when the file has versions', () => {

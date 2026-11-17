@@ -4,7 +4,7 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
 import { Activity } from '@opencloud-eu/web-client/graph/generated'
-import { getVaultClaim, resolveVaultEngine } from '@opencloud-eu/web-pkg'
+import { getVaultClaim, resolveVaultEngine, SideBarNoSelection } from '@opencloud-eu/web-pkg'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -95,7 +95,9 @@ describe('ActivitiesPanel', () => {
   it('should show no activities message if there is no data', async () => {
     const { wrapper } = getMountedWrapper({ activities: [] })
     await flushPromises()
-    expect(wrapper.html()).toContain('No activities')
+    const noActivities = wrapper.findComponent(SideBarNoSelection)
+    expect(noActivities.props('message')).toBe('No activities')
+    expect(noActivities.props('imgSrc')).toBe('images/illustrations/activities.svg')
   })
   it('should show loading spinner when fetching data', () => {
     const { wrapper } = getMountedWrapper()
