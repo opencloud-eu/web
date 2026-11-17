@@ -1,5 +1,19 @@
 # Changelog
 
+## [7.1.7](https://github.com/opencloud-eu/web/releases/tag/v7.1.7) - 2026-11-17
+
+### ❤️ Thanks to all contributors! ❤️
+
+@kulmann, @v-scharf
+
+### 🔒 Security
+
+- [stable-7.1] fix: port security fixes from web-internal [[#4503](https://github.com/opencloud-eu/web/pull/4503)]
+
+### 📦️ Dependencies
+
+- [full-ci] chore: bump opencloud for tests to v7.2.5 [[#4441](https://github.com/opencloud-eu/web/pull/4441)]
+
 ## [7.1.6](https://github.com/opencloud-eu/web/releases/tag/v7.1.6) - 2026-11-11
 
 ### ❤️ Thanks to all contributors! ❤️
