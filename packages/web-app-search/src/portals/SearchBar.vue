@@ -473,7 +473,7 @@ onBeforeUnmount(() => {
 function getFocusableElements() {
   const elements = [document.querySelector('.more-results')]
   elements.push(...Array.from(document.querySelectorAll('li.preview')))
-  return elements as HTMLElement[]
+  return elements.filter(Boolean) as HTMLElement[]
 }
 
 const showNoResults = computed(() => {
@@ -506,6 +506,11 @@ function onClear() {
 
 function findNextPreviewIndex(previous = false) {
   const elements = getFocusableElements()
+  // the preview is loading or has no results, so there is nothing to navigate
+  if (!elements.length) {
+    return null
+  }
+
   let index =
     activePreviewIndex.value !== null ? activePreviewIndex.value : previous ? elements.length : -1
   const increment = previous ? -1 : 1
