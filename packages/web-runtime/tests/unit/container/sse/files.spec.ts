@@ -202,7 +202,7 @@ describe('file events', () => {
         path: '/renamed'
       })
       expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'renamed' })
+        expect.objectContaining({ name: 'renamed', remoteItemId: mocks.shareSpace.id })
       )
       expect(mocks.router.push).toHaveBeenCalled()
     })
@@ -280,6 +280,54 @@ describe('file events', () => {
       expect(mocks.previewService.loadPreview).toHaveBeenCalledWith(
         expect.objectContaining({ space: mocks.shareSpace })
       )
+    })
+    describe('resources loaded via events', () => {
+      // the share space of a resource is resolved by its remote item id, e.g. to delete or open it
+      it('carry the share space id as remote item id when uploaded', async () => {
+        const mocks = getShareMocks()
+        mocks.resourceQueue.add.mockImplementation((task) => Promise.resolve(task({})))
+        mockGetFileInfo(mocks, {
+          id: 'space1!file1',
+          name: 'file1',
+          parentFolderId: 'space1!sharedFolder'
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: 'space1!file1',
+          spaceid: 'space1',
+          parentitemid: 'space1!sharedFolder',
+          initiatorid: 'remote1'
+        })
+        await onSSEProcessingFinishedEvent({ sseData, ...mocks })
+        expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(
+          expect.objectContaining({ path: '/file1', remoteItemId: mocks.shareSpace.id })
+        )
+      })
+      it('carry the share space id as remote item id when renamed', async () => {
+        const resourceToRename = mock<Resource>({
+          id: 'space1!file1',
+          name: 'file1',
+          path: '/file1',
+          storageId: 'space1',
+          parentFolderId: 'space1!sharedFolder',
+          remoteItemId: 'shareJail!share1'
+        })
+        const mocks = getShareMocks([resourceToRename])
+        mockGetFileInfo(mocks, {
+          id: 'space1!file1',
+          name: 'renamed',
+          parentFolderId: 'space1!sharedFolder'
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: resourceToRename.id,
+          spaceid: 'space1',
+          parentitemid: resourceToRename.parentFolderId,
+          initiatorid: 'remote1'
+        })
+        await onSSEItemRenamedEvent({ sseData, ...mocks })
+        expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(
+          expect.objectContaining({ name: 'renamed', remoteItemId: mocks.shareSpace.id })
+        )
+      })
     })
     it('ignores events of other spaces', async () => {
       const mocks = getShareMocks()

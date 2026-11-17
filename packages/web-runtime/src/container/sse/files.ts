@@ -63,6 +63,17 @@ const loadEventResource = async (
     return clientService.webdav.getFileInfo(space, { path: '', fileId })
   }
 
+  const resource = await loadShareResource({ clientService, resourcesStore }, space, fileId)
+  // needed to resolve the share space of the resource, like in the space loader
+  resource.remoteItemId = space.id
+  return resource
+}
+
+async function loadShareResource(
+  { clientService, resourcesStore }: Pick<SSEEventOptions, 'clientService' | 'resourcesStore'>,
+  space: SpaceResource,
+  fileId: string
+): Promise<Resource> {
   const resource = await clientService.webdav.getFileInfo(
     buildSpace({ id: fileId, name: '' }),
     { fileId },
