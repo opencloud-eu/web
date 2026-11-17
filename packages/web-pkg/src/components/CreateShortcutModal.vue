@@ -25,7 +25,7 @@
             <oc-contextual-helper
               :text="$gettext('Shortcut name as it will appear in the file list.')"
               :title="$gettext('Shortcut name')"
-              class="ml-1"
+              class="ms-1"
             />
           </div>
         </template>

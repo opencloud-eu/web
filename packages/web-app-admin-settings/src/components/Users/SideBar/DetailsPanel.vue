@@ -36,7 +36,7 @@
       <dd>
         <span v-if="user.appRoleAssignments" v-text="roleDisplayName" />
         <span v-else>
-          <span class="mr-1">-</span>
+          <span class="me-1">-</span>
           <oc-contextual-helper
             :text="
               $gettext(
@@ -52,7 +52,7 @@
       <dd>
         <space-quota v-if="showUserQuota" :space-quota="user.drive.quota" />
         <span v-else>
-          <span class="mr-1">-</span>
+          <span class="me-1">-</span>
           <oc-contextual-helper
             :text="
               $gettext(
@@ -67,7 +67,7 @@
       <dd>
         <span v-if="user.memberOf?.length" v-text="groupsDisplayValue" />
         <span v-else>
-          <span class="mr-1">-</span>
+          <span class="me-1">-</span>
           <oc-contextual-helper
             :text="$gettext('No groups assigned.')"
             :title="$gettext('Groups')"

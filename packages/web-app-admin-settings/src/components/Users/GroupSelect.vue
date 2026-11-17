@@ -18,7 +18,7 @@
             :userid="id"
             :user-name="displayName"
             :width="16"
-            class="flex self-center mr-2"
+            class="flex self-center me-2"
           />
           <span>{{ displayName }}</span>
         </span>
@@ -30,7 +30,7 @@
               :userid="id"
               :user-name="displayName"
               :width="16"
-              class="flex self-center mr-2"
+              class="flex self-center me-2"
             />
             <span>{{ displayName }}</span>
           </span>

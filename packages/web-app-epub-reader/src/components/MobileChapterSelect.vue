@@ -10,7 +10,7 @@
       no-hover
     >
       <span
-        class="min-w-0 flex-1 truncate text-left"
+        class="min-w-0 flex-1 truncate text-start"
         v-text="selectedChapter?.label || $gettext('Chapter')"
       />
       <oc-icon name="arrow-drop-down" size-class="size-4" />

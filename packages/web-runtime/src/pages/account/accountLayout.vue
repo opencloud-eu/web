@@ -1,7 +1,7 @@
 <template>
   <main
     id="account"
-    class="flex justify-center p-4 overflow-auto app-content border w-full bg-role-surface rounded-l-xl transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)]"
+    class="flex justify-center p-4 overflow-auto app-content border w-full bg-role-surface rounded-s-xl transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)]"
   >
     <div class="w-full lg:w-3/4 xl:w-1/2">
       <router-view />

@@ -4,9 +4,9 @@
       <div class="flex flex-col flex-1 min-h-0">
         <!-- Header Section -->
         <div class="flex items-center px-4 py-2 border-b shrink-0 min-h-[60px]">
-          <oc-icon name="cloud" size-class="size-8" class="mr-2" />
+          <oc-icon name="cloud" size-class="size-8" class="me-2" />
           <h1 class="px-2 text-2xl font-semibold m-0" v-text="$gettext('Where Are You From?')" />
-          <oc-contextual-helper class="pl-1" v-bind="helperContent" />
+          <oc-contextual-helper class="ps-1" v-bind="helperContent" />
         </div>
 
         <!-- No Token State -->
@@ -100,12 +100,12 @@
               <div
                 class="flex items-center px-4 py-2 bg-role-surface-container-highest border-b min-h-[42px]"
               >
-                <oc-icon name="shield-check" size-class="size-4" class="mr-2" />
+                <oc-icon name="shield-check" size-class="size-4" class="me-2" />
                 <h2 class="text-lg font-semibold m-0 truncate flex-1" :title="federation">
                   {{ federation }}
                 </h2>
                 <span
-                  class="ml-2 text-xs font-medium bg-role-surface-container px-2 py-0.5 rounded-xl whitespace-nowrap shrink-0"
+                  class="ms-2 text-xs font-medium bg-role-surface-container px-2 py-0.5 rounded-xl whitespace-nowrap shrink-0"
                 >
                   {{ providers.length }}
                   {{ providers.length === 1 ? $gettext('provider') : $gettext('providers') }}
@@ -116,7 +116,7 @@
                   v-for="p in providers"
                   :key="p.fqdn"
                   appearance="raw"
-                  class="w-full px-2 py-2 border-b last:border-b-0 text-left transition-colors hover:bg-role-surface-container-highest"
+                  class="w-full px-2 py-2 border-b last:border-b-0 text-start transition-colors hover:bg-role-surface-container-highest"
                   :disabled="loading"
                   :aria-label="$gettext('Select provider %{name}', { name: p.name })"
                   @click="navigateToProvider(p, token, providerDomain)"
@@ -141,7 +141,7 @@
             "
           >
             <div class="flex items-center mb-2">
-              <oc-icon name="cloud" size-class="size-5" class="mr-2" />
+              <oc-icon name="cloud" size-class="size-5" class="me-2" />
               <h3 class="text-base font-semibold m-0" v-text="$gettext('Manual Provider Entry')" />
             </div>
             <oc-text-input

@@ -49,7 +49,7 @@
     <template #displayName="rowData">
       <div class="flex items-center">
         <OcAvatar
-          class="shrink-0 mr-2"
+          class="shrink-0 me-2"
           :width="32"
           :userid="rowData.item.id"
           :user-name="rowData.item.displayName"
@@ -67,7 +67,7 @@
           name="lock"
           size-class="size-4"
           fill-type="line"
-          class="ml-2"
+          class="ms-2"
           :accessible-label="readOnlyLabel"
         />
       </div>
@@ -77,7 +77,7 @@
         v-oc-tooltip="$gettext('Show details')"
         :aria-label="$gettext('Show details')"
         appearance="raw"
-        class="ml-1 quick-action-button p-1 groups-table-btn-details"
+        class="ms-1 quick-action-button p-1 groups-table-btn-details"
         @click="showDetails(item)"
       >
         <oc-icon name="information" fill-type="line" />
@@ -87,7 +87,7 @@
         v-oc-tooltip="$gettext('Edit')"
         :aria-label="$gettext('Edit')"
         appearance="raw"
-        class="ml-1 quick-action-button p-1 groups-table-btn-edit"
+        class="ms-1 quick-action-button p-1 groups-table-btn-edit"
         @click="showEditPanel(item)"
       >
         <oc-icon name="pencil" fill-type="line" />

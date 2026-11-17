@@ -72,24 +72,27 @@ const toggle = () => {
 @layer components {
   .oc-switch-btn::before {
     @apply bg-role-on-secondary-container absolute;
-    left: 1px;
+    inset-inline-start: 1px;
     top: 2px;
     content: '';
     border-radius: 50%;
   }
   .oc-switch-btn[aria-checked='false'] {
     @apply bg-role-surface-container;
-    left: 2px;
+    inset-inline-start: 2px;
   }
   .oc-switch-btn[aria-checked='true'] {
     @apply bg-role-secondary-container;
-    left: 1px;
+    inset-inline-start: 1px;
   }
   .oc-switch-btn[aria-checked='false']::before {
     transform: translateX(0);
   }
   .oc-switch-btn[aria-checked='true']::before {
     transform: translateX(calc(100% + 2px));
+  }
+  [dir='rtl'] .oc-switch-btn[aria-checked='true']::before {
+    transform: translateX(calc(-100% - 2px));
   }
 }
 </style>

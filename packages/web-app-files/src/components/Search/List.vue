@@ -1,5 +1,5 @@
 <template>
-  <div class="flex">
+  <div class="flex w-full">
     <files-view-wrapper>
       <app-bar :breadcrumbs="breadcrumbs" :has-bulk-actions="true" :view-modes="viewModes">
         <template #actions>
@@ -21,7 +21,7 @@
                   <resource-icon
                     :resource="getFakeResourceForIcon(item as SearchMediaTypeFilterOption)"
                   />
-                  <span class="ml-2">{{ item.label }}</span>
+                  <span class="ms-2">{{ item.label }}</span>
                 </div>
               </template>
             </item-filter>
@@ -47,7 +47,7 @@
                 <oc-icon name="price-tag-3" size-class="size-4" class="flex" />
               </template>
               <template #item="{ item, term }">
-                <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
+                <span class="ms-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
               </template>
             </item-filter>
             <item-filter

@@ -1,6 +1,6 @@
 <template>
   <div id="oc-file-versions-sidebar">
-    <div v-if="versions.length" class="ml-2">
+    <div v-if="versions.length" class="ms-2">
       <oc-list class="oc-timeline">
         <li v-for="(item, index) in versions" :key="index">
           <div class="flex items-center justify-between gap-2">

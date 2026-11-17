@@ -5,7 +5,7 @@
       :aria-hidden="true"
       :for="id"
       class="inline-block"
-      :class="{ 'mr-2': inlineLabel, 'mb-0.5': !inlineLabel }"
+      :class="{ 'me-2': inlineLabel, 'mb-0.5': !inlineLabel }"
     >
       {{ label }}
       <span v-if="requiredMark" class="text-role-error" aria-hidden="true">*</span>
@@ -13,7 +13,7 @@
     <oc-contextual-helper
       v-if="contextualHelper?.isEnabled"
       v-bind="contextualHelper?.data"
-      class="pl-1"
+      class="ps-1"
     />
     <vue-select
       ref="selectRef"
@@ -72,10 +72,10 @@
           :class="{ 'vs__selected-readonly': option.readonly }"
         >
           <slot name="selected-option" v-bind="option">
-            <oc-icon v-if="readOnly && !multiple" name="lock" class="mr-1" size-class="size-4" />
+            <oc-icon v-if="readOnly && !multiple" name="lock" class="me-1" size-class="size-4" />
             {{ resolveOptionLabel(option) }}
           </slot>
-          <span v-if="multiple" class="flex items-center ml-2 mr-1 empty:hidden">
+          <span v-if="multiple" class="flex items-center ms-2 me-1 empty:hidden">
             <oc-icon
               v-if="option.readonly || readOnly"
               class="vs__deselect-lock"
@@ -116,7 +116,7 @@
         size-class="size-4"
         fill-type="line"
         aria-hidden="true"
-        class="mr-1"
+        class="me-1"
       />
       <span
         :id="`${id}-message`"

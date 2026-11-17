@@ -29,8 +29,8 @@ describe('OcSection', () => {
   })
 
   it('indents the content only when an icon is given', () => {
-    expect(getWrapper().find('.oc-section-content').classes()).not.toContain('pl-9')
-    expect(getWrapper({ icon: 'image' }).find('.oc-section-content').classes()).toContain('pl-9')
+    expect(getWrapper().find('.oc-section-content').classes()).not.toContain('ps-9')
+    expect(getWrapper({ icon: 'image' }).find('.oc-section-content').classes()).toContain('ps-9')
   })
 
   it('has no toggle when not expandable', () => {

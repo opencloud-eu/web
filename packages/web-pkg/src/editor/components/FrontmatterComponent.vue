@@ -35,7 +35,7 @@ const labelId = `frontmatter-label-${uuidV4()}`
 <style scoped>
 .text-editor-frontmatter-label {
   position: absolute;
-  right: 8px;
+  inset-inline-end: 8px;
   top: 4px;
   display: inline-flex;
   align-items: center;

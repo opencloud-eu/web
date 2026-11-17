@@ -13,7 +13,7 @@
       :term="term"
       v-bind="additionalAttrs"
     />
-    <search-highlights class="pl-8" :resource="searchResult.data as SearchResource" :term="term" />
+    <search-highlights class="ps-8" :resource="searchResult.data as SearchResource" :term="term" />
   </div>
 </template>
 

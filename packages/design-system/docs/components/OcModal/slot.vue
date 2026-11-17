@@ -6,13 +6,13 @@
       <div class="flex justify-end items-center mt-4">
         <div class="oc-modal-body-actions-grid">
           <oc-button
-            class="oc-modal-body-actions-secondary ml-2"
+            class="oc-modal-body-actions-secondary ms-2"
             appearance="outline"
             @click="hideModal"
           >
             Don't Save
           </oc-button>
-          <oc-button class="oc-modal-body-actions-confirm ml-2" appearance="filled" @click="confirm"
+          <oc-button class="oc-modal-body-actions-confirm ms-2" appearance="filled" @click="confirm"
             >Save
           </oc-button>
         </div>

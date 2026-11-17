@@ -48,7 +48,7 @@
           <li
             v-if="authStore.isGuestContext"
             id="oc-topbar-account-guest"
-            class="flex items-center pl-2 min-h-10.5 gap-4"
+            class="flex items-center ps-2 min-h-10.5 gap-4"
           >
             <oc-avatar
               v-if="authStore.guestEmail"
@@ -104,7 +104,7 @@
           </li>
         </template>
         <template v-else>
-          <li class="flex items-center pl-2 min-h-10.5 gap-4">
+          <li class="flex items-center ps-2 min-h-10.5 gap-4">
             <user-avatar
               :user-id="user.id"
               :user-name="user.displayName"

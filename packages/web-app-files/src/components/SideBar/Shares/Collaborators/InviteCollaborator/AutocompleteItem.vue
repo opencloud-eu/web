@@ -6,7 +6,7 @@
   >
     <user-avatar
       v-if="isAnyUserShareType"
-      class="mr-2"
+      class="me-2"
       :user-id="item.id"
       :user-name="item.displayName"
     />
@@ -16,7 +16,7 @@
       :name="shareTypeKey"
       :icon="shareTypeIcon"
       icon-size="medium"
-      class="mr-2"
+      class="me-2"
     />
     <div class="truncate">
       <span class="files-collaborators-autocomplete-username" :title="item.displayName">
@@ -28,7 +28,7 @@
           v-text="`(${$gettext(shareType.label)})`"
         />
       </template>
-      <span v-if="hint" class="files-collaborators-autocomplete-hint ml-1" v-text="`(${hint})`" />
+      <span v-if="hint" class="files-collaborators-autocomplete-hint ms-1" v-text="`(${hint})`" />
       <div
         v-if="additionalInfo"
         class="files-collaborators-autocomplete-additionalInfo text-sm truncate"
