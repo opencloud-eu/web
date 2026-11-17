@@ -94,6 +94,7 @@ const selectors = {
   providerListItem: '.provider',
   providerDisplayName: '.provider .display-name',
   providerMoreResultsLink: '.provider .more-results',
+  activePreview: 'li.preview.active',
   searchFilters: '#files-global-search-filter'
 }
 
@@ -355,6 +356,80 @@ describe('Search Bar portal component', () => {
     expect(providerFiles.previewSearch.search).toHaveBeenLastCalledWith(
       expect.stringContaining('folder-id')
     )
+  })
+  describe('arrow key navigation in the preview', () => {
+    async function pressArrowKeys(wrapper: ReturnType<typeof getMountedWrapper>['wrapper']) {
+      await wrapper.find(selectors.searchInput).trigger('keyup.down')
+      await wrapper.find(selectors.searchInput).trigger('keyup.up')
+    }
+
+    test('does nothing while the preview is loading', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      providerFiles.previewSearch.search.mockImplementationOnce(() => new Promise(() => undefined))
+      wrapper.find(selectors.searchInput).setValue('albert')
+      await flushPromises()
+      await pressArrowKeys(wrapper)
+      expect((wrapper.vm as any).activePreviewIndex).toBeNull()
+    })
+    test('does nothing if the preview has no results', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      providerFiles.previewSearch.search.mockReturnValueOnce({ values: [] })
+      providerContacts.previewSearch.search.mockReturnValueOnce({ values: [] })
+      wrapper.find(selectors.searchInput).setValue('nothing found')
+      await flushPromises()
+      expect(wrapper.find(selectors.noResults).exists()).toBe(true)
+      await pressArrowKeys(wrapper)
+      expect((wrapper.vm as any).activePreviewIndex).toBeNull()
+    })
+    test('moves through the more results link and the preview results', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      wrapper.find(selectors.searchInput).setValue('albert')
+      await flushPromises()
+      await wrapper.find(selectors.searchInput).trigger('keyup.down')
+      expect((wrapper.vm as any).activePreviewIndex).toBe(0)
+      await wrapper.find(selectors.searchInput).trigger('keyup.down')
+      expect((wrapper.vm as any).activePreviewIndex).toBe(1)
+      await wrapper.find(selectors.searchInput).trigger('keyup.up')
+      expect((wrapper.vm as any).activePreviewIndex).toBe(0)
+    })
+    test('selects the last preview result on arrow up', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      wrapper.find(selectors.searchInput).setValue('albert')
+      await flushPromises()
+      await wrapper.find(selectors.searchInput).trigger('keyup.up')
+      expect((wrapper.vm as any).activePreviewIndex).toBe(4)
+    })
+    describe('without a more results link', () => {
+      async function getActiveSearchIds(wrapper: ReturnType<typeof getMountedWrapper>['wrapper']) {
+        await nextTick()
+        return wrapper.findAll(selectors.activePreview).map((el) => el.attributes('data-search-id'))
+      }
+
+      test('starts with the first preview result', async () => {
+        const { wrapper } = getMountedWrapper({
+          providers: [providerContacts],
+          attachTo: document.body
+        })
+        wrapper.find(selectors.searchInput).setValue('albert')
+        await flushPromises()
+        await wrapper.find(selectors.searchInput).trigger('keyup.down')
+        expect(await getActiveSearchIds(wrapper)).toEqual(['c1'])
+      })
+      test('keeps a preview result selected when wrapping around', async () => {
+        const { wrapper } = getMountedWrapper({
+          providers: [providerContacts],
+          attachTo: document.body
+        })
+        wrapper.find(selectors.searchInput).setValue('albert')
+        await flushPromises()
+        await wrapper.find(selectors.searchInput).trigger('keyup.down')
+        await wrapper.find(selectors.searchInput).trigger('keyup.up')
+        expect(await getActiveSearchIds(wrapper)).toEqual(['c1'])
+        await wrapper.find(selectors.searchInput).trigger('keyup.down')
+        await wrapper.find(selectors.searchInput).trigger('keyup.down')
+        expect(await getActiveSearchIds(wrapper)).toEqual(['c1'])
+      })
+    })
   })
   describe('results announcement', () => {
     afterEach(() => {
