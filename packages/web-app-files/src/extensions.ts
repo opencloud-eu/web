@@ -1,6 +1,7 @@
 import {
   ApplicationInformation,
   Extension,
+  CustomComponentExtension,
   FloatingActionButtonExtension,
   isLocationCommonActive,
   isLocationGuestActive,
@@ -30,6 +31,8 @@ import { useSpaceActionsCreate } from './composables/actions/spaces/useSpaceActi
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import CreateOrUploadMenu from './components/CreateOrUploadMenu.vue'
+import DefaultSpaceHeader from './components/Spaces/DefaultSpaceHeader.vue'
+import { genericSpaceHeaderExtensionPoint } from './extensionPoints'
 import { APPID } from './appid'
 
 export const extensions = (appInfo: ApplicationInformation) => {
@@ -68,6 +71,12 @@ export const extensions = (appInfo: ApplicationInformation) => {
     ...folderViewExtensions,
     ...sideBarPanelExtensions,
     vaultIndicator,
+    {
+      id: 'com.github.opencloud-eu.web.files.default-space-header',
+      extensionPointIds: [genericSpaceHeaderExtensionPoint.id],
+      type: 'customComponent',
+      content: markRaw(DefaultSpaceHeader)
+    } as CustomComponentExtension,
     {
       id: 'com.github.opencloud-eu.web.files.search',
       extensionPointIds: ['app.search.provider'],
