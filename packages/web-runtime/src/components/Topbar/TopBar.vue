@@ -25,6 +25,7 @@
       <template v-if="!isEmbedModeEnabled">
         <custom-component-target :extension-point="topBarRightExtensionPoint" />
         <feedback-link v-if="isFeedbackLinkEnabled" v-bind="feedbackLinkOptions" />
+        <universal-access-dropdown v-if="isUniversalAccessEnabled" />
         <notifications v-if="isNotificationBellEnabled" />
         <side-bar-toggle
           v-if="isSideBarToggleVisible"
@@ -49,6 +50,7 @@ import UserMenu from './UserMenu.vue'
 import Notifications from './Notifications.vue'
 import FeedbackLink from './FeedbackLink.vue'
 import SideBarToggle from './SideBarToggle.vue'
+import UniversalAccessDropdown from './UniversalAccessDropdown.vue'
 import {
   CustomComponentTarget,
   createLocationGuest,
@@ -158,6 +160,9 @@ const logoWithVersion = computed(() => {
 const logoMobileWithVersion = computed(() => {
   const logo = unref(currentTheme).logoMobile || unref(currentTheme).logo
   return addVersionToAssetUrl(logo)
+})
+const isUniversalAccessEnabled = computed(() => {
+  return !!(unref(currentTheme).urls?.easyLanguage || unref(currentTheme).urls?.signLanguage)
 })
 </script>
 <style scoped>

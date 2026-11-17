@@ -2,7 +2,8 @@ import { Capabilities } from '@opencloud-eu/web-client/ocs'
 import {
   ApplicationInformation,
   AppMenuItemExtension,
-  useExtensionRegistry
+  useExtensionRegistry,
+  WebThemeType
 } from '@opencloud-eu/web-pkg'
 import { mock } from 'vitest-mock-extended'
 import { computed } from 'vue'
@@ -100,6 +101,19 @@ describe('Top Bar component', () => {
       expect(wrapper.find('notifications-stub').exists()).toBeFalsy()
     })
   })
+  describe('universal access dropdown', () => {
+    it.each([
+      { easyLanguage: 'https://easy-language.url' },
+      { signLanguage: 'https://sign-language.url' }
+    ])('shows if a url is set (%o)', (urls) => {
+      const { wrapper } = getWrapper({ themeUrls: urls })
+      expect(wrapper.find('universal-access-dropdown-stub').exists()).toBeTruthy()
+    })
+    it('hides if no url is set', () => {
+      const { wrapper } = getWrapper({ themeUrls: {} })
+      expect(wrapper.find('universal-access-dropdown-stub').exists()).toBeFalsy()
+    })
+  })
   it.each(['applications-menu', 'feedback-link', 'notifications', 'user-menu'])(
     'should hide %s when mode is "embed"',
     (componentName) => {
@@ -150,13 +164,15 @@ const getWrapper = ({
   userContextReady = true,
   guestContextReady = false,
   hideLogo = false,
-  currentRoute = mock<RouteLocationNormalizedLoaded>({ name: '', path: '', matched: [] })
+  currentRoute = mock<RouteLocationNormalizedLoaded>({ name: '', path: '', matched: [] }),
+  themeUrls
 }: {
   capabilities?: Partial<Capabilities['capabilities']>
   userContextReady?: boolean
   guestContextReady?: boolean
   hideLogo?: boolean
   currentRoute?: RouteLocationNormalizedLoaded
+  themeUrls?: WebThemeType['urls']
 } = {}) => {
   const mocks = { ...defaultComponentMocks({ currentRoute }) }
 
@@ -164,7 +180,8 @@ const getWrapper = ({
     piniaOptions: {
       authState: { userContextReady, guestContextReady },
       capabilityState: { capabilities },
-      configState: { options: { disableFeedbackLink: false, hideLogo } }
+      configState: { options: { disableFeedbackLink: false, hideLogo } },
+      ...(themeUrls && { themeState: { currentTheme: { urls: themeUrls } as WebThemeType } })
     }
   })
 
