@@ -58,7 +58,7 @@ export function useAppFileHandling({
         { responseType: 'arraybuffer', signal: options?.signal }
       )
       const blob = new Blob([response.body as ArrayBuffer], {
-        type: resource.mimeType || 'application/octet-stream'
+        type: options?.mimeType || resource.mimeType || 'application/octet-stream'
       })
       return URL.createObjectURL(blob)
     }

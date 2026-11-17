@@ -88,6 +88,7 @@ import {
   useFileActions
 } from '../../composables'
 import { AppWrapperSlotHandlers, AppWrapperSlotProps, YjsOptions } from './types'
+import { isResourceSupportedByFileExtension } from '../../apps'
 import { useAppWrapperYjs } from './useAppWrapperYjs'
 import {
   Resource,
@@ -447,6 +448,24 @@ const addMissingDriveAliasAndItem = async () => {
   })
 }
 
+function isPublicLinkRoot(resource: Resource) {
+  return isPublicSpaceResource(unref(space)) && resource.isFolder && resource.path === '/'
+}
+
+function isResourceSupportedByApp(resource: Resource) {
+  return appsStore.fileExtensions.some((fileExtension) => {
+    if (fileExtension.app !== applicationId) {
+      return false
+    }
+    // The root of a public folder link is named after the link token, so its extension is unknown.
+    // Folder contents are never embedded, so the folder registration is enough.
+    if (isPublicLinkRoot(resource)) {
+      return fileExtension.type === 'folder' && fileExtension.canOpen?.(resource) !== false
+    }
+    return isResourceSupportedByFileExtension(resource, fileExtension)
+  })
+}
+
 const loadResourceTask = useTask(function* (signal) {
   try {
     if (!unref(driveAliasAndItem)) {
@@ -470,6 +489,13 @@ const loadResourceTask = useTask(function* (signal) {
       Object.assign(currentSpace, { fileId, publicLinkPermission })
     }
     const fileInfo = yield getFileInfo(unref(currentFileContext), { signal })
+    // The route accepts any path, but apps may embed the file contents (e.g. as blob URL),
+    // which is only safe for the types they registered.
+    if (!isResourceSupportedByApp(fileInfo)) {
+      throw new Error(
+        $gettext('"%{fileName}" can\'t be opened with this app.', { fileName: fileInfo.name })
+      )
+    }
     resource.value = fileInfo
 
     if (isShareSpaceResource(unref(space))) {

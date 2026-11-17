@@ -22,6 +22,7 @@ export const GetFileUrlFactory = (
         version = null,
         username = '',
         signUrl = true,
+        mimeType,
         ...opts
       }: {
         disposition?: 'inline' | 'attachment'
@@ -29,6 +30,12 @@ export const GetFileUrlFactory = (
         username?: string
         // disable for clients authenticated via cookie, e.g. guests
         signUrl?: boolean
+        /**
+         * Type of the inline blob, overriding the one the server sends. Set it when the URL gets
+         * embedded, so the browser can't render the file as a different type (e.g. HTML).
+         * Only applies with `disposition: 'inline'`.
+         */
+        mimeType?: string
       } & DAVRequestOptions
     ): Promise<string> {
       // FIXME: re-introduce query parameters
@@ -45,7 +52,8 @@ export const GetFileUrlFactory = (
           responseType: 'blob',
           ...opts
         })
-        return URL.createObjectURL(response.body)
+        const blob: Blob = response.body
+        return URL.createObjectURL(mimeType ? new Blob([blob], { type: mimeType }) : blob)
       }
 
       if (version) {
