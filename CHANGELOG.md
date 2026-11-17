@@ -1,10 +1,14 @@
 # Changelog
 
-## [8.2.4](https://github.com/opencloud-eu/web/releases/tag/v8.2.4) - 2026-11-17
+## [8.3.0](https://github.com/opencloud-eu/web/releases/tag/v8.3.0) - 2026-11-17
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen
+@AlexAndBear, @JammingBen
+
+### 📈 Enhancement
+
+- feat: add empty state illustrations to activities and versions panels [[#4481](https://github.com/opencloud-eu/web/pull/4481)]
 
 ### 🐛 Bug Fixes
 
