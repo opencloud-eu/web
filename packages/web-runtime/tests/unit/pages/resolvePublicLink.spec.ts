@@ -89,6 +89,56 @@ describe('resolvePublicLink', () => {
         await flushPromises()
         expect(wrapper.find('input').attributes('error-message')).toBe('Incorrect password')
       })
+      it.each([
+        {
+          name: 'a server error',
+          error: new DavHttpError('', 'ERR_UNKNOWN' as DavErrorCode, undefined, 500)
+        },
+        { name: 'a network error', error: new TypeError('Failed to fetch') }
+      ])('keeps the form and shows an inline error on $name', async ({ error }) => {
+        vi.spyOn(console, 'error').mockImplementation(() => undefined)
+        const { wrapper, mocks } = getWrapper({ passwordRequired: true })
+        await flushPromises()
+        mocks.$clientService.webdav.getFileInfo.mockReset()
+        mocks.$clientService.webdav.getFileInfo.mockRejectedValueOnce(error)
+        ;(wrapper.vm as any).password = 'password'
+        await wrapper.vm.$nextTick()
+
+        await wrapper.find(selectors.submitButton).trigger('submit')
+        await flushPromises()
+
+        expect(wrapper.find(selectors.errorMessage).exists()).toBeFalsy()
+        expect(wrapper.find('form').exists()).toBeTruthy()
+        expect(wrapper.find('input').attributes('error-message')).toBe(
+          'The password could not be verified. Please try again.'
+        )
+        expect(mocks.$router.push).not.toHaveBeenCalled()
+      })
+      it('resolves the link when trying again after a temporary error', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => undefined)
+        const { wrapper, mocks, spaceResource } = getWrapper({ passwordRequired: true })
+        await flushPromises()
+        mocks.$clientService.webdav.getFileInfo.mockReset()
+        mocks.$clientService.webdav.getFileInfo
+          .mockRejectedValueOnce(
+            new DavHttpError('', 'ERR_UNKNOWN' as DavErrorCode, undefined, 503)
+          )
+          .mockResolvedValueOnce(spaceResource)
+        ;(wrapper.vm as any).password = 'password'
+        await wrapper.vm.$nextTick()
+
+        await wrapper.find(selectors.submitButton).trigger('submit')
+        await flushPromises()
+        expect(wrapper.find('input').attributes('error-message')).toBe(
+          'The password could not be verified. Please try again.'
+        )
+
+        await wrapper.find(selectors.submitButton).trigger('submit')
+        await flushPromises()
+
+        expect(wrapper.find('input').attributes('error-message')).toBeUndefined()
+        expect(mocks.$router.push).toHaveBeenCalled()
+      })
     })
   })
   describe('link target', () => {
@@ -297,6 +347,7 @@ function getWrapper({
 
   return {
     mocks,
+    spaceResource,
     wrapper: shallowMount(ResolvePublicLink, {
       global: {
         plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })],
