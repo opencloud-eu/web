@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@flash7777
+@AlexAndBear, @flash7777
+
+### 🐛 Bug Fixes
+
+- fix: disable sidebar toggle on account sub pages [[#4490](https://github.com/opencloud-eu/web/pull/4490)]
 
 ### 📈 Enhancement
 
