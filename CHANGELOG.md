@@ -1,6 +1,14 @@
 # Changelog
 
-## [8.3.1](https://github.com/opencloud-eu/web/releases/tag/v8.3.1) - 2026-11-17
+## [8.4.0](https://github.com/opencloud-eu/web/releases/tag/v8.4.0) - 2026-11-17
+
+### ❤️ Thanks to all contributors! ❤️
+
+@flash7777
+
+### 📈 Enhancement
+
+- feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
 
 ### 📦️ Dependencies
 
