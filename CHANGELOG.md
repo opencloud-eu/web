@@ -6,14 +6,16 @@
 
 @AlexAndBear, @JammingBen
 
+### 🐛 Bug Fixes
+
+- fix: open shortcut targets with noopener [[#4488](https://github.com/opencloud-eu/web/pull/4488)]
+- fix: keep focused filter chip below the sticky app bar [[#4480](https://github.com/opencloud-eu/web/pull/4480)]
+- fix: show existing recipients in share invite search [[#4477](https://github.com/opencloud-eu/web/pull/4477)]
+
 ### 📈 Enhancement
 
 - feat: prefill the space name when creating a space from a selection [[#4508](https://github.com/opencloud-eu/web/pull/4508)]
 - feat: add empty state illustrations to activities and versions panels [[#4481](https://github.com/opencloud-eu/web/pull/4481)]
-
-### 🐛 Bug Fixes
-
-- fix: show existing recipients in share invite search [[#4477](https://github.com/opencloud-eu/web/pull/4477)]
 
 ### 📦️ Dependencies
 
