@@ -13,7 +13,7 @@
       :position-fixed="true"
       :dropdown-should-open="
         ({ open, search }: DropDownShouldOpenOptions) =>
-          open && search.trim().length >= minSearchLength && !searchInProgress
+          open && search.trim().length >= minSearchLength && !searchInProgress && !searchFailed
       "
       @search:input="onSearch"
       @update:model-value="onCollaboratorsChanged"
@@ -70,19 +70,25 @@ const selectedCollaborators = ref<CollaboratorAutoCompleteItem[]>(
   )
 )
 
-const { autocompleteResults, minSearchLength, onSearch, searchInProgress, searchQuery } =
-  useCollaboratorAutocomplete(async (query, signal) => {
-    // guests can't be invited to spaces yet
-    const collaborators = await searchCollaborators(query, { signal })
+const {
+  autocompleteResults,
+  minSearchLength,
+  onSearch,
+  searchFailed,
+  searchInProgress,
+  searchQuery
+} = useCollaboratorAutocomplete('create-space-members-input', async (query, signal) => {
+  // guests can't be invited to spaces yet
+  const collaborators = await searchCollaborators(query, { signal })
 
-    return collaborators.filter(({ id }) => {
-      // the creator becomes the manager of the space anyway
-      if (id === userStore.user.id) {
-        return false
-      }
-      return !unref(selectedCollaborators).some((collaborator) => collaborator.id === id)
-    })
+  return collaborators.filter(({ id }) => {
+    // the creator becomes the manager of the space anyway
+    if (id === userStore.user.id) {
+      return false
+    }
+    return !unref(selectedCollaborators).some((collaborator) => collaborator.id === id)
   })
+})
 
 // The space doesn't exist yet, so its allowed roles can't be read from the
 // server. Space roles are the ones that apply to a drive root.

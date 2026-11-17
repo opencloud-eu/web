@@ -593,18 +593,32 @@ describe('InviteCollaboratorForm', () => {
 
       expect(resultAnnouncements()).toEqual(['1 result'])
     })
-    it('announces the empty list after a failed search', async () => {
+    it('reports a failed search instead of showing or announcing no results', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      const { mocks, input } = getTypingWrapper()
+      const { wrapper, mocks, input } = getTypingWrapper()
       mocks.$clientService.graphAuthenticated.users.listUsers.mockRejectedValueOnce(
-        new Error('search term too short')
+        new Error('search failed')
       )
       await input.setValue('mar')
       await flushPromises()
 
-      expect(resultAnnouncements()).toEqual(['No users or groups found.'])
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to search for users and groups' })
+      )
+      expect(wrapper.text()).not.toContain('No users or groups found.')
+      expect(resultAnnouncements()).toEqual([])
     })
-    it('announces nothing for a failed search after the list got closed', async () => {
+    it.each([
+      {
+        leftBy: 'closing the list',
+        leave: (input: DOMWrapper<HTMLInputElement>) =>
+          input.trigger('keydown', { key: 'Escape', keyCode: 27 })
+      },
+      {
+        leftBy: 'leaving the input',
+        leave: (input: DOMWrapper<HTMLInputElement>) => input.element.blur()
+      }
+    ])('reports nothing for a failed search left by $leftBy', async ({ leave }) => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { mocks, input } = getTypingWrapper()
       let fail: () => void
@@ -612,12 +626,13 @@ describe('InviteCollaboratorForm', () => {
         () => new Promise((_, reject) => (fail = () => reject(new Error('search failed'))))
       )
       await input.setValue('mar')
-      await input.trigger('keydown', { key: 'Escape', keyCode: 27 })
+      await leave(input)
 
       fail()
       await flushPromises()
 
       expect(resultAnnouncements()).toEqual([])
+      expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
     })
     it('announces only the result of the newest query', async () => {
       debounceMode.real = true
