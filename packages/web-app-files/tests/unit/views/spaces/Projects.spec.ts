@@ -7,7 +7,11 @@ import {
   FolderViewExtension,
   ResourceTable,
   FileSideBar,
-  eventBus
+  eventBus,
+  useMessages,
+  useResourcesStore,
+  useSpacesStore,
+  SpacesStore
 } from '@opencloud-eu/web-pkg'
 
 import {
@@ -139,6 +143,46 @@ describe('Projects view', () => {
       expect(resources.map(({ id }) => id)).toEqual(['unrestricted', 'large', 'small'])
     })
   })
+  describe('failed load', () => {
+    beforeEach(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    })
+
+    it('shows an error message and keeps listing the known spaces', async () => {
+      const error = new Error('Request failed with status code 500')
+      getMountedWrapper({
+        spaces: spacesResources,
+        reloadProjectSpaces: () => Promise.reject(error)
+      })
+      await flushPromises()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith({
+        title: 'Failed to load spaces',
+        errors: [error]
+      })
+      const { initResourceList } = useResourcesStore()
+      expect(initResourceList).toHaveBeenCalledWith({
+        currentFolder: null,
+        resources: spacesResources
+      })
+    })
+    it('stays silent when leaving the view cancels the load', async () => {
+      const { wrapper } = getMountedWrapper({
+        spaces: spacesResources,
+        reloadProjectSpaces: ({ signal }) =>
+          new Promise((_, reject) => {
+            signal.addEventListener('abort', () =>
+              reject(new DOMException('The operation was aborted.', 'AbortError'))
+            )
+          })
+      })
+      await flushPromises()
+      wrapper.unmount()
+      await flushPromises()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).not.toHaveBeenCalled()
+    })
+  })
   it('switches only once to the page of a space that is on another page', async () => {
     const spaces = Array.from({ length: 130 }, (_, i) => {
       const id = String(i + 1).padStart(3, '0')
@@ -187,7 +231,8 @@ function getMountedWrapper({
   stubAppBar = true,
   includeDisabled = false,
   query,
-  store = {}
+  store = {},
+  reloadProjectSpaces
 }: {
   mocks?: Record<string, unknown>
   spaces?: SpaceResource[]
@@ -196,6 +241,7 @@ function getMountedWrapper({
   includeDisabled?: boolean
   query?: Record<string, string>
   store?: PiniaMockOptions
+  reloadProjectSpaces?: SpacesStore['reloadProjectSpaces']
 } = {}) {
   const plugins = defaultPlugins({
     abilities,
@@ -205,6 +251,10 @@ function getMountedWrapper({
       ...store
     }
   })
+
+  if (reloadProjectSpaces) {
+    vi.mocked(useSpacesStore().reloadProjectSpaces).mockImplementation(reloadProjectSpaces)
+  }
 
   vi.mocked(queryItemAsString).mockImplementation(() => includeDisabled.toString())
   vi.mocked(queryItemAsString).mockImplementation(() => 'resource-table')
