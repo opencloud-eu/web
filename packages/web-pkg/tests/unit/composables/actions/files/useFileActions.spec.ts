@@ -33,6 +33,21 @@ describe('fileActions', () => {
         }
       })
     })
+    it('should not show editors for a folder named like a file', () => {
+      getWrapper({
+        setup: ({ editorActions }) => {
+          const folder = mock<Resource>({
+            id: '1',
+            canDownload: () => true,
+            mimeType: 'httpd/unix-directory',
+            extension: 'txt',
+            isFolder: true
+          })
+          const actions = unref(editorActions)
+          expect(actions.some((a) => a.isVisible({ resources: [folder], space: null }))).toBe(false)
+        }
+      })
+    })
   })
   describe('secure view context', () => {
     describe('computed property "editorActions"', () => {
@@ -43,7 +58,8 @@ describe('fileActions', () => {
               id: '1',
               canDownload: () => false,
               mimeType: 'text/txt',
-              extension: 'txt'
+              extension: 'txt',
+              isFolder: false
             })
             const actions = unref(editorActions)
             expect(actions.length).toEqual(2)
