@@ -1,5 +1,54 @@
 # Changelog
 
+## [8.2.3](https://github.com/opencloud-eu/web/releases/tag/v8.2.3) - 2026-11-17
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @kulmann, @v-scharf
+
+### 🔒 Security
+
+- [main] fix: port security fixes from web-internal [[#4502](https://github.com/opencloud-eu/web/pull/4502)]
+
+### 🐛 Bug Fixes
+
+- fix: disable create space from selection when exceeding default quota [[#4475](https://github.com/opencloud-eu/web/pull/4475)]
+- fix: remove ocnote from 'New'-menu, re-add txt [[#4474](https://github.com/opencloud-eu/web/pull/4474)]
+- fix: keep the final newline of markdown files on save [[#4220](https://github.com/opencloud-eu/web/pull/4220)]
+- fix: cancel modals, forms, search inputs and apps with escape [[#4458](https://github.com/opencloud-eu/web/pull/4458)]
+- fix: prevent nested vaults and copy/move into received vault shares [[#4460](https://github.com/opencloud-eu/web/pull/4460)]
+- fix: keep shared with me items that are still shared through another share [[#4339](https://github.com/opencloud-eu/web/pull/4339)]
+- fix: align the critical tag with the version check line [[#4457](https://github.com/opencloud-eu/web/pull/4457)]
+- fix: keep upload inputs working after a failed upload [[#4260](https://github.com/opencloud-eu/web/pull/4260)]
+- fix: confirm forms and modals with enter [[#4449](https://github.com/opencloud-eu/web/pull/4449)]
+- fix: count only the current tab and matching items in share view footers [[#4447](https://github.com/opencloud-eu/web/pull/4447)]
+- fix: reload the folder after a silent token renewal [[#4419](https://github.com/opencloud-eu/web/pull/4419)]
+- fix: use space id for vault indicator unlock state [[#4448](https://github.com/opencloud-eu/web/pull/4448)]
+- fix: don't reopen the notifications stream without a token on logout [[#4420](https://github.com/opencloud-eu/web/pull/4420)]
+- fix: update the open shares panel when another session changes shares [[#4371](https://github.com/opencloud-eu/web/pull/4371)]
+- fix: add logout for guests [[#4416](https://github.com/opencloud-eu/web/pull/4416)]
+- fix: match filter terms literally instead of as fuse operators [[#4437](https://github.com/opencloud-eu/web/pull/4437)]
+- fix: sort tag lists for display [[#4430](https://github.com/opencloud-eu/web/pull/4430)]
+
+### 📦️ Dependencies
+
+- chore(deps): update devdependencies (non-major) [[#4462](https://github.com/opencloud-eu/web/pull/4462)]
+- chore(deps): update node.js to v26 [[#4046](https://github.com/opencloud-eu/web/pull/4046)]
+- chore(deps): update dependency focus-trap to v8.2.5 [[#4473](https://github.com/opencloud-eu/web/pull/4473)]
+- chore(deps): update dependency dompurify to v3.4.18 [[#4472](https://github.com/opencloud-eu/web/pull/4472)]
+- fix(deps): update dependency vue-router to v5.5.1 [[#4468](https://github.com/opencloud-eu/web/pull/4468)]
+- chore(deps): update dependency fast-xml-parser to v5.12.1 [[#4463](https://github.com/opencloud-eu/web/pull/4463)]
+- fix(deps): update dependency @casl/ability to v7.1.3 [[#4466](https://github.com/opencloud-eu/web/pull/4466)]
+- chore(deps): update dependency filesize to v11.0.32 [[#4465](https://github.com/opencloud-eu/web/pull/4465)]
+- chore(deps): update shumc/imagor docker tag to v1.10.4 [[#4464](https://github.com/opencloud-eu/web/pull/4464)]
+- chore(deps): update pnpm to v11.28.12 [[#4469](https://github.com/opencloud-eu/web/pull/4469)]
+- chore(deps): update traefik docker tag to v3.7.19 [[#4470](https://github.com/opencloud-eu/web/pull/4470)]
+- chore(deps): update devdependencies (non-major) [[#4442](https://github.com/opencloud-eu/web/pull/4442)]
+- chore(deps): update dependency filesize to v11.0.31 [[#4456](https://github.com/opencloud-eu/web/pull/4456)]
+- chore(deps): update traefik docker tag to v3.7.18 [[#4444](https://github.com/opencloud-eu/web/pull/4444)]
+- chore(deps): update node.js to v24.22.3 [[#4443](https://github.com/opencloud-eu/web/pull/4443)]
+- [full-ci] chore: bump opencloud for tests to v9.1.0 [[#4438](https://github.com/opencloud-eu/web/pull/4438)]
+
 ## [8.2.2](https://github.com/opencloud-eu/web/releases/tag/v8.2.2) - 2026-11-11
 
 ### ❤️ Thanks to all contributors! ❤️
