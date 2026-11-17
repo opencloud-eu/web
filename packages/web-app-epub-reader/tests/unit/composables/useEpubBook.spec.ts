@@ -99,6 +99,107 @@ describe('useEpubBook', () => {
     expect(iframe.title).toBe('Book content')
   })
 
+  describe('links in the book', () => {
+    async function renderSection(...hrefs: string[]) {
+      const { result } = mountComposable(() => useEpubBook())
+      await result.open('content', { container: document.createElement('div') })
+      const sectionDocument = document.implementation.createHTMLDocument()
+      const links = hrefs.map((href) => {
+        const link = sectionDocument.createElement('a')
+        link.setAttribute('href', href)
+        link.appendChild(sectionDocument.createElement('span'))
+        sectionDocument.body.appendChild(link)
+        return link
+      })
+      const view = { iframe: document.createElement('iframe'), document: sectionDocument }
+      books[0].rendition.emit('rendered', {}, view)
+      return { links, view }
+    }
+
+    function click(element: Element) {
+      return !element.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+    }
+
+    let openSpy: ReturnType<typeof vi.spyOn>
+    beforeEach(() => {
+      openSpy = vi.spyOn(window, 'open').mockReturnValue(null)
+    })
+    afterEach(() => {
+      openSpy.mockRestore()
+    })
+
+    it.each([
+      ['https://opencloud.eu/', 'https://opencloud.eu/'],
+      ['http://example.com/page?q=1#top', 'http://example.com/page?q=1#top'],
+      [' HTTPS://OpenCloud.eu/a b', 'https://opencloud.eu/a%20b']
+    ])(
+      'opens the external link %s in a new tab without access to the reader',
+      async (href, url) => {
+        const { links } = await renderSection(href)
+
+        const prevented = click(links[0].firstElementChild)
+
+        expect(prevented).toBe(true)
+        expect(openSpy).toHaveBeenCalledTimes(1)
+        expect(openSpy).toHaveBeenCalledWith(url, '_blank', 'noopener,noreferrer')
+      }
+    )
+
+    it.each([
+      'javascript:alert(1)',
+      ' JaVaScRiPt:alert(1)',
+      '\tjavascript:alert(1)',
+      '//example.com/page',
+      'data:text/html,<script>alert(1)</script>',
+      'blob:https://example.com/1234',
+      'file:///etc/passwd',
+      'mailto:someone@example.com',
+      'chapter2.xhtml#section'
+    ])('does not open %s', async (href) => {
+      const { links } = await renderSection(href)
+
+      const prevented = click(links[0])
+
+      expect(prevented).toBe(false)
+      expect(openSpy).not.toHaveBeenCalled()
+    })
+
+    it('leaves book-internal links to epub.js', async () => {
+      const { links } = await renderSection('chapter2.xhtml')
+      const onEpubLinkClick = vi.fn(() => false)
+      links[0].onclick = onEpubLinkClick
+
+      click(links[0])
+
+      expect(onEpubLinkClick).toHaveBeenCalled()
+      expect(openSpy).not.toHaveBeenCalled()
+    })
+
+    it('leaves an http(s) link without "://" to epub.js, which handles it as internal', async () => {
+      const { links } = await renderSection('https:opencloud.eu')
+      // epub.js returns false, which browsers turn into preventDefault() but jsdom does not
+      const onEpubLinkClick = vi.fn((event: MouseEvent) => {
+        event.preventDefault()
+        return false
+      })
+      links[0].onclick = onEpubLinkClick
+
+      click(links[0])
+
+      expect(onEpubLinkClick).toHaveBeenCalled()
+      expect(openSpy).not.toHaveBeenCalled()
+    })
+
+    it('opens an external link only once when a section is reported as rendered again', async () => {
+      const { links, view } = await renderSection('https://opencloud.eu/')
+      books[0].rendition.emit('rendered', {}, view)
+
+      click(links[0])
+
+      expect(openSpy).toHaveBeenCalledTimes(1)
+    })
+  })
+
   it('destroys the previous book when another one is opened', async () => {
     const { result } = mountComposable(() => useEpubBook())
     await result.open('one', { container: document.createElement('div') })

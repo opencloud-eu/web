@@ -13,8 +13,8 @@ const RENDERABLE_TYPES = ['application/xhtml+xml', 'text/html']
 
 /** epub.js types don't declare the spine items. */
 type SpineItem = { href?: string; idref?: string; linear?: boolean }
-/** epub.js types don't declare the iframe of a rendered view. */
-type RenderedView = { iframe?: HTMLIFrameElement }
+/** epub.js types don't declare the iframe and document of a rendered view. */
+type RenderedView = { iframe?: HTMLIFrameElement; document?: Document }
 
 /**
  * Owns the epub.js book and its rendition. Everything else in the reader derives from the
@@ -86,6 +86,8 @@ export function useEpubBook() {
     // epub.js renders every section into a new iframe, which needs a name for screen readers
     nextRendition.on('rendered', (_section: unknown, view: RenderedView) => {
       view.iframe?.setAttribute('title', $gettext('Book content'))
+      // the sandboxed frame blocks the new window epub.js wants for external links
+      view.document?.addEventListener('click', openExternalLink)
     })
     rendition.value = nextRendition
 
@@ -157,6 +159,33 @@ function whenReady(currentBook: Book) {
     currentBook.on('openFailed', reject)
     currentBook.ready.then(() => resolve(), reject)
   })
+}
+
+/** Opens absolute http(s) links of the book in a new tab, everything else stays with epub.js. */
+function openExternalLink(event: MouseEvent) {
+  if (event.defaultPrevented) {
+    return
+  }
+  const link = (event.target as Element | null)?.closest?.('a[href]')
+  const url = toExternalUrl(link?.getAttribute('href'))
+  if (!url) {
+    return
+  }
+  event.preventDefault()
+  window.open(url, '_blank', 'noopener,noreferrer')
+}
+
+/** Only absolute URLs, relative ones are book-internal links. */
+function toExternalUrl(href: string | null | undefined) {
+  if (!href) {
+    return undefined
+  }
+  try {
+    const url = new URL(href)
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : undefined
+  } catch {
+    return undefined
+  }
 }
 
 function findFirstRenderableHref(currentBook: Book) {
