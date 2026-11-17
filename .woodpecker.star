@@ -18,7 +18,6 @@ MINIO_MC = "quay.io/opencloudeu/minio-mc-ci:1.0"
 OC_CI_BAZEL_BUILDIFIER = "quay.io/opencloudeu/bazel-buildifier-ci:latest"
 OC_CI_GOLANG = "quay.io/opencloudeu/golang-ci:1.26"
 OC_CI_NODEJS = "quay.io/opencloudeu/nodejs-ci:24"
-OC_CI_NODEJS_ALPINE = "quay.io/opencloudeu/nodejs-alpine-ci:24"
 OC_CI_WAIT_FOR = "quay.io/opencloudeu/wait-for-ci:latest"
 
 # renovate: datasource=docker depName=ghcr.io/euro-office/documentserver
@@ -682,7 +681,7 @@ def unitTests(ctx):
                  [
                      {
                          "name": "unit-tests",
-                         "image": OC_CI_NODEJS_ALPINE,
+                         "image": OC_CI_NODEJS,
                          "commands": [
                              "pnpm test:unit --coverage",
                          ],
@@ -917,7 +916,7 @@ def installBrowsers():
 def typeCheck():
     return [{
         "name": "type-check",
-        "image": OC_CI_NODEJS_ALPINE,
+        "image": OC_CI_NODEJS,
         "commands": [
             "pnpm check:types",
         ],
@@ -926,7 +925,7 @@ def typeCheck():
 def lint():
     return [{
         "name": "lint",
-        "image": OC_CI_NODEJS_ALPINE,
+        "image": OC_CI_NODEJS,
         "commands": [
             "pnpm lint",
         ],
@@ -936,14 +935,14 @@ def formatCheck():
     return [
         {
             "name": "format-check",
-            "image": OC_CI_NODEJS_ALPINE,
+            "image": OC_CI_NODEJS,
             "commands": [
                 "pnpm format:check",
             ],
         },
         {
             "name": "show-diff",
-            "image": OC_CI_NODEJS_ALPINE,
+            "image": OC_CI_NODEJS,
             "commands": [
                 "pnpm format:write",
                 "git diff",
