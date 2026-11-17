@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @v-scharf
+@AlexAndBear, @JammingBen, @kulmann, @v-scharf
+
+### 🔒 Security
+
+- [main] fix: port security fixes from web-internal [[#4502](https://github.com/opencloud-eu/web/pull/4502)]
 
 ### 🐛 Bug Fixes
 
