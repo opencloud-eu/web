@@ -6,7 +6,9 @@
   </div>
   <div v-else-if="isFileNotFound" class="size-full flex flex-col items-center justify-center">
     <oc-icon name="file-damage" size-class="size-12" color="var(--oc-role-error)" />
-    <p>{{ $gettext('Failed to load "%{filename}"', { filename: requestedFileName }) }}</p>
+    <p class="px-4 text-center wrap-anywhere">
+      {{ $gettext('Failed to load "%{filename}"', { filename: requestedFileName }) }}
+    </p>
   </div>
   <div
     v-else
@@ -43,14 +45,18 @@
           class="w-full flex flex-col items-center justify-center"
         >
           <oc-icon name="file-damage" size-class="size-12" color="var(--oc-role-error)" />
-          <p v-if="activeMediaFile.isUnsupported" data-testid="media-unsupported-message">
+          <p
+            v-if="activeMediaFile.isUnsupported"
+            class="px-4 wrap-anywhere"
+            data-testid="media-unsupported-message"
+          >
             {{
               $gettext('"%{filename}" cannot be displayed in this browser', {
                 filename: activeMediaFile.name
               })
             }}
           </p>
-          <p v-else>
+          <p v-else class="px-4 wrap-anywhere">
             {{ $gettext('Failed to load "%{filename}"', { filename: activeMediaFile.name }) }}
           </p>
         </div>
