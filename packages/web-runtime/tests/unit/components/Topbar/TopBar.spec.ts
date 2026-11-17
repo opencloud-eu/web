@@ -59,6 +59,22 @@ describe('Top Bar component', () => {
       expect(wrapper.find('router-link-stub').exists()).toBeFalsy()
     })
   })
+  describe('sidebar toggle', () => {
+    it('is enabled on a files route', () => {
+      const { wrapper } = getWrapper({
+        currentRoute: getRoute({ name: 'files-spaces-generic', parentName: 'files' })
+      })
+      expect(wrapper.find('side-bar-toggle-stub').attributes('disabled')).toBe('false')
+    })
+    it.each([
+      { name: 'account-preferences', parentName: 'account' },
+      { name: 'account-information', parentName: 'account' },
+      { name: 'notFound' }
+    ])('is disabled on the runtime page $name', (route) => {
+      const { wrapper } = getWrapper({ currentRoute: getRoute(route) })
+      expect(wrapper.find('side-bar-toggle-stub').attributes('disabled')).toBe('true')
+    })
+  })
   describe('notifications bell', () => {
     it('should display in authenticated context if announced via capabilities', () => {
       const { wrapper } = getWrapper({
@@ -134,7 +150,7 @@ const getWrapper = ({
   userContextReady = true,
   guestContextReady = false,
   hideLogo = false,
-  currentRoute = undefined
+  currentRoute = mock<RouteLocationNormalizedLoaded>({ name: '', path: '', matched: [] })
 }: {
   capabilities?: Partial<Capabilities['capabilities']>
   userContextReady?: boolean

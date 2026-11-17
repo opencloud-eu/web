@@ -28,7 +28,7 @@
         <notifications v-if="isNotificationBellEnabled" />
         <side-bar-toggle
           v-if="isSideBarToggleVisible"
-          :disabled="isSideBarToggleDisabled"
+          :disabled="isRuntimePageActive"
           class="hidden sm:flex"
         />
         <applications-menu
@@ -125,9 +125,6 @@ const homeLink = computed(() => {
 
 const isSideBarToggleVisible = computed(() => {
   return authStore.userContextReady || authStore.publicLinkContextReady || authStore.isGuestContext
-})
-const isSideBarToggleDisabled = computed(() => {
-  return isRuntimeRoute(unref(router.currentRoute))
 })
 
 const sidebarLogoAlt = computed(() => {
