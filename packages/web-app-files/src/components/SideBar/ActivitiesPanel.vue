@@ -1,7 +1,11 @@
 <template>
   <oc-loader v-if="isLoading" />
   <template v-else>
-    <p v-if="!activities.length" v-text="$gettext('No activities')" />
+    <side-bar-no-selection
+      v-if="!activities.length"
+      img-src="images/illustrations/activities.svg"
+      :message="$gettext('No activities')"
+    />
     <div v-else class="ml-2">
       <oc-list class="oc-timeline wrap-anywhere">
         <li v-for="activity in activities" :key="activity.id">
@@ -48,6 +52,7 @@ import {
   useClientService,
   useExtensionRegistry,
   useGetMatchingSpace,
+  SideBarNoSelection,
   UserAvatar
 } from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
