@@ -4,15 +4,16 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @flash7777
+@AlexAndBear, @flash7777, @xhzeem
+
+### 📈 Enhancement
+
+- feat: add right-to-left layout support [[#3540](https://github.com/opencloud-eu/web/pull/3540)]
+- feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
 
 ### 🐛 Bug Fixes
 
 - fix: disable sidebar toggle on account sub pages [[#4490](https://github.com/opencloud-eu/web/pull/4490)]
-
-### 📈 Enhancement
-
-- feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
 
 ### 📦️ Dependencies
 
