@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: report a failed people search instead of showing no results [[#4532](https://github.com/opencloud-eu/web/pull/4532)]
 - fix: keep public link password form after a temporary error [[#4533](https://github.com/opencloud-eu/web/pull/4533)]
 - fix: ignore arrow keys in the search preview while it is loading or empty [[#4501](https://github.com/opencloud-eu/web/pull/4501)]
 - fix: don't confirm modals on Enter while the confirm button is disabled [[#4507](https://github.com/opencloud-eu/web/pull/4507)]
