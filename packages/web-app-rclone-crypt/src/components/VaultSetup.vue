@@ -15,7 +15,7 @@
               )
             "
           />
-          <oc-contextual-helper class="pl-1 align-middle" v-bind="passphraseHelper" />
+          <oc-contextual-helper class="ps-1 align-middle" v-bind="passphraseHelper" />
         </p>
       </div>
     </div>

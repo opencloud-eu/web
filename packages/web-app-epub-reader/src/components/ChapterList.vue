@@ -23,7 +23,7 @@
         }"
       >
         <oc-button
-          class="max-w-full justify-start py-1.5 pl-[calc(0.5rem+var(--depth)*0.75rem)] pr-2"
+          class="max-w-full justify-start py-1.5 ps-[calc(0.5rem+var(--depth)*0.75rem)] pe-2"
           :class="{
             'font-semibold': currentChapter?.id === chapter.id
           }"
@@ -33,7 +33,7 @@
           no-hover
           @click="onChapterClick(chapter)"
         >
-          <span v-oc-tooltip="chapter.label" class="truncate mr-2" v-text="chapter.label" />
+          <span v-oc-tooltip="chapter.label" class="truncate me-2" v-text="chapter.label" />
         </oc-button>
       </li>
       <li

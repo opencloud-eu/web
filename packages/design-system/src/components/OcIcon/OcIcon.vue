@@ -8,7 +8,7 @@
       'align-baseline',
       '[&_svg]:block',
       tailwindSize,
-      { 'bg-transparent min-h-0': type === 'button' }
+      { 'bg-transparent min-h-0': type === 'button', 'rtl:-scale-x-100': isDirectional }
     ]"
   >
     <img
@@ -124,6 +124,10 @@ const {
 
 const emit = defineEmits<Emits>()
 
+// icons that point in the reading direction and need to be mirrored in right-to-left layouts
+const directionalIcons =
+  /^(arrow-(left|right)|arrow-drop-(left|right)|arrow-go-(back|forward)|share-forward|reply|logout-box|login-box)/
+
 const svgTitleId = computed(() => uniqueId('oc-icon-title-'))
 
 const isDark = inject<MaybeRefOrGetter<boolean>>(iconIsDarkInjectionKey, false)
@@ -155,6 +159,8 @@ const namedIcon = computed(() => {
     color: icon?.color ?? color
   }
 })
+
+const isDirectional = computed(() => directionalIcons.test(unref(namedIcon).name ?? ''))
 
 const nameWithFillType = computed(() => {
   const prefix = getIconUrlPrefix()

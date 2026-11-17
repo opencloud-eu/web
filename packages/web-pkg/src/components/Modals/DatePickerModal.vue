@@ -18,7 +18,7 @@
   <teleport defer :to="`#${modalActionsTarget(modal)}`">
     <oc-button
       :disabled="confirmDisabled"
-      class="oc-modal-body-actions-confirm ml-2"
+      class="oc-modal-body-actions-confirm ms-2"
       appearance="filled"
       @click="$emit('confirm', dateTime)"
     >

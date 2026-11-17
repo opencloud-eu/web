@@ -33,7 +33,7 @@
       </template>
     </oc-select>
     <role-dropdown
-      class="mt-2 ml-1"
+      class="mt-2 ms-1"
       mode="create"
       :existing-share-role="selectedRole"
       @option-change="onRoleChanged"

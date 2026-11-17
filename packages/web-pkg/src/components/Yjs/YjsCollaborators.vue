@@ -37,7 +37,7 @@
             />
             <span
               v-if="item.userId === followedUser?.id"
-              class="yjs-collaborator-follow-badge absolute -right-1.5 -bottom-1.5 inline-flex size-4 items-center justify-center rounded-full border-2 border-role-surface"
+              class="yjs-collaborator-follow-badge absolute -inset-e-1.5 -bottom-1.5 inline-flex size-4 items-center justify-center rounded-full border-2 border-role-surface"
               :style="{ backgroundColor: followedUser.color }"
             >
               <oc-icon name="focus-mode" fill-type="none" size="xsmall" color="#ffffff" />

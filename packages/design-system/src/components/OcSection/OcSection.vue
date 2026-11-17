@@ -15,7 +15,7 @@
             size-class="size-5"
             color="var(--oc-role-on-surface)"
           />
-          <span class="flex flex-col items-start text-left">
+          <span class="flex flex-col items-start text-start">
             <span class="oc-section-title font-semibold text-role-on-surface" v-text="title" />
             <span
               v-if="subtitle"
@@ -37,7 +37,7 @@
       v-if="!expandable || expanded"
       :id="contentId"
       class="oc-section-content flex flex-col gap-4 pt-4"
-      :class="{ 'pl-9': icon }"
+      :class="{ 'ps-9': icon }"
     >
       <slot />
     </div>

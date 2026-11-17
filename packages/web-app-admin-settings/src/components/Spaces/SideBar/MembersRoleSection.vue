@@ -10,7 +10,7 @@
         v-if="m.grantedToV2.user"
         :user-id="m.grantedToV2.user.id"
         :user-name="getDisplayName(m)"
-        class="mr-2"
+        class="me-2"
       />
       <oc-avatar-item
         v-else
@@ -18,7 +18,7 @@
         icon-size="medium"
         :icon="ShareTypes.group.icon"
         name="group"
-        class="mr-2"
+        class="me-2"
       />
       <span class="truncate" :title="getDisplayName(m)">
         <oc-filter-highlight :text="getDisplayName(m)" :term="term" />

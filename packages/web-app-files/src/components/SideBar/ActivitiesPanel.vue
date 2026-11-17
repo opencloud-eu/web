@@ -6,7 +6,7 @@
       img-src="images/illustrations/activities.svg"
       :message="$gettext('No activities')"
     />
-    <div v-else class="ml-2">
+    <div v-else class="ms-2">
       <oc-list class="oc-timeline wrap-anywhere">
         <li v-for="activity in activities" :key="activity.id">
           <span
@@ -16,7 +16,7 @@
           <div class="flex items-start mt-1">
             <oc-avatars
               :items="getAvatarsFromActivity(activity)"
-              class="mr-1 inline-flex h-lh shrink-0 items-center"
+              class="me-1 inline-flex h-lh shrink-0 items-center"
               stacked
               gap-size="small"
               :width="16.8"
@@ -32,7 +32,12 @@
                 />
               </template>
             </oc-avatars>
-            <span class="text-role-on-surface-variant" v-html="getHtmlFromActivity(activity)" />
+            <!-- activity texts come from the server in their own language -->
+            <span
+              class="text-role-on-surface-variant"
+              dir="auto"
+              v-html="getHtmlFromActivity(activity)"
+            />
           </div>
         </li>
       </oc-list>

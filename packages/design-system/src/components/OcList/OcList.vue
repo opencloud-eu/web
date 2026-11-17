@@ -39,11 +39,11 @@ defineSlots<Slots>()
     @apply mt-2 pt-2 border-t;
   }
   ul.oc-list.oc-timeline li {
-    @apply py-2 pl-4 flex flex-col before:rounded-[50%] w-full relative;
+    @apply py-2 ps-4 flex flex-col before:rounded-[50%] w-full relative;
   }
   ul.oc-list.oc-timeline li:before {
     @apply absolute;
-    left: -4px;
+    inset-inline-start: -4px;
     /* align the dot with the first line of the item (li padding + half a line) */
     top: calc(var(--spacing) * 2 + 0.5lh);
   }

@@ -47,7 +47,7 @@
       <div class="flex justify-center items-center">
         <oc-spinner
           v-if="isResourceInDeleteQueue(item.id)"
-          class="inline-flex ml-1"
+          class="inline-flex ms-1"
           size="medium"
           :aria-label="$gettext('File is being processed')"
         />
@@ -101,7 +101,7 @@
               v-for="action in getResourceTableActions(item)"
               :key="`resource-table-action-${item.id}-${action.name}`"
               v-oc-tooltip="getResourceTableLabel(action, item)"
-              class="resource-table-edit-name inline-flex shrink-0 raw-hover-surface p-1 -my-1 ml-1"
+              class="resource-table-edit-name inline-flex shrink-0 raw-hover-surface p-1 -my-1 ms-1"
               appearance="raw"
               :aria-label="getResourceTableLabel(action, item)"
               @click.stop="
@@ -127,7 +127,7 @@
         </resource-list-item>
       </div>
       <!-- aligned with the name, next to the icon -->
-      <div v-if="$slots.additionalResourceContent" :class="{ 'pl-8': !$slots['image'] }">
+      <div v-if="$slots.additionalResourceContent" :class="{ 'ps-8': !$slots['image'] }">
         <slot name="additionalResourceContent" :resource="item" />
       </div>
     </template>
@@ -144,7 +144,7 @@
         v-oc-tooltip="getTagToolTip(tag)"
         :type="userContextReady ? 'router-link' : 'span'"
         v-bind="getTagComponentAttrs(tag)"
-        class="resource-table-tag-wrapper resource-table-tag ml-1 max-w-20"
+        class="resource-table-tag-wrapper resource-table-tag ms-1 max-w-20"
         :rounded="true"
         size="small"
       >

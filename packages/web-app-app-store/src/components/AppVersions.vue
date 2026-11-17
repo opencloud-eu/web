@@ -31,7 +31,7 @@
             v-text="'-'"
           />
         </span>
-        <span class="flex items-center gap-2 ml-auto">
+        <span class="flex items-center gap-2 ms-auto">
           <span
             v-if="getVersionRange(version)"
             class="app-version-opencloud-range text-sm text-role-on-surface-variant"

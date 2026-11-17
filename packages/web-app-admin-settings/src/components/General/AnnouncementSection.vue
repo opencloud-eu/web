@@ -63,7 +63,7 @@
           "
         />
       </oc-switch>
-      <div class="flex items-center gap-2 ml-auto">
+      <div class="flex items-center gap-2 ms-auto">
         <oc-button appearance="outline" :disabled="!canPreview || isBusy" @click="preview">
           {{ $gettext('Preview') }}
         </oc-button>
