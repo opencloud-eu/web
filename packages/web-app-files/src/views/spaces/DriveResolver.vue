@@ -76,11 +76,11 @@ const resolveToInternalLocation = async (path: string) => {
     space.value = internalSpace
     item.value = resource.type !== 'folder' ? dirname(path) : path
 
-    return router.push(getLinkTargetRoute({ space: internalSpace, resource, path }))
+    return router.replace(getLinkTargetRoute({ space: internalSpace, resource, path }))
   }
 
   // no internal space found -> share -> resolve via private link as it holds all the necessary logic
-  return router.push({
+  return router.replace({
     name: 'resolvePrivateLink',
     params: { fileId: unref(fileId) }
   })
@@ -143,7 +143,7 @@ onMounted(async () => {
 
       // FIXME: check for type when server sends public-link-permission dav property
       if (publicSpace.publicLinkPermission === SharePermissionBit.Create) {
-        router.push({
+        router.replace({
           name: locationPublicUpload.name,
           params: { token: unref(space).id.toString() }
         })

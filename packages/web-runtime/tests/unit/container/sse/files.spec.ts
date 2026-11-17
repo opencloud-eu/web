@@ -204,7 +204,8 @@ describe('file events', () => {
       expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'renamed' })
       )
-      expect(mocks.router.push).toHaveBeenCalled()
+      expect(mocks.router.replace).toHaveBeenCalled()
+      expect(mocks.router.push).not.toHaveBeenCalled()
     })
     it('does not add a resource restored outside of the current folder', async () => {
       const mocks = getShareMocks()
@@ -334,14 +335,22 @@ describe('file events', () => {
       expect(mocks.resourcesStore.setCurrentFolder).not.toHaveBeenCalled()
     })
     it.each(['files-spaces-generic', 'files-public-link', 'files-guest-link'])(
-      'calls "setCurrentFolder" and updates the "%s" route when resource is current folder and has been renamed',
+      'calls "setCurrentFolder" and replaces the "%s" route when resource is current folder and has been renamed',
       async (currentRouteName) => {
         const resourceToRename = mock<Resource>({
           id: 'currenFolder!currentFolder',
+          fileId: 'currenFolder!currentFolder',
           storageId: 'space1',
           parentFolderId: 'space1'
         })
-        const mocks = getMocks({ resources: [resourceToRename], currentRouteName })
+        const mocks = getMocks({
+          resources: [resourceToRename],
+          currentRoute: mock<RouteLocation>({
+            name: currentRouteName,
+            // a stale file id shows that the values of the new route win over the current query
+            query: { fileId: 'currenFolder!stale', 'sort-by': 'name', details: 'sharing' }
+          })
+        })
         mocks.clientService.webdav.getFileInfo.mockResolvedValue(
           mock<Resource>({ ...resourceToRename, name: 'folder2', parentFolderId: 'space1' })
         )
@@ -353,9 +362,13 @@ describe('file events', () => {
         await onSSEItemRenamedEvent({ sseData, ...mocks })
         expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
         expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalled()
-        expect(mocks.router.push).toHaveBeenCalledWith(
-          expect.objectContaining({ name: currentRouteName })
+        expect(mocks.router.replace).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: currentRouteName,
+            query: { fileId: 'currenFolder!currentFolder', 'sort-by': 'name', details: 'sharing' }
+          })
         )
+        expect(mocks.router.push).not.toHaveBeenCalled()
         expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
       }
     )
@@ -445,6 +458,7 @@ describe('file events', () => {
       expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.setCurrentFolder).not.toHaveBeenCalled()
       expect(mocks.router.push).not.toHaveBeenCalled()
+      expect(mocks.router.replace).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
     })
   })

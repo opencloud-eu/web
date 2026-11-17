@@ -3,7 +3,13 @@ import { defaultPlugins, defaultComponentMocks, shallowMount } from '@opencloud-
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { CapabilityStore, ClientService, useRouteParam, useRouteQuery } from '@opencloud-eu/web-pkg'
-import { DavHttpError, PublicSpaceResource, Resource, urlJoin } from '@opencloud-eu/web-client'
+import {
+  DavHttpError,
+  PublicSpaceResource,
+  Resource,
+  SharePermissionBit,
+  urlJoin
+} from '@opencloud-eu/web-client'
 import { authService } from '../../../src/services/auth'
 import { defineComponent, ref, unref, useTemplateRef } from 'vue'
 import { DavErrorCode } from '@opencloud-eu/web-client/webdav'
@@ -86,6 +92,7 @@ describe('resolvePublicLink', () => {
 
         await expect((wrapper.vm as any).submitPassword()).resolves.toBeUndefined()
         expect(mocks.$router.push).not.toHaveBeenCalled()
+        expect(mocks.$router.replace).not.toHaveBeenCalled()
         await flushPromises()
         expect(wrapper.find('input').attributes('error-message')).toBe('Incorrect password')
       })
@@ -96,7 +103,7 @@ describe('resolvePublicLink', () => {
       const { mocks } = getWrapper({ redirectUrl: '' })
       await flushPromises()
 
-      expect(mocks.$router.push).toHaveBeenCalledWith(
+      expect(mocks.$router.replace).toHaveBeenCalledWith(
         expect.objectContaining({
           name: 'files-public-link',
           params: expect.objectContaining({ driveAliasAndItem: 'public/token' })
@@ -124,7 +131,7 @@ describe('resolvePublicLink', () => {
       await flushPromises()
 
       expect(mocks.$clientService.webdav.listFiles).toHaveBeenCalled()
-      expect(mocks.$router.push).toHaveBeenCalledWith(
+      expect(mocks.$router.replace).toHaveBeenCalledWith(
         expect.objectContaining({
           name: 'files-public-link',
           query: expect.objectContaining({ scrollTo: 'file-id' })
@@ -148,7 +155,7 @@ describe('resolvePublicLink', () => {
           { path: 'sub' },
           expect.anything()
         )
-        expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
           expect.objectContaining({
             name: 'files-public-link',
             params: expect.objectContaining({ driveAliasAndItem: 'public/token/sub' }),
@@ -170,7 +177,7 @@ describe('resolvePublicLink', () => {
         const { mocks } = getWrapper({ redirectUrl: '', item: 'sub/file.txt', itemResource: file })
         await flushPromises()
 
-        expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
           expect.objectContaining({
             name: 'files-public-link',
             params: expect.objectContaining({ driveAliasAndItem: 'public/token/sub' }),
@@ -183,7 +190,7 @@ describe('resolvePublicLink', () => {
         const { mocks } = getWrapper({ redirectUrl: '', item: 'missing', itemResource: 404 })
         await flushPromises()
 
-        expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
           expect.objectContaining({
             name: 'files-public-link',
             params: expect.objectContaining({ driveAliasAndItem: 'public/token/missing' }),
@@ -191,6 +198,44 @@ describe('resolvePublicLink', () => {
           })
         )
       })
+    })
+  })
+  describe('leaving the resolver', () => {
+    it('replaces the history entry with the redirect url', async () => {
+      const { mocks } = getWrapper({ redirectUrl: '/files/link/public/token?fileId=folder-id' })
+      await flushPromises()
+
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
+        path: '/files/link/public/token',
+        query: { fileId: 'folder-id' }
+      })
+      expect(mocks.$router.push).not.toHaveBeenCalled()
+    })
+    it('replaces the history entry with the upload page for a file drop link', async () => {
+      const { mocks } = getWrapper({
+        redirectUrl: '',
+        publicLinkPermission: SharePermissionBit.Create
+      })
+      await flushPromises()
+
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
+        name: 'files-public-upload',
+        params: { token: 'token' },
+        query: { fileId: 'token' }
+      })
+      expect(mocks.$router.push).not.toHaveBeenCalled()
+    })
+    it('replaces the history entry with the link target after entering the password', async () => {
+      const { wrapper, mocks } = getWrapper({ passwordRequired: true, redirectUrl: '' })
+      await flushPromises()
+      ;(wrapper.vm as any).password = 'password'
+      await (wrapper.vm as any).submitPassword()
+      await flushPromises()
+
+      expect(mocks.$router.replace).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'files-public-link' })
+      )
+      expect(mocks.$router.push).not.toHaveBeenCalled()
     })
   })
   describe('error message', () => {
@@ -226,7 +271,8 @@ function getWrapper({
   spaceFileId = 'folder-id',
   children = [],
   item = undefined,
-  itemResource = undefined
+  itemResource = undefined,
+  publicLinkPermission = undefined
 }: {
   passwordRequired?: boolean
   getFileInfoErrorStatusCode?: number
@@ -236,6 +282,7 @@ function getWrapper({
   item?: string
   // the resource at `item`, or the status code fetching it fails with
   itemResource?: Resource | number
+  publicLinkPermission?: number
 } = {}) {
   const $clientService = mockDeep<ClientService>()
   const spaceResource = mockDeep<PublicSpaceResource>({
@@ -244,6 +291,7 @@ function getWrapper({
     driveType: 'public',
     driveAlias: 'public/token',
     isFolder: true,
+    publicLinkPermission,
     getDriveAliasAndItem: ({ path }: Resource) =>
       urlJoin('public/token', path, { leadingSlash: false })
   })

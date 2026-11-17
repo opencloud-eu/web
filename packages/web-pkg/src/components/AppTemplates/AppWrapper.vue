@@ -408,7 +408,7 @@ const addMissingDriveAliasAndItem = async () => {
   const driveAliasAndItem = space.getDriveAliasAndItem({ path } as Resource)
 
   if (isPersonalSpaceResource(space)) {
-    return router.push({
+    return router.replace({
       params: {
         ...unref(currentRoute).params,
         driveAliasAndItem
@@ -428,7 +428,7 @@ const addMissingDriveAliasAndItem = async () => {
     contextRouteName = path === '/' ? 'files-guest-shares' : 'files-guest-link'
   }
 
-  return router.push({
+  return router.replace({
     params: {
       ...unref(currentRoute).params,
       driveAliasAndItem

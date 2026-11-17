@@ -524,9 +524,36 @@ describe('AppWrapper — missing drive alias', () => {
       const s = setup({ yjsEnabled: false, currentRoute, isGuestContext })
       await flushPromises()
 
-      expect(s.routerPush).toHaveBeenCalledWith(
+      expect(s.routerReplace).toHaveBeenCalledWith(
         expect.objectContaining({ query: expect.objectContaining({ contextRouteName }) })
       )
+    }
+  )
+
+  it.each([
+    {
+      driveType: 'personal',
+      space: mock<SpaceResource>({
+        driveType: 'personal',
+        getDriveAliasAndItem: () => 'personal/admin/sub/a.md'
+      }),
+      driveAliasAndItem: 'personal/admin/sub/a.md'
+    },
+    { driveType: 'share', space: shareSpace, driveAliasAndItem: 'share/Invited/sub/a.md' }
+  ])(
+    'replaces the route with the full app route in a $driveType space',
+    async ({ space, driveAliasAndItem }) => {
+      getResourceContextSpy.mockResolvedValue({ space, path: '/sub/a.md' })
+      const s = setup({ yjsEnabled: false, currentRoute })
+      await flushPromises()
+
+      expect(s.routerReplace).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: expect.objectContaining({ driveAliasAndItem }),
+          query: expect.objectContaining({ fileId: 'file-id' })
+        })
+      )
+      expect(s.routerPush).not.toHaveBeenCalled()
     }
   )
 
@@ -547,7 +574,7 @@ describe('AppWrapper — missing drive alias', () => {
     })
     // Like the router: the new route changes the file context, which restarts
     // the loading while the first run is still waiting for the route change.
-    s.routerPush.mockImplementationOnce(async (to: any) => {
+    s.routerReplace.mockImplementationOnce(async (to: any) => {
       route.params.driveAliasAndItem = to.params.driveAliasAndItem
       s.currentFileContext.value = mock<FileContext>({ space: mock<any>(), path: '/sub/a.md' })
       await flushPromises()
@@ -557,7 +584,7 @@ describe('AppWrapper — missing drive alias', () => {
     await s.resolveResource(FILE_A)
     await s.resolveContent('content of a')
 
-    expect(s.routerPush).toHaveBeenCalledTimes(1)
+    expect(s.routerReplace).toHaveBeenCalledTimes(1)
     expect(s.currentContent()).toBe('content of a')
     expect(errorHandler).not.toHaveBeenCalled()
   })
