@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: ignore arrow keys in the search preview while it is loading or empty [[#4501](https://github.com/opencloud-eu/web/pull/4501)]
+- fix: don't confirm modals on Enter while the confirm button is disabled [[#4507](https://github.com/opencloud-eu/web/pull/4507)]
 - fix: keep share space id on resources loaded via sse [[#4499](https://github.com/opencloud-eu/web/pull/4499)]
 - fix: show full chapter titles in the epub reader [[#4495](https://github.com/opencloud-eu/web/pull/4495)]
 - fix: keep preview video inside the stage when its size changes [[#4500](https://github.com/opencloud-eu/web/pull/4500)]
@@ -24,6 +26,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency filesize to v11.0.34 [[#4528](https://github.com/opencloud-eu/web/pull/4528)]
 - chore(deps): update collabora/code docker tag to v26.04.6.1.1 [[#4366](https://github.com/opencloud-eu/web/pull/4366)]
 - chore(deps): update pnpm to v12 [[#3314](https://github.com/opencloud-eu/web/pull/3314)]
 
