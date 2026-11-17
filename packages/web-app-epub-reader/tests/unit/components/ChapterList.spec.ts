@@ -8,6 +8,8 @@ const chapters: Chapter[] = [
   { id: '2', label: 'Chapter 2', href: 'c2', depth: 1 }
 ]
 
+const tooltipDirective = vi.fn()
+
 describe('ChapterList component', () => {
   function getWrapper() {
     return mount(ChapterList, {
@@ -17,6 +19,7 @@ describe('ChapterList component', () => {
       },
       global: {
         plugins: [...defaultPlugins()],
+        directives: { 'oc-tooltip': tooltipDirective },
         stubs: {
           'oc-search-bar': {
             props: ['modelValue'],
@@ -35,6 +38,15 @@ describe('ChapterList component', () => {
     expect(items).toHaveLength(2)
     expect(items[0].classes()).toContain('bg-role-secondary-container')
     expect(items[1].classes()).not.toContain('bg-role-secondary-container')
+  })
+
+  it('exposes the full chapter labels as native titles instead of tooltips', () => {
+    tooltipDirective.mockClear()
+    const wrapper = getWrapper()
+
+    const labels = wrapper.findAll('.epub-reader-chapters-list-item .oc-button span')
+    expect(labels.map((label) => label.attributes('title'))).toEqual(['Chapter 1', 'Chapter 2'])
+    expect(tooltipDirective).not.toHaveBeenCalled()
   })
 
   it('marks only the current chapter as current for screen readers', () => {
