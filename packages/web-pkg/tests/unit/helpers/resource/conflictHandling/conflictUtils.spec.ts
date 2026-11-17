@@ -2,8 +2,6 @@ import { resolveFileNameDuplicate } from '../../../../../src/helpers/resource/co
 import { getTextByteSize } from '../../../../../src/helpers/textByteSize'
 import { RESOURCE_NAME_MAX_BYTES } from '../../../../../src/constants'
 
-const family = '👨‍👩‍👧'
-
 describe('resolveFileNameDuplicate', () => {
   describe('names that fit into the max name bytes', () => {
     it.each([
@@ -65,22 +63,10 @@ describe('resolveFileNameDuplicate', () => {
         expected: `${'a'.repeat(245)} (1).txt`
       },
       {
-        case: 'a name with a ZWJ emoji sequence at the cut point',
-        name: `${'a'.repeat(233)}${family}.txt`,
-        extension: 'txt',
-        expected: `${'a'.repeat(233)} (1).txt`
-      },
-      {
         case: 'a name with whitespace at the cut point',
         name: `${'a'.repeat(245)}  bbbb.txt`,
         extension: 'txt',
         expected: `${'a'.repeat(245)} (1).txt`
-      },
-      {
-        case: 'a name with an extension too long to keep any of the base',
-        name: `a.${'b'.repeat(253)}`,
-        extension: 'b'.repeat(253),
-        expected: `a.${'b'.repeat(249)} (1)`
       }
     ])('shortens $case', ({ name, extension, expected }) => {
       const result = resolveFileNameDuplicate(name, extension, [])

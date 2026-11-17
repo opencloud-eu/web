@@ -4,43 +4,16 @@ import { RESOURCE_NAME_MAX_BYTES } from '../../../constants'
 import { withoutExtension } from '../../fileExtension'
 import { getTextByteSize } from '../../textByteSize'
 
-/**
- * Shortens the base from the end so that base and suffix together fit into the max name bytes.
- * Cuts on grapheme boundaries so no multi-byte character or emoji sequence gets split.
- */
-function fitBaseToMaxBytes(base: string, suffix: string): string {
-  const maxBaseBytes = RESOURCE_NAME_MAX_BYTES - getTextByteSize(suffix)
-  if (getTextByteSize(base) <= maxBaseBytes) {
-    return base
+// cuts the base by whole code points so base and suffix fit into the max name bytes
+function fitToMaxBytes(base: string, suffix: string): string {
+  if (getTextByteSize(base + suffix) <= RESOURCE_NAME_MAX_BYTES) {
+    return base + suffix
   }
-
-  let shortenedBase = ''
-  let bytes = 0
-  const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
-  for (const { segment } of segmenter.segment(base)) {
-    bytes += getTextByteSize(segment)
-    if (bytes > maxBaseBytes) {
-      break
-    }
-    shortenedBase += segment
+  const chars = Array.from(base)
+  while (chars.length && getTextByteSize(chars.join('') + suffix) > RESOURCE_NAME_MAX_BYTES) {
+    chars.pop()
   }
-  return shortenedBase.trimEnd()
-}
-
-function getDuplicateName(name: string, extension: string, iteration: number): string {
-  const nameWithoutExtension = extension ? withoutExtension(name, extension) : name
-  // dot files like ".env" and names not ending with the extension get the suffix appended
-  if (nameWithoutExtension && nameWithoutExtension !== name) {
-    const suffix = ` (${iteration}).${extension}`
-    const base = fitBaseToMaxBytes(nameWithoutExtension, suffix)
-    // with an extension too long to keep any of the base, the whole name gets shortened instead
-    if (base) {
-      return `${base}${suffix}`
-    }
-  }
-
-  const suffix = ` (${iteration})`
-  return `${fitBaseToMaxBytes(name, suffix)}${suffix}`
+  return chars.join('').trimEnd() + suffix
 }
 
 export const resolveFileNameDuplicate = (
@@ -49,7 +22,12 @@ export const resolveFileNameDuplicate = (
   existingResources: Pick<Resource, 'name'>[],
   iteration = 1
 ): string => {
-  const potentialName = getDuplicateName(name, extension, iteration)
+  const nameWithoutExtension = extension ? withoutExtension(name, extension) : name
+  // dot files like ".env" and names not ending with the extension get the suffix appended
+  const potentialName =
+    nameWithoutExtension && nameWithoutExtension !== name
+      ? fitToMaxBytes(nameWithoutExtension, ` (${iteration}).${extension}`)
+      : fitToMaxBytes(name, ` (${iteration})`)
   const hasConflict = existingResources.some((f) => f.name === potentialName)
   if (!hasConflict) {
     return potentialName
