@@ -20,7 +20,7 @@
             :width="16"
             class="flex self-center mr-2"
           />
-          <span>{{ displayName }}</span>
+          <span class="wrap-anywhere">{{ displayName }}</span>
         </span>
       </template>
       <template #option="{ displayName, id }">
@@ -32,7 +32,7 @@
               :width="16"
               class="flex self-center mr-2"
             />
-            <span>{{ displayName }}</span>
+            <span class="wrap-anywhere">{{ displayName }}</span>
           </span>
         </div>
       </template>
