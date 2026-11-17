@@ -22,14 +22,12 @@ const mediaFile = ({ id = 'video1', url = 'https://example.org/video' } = {}): M
 function getWrapper(file = mediaFile()) {
   return shallowMount(MediaVideo, {
     props: { file, isAutoPlayEnabled: false },
-    global: { plugins: [...defaultPlugins()] },
-    attachTo: document.querySelector('.stage_media')
+    global: { plugins: [...defaultPlugins()] }
   })
 }
 
 describe('MediaVideo component', () => {
   beforeEach(() => {
-    document.body.innerHTML = '<div class="stage_media"></div>'
     vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => undefined)
   })
 
