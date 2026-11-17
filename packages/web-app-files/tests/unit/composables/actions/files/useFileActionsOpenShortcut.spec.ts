@@ -86,7 +86,7 @@ describe('openShortcut', () => {
           }
         })
         await handler({ resources: [mock<Resource>()], space: null })
-        expect(window.open).toHaveBeenLastCalledWith(expected)
+        expect(window.open).toHaveBeenLastCalledWith(expected, '_blank', 'noopener,noreferrer')
         expect(window.location.href).toBe('https://demo.opencloud.eu')
       })
 
