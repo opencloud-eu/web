@@ -71,6 +71,7 @@ import {
   useGetResourceContext,
   useKeyboardActions
 } from '../../composables'
+import { isResourceSupportedByFileExtension } from '../../apps'
 import {
   Resource,
   SpaceResource,
@@ -252,6 +253,14 @@ const addMissingDriveAliasAndItem = async () => {
   })
 }
 
+function isResourceSupportedByApp(resource: Resource) {
+  return appsStore.fileExtensions.some(
+    (fileExtension) =>
+      fileExtension.app === applicationId &&
+      isResourceSupportedByFileExtension(resource, fileExtension)
+  )
+}
+
 const loadResourceTask = useTask(function* (signal) {
   try {
     if (!unref(driveAliasAndItem)) {
@@ -259,6 +268,13 @@ const loadResourceTask = useTask(function* (signal) {
     }
     space.value = unref(unref(currentFileContext).space)
     const fileInfo = yield getFileInfo(unref(currentFileContext), { signal })
+    // The route accepts any path, but apps may embed the file contents (e.g. as blob URL),
+    // which is only safe for the types they registered.
+    if (!isResourceSupportedByApp(fileInfo)) {
+      throw new Error(
+        $gettext('"%{fileName}" can\'t be opened with this app.', { fileName: fileInfo.name })
+      )
+    }
     resource.value = fileInfo
 
     if (isShareSpaceResource(unref(space))) {
@@ -355,6 +371,9 @@ watch(
   async () => {
     if (!unref(noResourceLoading)) {
       await loadResourceTask.perform()
+      if (unref(loadingError)) {
+        return
+      }
 
       if (unref(fileSizeLimit) && toNumber(unref(resource).size) > unref(fileSizeLimit)) {
         dispatchModal({
