@@ -2,8 +2,14 @@ import { computed, onScopeDispose, ref, unref } from 'vue'
 import { debounce } from 'lodash-es'
 import * as EmailValidator from 'email-validator'
 import { useTask } from 'vue-concurrency'
+import { useGettext } from 'vue3-gettext'
 import { call, CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
-import { useAbility, useCapabilityStore, useClientService } from '@opencloud-eu/web-pkg'
+import {
+  useAbility,
+  useCapabilityStore,
+  useClientService,
+  useMessages
+} from '@opencloud-eu/web-pkg'
 
 export const useCollaboratorSearch = () => {
   const clientService = useClientService()
@@ -109,15 +115,21 @@ function getCanonicalEmail(email: string) {
 
 /**
  * `fetchResults` returns the list to show, so each caller decides which sources
- * it searches and who it leaves out.
+ * it searches and who it leaves out. `inputId` is the search input the results
+ * belong to.
  */
 export const useCollaboratorAutocomplete = (
+  inputId: string,
   fetchResults: (query: string, signal: AbortSignal) => Promise<CollaboratorAutoCompleteItem[]>
 ) => {
   const capabilityStore = useCapabilityStore()
+  const { showErrorMessage } = useMessages()
+  const { $gettext } = useGettext()
 
   const searchQuery = ref('')
   const searchInProgress = ref(false)
+  // a failed search has no results to show, so the list mustn't claim that nobody matched
+  const searchFailed = ref(false)
   const autocompleteResults = ref<CollaboratorAutoCompleteItem[]>([])
   const minSearchLength = computed(() => capabilityStore.sharingSearchMinLength)
 
@@ -126,6 +138,13 @@ export const useCollaboratorAutocomplete = (
       autocompleteResults.value = yield* call(fetchResults(query, signal))
     } catch (e) {
       console.error(e)
+      searchFailed.value = true
+      if (isSearchShown(query)) {
+        showErrorMessage({
+          title: $gettext('Failed to search for users and groups'),
+          errors: [e]
+        })
+      }
     }
     searchInProgress.value = false
   }).restartable()
@@ -136,10 +155,25 @@ export const useCollaboratorAutocomplete = (
 
   onScopeDispose(() => fetchRecipients.cancel())
 
+  /**
+   * Whether the user still looks at the search for `query`: not after the input
+   * got cleared, changed or left.
+   */
+  function isSearchShown(query: string) {
+    const input = document.getElementById(inputId) as HTMLInputElement
+    return (
+      !!input &&
+      document.activeElement === input &&
+      input.value.trim() === query.trim() &&
+      query.trim().length >= unref(minSearchLength)
+    )
+  }
+
   function onSearch(query: string) {
     fetchRecipients.cancel()
     fetchRecipientsTask.cancelAll()
     autocompleteResults.value = []
+    searchFailed.value = false
     searchQuery.value = query
 
     if (query.trim().length < unref(minSearchLength)) {
@@ -153,8 +187,10 @@ export const useCollaboratorAutocomplete = (
 
   return {
     autocompleteResults,
+    isSearchShown,
     minSearchLength,
     onSearch,
+    searchFailed,
     searchInProgress,
     searchQuery
   }

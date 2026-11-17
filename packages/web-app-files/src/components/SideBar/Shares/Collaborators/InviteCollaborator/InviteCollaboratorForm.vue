@@ -31,7 +31,7 @@
         :filterable="false"
         :dropdown-should-open="
           ({ open, search }: DropDownShouldOpenOptions) =>
-            open && search.trim().length >= minSearchLength && !searchInProgress
+            open && search.trim().length >= minSearchLength && !searchInProgress && !searchFailed
         "
         :label="label"
         :label-hidden="true"
@@ -313,42 +313,41 @@ const createSharesConcurrentRequests = computed(() => {
   return configStore.options.concurrentRequests.shares.create
 })
 
-const { autocompleteResults, minSearchLength, onSearch, searchInProgress, searchQuery } =
-  useCollaboratorAutocomplete(async (query, signal) => {
-    const collaborators = await searchCollaborators(query, {
-      signal,
-      external: unref(isExternalShareRoleType)
-    }).catch((error) => {
-      // the list shows its no results label after a failed search, too
-      if (!signal.aborted) {
-        announceResults(query, [])
-      }
-      throw error
-    })
-
-    const contacts = unref(isSpace) ? [] : await searchOpenXchangeContacts(query.trim(), signal)
-
-    // guests can't be invited to spaces yet
-    const guests =
-      unref(isSpace) || unref(isExternalShareRoleType)
-        ? []
-        : getGuestCandidates(query, collaborators)
-
-    const results = [...collaborators, ...contacts, ...guests].filter(
-      (collaborator: CollaboratorAutoCompleteItem) => {
-        if (collaborator.id === userStore.user.id) {
-          return false
-        }
-
-        return !unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
-      }
-    )
-    // a newer search replaced this one, even if a source swallowed the abort
-    if (!signal.aborted) {
-      announceResults(query, results)
-    }
-    return results
+const {
+  autocompleteResults,
+  isSearchShown,
+  minSearchLength,
+  onSearch,
+  searchFailed,
+  searchInProgress,
+  searchQuery
+} = useCollaboratorAutocomplete('files-share-invite-input', async (query, signal) => {
+  const collaborators = await searchCollaborators(query, {
+    signal,
+    external: unref(isExternalShareRoleType)
   })
+
+  const contacts = unref(isSpace) ? [] : await searchOpenXchangeContacts(query.trim(), signal)
+
+  // guests can't be invited to spaces yet
+  const guests =
+    unref(isSpace) || unref(isExternalShareRoleType) ? [] : getGuestCandidates(query, collaborators)
+
+  const results = [...collaborators, ...contacts, ...guests].filter(
+    (collaborator: CollaboratorAutoCompleteItem) => {
+      if (collaborator.id === userStore.user.id) {
+        return false
+      }
+
+      return !unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
+    }
+  )
+  // a newer search replaced this one, even if a source swallowed the abort
+  if (!signal.aborted) {
+    announceResults(query, results)
+  }
+  return results
+})
 
 const isSpace = computed(() => !unref(resource) || isSpaceResource(unref(resource)))
 
@@ -561,13 +560,8 @@ const noOptionsLabel = computed(() => {
 })
 
 function announceResults(query: string, results: CollaboratorAutoCompleteItem[]) {
-  // only announce what the list shows: not after the input got cleared, changed or left
-  const input = document.getElementById('files-share-invite-input') as HTMLInputElement
-  if (
-    document.activeElement !== input ||
-    input.value.trim() !== query.trim() ||
-    query.trim().length < unref(minSearchLength)
-  ) {
+  // only announce what the list shows
+  if (!isSearchShown(query)) {
     return
   }
   // the keyboard skips unselectable results, so they are named here instead of counted
