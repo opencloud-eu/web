@@ -11,7 +11,11 @@
     >
       <source :src="file.url" :type="sourceType" @error="onError" />
     </audio>
-    <p v-if="audioText" class="text-role-on-surface-variant text-sm" v-text="audioText"></p>
+    <p
+      v-if="audioText"
+      class="text-role-on-surface-variant text-sm wrap-anywhere"
+      v-text="audioText"
+    ></p>
   </div>
 </template>
 <script setup lang="ts">
