@@ -29,7 +29,7 @@ Feature: Token renewal using refresh token
     And "Alice" closes the current tab
     And "Alice" opens the "files" app
     And "Alice" creates the following resources
-      | resource          | type    | content   |
-      | PARENT            | folder  |           |
-      | PARENT/parent.txt | txtFile | some text |
+      | resource             | type     | content   |
+      | PARENT               | folder   |           |
+      | PARENT/parent.ocnote | noteFile | some text |
     And "Alice" logs out
