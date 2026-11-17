@@ -68,6 +68,11 @@
 }
 
 /* Paragraph styles */
+.text-editor-content .ProseMirror :is(p, h1, h2, h3, h4, h5, h6) {
+  /* each block takes its direction from its own content, not from the UI language */
+  unicode-bidi: plaintext;
+}
+
 .text-editor-content .ProseMirror p {
   margin: 0 0 8px;
 }
