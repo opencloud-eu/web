@@ -21,7 +21,8 @@ const actionOptions: GetFileActionsOptions = {
       id: '1',
       canDownload: () => true,
       mimeType: 'text/plain',
-      extension: 'txt'
+      extension: 'txt',
+      isFolder: false
     })
   ],
   space: null,
@@ -46,6 +47,26 @@ describe('fileActions', () => {
       getWrapper({
         setup: ({ getAllOpenWithActions }) => {
           const actions = getAllOpenWithActions(actionOptions)
+          const editorActions = actions.filter((a) => a.name?.toString().startsWith('editor-'))
+          expect(editorActions.length).toBeFalsy()
+        }
+      })
+    })
+    it('should not provide file editors for a folder named like a file', () => {
+      getWrapper({
+        setup: ({ getAllOpenWithActions }) => {
+          const actions = getAllOpenWithActions({
+            ...actionOptions,
+            resources: [
+              mock<Resource>({
+                id: '1',
+                canDownload: () => true,
+                mimeType: 'httpd/unix-directory',
+                extension: 'txt',
+                isFolder: true
+              })
+            ]
+          })
           const editorActions = actions.filter((a) => a.name?.toString().startsWith('editor-'))
           expect(editorActions.length).toBeFalsy()
         }
@@ -153,7 +174,8 @@ describe('fileActions', () => {
                   id: '1',
                   canDownload: () => false,
                   mimeType: 'text/plain',
-                  extension: 'txt'
+                  extension: 'txt',
+                  isFolder: false
                 })
               ]
             })
