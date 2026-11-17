@@ -1,5 +1,28 @@
 # Changelog
 
+## [8.3.0](https://github.com/opencloud-eu/web/releases/tag/v8.3.0) - 2026-11-17
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @kulmann
+
+### 📈 Enhancement
+
+- feat: bring back ocnote to the new file menu [[#4511](https://github.com/opencloud-eu/web/pull/4511)]
+- feat: prefill the space name when creating a space from a selection [[#4508](https://github.com/opencloud-eu/web/pull/4508)]
+- feat: add empty state illustrations to activities and versions panels [[#4481](https://github.com/opencloud-eu/web/pull/4481)]
+
+### 🐛 Bug Fixes
+
+- fix: open shortcut targets with noopener [[#4488](https://github.com/opencloud-eu/web/pull/4488)]
+- fix: keep focused filter chip below the sticky app bar [[#4480](https://github.com/opencloud-eu/web/pull/4480)]
+- fix: show existing recipients in share invite search [[#4477](https://github.com/opencloud-eu/web/pull/4477)]
+
+### 📦️ Dependencies
+
+- chore(deps): update typescript-eslint monorepo to v8.73.0 [[#4492](https://github.com/opencloud-eu/web/pull/4492)]
+- chore(deps): update dependency filesize to v11.0.33 [[#4491](https://github.com/opencloud-eu/web/pull/4491)]
+
 ## [8.2.3](https://github.com/opencloud-eu/web/releases/tag/v8.2.3) - 2026-11-17
 
 ### ❤️ Thanks to all contributors! ❤️
