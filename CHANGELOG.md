@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: shorten duplicate names to fit into 255 bytes [[#4520](https://github.com/opencloud-eu/web/pull/4520)]
 - fix: wrap long group names in the user groups field [[#4494](https://github.com/opencloud-eu/web/pull/4494)]
 - fix: wrap long text in the preview stage [[#4489](https://github.com/opencloud-eu/web/pull/4489)]
 - fix: disable sidebar toggle on account sub pages [[#4490](https://github.com/opencloud-eu/web/pull/4490)]
