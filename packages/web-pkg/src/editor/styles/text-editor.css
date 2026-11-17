@@ -148,6 +148,8 @@
 
 /* Codeblock styles */
 .text-editor-content .ProseMirror pre {
+  /* code reads left-to-right regardless of the UI language */
+  direction: ltr;
   font-size: 14px;
   background: var(--oc-role-surface-container-high);
   padding: 8px 12px;

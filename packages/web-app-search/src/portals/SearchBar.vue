@@ -235,7 +235,7 @@ function updateLocationFilterInputPadding() {
     return
   }
 
-  inputElement.style.paddingRight = `${Math.ceil(locationFilterElement.offsetWidth) + 36}px`
+  inputElement.style.paddingInlineEnd = `${Math.ceil(locationFilterElement.offsetWidth) + 36}px`
 }
 
 watch(isMobile, () => {

@@ -64,6 +64,8 @@ blockquote {
 }
 
 pre {
+  /* code reads left-to-right regardless of the UI language */
+  direction: ltr;
   padding: 1em;
   background: #f5f5f5;
   border: 1px solid #ccc;
