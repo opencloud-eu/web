@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: prefill the space name when creating a space from a selection [[#4508](https://github.com/opencloud-eu/web/pull/4508)]
 - feat: add empty state illustrations to activities and versions panels [[#4481](https://github.com/opencloud-eu/web/pull/4481)]
 
 ### 🐛 Bug Fixes
