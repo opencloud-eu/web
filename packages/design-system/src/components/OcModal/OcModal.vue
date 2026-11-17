@@ -101,12 +101,7 @@
               v-if="!hideConfirmButton"
               class="oc-modal-body-actions-confirm ms-2"
               :appearance="buttonConfirmAppearance"
-              :disabled="
-                isLoading ||
-                buttonConfirmDisabled ||
-                !!inputError ||
-                (hasInput && inputRequiredMark && !userInputValue)
-              "
+              :disabled="isConfirmDisabled"
               :show-spinner="showSpinner"
               @click="confirm"
               >{{ $gettext(confirmLabel) }}
@@ -431,8 +426,17 @@ const onDocumentKeydown = (event: KeyboardEvent) => {
 
 useEventListener(document, 'keydown', onDocumentKeydown)
 
+const isConfirmDisabled = computed(() => {
+  return (
+    isLoading ||
+    buttonConfirmDisabled ||
+    !!inputError ||
+    (hasInput && inputRequiredMark && !unref(userInputValue))
+  )
+})
+
 const confirm = () => {
-  if (buttonConfirmDisabled || inputError) {
+  if (unref(isConfirmDisabled)) {
     return
   }
   emit('confirm', unref(userInputValue))
