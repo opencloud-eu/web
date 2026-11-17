@@ -24,6 +24,7 @@ import {
   useResourcesStore,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
+import { useSuggestedSpaceName } from '../../spaces'
 
 export const useFileActionsCreateSpaceFromResource = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -38,6 +39,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
   const resourcesStore = useResourcesStore()
   const { isSpaceNameValid } = useIsResourceNameValid()
   const { spacesDefaultQuota } = storeToRefs(useCapabilityStore())
+  const { getSuggestedSpaceName } = useSuggestedSpaceName()
 
   // A default quota of 0 means unlimited.
   function exceedsDefaultQuota(resources: Resource[]) {
@@ -146,6 +148,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
       confirmText: $gettext('Create'),
       hasInput: true,
       inputLabel: $gettext('Space name'),
+      inputValue: getSuggestedSpaceName(),
       inputRequiredMark: true,
       onInput: (name: string, setError: (error: string) => void) => {
         const { isValid, error } = isSpaceNameValid(name)
