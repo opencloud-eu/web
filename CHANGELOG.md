@@ -12,6 +12,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update collabora/code docker tag to v26.04.6.1.1 [[#4366](https://github.com/opencloud-eu/web/pull/4366)]
 - chore(deps): update pnpm to v12 [[#3314](https://github.com/opencloud-eu/web/pull/3314)]
 
 ## [8.3.0](https://github.com/opencloud-eu/web/releases/tag/v8.3.0) - 2026-11-17
