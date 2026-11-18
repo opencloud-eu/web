@@ -2,10 +2,13 @@ import { computed, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import {
+  isIncomingShareResource,
+  isProjectSpaceResource,
   isPublicSpaceResource,
-  isShareResource,
   isSpaceResource,
-  isTrashResource
+  isTrashResource,
+  Resource,
+  ShareTypes
 } from '@opencloud-eu/web-client'
 import {
   FileAction,
@@ -15,7 +18,8 @@ import {
   useClientService,
   useEventBus,
   useMessages,
-  useResourcesStore
+  useResourcesStore,
+  useSpacesStore
 } from '@opencloud-eu/web-pkg'
 
 export const useFileActionsFavorite = () => {
@@ -25,7 +29,15 @@ export const useFileActionsFavorite = () => {
   const ability = useAbility()
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
+  const spacesStore = useSpacesStore()
   const eventBus = useEventBus()
+
+  function updateStarred(resource: Resource, value: boolean) {
+    resourcesStore.updateResourceField({ id: resource.id, field: 'starred', value })
+    if (isSpaceResource(resource)) {
+      spacesStore.updateSpaceField({ id: resource.id, field: 'starred', value })
+    }
+  }
 
   const handler = async ({ resources }: FileActionOptions) => {
     const errors: { resource: string; error: unknown }[] = []
@@ -39,16 +51,12 @@ export const useFileActionsFavorite = () => {
           await clientService.graphAuthenticated.driveItems.unfollowDriveItem(resource.fileId)
         }
 
-        resourcesStore.updateResourceField({ id: resource.id, field: 'starred', value: newValue })
+        updateStarred(resource, newValue)
         if (!newValue) {
           eventBus.publish('app.files.list.removeFromFavorites', resource.id)
         }
       } catch (error) {
-        resourcesStore.updateResourceField({
-          id: resource.id,
-          field: 'starred',
-          value: !newValue
-        })
+        updateStarred(resource, !newValue)
         errors.push({ resource: resource.name, error })
       }
     }
@@ -87,8 +95,10 @@ export const useFileActionsFavorite = () => {
           return false
         }
 
-        // FIXME: remove this check once the backend exposes the favorite property via graph api for spaces
-        if (resources.some(isSpaceResource)) {
+        // only project spaces can be favorites, not personal, share or public spaces
+        if (
+          resources.some((r) => isSpaceResource(r) && (!isProjectSpaceResource(r) || r.disabled))
+        ) {
           return false
         }
 
@@ -100,7 +110,13 @@ export const useFileActionsFavorite = () => {
           return false
         }
 
-        if (!unref(currentFolder) && resources.some(isShareResource)) {
+        // precaution: following federated shares from the share lists is unverified, hence not offered
+        if (
+          !unref(currentFolder) &&
+          resources.some(
+            (r) => isIncomingShareResource(r) && r.shareTypes?.includes(ShareTypes.remote.value)
+          )
+        ) {
           return false
         }
 
