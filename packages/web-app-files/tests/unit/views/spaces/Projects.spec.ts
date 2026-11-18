@@ -24,7 +24,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { AbilityRule, SpaceResource } from '@opencloud-eu/web-client'
 import { folderViewsProjectSpacesExtensionPoint } from '../../../../src/extensionPoints'
-import { flushPromises } from '@vue/test-utils'
+import { enableAutoUnmount, flushPromises } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -33,6 +33,8 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useRouteQueryPersisted: vi.fn().mockImplementation(() => ref('resource-table')),
   useFileActions: vi.fn()
 }))
+
+enableAutoUnmount(afterEach)
 
 const spacesResources = [
   {
@@ -69,6 +71,11 @@ const spacesResources = [
     getDriveAliasAndItem: () => '2'
   }
 ] as unknown as SpaceResource[]
+
+const manySpaces = Array.from({ length: 130 }, (_, i) => {
+  const id = String(i + 1).padStart(3, '0')
+  return { ...spacesResources[0], id, name: `Space ${id}`, getDriveAliasAndItem: () => id }
+}) as unknown as SpaceResource[]
 
 describe('Projects view', () => {
   it('appBar always present', () => {
@@ -184,11 +191,7 @@ describe('Projects view', () => {
     })
   })
   it('switches only once to the page of a space that is on another page', async () => {
-    const spaces = Array.from({ length: 130 }, (_, i) => {
-      const id = String(i + 1).padStart(3, '0')
-      return { ...spacesResources[0], id, name: `Space ${id}`, getDriveAliasAndItem: () => id }
-    }) as unknown as SpaceResource[]
-    const { mocks } = getMountedWrapper({ spaces, query: {} })
+    const { mocks } = getMountedWrapper({ spaces: manySpaces, query: {} })
     await flushPromises()
     mocks.$router.push.mockClear()
     mocks.$router.push.mockReturnValue(new Promise(() => undefined))
@@ -203,6 +206,28 @@ describe('Projects view', () => {
     expect(mocks.$router.push).toHaveBeenCalledWith(
       expect.objectContaining({ query: expect.objectContaining({ page: 2 }) })
     )
+  })
+  describe('keyboard navigation', () => {
+    it('selects only the spaces of the current page on select all', async () => {
+      getMountedWrapper({ spaces: manySpaces, query: {} })
+      await flushPromises()
+      const resourcesStore = useResourcesStore()
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true }))
+
+      const visibleIds = manySpaces.slice(0, 100).map(({ id }) => id)
+      expect(resourcesStore.setSelection).toHaveBeenCalledWith(visibleIds)
+    })
+    it('does not move the selection beyond the last space of the current page', async () => {
+      getMountedWrapper({ spaces: manySpaces, query: {} })
+      await flushPromises()
+      const resourcesStore = useResourcesStore()
+      resourcesStore.latestSelectedId = '100'
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
+
+      expect(resourcesStore.setSelection).not.toHaveBeenCalled()
+    })
   })
   it('should not pass selected resource as space to sidebar when driveType is not "project"', () => {
     const resource = mock<SpaceResource>({ id: 'selected-resource', driveType: 'personal' })
