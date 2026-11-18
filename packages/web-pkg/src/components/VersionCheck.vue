@@ -65,15 +65,16 @@ const serverEdition = capabilityStore.status.edition || 'rolling'
 const currentServerVersion = capabilityStore.status.productversion
 const currentServerVersionSanitized = currentServerVersion.split('+')[0]
 
-function isCriticalVersion(channel: UpdateChannel) {
-  if (channel.critical_range) {
-    try {
-      return satisfiesVersionRange(currentServerVersionSanitized, channel.critical_range)
-    } catch (e) {
-      console.error(e)
-    }
+function isCriticalVersion({ critical_range }: UpdateChannel) {
+  if (!critical_range) {
+    return false
   }
-  return !!channel.critical?.includes(currentServerVersionSanitized)
+  try {
+    return satisfiesVersionRange(currentServerVersionSanitized, critical_range)
+  } catch (e) {
+    console.error(e)
+    return false
+  }
 }
 
 const showCritical = computed(() => {
