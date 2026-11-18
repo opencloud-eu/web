@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @flash7777, @kulmann, @xhzeem
+@AlexAndBear, @JammingBen, @butonic, @flash7777, @kulmann, @xhzeem
 
 ### 📈 Enhancement
 
+- feat(sharing): hide the invite form when user sharing is disabled [[#4548](https://github.com/opencloud-eu/web/pull/4548)]
 - feat: add favorites for project spaces and share roots [[#4547](https://github.com/opencloud-eu/web/pull/4547)]
 - feat: add easy and sign language menu to the top bar [[#4537](https://github.com/opencloud-eu/web/pull/4537)]
 - feat: add right-to-left layout support [[#3540](https://github.com/opencloud-eu/web/pull/3540)]
