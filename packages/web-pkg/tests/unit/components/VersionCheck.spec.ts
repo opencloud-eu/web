@@ -56,6 +56,56 @@ describe('VersionCheck component', () => {
       await nextTick()
       expect(wrapper.find('.version-check-critical').exists()).toBe(false)
     })
+    it.each([
+      { productversion: '6.1.0', critical_range: '1.0.0 - 3.0.0 || 5.0.0 - 7.0.0', expected: true },
+      {
+        productversion: '4.0.0',
+        critical_range: '1.0.0 - 3.0.0 || 5.0.0 - 7.0.0',
+        expected: false
+      },
+      { productversion: '3.4.0+git20250101', critical_range: '<3.5.0', expected: true }
+    ])(
+      'uses the critical range for $productversion in "$critical_range"',
+      async ({ productversion, critical_range, expected }) => {
+        const { wrapper } = getWrapper({
+          productversion,
+          critical_range,
+          abilities: [{ action: 'read-all', subject: 'Setting' }]
+        })
+        await nextTick()
+        expect(wrapper.find('.version-check-critical').exists()).toBe(expected)
+      }
+    )
+    it('prefers the critical range over the critical list', async () => {
+      const { wrapper } = getWrapper({
+        productversion: '3.4.0',
+        critical: ['3.4.0'],
+        critical_range: '<3.0.0',
+        abilities: [{ action: 'read-all', subject: 'Setting' }]
+      })
+      await nextTick()
+      expect(wrapper.find('.version-check-critical').exists()).toBe(false)
+    })
+    it('falls back to the critical list if the critical range is invalid', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const { wrapper } = getWrapper({
+        productversion: '3.4.0',
+        critical: ['3.4.0'],
+        critical_range: '^3.0.0',
+        abilities: [{ action: 'read-all', subject: 'Setting' }]
+      })
+      await nextTick()
+      expect(wrapper.find('.version-check-critical').exists()).toBe(true)
+    })
+    it('does not show the critical badge without critical list and range', async () => {
+      const { wrapper } = getWrapper({
+        productversion: '3.4.0',
+        critical: undefined,
+        abilities: [{ action: 'read-all', subject: 'Setting' }]
+      })
+      await nextTick()
+      expect(wrapper.find('.version-check-critical').exists()).toBe(false)
+    })
     it('shows critical badge when version is in critical list', async () => {
       const { wrapper } = getWrapper({
         productversion: '3.4.0+git20250101',
@@ -73,12 +123,14 @@ function getWrapper({
   hasError = false,
   isLoading = false,
   critical = [],
+  critical_range = undefined,
   abilities = []
 }: {
   productversion?: string
   hasError?: boolean
   isLoading?: boolean
   critical?: string[]
+  critical_range?: string
   abilities?: AbilityRule[]
 } = {}) {
   const mocks = { ...defaultComponentMocks() }
@@ -108,22 +160,26 @@ function getWrapper({
                     rolling: {
                       current_version: '3.5.0',
                       url: 'https://github.com/opencloud-eu/opencloud/releases/tag/v3.5.0',
-                      critical
+                      critical,
+                      critical_range
                     },
                     stable: {
                       current_version: '2.0.4',
                       url: 'https://github.com/opencloud-eu/opencloud/releases/tag/v2.0.4',
-                      critical
+                      critical,
+                      critical_range
                     },
                     lts: {
                       current_version: '2.0.4',
                       url: 'https://github.com/opencloud-eu/opencloud/releases/tag/v2.0.4',
-                      critical
+                      critical,
+                      critical_range
                     },
                     'lts-2.0': {
                       current_version: '2.0.4',
                       url: 'https://github.com/opencloud-eu/opencloud/releases/tag/v2.0.4',
-                      critical
+                      critical,
+                      critical_range
                     }
                   }
                 }

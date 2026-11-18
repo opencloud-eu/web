@@ -43,7 +43,7 @@ import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useAbility, useCapabilityStore, useUpdatesStore } from '../composables'
 import { UpdateChannel } from '../types'
-import { compareVersions } from '../utils'
+import { compareVersions, satisfiesVersionRange } from '../utils'
 
 const { $gettext } = useGettext()
 const capabilityStore = useCapabilityStore()
@@ -65,11 +65,22 @@ const serverEdition = capabilityStore.status.edition || 'rolling'
 const currentServerVersion = capabilityStore.status.productversion
 const currentServerVersionSanitized = currentServerVersion.split('+')[0]
 
+function isCriticalVersion(channel: UpdateChannel) {
+  if (channel.critical_range) {
+    try {
+      return satisfiesVersionRange(currentServerVersionSanitized, channel.critical_range)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  return !!channel.critical?.includes(currentServerVersionSanitized)
+}
+
 const showCritical = computed(() => {
-  return (
-    unref(updateData)?.critical.includes(currentServerVersionSanitized) &&
-    ability.can('read-all', 'Setting')
-  )
+  if (!unref(updateData) || !ability.can('read-all', 'Setting')) {
+    return false
+  }
+  return isCriticalVersion(unref(updateData))
 })
 
 watch(
