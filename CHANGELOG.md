@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: add duplicate action for files and folders [[#4534](https://github.com/opencloud-eu/web/pull/4534)]
 - feat(sharing): hide the invite form when user sharing is disabled [[#4548](https://github.com/opencloud-eu/web/pull/4548)]
 - feat: add favorites for project spaces and share roots [[#4547](https://github.com/opencloud-eu/web/pull/4547)]
 - feat: add easy and sign language menu to the top bar [[#4537](https://github.com/opencloud-eu/web/pull/4537)]
