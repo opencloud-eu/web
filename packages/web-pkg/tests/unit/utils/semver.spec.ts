@@ -1,4 +1,4 @@
-import { compareVersions, parseVersion } from '../../../src/utils/semver'
+import { compareVersions, parseVersion, satisfiesVersionRange } from '../../../src/utils/semver'
 
 describe('parseVersion', () => {
   it('parses version strings correctly', () => {
@@ -15,5 +15,108 @@ describe('compareVersions', () => {
   ])('compares version strings correctly', (a, b, expected) => {
     const result = compareVersions(a, b)
     expect(result).toBe(expected)
+  })
+
+  it.each(['alpha', 'beta.4', 'rc.0', 'RC.1', '1'])(
+    'orders the lowest prerelease "-0" below "-%s"',
+    (pre) => {
+      expect(compareVersions('7.2.0-0', `7.2.0-${pre}`)).toBeLessThan(0)
+    }
+  )
+})
+
+describe('satisfiesVersionRange', () => {
+  it.each([
+    ['2.0.0', '1.0.0 - 3.0.0', true],
+    ['1.0.0', '1.0.0 - 3.0.0', true],
+    ['3.0.0', '1.0.0 - 3.0.0', true],
+    ['3.0.1', '1.0.0 - 3.0.0', false],
+    ['0.9.9', '1.0.0 - 3.0.0', false],
+    ['4.0.0', '1.0.0 - 3.0.0 || 5.0.0 - 7.0.0', false],
+    ['6.1.0', '1.0.0 - 3.0.0 || 5.0.0 - 7.0.0', true],
+    ['7.2.9', '7.0.0 - 7.2', true],
+    ['7.3.0', '7.0.0 - 7.2', false],
+    ['7.2.4', '>=7.2.0 <=7.2.5', true],
+    ['7.2.6', '>=7.2.0 <=7.2.5', false],
+    ['7.2.6', '>= 7.2.0 < 7.3.0', true],
+    ['7.3.0', '>= 7.2.0 < 7.3.0', false],
+    ['9.1.0', '<9.1.1', true],
+    ['9.1.1', '<9.1.1', false],
+    ['9.2.0', '>9.1', true],
+    ['9.1.5', '>9.1', false],
+    ['6.2.0', '6.2.0 || 7.0.0 - 9.1.0', true],
+    ['6.3.0', '6.2.0 || 7.0.0 - 9.1.0', false],
+    ['7.2.3', '7.2.x', true],
+    ['7.3.0', '7.2.x', false],
+    ['7.9.0', '7.x', true],
+    ['8.0.0', '=7', false],
+    ['1.2.3', '*', true],
+    ['v7.2.1', 'v7.2.0 - v7.2.5', true],
+    ['9.1.0-rc.1', '<9.1.0', true],
+    ['7.2.0-beta.4', '<=7.2.5', true],
+    ['7.2.0-rc.1', '7.2.x', true],
+    ['7.3.0-rc.1', '7.2.x', false],
+    ['7.3.0-rc.1', '<=7.2', false],
+    ['8.0.0-rc.1', '7.x', false],
+    ['8.0.0-rc.1', '=7', false],
+    ['8.0.0-rc.1', '<=7', false],
+    ['9.2.0-rc.1', '>9.1', true],
+    ['7.2.0-rc.0', '>=7.2', true],
+    ['7.2.0-alpha', '<7.2', false],
+    ['7.2.9', '<=7.2', true],
+    ['7.3.0', '<=7.2', false],
+    ['6.9.9', '<7', true],
+    ['7.0.0', '<7', false],
+    ['7.2.0', '>=7.2', true],
+    ['7.1.9', '>=7.2', false],
+    ['7.3.9', '7.2 - 7.3', true],
+    ['7.4.0', '7.2 - 7.3', false],
+    ['7.1.9', '7.2 - 7.3', false],
+    ['0.0.0', '* - 3.0.0', true],
+    ['3.0.1', '* - 3.0.0', false],
+    ['7.2.3', '7.2.X', true],
+    ['2.0.0', '1.0.0||2.0.0', true],
+    ['3.0.0', '1.0.0||2.0.0', false]
+  ])('%s in "%s" is %s', (version, range, expected) => {
+    expect(satisfiesVersionRange(version, range)).toBe(expected)
+  })
+
+  it.each([
+    '',
+    '1.0.0 ||',
+    '^1.0.0',
+    '~1.2',
+    '1.0.0 - 2.0.0 - 3.0.0',
+    'abc',
+    '1.2.3.4',
+    '>=',
+    '>*',
+    '<*'
+  ])('throws on the unsupported range "%s"', (range) => {
+    expect(() => satisfiesVersionRange('1.0.0', range)).toThrow()
+  })
+
+  it.each(['x.2.3', '*.2', '1.x.3', '07.2.0', '<=7.02.5', '7.2.00'])(
+    'throws on the invalid version "%s" in a range',
+    (range) => {
+      expect(() => satisfiesVersionRange('9.9.9', range)).toThrow()
+    }
+  )
+
+  it.each(['', 'dev', '7.2', '7.2.0.1', '7.2.0+build', '07.2.0', '7.2.0-', '7.2.0-rc-1'])(
+    'throws on the invalid version "%s"',
+    (version) => {
+      expect(() => satisfiesVersionRange(version, '*')).toThrow()
+      expect(() => satisfiesVersionRange(version, '<=9.1.0')).toThrow()
+    }
+  )
+
+  it.each([
+    ['2.0.0', '1.0.0 -3.0.0'],
+    ['2.0.0', '1.0.0 | 2.0.0'],
+    ['7.2.5', '7.2.5 ||| 1.0.0'],
+    ['7.1.0', '>=7.2.0 ~7.2.5']
+  ])('throws for %s on the invalid range "%s"', (version, range) => {
+    expect(() => satisfiesVersionRange(version, range)).toThrow()
   })
 })

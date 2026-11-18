@@ -1,7 +1,7 @@
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { AbilityRule } from '@opencloud-eu/web-client'
 import { nextTick } from 'vue'
-import { VersionCheck } from '../../../src'
+import { UpdateChannel, VersionCheck } from '../../../src'
 
 describe('VersionCheck component', () => {
   it('shows loading spinner while loading', async () => {
@@ -27,43 +27,46 @@ describe('VersionCheck component', () => {
   })
 
   describe('critical badge', () => {
-    it('shows critical badge when current version is in critical list and user is admin', async () => {
-      const { wrapper } = getWrapper({
-        productversion: '3.4.0',
-        critical: ['3.4.0'],
-        abilities: [{ action: 'read-all', subject: 'Setting' }]
-      })
-      await nextTick()
-      expect(wrapper.find('.version-check-critical').exists()).toBe(true)
-    })
+    const admin: AbilityRule[] = [{ action: 'read-all', subject: 'Setting' }]
 
-    it('does not show critical badge when current version is not in critical list', async () => {
-      const { wrapper } = getWrapper({
-        productversion: '3.5.0',
-        critical: ['3.4.0'],
-        abilities: [{ action: 'read-all', subject: 'Setting' }]
-      })
+    it.each([
+      { productversion: '3.4.0', critical_range: '<3.5.0', expected: true },
+      { productversion: '3.5.0', critical_range: '<3.5.0', expected: false },
+      { productversion: '6.1.0', critical_range: '1.0.0 - 3.0.0 || 5.0.0 - 7.0.0', expected: true },
+      {
+        productversion: '4.0.0',
+        critical_range: '1.0.0 - 3.0.0 || 5.0.0 - 7.0.0',
+        expected: false
+      },
+      { productversion: '3.4.0+git20250101', critical_range: '<3.5.0', expected: true }
+    ])(
+      'is $expected for $productversion in "$critical_range"',
+      async ({ productversion, critical_range, expected }) => {
+        const { wrapper } = getWrapper({ productversion, critical_range, abilities: admin })
+        await nextTick()
+        expect(wrapper.find('.version-check-critical').exists()).toBe(expected)
+      }
+    )
+    it('is not shown to non-admins', async () => {
+      const { wrapper } = getWrapper({ productversion: '3.4.0', critical_range: '<3.5.0' })
       await nextTick()
       expect(wrapper.find('.version-check-critical').exists()).toBe(false)
     })
-
-    it('does not show critical badge when user is not admin', async () => {
-      const { wrapper } = getWrapper({
-        productversion: '3.4.0',
-        critical: ['3.4.0'],
-        abilities: []
-      })
+    it('is not shown without a critical range', async () => {
+      const { wrapper } = getWrapper({ productversion: '3.4.0', abilities: admin })
       await nextTick()
       expect(wrapper.find('.version-check-critical').exists()).toBe(false)
     })
-    it('shows critical badge when version is in critical list', async () => {
+    it('is not shown and logs an error if the critical range is invalid', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper } = getWrapper({
-        productversion: '3.4.0+git20250101',
-        critical: ['3.4.0'],
-        abilities: [{ action: 'read-all', subject: 'Setting' }]
+        productversion: '3.4.0',
+        critical_range: '^3.0.0',
+        abilities: admin
       })
       await nextTick()
-      expect(wrapper.find('.version-check-critical').exists()).toBe(true)
+      expect(wrapper.find('.version-check-critical').exists()).toBe(false)
+      expect(console.error).toHaveBeenCalled()
     })
   })
 })
@@ -72,13 +75,13 @@ function getWrapper({
   productversion = '3.5.0',
   hasError = false,
   isLoading = false,
-  critical = [],
+  critical_range = undefined,
   abilities = []
 }: {
   productversion?: string
   hasError?: boolean
   isLoading?: boolean
-  critical?: string[]
+  critical_range?: string
   abilities?: AbilityRule[]
 } = {}) {
   const mocks = { ...defaultComponentMocks() }
@@ -105,26 +108,10 @@ function getWrapper({
                 hasError,
                 updates: {
                   channels: {
-                    rolling: {
-                      current_version: '3.5.0',
-                      url: 'https://github.com/opencloud-eu/opencloud/releases/tag/v3.5.0',
-                      critical
-                    },
-                    stable: {
-                      current_version: '2.0.4',
-                      url: 'https://github.com/opencloud-eu/opencloud/releases/tag/v2.0.4',
-                      critical
-                    },
-                    lts: {
-                      current_version: '2.0.4',
-                      url: 'https://github.com/opencloud-eu/opencloud/releases/tag/v2.0.4',
-                      critical
-                    },
-                    'lts-2.0': {
-                      current_version: '2.0.4',
-                      url: 'https://github.com/opencloud-eu/opencloud/releases/tag/v2.0.4',
-                      critical
-                    }
+                    rolling: getChannel('3.5.0', critical_range),
+                    stable: getChannel('2.0.4', critical_range),
+                    lts: getChannel('2.0.4', critical_range),
+                    'lts-2.0': getChannel('2.0.4', critical_range)
                   }
                 }
               }
@@ -134,4 +121,14 @@ function getWrapper({
       }
     })
   }
+}
+
+function getChannel(current_version: string, critical_range: string) {
+  return {
+    current_version,
+    url: `https://github.com/opencloud-eu/opencloud/releases/tag/v${current_version}`,
+    critical_range,
+    // the update server keeps this list for older web versions, it must be ignored
+    critical: ['3.4.0']
+  } as UpdateChannel
 }
