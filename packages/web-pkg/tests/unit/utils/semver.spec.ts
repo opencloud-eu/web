@@ -81,6 +81,14 @@ describe('satisfiesVersionRange', () => {
     }
   )
 
+  it.each(['', 'dev', '7.2', '7.2.0.1', '7.2.0+build', '07.2.0', '7.2.0-', '7.2.0-rc-1'])(
+    'throws on the invalid version "%s"',
+    (version) => {
+      expect(() => satisfiesVersionRange(version, '*')).toThrow()
+      expect(() => satisfiesVersionRange(version, '<=9.1.0')).toThrow()
+    }
+  )
+
   it.each([
     ['2.0.0', '1.0.0 -3.0.0'],
     ['2.0.0', '1.0.0 | 2.0.0'],

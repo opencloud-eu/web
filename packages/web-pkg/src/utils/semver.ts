@@ -41,6 +41,9 @@ export const compareVersions = (a: string, b: string) => {
 }
 
 const wildcards = ['x', 'X', '*']
+// a full version with an optional prerelease that parseVersion can split, e.g. `v7.2.0-rc.1`
+const fullVersionPattern =
+  /^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-[0-9A-Za-z]+(\.[0-9A-Za-z]+)*)?$/
 
 /**
  * Bounds of a version range, by default including the lower and excluding the upper bound.
@@ -154,8 +157,12 @@ function parseRange(range: string) {
  * A prerelease version is lower than its release (7.2.0-rc.1 is in `<7.2.0`), and partial or
  * wildcard bounds include prereleases like npm's `includePrerelease` option (7.2.0-rc.1 is in
  * `7.2.x`, 7.3.0-rc.1 is not).
- * Throws on a range it can't parse.
+ * Throws on a range it can't parse and on a version that isn't a full version like `7.2.0` or
+ * `v7.2.0-rc.1` (no build metadata, no hyphens inside the prerelease).
  */
 export function satisfiesVersionRange(version: string, range: string) {
+  if (!fullVersionPattern.test(version)) {
+    throw new Error(`invalid version "${version}"`)
+  }
   return parseRange(range).some((set) => set.every((bounds) => isWithinBounds(version, bounds)))
 }
