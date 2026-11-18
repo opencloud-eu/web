@@ -1,6 +1,5 @@
 import { AxiosInstance } from 'axios'
-import { urlJoin } from '../utils'
-import { pbkdf2Sync } from 'crypto'
+import { bytesToHex, urlJoin } from '../utils'
 import { XMLParser } from 'fast-xml-parser'
 
 export interface UrlSignOptions {
@@ -15,7 +14,6 @@ export class UrlSign {
   private xmlParser: XMLParser
   private signingKey: string
 
-  private ALGORITHM = 'sha512'
   private TTL = 1200
   private HASH_LENGTH = 32
   private ITERATION_COUNT = 10000
@@ -59,15 +57,22 @@ export class UrlSign {
   }
 
   private async createHashedKey(url: string) {
-    const signignKey = await this.getSignKey()
-    const hashedKey = pbkdf2Sync(
-      url,
-      signignKey,
-      this.ITERATION_COUNT,
-      this.HASH_LENGTH,
-      this.ALGORITHM
+    const signingKey = await this.getSignKey()
+    const encoder = new TextEncoder()
+    const key = await crypto.subtle.importKey('raw', encoder.encode(url), 'PBKDF2', false, [
+      'deriveBits'
+    ])
+    const hashedKey = await crypto.subtle.deriveBits(
+      {
+        name: 'PBKDF2',
+        hash: 'SHA-512',
+        salt: encoder.encode(signingKey),
+        iterations: this.ITERATION_COUNT
+      },
+      key,
+      this.HASH_LENGTH * 8
     )
 
-    return hashedKey.toString('hex')
+    return bytesToHex(hashedKey)
   }
 }

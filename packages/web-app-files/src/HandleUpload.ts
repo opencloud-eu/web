@@ -1,6 +1,5 @@
 import Uppy, { BasePlugin } from '@uppy/core'
 import { basename, dirname, join } from 'path'
-import { v4 as uuidV4 } from 'uuid'
 import { Language } from 'vue3-gettext'
 import { Ref, unref } from 'vue'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
@@ -146,7 +145,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
           name: file.name,
           mtime: (file.data as File).lastModified / 1000,
           tusEndpoint: endpoint,
-          uploadId: uuidV4(),
+          uploadId: crypto.randomUUID(),
           isFolder: file.type === 'directory'
         }
 
@@ -169,7 +168,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       if (relativeFilePath) {
         const topLevelDirectory = relativeFilePath.split('/').filter(Boolean)[0]
         if (!topLevelFolderIds[topLevelDirectory]) {
-          topLevelFolderIds[topLevelDirectory] = uuidV4()
+          topLevelFolderIds[topLevelDirectory] = crypto.randomUUID()
         }
         topLevelFolderId = topLevelFolderIds[topLevelDirectory]
       }
@@ -201,7 +200,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         uppyId: this.uppyService.generateUploadId(file),
         relativeFolder: directory,
         tusEndpoint: endpoint,
-        uploadId: uuidV4(),
+        uploadId: crypto.randomUUID(),
         topLevelFolderId,
         // route data
         routeName: name as string,
@@ -404,11 +403,11 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       if (path) {
         const isRoot = path.split('/').length <= 1
         path = urlJoin(path, { leadingSlash: true })
-        const uploadId = !isRoot ? uuidV4() : topLevelIds[path]
+        const uploadId = !isRoot ? crypto.randomUUID() : topLevelIds[path]
         const relativeFolder = dirname(path) === '/' ? '' : dirname(path)
 
         const uppyFile = {
-          id: uuidV4(),
+          id: crypto.randomUUID(),
           name: basename(path),
           type: 'folder',
           meta: {

@@ -133,7 +133,6 @@ import { defaultFuseOptions, escapeFuseQuery } from '@opencloud-eu/web-pkg'
 import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { omit, uniq } from 'lodash-es'
 import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
-import { v4 as uuidV4 } from 'uuid'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const appsStore = useAppsStore()
@@ -218,7 +217,7 @@ const matchingCount = computed(() => {
 const breadcrumbs = computed(() => {
   return [
     {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: $gettext('Shares'),
       onClick: () => loadResources(),
       isStaticNav: true

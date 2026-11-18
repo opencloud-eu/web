@@ -21,12 +21,11 @@
 <script setup lang="ts">
 import { NodeViewContent, nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
 import { useGettext } from 'vue3-gettext'
-import { v4 as uuidV4 } from 'uuid'
 
 defineProps(nodeViewProps)
 const { $gettext } = useGettext()
 
-const hintId = `html-block-hint-${uuidV4()}`
+const hintId = `html-block-hint-${crypto.randomUUID()}`
 </script>
 
 <style scoped>

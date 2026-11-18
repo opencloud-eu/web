@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { Ref, ref, unref } from 'vue'
-import { v4 as uuidV4 } from 'uuid'
 import { UseWebWorkerReturn, useWebWorker } from '@vueuse/core'
 
 export interface WebWorker<T = any> extends UseWebWorkerReturn<T> {
@@ -17,7 +16,7 @@ export const useWebWorkersStore = defineStore('webWorkers', () => {
     workerUrl: string,
     { needsTokenRenewal = false }: { needsTokenRenewal?: boolean } = {}
   ): WebWorker<T> => {
-    const workerId = uuidV4()
+    const workerId = crypto.randomUUID()
     const result = useWebWorker(workerUrl, { type: 'module', name: workerId })
     const worker = { id: workerId, needsTokenRenewal, ...result }
     unref(workers).push(worker)

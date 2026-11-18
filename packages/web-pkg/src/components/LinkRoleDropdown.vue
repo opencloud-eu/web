@@ -61,7 +61,6 @@
 </template>
 
 <script setup lang="ts">
-import { v4 as uuidV4 } from 'uuid'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
@@ -91,5 +90,5 @@ const currentLinkRoleLabel = computed(() => {
   return $gettext(getLinkRoleByType(modelValue)?.displayName)
 })
 
-const dropUuid = uuidV4()
+const dropUuid = crypto.randomUUID()
 </script>

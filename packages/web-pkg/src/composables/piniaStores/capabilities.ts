@@ -1,6 +1,7 @@
 import { AppProviderCapability, Capabilities } from '@opencloud-eu/web-client/ocs'
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
+import cloneDeep from 'lodash-es/cloneDeep'
 import merge from 'lodash-es/merge'
 import { SharePermissionBit } from '@opencloud-eu/web-client'
 
@@ -34,6 +35,9 @@ const defaultValues = {
       password: {
         enforced_for: { read_only: false, upload_only: false, read_write: false }
       }
+    },
+    user: {
+      enabled: true
     }
   },
   graph: {
@@ -66,10 +70,10 @@ const defaultValues = {
 
 export const useCapabilityStore = defineStore('capabilities', () => {
   const isInitialized = ref(false)
-  const capabilities = ref<Capabilities['capabilities']>(defaultValues)
+  const capabilities = ref<Capabilities['capabilities']>(cloneDeep(defaultValues))
 
   const setCapabilities = (data: Capabilities) => {
-    capabilities.value = merge({ ...defaultValues }, data.capabilities)
+    capabilities.value = merge(cloneDeep(defaultValues), data.capabilities)
     isInitialized.value = true
   }
 
@@ -123,6 +127,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     () => unref(capabilities).files_sharing.public?.password.enforced_for
   )
   const sharingSearchMinLength = computed(() => unref(capabilities).files_sharing.search_min_length)
+  const sharingUserEnabled = computed(() => unref(capabilities).files_sharing.user?.enabled)
   const sharingUserProfilePicture = computed(
     () => unref(capabilities).files_sharing.user?.profile_picture
   )
@@ -181,6 +186,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     sharingPublicDefaultPermissions,
     sharingPublicPasswordEnforcedFor,
     sharingSearchMinLength,
+    sharingUserEnabled,
     sharingUserProfilePicture,
     tusMaxChunkSize,
     tusExtension,

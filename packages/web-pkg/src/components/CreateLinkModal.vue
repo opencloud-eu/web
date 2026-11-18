@@ -104,7 +104,6 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { v4 as uuidV4 } from 'uuid'
 import { upperFirst } from 'lodash-es'
 import { useGettext } from 'vue3-gettext'
 import { ComponentPublicInstance, computed, ref, reactive, unref, onMounted, watch } from 'vue'
@@ -182,7 +181,7 @@ const confirmPasswordButtonText = computed(() => {
   return $gettext('Copy link and password')
 })
 
-const passwordInputKey = ref(uuidV4())
+const passwordInputKey = ref(crypto.randomUUID())
 const roleRefs = ref<Record<string, RoleRef>>({})
 
 const selectedExpiry = ref<DateTime>()

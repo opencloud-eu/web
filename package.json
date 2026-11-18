@@ -36,7 +36,6 @@
   ],
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
-    "@noble/hashes": "2.4.0",
     "@opencloud-eu/eslint-config": "workspace:*",
     "@opencloud-eu/prettier-config": "workspace:*",
     "@opencloud-eu/tsconfig": "workspace:*",

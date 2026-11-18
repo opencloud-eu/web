@@ -48,7 +48,6 @@
 import Fuse from 'fuse.js'
 import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { v4 as uuidV4 } from 'uuid'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
 import {
   AppBar,
@@ -119,7 +118,7 @@ const matchingCount = computed(() =>
 
 const breadcrumbs = computed(() => [
   {
-    id: uuidV4(),
+    id: crypto.randomUUID(),
     text: $gettext('Shares'),
     onClick: () => loadResources(),
     isStaticNav: true

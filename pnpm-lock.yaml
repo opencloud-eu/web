@@ -287,9 +287,6 @@ importers:
       '@axe-core/playwright':
         specifier: ^4.11.1
         version: 4.14.0(playwright-core@1.65.1)
-      '@noble/hashes':
-        specifier: 2.4.0
-        version: 2.4.0
       '@opencloud-eu/eslint-config':
         specifier: workspace:*
         version: link:packages/eslint-config
@@ -712,9 +709,6 @@ importers:
       pinia:
         specifier: 4.1.0
         version: 4.1.0(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.45(typescript@6.0.3))
-      uuid:
-        specifier: 14.0.3
-        version: 14.0.3
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.45(typescript@6.0.3))
@@ -873,9 +867,6 @@ importers:
       '@opencloud-eu/web-pkg':
         specifier: workspace:*
         version: link:../web-pkg
-      uuid:
-        specifier: ^14.0.0
-        version: 14.0.3
       vue:
         specifier: ^3.5.0
         version: 3.5.45(typescript@6.0.3)
@@ -972,9 +963,6 @@ importers:
       lodash-es:
         specifier: ^4.17.23
         version: 4.18.1
-      uuid:
-        specifier: ^14.0.0
-        version: 14.0.3
       webdav:
         specifier: 5.11.0
         version: 5.11.0
@@ -1168,9 +1156,6 @@ importers:
       qs:
         specifier: ^6.15.0
         version: 6.17.1
-      uuid:
-        specifier: ^14.0.0
-        version: 14.0.3
       vue-concurrency:
         specifier: ^5.0.3
         version: 5.0.3(vue@3.5.45(typescript@6.0.3))
@@ -1250,9 +1235,6 @@ importers:
       qs:
         specifier: 6.17.1
         version: 6.17.1
-      uuid:
-        specifier: 14.0.3
-        version: 14.0.3
       vue:
         specifier: ^3.5.31
         version: 3.5.45(typescript@6.0.3)
@@ -1706,10 +1688,6 @@ packages:
   '@noble/hashes@1.8.0':
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
     engines: {node: ^14.21.3 || >=16}
-
-  '@noble/hashes@2.4.0':
-    resolution: {integrity: sha512-X5XaVWZIBCT7HHZGm5I7ZQXDwLG+bGXuSrMQAW+7Zvl87h1kmc1ZB1VSRJcpUfoUrGQp4Fkoxm5kZ+Ms+aW+eA==}
-    engines: {node: '>= 20.19.0'}
 
   '@nodable/entities@3.1.0':
     resolution: {integrity: sha512-LsS/DjHr+uDM647Gru/cA8+J3a3HfhttwCKLyuoyN7yXTFCxKBtSgMQBvrW9yNPa2/zDRUNuGPaH5QUFoa4arQ==}
@@ -6115,8 +6093,6 @@ snapshots:
   '@noble/ciphers@0.5.3': {}
 
   '@noble/hashes@1.8.0': {}
-
-  '@noble/hashes@2.4.0': {}
 
   '@nodable/entities@3.1.0': {}
 

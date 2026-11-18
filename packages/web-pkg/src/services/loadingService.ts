@@ -1,4 +1,3 @@
-import { v4 as uuidV4 } from 'uuid'
 import { eventBus } from './eventBus'
 import { debounce } from 'lodash-es'
 
@@ -65,7 +64,7 @@ export class LoadingService {
     }: { debounceTime?: number; indeterminate?: boolean; warnBeforeUnload?: boolean } = {}
   ): Promise<T> {
     const task = {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       active: false,
       warnBeforeUnload,
       ...(!indeterminate && { state: { total: 0, current: 0 } })
