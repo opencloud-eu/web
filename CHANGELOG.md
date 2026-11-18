@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: skip disabled resources when selecting all via keyboard [[#4522](https://github.com/opencloud-eu/web/pull/4522)]
 - fix: limit keyboard selection in the spaces overview to the current page [[#4530](https://github.com/opencloud-eu/web/pull/4530)]
 - fix: replace history entries of redirect-only steps [[#4523](https://github.com/opencloud-eu/web/pull/4523)]
 - fix: show an error message when loading the group memberships fails [[#4529](https://github.com/opencloud-eu/web/pull/4529)]
