@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: limit keyboard selection in the spaces overview to the current page [[#4530](https://github.com/opencloud-eu/web/pull/4530)]
 - fix: replace history entries of redirect-only steps [[#4523](https://github.com/opencloud-eu/web/pull/4523)]
 - fix: show an error message when loading the group memberships fails [[#4529](https://github.com/opencloud-eu/web/pull/4529)]
 - fix: report a failed people search instead of showing no results [[#4532](https://github.com/opencloud-eu/web/pull/4532)]
