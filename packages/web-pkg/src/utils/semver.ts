@@ -62,8 +62,13 @@ function getVersionBounds(partial: string): VersionBounds {
   const parts = (partial.startsWith('v') ? partial.slice(1) : partial).split('.')
   const firstWildcard = parts.findIndex((part) => wildcards.includes(part))
   const known = firstWildcard === -1 ? parts : parts.slice(0, firstWildcard)
+  const wildcardParts = parts.slice(known.length)
 
-  if (parts.length > 3 || known.some((part) => !/^\d+$/.test(part))) {
+  if (
+    parts.length > 3 ||
+    known.some((part) => !/^(0|[1-9]\d*)$/.test(part)) ||
+    wildcardParts.some((part) => !wildcards.includes(part))
+  ) {
     throw new Error(`invalid version "${partial}"`)
   }
   if (known.length === 3) {
