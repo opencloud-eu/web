@@ -42,8 +42,13 @@ export const compareVersions = (a: string, b: string) => {
 
 const wildcards = ['x', 'X', '*']
 
+/**
+ * Bounds of a version range, by default including the lower and excluding the upper bound.
+ * A missing bound is unbounded.
+ */
 interface VersionBounds {
   lower?: string
+  lowerExclusive?: boolean
   upper?: string
   upperInclusive?: boolean
 }
@@ -72,9 +77,15 @@ function getVersionBounds(partial: string): VersionBounds {
   return { lower: lower.join('.'), upper: upper.join('.'), upperInclusive: false }
 }
 
-function isWithinBounds(version: string, { lower, upper, upperInclusive }: VersionBounds) {
-  if (lower && compareVersions(version, lower) < 0) {
-    return false
+function isWithinBounds(
+  version: string,
+  { lower, lowerExclusive, upper, upperInclusive }: VersionBounds
+) {
+  if (lower) {
+    const comparison = compareVersions(version, lower)
+    if (lowerExclusive ? comparison <= 0 : comparison < 0) {
+      return false
+    }
   }
   if (!upper) {
     return true
@@ -83,44 +94,51 @@ function isWithinBounds(version: string, { lower, upper, upperInclusive }: Versi
   return upperInclusive ? comparison <= 0 : comparison < 0
 }
 
-function satisfiesComparator(version: string, comparator: string) {
+function parseComparator(comparator: string): VersionBounds {
   const [, operator, partial] = comparator.match(/^(<=|>=|<|>|=)?(.+)$/)
   const bounds = getVersionBounds(partial)
 
+  if ((operator === '<' || operator === '>') && !bounds.lower) {
+    throw new Error(`invalid comparator "${comparator}"`)
+  }
+
   switch (operator) {
     case '>=':
-      return isWithinBounds(version, { lower: bounds.lower })
+      return { lower: bounds.lower }
     case '>':
-      if (!bounds.upper) {
-        return false
-      }
-      return bounds.upperInclusive
-        ? compareVersions(version, bounds.upper) > 0
-        : compareVersions(version, bounds.upper) >= 0
+      return { lower: bounds.upper, lowerExclusive: bounds.upperInclusive }
     case '<':
-      return bounds.lower ? compareVersions(version, bounds.lower) < 0 : false
+      return { upper: bounds.lower }
     case '<=':
-      return isWithinBounds(version, { upper: bounds.upper, upperInclusive: bounds.upperInclusive })
+      return { upper: bounds.upper, upperInclusive: bounds.upperInclusive }
     default:
-      return isWithinBounds(version, bounds)
+      return bounds
   }
 }
 
-function satisfiesComparatorSet(version: string, set: string) {
+function parseComparatorSet(set: string): VersionBounds[] {
   const hyphenRange = set.split(/\s+-\s+/)
+  if (hyphenRange.length > 2) {
+    throw new Error(`invalid version range "${set}"`)
+  }
   if (hyphenRange.length === 2) {
     const { lower } = getVersionBounds(hyphenRange[0])
     const { upper, upperInclusive } = getVersionBounds(hyphenRange[1])
-    return isWithinBounds(version, { lower, upper, upperInclusive })
-  }
-  if (hyphenRange.length > 2) {
-    throw new Error(`invalid version range "${set}"`)
+    return [{ lower, upper, upperInclusive }]
   }
 
   return set
     .replace(/(<=|>=|<|>|=)\s+/g, '$1')
     .split(/\s+/)
-    .every((comparator) => satisfiesComparator(version, comparator))
+    .map(parseComparator)
+}
+
+function parseRange(range: string) {
+  const sets = range.split('||').map((set) => set.trim())
+  if (sets.some((set) => !set)) {
+    throw new Error(`invalid version range "${range}"`)
+  }
+  return sets.map(parseComparatorSet)
 }
 
 /**
@@ -130,9 +148,5 @@ function satisfiesComparatorSet(version: string, set: string) {
  * Throws on a range it can't parse.
  */
 export function satisfiesVersionRange(version: string, range: string) {
-  const sets = range.split('||').map((set) => set.trim())
-  if (sets.some((set) => !set)) {
-    throw new Error(`invalid version range "${range}"`)
-  }
-  return sets.some((set) => satisfiesComparatorSet(version, set))
+  return parseRange(range).some((set) => set.every((bounds) => isWithinBounds(version, bounds)))
 }

@@ -56,4 +56,13 @@ describe('satisfiesVersionRange', () => {
       expect(() => satisfiesVersionRange('1.0.0', range)).toThrow()
     }
   )
+
+  it.each([
+    ['2.0.0', '1.0.0 -3.0.0'],
+    ['2.0.0', '1.0.0 | 2.0.0'],
+    ['7.2.5', '7.2.5 ||| 1.0.0'],
+    ['7.1.0', '>=7.2.0 ~7.2.5']
+  ])('throws for %s on the invalid range "%s"', (version, range) => {
+    expect(() => satisfiesVersionRange(version, range)).toThrow()
+  })
 })
