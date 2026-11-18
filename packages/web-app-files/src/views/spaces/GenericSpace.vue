@@ -154,7 +154,6 @@ import WhitespaceContextMenu from '../../components/Spaces/WhitespaceContextMenu
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { useFileUpload, useResourcesViewDefaults } from '../../composables'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
-import { v4 as uuidV4 } from 'uuid'
 import {
   useKeyboardFileMouseActions,
   useKeyboardFileNavigation,
@@ -239,14 +238,14 @@ const breadcrumbs = computed(() => {
   const rootBreadcrumbItems: BreadcrumbItem[] = []
   if (isProjectSpaceResource(unref(space))) {
     rootBreadcrumbItems.push({
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: $gettext('Spaces'),
       to: createLocationSpaces('files-spaces-projects'),
       isStaticNav: true
     })
   } else if (isShareSpaceResource(unref(space)) && authStore.isGuestContext) {
     rootBreadcrumbItems.push({
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: $gettext('Shares'),
       to: createLocationGuest('files-guest-shares'),
       isStaticNav: true
@@ -254,13 +253,13 @@ const breadcrumbs = computed(() => {
   } else if (isShareSpaceResource(unref(space))) {
     rootBreadcrumbItems.push(
       {
-        id: uuidV4(),
+        id: crypto.randomUUID(),
         text: $gettext('Shares'),
         to: { path: '/files/shares' },
         isStaticNav: true
       },
       {
-        id: uuidV4(),
+        id: crypto.randomUUID(),
         text: $gettext('Shared with me'),
         to: { path: '/files/shares/with-me' },
         isStaticNav: true
@@ -275,7 +274,7 @@ const breadcrumbs = computed(() => {
   const query = omit({ ...unref(route).query, ...routeQuery }, 'page')
   if (isPersonalSpaceResource(unref(space))) {
     spaceBreadcrumbItem = {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: unref(space).name,
       ...(unref(space).isOwner(userStore.user) && {
         to: createLocationSpaces('files-spaces-generic', {
@@ -286,7 +285,7 @@ const breadcrumbs = computed(() => {
     }
   } else if (isShareSpaceResource(unref(space))) {
     spaceBreadcrumbItem = {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       allowContextActions: true,
       text: unref(space).name,
       to: authStore.isGuestContext
@@ -295,7 +294,7 @@ const breadcrumbs = computed(() => {
     }
   } else if (isPublicSpaceResource(unref(space))) {
     spaceBreadcrumbItem = {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: $gettext('Public link'),
       to: createLocationPublic('files-public-link', {
         params,
@@ -305,7 +304,7 @@ const breadcrumbs = computed(() => {
     }
   } else {
     spaceBreadcrumbItem = {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       allowContextActions: !unref(isSpaceFrontpage),
       text: unref(space).name,
       to: createLocationSpaces('files-spaces-generic', {

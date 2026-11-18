@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { v4 as uuidV4 } from 'uuid'
 import { ref, unref } from 'vue'
 import { HttpError } from '@opencloud-eu/web-client'
 import { Action, ActionOptions } from '../actions'
@@ -22,7 +21,7 @@ export const useMessages = defineStore('messages', () => {
   const messages = ref<Message[]>([])
 
   const showMessage = (data: Omit<Message, 'id'>) => {
-    const message = { ...data, id: uuidV4() as string }
+    const message: Message = { ...data, id: crypto.randomUUID() }
     messages.value.push(message)
     return message
   }
@@ -40,9 +39,9 @@ export const useMessages = defineStore('messages', () => {
   }
 
   const showErrorMessage = (data: Omit<Message, 'id'>) => {
-    const message = {
-      id: uuidV4() as string,
-      status: 'danger' as const,
+    const message: Message = {
+      id: crypto.randomUUID(),
+      status: 'danger',
       timeout: 0,
       ...(data.errors && { errorLogContent: getXRequestIdsFromErrors(data.errors) }),
       ...data

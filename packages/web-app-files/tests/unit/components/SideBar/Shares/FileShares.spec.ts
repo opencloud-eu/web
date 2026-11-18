@@ -2,7 +2,6 @@ import FileShares from '../../../../../src/components/SideBar/Shares/FileShares.
 import { mock } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { v4 as uuidV4 } from 'uuid'
 import { CollaboratorShare, ShareRole, ShareTypes } from '@opencloud-eu/web-client'
 import {
   defaultPlugins,
@@ -30,7 +29,7 @@ const buildCollaborators = (amount: number): CollaboratorShare[] =>
   Array.from({ length: amount }, () => getCollaborator())
 
 const getCollaborator = (): CollaboratorShare => ({
-  id: uuidV4(),
+  id: crypto.randomUUID(),
   sharedWith: {
     id: 'einstein',
     displayName: 'Albert Einstein'
@@ -41,7 +40,7 @@ const getCollaborator = (): CollaboratorShare => ({
   },
   permissions: [],
   role: mock<ShareRole>(),
-  resourceId: uuidV4(),
+  resourceId: crypto.randomUUID(),
   indirect: false,
   shareType: ShareTypes.user.value,
   createdDateTime: '2024-01-01'

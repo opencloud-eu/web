@@ -1,11 +1,4 @@
-import {
-  defineConfig,
-  mergeConfig,
-  Plugin,
-  searchForWorkspaceRoot,
-  UserConfig,
-  ViteDevServer
-} from 'vite'
+import { defineConfig, mergeConfig, Plugin, UserConfig, ViteDevServer } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { Target, viteStaticCopy } from 'vite-plugin-static-copy'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
@@ -28,7 +21,6 @@ import {
 
 const dist = process.env.DIST_DIR || 'dist'
 
-const projectRootDir = searchForWorkspaceRoot(process.cwd())
 const { version } = packageJson
 const supportedBrowsersRegex = getUserAgentRegex({ allowHigherVersions: true })
 
@@ -167,12 +159,6 @@ export default defineConfig(({ mode, command }) => {
                   priority: 100
                 },
                 {
-                  // shared with web-client, would otherwise land in tiptap-vendor as a dependency of a tiptap extension
-                  name: 'uuid',
-                  test: /node_modules\/uuid\//,
-                  priority: 100
-                },
-                {
                   name: 'tiptap-vendor',
                   test: /node_modules\/@tiptap/
                 },
@@ -202,10 +188,7 @@ export default defineConfig(({ mode, command }) => {
         'process.env.PACKAGE_VERSION': JSON.stringify(version)
       },
       resolve: {
-        dedupe: ['vue3-gettext'],
-        alias: {
-          crypto: join(projectRootDir, 'polyfills/crypto.js')
-        }
+        dedupe: ['vue3-gettext']
       },
       plugins: [
         tailwindcss(),

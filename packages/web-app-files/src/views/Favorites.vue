@@ -179,7 +179,6 @@ import {
 } from '../composables/keyboardActions'
 import { folderViewsFavoritesExtensionPoint } from '../extensionPoints'
 import { useGettext } from 'vue3-gettext'
-import { v4 as uuidV4 } from 'uuid'
 
 const { getMatchingSpace } = useGetMatchingSpace()
 const { loadGraphPermissions } = useSpacesStore()
@@ -283,7 +282,7 @@ const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 const breadcrumbs = computed(() => {
   return [
     {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: $gettext('Favorites'),
       onClick: () => loadResources(),
       isStaticNav: true

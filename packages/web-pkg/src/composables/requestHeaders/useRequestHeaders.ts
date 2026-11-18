@@ -1,5 +1,4 @@
 import { computed } from 'vue'
-import { v4 as uuidV4 } from 'uuid'
 import { Auth } from '../../services'
 import { useAuthStore } from '../piniaStores'
 import { useGettext } from 'vue3-gettext'
@@ -20,7 +19,7 @@ export const useRequestHeaders = () => {
     return {
       'Accept-Language': language.current,
       'Initiator-ID': clientService.initiatorId,
-      'X-Request-ID': uuidV4(),
+      'X-Request-ID': crypto.randomUUID(),
       ...auth.getHeaders()
     }
   })
