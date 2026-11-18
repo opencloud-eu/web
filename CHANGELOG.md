@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: add favorites for project spaces and share roots [[#4547](https://github.com/opencloud-eu/web/pull/4547)]
 - feat: add easy and sign language menu to the top bar [[#4537](https://github.com/opencloud-eu/web/pull/4537)]
 - feat: add right-to-left layout support [[#3540](https://github.com/opencloud-eu/web/pull/3540)]
 - feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
