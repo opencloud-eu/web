@@ -211,12 +211,14 @@ export const onSSEItemRenamedEvent = async ({
       return replaceAppRouteFolder(router, space, currentFolder.path, updatedResource.path)
     }
 
-    return router.push({
+    const { params, query } = createFileRouteOptions(space, {
+      path: updatedResource.path,
+      fileId: updatedResource.fileId
+    })
+    return router.replace({
       name: routeName,
-      ...createFileRouteOptions(space, {
-        path: updatedResource.path,
-        fileId: updatedResource.fileId
-      })
+      params,
+      query: { ...unref(router.currentRoute).query, ...query }
     })
   }
 

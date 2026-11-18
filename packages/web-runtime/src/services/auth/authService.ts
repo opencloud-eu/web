@@ -401,7 +401,7 @@ export class AuthService implements AuthServiceInterface {
     if (isPublicLinkContextRequired(this.router, route)) {
       const token = extractPublicLinkToken(route)
       this.publicLinkManager.clear(token)
-      await this.router.push({
+      await this.router.replace({
         name: 'resolvePublicLink',
         params: { token },
         query: { redirectUrl: route.fullPath }

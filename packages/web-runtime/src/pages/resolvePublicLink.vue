@@ -199,12 +199,12 @@ const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boole
 
   const url = queryItemAsString(unref(redirectUrl))
   if (url) {
-    router.push(parsePathQuery(url))
+    router.replace(parsePathQuery(url))
     return
   }
 
   if (unref(loadedSpace).publicLinkPermission === SharePermissionBit.Create) {
-    router.push({
+    router.replace({
       name: 'files-public-upload',
       params: { token: unref(token) },
       query: { fileId: unref(publicLinkSpace).fileId }
@@ -216,7 +216,7 @@ const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boole
 
   const { resource, path } = yield* call(getTargetResource(signal))
 
-  router.push(
+  router.replace(
     getLinkTargetRoute({
       space: unref(loadedSpace),
       resource,
