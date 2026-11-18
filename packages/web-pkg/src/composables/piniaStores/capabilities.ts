@@ -1,6 +1,7 @@
 import { AppProviderCapability, Capabilities } from '@opencloud-eu/web-client/ocs'
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
+import cloneDeep from 'lodash-es/cloneDeep'
 import merge from 'lodash-es/merge'
 import { SharePermissionBit } from '@opencloud-eu/web-client'
 
@@ -66,10 +67,10 @@ const defaultValues = {
 
 export const useCapabilityStore = defineStore('capabilities', () => {
   const isInitialized = ref(false)
-  const capabilities = ref<Capabilities['capabilities']>(defaultValues)
+  const capabilities = ref<Capabilities['capabilities']>(cloneDeep(defaultValues))
 
   const setCapabilities = (data: Capabilities) => {
-    capabilities.value = merge({ ...defaultValues }, data.capabilities)
+    capabilities.value = merge(cloneDeep(defaultValues), data.capabilities)
     isInitialized.value = true
   }
 
