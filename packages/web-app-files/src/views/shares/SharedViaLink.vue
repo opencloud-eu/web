@@ -117,7 +117,6 @@ import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
 import { folderViewsSharedViaLinkExtensionPoint } from '../../extensionPoints'
-import { v4 as uuidV4 } from 'uuid'
 import { useGettext } from 'vue3-gettext'
 import Fuse from 'fuse.js'
 
@@ -213,7 +212,7 @@ resourcesStore.$onAction(async (action) => {
 const breadcrumbs = computed(() => {
   return [
     {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: $gettext('Shares'),
       onClick: () => loadResources(),
       isStaticNav: true

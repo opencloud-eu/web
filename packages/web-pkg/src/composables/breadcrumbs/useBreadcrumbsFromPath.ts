@@ -2,7 +2,6 @@ import { eventBus } from '../../services/eventBus'
 import { RouteLocation } from 'vue-router'
 import omit from 'lodash-es/omit'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
-import { v4 as uuidV4 } from 'uuid'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { Ref, ref, unref } from 'vue'
 import { AncestorMetaData } from '../../types'
@@ -28,7 +27,7 @@ export const useBreadcrumbsFromPath = () => {
       const ancestor = unref(ancestorMetaData)[relativePath]
 
       return {
-        id: uuidV4(),
+        id: crypto.randomUUID(),
         allowContextActions: true,
         text,
         to: {
@@ -49,7 +48,7 @@ export const useBreadcrumbsFromPath = () => {
     return [
       ...items,
       {
-        id: uuidV4(),
+        id: crypto.randomUUID(),
         allowContextActions: last.allowContextActions,
         text: last.text,
         ...(last.icon && { icon: last.icon }),

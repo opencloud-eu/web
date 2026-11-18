@@ -2,7 +2,6 @@ import { eventBus } from '../services'
 import { RouteLocation } from 'vue-router'
 import omit from 'lodash-es/omit'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
-import { v4 as uuidV4 } from 'uuid'
 
 export const breadcrumbsFromPath = (
   currentRoute: RouteLocation,
@@ -15,7 +14,7 @@ export const breadcrumbsFromPath = (
   return resource.map(
     (text, i) =>
       ({
-        id: uuidV4(),
+        id: crypto.randomUUID(),
         allowContextActions: true,
         text,
         to: {
@@ -33,7 +32,7 @@ export const concatBreadcrumbs = (...items: BreadcrumbItem[]): BreadcrumbItem[] 
   return [
     ...items,
     {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       allowContextActions: last.allowContextActions,
       text: last.text,
       ...(last.icon && { icon: last.icon }),

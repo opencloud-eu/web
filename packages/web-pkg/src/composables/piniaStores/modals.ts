@@ -1,6 +1,5 @@
 import { ContextualHelperData } from '@opencloud-eu/design-system/helpers'
 import { defineStore } from 'pinia'
-import { v4 as uuidV4 } from 'uuid'
 import { Component, ComponentPublicInstance, computed, ref, unref } from 'vue'
 
 export type CustomModalComponent = Component<{ modal: Modal } & Record<string, any>>
@@ -67,7 +66,7 @@ export const useModals = defineStore('modals', () => {
   }
 
   const dispatchModal = (data: Omit<Modal, 'id'>) => {
-    const modal = { ...data, id: uuidV4() as string }
+    const modal: Modal = { ...data, id: crypto.randomUUID() }
     modals.value.push(modal)
     return modal
   }

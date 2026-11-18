@@ -53,7 +53,6 @@
 import { ref, computed, unref } from 'vue'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
-import { v4 as uuidV4 } from 'uuid'
 import { AppMenuItemExtension, useRouter } from '@opencloud-eu/web-pkg'
 
 const { menuItems = [] } = defineProps<{
@@ -75,7 +74,7 @@ const applicationSwitcherLabel = computed(() => {
   return $gettext('Application Switcher')
 })
 const updateAppIcons = () => {
-  appIconKey.value = uuidV4().replaceAll('-', '')
+  appIconKey.value = crypto.randomUUID().replaceAll('-', '')
 }
 
 const getAdditionalEventBindings = (item: AppMenuItemExtension) => {

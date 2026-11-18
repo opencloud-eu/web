@@ -1,5 +1,4 @@
 import { Cipher, increment } from '@fyears/rclone-crypt'
-import { v4 as uuidV4 } from 'uuid'
 import { VaultEngine } from '@opencloud-eu/web-pkg'
 import { fromBase64, toBase64 } from '../integrity'
 
@@ -56,7 +55,7 @@ export function createEngine(vaultRoot: string, password: string): VaultEngine {
       // A random uuid encrypted with the vault's own content cipher, in the very
       // same rclone-crypt file format the vault's files use.
       const ciphertext = await cipher.encryptData(
-        new TextEncoder().encode(uuidV4()),
+        new TextEncoder().encode(crypto.randomUUID()),
         // nonce omitted → lib generates a fresh random nonce
         undefined
       )

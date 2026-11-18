@@ -1,5 +1,4 @@
 import { computed, unref, watch } from 'vue'
-import { v4 as uuidV4 } from 'uuid'
 import {
   OcTusOptions,
   OcUppyBody,
@@ -35,7 +34,7 @@ export function useUpload(options: UploadOptions) {
       headers['Authorization'] = 'Bearer ' + authStore.accessToken
     }
 
-    headers['X-Request-ID'] = uuidV4()
+    headers['X-Request-ID'] = crypto.randomUUID()
     headers['Accept-Language'] = language.current
     headers['Initiator-ID'] = clientService.initiatorId
     // tells the server to not send a `Www-Authenticate` header, which would trigger the browser's native login dialog

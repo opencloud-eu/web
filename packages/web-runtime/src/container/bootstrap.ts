@@ -53,7 +53,6 @@ import {
   getWebVersion
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
-import { v4 as uuidV4 } from 'uuid'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { getQueryParam } from '../helpers/url'
 import PQueue from 'p-queue'
@@ -92,9 +91,7 @@ import {
   onSSESpaceEnabledEvent
 } from './sse'
 import { loadTranslations, resolveInitialLanguage } from '../helpers/language'
-import { urlJoin } from '@opencloud-eu/web-client'
-import { sha256 } from '@noble/hashes/sha2.js'
-import { bytesToHex } from '@noble/hashes/utils.js'
+import { bytesToHex, urlJoin } from '@opencloud-eu/web-client'
 import { injectGeneratorMeta } from '../helpers/meta'
 
 // Snapshot embed query params on first call so they survive Vue Router
@@ -192,7 +189,10 @@ export const announceConfiguration = async ({
   token?: string
 }) => {
   const request = await fetch(path, {
-    headers: { 'X-Request-ID': uuidV4(), ...(token && { Authorization: `Bearer ${token}` }) }
+    headers: {
+      'X-Request-ID': crypto.randomUUID(),
+      ...(token && { Authorization: `Bearer ${token}` })
+    }
   })
   if (request.status !== 200) {
     throw new Error(`config could not be loaded. HTTP status-code ${request.status}`)
@@ -752,8 +752,10 @@ export const announceUpdates = async ({
   }
 
   try {
-    const encoder = new TextEncoder()
-    const sha256ServerUrl = sha256(encoder.encode(configStore.serverUrl))
+    const serverUrlHash = await crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(configStore.serverUrl)
+    )
 
     updatesStore.setIsLoading(true)
     const { data }: { data: Updates } = await clientService.httpUnAuthenticated.get(
@@ -763,7 +765,7 @@ export const announceUpdates = async ({
           'Cache-Control': 'no-cache'
         },
         params: {
-          server: bytesToHex(sha256ServerUrl),
+          server: bytesToHex(serverUrlHash),
           edition: capabilityStore.status.edition || 'rolling',
           version: capabilityStore.status.productversion
         }

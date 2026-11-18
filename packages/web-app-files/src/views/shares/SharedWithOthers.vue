@@ -148,7 +148,6 @@ import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { folderViewsSharedWithOthersExtensionPoint } from '../../extensionPoints'
-import { v4 as uuidV4 } from 'uuid'
 import Fuse from 'fuse.js'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
@@ -221,7 +220,7 @@ const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 const breadcrumbs = computed(() => {
   return [
     {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: $gettext('Shares'),
       onClick: () => loadResources(),
       isStaticNav: true

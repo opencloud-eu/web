@@ -64,7 +64,6 @@
 
 <script setup lang="ts">
 import RoleItem from '../Shared/RoleItem.vue'
-import { v4 as uuidV4 } from 'uuid'
 import { inject, computed, ref, unref, Ref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { ShareRole } from '@opencloud-eu/web-client'
@@ -175,7 +174,7 @@ watch(
 
 const roleButtonId = computed(() => {
   if (domSelector) {
-    return `files-collaborators-role-button-${domSelector}-${uuidV4()}`
+    return `files-collaborators-role-button-${domSelector}-${crypto.randomUUID()}`
   }
   return 'files-collaborators-role-button-new'
 })

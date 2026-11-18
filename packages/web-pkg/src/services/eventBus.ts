@@ -1,5 +1,3 @@
-import { v4 as uuidV4 } from 'uuid'
-
 export class EventBus {
   private topics: Map<string, { callback: (data?: unknown) => void; token: string }[]>
 
@@ -9,7 +7,7 @@ export class EventBus {
 
   public subscribe<T = unknown>(topic: string, callback: (data?: T) => void): string {
     const subscription = {
-      token: uuidV4(),
+      token: crypto.randomUUID(),
       callback: callback as (data?: unknown) => void
     }
     const subscriptions = [subscription, ...(this.topics.get(topic) || [])]

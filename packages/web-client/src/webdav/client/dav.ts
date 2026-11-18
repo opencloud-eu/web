@@ -6,7 +6,6 @@ import {
   WebDAVClient,
   createClient
 } from 'webdav'
-import { v4 as uuidV4 } from 'uuid'
 import { encodePath, urlJoin } from '../../utils'
 import { DavMethod, DavPropertyValue } from '../constants'
 import { buildPropFindBody, buildPropPatchBody, DavPropertyRecord } from './builders'
@@ -202,7 +201,7 @@ export class DAV {
     return {
       'Content-Type': 'application/xml; charset=utf-8',
       'X-Requested-With': 'XMLHttpRequest',
-      'X-Request-ID': uuidV4(),
+      'X-Request-ID': crypto.randomUUID(),
       ...(this.headers && { ...this.headers() }),
       ...headers
     }
