@@ -96,8 +96,10 @@ x-opencloud-server: &opencloud-service
     - oc.opencloud.test:${DOCKER_HOST:-host-gateway}
   restart: unless-stopped
   depends_on:
-    - traefik
-    - tika-service
+    traefik:
+      condition: service_started
+    tika:
+      condition: service_healthy
 
 services:
   opencloud:
@@ -161,6 +163,8 @@ services:
         condition: service_started
       imagor:
         condition: service_started
+      tika:
+        condition: service_healthy
 
   opencloud-federated:
     <<: *opencloud-service
@@ -312,15 +316,6 @@ services:
       traefik:
         aliases:
           - ${STALWART_DOMAIN:-stalwart.opencloud.test}
-
-  tika-service:
-    image: dadarek/wait-for-dependencies:latest
-    container_name: web_tika_service
-    depends_on:
-      - tika
-    command: 'tika:9998'
-    networks:
-      - traefik
 
   tika:
     image: apache/tika:4.3.0-SNAPSHOT
