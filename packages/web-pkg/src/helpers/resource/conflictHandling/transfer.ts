@@ -1,4 +1,3 @@
-import { basename, join } from 'path'
 import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ResolveStrategy, TransferType, type TransferData } from './types'
 import { ConflictDialog } from './conflictDialog'
@@ -7,7 +6,7 @@ import type { ClientService } from '../../../services'
 import { useMessages } from '../../../composables'
 import { Ref, unref } from 'vue'
 import type { Language } from 'vue3-gettext'
-import { HttpError } from '@opencloud-eu/web-client'
+import { HttpError, basename, urlJoin } from '@opencloud-eu/web-client'
 
 export class ResourceTransfer extends ConflictDialog {
   constructor(
@@ -175,7 +174,7 @@ export class ResourceTransfer extends ConflictDialog {
         sourceSpace: this.sourceSpace,
         targetSpace: this.targetSpace,
         targetFolder: this.targetFolder,
-        path: join(this.targetFolder.path, targetName),
+        path: urlJoin(this.targetFolder.path, targetName),
         overwrite: overwriteTarget,
         transferType
       })
@@ -200,7 +199,7 @@ export class ResourceTransfer extends ConflictDialog {
     }
 
     const folderName = basename(resource.path)
-    const newPath = join(targetFolder.path, folderName)
+    const newPath = urlJoin(targetFolder.path, folderName)
 
     if (currentFolderPath.split('/').length < newPath.split('/').length) {
       // this edge case is only possible when moving folders upwards in the hierarchy

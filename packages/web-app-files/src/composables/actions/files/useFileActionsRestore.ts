@@ -1,5 +1,3 @@
-import { basename, dirname } from 'path'
-
 import {
   Resource,
   isProjectSpaceResource,
@@ -7,7 +5,9 @@ import {
   extractNodeId,
   SpaceResource,
   isTrashResource,
-  urlJoin
+  urlJoin,
+  basename,
+  dirname
 } from '@opencloud-eu/web-client'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'

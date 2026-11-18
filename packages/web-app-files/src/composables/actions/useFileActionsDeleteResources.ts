@@ -22,8 +22,7 @@ import {
   Modifier,
   useKeyboardActions
 } from '@opencloud-eu/web-pkg'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { dirname } from 'path'
+import { Resource, SpaceResource, dirname } from '@opencloud-eu/web-client'
 import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'

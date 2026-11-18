@@ -1,11 +1,11 @@
 import { onMounted, onBeforeUnmount, unref, type Ref, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { dirname, join, relative } from 'path'
 import {
   extractExtensionFromFile,
   extractNameWithoutExtension,
   Resource,
   SpaceResource,
+  dirname,
   urlJoin
 } from '@opencloud-eu/web-client'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
@@ -27,6 +27,16 @@ import {
 interface CollaboraMessage {
   MessageId: string
   Values?: Record<string, unknown>
+}
+
+// path of folder relative to baseFolder, null if it's outside of baseFolder
+function getSubfolderPath(baseFolder: string, folder: string): string | null {
+  const base = urlJoin(baseFolder, { trailingSlash: true })
+  const target = urlJoin(folder, { trailingSlash: true })
+  if (!target.startsWith(base)) {
+    return null
+  }
+  return target.slice(base.length).replace(/\/$/, '')
 }
 
 export function useCollaboraPostMessages({
@@ -120,12 +130,8 @@ export function useCollaboraPostMessages({
     const errorTitle = $gettext('Unable to save »%{fileName}«', { fileName })
 
     // Collabora saves relative to the folder of the current file and can't leave it
-    const targetPath = relative(dirname(currentResource.path), targetFolder.path)
-    if (
-      targetFolder.storageId !== currentResource.storageId ||
-      targetPath === '..' ||
-      targetPath.startsWith('../')
-    ) {
+    const targetPath = getSubfolderPath(dirname(currentResource.path), targetFolder.path)
+    if (targetFolder.storageId !== currentResource.storageId || targetPath === null) {
       showErrorMessage({
         title: errorTitle,
         desc: $gettext('Documents can only be saved in the current folder or its subfolders.')
@@ -148,7 +154,10 @@ export function useCollaboraPostMessages({
       return
     }
 
-    postMessageToCollabora('Action_SaveAs', { Filename: join(targetPath, fileName), Notify: true })
+    postMessageToCollabora('Action_SaveAs', {
+      Filename: urlJoin(targetPath, fileName, { leadingSlash: false }),
+      Notify: true
+    })
   }
 
   async function handleActionSaveResp(message: CollaboraMessage): Promise<void> {
@@ -162,7 +171,7 @@ export function useCollaboraPostMessages({
     // FIXME: when we move to id based propfinds we magically need a fileId for the new file. Collabora doesn't provide that.
     // the file name is relative to the folder of the current file and may contain subfolders
     const newFile = await webdav.getFileInfo(currentSpace, {
-      path: join(dirname(currentResource.path), message.Values.fileName as string),
+      path: urlJoin(dirname(currentResource.path), message.Values.fileName as string),
       fileId: undefined
     })
     await router.push({

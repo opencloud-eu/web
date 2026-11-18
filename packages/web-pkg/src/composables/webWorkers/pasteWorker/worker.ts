@@ -1,6 +1,5 @@
 import PQueue from 'p-queue'
-import { join } from 'path'
-import { webdav as _webdav } from '@opencloud-eu/web-client'
+import { webdav as _webdav, urlJoin } from '@opencloud-eu/web-client'
 import type { WorkerTopic } from '../../piniaStores/webWorkers'
 import { TransferType } from '../../../helpers/resource/conflictHandling/types'
 import type { TransferData } from '../../../helpers/resource/conflictHandling'
@@ -79,8 +78,8 @@ self.onmessage = async (e: MessageEvent) => {
           await doMove(data)
         }
 
-        resource.path = join(data.targetFolder.path, resource.name)
-        resource.webDavPath = join(data.targetFolder.webDavPath, resource.name)
+        resource.path = urlJoin(data.targetFolder.path, resource.name)
+        resource.webDavPath = urlJoin(data.targetFolder.webDavPath, resource.name)
 
         successful.push(resource)
       } catch (e) {

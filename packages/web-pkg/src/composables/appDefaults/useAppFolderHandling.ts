@@ -1,12 +1,12 @@
 import { Ref, ref, unref, MaybeRef } from 'vue'
-import { dirname } from 'path'
 import { ClientService, folderService } from '../../services'
 import { useAppFileHandling } from './useAppFileHandling'
 import {
   HttpError,
   isSearchResource,
   isShareSpaceResource,
-  Resource
+  Resource,
+  dirname
 } from '@opencloud-eu/web-client'
 import { FileContext } from './types'
 import { RouteLocationNormalizedLoaded } from 'vue-router'

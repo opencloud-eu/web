@@ -1,10 +1,9 @@
 import { unref } from 'vue'
-import { join } from 'path'
 import { useWebWorkersStore } from '../../piniaStores/webWorkers'
 import { useAuthStore, useConfigStore, useVaultStore } from '../../piniaStores'
 import { useLoadingService } from '../../loadingService'
 import { useRequestHeaders } from '../../requestHeaders'
-import { createHttpError, type HttpError, type Resource } from '@opencloud-eu/web-client'
+import { createHttpError, type HttpError, type Resource, urlJoin } from '@opencloud-eu/web-client'
 import { TransferType, type TransferData } from '../../../helpers/resource/conflictHandling/types'
 import PasteWorker from './worker?worker'
 
@@ -84,7 +83,7 @@ export const usePasteWorker = () => {
       const isMove = transferType === TransferType.MOVE
       const succeeded = isMove
         ? movedIds.has(resource.id)
-        : targetPaths.has(join(targetFolder.path, resource.name))
+        : targetPaths.has(urlJoin(targetFolder.path, resource.name))
       if (!succeeded) {
         continue
       }

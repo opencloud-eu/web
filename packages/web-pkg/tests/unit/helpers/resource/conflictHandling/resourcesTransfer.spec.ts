@@ -44,7 +44,7 @@ describe('resourcesTransfer', () => {
     targetSpace = buildSpace(spaceOptions)
     targetFolder = {
       id: 'target',
-      path: 'target',
+      path: '/target',
       webDavPath: '/target'
     }
   })
@@ -137,7 +137,7 @@ describe('resourcesTransfer', () => {
     ] as Resource[]
     clientServiceMock.webdav.listFiles.mockResolvedValueOnce({
       resource: targetFolder,
-      children: [{ id: '3', name: 'a.txt', path: 'target/a.txt' } as Resource]
+      children: [{ id: '3', name: 'a.txt', path: '/target/a.txt' } as Resource]
     })
     const resourcesTransfer = new ResourceTransfer(
       sourceSpace,
@@ -155,7 +155,7 @@ describe('resourcesTransfer', () => {
 
     const transferData = await resourcesTransfer.getTransferData(TransferType.COPY)
 
-    expect(transferData.map(({ path }) => path)).toEqual(['target/a (2).txt', 'target/a (1).txt'])
+    expect(transferData.map(({ path }) => path)).toEqual(['/target/a (2).txt', '/target/a (1).txt'])
   })
   describe('getTransferData with conflicts', () => {
     const batchTargetFolder = { id: 'target', path: '/target', webDavPath: '/target' } as Resource
@@ -882,7 +882,7 @@ describe('resourcesTransfer', () => {
     const targetFolderItems = [
       {
         id: 'a',
-        path: 'target/a',
+        path: '/target/a',
         webDavPath: '/target/a',
         name: '/target/a'
       }
@@ -908,7 +908,7 @@ describe('resourcesTransfer', () => {
     const targetFolderItems = [
       {
         id: 'a',
-        path: 'target/a',
+        path: '/target/a',
         webDavPath: '/target/a',
         name: '/target/a'
       }
@@ -918,7 +918,7 @@ describe('resourcesTransfer', () => {
       resourcesToMove,
       targetSpace,
       resourcesToMove[0],
-      computed(() => mock<Resource>({ path: '/' })),
+      computed(() => mock<Resource>({ path: '/target/a' })),
       clientServiceMock,
       vi.fn(),
       vi.fn()

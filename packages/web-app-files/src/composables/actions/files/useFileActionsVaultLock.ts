@@ -1,7 +1,6 @@
 import { computed, Ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { dirname } from 'path'
-import { isSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { isSpaceResource, Resource, SpaceResource, dirname } from '@opencloud-eu/web-client'
 import {
   createFileRouteOptions,
   ExtensionRegistry,

@@ -1,10 +1,8 @@
 import Uppy, { BasePlugin } from '@uppy/core'
-import { basename, dirname, join } from 'path'
 import { Language } from 'vue3-gettext'
 import { Ref, unref } from 'vue'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { urlJoin } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, basename, dirname, urlJoin } from '@opencloud-eu/web-client'
 import { UploadResourceConflict } from './helpers/resource'
 import {
   ExtensionRegistry,
@@ -457,7 +455,9 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       const foldersToBeCreated = Object.keys(current)
       const promises: Promise<unknown>[] = []
       for (const folder of foldersToBeCreated) {
-        promises.push(createDirectoryLevel(current[folder], join(path, folder)))
+        promises.push(
+          createDirectoryLevel(current[folder], urlJoin(path, folder, { leadingSlash: 'keep' }))
+        )
       }
       return Promise.allSettled(promises)
     }
