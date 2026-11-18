@@ -90,6 +90,7 @@
           v-else
           :are-paths-displayed="true"
           :resources="paginatedResources"
+          :fields-displayed="['name', 'size', 'tags', 'mdate']"
           :view-mode="viewMode"
           :header-position="fileListHeaderY"
           :sort-by="sortBy"

@@ -3,7 +3,7 @@ import { SearchResult } from '../../components'
 import { DavProperties } from '@opencloud-eu/web-client/webdav'
 import { call } from '@opencloud-eu/web-client'
 import { useClientService } from '../clientService'
-import { isProjectSpaceResource } from '@opencloud-eu/web-client'
+import { getProjectSpaceOfRootItem } from '../../helpers/spaces'
 import {
   useCapabilityStore,
   useExtensionRegistry,
@@ -34,10 +34,6 @@ export const useSearch = () => {
   const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enabled)
   const tagSearchEnabled = computed(() => capabilityStore.searchTag?.enabled)
   const areHiddenFilesShown = computed(() => resourcesStore.areHiddenFilesShown)
-  const projectSpaces = computed(() => spacesStore.spaces.filter(isProjectSpaceResource))
-  const getProjectSpace = (id: string) => {
-    return unref(projectSpaces).find((s) => s.id === id)
-  }
 
   const searchTask = useTask(function* (
     signal,
@@ -75,7 +71,10 @@ export const useSearch = () => {
           return !claim?.encryptsNames || claim.vaultRoot === resource.path
         })
         .map((resource) => {
-          const matchingSpace = getProjectSpace(resource.parentFolderId)
+          const matchingSpace = getProjectSpaceOfRootItem(
+            spacesStore.spaces,
+            resource.parentFolderId
+          )
           const data = (matchingSpace ? matchingSpace : resource) as SearchResource
 
           // A surfaced vault root is a normal clear-text folder; flag it so the

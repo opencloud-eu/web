@@ -307,6 +307,18 @@ async function setLoadedResource(resource: Resource) {
   }
 }
 
+// shared resources are shown as a merged copy, which needs to follow favorite changes of the selection
+watch(
+  () => unref(panelContext).items[0]?.starred,
+  (starred) => {
+    const resource = unref(loadedResource)
+    if (!resource || resource.id !== unref(panelContext).items[0]?.id) {
+      return
+    }
+    loadedResource.value.starred = starred
+  }
+)
+
 function resetSidebarResource() {
   currentResourceMtime.value = undefined
   loadedSharesResourceId.value = undefined

@@ -1,6 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import type { RouteLocation } from 'vue-router'
+import type { Resource, SearchResource, SpaceResource } from '@opencloud-eu/web-client'
 import { FolderLoaderFavorites, type TaskContext } from '../../../../../src/services/folder'
 import {
   useCapabilityStore,
@@ -53,26 +54,54 @@ describe('FolderLoaderFavorites', () => {
       expect.anything()
     )
   })
+  it('lists the root of a favorite project space as the space itself', async () => {
+    const space = mock<SpaceResource>({ id: 'storage$space', driveType: 'project' })
+    const spaceRoot = mock<Resource>({ id: 'storage$space!space', parentFolderId: 'storage$space' })
+    const file = mock<Resource>({ id: 'storage$space!file', parentFolderId: 'storage$space!space' })
+
+    const { resourcesStore, spacesStore } = await loadFavorites({}, 'files-common-favorites', {
+      resources: [spaceRoot, file],
+      spaces: [space]
+    })
+
+    expect(resourcesStore.initResourceList).toHaveBeenCalledWith({
+      currentFolder: null,
+      resources: [space, file]
+    })
+    expect(spacesStore.updateSpaceField).toHaveBeenCalledWith({
+      id: 'storage$space',
+      field: 'starred',
+      value: true
+    })
+  })
 })
 
 async function loadFavorites(
   query: Record<string, string | Record<string, string>>,
-  routeName = 'files-common-favorites'
+  routeName = 'files-common-favorites',
+  { resources = [], spaces = [] }: { resources?: Resource[]; spaces?: SpaceResource[] } = {}
 ) {
   const mocks = defaultComponentMocks({
     currentRoute: { name: routeName, query } as unknown as RouteLocation
   })
-  mocks.$clientService.webdav.search.mockResolvedValue({ resources: [], totalResults: 0 })
+  mocks.$clientService.webdav.search.mockResolvedValue({
+    resources: resources as SearchResource[],
+    totalResults: resources.length
+  })
 
   let task!: ReturnType<FolderLoaderFavorites['getTask']>
+  let resourcesStore!: ReturnType<typeof useResourcesStore>
+  let spacesStore!: ReturnType<typeof useSpacesStore>
 
   getComposableWrapper(
     () => {
+      resourcesStore = useResourcesStore()
+      spacesStore = useSpacesStore()
       const context: TaskContext = {
         router: mocks.$router,
         clientService: mocks.$clientService,
-        resourcesStore: useResourcesStore(),
-        spacesStore: useSpacesStore(),
+        resourcesStore,
+        spacesStore,
         sharesStore: useSharesStore(),
         configStore: useConfigStore(),
         userStore: useUserStore(),
@@ -82,9 +111,9 @@ async function loadFavorites(
       }
       task = new FolderLoaderFavorites().getTask(context)
     },
-    { mocks, provide: mocks }
+    { mocks, provide: mocks, pluginOptions: { piniaOptions: { spacesState: { spaces } } } }
   )
 
   await task.perform(new AbortController().signal)
-  return { search: mocks.$clientService.webdav.search }
+  return { search: mocks.$clientService.webdav.search, resourcesStore, spacesStore }
 }

@@ -1194,6 +1194,82 @@ describe('file events', () => {
       expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
     })
   })
+  describe('favorite events of a project space', () => {
+    // the event carries the id of the space root, its parent is the space itself
+    const projectSpace = mock<SpaceResource>({ id: 'storage$space', driveType: 'project' })
+    const sseData = mock<EventSchemaType>({
+      itemid: 'storage$space!space',
+      parentitemid: projectSpace.id,
+      spaceid: projectSpace.id
+    })
+
+    it.each([
+      { handler: onSSEItemFavoriteAddedEvent, starred: true },
+      { handler: onSSEItemFavoriteRemovedEvent, starred: false }
+    ])('$handler.name updates the space and the listed space', async ({ handler, starred }) => {
+      const mocks = getMocks({ resources: [projectSpace], spaces: [projectSpace] })
+      await handler({ sseData, ...mocks })
+      const update = { id: projectSpace.id, field: 'starred', value: starred }
+      expect(mocks.spacesStore.updateSpaceField).toHaveBeenCalledWith(update)
+      expect(mocks.resourcesStore.updateResourceField).toHaveBeenCalledWith(update)
+    })
+    it('adds the space to the favorites view', async () => {
+      const mocks = getMocks({
+        spaces: [projectSpace],
+        currentRouteName: 'files-common-favorites'
+      })
+      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
+      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(projectSpace)
+    })
+    it('removes the space from the favorites view', async () => {
+      const mocks = getMocks({
+        resources: [projectSpace],
+        spaces: [projectSpace],
+        currentRouteName: 'files-common-favorites'
+      })
+      await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([projectSpace])
+    })
+    it('keeps the space as current folder instead of replacing it with a copy', async () => {
+      const mocks = getMocks({ currentFolder: projectSpace, spaces: [projectSpace] })
+      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
+      expect(mocks.spacesStore.updateSpaceField).toHaveBeenCalledWith({
+        id: projectSpace.id,
+        field: 'starred',
+        value: true
+      })
+      expect(mocks.resourcesStore.setCurrentFolder).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('favorite events of a received share', () => {
+    // received shares are listed by their share id, the event carries the id of the shared item
+    const share = mock<Resource>({ id: 'shareJail!share1', fileId: 'space1!sharedFolder' })
+    const sseData = mock<EventSchemaType>({
+      itemid: share.fileId,
+      parentitemid: 'space1!parent',
+      spaceid: 'space1'
+    })
+
+    it('updates the listed share', async () => {
+      const mocks = getMocks({ resources: [share] })
+      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.updateResourceField).toHaveBeenCalledWith({
+        id: share.id,
+        field: 'starred',
+        value: true
+      })
+    })
+    it('updates the share as current folder', async () => {
+      const mocks = getMocks({ currentFolder: share })
+      await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalledWith(
+        expect.objectContaining({ id: share.id, starred: false })
+      )
+    })
+  })
+
   describe('during a running folder load', () => {
     it.each(
       [
