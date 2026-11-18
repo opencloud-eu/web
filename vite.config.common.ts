@@ -1,4 +1,4 @@
-import { CompilerOptions } from '@vue/compiler-sfc'
+import type { CompilerOptions } from 'vue/compiler-sfc'
 
 export const compilerOptions: CompilerOptions = {
   whitespace: 'preserve'
