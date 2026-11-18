@@ -62,17 +62,39 @@ describe('satisfiesVersionRange', () => {
     ['8.0.0-rc.1', '<=7', false],
     ['9.2.0-rc.1', '>9.1', true],
     ['7.2.0-rc.0', '>=7.2', true],
-    ['7.2.0-alpha', '<7.2', false]
+    ['7.2.0-alpha', '<7.2', false],
+    ['7.2.9', '<=7.2', true],
+    ['7.3.0', '<=7.2', false],
+    ['6.9.9', '<7', true],
+    ['7.0.0', '<7', false],
+    ['7.2.0', '>=7.2', true],
+    ['7.1.9', '>=7.2', false],
+    ['7.3.9', '7.2 - 7.3', true],
+    ['7.4.0', '7.2 - 7.3', false],
+    ['7.1.9', '7.2 - 7.3', false],
+    ['0.0.0', '* - 3.0.0', true],
+    ['3.0.1', '* - 3.0.0', false],
+    ['7.2.3', '7.2.X', true],
+    ['2.0.0', '1.0.0||2.0.0', true],
+    ['3.0.0', '1.0.0||2.0.0', false]
   ])('%s in "%s" is %s', (version, range, expected) => {
     expect(satisfiesVersionRange(version, range)).toBe(expected)
   })
 
-  it.each(['', '1.0.0 ||', '^1.0.0', '~1.2', '1.0.0 - 2.0.0 - 3.0.0', 'abc', '1.2.3.4', '>='])(
-    'throws on the unsupported range "%s"',
-    (range) => {
-      expect(() => satisfiesVersionRange('1.0.0', range)).toThrow()
-    }
-  )
+  it.each([
+    '',
+    '1.0.0 ||',
+    '^1.0.0',
+    '~1.2',
+    '1.0.0 - 2.0.0 - 3.0.0',
+    'abc',
+    '1.2.3.4',
+    '>=',
+    '>*',
+    '<*'
+  ])('throws on the unsupported range "%s"', (range) => {
+    expect(() => satisfiesVersionRange('1.0.0', range)).toThrow()
+  })
 
   it.each(['x.2.3', '*.2', '1.x.3', '07.2.0', '<=7.02.5', '7.2.00'])(
     'throws on the invalid version "%s" in a range',

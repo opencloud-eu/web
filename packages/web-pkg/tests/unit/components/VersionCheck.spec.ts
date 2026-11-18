@@ -96,6 +96,7 @@ describe('VersionCheck component', () => {
       })
       await nextTick()
       expect(wrapper.find('.version-check-critical').exists()).toBe(true)
+      expect(console.error).toHaveBeenCalled()
     })
     it('does not show the critical badge without critical list and range', async () => {
       const { wrapper } = getWrapper({
@@ -122,7 +123,7 @@ function getWrapper({
   productversion = '3.5.0',
   hasError = false,
   isLoading = false,
-  critical = [],
+  critical = undefined,
   critical_range = undefined,
   abilities = []
 }: {
