@@ -16,6 +16,13 @@ describe('compareVersions', () => {
     const result = compareVersions(a, b)
     expect(result).toBe(expected)
   })
+
+  it.each(['alpha', 'beta.4', 'rc.0', 'RC.1', '1'])(
+    'orders the lowest prerelease "-0" below "-%s"',
+    (pre) => {
+      expect(compareVersions('7.2.0-0', `7.2.0-${pre}`)).toBeLessThan(0)
+    }
+  )
 })
 
 describe('satisfiesVersionRange', () => {
@@ -45,7 +52,17 @@ describe('satisfiesVersionRange', () => {
     ['8.0.0', '=7', false],
     ['1.2.3', '*', true],
     ['v7.2.1', 'v7.2.0 - v7.2.5', true],
-    ['9.1.0-rc.1', '<9.1.0', true]
+    ['9.1.0-rc.1', '<9.1.0', true],
+    ['7.2.0-beta.4', '<=7.2.5', true],
+    ['7.2.0-rc.1', '7.2.x', true],
+    ['7.3.0-rc.1', '7.2.x', false],
+    ['7.3.0-rc.1', '<=7.2', false],
+    ['8.0.0-rc.1', '7.x', false],
+    ['8.0.0-rc.1', '=7', false],
+    ['8.0.0-rc.1', '<=7', false],
+    ['9.2.0-rc.1', '>9.1', true],
+    ['7.2.0-rc.0', '>=7.2', true],
+    ['7.2.0-alpha', '<7.2', false]
   ])('%s in "%s" is %s', (version, range, expected) => {
     expect(satisfiesVersionRange(version, range)).toBe(expected)
   })

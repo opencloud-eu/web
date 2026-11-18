@@ -54,8 +54,9 @@ interface VersionBounds {
 }
 
 /**
- * Bounds of a (partial) version: `7.2.x` and `7.2` are >=7.2.0 <7.3.0, `7` is >=7.0.0 <8.0.0,
- * a full version is exactly that version and `*` has no bounds.
+ * Bounds of a (partial) version: `7.2.x` and `7.2` are >=7.2.0-0 <7.3.0-0, `7` is >=7.0.0-0 <8.0.0-0,
+ * a full version is exactly that version and `*` has no bounds. The `-0` prerelease is the lowest
+ * one, so the prereleases of 7.2.0 are in `7.2.x` and the ones of 7.3.0 are not.
  */
 function getVersionBounds(partial: string): VersionBounds {
   const parts = (partial.startsWith('v') ? partial.slice(1) : partial).split('.')
@@ -74,7 +75,7 @@ function getVersionBounds(partial: string): VersionBounds {
 
   const lower = [...known, '0', '0'].slice(0, 3)
   const upper = [...known.slice(0, -1), String(Number(known.at(-1)) + 1), '0', '0'].slice(0, 3)
-  return { lower: lower.join('.'), upper: upper.join('.'), upperInclusive: false }
+  return { lower: `${lower.join('.')}-0`, upper: `${upper.join('.')}-0` }
 }
 
 function isWithinBounds(
@@ -145,6 +146,9 @@ function parseRange(range: string) {
  * Checks whether a version is in a range, using a subset of the npm semver range syntax:
  * ranges joined with `||`, hyphen ranges (`1.0.0 - 3.0.0`, both ends inclusive), comparators
  * (`<`, `<=`, `>`, `>=`, `=`, joined by spaces) and wildcards (`7.2.x`, `7.x`, `*`).
+ * A prerelease version is lower than its release (7.2.0-rc.1 is in `<7.2.0`), and partial or
+ * wildcard bounds include prereleases like npm's `includePrerelease` option (7.2.0-rc.1 is in
+ * `7.2.x`, 7.3.0-rc.1 is not).
  * Throws on a range it can't parse.
  */
 export function satisfiesVersionRange(version: string, range: string) {
