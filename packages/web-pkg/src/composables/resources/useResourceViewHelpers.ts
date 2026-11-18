@@ -9,6 +9,7 @@ import { routeToContextQuery } from '../appDefaults'
 import { useGetMatchingSpace } from '../spaces'
 import { useResourceViewDrag } from './useResourceViewDrag'
 import { useCanBeOpenedWithSecureView } from './useCanBeOpenedWithSecureView'
+import { useIsResourceDisabled } from './useIsResourceDisabled'
 import { useResourceViewContextMenu } from './useResourceViewContextMenu'
 import { useResourceViewSelection } from './useResourceViewSelection'
 import { ClipboardActions } from '../../helpers'
@@ -34,12 +35,8 @@ export const useResourceViewHelpers = ({
   const { interceptModifierClick } = useInterceptModifierClick()
   const { getMatchingSpace } = useGetMatchingSpace()
   const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
-  const {
-    isEnabled: isEmbedModeEnabled,
-    fileTypes: embedModeFileTypes,
-    isFilePicker,
-    postMessage
-  } = useEmbedMode()
+  const { isResourceDisabled, isResourceInDeleteQueue } = useIsResourceDisabled()
+  const { isEnabled: isEmbedModeEnabled, isFilePicker, postMessage } = useEmbedMode()
 
   const clipboardStore = useClipboardStore()
   const { resources: clipboardResources, action: clipboardAction } = storeToRefs(clipboardStore)
@@ -48,35 +45,6 @@ export const useResourceViewHelpers = ({
 
   const isResourceSelected = (item: Resource) => {
     return unref(selectedIdsSet).has(item.id)
-  }
-
-  const deleteQueueSet = computed(() => new Set(resourcesStore.deleteQueue))
-  const isResourceInDeleteQueue = (id: string): boolean => {
-    return unref(deleteQueueSet).has(id)
-  }
-
-  const embedModeFileTypesSet = computed(
-    () => new Set((unref(embedModeFileTypes) || []).map((fileType) => fileType.toLowerCase()))
-  )
-
-  const isResourceDisabled = (resource: Resource) => {
-    if (unref(isEmbedModeEnabled) && resource.isInVault) {
-      return true
-    }
-
-    if (unref(isEmbedModeEnabled) && unref(embedModeFileTypesSet).size) {
-      return (
-        !unref(embedModeFileTypesSet).has(resource.extension?.toLowerCase()) &&
-        !unref(embedModeFileTypesSet).has(resource.mimeType?.toLowerCase()) &&
-        !resource.isFolder
-      )
-    }
-
-    if (isResourceInDeleteQueue(resource.id)) {
-      return true
-    }
-
-    return resource.processing === true
   }
 
   const disabledResources = computed(() => {

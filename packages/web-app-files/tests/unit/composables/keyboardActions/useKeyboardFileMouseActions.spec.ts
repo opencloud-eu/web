@@ -5,6 +5,7 @@ import {
   eventBus,
   FolderViewModeConstants,
   Key,
+  OptionsConfig,
   useKeyboardActions,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
@@ -25,11 +26,11 @@ enableAutoUnmount(afterEach)
 
 const resources = ['1', '2', '3', '4', '5'].map((id) => mock<Resource>({ id, processing: false }))
 
-function renderRows(rows: Resource[]) {
+function renderRows(rows: Resource[], disabledIds: string[] = []) {
   document.body.innerHTML = `<table><tbody>${rows
     .map(
-      ({ id, processing }) =>
-        `<tr data-item-id="${id}"${processing ? ' class="oc-table-disabled"' : ''}><td>item ${id}</td></tr>`
+      ({ id }) =>
+        `<tr data-item-id="${id}"${disabledIds.includes(id) ? ' class="oc-table-disabled"' : ''}><td>item ${id}</td></tr>`
     )
     .join('')}</tbody></table>`
 }
@@ -73,10 +74,29 @@ describe('useKeyboardFileMouseActions', () => {
         expect([...store.selectedIds].sort()).toEqual(['1', '2', '3'])
       }
     )
-    it('skips processing rows when shrinking the range with shift + arrow', () => {
-      const rows = resources.map((r) => mock<Resource>({ id: r.id, processing: r.id === '2' }))
-      renderRows(rows)
-      const { store } = getWrapper(3, rows)
+    it.each([
+      {
+        name: 'processing',
+        rows: resources.map((r) => mock<Resource>({ id: r.id, processing: r.id === '2' })),
+        options: undefined
+      },
+      {
+        name: 'disabled',
+        rows: resources.map((r) =>
+          mock<Resource>({
+            id: r.id,
+            extension: r.id === '2' ? 'md' : 'txt',
+            mimeType: 'application/octet-stream',
+            isFolder: false,
+            isInVault: false,
+            processing: false
+          })
+        ),
+        options: { embed: { enabled: true, fileTypes: ['txt'] } }
+      }
+    ])('skips $name rows when shrinking the range with shift + arrow', ({ rows, options }) => {
+      renderRows(rows, ['2'])
+      const { store } = getWrapper(3, rows, options)
       shiftClick(0, rows)
       expect([...store.selectedIds].sort()).toEqual(['1', '3', '4'])
       pressKey(Key.ArrowDown, true)
@@ -109,7 +129,12 @@ describe('useKeyboardFileMouseActions', () => {
   })
 })
 
-function getWrapper(anchor = 0, rows = resources) {
+// the config store keeps embed options of earlier tests, so disable embed mode explicitly
+function getWrapper(
+  anchor = 0,
+  rows = resources,
+  options: OptionsConfig = { embed: { enabled: false } }
+) {
   const { vm } = getComposableWrapper(
     () => {
       const store = useResourcesStore()
@@ -120,7 +145,15 @@ function getWrapper(anchor = 0, rows = resources) {
       useKeyboardFileMouseActions(keyActions, viewMode)
       return { store }
     },
-    { pluginOptions: { piniaOptions: { stubActions: false, resourcesStore: { resources: rows } } } }
+    {
+      pluginOptions: {
+        piniaOptions: {
+          stubActions: false,
+          resourcesStore: { resources: rows },
+          configState: { options }
+        }
+      }
+    }
   )
   return { store: vm.store }
 }
