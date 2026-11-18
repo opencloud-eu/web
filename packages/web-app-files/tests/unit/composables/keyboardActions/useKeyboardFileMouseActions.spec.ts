@@ -5,6 +5,7 @@ import {
   eventBus,
   FolderViewModeConstants,
   Key,
+  OptionsConfig,
   useKeyboardActions,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
@@ -85,6 +86,32 @@ describe('useKeyboardFileMouseActions', () => {
       pressKey(Key.ArrowDown, true)
       expect([...store.selectedIds].sort()).toEqual(['4', '5'])
     })
+    it('skips disabled rows when shrinking the range with shift + arrow in embed mode', () => {
+      const rows = resources.map((r) =>
+        mock<Resource>({
+          id: r.id,
+          extension: r.id === '2' ? 'md' : 'txt',
+          mimeType: 'application/octet-stream',
+          isFolder: false,
+          isInVault: false,
+          processing: false
+        })
+      )
+      document.body.innerHTML = `<table><tbody>${rows
+        .map(
+          ({ id }) =>
+            `<tr data-item-id="${id}"${id === '2' ? ' class="oc-table-disabled"' : ''}><td>item ${id}</td></tr>`
+        )
+        .join('')}</tbody></table>`
+      const { store } = getWrapper(3, rows, { embed: { enabled: true, fileTypes: ['txt'] } })
+      shiftClick(0, rows)
+      expect([...store.selectedIds].sort()).toEqual(['1', '3', '4'])
+      pressKey(Key.ArrowDown, true)
+      pressKey(Key.ArrowDown, true)
+      expect(store.selectedIds).toEqual(['4'])
+      pressKey(Key.ArrowDown, true)
+      expect([...store.selectedIds].sort()).toEqual(['4', '5'])
+    })
     it('drops an anchor that is no longer selected', () => {
       const { store } = getWrapper()
       shiftClick(2)
@@ -109,7 +136,12 @@ describe('useKeyboardFileMouseActions', () => {
   })
 })
 
-function getWrapper(anchor = 0, rows = resources) {
+// the config store keeps embed options of earlier tests, so disable embed mode explicitly
+function getWrapper(
+  anchor = 0,
+  rows = resources,
+  options: OptionsConfig = { embed: { enabled: false } }
+) {
   const { vm } = getComposableWrapper(
     () => {
       const store = useResourcesStore()
@@ -120,7 +152,15 @@ function getWrapper(anchor = 0, rows = resources) {
       useKeyboardFileMouseActions(keyActions, viewMode)
       return { store }
     },
-    { pluginOptions: { piniaOptions: { stubActions: false, resourcesStore: { resources: rows } } } }
+    {
+      pluginOptions: {
+        piniaOptions: {
+          stubActions: false,
+          resourcesStore: { resources: rows },
+          configState: { options }
+        }
+      }
+    }
   )
   return { store: vm.store }
 }

@@ -280,6 +280,110 @@ describe('useKeyboardFileNavigation', () => {
     })
   })
 
+  describe('disabled resources in embed mode', () => {
+    function createFile(id: string): Resource {
+      return mock<Resource>({
+        id,
+        extension: id.split('.').pop(),
+        mimeType: 'application/octet-stream',
+        isFolder: false,
+        isInVault: false,
+        processing: false
+      })
+    }
+
+    function setup({
+      ids = ['a.txt', 'b.txt', 'c.md', 'd.txt'],
+      selectedIds = [],
+      viewMode = FolderViewModeConstants.name.table
+    }: { ids?: string[]; selectedIds?: string[]; viewMode?: string } = {}) {
+      const resources = ids.map(createFile)
+      createMockStore({
+        stubActions: false,
+        resourcesStore: { resources },
+        configState: { options: { embed: { enabled: true, fileTypes: ['txt'] } } }
+      })
+      const store = useResourcesStore()
+      store.setSelection(selectedIds)
+
+      const keyActions = createKeyActions()
+      useKeyboardFileNavigation(keyActions, ref(resources), ref(viewMode))
+      return { store, keyActions }
+    }
+
+    afterEach(() => {
+      document.body.innerHTML = ''
+    })
+
+    it('skips a disabled resource on ArrowDown', () => {
+      const { store, keyActions } = setup({ selectedIds: ['b.txt'] })
+
+      triggerAction(keyActions, Key.ArrowDown)
+
+      expect(store.selectedIds).toEqual(['d.txt'])
+    })
+
+    it('skips a disabled resource on ArrowUp', () => {
+      const { store, keyActions } = setup({ selectedIds: ['d.txt'] })
+
+      triggerAction(keyActions, Key.ArrowUp)
+
+      expect(store.selectedIds).toEqual(['b.txt'])
+    })
+
+    it('stays on the current resource if only disabled ones follow', () => {
+      const { store, keyActions } = setup({ ids: ['a.txt', 'b.md'], selectedIds: ['a.txt'] })
+
+      triggerAction(keyActions, Key.ArrowDown)
+
+      expect(store.selectedIds).toEqual(['a.txt'])
+    })
+
+    it('starts at the first enabled resource without a selection', () => {
+      const { store, keyActions } = setup({ ids: ['a.md', 'b.txt'] })
+
+      triggerAction(keyActions, Key.ArrowDown)
+
+      expect(store.selectedIds).toEqual(['b.txt'])
+    })
+
+    it('leaves a disabled resource out of the Shift+Arrow range', () => {
+      const { store, keyActions } = setup({ selectedIds: ['b.txt'] })
+
+      triggerAction(keyActions, Key.ArrowDown, Modifier.Shift)
+
+      expect(store.selectedIds).toEqual(['b.txt', 'd.txt'])
+    })
+
+    it('leaves a disabled resource out of the Shift+ArrowDown range in tiles view', async () => {
+      document.body.innerHTML =
+        '<div id="tiles-view"><ul>' +
+        ['b.txt', 'c.md', 'd.txt']
+          .map((id) => `<li><div data-item-id="${id}"></div></li>`)
+          .join('') +
+        '</ul></div>'
+      const { store, keyActions } = setup({
+        ids: ['b.txt', 'c.md', 'd.txt'],
+        selectedIds: ['b.txt'],
+        viewMode: FolderViewModeConstants.name.tiles
+      })
+      await nextTick()
+
+      triggerAction(keyActions, Key.ArrowDown, Modifier.Shift)
+
+      expect(store.selectedIds).toEqual(['b.txt'])
+    })
+
+    it('does not select a disabled resource on Space', () => {
+      const { store, keyActions } = setup({ selectedIds: ['b.txt'] })
+      store.setLastSelectedId('c.md')
+
+      triggerAction(keyActions, Key.Space)
+
+      expect(store.selectedIds).toEqual(['b.txt'])
+    })
+  })
+
   describe('without a selected resource', () => {
     beforeEach(() => {
       document.body.innerHTML =

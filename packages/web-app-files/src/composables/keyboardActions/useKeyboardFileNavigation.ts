@@ -37,6 +37,9 @@ export const useKeyboardFileNavigation = (
     if (!unref(latestSelectedId)) {
       return
     }
+    if (!isResourceIdSelectable(unref(latestSelectedId))) {
+      return
+    }
     resourcesStore.toggleSelection(unref(latestSelectedId))
   })
 
@@ -150,7 +153,7 @@ export const useKeyboardFileNavigation = (
     let nextResourceIndex = latestSelectedResourceIndex + step
 
     while (nextResourceIndex >= 0 && nextResourceIndex < paginatedResources.value.length) {
-      if (paginatedResources.value[nextResourceIndex].processing !== true) {
+      if (isResourceSelectable(paginatedResources.value[nextResourceIndex])) {
         return paginatedResources.value[nextResourceIndex].id
       }
       nextResourceIndex += step
@@ -163,7 +166,17 @@ export const useKeyboardFileNavigation = (
   }
 
   const getFirstResourceId = () => {
-    return paginatedResources.value.length ? paginatedResources.value[0].id : -1
+    const firstResource = unref(paginatedResources).find(isResourceSelectable)
+    return firstResource ? firstResource.id : -1
+  }
+
+  function isResourceSelectable(resource: Resource) {
+    return resource.processing !== true && !isResourceDisabled(resource)
+  }
+
+  function isResourceIdSelectable(id: string) {
+    const resource = unref(paginatedResources).find((r) => r.id === id)
+    return !resource || isResourceSelectable(resource)
   }
 
   const getElementsInRow = () => {
@@ -188,7 +201,7 @@ export const useKeyboardFileNavigation = (
     keyActions.resetSelectionCursor()
     resourcesStore.setSelection(
       unref(paginatedResources)
-        .filter((resource) => resource.processing !== true && !isResourceDisabled(resource))
+        .filter(isResourceSelectable)
         .map(({ id }) => id)
     )
   }
@@ -249,6 +262,9 @@ export const useKeyboardFileNavigation = (
         continue
       }
       const id = vp.tilesListCard[i].getAttribute('data-item-id')
+      if (!isResourceIdSelectable(id)) {
+        continue
+      }
       i < vp.tileViewStartIndex
         ? resourcesStore.addSelection(id)
         : resourcesStore.removeSelection(id)
@@ -267,6 +283,9 @@ export const useKeyboardFileNavigation = (
         continue
       }
       const id = vp.tilesListCard[i].getAttribute('data-item-id')
+      if (!isResourceIdSelectable(id)) {
+        continue
+      }
       i > vp.tileViewStartIndex
         ? resourcesStore.addSelection(id)
         : resourcesStore.removeSelection(id)

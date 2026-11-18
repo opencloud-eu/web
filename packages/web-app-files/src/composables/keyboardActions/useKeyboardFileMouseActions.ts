@@ -1,5 +1,10 @@
 import { onBeforeUnmount, onMounted, unref, Ref, watchEffect } from 'vue'
-import { QueryValue, FolderViewModeConstants, useResourcesStore } from '@opencloud-eu/web-pkg'
+import {
+  QueryValue,
+  FolderViewModeConstants,
+  useIsResourceDisabled,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { KeyboardActions } from '@opencloud-eu/web-pkg'
 import { Resource } from '@opencloud-eu/web-client'
@@ -12,6 +17,7 @@ export const useKeyboardFileMouseActions = (
 ) => {
   const resourcesStore = useResourcesStore()
   const { latestSelectedId, selectedIds } = storeToRefs(resourcesStore)
+  const { isResourceDisabled } = useIsResourceDisabled()
 
   let fileListClickedEvent: string
   let shiftAnchorResetEvent: string
@@ -75,13 +81,14 @@ export const useKeyboardFileMouseActions = (
     resourcesStore.setLastSelectedId(resource.id)
 
     // lets shift + arrow keys shrink or extend the range from the anchor.
-    // shift + arrow skips processing rows, so only count rows it can land on.
+    // shift + arrow skips processing and disabled rows, so only count rows it can land on.
     const resourcesById = new Map(resourcesStore.resources.map((r) => [r.id, r]))
-    const steps = resourceNodes
-      .slice(minIndex + 1, maxIndex + 1)
-      .filter(
-        (node) => resourcesById.get(node.getAttribute('data-item-id'))?.processing !== true
-      ).length
+    const steps = resourceNodes.slice(minIndex + 1, maxIndex + 1).filter((node) => {
+      const nodeResource = resourcesById.get(node.getAttribute('data-item-id'))
+      return (
+        !nodeResource || (nodeResource.processing !== true && !isResourceDisabled(nodeResource))
+      )
+    }).length
     keyActions.selectionCursor.value = clickedIndex < anchorIndex ? -steps : steps
   }
 
