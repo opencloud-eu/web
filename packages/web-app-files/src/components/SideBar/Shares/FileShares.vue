@@ -1,7 +1,7 @@
 <template>
   <div id="oc-files-sharing-sidebar" class="relative">
     <invite-collaborator-form
-      v-if="canShare({ resource, space })"
+      v-if="canShareWithUsers"
       key="new-collaborator"
       :label="$gettext('Share with people')"
       :contextual-helper="{
@@ -86,6 +86,7 @@ import {
   useSharesStore,
   useResourcesStore,
   useCanShare,
+  useCapabilityStore,
   CustomComponentTarget,
   useClientService,
   useLocalPagination,
@@ -117,6 +118,7 @@ const userStore = useUserStore()
 const { getMatchingSpace } = useGetMatchingSpace()
 const { dispatchModal } = useModals()
 const { canShare } = useCanShare()
+const capabilityStore = useCapabilityStore()
 const router = useRouter()
 const { showMessage, showErrorMessage } = useMessages()
 const { shareInviteCollaboratorHelp } = useContextualHelpers()
@@ -198,7 +200,17 @@ const {
   paginatedItems: paginatedSpaceMembers
 } = useLocalPagination({ items: spaceMembers, perPage: 10, resetOn: resource })
 
+const canShareWithUsers = computed(() => {
+  if (capabilityStore.sharingUserEnabled === false) {
+    return false
+  }
+  return canShare({ resource: unref(resource), space: unref(space) })
+})
+
 const noSharePermsMessage = computed(() => {
+  if (capabilityStore.sharingUserEnabled === false) {
+    return $gettext('Sharing with people is disabled.')
+  }
   const translatedFile = $gettext("You don't have permission to share this file.")
   const translatedFolder = $gettext("You don't have permission to share this folder.")
   return unref(resource).type === 'file' ? translatedFile : translatedFolder

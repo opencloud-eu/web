@@ -59,6 +59,12 @@ describe('FileShares', () => {
       const { wrapper } = getWrapper({ resource, canShare: false })
       expect(wrapper.find('invite-collaborator-form-stub').exists()).toBeFalsy()
     })
+    it('does not render the form when user sharing is disabled', () => {
+      const resource = mock<Resource>({ type: 'file' })
+      const { wrapper } = getWrapper({ resource, canShare: true, userSharingEnabled: false })
+      expect(wrapper.find('invite-collaborator-form-stub').exists()).toBeFalsy()
+      expect(wrapper.text()).toContain('Sharing with people is disabled.')
+    })
   })
 
   describe('collaborators list', () => {
@@ -192,7 +198,8 @@ function getWrapper({
   spaceMembers = [],
   user = undefined,
   ancestorMetaData = {},
-  canShare = true
+  canShare = true,
+  userSharingEnabled = undefined
 }: {
   mountType?: typeof mount
   resource?: Resource
@@ -202,6 +209,7 @@ function getWrapper({
   user?: User
   ancestorMetaData?: AncestorMetaData
   canShare?: boolean
+  userSharingEnabled?: boolean
 } = {}) {
   vi.mocked(useCanShare).mockReturnValue({ canShare: () => canShare })
 
@@ -221,6 +229,11 @@ function getWrapper({
                 options: { contextHelpers: true }
               },
               sharesState: { collaboratorShares: collaborators },
+              ...(userSharingEnabled !== undefined && {
+                capabilityState: {
+                  capabilities: { files_sharing: { user: { enabled: userSharingEnabled } } }
+                }
+              }),
               resourcesStore: { ancestorMetaData }
             }
           })

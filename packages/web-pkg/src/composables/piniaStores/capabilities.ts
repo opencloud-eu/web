@@ -35,6 +35,9 @@ const defaultValues = {
       password: {
         enforced_for: { read_only: false, upload_only: false, read_write: false }
       }
+    },
+    user: {
+      enabled: true
     }
   },
   graph: {
@@ -124,6 +127,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     () => unref(capabilities).files_sharing.public?.password.enforced_for
   )
   const sharingSearchMinLength = computed(() => unref(capabilities).files_sharing.search_min_length)
+  const sharingUserEnabled = computed(() => unref(capabilities).files_sharing.user?.enabled)
   const sharingUserProfilePicture = computed(
     () => unref(capabilities).files_sharing.user?.profile_picture
   )
@@ -182,6 +186,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     sharingPublicDefaultPermissions,
     sharingPublicPasswordEnforcedFor,
     sharingSearchMinLength,
+    sharingUserEnabled,
     sharingUserProfilePicture,
     tusMaxChunkSize,
     tusExtension,
