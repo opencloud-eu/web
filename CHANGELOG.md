@@ -29,6 +29,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update axllent/mailpit docker tag to v1.34.0 [[#4541](https://github.com/opencloud-eu/web/pull/4541)]
 - chore(deps): update dependency filesize to v11.0.34 [[#4528](https://github.com/opencloud-eu/web/pull/4528)]
 - chore(deps): update collabora/code docker tag to v26.04.6.1.1 [[#4366](https://github.com/opencloud-eu/web/pull/4366)]
 - chore(deps): update pnpm to v12 [[#3314](https://github.com/opencloud-eu/web/pull/3314)]
