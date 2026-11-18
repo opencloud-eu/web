@@ -1,11 +1,10 @@
 import DriveRedirect from '../../../../src/views/spaces/DriveRedirect.vue'
 import { mock } from 'vitest-mock-extended'
-import { join } from 'path'
 import { computed, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import { Router } from 'vue-router'
 import type { MockInstance } from 'vitest'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import {
   createRouter,
@@ -197,7 +196,7 @@ describe('DriveRedirect view', () => {
 function getPersonalSpace() {
   const space = mock<SpaceResource>({ id: 'personal-1', driveType: 'personal' })
   space.getDriveAliasAndItem.mockImplementation((resource: Resource) =>
-    join('personal/admin', resource.path).replace(/\/$/, '')
+    urlJoin('personal/admin', resource.path, { leadingSlash: false })
   )
   return space
 }

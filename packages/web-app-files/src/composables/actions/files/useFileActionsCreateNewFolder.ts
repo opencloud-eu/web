@@ -1,6 +1,5 @@
-import { isShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
+import { isShareSpaceResource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
-import { join } from 'path'
 import { computed, markRaw, nextTick, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -62,7 +61,7 @@ export const useFileActionsCreateNewFolder = () => {
         encrypt && !unref(areFileExtensionsShown)
           ? withoutExtension(serverName, creation.vaultExtension)
           : serverName
-      const path = join(unref(currentFolder).path, serverName)
+      const path = urlJoin(unref(currentFolder).path, serverName)
       const resource = await clientService.webdav.createFolder(space, { path })
 
       // FIXME: move to buildResource as soon as it has space context
