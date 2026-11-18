@@ -6,6 +6,12 @@
 
 @AlexAndBear, @JammingBen, @flash7777, @xhzeem
 
+### 📈 Enhancement
+
+- feat: add easy and sign language menu to the top bar [[#4537](https://github.com/opencloud-eu/web/pull/4537)]
+- feat: add right-to-left layout support [[#3540](https://github.com/opencloud-eu/web/pull/3540)]
+- feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
+
 ### 🐛 Bug Fixes
 
 - fix: skip disabled resources when selecting all via keyboard [[#4522](https://github.com/opencloud-eu/web/pull/4522)]
@@ -24,11 +30,6 @@
 - fix: wrap long group names in the user groups field [[#4494](https://github.com/opencloud-eu/web/pull/4494)]
 - fix: wrap long text in the preview stage [[#4489](https://github.com/opencloud-eu/web/pull/4489)]
 - fix: disable sidebar toggle on account sub pages [[#4490](https://github.com/opencloud-eu/web/pull/4490)]
-
-### 📈 Enhancement
-
-- feat: add right-to-left layout support [[#3540](https://github.com/opencloud-eu/web/pull/3540)]
-- feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
 
 ### 📦️ Dependencies
 
