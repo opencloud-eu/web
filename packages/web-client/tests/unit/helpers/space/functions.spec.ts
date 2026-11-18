@@ -225,6 +225,16 @@ describe('buildSpace', () => {
     )
   })
 
+  describe('starred', () => {
+    it.each([true, false, undefined])(
+      'is set from the following state %s of the drive root',
+      (following) => {
+        const space = buildSpace({ root: { '@libre.graph.me.following': following } } as Drive)
+        expect(space.starred).toBe(!!following)
+      }
+    )
+  })
+
   describe('contentType', () => {
     it('carries the drive\'s "@libre.graph.contentType" verbatim', () => {
       expect(

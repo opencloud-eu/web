@@ -208,7 +208,7 @@ export function buildSpace(
     size: data.quota?.used || 0,
     tags: [] as string[],
     permissions: '',
-    starred: false,
+    starred: data.root?.['@libre.graph.me.following'] || false,
     etag: '',
     shareTypes: [] as number[],
     privateLink: data.webUrl,

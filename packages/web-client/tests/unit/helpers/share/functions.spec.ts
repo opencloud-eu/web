@@ -183,6 +183,14 @@ describe('share helper functions', () => {
       const result = buildIncomingShareResource({ driveItem, graphRoles, serverUrl: '' })
       expect(result.outgoing).toBeFalsy()
     })
+    it.each([true, false, undefined])(
+      'sets starred from the following state %s of the drive item',
+      (following) => {
+        const item = { ...driveItem, '@libre.graph.me.following': following }
+        const result = buildIncomingShareResource({ driveItem: item, graphRoles, serverUrl: '' })
+        expect(result.starred).toBe(!!following)
+      }
+    )
     it('sets sharedBy based on the permission invitation', () => {
       const result = buildIncomingShareResource({ driveItem, graphRoles, serverUrl: '' })
       expect(result.sharedBy).toEqual([sharedBy])
@@ -225,6 +233,14 @@ describe('share helper functions', () => {
       const result = buildOutgoingShareResource({ driveItem, user, serverUrl: '' })
       expect(result.outgoing).toBeTruthy()
     })
+    it.each([true, false, undefined])(
+      'sets starred from the following state %s of the drive item',
+      (following) => {
+        const item = { ...driveItem, '@libre.graph.me.following': following }
+        const result = buildOutgoingShareResource({ driveItem: item, user, serverUrl: '' })
+        expect(result.starred).toBe(!!following)
+      }
+    )
     it('sets the path based on the parent reference path and the drive item name', () => {
       const result = buildOutgoingShareResource({ driveItem, user, serverUrl: '' })
       expect(result.path).toEqual(`${driveItem.parentReference.path}/${driveItem.name}`)

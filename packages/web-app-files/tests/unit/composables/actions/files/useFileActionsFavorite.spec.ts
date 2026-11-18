@@ -1,7 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useResourcesStore } from '@opencloud-eu/web-pkg'
+import { Resource, ShareTypes, SpaceResource } from '@opencloud-eu/web-client'
+import { useResourcesStore, useSpacesStore } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   getComposableWrapper,
@@ -36,13 +36,30 @@ describe('favorite', () => {
           }
         })
       })
-      it('returns false for space resources', () => {
+      it('returns true for project spaces', () => {
         getWrapper({
           setup: ({ actions }) => {
-            const resource = { ...getResource({ id: '1' }), type: 'space' } as Resource
+            const resource = getSpace({ driveType: 'project' })
             expect(
               unref(actions)[0].isVisible({
                 space: mock<SpaceResource>({ driveType: 'project' }),
+                resources: [resource]
+              })
+            ).toBeTruthy()
+          }
+        })
+      })
+      it.each([
+        { driveType: 'personal', disabled: false },
+        { driveType: 'share', disabled: false },
+        { driveType: 'project', disabled: true }
+      ])('returns false for a $driveType space (disabled: $disabled)', (data) => {
+        getWrapper({
+          setup: ({ actions }) => {
+            const resource = getSpace(data)
+            expect(
+              unref(actions)[0].isVisible({
+                space: mock<SpaceResource>({ driveType: data.driveType }),
                 resources: [resource]
               })
             ).toBeFalsy()
@@ -74,17 +91,63 @@ describe('favorite', () => {
           }
         })
       })
-      it('returns false for share list entries', () => {
+      it.each([{ outgoing: false }, { outgoing: true }])(
+        'returns true for share list entries (outgoing: $outgoing)',
+        ({ outgoing }) => {
+          getWrapper({
+            currentFolder: null,
+            setup: ({ actions }) => {
+              const resource = {
+                ...getResource({ id: '1' }),
+                sharedWith: [],
+                shareTypes: [ShareTypes.user.value],
+                outgoing
+              } as Resource
+              expect(
+                unref(actions)[0].isVisible({
+                  space: mock<SpaceResource>({ driveType: 'share' }),
+                  resources: [resource]
+                })
+              ).toBeTruthy()
+            }
+          })
+        }
+      )
+      it('returns false for federated incoming shares', () => {
         getWrapper({
           currentFolder: null,
           setup: ({ actions }) => {
-            const resource = { ...getResource({ id: '1' }), sharedWith: [] } as Resource
+            const resource = {
+              ...getResource({ id: '1' }),
+              sharedWith: [],
+              shareTypes: [ShareTypes.remote.value],
+              outgoing: false
+            } as Resource
             expect(
               unref(actions)[0].isVisible({
                 space: mock<SpaceResource>({ driveType: 'share' }),
                 resources: [resource]
               })
             ).toBeFalsy()
+          }
+        })
+      })
+      it('returns true for the root of a federated share browsed inside it', () => {
+        const shareRoot = {
+          ...getResource({ id: '1' }),
+          sharedWith: [],
+          shareTypes: [ShareTypes.remote.value],
+          outgoing: false
+        } as Resource
+        getWrapper({
+          currentFolder: shareRoot,
+          setup: ({ actions }) => {
+            expect(
+              unref(actions)[0].isVisible({
+                space: mock<SpaceResource>({ driveType: 'share' }),
+                resources: [shareRoot]
+              })
+            ).toBeTruthy()
           }
         })
       })
@@ -148,6 +211,24 @@ describe('favorite', () => {
 
         expect(unref(instance.actions)[0].label({ space, resources })).toBe('Remove from favorites')
       })
+      it('follows a project space and updates it in the spaces store', async () => {
+        const space = getSpace({ id: 'space-1', fileId: 'space-1', driveType: 'project' })
+        let instance: ReturnType<typeof useFileActionsFavorite>
+        const { mocks } = getWrapper({
+          spaces: [space],
+          setup: (i) => {
+            instance = i
+          }
+        })
+
+        await unref(instance.actions)[0].handler({ space, resources: [space] })
+
+        expect(
+          mocks.$clientService.graphAuthenticated.driveItems.followDriveItem
+        ).toHaveBeenCalledWith('space-1')
+        const spacesStore = useSpacesStore()
+        expect(spacesStore.spaces.find(({ id }) => id === 'space-1').starred).toBe(true)
+      })
     })
   })
 })
@@ -159,11 +240,21 @@ function getResource(resource: Partial<Resource>): Resource {
   }
 }
 
+function getSpace(space: Partial<SpaceResource>): SpaceResource {
+  return {
+    ...mock<SpaceResource>({ id: 'space', starred: false, isInVault: false, disabled: false }),
+    type: 'space',
+    ...space
+  }
+}
+
 function getWrapper({
   currentFolder = mock<Resource>({ id: 'cf-1', path: '/' }),
+  spaces = [],
   setup
 }: {
   currentFolder?: Resource
+  spaces?: SpaceResource[]
   setup: (instance: ReturnType<typeof useFileActionsFavorite>) => void
 }) {
   const mocks = defaultComponentMocks({
@@ -171,6 +262,7 @@ function getWrapper({
   })
 
   return {
+    mocks,
     wrapper: getComposableWrapper(
       () => {
         setup(useFileActionsFavorite())
@@ -180,7 +272,11 @@ function getWrapper({
         provide: mocks,
         pluginOptions: {
           abilities: [{ action: 'create', subject: 'Favorite' }],
-          piniaOptions: { stubActions: false, resourcesStore: { currentFolder } }
+          piniaOptions: {
+            stubActions: false,
+            resourcesStore: { currentFolder },
+            spacesState: { spaces }
+          }
         }
       }
     )

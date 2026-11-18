@@ -95,6 +95,31 @@ describe('FileSideBar', () => {
       expect(wrapper.find(selectors.spaceInfoStub).exists()).toBeFalsy()
     })
   })
+  describe('shared resource', () => {
+    it('shows favorite changes of the selected share', async () => {
+      const share = {
+        ...mock<Resource>({ id: 'share1', path: '/shared', starred: false }),
+        sharedWith: [],
+        sharePermissions: [],
+        outgoing: false
+      } as Resource
+      const { wrapper, mocks, selectedResources } = createWrapper()
+      mocks.$clientService.webdav.getFileInfo.mockResolvedValue({
+        id: 'file1',
+        path: '/shared',
+        starred: false,
+        tags: ['tag1']
+      } as Resource)
+      selectedResources.value = [share]
+      await flushPromises()
+      // the sidebar shows a copy of the share, merged with its webdav resource
+      expect((wrapper.vm as any).loadedResource.tags).toEqual(['tag1'])
+
+      selectedResources.value[0].starred = true
+      await wrapper.vm.$nextTick()
+      expect((wrapper.vm as any).loadedResource.starred).toBe(true)
+    })
+  })
   describe('loadSharesTask', () => {
     it('sets the loading state correctly', async () => {
       const resource = mock<Resource>()
