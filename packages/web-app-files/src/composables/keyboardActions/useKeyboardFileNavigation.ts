@@ -232,10 +232,14 @@ export const useKeyboardFileNavigation = (
       return tile.getAttribute('data-item-id') === unref(tileViewStart).toString()
     })
 
-    const nextIndex =
-      viewDirection === Direction.LEFT
-        ? currentResourceIndex - elementsInRow
-        : currentResourceIndex + elementsInRow
+    const step = viewDirection === Direction.LEFT ? -elementsInRow : elementsInRow
+    let nextIndex = currentResourceIndex + step
+    while (
+      tilesListCard[nextIndex] &&
+      !isResourceIdSelectable(tilesListCard[nextIndex].getAttribute('data-item-id'))
+    ) {
+      nextIndex += step
+    }
 
     if (!tilesListCard[nextIndex]) {
       return {}

@@ -26,11 +26,11 @@ enableAutoUnmount(afterEach)
 
 const resources = ['1', '2', '3', '4', '5'].map((id) => mock<Resource>({ id, processing: false }))
 
-function renderRows(rows: Resource[]) {
+function renderRows(rows: Resource[], disabledIds: string[] = []) {
   document.body.innerHTML = `<table><tbody>${rows
     .map(
-      ({ id, processing }) =>
-        `<tr data-item-id="${id}"${processing ? ' class="oc-table-disabled"' : ''}><td>item ${id}</td></tr>`
+      ({ id }) =>
+        `<tr data-item-id="${id}"${disabledIds.includes(id) ? ' class="oc-table-disabled"' : ''}><td>item ${id}</td></tr>`
     )
     .join('')}</tbody></table>`
 }
@@ -74,36 +74,29 @@ describe('useKeyboardFileMouseActions', () => {
         expect([...store.selectedIds].sort()).toEqual(['1', '2', '3'])
       }
     )
-    it('skips processing rows when shrinking the range with shift + arrow', () => {
-      const rows = resources.map((r) => mock<Resource>({ id: r.id, processing: r.id === '2' }))
-      renderRows(rows)
-      const { store } = getWrapper(3, rows)
-      shiftClick(0, rows)
-      expect([...store.selectedIds].sort()).toEqual(['1', '3', '4'])
-      pressKey(Key.ArrowDown, true)
-      pressKey(Key.ArrowDown, true)
-      expect(store.selectedIds).toEqual(['4'])
-      pressKey(Key.ArrowDown, true)
-      expect([...store.selectedIds].sort()).toEqual(['4', '5'])
-    })
-    it('skips disabled rows when shrinking the range with shift + arrow in embed mode', () => {
-      const rows = resources.map((r) =>
-        mock<Resource>({
-          id: r.id,
-          extension: r.id === '2' ? 'md' : 'txt',
-          mimeType: 'application/octet-stream',
-          isFolder: false,
-          isInVault: false,
-          processing: false
-        })
-      )
-      document.body.innerHTML = `<table><tbody>${rows
-        .map(
-          ({ id }) =>
-            `<tr data-item-id="${id}"${id === '2' ? ' class="oc-table-disabled"' : ''}><td>item ${id}</td></tr>`
-        )
-        .join('')}</tbody></table>`
-      const { store } = getWrapper(3, rows, { embed: { enabled: true, fileTypes: ['txt'] } })
+    it.each([
+      {
+        name: 'processing',
+        rows: resources.map((r) => mock<Resource>({ id: r.id, processing: r.id === '2' })),
+        options: undefined
+      },
+      {
+        name: 'disabled',
+        rows: resources.map((r) =>
+          mock<Resource>({
+            id: r.id,
+            extension: r.id === '2' ? 'md' : 'txt',
+            mimeType: 'application/octet-stream',
+            isFolder: false,
+            isInVault: false,
+            processing: false
+          })
+        ),
+        options: { embed: { enabled: true, fileTypes: ['txt'] } }
+      }
+    ])('skips $name rows when shrinking the range with shift + arrow', ({ rows, options }) => {
+      renderRows(rows, ['2'])
+      const { store } = getWrapper(3, rows, options)
       shiftClick(0, rows)
       expect([...store.selectedIds].sort()).toEqual(['1', '3', '4'])
       pressKey(Key.ArrowDown, true)

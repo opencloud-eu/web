@@ -355,21 +355,35 @@ describe('useKeyboardFileNavigation', () => {
       expect(store.selectedIds).toEqual(['b.txt', 'd.txt'])
     })
 
-    it('leaves a disabled resource out of the Shift+ArrowDown range in tiles view', async () => {
+    function setupTiles() {
       document.body.innerHTML =
         '<div id="tiles-view"><ul>' +
         ['b.txt', 'c.md', 'd.txt']
           .map((id) => `<li><div data-item-id="${id}"></div></li>`)
           .join('') +
         '</ul></div>'
-      const { store, keyActions } = setup({
+      return setup({
         ids: ['b.txt', 'c.md', 'd.txt'],
         selectedIds: ['b.txt'],
         viewMode: FolderViewModeConstants.name.tiles
       })
+    }
+
+    it('leaves a disabled resource out of the Shift+ArrowDown range in tiles view', async () => {
+      const { store, keyActions } = setupTiles()
       await nextTick()
 
       triggerAction(keyActions, Key.ArrowDown, Modifier.Shift)
+
+      expect(store.selectedIds).toEqual(['b.txt', 'd.txt'])
+    })
+
+    it('does not select a disabled resource when reversing a tiles view range', async () => {
+      const { store, keyActions } = setupTiles()
+      await nextTick()
+
+      triggerAction(keyActions, Key.ArrowDown, Modifier.Shift)
+      triggerAction(keyActions, Key.ArrowLeft, Modifier.Shift)
 
       expect(store.selectedIds).toEqual(['b.txt'])
     })
