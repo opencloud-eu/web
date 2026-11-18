@@ -7,9 +7,11 @@ import {
   ExtensionPoint,
   OptionsConfig,
   useExtensionRegistry,
+  useMessages,
   useUserStore
 } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
+import { Graph } from '@opencloud-eu/web-client/graph'
 
 const $route = {
   meta: {
@@ -108,6 +110,44 @@ describe('account information page', () => {
 
         expect(wrapper.find(selectors.groupNames).text()).toBe('one, two, three')
       })
+      describe('failed load', () => {
+        beforeEach(() => {
+          vi.spyOn(console, 'error').mockImplementation(() => undefined)
+        })
+
+        it('shows an error message instead of claiming no group memberships', async () => {
+          const error = new Error('Request failed with status code 500')
+          const { wrapper } = getWrapper({ getMe: () => Promise.reject(error) })
+          await flushPromises()
+
+          const { showErrorMessage } = useMessages()
+          expect(showErrorMessage).toHaveBeenCalledWith({
+            title: 'Failed to load group memberships',
+            errors: [error]
+          })
+          expect(wrapper.find(selectors.groupNamesEmpty).exists()).toBeFalsy()
+        })
+        it('stays silent when leaving the page cancels the load', async () => {
+          let requestSignal: AbortSignal
+          const { wrapper } = getWrapper({
+            getMe: (_, { signal }) => {
+              requestSignal = signal
+              return new Promise((_, reject) => {
+                signal.addEventListener('abort', () =>
+                  reject(new DOMException('The operation was aborted.', 'AbortError'))
+                )
+              })
+            }
+          })
+          await flushPromises()
+          wrapper.unmount()
+          await flushPromises()
+
+          expect(requestSignal.aborted).toBe(true)
+          const { showErrorMessage } = useMessages()
+          expect(showErrorMessage).not.toHaveBeenCalled()
+        })
+      })
     })
 
     describe('Logout from all devices link', () => {
@@ -139,7 +179,8 @@ function getWrapper({
   isPublicLinkContext = false,
   isUserContext = true,
   extensionPoints = [],
-  extensions = []
+  extensions = [],
+  getMe
 }: {
   user?: User
   memberOf?: User['memberOf']
@@ -148,6 +189,7 @@ function getWrapper({
   isUserContext?: boolean
   extensionPoints?: ExtensionPoint<Extension>[]
   extensions?: Extension[]
+  getMe?: Graph['users']['getMe']
 } = {}) {
   const plugins = defaultPlugins({
     piniaOptions: {
@@ -177,6 +219,9 @@ function getWrapper({
   mocks.$clientService.graphAuthenticated.users.getMe.mockResolvedValue(
     mock<User>({ id: '1', memberOf })
   )
+  if (getMe) {
+    mocks.$clientService.graphAuthenticated.users.getMe.mockImplementation(getMe)
+  }
 
   return {
     mocks,
