@@ -1,4 +1,9 @@
-import { QueryValue, useResourcesStore, FolderViewModeConstants } from '@opencloud-eu/web-pkg'
+import {
+  QueryValue,
+  useResourcesStore,
+  FolderViewModeConstants,
+  useIsResourceDisabled
+} from '@opencloud-eu/web-pkg'
 import { useScrollTo } from '@opencloud-eu/web-pkg'
 import { Ref, ref, unref, nextTick, watchEffect } from 'vue'
 import { Key, KeyboardActions, Modifier, focusCheckbox } from '@opencloud-eu/web-pkg'
@@ -18,6 +23,7 @@ export const useKeyboardFileNavigation = (
   const { scrollToResource } = useScrollTo()
   const resourcesStore = useResourcesStore()
   const { latestSelectedId, selectedIds } = storeToRefs(resourcesStore)
+  const { isResourceDisabled } = useIsResourceDisabled()
 
   const bindKeyActionsIds: Ref<string[]> = ref([])
   const tileViewStart = ref<string>(null)
@@ -29,6 +35,9 @@ export const useKeyboardFileNavigation = (
 
   keyActions.bindKeyAction({ primary: Key.Space }, () => {
     if (!unref(latestSelectedId)) {
+      return
+    }
+    if (!isResourceIdSelectable(unref(latestSelectedId))) {
       return
     }
     resourcesStore.toggleSelection(unref(latestSelectedId))
@@ -144,7 +153,7 @@ export const useKeyboardFileNavigation = (
     let nextResourceIndex = latestSelectedResourceIndex + step
 
     while (nextResourceIndex >= 0 && nextResourceIndex < paginatedResources.value.length) {
-      if (paginatedResources.value[nextResourceIndex].processing !== true) {
+      if (isResourceSelectable(paginatedResources.value[nextResourceIndex])) {
         return paginatedResources.value[nextResourceIndex].id
       }
       nextResourceIndex += step
@@ -157,7 +166,17 @@ export const useKeyboardFileNavigation = (
   }
 
   const getFirstResourceId = () => {
-    return paginatedResources.value.length ? paginatedResources.value[0].id : -1
+    const firstResource = unref(paginatedResources).find(isResourceSelectable)
+    return firstResource ? firstResource.id : -1
+  }
+
+  function isResourceSelectable(resource: Resource) {
+    return resource.processing !== true && !isResourceDisabled(resource)
+  }
+
+  function isResourceIdSelectable(id: string) {
+    const resource = unref(paginatedResources).find((r) => r.id === id)
+    return !resource || isResourceSelectable(resource)
   }
 
   const getElementsInRow = () => {
@@ -182,7 +201,7 @@ export const useKeyboardFileNavigation = (
     keyActions.resetSelectionCursor()
     resourcesStore.setSelection(
       unref(paginatedResources)
-        .filter((resource) => resource.processing !== true)
+        .filter(isResourceSelectable)
         .map(({ id }) => id)
     )
   }
@@ -213,10 +232,14 @@ export const useKeyboardFileNavigation = (
       return tile.getAttribute('data-item-id') === unref(tileViewStart).toString()
     })
 
-    const nextIndex =
-      viewDirection === Direction.LEFT
-        ? currentResourceIndex - elementsInRow
-        : currentResourceIndex + elementsInRow
+    const step = viewDirection === Direction.LEFT ? -elementsInRow : elementsInRow
+    let nextIndex = currentResourceIndex + step
+    while (
+      tilesListCard[nextIndex] &&
+      !isResourceIdSelectable(tilesListCard[nextIndex].getAttribute('data-item-id'))
+    ) {
+      nextIndex += step
+    }
 
     if (!tilesListCard[nextIndex]) {
       return {}
@@ -243,6 +266,9 @@ export const useKeyboardFileNavigation = (
         continue
       }
       const id = vp.tilesListCard[i].getAttribute('data-item-id')
+      if (!isResourceIdSelectable(id)) {
+        continue
+      }
       i < vp.tileViewStartIndex
         ? resourcesStore.addSelection(id)
         : resourcesStore.removeSelection(id)
@@ -261,6 +287,9 @@ export const useKeyboardFileNavigation = (
         continue
       }
       const id = vp.tilesListCard[i].getAttribute('data-item-id')
+      if (!isResourceIdSelectable(id)) {
+        continue
+      }
       i > vp.tileViewStartIndex
         ? resourcesStore.addSelection(id)
         : resourcesStore.removeSelection(id)
