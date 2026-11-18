@@ -116,7 +116,6 @@
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:^",
-    "@types/lodash-es": "4.17.12",
     "@types/node": "^26.0.0",
     "vite-plugin-node-polyfills": "0.28.0"
   }

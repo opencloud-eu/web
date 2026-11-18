@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { CompilerError } from '@vue/compiler-dom'
+import type { CompilerError } from 'vue/compiler-sfc'
 import { computed, unref, useTemplateRef, compile, ref, onMounted } from 'vue'
 
 const { path } = defineProps<{
