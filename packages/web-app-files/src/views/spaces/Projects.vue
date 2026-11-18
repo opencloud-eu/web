@@ -327,7 +327,7 @@ watch(selectedResourcesIds, async (ids) => {
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
 const keyActions = useKeyboardActions()
-useKeyboardFileNavigation(keyActions, sortedResources, viewMode)
+useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 useKeyboardFileActions(keyActions)
 
