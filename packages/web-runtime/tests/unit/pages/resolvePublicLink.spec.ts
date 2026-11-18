@@ -119,7 +119,7 @@ describe('resolvePublicLink', () => {
         expect(wrapper.find('input').attributes('error-message')).toBe(
           'The password could not be verified. Please try again.'
         )
-        expect(mocks.$router.push).not.toHaveBeenCalled()
+        expect(mocks.$router.replace).not.toHaveBeenCalled()
       })
       it('resolves the link when trying again after a temporary error', async () => {
         vi.spyOn(console, 'error').mockImplementation(() => undefined)
@@ -144,7 +144,7 @@ describe('resolvePublicLink', () => {
         await flushPromises()
 
         expect(wrapper.find('input').attributes('error-message')).toBeUndefined()
-        expect(mocks.$router.push).toHaveBeenCalled()
+        expect(mocks.$router.replace).toHaveBeenCalled()
       })
     })
   })

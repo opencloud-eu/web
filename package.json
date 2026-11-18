@@ -36,7 +36,6 @@
   ],
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
-    "@module-federation/runtime": "2.3.1",
     "@noble/hashes": "2.4.0",
     "@opencloud-eu/eslint-config": "workspace:*",
     "@opencloud-eu/prettier-config": "workspace:*",
@@ -49,8 +48,6 @@
     "@vitejs/plugin-vue": "6.0.11",
     "@vitest/coverage-v8": "^5.0.0",
     "@vitest/web-worker": "^5.0.0",
-    "@vue/compiler-dom": "^3.5.31",
-    "@vue/compiler-sfc": "^3.5.31",
     "@vue/test-utils": "2.6.0",
     "browserslist-to-esbuild": "^2.1.1",
     "browserslist-useragent-regexp": "^4.1.3",

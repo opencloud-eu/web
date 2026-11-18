@@ -21,8 +21,7 @@ export default [
       ecmaVersion: 2015,
       parserOptions: {
         parser: {
-          ts: '@typescript-eslint/parser',
-          vue: 'vue-eslint-parser'
+          ts: tseslint.parser
         },
         requireConfigFile: false,
         sourceType: 'module'
