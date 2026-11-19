@@ -29,6 +29,12 @@ describe('SupportCard', () => {
     }
   )
 
+  it('emits dismiss when the close button is clicked', async () => {
+    const { wrapper } = getWrapper()
+    await wrapper.find('.oc-support-card-dismiss').trigger('click')
+    expect(wrapper.emitted('dismiss')).toHaveLength(1)
+  })
+
   it('only animates on the first mount', async () => {
     vi.resetModules()
     const { default: FreshSupportCard } =
