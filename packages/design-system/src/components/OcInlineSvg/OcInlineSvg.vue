@@ -62,7 +62,6 @@ const {
 
 const emit = defineEmits<Emits>()
 
-// The SVG gets inlined into the document, so everything that could run code has to go
 function transformSvgElement(svg: SVGElement) {
   const sanitizedSvg = sanitizeSvg(svg)
   if (!transformSource) {

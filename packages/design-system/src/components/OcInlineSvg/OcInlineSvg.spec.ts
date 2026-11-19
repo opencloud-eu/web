@@ -1,7 +1,6 @@
 import { mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
 import OcInlineSvg from './OcInlineSvg.vue'
 
-// parses the markup the same way vue-inline-svg does
 function parseSvg(markup: string) {
   return new DOMParser()
     .parseFromString(markup, 'text/xml')

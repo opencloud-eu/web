@@ -1,6 +1,5 @@
 import { sanitizeSvg } from './sanitizeSvg'
 
-// parses the markup the same way vue-inline-svg does
 function parseSvg(markup: string) {
   return new DOMParser()
     .parseFromString(markup, 'text/xml')
