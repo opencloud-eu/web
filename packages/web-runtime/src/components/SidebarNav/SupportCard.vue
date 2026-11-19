@@ -5,6 +5,7 @@
   >
     <oc-button
       appearance="raw"
+      no-hover
       class="oc-support-card-dismiss absolute top-1 end-1 p-1"
       :aria-label="$gettext('Dismiss support card')"
       @click="emit('dismiss')"
