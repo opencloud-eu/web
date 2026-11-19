@@ -769,10 +769,6 @@ def e2eTests(ctx):
             }
             environment.update(params["testEnvironment"])
 
-            # console errors only fail chromium runs
-            if not [p for p in projects if "chromium" in p]:
-                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
-
             browsers = []
             for project in projects:
                 browser = projectBrowser(project)
