@@ -25,6 +25,7 @@ import OcHiddenAnnouncer from './src/components/OcHiddenAnnouncer/OcHiddenAnnoun
 import OcIcon from './src/components/OcIcon/OcIcon.vue'
 import OcImage from './src/components/OcImage/OcImage.vue'
 import OcInfoDrop from './src/components/OcInfoDrop/OcInfoDrop.vue'
+import OcInlineSvg from './src/components/OcInlineSvg/OcInlineSvg.vue'
 import OcList from './src/components/OcList/OcList.vue'
 import OcLoader from './src/components/OcLoader/OcLoader.vue'
 import OcModal from './src/components/OcModal/OcModal.vue'
@@ -89,6 +90,7 @@ declare module 'vue' {
     OcIcon: typeof OcIcon
     OcImage: typeof OcImage
     OcInfoDrop: typeof OcInfoDrop
+    OcInlineSvg: typeof OcInlineSvg
     OcList: typeof OcList
     OcLoader: typeof OcLoader
     OcModal: typeof OcModal
