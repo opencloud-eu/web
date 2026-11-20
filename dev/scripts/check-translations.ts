@@ -1,9 +1,22 @@
+/**
+ * Checks compiled translations.json files for markup. Runs after vue-gettext-compile (see the
+ * `translations` target in packages/web-runtime/l10n/Makefile), so translations from Transifex
+ * can't bring HTML into the app.
+ *
+ * A translation that contains markup is removed for its language, so the English text is shown
+ * instead, and a warning is logged. The file is only written if something was removed.
+ *
+ * Usage: node dev/scripts/check-translations.ts <translations.json>...
+ */
 import { readFile, writeFile } from 'node:fs/promises'
 
 type Message = string | string[]
 type Translations = Record<string, Record<string, Message | Record<string, Message>>>
 
+// HTML markup (tags, end tags, comments, doctypes) can only start with `<` followed by a letter,
+// `!`, `/` or `?`. Plain text like `a < b` or `<3` doesn't match.
 const markupPattern = /<[a-zA-Z!/?]/
+// the placeholder syntax of vue3-gettext, e.g. `%{ amount }`
 const placeholderPattern = /%\{((?:.|\n)+?)\}/g
 
 function collectStrings(value: Message | Record<string, Message>): string[] {
