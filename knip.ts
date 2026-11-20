@@ -48,6 +48,7 @@ const config: KnipConfig = {
         'gettext.config.cjs',
         'release-config.ts',
         'dev/vite-plugins/*.ts',
+        'dev/scripts/*.ts',
         'tests/unit/stubs/*.ts'
       ]
     },
