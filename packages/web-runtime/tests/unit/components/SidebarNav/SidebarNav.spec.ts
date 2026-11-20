@@ -6,6 +6,10 @@ import { mock } from 'vitest-mock-extended'
 import { h } from 'vue'
 
 describe('OcSidebarNav', () => {
+  afterEach(() => {
+    window.localStorage.clear()
+  })
+
   it('renders navItems into a list', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.html()).toMatchSnapshot()
@@ -42,6 +46,19 @@ describe('OcSidebarNav', () => {
     it('renders the support card by default', () => {
       const { wrapper } = getWrapper()
       expect(wrapper.find('support-card-stub').exists()).toBeTruthy()
+    })
+
+    it('hides the support card when it gets dismissed and remembers it', async () => {
+      const { wrapper } = getWrapper()
+      await wrapper.findComponent({ name: 'SupportCard' }).vm.$emit('dismiss')
+      expect(wrapper.find('support-card-stub').exists()).toBeFalsy()
+      expect(window.localStorage.getItem('oc_supportCardDismissed')).toBe('true')
+    })
+
+    it('does not render the support card when it was dismissed before', () => {
+      window.localStorage.setItem('oc_supportCardDismissed', 'true')
+      const { wrapper } = getWrapper()
+      expect(wrapper.find('support-card-stub').exists()).toBeFalsy()
     })
 
     it('does not render the support card when the sponsor link is disabled in config', () => {
