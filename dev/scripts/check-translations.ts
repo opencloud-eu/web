@@ -6,6 +6,16 @@
  * A translation that contains markup is removed for its language, so the English text is shown
  * instead, and a warning is logged. The file is only written if something was removed.
  *
+ * Example: the German "Delete" pair is removed, French and all other German strings stay.
+ *
+ *   { "de": { "Delete": "Löschen<img src=x onerror=alert(1)>", "Rename": "Umbenennen" },
+ *     "fr": { "Delete": "Supprimer", "Rename": "Renommer" } }
+ *
+ *   becomes
+ *
+ *   { "de": { "Rename": "Umbenennen" },
+ *     "fr": { "Delete": "Supprimer", "Rename": "Renommer" } }
+ *
  * Usage: node dev/scripts/check-translations.ts <translations.json>...
  */
 import { readFile, writeFile } from 'node:fs/promises'
