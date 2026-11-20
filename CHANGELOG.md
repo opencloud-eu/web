@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @butonic, @flash7777, @kulmann, @v-scharf, @xhzeem
 
+### 🔒 Security
+
+- chore: check translations for markup after compiling [[#4561](https://github.com/opencloud-eu/web/pull/4561)]
+
 ### 📈 Enhancement
 
 - feat: read critical versions from a semver range in the version check [[#4551](https://github.com/opencloud-eu/web/pull/4551)]
