@@ -36,7 +36,7 @@
         />
       </span>
       <div class="flex flex-col gap-0.5">
-        <span class="font-bold" v-text="$gettext('Support OpenCloud')" />
+        <span class="font-bold pe-5" v-text="$gettext('Support OpenCloud')" />
         <span
           class="text-xs text-role-on-surface-variant"
           v-text="$gettext('Donate or get professional support')"
