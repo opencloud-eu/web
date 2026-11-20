@@ -13,6 +13,7 @@
 
 ### 📈 Enhancement
 
+- feat: allow dismissing the support card in the sidebar [[#4560](https://github.com/opencloud-eu/web/pull/4560)]
 - feat: read critical versions from a semver range in the version check [[#4551](https://github.com/opencloud-eu/web/pull/4551)]
 - feat: add duplicate action for files and folders [[#4534](https://github.com/opencloud-eu/web/pull/4534)]
 - feat(sharing): hide the invite form when user sharing is disabled [[#4548](https://github.com/opencloud-eu/web/pull/4548)]
