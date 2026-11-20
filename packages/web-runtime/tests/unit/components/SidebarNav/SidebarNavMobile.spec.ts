@@ -7,6 +7,7 @@ import { enableAutoUnmount } from '@vue/test-utils'
 enableAutoUnmount(afterEach)
 afterEach(() => {
   document.body.innerHTML = ''
+  window.localStorage.clear()
 })
 
 const selectors = {
@@ -92,9 +93,33 @@ describe('SidebarNavMobile component', () => {
       }
     }
   )
+
+  it('keeps the menu open when dismissing the support card and remembers it', async () => {
+    const { wrapper } = getWrapper({ stubSidebarNav: false })
+    await wrapper.get(selectors.mobileNavBtn).trigger('click')
+    await wrapper.get('.oc-support-card-dismiss').trigger('click')
+    expect(window.localStorage.getItem('oc_supportCardDismissed')).toBe('true')
+    expect(wrapper.find('#sidebar-nav-mobile-panel').exists()).toBe(true)
+    expect(wrapper.find('.oc-support-card').exists()).toBe(false)
+
+    await wrapper.get('#sidebar-nav-mobile-panel').trigger('keydown', { key: 'Escape' })
+    await wrapper.get(selectors.mobileNavBtn).trigger('click')
+    expect(wrapper.find('#sidebar-nav-mobile-panel').exists()).toBe(true)
+    expect(wrapper.find('.oc-support-card').exists()).toBe(false)
+  })
 })
 
-function getWrapper({ isTablet = true, navItems: items = navItems } = {}) {
+const sidebarNavStub = {
+  template: `<aside>
+    <a href="/files">Files</a>
+    <button disabled>Disabled</button>
+    <a href="/skipped" tabindex="-1">Skipped</a>
+    <button style="display: none">Hidden</button>
+    <a href="/favorites">Favorites</a>
+  </aside>`
+}
+
+function getWrapper({ isTablet = true, navItems: items = navItems, stubSidebarNav = true } = {}) {
   mockIsTablet = isTablet
   mockNavItems = items
 
@@ -111,15 +136,9 @@ function getWrapper({ isTablet = true, navItems: items = navItems } = {}) {
         provide: mocks,
         stubs: {
           VersionCheck: true,
-          SidebarNav: {
-            template: `<aside>
-              <a href="/files">Files</a>
-              <button disabled>Disabled</button>
-              <a href="/skipped" tabindex="-1">Skipped</a>
-              <button style="display: none">Hidden</button>
-              <a href="/favorites">Favorites</a>
-            </aside>`
-          },
+          SidebarNavItem: true,
+          CustomComponentTarget: true,
+          ...(stubSidebarNav && { SidebarNav: sidebarNavStub }),
           Teleport: true
         },
         renderStubDefaultSlot: true
