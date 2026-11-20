@@ -1,0 +1,30 @@
+[
+  {
+    "name": "src",
+    "required": true,
+    "description": "URL of the SVG file to load and inline.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "title",
+    "required": false,
+    "description": "Title to set on the SVG, replaces an existing one.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "uniqueIds",
+    "required": false,
+    "description": "Rewrites all IDs inside the SVG to be unique per instance. Only needed for SVGs that\nreference IDs internally, e.g. via gradients or clip paths.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "transformSource",
+    "required": false,
+    "description": "Function to modify the SVG element before it gets rendered. Receives the already\nsanitized element and has to return it.",
+    "default": "",
+    "type": "(svg: SVGElement) => SVGElement"
+  }
+]

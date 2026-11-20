@@ -1,0 +1,17 @@
+[
+  {
+    "name": "loaded",
+    "description": "Emitted when the SVG has been loaded and rendered.",
+    "type": "(e: 'loaded', svg: SVGElement): void"
+  },
+  {
+    "name": "unloaded",
+    "description": "Emitted when the rendered SVG has been removed, e.g. because the source has changed.",
+    "type": "(e: 'unloaded'): void"
+  },
+  {
+    "name": "error",
+    "description": "Emitted when the SVG could not be loaded.",
+    "type": "(e: 'error', error: Error): void"
+  }
+]
