@@ -1,6 +1,7 @@
 import { mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
 import { nextTick, ref, Ref } from 'vue'
 import OcIcon from './OcIcon.vue'
+import OcInlineSvg from '../OcInlineSvg/OcInlineSvg.vue'
 import { iconIsDarkInjectionKey } from '../../helpers'
 
 describe('OcIcon', () => {
@@ -36,6 +37,10 @@ describe('OcIcon', () => {
     )
   })
   describe('src', () => {
+    it('renders the svg icon through the sanitizing inline svg component', () => {
+      const { wrapper } = getWrapper({ name: 'settings' })
+      expect(wrapper.findComponent(OcInlineSvg).props('src')).toEqual('icons/settings-fill.svg')
+    })
     it('should use the provided name to render the correct fill svg icon', () => {
       const { wrapper } = getWrapper({ name: 'settings' })
       const inlineSvg = wrapper.findComponent({ name: 'inline-svg' })
