@@ -8,7 +8,7 @@
       no-hover
       class="oc-support-card-dismiss absolute top-1 end-1 p-1"
       :aria-label="$gettext('Dismiss support card')"
-      @click="emit('dismiss')"
+      @click.stop="emit('dismiss')"
     >
       <oc-icon name="close" fill-type="line" size-class="size-4" />
     </oc-button>
@@ -36,7 +36,7 @@
         />
       </span>
       <div class="flex flex-col gap-0.5">
-        <span class="font-bold pe-5" v-text="$gettext('Support OpenCloud')" />
+        <span class="font-bold" v-text="$gettext('Support OpenCloud')" />
         <span
           class="text-xs text-role-on-surface-variant"
           v-text="$gettext('Donate or get professional support')"

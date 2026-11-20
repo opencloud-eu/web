@@ -94,12 +94,15 @@ describe('SidebarNavMobile component', () => {
     }
   )
 
-  it('remembers the dismissed support card after closing and reopening the menu', async () => {
+  it('keeps the menu open when dismissing the support card and remembers it', async () => {
     const { wrapper } = getWrapper({ stubSidebarNav: false })
     await wrapper.get(selectors.mobileNavBtn).trigger('click')
     await wrapper.get('.oc-support-card-dismiss').trigger('click')
     expect(window.localStorage.getItem('oc_supportCardDismissed')).toBe('true')
+    expect(wrapper.find('#sidebar-nav-mobile-panel').exists()).toBe(true)
+    expect(wrapper.find('.oc-support-card').exists()).toBe(false)
 
+    await wrapper.get('#sidebar-nav-mobile-panel').trigger('keydown', { key: 'Escape' })
     await wrapper.get(selectors.mobileNavBtn).trigger('click')
     expect(wrapper.find('#sidebar-nav-mobile-panel').exists()).toBe(true)
     expect(wrapper.find('.oc-support-card').exists()).toBe(false)

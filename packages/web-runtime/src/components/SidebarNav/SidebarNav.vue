@@ -96,7 +96,6 @@ const configStore = useConfigStore()
 const { options } = storeToRefs(configStore)
 const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 
-// written synchronously: in the mobile menu the click also unmounts this component right away
 const isSupportCardDismissed = ref(
   window.localStorage.getItem('oc_supportCardDismissed') === 'true'
 )
