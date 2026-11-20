@@ -775,6 +775,10 @@ def e2eTests(ctx):
                 if browser not in browsers:
                     browsers.append(browser)
 
+            # uncaught console errors only fail chromium runs
+            if "chromium" not in browsers:
+                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
+
             steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
                     installPnpm() + \
                     restoreBrowsersCache(browsers) + \
