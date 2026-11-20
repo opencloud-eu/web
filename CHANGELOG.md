@@ -8,6 +8,7 @@
 
 ### 🔒 Security
 
+- fix: sanitize inlined SVGs [[#4559](https://github.com/opencloud-eu/web/pull/4559)]
 - chore: check translations for markup after compiling [[#4561](https://github.com/opencloud-eu/web/pull/4561)]
 
 ### 📈 Enhancement
