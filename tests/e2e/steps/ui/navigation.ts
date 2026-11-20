@@ -404,7 +404,7 @@ When(
   async (
     { world }: { world: World },
     stepUser: string,
-    method: 'context menu' | 'batch action' | 'preview',
+    method: 'context menu' | 'batch action' | 'preview' | 'space header',
     stepTable: DataTable
   ): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)

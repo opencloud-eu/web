@@ -524,7 +524,7 @@ export class Resource {
   }
 
   async markAsFavorite(args: {
-    method: 'context menu' | 'batch action' | 'preview'
+    method: 'context menu' | 'batch action' | 'preview' | 'space header'
     resources: string[]
   }): Promise<void> {
     await po.markAsFavorite({
@@ -535,7 +535,7 @@ export class Resource {
   }
 
   async unmarkAsFavorite(args: {
-    method: 'context menu' | 'batch action'
+    method: 'context menu' | 'batch action' | 'space header'
     resources: string[]
   }): Promise<void> {
     await po.unmarkAsFavorite({
@@ -543,6 +543,10 @@ export class Resource {
       method: args.method,
       resources: args.resources
     })
+  }
+
+  getFavoriteIndicator(resource: string): Locator {
+    return po.getFavoriteIndicator({ page: this.#page, resource })
   }
 
   async showExpirationDateIndicator(
