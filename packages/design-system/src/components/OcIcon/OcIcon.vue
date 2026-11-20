@@ -20,7 +20,7 @@
       @load="emit('loaded')"
       @error="onImageError"
     />
-    <inline-svg
+    <oc-inline-svg
       v-else
       :src="nameWithFillType"
       :unique-ids="uniqueIds"
@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { computed, inject, MaybeRefOrGetter, ref, toValue, unref, watch } from 'vue'
-import InlineSvg from 'vue-inline-svg'
+import OcInlineSvg from '../OcInlineSvg/OcInlineSvg.vue'
 import {
   FillType,
   Icon,
@@ -50,8 +50,6 @@ import {
   getIconUrlPrefix,
   addVersionToAssetUrl
 } from '../../helpers'
-
-InlineSvg.name = 'inline-svg'
 
 export interface Props {
   /**

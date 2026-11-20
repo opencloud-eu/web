@@ -4,7 +4,7 @@
       class="flex justify-center items-center p-4 mb-4 bg-role-surface-container rounded-xl"
       data-testid="sidebar-multiple-selection-image"
     >
-      <inline-svg
+      <oc-inline-svg
         :src="imgSrcWithVersion"
         class="sidebar-multiple-selection-image"
         width="160"
@@ -29,7 +29,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import InlineSvg from 'vue-inline-svg'
 import { addVersionToAssetUrl } from '@opencloud-eu/design-system/helpers'
 
 const {

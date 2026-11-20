@@ -30,6 +30,7 @@ export { default as OcHiddenAnnouncer } from './OcHiddenAnnouncer/OcHiddenAnnoun
 export { default as OcIcon } from './OcIcon/OcIcon.vue'
 export { default as OcImage } from './OcImage/OcImage.vue'
 export { default as OcInfoDrop } from './OcInfoDrop/OcInfoDrop.vue'
+export { default as OcInlineSvg } from './OcInlineSvg/OcInlineSvg.vue'
 export { default as OcList } from './OcList/OcList.vue'
 export { default as OcLoader } from './OcLoader/OcLoader.vue'
 export { default as OcModal } from './OcModal/OcModal.vue'

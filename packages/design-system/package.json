@@ -99,6 +99,7 @@
     "@emoji-mart/data": "^1.2.1",
     "@floating-ui/dom": "^1.7.6",
     "@vueuse/core": "^15.0.0",
+    "dompurify": "^3.3.3",
     "emoji-mart": "^5.6.0",
     "focus-trap": "^8.0.0",
     "focus-trap-vue": "^4.1.0",
