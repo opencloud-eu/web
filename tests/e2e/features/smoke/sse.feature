@@ -10,8 +10,8 @@ Feature: server sent events
   | item-trashed            | x |
   | item-restored           | x |
   | item-moved              | x |
-  | item-favorite-added     | x |
-  | item-favorite-removed   | x |
+  | item-favorite-added     | x | files and spaces
+  | item-favorite-removed   | x | files and spaces
   | folder-created          | x |
   | space-created           | x |
   | space-member-added      | x |
@@ -397,4 +397,47 @@ Feature: server sent events
     Then following resource should not be displayed in the files list for user "Alice"
       | resource    |
       | example.txt |
+    And "Alice" logs out
+
+
+  Scenario: favorite sse events update the spaces list across tabs
+    Given "Admin" assigns following role to the users using API
+      | id    | role        |
+      | Alice | Space Admin |
+    And "Alice" creates the project space using API "Marketing"
+    And "Alice" logs in
+
+    # tab 2. open the spaces list in the second tab
+    And "Alice" opens a new tab
+    And "Alice" navigates to the projects space page
+    And "Alice" should not see the favorite indicator for the following resource
+      | resource  |
+      | Marketing |
+
+    # tab 1. item-favorite-added - mark the space as favorite
+    When "Alice" switches to tab 1
+    And "Alice" navigates to the project space "Marketing"
+    And "Alice" marks the following resource as favorite using "space header"
+      | resource  |
+      | Marketing |
+    Then "Alice" should get "item-favorite-added" SSE event
+
+    # tab 2. check that the space is marked without a reload
+    When "Alice" switches to tab 2
+    Then "Alice" should see the favorite indicator for the following resource
+      | resource  |
+      | Marketing |
+
+    # tab 1. item-favorite-removed - unmark the space as favorite
+    When "Alice" switches to tab 1
+    And "Alice" removes the following resource from favorites using "space header"
+      | resource  |
+      | Marketing |
+    Then "Alice" should get "item-favorite-removed" SSE event
+
+    # tab 2. check that the space is not marked anymore without a reload
+    When "Alice" switches to tab 2
+    Then "Alice" should not see the favorite indicator for the following resource
+      | resource  |
+      | Marketing |
     And "Alice" logs out
