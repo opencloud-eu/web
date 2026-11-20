@@ -1,5 +1,4 @@
-import path, { basename, dirname } from 'path'
-import { urlJoin } from '../../utils'
+import { basename, dirname, urlJoin } from '../../utils'
 import { DavPermission, DavProperty } from '../../webdav/constants'
 import { Resource, SearchResource, TrashResource, WebDavResponseResource } from './types'
 import { camelCase } from 'lodash-es'
@@ -237,12 +236,12 @@ export function buildDeletedResource(resource: WebDavResponseResource): TrashRes
   const isFolder = resource.type === 'directory'
   const fullName = resource.props[DavProperty.TrashbinOriginalFilename]?.toString()
   const extension = extractExtensionFromFile({ name: fullName, type: resource.type } as Resource)
-  const id = path.basename(resource.filename)
+  const id = basename(resource.filename)
   return {
     type: isFolder ? 'folder' : resource.type,
     isFolder,
     ddate: resource.props[DavProperty.TrashbinDeletedDate],
-    name: path.basename(fullName),
+    name: basename(fullName),
     extension,
     path: urlJoin(resource.props[DavProperty.TrashbinOriginalLocation], { leadingSlash: true }),
     id,

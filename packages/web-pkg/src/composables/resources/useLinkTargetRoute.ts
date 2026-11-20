@@ -1,12 +1,12 @@
 import { ref } from 'vue'
 import { RouteLocationNamedRaw } from 'vue-router'
-import { dirname } from 'path'
 import {
   isPublicSpaceResource,
   isShareSpaceResource,
   Resource,
   SpaceResource,
-  urlJoin
+  urlJoin,
+  dirname
 } from '@opencloud-eu/web-client'
 import { useResourceLink } from './useResourceLink'
 import { createFileRouteOptions } from '../../helpers/router'

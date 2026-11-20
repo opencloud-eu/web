@@ -97,10 +97,9 @@
 
 <script setup lang="ts">
 import { omit, last } from 'lodash-es'
-import { basename } from 'path'
 import { computed, onBeforeUnmount, onMounted, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, basename } from '@opencloud-eu/web-client'
 import {
   isPersonalSpaceResource,
   isProjectSpaceResource,

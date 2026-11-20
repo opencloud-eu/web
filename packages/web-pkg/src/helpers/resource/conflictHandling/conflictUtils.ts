@@ -1,5 +1,4 @@
-import { dirname } from 'path'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, dirname } from '@opencloud-eu/web-client'
 import { RESOURCE_NAME_MAX_BYTES } from '../../../constants'
 import { withoutExtension } from '../../fileExtension'
 import { getTextByteSize } from '../../textByteSize'

@@ -1,6 +1,5 @@
 import { markRaw } from 'vue'
-import { join } from 'path'
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, urlJoin } from '@opencloud-eu/web-client'
 import { ResolveConflict, ResolveStrategy } from './types'
 import { isSameResource } from '../sameResource'
 import { useModals } from '../../../composables'
@@ -33,7 +32,7 @@ export class ConflictDialog {
     targetFolderResources: Resource[]
   ): Promise<FileConflict[]> {
     function findExistingResource(resource: Resource) {
-      const targetFilePath = join(targetFolder.path, resource.name)
+      const targetFilePath = urlJoin(targetFolder.path, resource.name)
       return targetFolderResources.find((r) => r.path === targetFilePath)
     }
 
