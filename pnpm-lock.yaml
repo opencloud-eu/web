@@ -689,8 +689,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       '@uppy/core':
-        specifier: 6.3.1
-        version: 6.3.1
+        specifier: 6.3.2
+        version: 6.3.2
       '@vueuse/core':
         specifier: ^14.0.0 || ^15.0.0
         version: 15.0.0(vue@3.5.45(typescript@6.0.3))
@@ -1095,16 +1095,16 @@ importers:
         version: 3.0.10(patch_hash=142e9b3bcc552bcd98d6274d511a32c02fab4cbe64278644dc3818fc5277061e)(prosemirror-model@1.25.12)(prosemirror-state@1.4.4)(prosemirror-view@1.42.6)(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)
       '@uppy/core':
         specifier: ^6.0.0
-        version: 6.3.1
+        version: 6.3.2
       '@uppy/tus':
         specifier: ^6.0.0
-        version: 6.0.1(@uppy/core@6.3.1)
+        version: 6.0.1(@uppy/core@6.3.2)
       '@uppy/utils':
         specifier: ^7.2.0
         version: 7.2.0
       '@uppy/xhr-upload':
         specifier: ^6.0.0
-        version: 6.0.1(@uppy/core@6.3.1)
+        version: 6.0.1(@uppy/core@6.3.2)
       '@vue/shared':
         specifier: ^3.5.31
         version: 3.5.45
@@ -2705,8 +2705,8 @@ packages:
   '@ungap/structured-clone@1.3.3':
     resolution: {integrity: sha512-60YRaenCQcVjYEKOcG824+DRGGIQ3VKErcBoAEDJZz5bKIs2ZG+X/H9Nk+Q6EVkwJk5QNApxbrc5QtBSwtrXAg==}
 
-  '@uppy/core@6.3.1':
-    resolution: {integrity: sha512-yIhg41/2RHzyZcxCW0Ta81JyveCGoiBpWozpXRJSjsr4Xip61mzFgPyUEeb0VCLKprK4m8xiJyr2nJqnZwgcww==}
+  '@uppy/core@6.3.2':
+    resolution: {integrity: sha512-xZOazr4P59wwEeGJVktH67/0D0OzWy3HbsdCKi368JKzSNgTmDHv2FvGbFqcNY4b3K3j09ji+AwE6Oif7IvTmg==}
 
   '@uppy/tus@6.0.1':
     resolution: {integrity: sha512-svsbIJlVqKoudatxuFf+o7SiK/kklbcQiKDuIoTBfaHKNYJnfDvPjn16iHzQ0kyh6GfBmrc7NHUXXgv5sC6UWw==}
@@ -7025,7 +7025,7 @@ snapshots:
 
   '@ungap/structured-clone@1.3.3': {}
 
-  '@uppy/core@6.3.1':
+  '@uppy/core@6.3.2':
     dependencies:
       '@transloadit/prettier-bytes': 2.0.0
       classnames: 2.5.1
@@ -7040,9 +7040,9 @@ snapshots:
     transitivePeerDependencies:
       - preact-render-to-string
 
-  '@uppy/tus@6.0.1(@uppy/core@6.3.1)':
+  '@uppy/tus@6.0.1(@uppy/core@6.3.2)':
     dependencies:
-      '@uppy/core': 6.3.1
+      '@uppy/core': 6.3.2
       tus-js-client: 4.3.1
 
   '@uppy/utils@7.2.0':
@@ -7052,9 +7052,9 @@ snapshots:
     transitivePeerDependencies:
       - preact-render-to-string
 
-  '@uppy/xhr-upload@6.0.1(@uppy/core@6.3.1)':
+  '@uppy/xhr-upload@6.0.1(@uppy/core@6.3.2)':
     dependencies:
-      '@uppy/core': 6.3.1
+      '@uppy/core': 6.3.2
 
   '@vitejs/plugin-basic-ssl@2.3.0(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)(yaml@2.9.1))':
     dependencies:
