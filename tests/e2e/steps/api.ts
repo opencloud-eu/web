@@ -289,6 +289,20 @@ Given(
 )
 
 Given(
+  '{string} creates the following project space(s) using API',
+  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
+    const user =
+      stepUser === 'Admin'
+        ? world.usersEnvironment.getUser({ key: stepUser })
+        : world.usersEnvironment.getCreatedUser({ key: stepUser })
+    for (const { name } of stepTable.hashes()) {
+      const spaceId = await api.graph.createSpace({ user, space: { name } as unknown as Space })
+      world.spacesEnvironment.createSpace({ key: name, space: { name, id: spaceId } })
+    }
+  }
+)
+
+Given(
   '{string} creates {int} project space(s) using API',
   async ({ world }: { world: World }, stepUser: string, numberOfSpaces: number): Promise<void> => {
     const user =
