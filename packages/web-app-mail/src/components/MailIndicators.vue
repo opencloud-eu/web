@@ -14,7 +14,7 @@
     </oc-tag>
     <oc-icon
       v-if="mail.hasAttachment"
-      v-oc-tooltip="$ngettext('Attachment', 'Attachments', 1)"
+      v-oc-tooltip="$gettext('Attachments')"
       :aria-label="$gettext('This mail has attachments')"
       size-class="size-4"
       name="attachment-2"
