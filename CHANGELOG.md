@@ -1,5 +1,53 @@
 # Changelog
 
+## [8.4.0](https://github.com/opencloud-eu/web/releases/tag/v8.4.0) - 2026-11-21
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @butonic, @flash7777, @kulmann, @v-scharf, @xhzeem
+
+### 🔒 Security
+
+- fix: sanitize inlined SVGs [[#4559](https://github.com/opencloud-eu/web/pull/4559)]
+- chore: check translations for markup after compiling [[#4561](https://github.com/opencloud-eu/web/pull/4561)]
+
+### 📈 Enhancement
+
+- feat: allow dismissing the support card in the sidebar [[#4560](https://github.com/opencloud-eu/web/pull/4560)]
+- feat: read critical versions from a semver range in the version check [[#4551](https://github.com/opencloud-eu/web/pull/4551)]
+- feat: add duplicate action for files and folders [[#4534](https://github.com/opencloud-eu/web/pull/4534)]
+- feat(sharing): hide the invite form when user sharing is disabled [[#4548](https://github.com/opencloud-eu/web/pull/4548)]
+- feat: add favorites for project spaces and share roots [[#4547](https://github.com/opencloud-eu/web/pull/4547)]
+- feat: add easy and sign language menu to the top bar [[#4537](https://github.com/opencloud-eu/web/pull/4537)]
+- feat: add right-to-left layout support [[#3540](https://github.com/opencloud-eu/web/pull/3540)]
+- feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
+
+### 🐛 Bug Fixes
+
+- fix: skip disabled resources when selecting all via keyboard [[#4522](https://github.com/opencloud-eu/web/pull/4522)]
+- fix: limit keyboard selection in the spaces overview to the current page [[#4530](https://github.com/opencloud-eu/web/pull/4530)]
+- fix: replace history entries of redirect-only steps [[#4523](https://github.com/opencloud-eu/web/pull/4523)]
+- fix: show an error message when loading the group memberships fails [[#4529](https://github.com/opencloud-eu/web/pull/4529)]
+- fix: report a failed people search instead of showing no results [[#4532](https://github.com/opencloud-eu/web/pull/4532)]
+- fix: keep public link password form after a temporary error [[#4533](https://github.com/opencloud-eu/web/pull/4533)]
+- fix: ignore arrow keys in the search preview while it is loading or empty [[#4501](https://github.com/opencloud-eu/web/pull/4501)]
+- fix: don't confirm modals on Enter while the confirm button is disabled [[#4507](https://github.com/opencloud-eu/web/pull/4507)]
+- fix: keep share space id on resources loaded via sse [[#4499](https://github.com/opencloud-eu/web/pull/4499)]
+- fix: show full chapter titles in the epub reader [[#4495](https://github.com/opencloud-eu/web/pull/4495)]
+- fix: keep preview video inside the stage when its size changes [[#4500](https://github.com/opencloud-eu/web/pull/4500)]
+- fix: show an error message when the spaces or trash overview fails to load [[#4521](https://github.com/opencloud-eu/web/pull/4521)]
+- fix: shorten duplicate names to fit into 255 bytes [[#4520](https://github.com/opencloud-eu/web/pull/4520)]
+- fix: wrap long group names in the user groups field [[#4494](https://github.com/opencloud-eu/web/pull/4494)]
+- fix: wrap long text in the preview stage [[#4489](https://github.com/opencloud-eu/web/pull/4489)]
+- fix: disable sidebar toggle on account sub pages [[#4490](https://github.com/opencloud-eu/web/pull/4490)]
+
+### 📦️ Dependencies
+
+- chore(deps): update axllent/mailpit docker tag to v1.34.0 [[#4541](https://github.com/opencloud-eu/web/pull/4541)]
+- chore(deps): update dependency filesize to v11.0.34 [[#4528](https://github.com/opencloud-eu/web/pull/4528)]
+- chore(deps): update collabora/code docker tag to v26.04.6.1.1 [[#4366](https://github.com/opencloud-eu/web/pull/4366)]
+- chore(deps): update pnpm to v12 [[#3314](https://github.com/opencloud-eu/web/pull/3314)]
+
 ## [8.3.0](https://github.com/opencloud-eu/web/releases/tag/v8.3.0) - 2026-11-17
 
 ### ❤️ Thanks to all contributors! ❤️
