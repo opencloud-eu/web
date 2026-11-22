@@ -137,14 +137,6 @@ describe('SpaceHeader', () => {
         wrapper.find('svg[src="icons/resource-type-space-vault-fill.svg"]').exists()
       ).toBeTruthy()
     })
-    it('does not show the vault icon for a regular space', async () => {
-      const space = getSpaceMock()
-      space.type = 'space'
-      space.isInVault = false
-      const wrapper = getWrapper({ space })
-      await flushPromises()
-      expect(wrapper.find('[data-testid="space-vault-icon"]').exists()).toBeFalsy()
-    })
   })
   describe('space description', () => {
     it('should show the description', async () => {

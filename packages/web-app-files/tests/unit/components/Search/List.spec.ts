@@ -108,7 +108,6 @@ describe('List component', () => {
       mocks: { $router }
     })
 
-    let replacementCounter = 0
     const queries = [{}, {}, {}, {}, {}, {}, {}, {}, { q_tags: 'foo' }, {}, {}, {}, {}]
     for (const query of queries) {
       await $router.replace({
@@ -123,12 +122,9 @@ describe('List component', () => {
           query
         )
       })
-
-      replacementCounter++
     }
 
     await flushPromises()
-    expect(replacementCounter).toBe(queries.length)
     expect(wrapper.emitted('search').length).toBe(4)
   })
   it('clears the tag filter chip when the tags are removed from the route', async () => {

@@ -35,7 +35,7 @@ describe('editReadmeContent', () => {
       })
     })
     it('should be false if canEditReadme is false', () => {
-      const spaceMock = mock<SpaceResource>({ canEditReadme: () => false })
+      const spaceMock = mock<SpaceResource>({ driveType: 'project', canEditReadme: () => false })
 
       getWrapper({
         setup: ({ actions }) => {

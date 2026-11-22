@@ -31,10 +31,11 @@ describe('GenericTrash view', () => {
     expect(wrapper.find('file-side-bar-stub').exists()).toBeTruthy()
   })
   it('shows the personal space breadcrumb', () => {
-    const { wrapper } = getMountedWrapper()
+    const space = mock<SpaceResource>({ driveType: 'personal', name: 'Albert Einstein' })
+    const { wrapper } = getMountedWrapper({ props: { space } })
     expect(
       wrapper.findComponent<typeof AppBar>('app-bar-stub').props().breadcrumbs[1].text
-    ).toEqual('Personal space')
+    ).toEqual('Personal')
   })
   it('shows the project space breadcrumb', () => {
     const space = mock<SpaceResource>({ driveType: 'project' })

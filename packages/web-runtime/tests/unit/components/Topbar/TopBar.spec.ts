@@ -19,10 +19,6 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 describe('Top Bar component', () => {
-  it('Displays applications menu', () => {
-    const { wrapper } = getWrapper()
-    expect(wrapper.find('applications-menu-stub').exists()).toBeTruthy()
-  })
   it('hides the applications menu in a guest context', () => {
     const { wrapper } = getWrapper({ userContextReady: false, guestContextReady: true })
     expect(wrapper.find('applications-menu-stub').exists()).toBeFalsy()

@@ -8,10 +8,7 @@ import { mock } from 'vitest-mock-extended'
 import { Resource, ShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { useSpacesStore } from '../../../../src/composables/piniaStores'
 
-describe('useSpaceHelpers', () => {
-  it('should be valid', () => {
-    expect(useGetMatchingSpace).toBeDefined()
-  })
+describe('useGetMatchingSpace', () => {
   describe('method "getMatchingSpace"', () => {
     it('should return the matching project space', () => {
       getWrapper({

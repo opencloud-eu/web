@@ -16,8 +16,7 @@ describe('OcTextarea', () => {
   }
 
   const selectors = {
-    textareaMessage: '.oc-textarea-message span',
-    textArea: '.oc-textarea'
+    textareaMessage: '.oc-textarea-message span'
   }
   describe('id prop', () => {
     const wrapper = getShallowWrapper({

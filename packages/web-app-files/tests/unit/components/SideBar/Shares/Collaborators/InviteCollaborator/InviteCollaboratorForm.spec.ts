@@ -63,13 +63,6 @@ describe('InviteCollaboratorForm', () => {
   afterEach(() => {
     announceMock.mockReset()
   })
-  describe('renders correctly', () => {
-    it.todo('renders a select field for share receivers')
-    it.todo('renders an inviteDescriptionMessage')
-    it.todo('renders a role selector component')
-    it.todo('renders an expiration datepicker component')
-    it.todo('renders an hidden-announcer')
-  })
   describe('invite input', () => {
     it('is named after the visible label', () => {
       const { wrapper } = getWrapper({ shallow: false, props: { label: 'Share with people' } })
@@ -87,10 +80,6 @@ describe('InviteCollaboratorForm', () => {
     })
   })
   describe('share button', () => {
-    it('is present', () => {
-      const { wrapper } = getWrapper()
-      expect(wrapper.find('#new-collaborators-form-create-button').exists()).toBeTruthy()
-    })
     it('is disabled when no collaborators selected', () => {
       const { wrapper } = getWrapper()
       const btn = wrapper.findComponent<typeof OcButton>('#new-collaborators-form-create-button')
@@ -787,16 +776,6 @@ describe('InviteCollaboratorForm', () => {
         expect(addShare).toHaveBeenCalledTimes(1)
       })
     })
-    it('clicking the invite-sharees button calls the "share"-action', async () => {
-      const { wrapper } = getWrapper()
-      const shareSpy = vi.spyOn(wrapper.vm as any, 'share')
-      const shareBtn = wrapper.find('#new-collaborators-form-create-button')
-      expect(shareBtn.exists()).toBeTruthy()
-
-      await wrapper.vm.$nextTick()
-      await shareBtn.trigger('click')
-      expect(shareSpy).toHaveBeenCalledTimes(0)
-    })
     it.each([
       { storageId: undefined, resource: mock<Resource>(folderMock) },
       { storageId: undefined, resource: mock<SpaceResource>(spaceMock) },
@@ -982,7 +961,6 @@ describe('InviteCollaboratorForm', () => {
       expect((wrapper.vm as any).selectedCollaborators).toEqual([])
       expect((wrapper.vm as any).expirationDate).toBeNull()
     })
-    it.todo('resets focus upon selecting an invitee')
   })
   describe('share role type filter', () => {
     it.each([

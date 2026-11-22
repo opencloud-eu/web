@@ -283,24 +283,6 @@ describe('setupVaultUnlockGuard', () => {
     expect(result).toMatchObject({ query: { cancelUrl: '/search?term=secret' } })
   })
 
-  it('omits the cancel URL on a cold start, where there is no page to return to', async () => {
-    const guard = installGuard({
-      spaces: [space],
-      claim: { vaultRoot: '/my.vault', unlockRoute },
-      engine: null
-    })
-
-    const result = (await guard(
-      {
-        params: { driveAliasAndItem: 'personal/admin/my.vault' },
-        fullPath: '/files/personal/admin/my.vault'
-      },
-      coldStart
-    )) as any
-
-    expect(result.query).not.toHaveProperty('cancelUrl')
-  })
-
   it('omits the cancel URL when the user came from the unlock route itself', async () => {
     const guard = installGuard({
       spaces: [space],

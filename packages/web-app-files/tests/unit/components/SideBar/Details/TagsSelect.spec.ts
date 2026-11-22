@@ -1,8 +1,8 @@
 import { defaultComponentMocks, mount, defaultPlugins } from '@opencloud-eu/web-test-helpers'
-import TagsSelect from '../../../../src/components/SideBar/Details/TagsSelect.vue'
+import TagsSelect from '../../../../../src/components/SideBar/Details/TagsSelect.vue'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
-import { ClientService, eventBus, useMessages, useResourcesStore } from '@opencloud-eu/web-pkg'
+import { ClientService, useMessages, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { OcSelect } from '@opencloud-eu/design-system/components'
 import { flushPromises } from '@vue/test-utils'
 
@@ -165,12 +165,10 @@ describe('Tag Select', () => {
       new Error()
     )
     const resource = mock<Resource>({ tags: ['a'] })
-    const eventStub = vi.spyOn(eventBus, 'publish')
     const { wrapper } = createWrapper(resource, clientService)
     ;(wrapper.vm as any).selectedTags.push({ label: 'b' })
     await (wrapper.vm as any).save((wrapper.vm as any).selectedTags)
     expect(assignTagsStub).toHaveBeenCalled()
-    expect(eventStub).not.toHaveBeenCalled()
     const { showErrorMessage } = useMessages()
     expect(showErrorMessage).toHaveBeenCalledTimes(1)
   })

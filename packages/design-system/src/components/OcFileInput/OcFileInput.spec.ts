@@ -3,7 +3,6 @@ import OcFileInput from './OcFileInput.vue'
 
 describe('OcFileInput', () => {
   const selectors = {
-    inputField: '.oc-file-input',
     inputMessage: '.oc-file-input-message span',
     descriptionMessage: '.oc-file-input-description',
     errorMessage: '.oc-file-input-danger',

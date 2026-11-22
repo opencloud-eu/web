@@ -16,9 +16,10 @@ describe('OcSwitch', () => {
 
     expect(wrapper.emitted('update:checked')[0][0]).toEqual(true)
 
+    await wrapper.setProps({ checked: true })
     await wrapper.find('[data-testid="oc-switch-btn"]').trigger('click')
 
-    expect(wrapper.emitted('update:checked')[0][0]).toEqual(true)
+    expect(wrapper.emitted('update:checked')[1][0]).toEqual(false)
   })
 
   it('keeps its button when toggled, so the button keeps the focus', async () => {

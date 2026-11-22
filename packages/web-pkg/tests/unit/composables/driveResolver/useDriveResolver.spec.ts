@@ -10,9 +10,6 @@ import {
 import { useSpacesStore } from '../../../../src/composables/piniaStores'
 
 describe('useDriveResolver', () => {
-  it('should be valid', () => {
-    expect(useDriveResolver).toBeDefined()
-  })
   it('space and item should be null when no driveAliasAndItem given', () => {
     const mocks = defaultComponentMocks()
 

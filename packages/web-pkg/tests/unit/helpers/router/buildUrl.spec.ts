@@ -1,5 +1,5 @@
 import { createMemoryHistory, createRouter, Router } from 'vue-router'
-import { buildUrl } from '@opencloud-eu/web-pkg'
+import { buildUrl } from '../../../../src/helpers/router'
 import { urlJoin } from '@opencloud-eu/web-client'
 
 function setLocation(location: string, base: string) {

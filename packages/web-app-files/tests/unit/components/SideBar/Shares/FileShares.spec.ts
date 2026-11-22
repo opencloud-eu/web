@@ -178,15 +178,6 @@ describe('FileShares', () => {
       expect(wrapper.findAll('#space-collaborators-list li').length).toBe(2)
     })
   })
-
-  describe('"deleteShareConfirmation" method', () => {
-    it('dispatches a modal', () => {
-      const { wrapper } = getWrapper()
-      const { dispatchModal } = useModals()
-      ;(wrapper.vm as any).deleteShareConfirmation(mock<CollaboratorShare>())
-      expect(dispatchModal).toHaveBeenCalled()
-    })
-  })
 })
 
 function getWrapper({

@@ -7,9 +7,6 @@ import { Capabilities } from '@opencloud-eu/web-client/ocs'
 import { PasswordEnforcedForCapability } from '@opencloud-eu/web-client/ocs'
 
 describe('useLinkTypes', () => {
-  it('should be valid', () => {
-    expect(useLinkTypes).toBeDefined()
-  })
   describe('computed "defaultLinkType"', () => {
     it('is viewer', () => {
       getWrapper({

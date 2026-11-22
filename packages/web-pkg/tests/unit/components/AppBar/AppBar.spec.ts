@@ -26,9 +26,7 @@ vi.mock('@opencloud-eu/design-system/composables', async (importOriginal) => {
 const selectors = {
   ocBreadcrumbStub: 'oc-breadcrumb-stub',
   batchActionsStub: 'batch-actions-stub',
-  viewOptionsStub: 'view-options-stub',
-  sidebarToggleStub: 'sidebar-toggle-stub',
-  mobileNavStub: 'mobile-nav-stub'
+  viewOptionsStub: 'view-options-stub'
 }
 
 const selectedFiles = [mock<Resource>(), mock<Resource>()]

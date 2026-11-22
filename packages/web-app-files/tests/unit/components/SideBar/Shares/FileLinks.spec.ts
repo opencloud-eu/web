@@ -101,9 +101,10 @@ describe('FileLinks', () => {
       })
     })
 
-    it('should not render link list if no links are provided', () => {
+    it('shows the "no results" message instead of the link list if no links are provided', () => {
       const { wrapper } = getWrapper({ links: [] })
-      expect(wrapper.find('oc-list-stub').exists()).toBeFalsy()
+      expect(wrapper.find('#files-links-list').exists()).toBeFalsy()
+      expect(wrapper.find(selectors.linkNoResults).exists()).toBeTruthy()
     })
   })
   describe('when canCreateLinks is set to true', () => {
