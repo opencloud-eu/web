@@ -66,51 +66,42 @@ describe('undoDelete', () => {
     })
   })
   describe('handler', () => {
-    it('calls the restore file action and transforms the ids before', () => {
-      getWrapper({
-        setup: async ({ actions }, { restoreHandlerMock }) => {
-          const space = mock<SpaceResource>()
-          const callback = vi.fn()
-          const resources = [{ id: '1$2!3' } as Resource]
-          await unref(actions)[0].handler({ space, resources, callback })
+    it('calls the restore file action and transforms the ids before', async () => {
+      const { instance, restoreHandlerMock } = getWrapper()
+      const space = mock<SpaceResource>()
+      const callback = vi.fn()
+      const resources = [{ id: '1$2!3' } as Resource]
+      await unref(instance.actions)[0].handler({ space, resources, callback })
 
-          expect(restoreHandlerMock).toHaveBeenCalledWith({ space, resources: [{ id: '3' }] })
-          expect(callback).toHaveBeenCalled()
-        }
+      expect(restoreHandlerMock).toHaveBeenCalledWith({ space, resources: [{ id: '3' }] })
+      expect(callback).toHaveBeenCalled()
+    })
+    it('decrypts the vault paths if the vault is unlocked', async () => {
+      const { instance, restoreHandlerMock } = getWrapper()
+      vi.mocked(resolveVaultEngine).mockResolvedValue(
+        mock<VaultEngine>({
+          vaultRoot: '/my.vault',
+          decryptPath: (path) => Promise.resolve(path === 'enc' ? 'file.txt' : path)
+        })
+      )
+      const space = mock<SpaceResource>()
+      const resources = [{ id: '1$2!3', name: 'file.txt', path: '/my.vault/enc' } as Resource]
+      await unref(instance.actions)[0].handler({ space, resources, callback: vi.fn() })
+
+      expect(restoreHandlerMock).toHaveBeenCalledWith({
+        space,
+        resources: [{ id: '3', name: 'file.txt', path: '/my.vault/file.txt' }]
       })
     })
-    it('decrypts the vault paths if the vault is unlocked', () => {
-      getWrapper({
-        setup: async ({ actions }, { restoreHandlerMock }) => {
-          vi.mocked(resolveVaultEngine).mockResolvedValue(
-            mock<VaultEngine>({
-              vaultRoot: '/my.vault',
-              decryptPath: (path) => Promise.resolve(path === 'enc' ? 'file.txt' : path)
-            })
-          )
-          const space = mock<SpaceResource>()
-          const resources = [{ id: '1$2!3', name: 'file.txt', path: '/my.vault/enc' } as Resource]
-          await unref(actions)[0].handler({ space, resources, callback: vi.fn() })
+    it('keeps the encrypted vault paths if the vault is locked', async () => {
+      const { instance, restoreHandlerMock } = getWrapper()
+      const space = mock<SpaceResource>()
+      const resources = [{ id: '1$2!3', name: 'file.txt', path: '/my.vault/enc' } as Resource]
+      await unref(instance.actions)[0].handler({ space, resources, callback: vi.fn() })
 
-          expect(restoreHandlerMock).toHaveBeenCalledWith({
-            space,
-            resources: [{ id: '3', name: 'file.txt', path: '/my.vault/file.txt' }]
-          })
-        }
-      })
-    })
-    it('keeps the encrypted vault paths if the vault is locked', () => {
-      getWrapper({
-        setup: async ({ actions }, { restoreHandlerMock }) => {
-          const space = mock<SpaceResource>()
-          const resources = [{ id: '1$2!3', name: 'file.txt', path: '/my.vault/enc' } as Resource]
-          await unref(actions)[0].handler({ space, resources, callback: vi.fn() })
-
-          expect(restoreHandlerMock).toHaveBeenCalledWith({
-            space,
-            resources: [{ id: '3', name: 'file.txt', path: '/my.vault/enc' }]
-          })
-        }
+      expect(restoreHandlerMock).toHaveBeenCalledWith({
+        space,
+        resources: [{ id: '3', name: 'file.txt', path: '/my.vault/enc' }]
       })
     })
   })
@@ -183,13 +174,8 @@ function getWrapper({
   currentRouteName?: string
   stubActions?: boolean
   resources?: Resource[]
-  setup: (
-    instance: ReturnType<typeof useFileActionsUndoDelete>,
-    mocks: {
-      restoreHandlerMock: FileAction['handler']
-    }
-  ) => void
-}) {
+  setup?: (instance: ReturnType<typeof useFileActionsUndoDelete>) => void
+} = {}) {
   const restoreHandlerMock = vi.fn()
   const useFileActionsRestoreMock = mock<ReturnType<typeof useFileActionsRestore>>()
   useFileActionsRestoreMock.actions = computed(() => [
@@ -204,26 +190,23 @@ function getWrapper({
     dav: { trashbin: trashBinEnabled ? '1.0' : undefined }
   } satisfies Partial<CapabilityStore['capabilities']>
 
-  return {
-    mocks,
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useFileActionsUndoDelete()
-        setup(instance, {
-          restoreHandlerMock
-        })
-      },
-      {
-        mocks,
-        provide: mocks,
-        pluginOptions: {
-          piniaOptions: {
-            stubActions,
-            capabilityState: { capabilities },
-            resourcesStore: { resources }
-          }
+  let instance: ReturnType<typeof useFileActionsUndoDelete>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useFileActionsUndoDelete()
+      setup?.(instance)
+    },
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: {
+        piniaOptions: {
+          stubActions,
+          capabilityState: { capabilities },
+          resourcesStore: { resources }
         }
       }
-    )
-  }
+    }
+  )
+  return { wrapper, instance, mocks, restoreHandlerMock }
 }

@@ -64,42 +64,33 @@ describe('delete image', () => {
     })
   })
   describe('method "handler"', () => {
-    it('should trigger the modal', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({ resources: [mock<SpaceResource>({ id: '1' })] })
-          expect(dispatchModal).toHaveBeenCalledTimes(1)
-        }
-      })
+    it('should trigger the modal', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({ resources: [mock<SpaceResource>({ id: '1' })] })
+      expect(dispatchModal).toHaveBeenCalledTimes(1)
     })
   })
   describe('method "deleteSpaceImage"', () => {
-    it('should show message on success', () => {
-      getWrapper({
-        setup: async ({ deleteSpaceImage }, { clientService }) => {
-          clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(
-            mock<SpaceResource>()
-          )
-          await deleteSpaceImage({ space: mock<SpaceResource>() })
+    it('should show message on success', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(
+        mock<SpaceResource>()
+      )
+      await instance.deleteSpaceImage({ space: mock<SpaceResource>() })
 
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledTimes(1)
     })
 
-    it('should show message on error', () => {
+    it('should show message on error', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      getWrapper({
-        setup: async ({ deleteSpaceImage }, { clientService }) => {
-          clientService.graphAuthenticated.drives.updateDrive.mockRejectedValue(new Error())
-          await deleteSpaceImage({ space: mock<SpaceResource>() })
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.graphAuthenticated.drives.updateDrive.mockRejectedValue(new Error())
+      await instance.deleteSpaceImage({ space: mock<SpaceResource>() })
 
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
     })
   })
 })
@@ -107,30 +98,22 @@ describe('delete image', () => {
 function getWrapper({
   setup
 }: {
-  setup: (
-    instance: ReturnType<typeof useSpaceActionsDeleteImage>,
-    {
-      clientService
-    }: {
-      clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
-    }
-  ) => void
-}) {
+  setup?: (instance: ReturnType<typeof useSpaceActionsDeleteImage>) => void
+} = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
   })
 
-  return {
-    mocks,
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useSpaceActionsDeleteImage()
-        setup(instance, { clientService: mocks.$clientService })
-      },
-      {
-        mocks,
-        provide: mocks
-      }
-    )
-  }
+  let instance: ReturnType<typeof useSpaceActionsDeleteImage>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useSpaceActionsDeleteImage()
+      setup?.(instance)
+    },
+    {
+      mocks,
+      provide: mocks
+    }
+  )
+  return { wrapper, instance, mocks }
 }

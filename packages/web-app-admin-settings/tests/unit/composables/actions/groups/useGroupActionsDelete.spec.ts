@@ -31,16 +31,15 @@ describe('useGroupActionsDelete', () => {
     })
   })
   describe('method "deleteGroups"', () => {
-    it('should successfully delete all given gropups and reload the groups list', () => {
-      getWrapper({
-        setup: async ({ deleteGroups }, { clientService }) => {
-          const group = mock<Group>({ id: '1' })
-          await deleteGroups([group])
-          expect(clientService.graphAuthenticated.groups.deleteGroup).toHaveBeenCalledWith(group.id)
-          const { removeGroups } = useGroupSettingsStore()
-          expect(removeGroups).toHaveBeenCalled()
-        }
-      })
+    it('should successfully delete all given gropups and reload the groups list', async () => {
+      const { instance, mocks } = getWrapper()
+      const group = mock<Group>({ id: '1' })
+      await instance.deleteGroups([group])
+      expect(mocks.$clientService.graphAuthenticated.groups.deleteGroup).toHaveBeenCalledWith(
+        group.id
+      )
+      const { removeGroups } = useGroupSettingsStore()
+      expect(removeGroups).toHaveBeenCalled()
     })
     it('should only remove the successfully deleted groups from the list', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
@@ -65,7 +64,7 @@ describe('useGroupActionsDelete', () => {
 function getWrapper({
   setup
 }: {
-  setup: (
+  setup?: (
     instance: ReturnType<typeof useGroupActionsDelete>,
     {
       clientService
@@ -73,15 +72,15 @@ function getWrapper({
       clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
     }
   ) => void
-}) {
+} = {}) {
   const mocks = defaultComponentMocks()
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useGroupActionsDelete()
-        setup(instance, { clientService: mocks.$clientService })
-      },
-      { mocks, provide: mocks }
-    )
-  }
+  let instance: ReturnType<typeof useGroupActionsDelete>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useGroupActionsDelete()
+      setup?.(instance, { clientService: mocks.$clientService })
+    },
+    { mocks, provide: mocks }
+  )
+  return { wrapper, instance, mocks }
 }

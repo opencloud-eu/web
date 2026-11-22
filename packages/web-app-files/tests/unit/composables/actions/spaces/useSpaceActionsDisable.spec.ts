@@ -1,5 +1,5 @@
 import { useSpaceActionsDisable } from '../../../../../src/composables/actions/spaces'
-import { useMessages, useModals, useVaultStore, VaultStore } from '@opencloud-eu/web-pkg'
+import { useMessages, useModals, useVaultStore } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import {
   defaultComponentMocks,
@@ -51,64 +51,48 @@ describe('disable', () => {
   })
 
   describe('handler', () => {
-    it('should trigger the disable modal window', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({
-            resources: [
-              mock<SpaceResource>({ id: '1', canDisable: () => true, driveType: 'project' })
-            ]
-          })
-
-          expect(dispatchModal).toHaveBeenCalledTimes(1)
-        }
+    it('should trigger the disable modal window', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({
+        resources: [mock<SpaceResource>({ id: '1', canDisable: () => true, driveType: 'project' })]
       })
+
+      expect(dispatchModal).toHaveBeenCalledTimes(1)
     })
-    it('should not trigger the disable modal window without any resource', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({
-            resources: [
-              mock<SpaceResource>({ id: '1', canDisable: () => false, driveType: 'project' })
-            ]
-          })
-
-          expect(dispatchModal).toHaveBeenCalledTimes(0)
-        }
+    it('should not trigger the disable modal window without any resource', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({
+        resources: [mock<SpaceResource>({ id: '1', canDisable: () => false, driveType: 'project' })]
       })
+
+      expect(dispatchModal).toHaveBeenCalledTimes(0)
     })
   })
 
   describe('method "disableSpace"', () => {
-    it('should show message on success', () => {
-      getWrapper({
-        setup: async ({ disableSpaces }, { clientService }) => {
-          clientService.graphAuthenticated.drives.disableDrive.mockResolvedValue()
-          await disableSpaces([
-            mock<SpaceResource>({ id: '1', canDisable: () => true, driveType: 'project' })
-          ])
+    it('should show message on success', async () => {
+      const { disableSpaces, clientService } = getDisableSpaces()
+      clientService.graphAuthenticated.drives.disableDrive.mockResolvedValue()
+      await disableSpaces([
+        mock<SpaceResource>({ id: '1', canDisable: () => true, driveType: 'project' })
+      ])
 
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledTimes(1)
     })
 
-    it('should show message on error', () => {
+    it('should show message on error', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      getWrapper({
-        setup: async ({ disableSpaces }, { clientService }) => {
-          clientService.graphAuthenticated.drives.disableDrive.mockRejectedValue(new Error())
-          await disableSpaces([
-            mock<SpaceResource>({ id: '1', canDisable: () => true, driveType: 'project' })
-          ])
+      const { disableSpaces, clientService } = getDisableSpaces()
+      clientService.graphAuthenticated.drives.disableDrive.mockRejectedValue(new Error())
+      await disableSpaces([
+        mock<SpaceResource>({ id: '1', canDisable: () => true, driveType: 'project' })
+      ])
 
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -157,48 +141,37 @@ describe('disable', () => {
 })
 
 function getDisableSpaces() {
-  let disableSpaces: ReturnType<typeof useSpaceActionsDisable>['disableSpaces']
-  let vaultStore: VaultStore
-  const { mocks } = getWrapper({
-    setup: (instance) => {
-      disableSpaces = instance.disableSpaces
-      vaultStore = useVaultStore()
-    }
-  })
-  return { disableSpaces, vaultStore, clientService: mocks.$clientService }
+  const { instance, mocks } = getWrapper()
+  return {
+    disableSpaces: instance.disableSpaces,
+    vaultStore: useVaultStore(),
+    clientService: mocks.$clientService
+  }
 }
 
 function getWrapper({
   setup
 }: {
-  setup: (
-    instance: ReturnType<typeof useSpaceActionsDisable>,
-    {
-      clientService
-    }: {
-      clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
-    }
-  ) => void
-}) {
+  setup?: (instance: ReturnType<typeof useSpaceActionsDisable>) => void
+} = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ name: 'files-spaces-projects' })
   })
-  return {
-    mocks,
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useSpaceActionsDisable()
-        setup(instance, { clientService: mocks.$clientService })
-      },
-      {
-        mocks,
-        provide: mocks,
-        pluginOptions: {
-          piniaOptions: {
-            userState: { user: { id: '1', onPremisesSamAccountName: 'alice' } as User }
-          }
+  let instance: ReturnType<typeof useSpaceActionsDisable>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useSpaceActionsDisable()
+      setup?.(instance)
+    },
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: {
+        piniaOptions: {
+          userState: { user: { id: '1', onPremisesSamAccountName: 'alice' } as User }
         }
       }
-    )
-  }
+    }
+  )
+  return { wrapper, instance, mocks }
 }

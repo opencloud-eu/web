@@ -81,57 +81,48 @@ describe('emptyTrashBin', () => {
   })
 
   describe('method "emptyTrashBin"', () => {
-    it('should show message on success', () => {
-      getWrapper({
-        setup: async ({ emptyTrashBin }, { space }) => {
-          await emptyTrashBin({ space })
+    it('should show message on success', async () => {
+      const { instance, mocks } = getWrapper()
+      await instance.emptyTrashBin({ space: mocks.space })
 
-          const { showMessage } = useMessages()
-          const { clearResources, resetSelection } = useResourcesStore()
-          const { updateSpaceField } = useSpacesStore()
+      const { showMessage } = useMessages()
+      const { clearResources, resetSelection } = useResourcesStore()
+      const { updateSpaceField } = useSpacesStore()
 
-          expect(showMessage).toHaveBeenCalledTimes(1)
+      expect(showMessage).toHaveBeenCalledTimes(1)
 
-          expect(clearResources).not.toHaveBeenCalled()
-          expect(resetSelection).toHaveBeenCalledTimes(1)
+      expect(clearResources).not.toHaveBeenCalled()
+      expect(resetSelection).toHaveBeenCalledTimes(1)
 
-          expect(updateSpaceField).toHaveBeenCalledTimes(1)
-        }
-      })
+      expect(updateSpaceField).toHaveBeenCalledTimes(1)
     })
 
-    it('should clear resources when trash resources are present in the file list', () => {
-      getWrapper({
-        resources: [mock<TrashResource>({ ddate: 'date' })],
-        setup: async ({ emptyTrashBin }, { space }) => {
-          await emptyTrashBin({ space })
-
-          const { clearResources } = useResourcesStore()
-          expect(clearResources).toHaveBeenCalledTimes(1)
-        }
+    it('should clear resources when trash resources are present in the file list', async () => {
+      const { instance, mocks } = getWrapper({
+        resources: [mock<TrashResource>({ ddate: 'date' })]
       })
+      await instance.emptyTrashBin({ space: mocks.space })
+
+      const { clearResources } = useResourcesStore()
+      expect(clearResources).toHaveBeenCalledTimes(1)
     })
 
-    it('should show message on error', () => {
+    it('should show message on error', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
-      getWrapper({
-        resolveClearTrashBin: false,
-        setup: async ({ emptyTrashBin }, { space }) => {
-          await emptyTrashBin({ space })
+      const { instance, mocks } = getWrapper({ resolveClearTrashBin: false })
+      await instance.emptyTrashBin({ space: mocks.space })
 
-          const { showErrorMessage } = useMessages()
-          const { clearResources, resetSelection } = useResourcesStore()
-          const { updateSpaceField } = useSpacesStore()
+      const { showErrorMessage } = useMessages()
+      const { clearResources, resetSelection } = useResourcesStore()
+      const { updateSpaceField } = useSpacesStore()
 
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
 
-          expect(clearResources).not.toHaveBeenCalled()
-          expect(resetSelection).not.toHaveBeenCalled()
+      expect(clearResources).not.toHaveBeenCalled()
+      expect(resetSelection).not.toHaveBeenCalled()
 
-          expect(updateSpaceField).not.toHaveBeenCalled()
-        }
-      })
+      expect(updateSpaceField).not.toHaveBeenCalled()
     })
   })
 })
@@ -145,15 +136,8 @@ function getWrapper({
   resolveClearTrashBin?: boolean
   driveType?: string
   resources?: Resource[]
-  setup: (
-    instance: ReturnType<typeof useFileActionsEmptyTrashBin>,
-    {
-      space
-    }: {
-      space: ProjectSpaceResource
-    }
-  ) => void
-}) {
+  setup?: (instance: ReturnType<typeof useFileActionsEmptyTrashBin>) => void
+} = {}) {
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({
@@ -169,17 +153,17 @@ function getWrapper({
     mocks.$clientService.webdav.clearTrashBin.mockRejectedValue(new Error(''))
   }
 
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useFileActionsEmptyTrashBin()
-        setup(instance, { space: mocks.space })
-      },
-      {
-        mocks,
-        provide: mocks,
-        pluginOptions: { piniaOptions: { resourcesStore: { resources } } }
-      }
-    )
-  }
+  let instance: ReturnType<typeof useFileActionsEmptyTrashBin>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useFileActionsEmptyTrashBin()
+      setup?.(instance)
+    },
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: { piniaOptions: { resourcesStore: { resources } } }
+    }
+  )
+  return { wrapper, instance, mocks }
 }
