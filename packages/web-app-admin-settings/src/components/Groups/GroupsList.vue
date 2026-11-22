@@ -137,7 +137,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { useGettext } from 'vue3-gettext'
-import { perPageDefault, perPageStoragePrefix } from '../../defaults'
+import { perPageDefault } from '../../defaults'
 import {
   useKeyboardTableMouseActions,
   useKeyboardTableNavigation
@@ -184,7 +184,7 @@ const {
   items: paginatedItems,
   page: currentPage,
   total: totalPages
-} = usePagination({ items, perPageDefault, perPageStoragePrefix })
+} = usePagination({ items, perPageDefault })
 
 const keyActions = useKeyboardActions()
 useKeyboardTableNavigation(keyActions, paginatedItems, selectedGroups, lastSelectedGroupId)
