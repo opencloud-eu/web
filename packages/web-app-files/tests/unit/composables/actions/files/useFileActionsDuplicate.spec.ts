@@ -102,235 +102,217 @@ describe('duplicate', () => {
   })
 
   describe('method "duplicateFiles"', () => {
-    it('duplicates with incremented file names', () => {
-      getWrapper({
-        setup: async ({ duplicateFiles }, { space, clientService }) => {
-          clientService.webdav.listFiles.mockResolvedValue({
-            resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
-            children: [
-              mock<Resource>({ name: 'Report.txt', extension: 'txt' }),
-              mock<Resource>({ name: 'Report (1).txt', extension: 'txt' })
-            ]
-          })
-          clientService.webdav.getFileInfo.mockResolvedValue(
-            mock<Resource>({ id: 'copy-1', path: '/folder/Report (2).txt' })
-          )
+    it('duplicates with incremented file names', async () => {
+      const { instance, mocks } = getWrapper()
+      const { space, $clientService: clientService } = mocks
+      clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
+        children: [
+          mock<Resource>({ name: 'Report.txt', extension: 'txt' }),
+          mock<Resource>({ name: 'Report (1).txt', extension: 'txt' })
+        ]
+      })
+      clientService.webdav.getFileInfo.mockResolvedValue(
+        mock<Resource>({ id: 'copy-1', path: '/folder/Report (2).txt' })
+      )
 
-          await duplicateFiles({ space, resources: [getSourceResource()] })
+      await instance.duplicateFiles({ space, resources: [getSourceResource()] })
 
-          expect(clientService.webdav.copyFiles).toHaveBeenCalledWith(
-            space,
-            expect.objectContaining({ name: 'Report.txt' }),
-            space,
-            { path: '/folder/Report (2).txt' }
-          )
-          expect(clientService.webdav.listFiles).toHaveBeenCalledWith(space, { path: '/folder' })
+      expect(clientService.webdav.copyFiles).toHaveBeenCalledWith(
+        space,
+        expect.objectContaining({ name: 'Report.txt' }),
+        space,
+        { path: '/folder/Report (2).txt' }
+      )
+      expect(clientService.webdav.listFiles).toHaveBeenCalledWith(space, { path: '/folder' })
 
-          const { upsertResources } = useResourcesStore()
-          expect(upsertResources).toHaveBeenCalledWith([
-            expect.objectContaining({ path: '/folder/Report (2).txt' })
-          ])
+      const { upsertResources } = useResourcesStore()
+      expect(upsertResources).toHaveBeenCalledWith([
+        expect.objectContaining({ path: '/folder/Report (2).txt' })
+      ])
 
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledWith({
-            title: '"Report.txt" was duplicated successfully'
-          })
-        }
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledWith({
+        title: '"Report.txt" was duplicated successfully'
       })
     })
 
-    it('shows count message for multiple duplicated resources', () => {
-      getWrapper({
-        setup: async ({ duplicateFiles }, { space, clientService }) => {
-          clientService.webdav.listFiles.mockResolvedValue({
-            resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
-            children: [
-              mock<Resource>({ name: 'Report.txt', extension: 'txt' }),
-              mock<Resource>({ name: 'Image.png', extension: 'png' })
-            ]
-          })
-          clientService.webdav.getFileInfo.mockResolvedValue(
-            mock<Resource>({ id: 'copy-1', path: '/folder/ignored' })
-          )
+    it('shows count message for multiple duplicated resources', async () => {
+      const { instance, mocks } = getWrapper()
+      const { space, $clientService: clientService } = mocks
+      clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
+        children: [
+          mock<Resource>({ name: 'Report.txt', extension: 'txt' }),
+          mock<Resource>({ name: 'Image.png', extension: 'png' })
+        ]
+      })
+      clientService.webdav.getFileInfo.mockResolvedValue(
+        mock<Resource>({ id: 'copy-1', path: '/folder/ignored' })
+      )
 
-          await duplicateFiles({
-            space,
-            resources: [getSourceResource('Report.txt'), getSourceResource('Image.png')]
-          })
+      await instance.duplicateFiles({
+        space,
+        resources: [getSourceResource('Report.txt'), getSourceResource('Image.png')]
+      })
 
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledWith({
-            title: '2 items were duplicated successfully'
-          })
-        }
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledWith({
+        title: '2 items were duplicated successfully'
       })
     })
 
-    it('shows an error message if duplication fails', () => {
+    it('shows an error message if duplication fails', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
-      getWrapper({
-        setup: async ({ duplicateFiles }, { space, clientService }) => {
-          clientService.webdav.copyFiles.mockRejectedValue(new Error('failed'))
-          clientService.webdav.listFiles.mockResolvedValue({
-            resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
-            children: [mock<Resource>({ name: 'Report.txt', extension: 'txt' })]
-          })
-
-          await duplicateFiles({ space, resources: [getSourceResource()] })
-
-          const { showErrorMessage, showMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
-          expect(showMessage).not.toHaveBeenCalled()
-        }
+      const { instance, mocks } = getWrapper()
+      const { space, $clientService: clientService } = mocks
+      clientService.webdav.copyFiles.mockRejectedValue(new Error('failed'))
+      clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
+        children: [mock<Resource>({ name: 'Report.txt', extension: 'txt' })]
       })
+
+      await instance.duplicateFiles({ space, resources: [getSourceResource()] })
+
+      const { showErrorMessage, showMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
+      expect(showMessage).not.toHaveBeenCalled()
     })
 
-    it('shows an error message if listing the parent folder fails', () => {
+    it('shows an error message if listing the parent folder fails', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
-      getWrapper({
-        setup: async ({ duplicateFiles }, { space, clientService }) => {
-          clientService.webdav.listFiles.mockRejectedValue(new Error('failed'))
+      const { instance, mocks } = getWrapper()
+      const { space, $clientService: clientService } = mocks
+      clientService.webdav.listFiles.mockRejectedValue(new Error('failed'))
 
-          await duplicateFiles({ space, resources: [getSourceResource()] })
+      await instance.duplicateFiles({ space, resources: [getSourceResource()] })
 
-          expect(clientService.webdav.copyFiles).not.toHaveBeenCalled()
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      expect(clientService.webdav.copyFiles).not.toHaveBeenCalled()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
     })
 
-    it('upserts successful duplicates and shows an error on partial failure', () => {
+    it('upserts successful duplicates and shows an error on partial failure', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
-      getWrapper({
-        setup: async ({ duplicateFiles }, { space, clientService }) => {
-          clientService.webdav.listFiles.mockResolvedValue({
-            resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
-            children: [
-              mock<Resource>({ name: 'Report.txt', extension: 'txt' }),
-              mock<Resource>({ name: 'Image.png', extension: 'png' })
-            ]
-          })
-          clientService.webdav.copyFiles.mockImplementation((_s, _source, _t, { path }) =>
-            path === '/folder/Image (1).png'
-              ? Promise.reject(new Error('failed'))
-              : Promise.resolve(undefined)
-          )
-          clientService.webdav.getFileInfo.mockResolvedValue(
-            mock<Resource>({ id: 'copy-1', path: '/folder/Report (1).txt' })
-          )
-
-          await duplicateFiles({
-            space,
-            resources: [getSourceResource('Report.txt'), getSourceResource('Image.png')]
-          })
-
-          const { upsertResources, resetSelection } = useResourcesStore()
-          expect(upsertResources).toHaveBeenCalledWith([
-            expect.objectContaining({ path: '/folder/Report (1).txt' })
-          ])
-          expect(resetSelection).not.toHaveBeenCalled()
-
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
-        }
+      const { instance, mocks } = getWrapper()
+      const { space, $clientService: clientService } = mocks
+      clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
+        children: [
+          mock<Resource>({ name: 'Report.txt', extension: 'txt' }),
+          mock<Resource>({ name: 'Image.png', extension: 'png' })
+        ]
       })
+      clientService.webdav.copyFiles.mockImplementation((_s, _source, _t, { path }) =>
+        path === '/folder/Image (1).png'
+          ? Promise.reject(new Error('failed'))
+          : Promise.resolve(undefined)
+      )
+      clientService.webdav.getFileInfo.mockResolvedValue(
+        mock<Resource>({ id: 'copy-1', path: '/folder/Report (1).txt' })
+      )
+
+      await instance.duplicateFiles({
+        space,
+        resources: [getSourceResource('Report.txt'), getSourceResource('Image.png')]
+      })
+
+      const { upsertResources, resetSelection } = useResourcesStore()
+      expect(upsertResources).toHaveBeenCalledWith([
+        expect.objectContaining({ path: '/folder/Report (1).txt' })
+      ])
+      expect(resetSelection).not.toHaveBeenCalled()
+
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
     })
 
-    it('reports success if fetching the duplicate fails after copying', () => {
+    it('reports success if fetching the duplicate fails after copying', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
-      getWrapper({
-        setup: async ({ duplicateFiles }, { space, clientService }) => {
-          clientService.webdav.listFiles.mockResolvedValue({
-            resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
-            children: [mock<Resource>({ name: 'Report.txt', extension: 'txt' })]
-          })
-          clientService.webdav.getFileInfo.mockRejectedValue(new Error('failed'))
+      const { instance, mocks } = getWrapper()
+      const { space, $clientService: clientService } = mocks
+      clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
+        children: [mock<Resource>({ name: 'Report.txt', extension: 'txt' })]
+      })
+      clientService.webdav.getFileInfo.mockRejectedValue(new Error('failed'))
 
-          await duplicateFiles({ space, resources: [getSourceResource()] })
+      await instance.duplicateFiles({ space, resources: [getSourceResource()] })
 
-          const { upsertResources } = useResourcesStore()
-          expect(upsertResources).not.toHaveBeenCalled()
+      const { upsertResources } = useResourcesStore()
+      expect(upsertResources).not.toHaveBeenCalled()
 
-          const { showMessage, showErrorMessage } = useMessages()
-          expect(showErrorMessage).not.toHaveBeenCalled()
-          expect(showMessage).toHaveBeenCalledWith({
-            title: '"Report.txt" was duplicated successfully'
-          })
-        }
+      const { showMessage, showErrorMessage } = useMessages()
+      expect(showErrorMessage).not.toHaveBeenCalled()
+      expect(showMessage).toHaveBeenCalledWith({
+        title: '"Report.txt" was duplicated successfully'
       })
     })
 
-    it('does not upsert if the current folder changed while duplicating', () => {
-      getWrapper({
-        setup: async ({ duplicateFiles }, { space, clientService }) => {
-          const resourcesStore = useResourcesStore()
-          clientService.webdav.listFiles.mockResolvedValue({
-            resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
-            children: [mock<Resource>({ name: 'Report.txt', extension: 'txt' })]
-          })
-          clientService.webdav.copyFiles.mockImplementation(() => {
-            resourcesStore.currentFolder = mock<Resource>({ id: 'folder-2', path: '/other' })
-            return Promise.resolve(undefined)
-          })
-          clientService.webdav.getFileInfo.mockResolvedValue(
-            mock<Resource>({ id: 'copy-1', path: '/folder/Report (1).txt' })
-          )
-
-          await duplicateFiles({ space, resources: [getSourceResource()] })
-
-          expect(resourcesStore.upsertResources).not.toHaveBeenCalled()
-        }
+    it('does not upsert if the current folder changed while duplicating', async () => {
+      const { instance, mocks } = getWrapper()
+      const { space, $clientService: clientService } = mocks
+      const resourcesStore = useResourcesStore()
+      clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
+        children: [mock<Resource>({ name: 'Report.txt', extension: 'txt' })]
       })
+      clientService.webdav.copyFiles.mockImplementation(() => {
+        resourcesStore.currentFolder = mock<Resource>({ id: 'folder-2', path: '/other' })
+        return Promise.resolve(undefined)
+      })
+      clientService.webdav.getFileInfo.mockResolvedValue(
+        mock<Resource>({ id: 'copy-1', path: '/folder/Report (1).txt' })
+      )
+
+      await instance.duplicateFiles({ space, resources: [getSourceResource()] })
+
+      expect(resourcesStore.upsertResources).not.toHaveBeenCalled()
     })
 
-    it('sets the remote item id on duplicates in share spaces', () => {
-      getWrapper({
-        setup: async ({ duplicateFiles }, { clientService }) => {
-          const shareSpace = mock<ShareSpaceResource>({ id: 'share-1', driveType: 'share' })
-          clientService.webdav.listFiles.mockResolvedValue({
-            resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
-            children: [mock<Resource>({ name: 'Report.txt', extension: 'txt' })]
-          })
-          clientService.webdav.getFileInfo.mockResolvedValue(
-            mock<Resource>({
-              id: 'copy-1',
-              path: '/folder/Report (1).txt',
-              remoteItemId: undefined
-            })
-          )
-
-          await duplicateFiles({ space: shareSpace, resources: [getSourceResource()] })
-
-          const { upsertResources } = useResourcesStore()
-          expect(upsertResources).toHaveBeenCalledWith([
-            expect.objectContaining({ id: 'copy-1', remoteItemId: 'share-1' })
-          ])
-        }
+    it('sets the remote item id on duplicates in share spaces', async () => {
+      const { instance, mocks } = getWrapper()
+      const { $clientService: clientService } = mocks
+      const shareSpace = mock<ShareSpaceResource>({ id: 'share-1', driveType: 'share' })
+      clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
+        children: [mock<Resource>({ name: 'Report.txt', extension: 'txt' })]
       })
+      clientService.webdav.getFileInfo.mockResolvedValue(
+        mock<Resource>({
+          id: 'copy-1',
+          path: '/folder/Report (1).txt',
+          remoteItemId: undefined
+        })
+      )
+
+      await instance.duplicateFiles({ space: shareSpace, resources: [getSourceResource()] })
+
+      const { upsertResources } = useResourcesStore()
+      expect(upsertResources).toHaveBeenCalledWith([
+        expect.objectContaining({ id: 'copy-1', remoteItemId: 'share-1' })
+      ])
     })
 
-    it('only upserts duplicates located in the current folder', () => {
-      getWrapper({
-        setup: async ({ duplicateFiles }, { space, clientService }) => {
-          clientService.webdav.listFiles.mockResolvedValue({
-            resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
-            children: [mock<Resource>({ name: 'Report.txt', extension: 'txt' })]
-          })
-          clientService.webdav.getFileInfo.mockResolvedValue(
-            mock<Resource>({ id: 'copy-1', path: '/elsewhere/Report (1).txt' })
-          )
-
-          await duplicateFiles({ space, resources: [getSourceResource()] })
-
-          const { upsertResources } = useResourcesStore()
-          expect(upsertResources).toHaveBeenCalledWith([])
-        }
+    it('only upserts duplicates located in the current folder', async () => {
+      const { instance, mocks } = getWrapper()
+      const { space, $clientService: clientService } = mocks
+      clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
+        children: [mock<Resource>({ name: 'Report.txt', extension: 'txt' })]
       })
+      clientService.webdav.getFileInfo.mockResolvedValue(
+        mock<Resource>({ id: 'copy-1', path: '/elsewhere/Report (1).txt' })
+      )
+
+      await instance.duplicateFiles({ space, resources: [getSourceResource()] })
+
+      const { upsertResources } = useResourcesStore()
+      expect(upsertResources).toHaveBeenCalledWith([])
     })
   })
 })
@@ -342,17 +324,11 @@ function getWrapper({
 }: {
   canCreate?: boolean
   currentFolderPath?: string
-  setup: (
+  setup?: (
     instance: ReturnType<typeof useFileActionsDuplicate>,
-    {
-      space,
-      clientService
-    }: {
-      space: SpaceResource
-      clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
-    }
+    { space }: { space: SpaceResource }
   ) => void
-}) {
+} = {}) {
   const currentFolder = mock<Resource>({
     id: 'folder-1',
     path: currentFolderPath,
@@ -366,17 +342,17 @@ function getWrapper({
     space
   }
 
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useFileActionsDuplicate()
-        setup(instance, { space, clientService: mocks.$clientService })
-      },
-      {
-        mocks,
-        provide: mocks,
-        pluginOptions: { piniaOptions: { resourcesStore: { currentFolder } } }
-      }
-    )
-  }
+  let instance: ReturnType<typeof useFileActionsDuplicate>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useFileActionsDuplicate()
+      setup?.(instance, { space })
+    },
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: { piniaOptions: { resourcesStore: { currentFolder } } }
+    }
+  )
+  return { wrapper, instance, mocks }
 }

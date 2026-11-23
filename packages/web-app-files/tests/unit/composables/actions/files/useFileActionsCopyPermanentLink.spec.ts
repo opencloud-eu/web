@@ -66,17 +66,14 @@ describe('useFileActionsCopyPermanentLink', () => {
   })
 
   describe('handler', () => {
-    it('calls the copyToClipboard method with the private link of the resource', () => {
-      getWrapper({
-        setup: async ({ actions }, { mocks }) => {
-          const privateLink = 'https://example.com'
-          await unref(actions)[0].handler({
-            resources: [mock<Resource>({ privateLink })],
-            space: mock<SpaceResource>()
-          })
-          expect(mocks.copyToClipboardMock).toHaveBeenCalledWith(privateLink)
-        }
+    it('calls the copyToClipboard method with the private link of the resource', async () => {
+      const { instance, mocks } = getWrapper()
+      const privateLink = 'https://example.com'
+      await unref(instance.actions)[0].handler({
+        resources: [mock<Resource>({ privateLink })],
+        space: mock<SpaceResource>()
       })
+      expect(mocks.copyToClipboardMock).toHaveBeenCalledWith(privateLink)
     })
   })
 })
@@ -85,29 +82,26 @@ function getWrapper({
   setup,
   isGuest = false
 }: {
-  setup: (
-    instance: ReturnType<typeof useFileActionsCopyPermanentLink>,
-    mocks: Record<string, any>
-  ) => void
+  setup?: (instance: ReturnType<typeof useFileActionsCopyPermanentLink>) => void
   isGuest?: boolean
-}) {
+} = {}) {
   const copyToClipboardMock = vi.fn()
   vi.mocked(useClipboard).mockReturnValue(
     mock<ReturnType<typeof useClipboard>>({ copy: copyToClipboardMock })
   )
   const mocks = { ...defaultComponentMocks(), copyToClipboardMock }
 
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useFileActionsCopyPermanentLink()
-        setup(instance, { mocks })
-      },
-      {
-        mocks,
-        provide: mocks,
-        pluginOptions: { piniaOptions: { authState: { guestContextReady: isGuest } } }
-      }
-    )
-  }
+  let instance: ReturnType<typeof useFileActionsCopyPermanentLink>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useFileActionsCopyPermanentLink()
+      setup?.(instance)
+    },
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: { piniaOptions: { authState: { guestContextReady: isGuest } } }
+    }
+  )
+  return { wrapper, instance, mocks }
 }

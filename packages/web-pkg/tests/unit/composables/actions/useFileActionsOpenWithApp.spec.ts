@@ -42,17 +42,14 @@ describe('openWithApp', () => {
       })
     })
     describe('method "handler"', () => {
-      it('creates a modal', () => {
-        getWrapper({
-          setup: async ({ actions }) => {
-            const { dispatchModal } = useModals()
-            await unref(actions)[0].handler({
-              resources: [mock<Resource>({ storageId: spaceMock.id, path: '/' })],
-              space: mock<SpaceResource>()
-            })
-            expect(dispatchModal).toHaveBeenCalled()
-          }
+      it('creates a modal', async () => {
+        const { instance } = getWrapper()
+        const { dispatchModal } = useModals()
+        await unref(instance.actions)[0].handler({
+          resources: [mock<Resource>({ storageId: spaceMock.id, path: '/' })],
+          space: mock<SpaceResource>()
         })
+        expect(dispatchModal).toHaveBeenCalled()
       })
     })
     describe('method "onFilePicked"', () => {
@@ -75,9 +72,9 @@ function getWrapper({
   setup,
   isFilesAppActive = false
 }: {
-  setup: (instance: ReturnType<typeof useFileActionsOpenWithApp>) => void
+  setup?: (instance: ReturnType<typeof useFileActionsOpenWithApp>) => void
   isFilesAppActive?: boolean
-}) {
+} = {}) {
   vi.mocked(useIsFilesAppActive).mockReturnValueOnce(computed(() => isFilesAppActive))
 
   const mocks = {
@@ -86,29 +83,29 @@ function getWrapper({
     })
   }
 
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useFileActionsOpenWithApp({ appId: 'text-editor' })
-        setup(instance)
-      },
-      {
-        mocks,
-        provide: mocks,
-        pluginOptions: {
-          piniaOptions: {
-            spacesState: { spaces: [spaceMock] },
-            appsState: {
-              apps: {
-                'text-editor': mock<ApplicationInformation>({
-                  name: 'text-editor',
-                  extensions: [mock<ApplicationFileExtension>({ extension: 'txt' })]
-                })
-              }
+  let instance: ReturnType<typeof useFileActionsOpenWithApp>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useFileActionsOpenWithApp({ appId: 'text-editor' })
+      setup?.(instance)
+    },
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: {
+        piniaOptions: {
+          spacesState: { spaces: [spaceMock] },
+          appsState: {
+            apps: {
+              'text-editor': mock<ApplicationInformation>({
+                name: 'text-editor',
+                extensions: [mock<ApplicationFileExtension>({ extension: 'txt' })]
+              })
             }
           }
         }
       }
-    )
-  }
+    }
+  )
+  return { wrapper, instance }
 }

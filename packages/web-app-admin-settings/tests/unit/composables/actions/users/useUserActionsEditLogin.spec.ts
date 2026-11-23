@@ -30,14 +30,11 @@ describe('useUserActionsEditLogin', () => {
     })
   })
   describe('method "handler"', () => {
-    it('creates a modal', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({ resources: [mock<User>()] })
-          expect(dispatchModal).toHaveBeenCalled()
-        }
-      })
+    it('creates a modal', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({ resources: [mock<User>()] })
+      expect(dispatchModal).toHaveBeenCalled()
     })
   })
 })
@@ -45,12 +42,12 @@ describe('useUserActionsEditLogin', () => {
 function getWrapper({
   setup
 }: {
-  setup: (instance: ReturnType<typeof useUserActionsEditLogin>) => void
-}) {
-  return {
-    wrapper: getComposableWrapper(() => {
-      const instance = useUserActionsEditLogin()
-      setup(instance)
-    })
-  }
+  setup?: (instance: ReturnType<typeof useUserActionsEditLogin>) => void
+} = {}) {
+  let instance: ReturnType<typeof useUserActionsEditLogin>
+  const wrapper = getComposableWrapper(() => {
+    instance = useUserActionsEditLogin()
+    setup?.(instance)
+  })
+  return { wrapper, instance }
 }

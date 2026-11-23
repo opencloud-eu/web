@@ -64,17 +64,14 @@ describe('useFileActionsCreateLink', () => {
   })
 
   describe('handler', () => {
-    it('calls the createLink method and shows messages', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { addLink } = useSharesStore()
-          await unref(actions)[0].handler({
-            resources: [mock<Resource>({ canShare: () => true })],
-            space: undefined
-          })
-          expect(addLink).toHaveBeenCalledTimes(1)
-        }
+    it('calls the createLink method and shows messages', async () => {
+      const { instance } = getWrapper()
+      const { addLink } = useSharesStore()
+      await unref(instance.actions)[0].handler({
+        resources: [mock<Resource>({ canShare: () => true })],
+        space: undefined
       })
+      expect(addLink).toHaveBeenCalledTimes(1)
     })
 
     it('shows a modal if enforced', () => {
@@ -101,14 +98,11 @@ function getWrapper({
   passwordEnforced = false,
   defaultLinkType = SharingLinkType.View
 }: {
-  setup: (
-    instance: ReturnType<typeof useFileActionsCreateLink>,
-    mocks: Record<string, unknown>
-  ) => void
+  setup?: (instance: ReturnType<typeof useFileActionsCreateLink>) => void
   enforceModal?: boolean
   passwordEnforced?: boolean
   defaultLinkType?: SharingLinkType
-}) {
+} = {}) {
   vi.mocked(useLinkTypes).mockReturnValue(
     mock<ReturnType<typeof useLinkTypes>>({ defaultLinkType: ref(defaultLinkType) })
   )
@@ -118,18 +112,18 @@ function getWrapper({
     files_sharing: { public: { password: { enforced_for: { read_only: passwordEnforced } } } }
   } satisfies Partial<CapabilityStore['capabilities']>
 
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useFileActionsCreateLink({
-          enforceModal
-        })
-        setup(instance, { mocks })
-      },
-      {
-        provide: mocks,
-        pluginOptions: { piniaOptions: { capabilityState: { capabilities } } }
-      }
-    )
-  }
+  let instance: ReturnType<typeof useFileActionsCreateLink>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useFileActionsCreateLink({
+        enforceModal
+      })
+      setup?.(instance)
+    },
+    {
+      provide: mocks,
+      pluginOptions: { piniaOptions: { capabilityState: { capabilities } } }
+    }
+  )
+  return { wrapper, instance }
 }

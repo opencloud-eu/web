@@ -19,14 +19,11 @@ describe('useUserActionsCreateUser', () => {
     )
   })
   describe('method "handler"', () => {
-    it('creates a modal', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler()
-          expect(dispatchModal).toHaveBeenCalled()
-        }
-      })
+    it('creates a modal', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler()
+      expect(dispatchModal).toHaveBeenCalled()
     })
     it('focuses the user name input initially', () => {
       getWrapper({
@@ -45,12 +42,12 @@ describe('useUserActionsCreateUser', () => {
 function getWrapper({
   setup
 }: {
-  setup: (instance: ReturnType<typeof useUserActionsCreateUser>) => void
-}) {
-  return {
-    wrapper: getComposableWrapper(() => {
-      const instance = useUserActionsCreateUser()
-      setup(instance)
-    })
-  }
+  setup?: (instance: ReturnType<typeof useUserActionsCreateUser>) => void
+} = {}) {
+  let instance: ReturnType<typeof useUserActionsCreateUser>
+  const wrapper = getComposableWrapper(() => {
+    instance = useUserActionsCreateUser()
+    setup?.(instance)
+  })
+  return { wrapper, instance }
 }
