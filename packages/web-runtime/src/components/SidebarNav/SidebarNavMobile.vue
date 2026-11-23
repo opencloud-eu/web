@@ -92,6 +92,7 @@ function trapFocus(event: KeyboardEvent) {
     (el) =>
       el.tabIndex >= 0 &&
       !el.matches(':disabled') &&
+      !el.closest('[inert]') &&
       el.checkVisibility({ visibilityProperty: true })
   )
   const index = focusable.indexOf(document.activeElement as HTMLElement)

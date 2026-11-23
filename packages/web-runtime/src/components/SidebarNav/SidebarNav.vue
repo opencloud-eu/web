@@ -45,11 +45,7 @@
     </div>
     <div class="flex flex-col gap-2">
       <custom-component-target :extension-point="dynamicExtensionPointBottom" />
-      <support-card
-        v-if="!options.disableSponsorLink && !isEmbedModeEnabled && !isSupportCardDismissed"
-        class="mx-3 mt-4"
-        @dismiss="dismissSupportCard"
-      />
+      <support-card v-if="!options.disableSponsorLink && !isEmbedModeEnabled" class="mx-3 mt-4" />
       <div
         v-if="!isEmbedModeEnabled"
         class="flex flex-col px-4 text-xs text-role-on-surface-variant"
@@ -95,15 +91,6 @@ const { isTablet } = useIsMobile()
 const configStore = useConfigStore()
 const { options } = storeToRefs(configStore)
 const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
-
-const isSupportCardDismissed = ref(
-  window.localStorage.getItem('oc_supportCardDismissed') === 'true'
-)
-
-function dismissSupportCard() {
-  isSupportCardDismissed.value = true
-  window.localStorage.setItem('oc_supportCardDismissed', 'true')
-}
 
 const dynamicExtensionPointMain = computed<ExtensionPoint<CustomComponentExtension>>(() => ({
   id: `app.${unref(activeApp)}.sidebar-nav.main`,
