@@ -18,9 +18,10 @@ export const useContactsStore = defineStore('contacts', () => {
   }
 
   const upsertContact = (data: Contact) => {
-    const existing = unref(contacts).find(({ id }) => id === data.id)
-    if (existing) {
-      Object.assign(existing, data)
+    const index = unref(contacts).findIndex(({ id }) => id === data.id)
+    if (index !== -1) {
+      // replace the contact, properties missing in the new data must not be kept
+      unref(contacts).splice(index, 1, data)
       return
     }
     unref(contacts).push(data)
