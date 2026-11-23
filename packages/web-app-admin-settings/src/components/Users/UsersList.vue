@@ -149,7 +149,7 @@ import {
   SortField
 } from '@opencloud-eu/web-pkg'
 import { AppRole, AppRoleAssignment, User } from '@opencloud-eu/web-client/graph/generated'
-import { perPageDefault, perPageStoragePrefix } from '../../defaults'
+import { perPageDefault } from '../../defaults'
 import { storeToRefs } from 'pinia'
 import { useUserSettingsStore } from '../../composables/stores/userSettings'
 import {
@@ -215,7 +215,7 @@ const {
   items: paginatedItems,
   page: currentPage,
   total: totalPages
-} = usePagination({ items, perPageDefault, perPageStoragePrefix })
+} = usePagination({ items, perPageDefault })
 
 const keyActions = useKeyboardActions()
 useKeyboardTableNavigation(keyActions, paginatedItems, selectedUsers, lastSelectedUserId)

@@ -3,6 +3,7 @@ import {
   queryItemAsString,
   useGetMatchingSpace,
   useRouteQuery,
+  useItemsPerPage,
   useClientService,
   useRouter,
   createFileRouteOptions,
@@ -75,10 +76,7 @@ export const useFileActionsDeleteResources = () => {
     return parseInt(queryItemAsString(unref(currentPageQuery)))
   })
 
-  const itemsPerPageQuery = useRouteQuery('items-per-page', '1')
-  const itemsPerPage = computed(() => {
-    return parseInt(queryItemAsString(unref(itemsPerPageQuery)))
-  })
+  const itemsPerPage = useItemsPerPage()
 
   const resources = computed(() => {
     return cloneStateObject<Resource[]>(unref(resourcesToDelete))

@@ -20,6 +20,10 @@ import {
 import { useResourcesViewDefaults } from '../../../../src/composables/resourcesViewDefaults'
 
 describe('useResourcesViewDefaults', () => {
+  afterEach(() => {
+    window.localStorage.clear()
+  })
+
   describe('scrollTo param on selection changes', () => {
     it('removes the param when a selection gets reset', async () => {
       const { mocks } = getWrapper()
@@ -152,9 +156,13 @@ describe('useResourcesViewDefaults', () => {
       (_, i) => ({ id: `${i + 1}`, name: `file-${i + 1}`, type: 'file' }) as Resource
     )
 
+    beforeEach(() => {
+      window.localStorage.setItem('oc-options_items-per-page', '20')
+    })
+
     it('filters all resources before paginating them', () => {
       const { result } = getWrapper({
-        query: { page: '1', 'items-per-page': '20' },
+        query: { page: '1' },
         resources,
         filterResources: (items) => items.filter(({ name }) => name === 'file-30')
       })
@@ -164,7 +172,7 @@ describe('useResourcesViewDefaults', () => {
     })
     it('paginates the filtered resources', () => {
       const { result } = getWrapper({
-        query: { page: '2', 'items-per-page': '20' },
+        query: { page: '2' },
         resources,
         filterResources: (items) => items.filter(({ name }) => name !== 'file-1')
       })

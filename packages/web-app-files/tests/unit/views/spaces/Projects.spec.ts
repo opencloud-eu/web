@@ -268,6 +268,8 @@ function getMountedWrapper({
   store?: PiniaMockOptions
   reloadProjectSpaces?: SpacesStore['reloadProjectSpaces']
 } = {}) {
+  window.localStorage.setItem('oc-options_view-mode', 'resource-table')
+  window.localStorage.setItem('oc-options_tiles-size', '1')
   const plugins = defaultPlugins({
     abilities,
     piniaOptions: {

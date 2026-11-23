@@ -100,16 +100,8 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
 
   const { refresh: refreshFileListHeaderPosition, y: fileListHeaderY } = useFileListHeaderPosition()
 
-  const currentViewModeQuery = useRouteQuery(
-    FolderViewModeConstants.queryName,
-    FolderViewModeConstants.defaultModeName
-  )
-  const currentViewMode = computed((): string => queryItemAsString(currentViewModeQuery.value))
-  const viewMode = useViewMode(currentViewMode)
-
-  const currentTilesSizeQuery = useRouteQuery('tiles-size', '1')
-  const currentTilesSize = computed((): string => String(currentTilesSizeQuery.value))
-  const viewSize = useViewSize(currentTilesSize)
+  const viewMode = useViewMode()
+  const viewSize = useViewSize()
 
   const viewModes = computed(() => {
     return [
@@ -150,7 +142,7 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     items: paginatedResources,
     total: paginationPages,
     page: paginationPage
-  } = usePagination<T>({ items, perPageStoragePrefix: 'files' })
+  } = usePagination<T>({ items })
 
   const scrollToParam = useRouteQuery('scrollTo')
   function resetScrollToParam() {

@@ -145,7 +145,7 @@ import {
   translateSortFields
 } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
-import { perPageDefault, perPageStoragePrefix } from '../../defaults'
+import { perPageDefault } from '../../defaults'
 import {
   useKeyboardTableMouseActions,
   useKeyboardTableNavigation
@@ -225,7 +225,7 @@ const {
   items: paginatedItems,
   page: currentPage,
   total: totalPages
-} = usePagination({ items, perPageDefault, perPageStoragePrefix })
+} = usePagination({ items, perPageDefault })
 
 const keyActions = useKeyboardActions()
 useKeyboardTableNavigation(keyActions, paginatedItems, selectedSpaces, lastSelectedSpaceId)

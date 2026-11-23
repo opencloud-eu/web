@@ -173,7 +173,8 @@ describe('TrashOverview', () => {
       'offers the name and status sort in the tiles view with $expected active',
       async ({ sortDir, expected }) => {
         const { wrapper } = getWrapper({
-          query: { 'view-mode': 'resource-tiles', 'sort-by': 'indicators', 'sort-dir': sortDir }
+          viewMode: 'resource-tiles',
+          query: { 'sort-by': 'indicators', 'sort-dir': sortDir }
         })
         await flushPromises()
         const tiles = wrapper.findComponent(ResourceTiles)
@@ -296,22 +297,24 @@ function getWrapper({
   spaces = spaceMocks,
   stubResourceTable = true,
   areEmptyTrashesShown = true,
+  viewMode = 'resource-table',
   query = {},
   listMyDrives
 }: {
   spaces?: SpaceResource[]
   stubResourceTable?: boolean
   areEmptyTrashesShown?: boolean
+  viewMode?: string
   query?: Record<string, string>
   listMyDrives?: Graph['drives']['listMyDrives']
 } = {}) {
+  window.localStorage.setItem('oc-options_view-mode', viewMode)
+  window.localStorage.setItem('oc-options_tiles-size', '1')
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({
         name: 'trash-overview',
         query: {
-          'view-mode': 'resource-table',
-          'tiles-size': '1',
           'sort-by': 'name',
           'sort-dir': 'asc',
           ...query
@@ -329,7 +332,6 @@ function getWrapper({
     })
   ]
 
-  const viewMode = query['view-mode'] || 'resource-table'
   const extensions = [
     {
       id: `com.github.opencloud-eu.web.files.folder-view.${viewMode}`,

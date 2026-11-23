@@ -95,6 +95,9 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 // unmount after each test, otherwise stale lists react to the global click events and key presses
 enableAutoUnmount(afterEach)
+afterEach(() => {
+  window.localStorage.clear()
+})
 
 describe('SpacesList', () => {
   describe('space images', () => {
@@ -390,8 +393,10 @@ function getWrapper({
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
   const query: Record<string, string> = {
-    ...(page && { page }),
-    ...(perPage && { 'items-per-page': perPage })
+    ...(page && { page })
+  }
+  if (perPage) {
+    window.localStorage.setItem('oc-options_items-per-page', perPage)
   }
   const mocks = defaultComponentMocks({
     currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded

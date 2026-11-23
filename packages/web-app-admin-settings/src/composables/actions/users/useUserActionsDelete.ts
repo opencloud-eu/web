@@ -6,6 +6,7 @@ import {
   useUserStore,
   useModals,
   useRouteQuery,
+  useItemsPerPage,
   isPromiseFulfilled,
   isPromiseRejected
 } from '@opencloud-eu/web-pkg'
@@ -14,6 +15,7 @@ import { UserAction, UserActionOptions } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { useUserSettingsStore } from '../../stores/userSettings'
+import { perPageDefault } from '../../../defaults'
 
 export function useUserActionsDelete() {
   const { showMessage, showErrorMessage } = useMessages()
@@ -29,10 +31,7 @@ export function useUserActionsDelete() {
     return parseInt(queryItemAsString(unref(currentPageQuery)))
   })
 
-  const itemsPerPageQuery = useRouteQuery('items-per-page', '1')
-  const itemsPerPage = computed(() => {
-    return parseInt(queryItemAsString(unref(itemsPerPageQuery)))
-  })
+  const itemsPerPage = useItemsPerPage(perPageDefault)
 
   async function deleteUsers(users: User[]) {
     const graphClient = clientService.graphAuthenticated
