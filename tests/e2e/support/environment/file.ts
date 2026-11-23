@@ -1,11 +1,11 @@
 import fs from 'fs'
 import path from 'path'
-import { appConfig } from '../../playwright.config'
 import { File } from '../types'
+import { resolveAssetPath } from '../utils/runtimeFs'
 
 export class FilesEnvironment {
   getFile({ name }: { name: string }): File {
-    const relPath = path.join(appConfig.assetsPath, name)
+    const relPath = resolveAssetPath(name)
     if (!fs.existsSync(relPath)) {
       throw new Error('TODO: fixture files')
     }

@@ -59,21 +59,11 @@ export const close = async ({ page }: { page: Page }): Promise<void> => {
 }
 
 export const openPanel = async ({ page, name }: { page: Page; name: string }): Promise<void> => {
-  const currentPanel = page.locator('.sidebar-panel.is-active')
-  const backButton = currentPanel.locator('.header__back')
-
-  if (await backButton.count()) {
-    await Promise.all([
-      locatorUtils.waitForEvent(currentPanel, 'transitionend'),
-      backButton.click()
-    ])
-  }
   const panelSelector = page.locator(`#sidebar-panel-${name}-select`)
   const nextPanel = page.locator(`#sidebar-panel-${name}`)
   await Promise.all([
     page.locator('div.oc-loader').waitFor({ state: 'detached' }),
-    locatorUtils.waitForEvent(nextPanel, 'transitionend'),
-    panelSelector.click()
+    locatorUtils.clickUntilClass(panelSelector, nextPanel, 'is-active-sub-panel')
   ])
-  await nextPanel.waitFor()
+  await locatorUtils.waitForTransitionsToEnd(nextPanel)
 }

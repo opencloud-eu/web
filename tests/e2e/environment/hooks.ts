@@ -23,32 +23,36 @@ Before(async ({ world }) => {
     }
   }
 
-  world.uniquePrefix = uuidv4().substring(0, 3)
+  world.uniquePrefix = uuidv4().substring(0, 8)
   world.a11yEnabled = world.tags?.includes('@a11y') ?? false
 })
 
+// every cleanup step runs even if an earlier one failed, the failures are reported at the end
 After(async ({ world }) => {
   appConfig.federatedServer = false
+  const adminUser = world.usersEnvironment.getUser({ key: 'admin' })
+  const errors: unknown[] = []
 
-  await world.actorsEnvironment.close()
+  await runCleanup(errors, () => world.actorsEnvironment.close())
 
   // refresh keycloak admin access token
   if (appConfig.keycloak) {
-    const user = world.usersEnvironment.getUser({ key: 'admin' })
-    await api.keycloak.refreshKeycloakAdminAccessToken()
-    await api.keycloak.refreshAccessTokenForKeycloakOpenCloudUser(user)
+    await runCleanup(errors, async () => {
+      await api.keycloak.refreshKeycloakAdminAccessToken()
+      await api.keycloak.refreshAccessTokenForKeycloakOpenCloudUser(adminUser)
+    })
   }
 
   if (isOcm(world)) {
     appConfig.federatedServer = true
-    await cleanUpUser(store.federatedUserStore, world.usersEnvironment.getUser({ key: 'admin' }))
+    await runCleanup(errors, () => cleanUpUser(store.federatedUserStore, adminUser))
     appConfig.federatedServer = false
   }
 
-  await cleanUpUser(store.createdUserStore, world.usersEnvironment.getUser({ key: 'admin' }))
-  await cleanUpGuests(world.usersEnvironment.getUser({ key: 'admin' }))
-  await cleanUpSpaces(world.usersEnvironment.getUser({ key: 'admin' }))
-  await cleanUpGroup(world.usersEnvironment.getUser({ key: 'admin' }))
+  await runCleanup(errors, () => cleanUpUser(store.createdUserStore, adminUser))
+  await runCleanup(errors, () => cleanUpGuests(adminUser))
+  await runCleanup(errors, () => cleanUpSpaces(adminUser))
+  await runCleanup(errors, () => cleanUpGroup(adminUser))
 
   store.createdLinkStore.clear()
   store.createdTokenStore.clear()
@@ -56,11 +60,37 @@ After(async ({ world }) => {
   store.keycloakTokenStore.clear()
   utils.removeTempUploadDirectory()
   environment.closeSSEConnections()
+
+  if (errors.length) {
+    throw new AggregateError(errors, `${errors.length} cleanup step(s) failed after the scenario`)
+  }
 })
 
 AfterAll(() => {
   environment.closeSSEConnections()
 })
+
+async function runCleanup(errors: unknown[], cleanup: () => Promise<unknown>): Promise<void> {
+  try {
+    await cleanup()
+  } catch (error) {
+    errors.push(error)
+  }
+}
+
+// waits for all requests, also when some of them fail, and throws the failures afterwards
+async function settleAll(requests: Promise<unknown>[]): Promise<void> {
+  const results = await Promise.allSettled(requests)
+  const errors = results
+    .filter((result) => result.status === 'rejected')
+    .map((result) => result.reason)
+  if (errors.length) {
+    throw new AggregateError(
+      errors,
+      `${errors.length} of ${requests.length} cleanup requests failed`
+    )
+  }
+}
 
 const cleanUpUser = async (createdUserStore: Map<string, User>, adminUser: User) => {
   const requests: Promise<User>[] = []
@@ -71,8 +101,11 @@ const cleanUpUser = async (createdUserStore: Map<string, User>, adminUser: User)
       requests.push(api.graph.deleteUser({ user, admin: adminUser }))
     }
   })
-  await Promise.all(requests)
-  createdUserStore.clear()
+  try {
+    await settleAll(requests)
+  } finally {
+    createdUserStore.clear()
+  }
 }
 
 const cleanUpGuests = async (adminUser: User) => {
@@ -90,8 +123,11 @@ const cleanUpGuests = async (adminUser: User) => {
       })
     )
   })
-  await Promise.all(requests)
-  store.invitedGuestStore.clear()
+  try {
+    await settleAll(requests)
+  } finally {
+    store.invitedGuestStore.clear()
+  }
 }
 
 const cleanUpSpaces = async (adminUser: User) => {
@@ -113,8 +149,11 @@ const cleanUpSpaces = async (adminUser: User) => {
         })
     )
   })
-  await Promise.all(requests)
-  store.createdSpaceStore.clear()
+  try {
+    await settleAll(requests)
+  } finally {
+    store.createdSpaceStore.clear()
+  }
 }
 
 const cleanUpGroup = async (adminUser: User) => {
@@ -127,8 +166,11 @@ const cleanUpGroup = async (adminUser: User) => {
     }
   })
 
-  await Promise.all(requests)
-  store.createdGroupStore.clear()
+  try {
+    await settleAll(requests)
+  } finally {
+    store.createdGroupStore.clear()
+  }
 }
 
 const isOcm = (world: World): boolean => {
