@@ -33,11 +33,19 @@ export const createUser = async ({ user, admin }: { user: User; admin: User }): 
 }
 
 export const deleteUser = async ({ user, admin }: { user: User; admin: User }): Promise<User> => {
-  await request({
+  const response = await request({
     method: 'DELETE',
     path: urlJoin('graph', 'v1.0', 'users', user.username),
     user: admin
   })
+  // the scenario itself may have deleted the user already
+  const alreadyDeleted = response.status() === 404
+  // with keycloak the identity backend is read-only: the server purges the personal space,
+  // then answers 405 because it can't delete the user itself (keycloak deletes it)
+  const readOnlyBackend = appConfig.keycloak && response.status() === 405
+  if (!alreadyDeleted && !readOnlyBackend) {
+    checkResponseStatus(response, 'Failed while deleting user')
+  }
   try {
     const usersEnvironment = new UsersEnvironment()
     usersEnvironment.removeCreatedUser({ key: user.username })
@@ -51,6 +59,7 @@ export const getUserId = async ({ user, admin }: { user: User; admin: User }): P
     path: urlJoin('graph', 'v1.0', 'users', user.username),
     user: admin
   })
+  checkResponseStatus(response, 'Failed while getting user id')
 
   const resBody = (await response.json()) as User
   return resBody.id
@@ -92,11 +101,15 @@ export const deleteGroup = async ({
   const usersEnvironment = new UsersEnvironment()
   const groupId = usersEnvironment.getCreatedGroup({ key: group.id }).uuid
 
-  await request({
+  const response = await request({
     method: 'DELETE',
     path: urlJoin('graph', 'v1.0', 'groups', groupId),
     user: admin
   })
+  // the scenario itself may have deleted the group already
+  if (response.status() !== 404) {
+    checkResponseStatus(response, 'Failed while deleting group')
+  }
   return group
 }
 
