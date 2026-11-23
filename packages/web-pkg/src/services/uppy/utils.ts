@@ -1,4 +1,4 @@
-import { basename } from 'path'
+import { basename } from '@opencloud-eu/web-client'
 import { OcMinimalUppyFile } from './uppyService'
 
 /**

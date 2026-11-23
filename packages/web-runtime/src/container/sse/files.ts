@@ -16,13 +16,13 @@ import {
   isShareSpaceResource,
   Resource,
   SpaceResource,
-  urlJoin
+  urlJoin,
+  dirname
 } from '@opencloud-eu/web-client'
 import { DavProperties, DavProperty } from '@opencloud-eu/web-client/webdav'
 import { until } from '@vueuse/core'
 import { unref } from 'vue'
 import { LocationQueryValue, RouteParams } from 'vue-router'
-import { dirname } from 'path'
 import { SSEEventOptions } from './types'
 
 /**

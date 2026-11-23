@@ -30,9 +30,9 @@ import {
   isPublicSpaceResource,
   PublicSpaceResource,
   SharePermissionBit,
-  SpaceResource
+  SpaceResource,
+  dirname
 } from '@opencloud-eu/web-client'
-import { dirname } from 'path'
 import { isOwnedPersonalDriveAlias } from '../../helpers/driveAlias'
 
 const authStore = useAuthStore()

@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { computed, ref, unref, useId, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { join } from 'path'
+import { urlJoin } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -169,7 +169,7 @@ watch(encrypt, (on) => {
 
 function validate(name: string) {
   const resource = {
-    path: join(unref(currentFolder).path, name),
+    path: urlJoin(unref(currentFolder).path, name),
     name,
     isFolder: true
   } as Resource

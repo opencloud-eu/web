@@ -1,5 +1,5 @@
 import { Ref, computed, unref } from 'vue'
-import { basename } from 'path'
+import { basename } from '@opencloud-eu/web-client'
 import { FileContext } from './types'
 import { useAppMeta } from './useAppMeta'
 import { useDocumentTitle } from './useDocumentTitle'

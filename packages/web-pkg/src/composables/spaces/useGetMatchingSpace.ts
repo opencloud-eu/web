@@ -1,13 +1,15 @@
 import { useRouteParam } from '../router'
-import { isIncomingShareResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
+  isIncomingShareResource,
+  Resource,
+  SpaceResource,
+  basename,
   isMountPointSpaceResource,
   ShareTypes,
   OCM_PROVIDER_ID,
   isShareResource
 } from '@opencloud-eu/web-client'
 import { computed, Ref, unref } from 'vue'
-import { basename } from 'path'
 import { useSpacesStore } from '../piniaStores'
 
 type GetMatchingSpaceOptions = {

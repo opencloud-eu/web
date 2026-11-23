@@ -100,11 +100,12 @@ import {
   isPublicSpaceResource,
   isShareSpaceResource,
   PublicSpaceResource,
-  urlJoin
+  urlJoin,
+  basename,
+  dirname
 } from '@opencloud-eu/web-client'
 import { DavPermission } from '@opencloud-eu/web-client/webdav'
 import { HttpError } from '@opencloud-eu/web-client'
-import { basename, dirname } from 'path'
 import { useFileActionsOpenWithApp } from '../../composables'
 import { ResourceNotFoundError } from '../../errors'
 import { UnsavedChangesModal } from '../Modals'

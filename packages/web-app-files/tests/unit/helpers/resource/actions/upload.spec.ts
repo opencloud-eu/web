@@ -1,4 +1,3 @@
-import { dirname } from 'path'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { Language } from 'vue3-gettext'
 import { UploadResourceConflict } from '../../../../../src/helpers/resource'
@@ -10,7 +9,7 @@ import {
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { nextTick } from 'vue'
-import { Resource, urlJoin } from '@opencloud-eu/web-client'
+import { Resource, urlJoin, dirname } from '@opencloud-eu/web-client'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 const getResourceConflictInstance = ({

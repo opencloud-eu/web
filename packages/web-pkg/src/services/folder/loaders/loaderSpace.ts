@@ -8,7 +8,8 @@ import {
   isProjectSpaceResource,
   isPublicSpaceResource,
   isShareSpaceResource,
-  SpaceResource
+  SpaceResource,
+  dirname
 } from '@opencloud-eu/web-client'
 import { unref } from 'vue'
 import { FolderLoaderOptions } from './types'
@@ -25,7 +26,6 @@ import {
 } from '../../../helpers'
 import { useFileRouteReplace } from '../../../composables'
 import { DavProperties, DavProperty } from '@opencloud-eu/web-client/webdav'
-import { dirname } from 'path'
 
 export class FolderLoaderSpace implements FolderLoader {
   public isEnabled(): boolean {

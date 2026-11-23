@@ -3,11 +3,11 @@ import {
   isPublicSpaceResource,
   isShareSpaceResource,
   Resource,
-  SpaceResource
+  SpaceResource,
+  urlJoin
 } from '@opencloud-eu/web-client'
 import { DavPermission, WebDAV } from '@opencloud-eu/web-client/webdav'
 import { storeToRefs } from 'pinia'
-import { join } from 'path'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -104,10 +104,10 @@ export const useFileActionsCreateNewFile = () => {
               currentFolder: unref(currentFolder)
             })
           } else if (appFileExtension.type === 'folder') {
-            const path = join(unref(currentFolder).path, fileName)
+            const path = urlJoin(unref(currentFolder).path, fileName)
             resource = await (clientService.webdav as WebDAV).createFolder(space, { path })
           } else {
-            const path = join(unref(currentFolder).path, fileName)
+            const path = urlJoin(unref(currentFolder).path, fileName)
             resource = await (clientService.webdav as WebDAV).putFileContents(space, {
               path
             })
@@ -141,7 +141,7 @@ export const useFileActionsCreateNewFile = () => {
       onInput: (name: string, setError: (error: string) => void) => {
         const newFileName = areFileExtensionsShown.value ? name : `${name}.${extension}`
         const resource = {
-          path: join(unref(currentFolder).path, newFileName),
+          path: urlJoin(unref(currentFolder).path, newFileName),
           name: newFileName,
           extension
         } as Resource
