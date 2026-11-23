@@ -45,6 +45,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update collabora/code docker tag to v26.04.6.2.1 [[#4567](https://github.com/opencloud-eu/web/pull/4567)]
 - chore(deps): update dependency filesize to v11.0.35 [[#4555](https://github.com/opencloud-eu/web/pull/4555)]
 - chore(deps): update vue monorepo to v3.5.46 [[#4564](https://github.com/opencloud-eu/web/pull/4564)]
 - chore(deps): update hocuspocus monorepo to v4.9.0 [[#4565](https://github.com/opencloud-eu/web/pull/4565)]
