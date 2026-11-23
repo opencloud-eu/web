@@ -1,5 +1,4 @@
 import { Contact } from '@opencloud-eu/web-client/ox'
-import { ShareTypes } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { useOpenXchangeContacts } from '../../../../src/composables/openXchange/useOpenXchangeContacts'
 
@@ -11,7 +10,7 @@ describe('useOpenXchangeContacts', () => {
     expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
   })
 
-  it('maps contacts to contact share recipients when enabled', async () => {
+  it('returns the address book contacts when enabled', async () => {
     const contacts: Contact[] = [
       { id: '1', displayName: 'Jane Doe', email: 'jane@example.com' },
       { id: '2', displayName: '', email: 'john@example.com' }
@@ -20,20 +19,7 @@ describe('useOpenXchangeContacts', () => {
 
     const result = await instance.searchContacts('j')
 
-    expect(result).toEqual([
-      {
-        id: 'jane@example.com',
-        displayName: 'Jane Doe',
-        mail: 'jane@example.com',
-        shareType: ShareTypes.contact.value
-      },
-      {
-        id: 'john@example.com',
-        displayName: 'john@example.com',
-        mail: 'john@example.com',
-        shareType: ShareTypes.contact.value
-      }
-    ])
+    expect(result).toEqual(contacts)
   })
 
   it('returns an empty list when the api call fails', async () => {

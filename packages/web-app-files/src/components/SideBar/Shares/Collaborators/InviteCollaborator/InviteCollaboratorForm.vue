@@ -198,10 +198,7 @@ import { DriveRecipient } from '@opencloud-eu/web-client/graph/generated'
 import ExpirationDateIndicator from '../../ExpirationDateIndicator.vue'
 import { ContextualHelper, isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
-import {
-  useInviteContactViaEmail,
-  useOpenXchangeContacts
-} from '../../../../../composables/openXchange'
+import { useOpenXchangeContacts } from '../../../../../composables/openXchange'
 
 type DropDownShouldOpenOptions = { open: boolean; search: string }
 
@@ -231,9 +228,8 @@ const sharesStore = useSharesStore()
 const { addShare } = sharesStore
 const { collaboratorShares } = storeToRefs(sharesStore)
 
-const { searchCollaborators, getGuestCandidates } = useCollaboratorSearch()
+const { canInviteGuests, searchCollaborators, getGuestCandidates } = useCollaboratorSearch()
 const { searchContacts: searchOpenXchangeContacts } = useOpenXchangeContacts()
-const { inviteContact } = useInviteContactViaEmail()
 
 const showMoreShareOptionsDropRef = useTemplateRef<typeof OcDrop>('showMoreShareOptionsDropRef')
 const announcer = useTemplateRef<typeof OcHiddenAnnouncer>('announcer')
@@ -322,18 +318,16 @@ const {
   searchInProgress,
   searchQuery
 } = useCollaboratorAutocomplete('files-share-invite-input', async (query, signal) => {
-  const collaborators = await searchCollaborators(query, {
-    signal,
-    external: unref(isExternalShareRoleType)
-  })
-
-  const contacts = unref(isSpace) ? [] : await searchOpenXchangeContacts(query.trim(), signal)
-
   // guests can't be invited to spaces yet
-  const guests =
-    unref(isSpace) || unref(isExternalShareRoleType) ? [] : getGuestCandidates(query, collaborators)
+  const guestsPossible =
+    !unref(isSpace) && !unref(isExternalShareRoleType) && unref(canInviteGuests)
+  const [collaborators, contacts] = await Promise.all([
+    searchCollaborators(query, { signal, external: unref(isExternalShareRoleType) }),
+    guestsPossible ? searchOpenXchangeContacts(query.trim(), signal) : []
+  ])
+  const guests = guestsPossible ? getGuestCandidates(query, collaborators, contacts) : []
 
-  const results = [...collaborators, ...contacts, ...guests].filter(
+  const results = [...collaborators, ...guests].filter(
     (collaborator: CollaboratorAutoCompleteItem) => {
       if (collaborator.id === userStore.user.id) {
         return false
@@ -409,36 +403,11 @@ const share = async () => {
   const saveQueue = new PQueue({ concurrency: unref(createSharesConcurrentRequests) })
   const savePromises: Promise<void>[] = []
   const errors: { displayName: string; error: Error }[] = []
-  const contactErrors: { displayName: string; error: Error }[] = []
   const addedShares: CollaboratorShare[] = []
   const failedCollaborators: CollaboratorAutoCompleteItem[] = []
-  let invitedContactCount = 0
 
   unref(selectedCollaborators).forEach((collaborator) => {
     const { id, shareType, displayName } = collaborator
-
-    if (shareType === ShareTypes.contact.value) {
-      // address book contacts are not OpenCloud users: create a public link
-      // and email it to them, never a collaborator share
-      savePromises.push(
-        saveQueue.add(async () => {
-          try {
-            await inviteContact({
-              space: unref(space),
-              resource: unref(resource),
-              contact: collaborator
-            })
-            invitedContactCount++
-          } catch (error) {
-            console.error(error)
-            contactErrors.push({ displayName, error })
-            failedCollaborators.push(collaborator)
-            throw error
-          }
-        })
-      )
-      return
-    }
 
     const isGuest = shareType === ShareTypes.guest.value
 
@@ -494,28 +463,9 @@ const share = async () => {
     showMessage({ title: $gettext('Share was added successfully') })
   }
 
-  if (invitedContactCount > 0) {
-    showMessage({
-      title: $ngettext(
-        'Sent a read-only link to %{count} contact',
-        'Sent read-only links to %{count} contacts',
-        invitedContactCount,
-        { count: invitedContactCount.toString() }
-      )
-    })
-  }
-
   errors.forEach((e) => {
     showErrorMessage({
       title: $gettext('Failed to add share for "%{displayName}"', {
-        displayName: e.displayName
-      }),
-      errors: [e.error]
-    })
-  })
-  contactErrors.forEach((e) => {
-    showErrorMessage({
-      title: $gettext('Failed to send invite link for "%{displayName}"', {
         displayName: e.displayName
       }),
       errors: [e.error]
