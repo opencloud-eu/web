@@ -141,19 +141,17 @@ export const disableSpace = ({
   })
 }
 
-export const deleteSpace = async ({
+export const deleteSpace = ({
   user,
   space
 }: {
   user: User
   space: Space
 }): Promise<APIResponse> => {
-  const response = await request({
+  return request({
     method: 'DELETE',
     path: urlJoin('graph', 'v1.0', 'drives', space.id),
     user: user,
     header: { Purge: 'T' }
   })
-  checkResponseStatus(response, 'Failed while deleting space')
-  return response
 }
