@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- fix: keep sorting in local storage only [[#4586](https://github.com/opencloud-eu/web/pull/4586)]
 - fix: keep view options in local storage only [[#4571](https://github.com/opencloud-eu/web/pull/4571)]
 
 ### 🔒 Security
