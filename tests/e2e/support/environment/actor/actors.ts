@@ -1,16 +1,12 @@
-import { kebabCase } from 'lodash-es'
-import { DateTime } from 'luxon'
-import EventEmitter from 'events'
 import { Actor } from '../../types'
 import { ActorsOptions } from './shared'
 import { ActorEnvironment } from './actor'
 import { actorStore } from '../../store'
 
-export class ActorsEnvironment extends EventEmitter {
+export class ActorsEnvironment {
   private readonly options: ActorsOptions
 
   constructor(options: ActorsOptions) {
-    super()
     this.options = options
   }
 
@@ -22,17 +18,14 @@ export class ActorsEnvironment extends EventEmitter {
     return actorStore.get(key)
   }
 
-  public async createActor({ key, namespace }: { key: string; namespace: string }): Promise<Actor> {
+  public async createActor({ key }: { key: string }): Promise<Actor> {
     if (actorStore.has(key)) {
       return this.getActor({ key })
     }
 
-    const actor = new ActorEnvironment({ id: key, namespace, ...this.options })
+    const actor = new ActorEnvironment({ id: key, ...this.options })
     await actor.setup()
     actor.on('closed', () => actorStore.delete(key))
-    actor.page.on('console', (message) => {
-      this.emit('console', key, message)
-    })
 
     actorStore.set(key, actor)
 
@@ -41,9 +34,5 @@ export class ActorsEnvironment extends EventEmitter {
 
   public async close(): Promise<void> {
     await Promise.allSettled([...actorStore.values()].map((actor) => actor.close()))
-  }
-
-  public generateNamespace(user: string): string {
-    return kebabCase([user, DateTime.now().toFormat('yyyy-M-d-hh-mm-ss')].join('-'))
   }
 }

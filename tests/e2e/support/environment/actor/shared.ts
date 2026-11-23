@@ -10,5 +10,4 @@ export interface ActorsOptions {
 
 export interface ActorOptions extends ActorsOptions {
   id: string
-  namespace: string
 }

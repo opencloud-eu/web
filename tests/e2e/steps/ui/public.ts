@@ -1,6 +1,5 @@
 import { When, Then } from '../../environment/fixtures'
 import { DataTable } from 'playwright-bdd'
-import { Page } from '@playwright/test'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
 import { processDelete, processDownload } from './resources'
@@ -10,17 +9,7 @@ import { pageObjectFor, actorPage } from '../../environment/pageObject'
 When(
   '{string} opens the public link {string}',
   async ({ world }: { world: World }, stepUser: string, name: string): Promise<void> => {
-    let page: Page
-    try {
-      page = world.actorsEnvironment.getActor({ key: stepUser }).page
-    } catch {
-      await world.actorsEnvironment
-        .createActor({
-          key: stepUser,
-          namespace: world.actorsEnvironment.generateNamespace(stepUser)
-        })
-        .then((actor) => (page = actor.page))
-    }
+    const { page } = await world.actorsEnvironment.createActor({ key: stepUser })
 
     const { url } = world.linksEnvironment.getLink({ name })
     const pageObject = new objects.applicationFiles.page.Public({ page })

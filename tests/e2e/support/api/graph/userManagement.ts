@@ -1,5 +1,5 @@
 import { checkResponseStatus, request } from '../http'
-import { Group, Me, User } from '../../types'
+import { Group, User } from '../../types'
 import { urlJoin } from '../../utils/urlJoin'
 import { appConfig } from '../../../playwright.config'
 import { getApplicationEntity } from './utils'
@@ -7,20 +7,6 @@ import { userRoleStore } from '../../store'
 import { UsersEnvironment } from '../../environment'
 import { setAccessAndRefreshToken } from '../token'
 import { readFile } from 'fs/promises'
-
-interface GroupResponse {
-  value: Group[]
-}
-
-export const me = async ({ user }: { user: User }): Promise<Me> => {
-  const response = await request({
-    method: 'GET',
-    path: urlJoin('graph', 'v1.0', 'me'),
-    user
-  })
-
-  return (await response.json()) as Me
-}
 
 export const createUser = async ({ user, admin }: { user: User; admin: User }): Promise<User> => {
   const body = {
@@ -181,16 +167,6 @@ export const getUserIdByMail = async ({
   const match = data.value?.find((user) => user.mail?.toLowerCase() === mail.toLowerCase())
 
   return match?.id ?? null
-}
-
-export const getGroups = async (adminUser: User): Promise<Group[]> => {
-  const response = await request({
-    method: 'GET',
-    path: urlJoin('graph', 'v1.0', 'groups'),
-    user: adminUser
-  })
-  const data = (await response.json()) as GroupResponse
-  return data.value
 }
 
 export const uploadProfileImage = async ({

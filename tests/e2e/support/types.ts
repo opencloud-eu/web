@@ -41,10 +41,6 @@ export interface File {
   path: string
 }
 
-export interface Me {
-  id: string
-}
-
 export interface Group {
   uuid?: string
   id: string
