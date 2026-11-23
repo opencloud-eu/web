@@ -1,16 +1,22 @@
 import { useUserActionsDelete } from '../../../../../src/composables/actions/users/useUserActionsDelete'
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
+import { flushPromises } from '@vue/test-utils'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { useCapabilityStore, useModals, useUserStore } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   getComposableWrapper,
+  RouteLocation,
   writable
 } from '@opencloud-eu/web-test-helpers'
 import { useUserSettingsStore } from '../../../../../src/composables/stores/userSettings'
 
 describe('useUserActionsDelete', () => {
+  afterEach(() => {
+    window.localStorage.clear()
+  })
+
   describe('method "isVisible"', () => {
     it.each([
       { resources: [], disabledViaCapability: false, isVisible: false },
@@ -77,12 +83,30 @@ describe('useUserActionsDelete', () => {
       const { removeUsers } = useUserSettingsStore()
       expect(removeUsers).toHaveBeenCalledWith([deleted])
     })
+    it.each(['0', 'abc'])(
+      'moves to the last page with the default items per page for the invalid stored value %s',
+      async (itemsPerPage) => {
+        window.localStorage.setItem('oc-options_items-per-page', itemsPerPage)
+        const { instance, mocks } = getWrapper({ query: { page: '5' } })
+        useUserSettingsStore().users = Array.from({ length: 60 }, (_, i) =>
+          mock<User>({ id: `${i}` })
+        )
+        await instance.deleteUsers([mock<User>({ id: 'deleted' })])
+        await flushPromises()
+
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
+          expect.objectContaining({ query: expect.objectContaining({ page: '2' }) })
+        )
+      }
+    )
   })
 })
 
 function getWrapper({
-  setup
+  setup,
+  query = {}
 }: {
+  query?: Record<string, string>
   setup?: (
     instance: ReturnType<typeof useUserActionsDelete>,
     {
@@ -92,7 +116,9 @@ function getWrapper({
     }
   ) => void
 } = {}) {
-  const mocks = defaultComponentMocks()
+  const mocks = defaultComponentMocks({
+    currentRoute: mock<RouteLocation>({ path: '/users', query })
+  })
   let instance: ReturnType<typeof useUserActionsDelete>
   const wrapper = getComposableWrapper(
     () => {

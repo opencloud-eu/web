@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { computed, unref } from 'vue'
-import path from 'path'
+import { urlJoin } from '@opencloud-eu/web-client'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const {
@@ -121,7 +121,7 @@ const pathTooltip = computed(() => {
     return null
   }
   if (pathPrefix) {
-    return path.join(pathPrefix, fullPath)
+    return urlJoin(pathPrefix, fullPath, { leadingSlash: 'keep', trailingSlash: 'keep' })
   }
   return fullPath
 })

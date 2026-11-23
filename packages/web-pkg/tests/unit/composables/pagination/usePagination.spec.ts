@@ -1,5 +1,5 @@
-import { ref, unref } from 'vue'
-import { usePagination } from '../../../../src/composables'
+import { nextTick, ref, unref } from 'vue'
+import { useItemsPerPage, usePagination } from '../../../../src/composables'
 import { eventBus } from '../../../../src/services'
 import { createRouter, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { flushPromises } from '@vue/test-utils'
@@ -57,7 +57,11 @@ describe('usePagination', () => {
     })
   })
   describe('computed perPage', () => {
-    it('falls back to the default while the route query is still unset', async () => {
+    afterEach(() => {
+      window.localStorage.clear()
+    })
+
+    it('falls back to the default when nothing is stored', async () => {
       const router = createRouter({ routes: [{ path: '/', redirect: null }] })
       router.push('/')
       await router.isReady()
@@ -67,8 +71,7 @@ describe('usePagination', () => {
         () => {
           const { items: paginatedItems, perPage } = usePagination({
             items: ref([1, 2, 3, 4, 5, 6]),
-            perPageDefault: '2',
-            perPageStoragePrefix: 'unit-tests'
+            perPageDefault: '2'
           })
 
           expect(unref(perPage)).toBe(2)
@@ -77,34 +80,6 @@ describe('usePagination', () => {
         { mocks, provide: mocks }
       )
     })
-    it.each(['0', '-1'])(
-      'falls back to the default for the invalid route query value %s',
-      async (itemsPerPage) => {
-        const router = createRouter({ routes: [{ path: '/', redirect: null }] })
-        router.push({ path: '/', query: { 'items-per-page': itemsPerPage } })
-        await router.isReady()
-
-        const mocks = { $router: router }
-        getComposableWrapper(
-          () => {
-            const {
-              items: paginatedItems,
-              perPage,
-              total
-            } = usePagination({
-              items: ref([1, 2, 3, 4, 5, 6]),
-              perPageDefault: '100',
-              perPageStoragePrefix: 'unit-tests'
-            })
-
-            expect(unref(perPage)).toBe(100)
-            expect(unref(total)).toBe(1)
-            expect(unref(paginatedItems)).toEqual([1, 2, 3, 4, 5, 6])
-          },
-          { mocks, provide: mocks }
-        )
-      }
-    )
   })
   describe('event bus subscription', () => {
     it('unsubscribes from the page navigation event on unmount', () => {
@@ -135,7 +110,7 @@ describe('usePagination', () => {
       const mocks = { $router: router }
       const items = Array.from({ length: 25 }, (_, i) => ({ id: `${i + 1}` }))
       const wrapper = getComposableWrapper(
-        () => usePagination({ items: ref(items), perPage: 20, perPageStoragePrefix: 'unit-tests' }),
+        () => usePagination({ items: ref(items), perPage: 20 }),
         { mocks, provide: mocks }
       )
 
@@ -166,7 +141,7 @@ describe('usePagination', () => {
       const mocks = { $router: router }
       const items = Array.from({ length: 25 }, (_, i) => ({ id: `${i + 1}` }))
       const wrapper = getComposableWrapper(
-        () => usePagination({ items: ref(items), perPage: 20, perPageStoragePrefix: 'unit-tests' }),
+        () => usePagination({ items: ref(items), perPage: 20 }),
         { mocks, provide: mocks }
       )
 
@@ -181,6 +156,40 @@ describe('usePagination', () => {
       expect(unref(router.currentRoute).query.page).toBe('2')
       wrapper.unmount()
     })
+  })
+})
+
+const itemsPerPageStorageKey = 'oc-options_items-per-page'
+
+describe('useItemsPerPage', () => {
+  afterEach(() => {
+    window.localStorage.clear()
+  })
+
+  it('uses the default of the caller when nothing is stored', () => {
+    expect(unref(useItemsPerPage())).toBe(100)
+    expect(unref(useItemsPerPage('50'))).toBe(50)
+  })
+  it('reads the stored value', () => {
+    window.localStorage.setItem(itemsPerPageStorageKey, '250')
+    expect(unref(useItemsPerPage())).toBe(250)
+  })
+  it.each(['0', '-1', 'abc'])(
+    'falls back to the default for the invalid stored value %s',
+    (value) => {
+      window.localStorage.setItem(itemsPerPageStorageKey, value)
+      expect(unref(useItemsPerPage('50'))).toBe(50)
+    }
+  )
+  it('shares the chosen value between all callers', async () => {
+    const filesItemsPerPage = useItemsPerPage()
+    const adminItemsPerPage = useItemsPerPage('50')
+
+    filesItemsPerPage.value = 20
+    await nextTick()
+
+    expect(unref(adminItemsPerPage)).toBe(20)
+    expect(window.localStorage.getItem(itemsPerPageStorageKey)).toBe('20')
   })
 })
 
@@ -200,8 +209,7 @@ function getWrapper({
       const instance = usePagination({
         items: ref(items),
         page: currentPage,
-        perPage: itemsPerPage,
-        perPageStoragePrefix: 'unit-tests'
+        perPage: itemsPerPage
       })
       setup(instance)
     })

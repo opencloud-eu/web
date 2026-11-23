@@ -71,9 +71,8 @@ import {
   withExtension,
   withoutExtension
 } from '@opencloud-eu/web-pkg'
-import { extractExtensionFromFile, Resource } from '@opencloud-eu/web-client'
+import { extractExtensionFromFile, Resource, urlJoin } from '@opencloud-eu/web-client'
 import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
-import { join } from 'path'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useFileActionsCreateLink } from '../../composables'
@@ -144,7 +143,7 @@ const fileNameErrorMessage = computed(() => {
     return undefined
   }
   const name = unref(fullFileName)
-  const resource = { path: join(unref(currentFolder).path, name), name } as Resource
+  const resource = { path: urlJoin(unref(currentFolder).path, name), name } as Resource
   // no existing resources to check against, name conflicts get resolved on save
   const { isValid, error } = isFileNameValid(resource, name, [], unref(space))
   return isValid ? undefined : error

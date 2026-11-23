@@ -27,6 +27,9 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 // unmount after each test, otherwise stale lists react to the global click events and key presses
 enableAutoUnmount(afterEach)
+afterEach(() => {
+  window.localStorage.clear()
+})
 
 describe('GroupsList', () => {
   describe('sorting', () => {
@@ -79,6 +82,7 @@ describe('GroupsList', () => {
 
   describe('pagination', () => {
     it('shows the last page when the current page runs out of filtered groups', async () => {
+      window.localStorage.setItem('oc-options_items-per-page', '1')
       const { wrapper } = getWrapper({
         groups: [
           { id: '1', displayName: 'admins' },
@@ -86,7 +90,7 @@ describe('GroupsList', () => {
           { id: '3', displayName: 'users' }
         ] as Group[],
         filterTerm: 'admins',
-        query: { page: '2', 'items-per-page': '1' }
+        query: { page: '2' }
       })
       expect(getTableData(wrapper).map((g) => g.displayName)).toEqual(['admins2'])
 

@@ -32,9 +32,7 @@
                     :has-file-extensions="false"
                     :has-folders-first="false"
                     :has-pagination="true"
-                    :pagination-options="paginationOptions"
                     :per-page-default="perPageDefault"
-                    per-page-storage-prefix="admin-settings"
                   />
                 </div>
               </div>
@@ -105,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { perPageDefault, paginationOptions } from '../defaults'
+import { perPageDefault } from '../defaults'
 import {
   Action,
   AppLoadingSpinner,

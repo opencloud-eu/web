@@ -7,9 +7,10 @@ import {
   isShareSpaceResource,
   isTrashResource,
   Resource,
-  SpaceResource
+  SpaceResource,
+  dirname,
+  urlJoin
 } from '@opencloud-eu/web-client'
-import { dirname, join } from 'path'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
 import {
   FileAction,
@@ -52,7 +53,7 @@ export const useFileActionsRename = () => {
     let currentFolder = resourcesStore.currentFolder
 
     try {
-      const newPath = join(dirname(resource.path), newName)
+      const newPath = urlJoin(dirname(resource.path), newName)
 
       await (clientService.webdav as WebDAV).moveFiles(space, resource, space, {
         path: newPath

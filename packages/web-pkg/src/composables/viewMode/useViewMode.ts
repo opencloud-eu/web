@@ -1,30 +1,22 @@
-import { computed, ComputedRef, ref, Ref, unref } from 'vue'
-import { queryItemAsString } from '../appDefaults'
-import { useRouteQueryPersisted } from '../router'
+import { ref, Ref, unref } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { FolderViewModeConstants } from './constants'
 
-export function useViewMode(options: ComputedRef<string>): ComputedRef<string> {
-  if (options) {
-    return computed(() => unref(options))
-  }
-
-  const viewModeQuery = useRouteQueryPersisted({
-    name: FolderViewModeConstants.queryName,
-    defaultValue: FolderViewModeConstants.defaultModeName
+export function useViewMode(): Ref<string> {
+  return useLocalStorage<string>('oc-options_view-mode', FolderViewModeConstants.defaultModeName, {
+    writeDefaults: false
   })
-  return computed(() => queryItemAsString(unref(viewModeQuery)))
 }
 
-export function useViewSize(options: ComputedRef<string>): ComputedRef<number> {
-  if (options) {
-    return computed(() => parseInt(unref(options)))
-  }
-
-  const viewModeSize = useRouteQueryPersisted({
-    name: FolderViewModeConstants.tilesSizeQueryName,
-    defaultValue: FolderViewModeConstants.tilesSizeDefault.toString()
-  })
-  return computed(() => parseInt(queryItemAsString(unref(viewModeSize))))
+export function useViewSize(): Ref<number> {
+  // on phones the default tile size results in one huge tile per row, so default to the smallest size
+  const { isMobile } = useIsMobile()
+  return useLocalStorage<number>(
+    'oc-options_tiles-size',
+    unref(isMobile) ? 1 : FolderViewModeConstants.tilesSizeDefault,
+    { writeDefaults: false }
+  )
 }
 
 // doesn't need to be persisted anywhere. Gets re-calculated when the ResourceTiles component gets mounted.

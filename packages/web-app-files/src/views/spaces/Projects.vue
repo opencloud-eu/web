@@ -11,7 +11,6 @@
         :has-pagination="true"
         :batch-actions-loading="batchActionsLoading"
         :view-modes="viewModes"
-        :view-mode-default="FolderViewModeConstants.defaultModeName"
       >
         <template #actions>
           <div class="flex items-center justify-between w-full my-2">

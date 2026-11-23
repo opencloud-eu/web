@@ -3,7 +3,7 @@
     <view-mode-switch
       v-if="viewModes.length > 1"
       :view-modes="viewModes"
-      :current-view-mode="queryItemAsString(viewModeQuery)"
+      :current-view-mode="viewMode"
       @select="setViewMode"
     />
     <oc-button
@@ -53,8 +53,7 @@
         </li>
         <li v-if="hasPagination" class="mt-2 mb-4 last:mb-0 [&>*]:flex [&>*]:justify-between">
           <oc-page-size
-            v-if="!queryParamsLoading"
-            :selected="queryItemAsString(itemsPerPageQuery)"
+            :selected="itemsPerPage.toString()"
             data-testid="files-pagination-size"
             :label="$gettext('Items per page')"
             :options="paginationOptions"
@@ -81,10 +80,10 @@
             @update:checked="updateEmptyTrashesShownModel"
           />
         </li>
-        <li v-if="viewModeQuery === FolderViewModeConstants.name.tiles" class="mt-2 mb-4 last:mb-0">
+        <li v-if="isTileSizeSliderShown" class="mt-2 mb-4 last:mb-0">
           <oc-range
             id="tiles-size-slider"
-            v-model="viewSizeModel"
+            v-model="viewSize"
             :label="$gettext('Grid size')"
             :min="1"
             :max="viewSizeMax"
@@ -99,19 +98,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   FolderViewModeConstants,
   PaginationConstants,
-  QueryValue,
   queryItemAsString,
   useActiveLocation,
+  useItemsPerPage,
   useResourcesStore,
   useRoute,
   useRouteQuery,
-  useRouteQueryPersisted,
   useRouter,
+  useViewMode,
+  useViewSize,
   useViewSizeMax
 } from '../composables'
 import { FolderView } from '../ui/types'
@@ -119,29 +119,22 @@ import { storeToRefs } from 'pinia'
 import { isLocationSpacesActive, isLocationTrashActive } from '../router'
 import { PageSizeOption } from '@opencloud-eu/design-system/helpers'
 import ViewModeSwitch from './ViewModeSwitch.vue'
-import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const {
-  perPageStoragePrefix,
   hasHiddenFiles = true,
   hasFileExtensions = true,
   hasFoldersFirst = true,
   hasPagination = true,
   paginationOptions = PaginationConstants.options,
-  perPageQueryName = PaginationConstants.perPageQueryName,
   perPageDefault = PaginationConstants.perPageDefault,
-  viewModeDefault = FolderViewModeConstants.defaultModeName,
   viewModes = []
 } = defineProps<{
-  perPageStoragePrefix: string
   hasHiddenFiles?: boolean
   hasFileExtensions?: boolean
   hasFoldersFirst?: boolean
   hasPagination?: boolean
   paginationOptions?: string[]
-  perPageQueryName?: string
   perPageDefault?: string
-  viewModeDefault?: string
   viewModes?: FolderView[]
 }>()
 
@@ -165,78 +158,30 @@ const {
   areFoldersSortedFirst
 } = storeToRefs(resourcesStore)
 
-const queryParamsLoading = ref(false)
-
 const isProjectsLocation = useActiveLocation(isLocationSpacesActive, 'files-spaces-projects')
 const isTrashOverViewLocation = useActiveLocation(isLocationTrashActive, 'files-trash-overview')
 
-const currentPageQuery = useRouteQuery('page')
-const currentPage = computed(() => {
-  if (!unref(currentPageQuery)) {
-    return 1
+const currentPageQuery = useRouteQuery('page', '1')
+const itemsPerPage = useItemsPerPage(perPageDefault)
+
+const viewMode = useViewMode()
+const viewSize = useViewSize()
+const viewSizeMax = useViewSizeMax()
+
+const isTileSizeSliderShown = computed(() => {
+  return viewModes.length > 0 && unref(viewMode) === FolderViewModeConstants.name.tiles
+})
+
+const setItemsPerPage = (value: PageSizeOption) => {
+  itemsPerPage.value = Number(value)
+  if (parseInt(queryItemAsString(unref(currentPageQuery))) > 1) {
+    return router.replace({ query: { ...unref(currentRoute).query, page: '1' } })
   }
-  return parseInt(queryItemAsString(unref(currentPageQuery)))
-})
-const itemsPerPageQuery = useRouteQueryPersisted({
-  name: perPageQueryName,
-  defaultValue: perPageDefault,
-  storagePrefix: perPageStoragePrefix
-})
-
-// view mode and tile size only apply to views that offer view modes, so we don't want to write them into the url otherwise
-const hasViewModes = computed(() => viewModes.length > 0)
-
-const viewModeQuery = unref(hasViewModes)
-  ? useRouteQueryPersisted({
-      name: FolderViewModeConstants.queryName,
-      defaultValue: viewModeDefault
-    })
-  : ref<QueryValue>()
-
-// on phones the default tile size results in one huge tile per row, so default to the smallest size
-const { isMobile } = useIsMobile()
-const viewSizeQuery = unref(hasViewModes)
-  ? useRouteQueryPersisted({
-      name: FolderViewModeConstants.tilesSizeQueryName,
-      defaultValue: unref(isMobile) ? '1' : FolderViewModeConstants.tilesSizeDefault.toString()
-    })
-  : ref<QueryValue>()
-
-const setItemsPerPage = (itemsPerPage: PageSizeOption) => {
-  return router.replace({
-    query: {
-      ...unref(currentRoute).query,
-      [perPageQueryName]: itemsPerPage.toString(),
-      ...(unref(currentPage) > 1 && { page: '1' })
-    }
-  })
 }
 
 const setViewMode = (mode: FolderView) => {
-  viewModeQuery.value = mode.name
+  viewMode.value = mode.name
 }
-
-watch(
-  () =>
-    unref(hasViewModes)
-      ? [unref(itemsPerPageQuery), unref(viewModeQuery), unref(viewSizeQuery)]
-      : [unref(itemsPerPageQuery)],
-  (params) => {
-    queryParamsLoading.value = params.some((p) => !p)
-  },
-  { immediate: true, deep: true }
-)
-
-const viewSizeMax = useViewSizeMax()
-
-const viewSizeModel = computed({
-  get() {
-    return Number(queryItemAsString(unref(viewSizeQuery)))
-  },
-  set(value: number) {
-    viewSizeQuery.value = value.toString()
-  }
-})
 
 const hiddenFilesShownModel = computed({
   get() {
