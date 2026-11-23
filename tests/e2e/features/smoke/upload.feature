@@ -32,6 +32,9 @@ Feature: Upload
       | new-lorem-big.txt | replace   |
       | lorem.txt         | skip      |
       | textfile.txt      | keep both |
+    Then following resource should be displayed in the files list for user "Alice"
+      | resource         |
+      | textfile (1).txt |
     And "Alice" creates the following resources
       | resource              | type     | content      |
       | PARENT                | folder   |              |

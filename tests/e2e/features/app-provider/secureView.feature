@@ -5,64 +5,12 @@ Feature: Secure view
   Any actions for the recipient, such as editing, downloading, copying the document, are prohibited
   # To run this feature we need to run the external app-provider service along Collabora service
 
-  Background:
+  Scenario: secure view files can only be opened in Collabora
     Given "Admin" creates following users using API
       | id    |
       | Alice |
       | Brian |
-    And "Alice" logs in
-    And "Alice" opens the "files" app
-
-
-  Scenario: open a secure view file with Collabora
-    Given "Alice" creates the following folder in personal space using API
-      | name          |
-      | shared folder |
-    And "Alice" uploads the following local file into personal space using API
-      | localFile       | to                            |
-      | simple.pdf      | shared folder/simple.pdf      |
-      | testavatar.jpeg | shared folder/testavatar.jpeg |
-      | lorem.txt       | shared folder/lorem.txt       |
-    And "Alice" creates the following resource
-      | resource           | type         | content                 |
-      | secureDocument.odt | OpenDocument | very important document |
-
-    And "Alice" shares the following resources using the sidebar panel
-      | resource           | recipient | type | role              |
-      | secureDocument.odt | Brian     | user | Can view (secure) |
-      | shared folder      | Brian     | user | Can view (secure) |
-    And "Alice" logs out
-
-    And "Brian" logs in
-    And "Brian" navigates to the shared with me page
-    When "Brian" opens the following file in Collabora
-      | resource           |
-      | secureDocument.odt |
-
-    # we copy the contents of the file and compare the clipboard with the expected contents.
-    # In case the user does not have download permissions and tries to copy file content, the clipboard should be set to “Copying from document disabled”.
-    Then "Brian" should see the content "Copying from the document has been disabled by your administrator" in editor "CollaboraOnline"
-    And "Brian" closes the file viewer
-    When "Brian" opens folder "shared folder"
-    And "Brian" opens the following file in Collabora
-      | resource   |
-      | simple.pdf |
-    Then "Brian" should see the content "Copying from the document has been disabled by your administrator" in editor "CollaboraOnline"
-    And "Brian" closes the file viewer
-    And "Brian" opens the following file in Collabora
-      | resource        |
-      | testavatar.jpeg |
-    Then "Brian" should see the content "Copying from the document has been disabled by your administrator" in editor "CollaboraOnline"
-    And "Brian" closes the file viewer
-    And "Brian" opens the following file in Collabora
-      | resource  |
-      | lorem.txt |
-    Then "Brian" should see the content "Copying from the document has been disabled by your administrator" in editor "CollaboraOnline"
-    And "Brian" logs out
-
-
-  Scenario: check available actions for secure view file
-    Given "Alice" creates the following folder in personal space using API
+    And "Alice" creates the following folder in personal space using API
       | name          |
       | shared folder |
     And "Alice" uploads the following local file into personal space using API
@@ -70,14 +18,16 @@ Feature: Secure view
       | simple.pdf      | shared folder/secure.pdf       |
       | testavatar.jpeg | shared folder/securePhoto.jpeg |
       | lorem.txt       | shared folder/secureFile.txt   |
+    And "Alice" logs in
+    And "Alice" opens the "files" app
     And "Alice" creates the following resource
       | resource           | type         | content                 |
       | secureDocument.odt | OpenDocument | very important document |
-    And "Alice" shares the following resources using the sidebar panel
+    And "Alice" logs out
+    And "Alice" shares the following resources using API
       | resource           | recipient | type | role              |
       | secureDocument.odt | Brian     | user | Can view (secure) |
       | shared folder      | Brian     | user | Can view (secure) |
-    And "Alice" logs out
 
     And "Brian" logs in
     And "Brian" navigates to the shared with me page
@@ -93,10 +43,19 @@ Feature: Secure view
     And "Brian" should not see preview for file "secureDocument.odt"
 
     # folder
-    Then "Brian" should not see following actions for folder "shared folder"
+    And "Brian" should not see following actions for folder "shared folder"
       | action   |
       | Download |
       | Copy     |
+
+    # we copy the contents of the file and compare the clipboard with the expected contents.
+    # In case the user does not have download permissions and tries to copy file content, the clipboard should be set to “Copying from document disabled”.
+    When "Brian" opens the following file in Collabora
+      | resource           |
+      | secureDocument.odt |
+    Then "Brian" should see the content "Copying from the document has been disabled by your administrator" in editor "CollaboraOnline"
+    And "Brian" closes the file viewer
+
     When "Brian" opens folder "shared folder"
 
     # .pdf file
@@ -132,7 +91,23 @@ Feature: Secure view
       | Text Editor |
     And "Brian" should not see thumbnail and preview for file "secureFile.txt"
 
-    # check available actions and files preview in the seach result page
+    When "Brian" opens the following file in Collabora
+      | resource   |
+      | secure.pdf |
+    Then "Brian" should see the content "Copying from the document has been disabled by your administrator" in editor "CollaboraOnline"
+    And "Brian" closes the file viewer
+    When "Brian" opens the following file in Collabora
+      | resource         |
+      | securePhoto.jpeg |
+    Then "Brian" should see the content "Copying from the document has been disabled by your administrator" in editor "CollaboraOnline"
+    And "Brian" closes the file viewer
+    When "Brian" opens the following file in Collabora
+      | resource       |
+      | secureFile.txt |
+    Then "Brian" should see the content "Copying from the document has been disabled by your administrator" in editor "CollaboraOnline"
+    And "Brian" closes the file viewer
+
+    # check available actions and files preview in the search result page
     When "Brian" searches "secure" using the global search and the "all files" filter and presses enter
     Then following resources should be displayed in the files list for user "Brian"
       | resource           |
@@ -151,28 +126,6 @@ Feature: Secure view
       | Copy        |
       | Text Editor |
     And "Brian" should not see thumbnail and preview for file "secureFile.txt"
-
-    # .jpeg file
-    Then "Brian" should see following actions for file "securePhoto.jpeg"
-      | action          |
-      | CollaboraOnline |
-    But "Brian" should not see following actions for file "securePhoto.jpeg"
-      | action   |
-      | Download |
-      | Copy     |
-      | Preview  |
-    And "Brian" should not see thumbnail and preview for file "securePhoto.jpeg"
-
-    # .pdf file
-    Then "Brian" should see following actions for file "secure.pdf"
-      | action          |
-      | CollaboraOnline |
-    But "Brian" should not see following actions for file "secure.pdf"
-      | action     |
-      | Download   |
-      | Copy       |
-      | PDF Viewer |
-    And "Brian" should not see preview for file "secure.pdf"
 
     # .odt file
     Then "Brian" should see following actions for file "secureDocument.odt"

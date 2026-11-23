@@ -26,10 +26,12 @@ Feature: Favorites
       | resource | recipient | type  | role     |
       | shared   | Brian     | user  | Can edit |
     And "Brian" uploads the following local file into personal space using API
-      | localFile       | to        |
-      | user-avatar.png | image.png |
-      | test_video.mp4  | video.mp4 |
-    
+      | localFile       | to         |
+      | user-avatar.png | image.png  |
+      | test_video.mp4  | video.mp4  |
+      | simple.pdf      | simple.pdf |
+      | lorem.txt       | lorem.txt  |
+
 
     And "Brian" logs in
     And "Brian" navigates to the shared with me page
@@ -38,9 +40,11 @@ Feature: Favorites
       | resource        |
       | testavatar.jpg  |
     And "Brian" navigates to the personal space page
-    And "Brian" marks the following resource as favorite using "batch action"
+    And "Brian" marks the following resources as favorite using "batch action"
       | resource   |
       | image.png  |
+      | simple.pdf |
+      | lorem.txt  |
     And "Brian" opens the following file in mediaviewer
       | resource  |
       | video.mp4 |
@@ -54,6 +58,8 @@ Feature: Favorites
       | resource       |
       | testavatar.jpg |
       | image.png      |
+      | simple.pdf     |
+      | lorem.txt      |
       | video.mp4      |
     And "Brian" removes the following resource from favorites using "context menu"
       | resource  |
@@ -61,53 +67,24 @@ Feature: Favorites
     And following resource should not be displayed in the files list for user "Brian"
       | resource       |
       | image.png      |
+    And "Brian" removes the following resources from favorites using "batch action"
+      | resource   |
+      | video.mp4  |
+      | simple.pdf |
+    And following resources should not be displayed in the files list for user "Brian"
+      | resource   |
+      | video.mp4  |
+      | simple.pdf |
+
+    And "Brian" navigates to the personal space page
     And "Brian" removes the following resource from favorites using "batch action"
       | resource  |
-      | video.mp4 |
-    And following resource should not be displayed in the files list for user "Brian"
-      | resource       |
-      | video.mp4      |
-    And "Brian" logs out
-
-
-  Scenario: mark and unmark resources as favorites using batch action
-    Given "Brian" uploads the following local file into personal space using API
-      | localFile       | to         |
-      | user-avatar.png | image.png  |
-      | simple.pdf      | simple.pdf |
-      | lorem.txt       | lorem.txt  |
-    
-    And "Brian" logs in
-    And "Brian" navigates to the personal space page
-    And "Brian" marks the following resources as favorite using "batch action"
-      | resource   |
-      | image.png  |
-      | simple.pdf |
-      | lorem.txt  |
-    And "Brian" navigates to the favorites page
-    And following resources should be displayed in the files list for user "Brian"
-      | resource   |
-      | image.png  |
-      | simple.pdf |
-      | lorem.txt  |
-    And "Brian" removes the following resources from favorites using "batch action"
-      | resource   |
-      | image.png  |
-      | simple.pdf |
-    And following resources should not be displayed in the files list for user "Brian"
-      | resource   |
-      | image.png  |
-      | simple.pdf |
-    
-    And "Brian" navigates to the personal space page
-    And "Brian" removes the following resources from favorites using "batch action"
-      | resource   |
-      | lorem.txt  |
-    
+      | lorem.txt |
     And "Brian" navigates to the favorites page
     And following resources should not be displayed in the files list for user "Brian"
       | resource   |
       | image.png  |
+      | video.mp4  |
       | simple.pdf |
       | lorem.txt  |
     And "Brian" logs out

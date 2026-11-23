@@ -5,8 +5,6 @@ import { UsersEnvironment } from '../../../environment'
 const appBar = '#admin-settings-app-bar'
 const userIdSelector = `[data-item-id="%s"] .users-table-btn-action-dropdown`
 const editActionBtnContextMenu = '.context-menu .oc-users-actions-edit-trigger'
-const editActionBtnQuickActions =
-  '[data-item-id="%s"] .oc-table-data-cell-actions .users-table-btn-edit'
 const editPanel = '.sidebar-panel__body-EditPanel:visible'
 const closeEditPanel = '.sidebar-panel__header .header__close'
 const deleteActionBtn = '.oc-users-actions-delete-trigger'
@@ -372,9 +370,6 @@ export const openEditPanel = async (args: {
       await page.locator(util.format(userIdSelector, uuid)).click()
       await page.locator(editActionBtnContextMenu).click()
       break
-    case 'quick-action':
-      await page.locator(util.format(editActionBtnQuickActions, uuid)).click()
-      break
     default:
       throw new Error(`${action} not implemented`)
   }
@@ -419,11 +414,6 @@ export const deleteUserUsingBatchAction = async (args: {
   }
 
   await Promise.all([...checkResponses, page.locator(actionConfirmButton).click()])
-}
-
-export const waitForEditPanelToBeVisible = async (args: { page: Page }): Promise<void> => {
-  const { page } = args
-  await page.locator(editPanel).waitFor()
 }
 
 const getGroupId = (group: string): string => {

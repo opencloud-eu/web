@@ -142,9 +142,12 @@ Feature: Integration with Collabora online office
     Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "CollaboraOnline"
 
     When "Alice" closes the file viewer
-    Then following resource should not be displayed in the files list for user "Alice"
-      | resource          |
-      | Template (1).docx |
+    Then following resource should be displayed in the files list for user "Alice"
+      | resource     |
+      | Template.odt |
+    And following resource should not be displayed in the files list for user "Alice"
+      | resource         |
+      | Template (1).odt |
     And "Alice" logs out
 
 
@@ -156,5 +159,6 @@ Feature: Integration with Collabora online office
     Then "Alice" should see the content "test content" in editor "CollaboraOnline"
     And "Alice" closes the file viewer
     When "Alice" opens file "new.txt" via "text-editor" using the context menu
+    Then "Alice" should see the content "test content" in editor "TextEditor"
     And "Alice" closes the file viewer
     And "Alice" logs out

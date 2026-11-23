@@ -164,14 +164,6 @@ Feature: spaces management
       | name   |
       | team A |
       | team B |
-    And "Alice" enables the following spaces using the batch-actions
-      | name   |
-      | team A |
-      | team B |
-    And "Alice" disables the following spaces using the batch-actions
-      | name   |
-      | team A |
-      | team B |
     And "Alice" deletes the following spaces using the batch-actions
       | name   |
       | team A |

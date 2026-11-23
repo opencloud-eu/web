@@ -51,6 +51,7 @@ export const getUserId = async ({ user, admin }: { user: User; admin: User }): P
     path: urlJoin('graph', 'v1.0', 'users', user.username),
     user: admin
   })
+  checkResponseStatus(response, 'Failed while getting user id')
 
   const resBody = (await response.json()) as User
   return resBody.id

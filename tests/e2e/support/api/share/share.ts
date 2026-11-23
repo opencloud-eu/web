@@ -11,6 +11,7 @@ export const shareRoles: Readonly<{
   'Can manage': string
   'Can edit': string
   'Can view': string
+  'Can view (secure)': string
   'Secret File Drop': string
   'Cannot access': string
 }> = {
@@ -18,6 +19,7 @@ export const shareRoles: Readonly<{
   'Can manage': 'manager',
   'Can edit': 'editor',
   'Can view': 'viewer',
+  'Can view (secure)': 'secure viewer',
   'Secret File Drop': 'uploader',
   'Cannot access': 'denied'
 } as const
@@ -226,6 +228,7 @@ export const createLinkShare = async ({
     },
     user
   })
+  checkResponseStatus(response, 'Failed while creating public link share')
 
   const responseData = (await response.json()) as { link: { webUrl: string } }
   const webUrl = responseData.link.webUrl
@@ -234,8 +237,6 @@ export const createLinkShare = async ({
     key: name,
     link: { name: name, url: webUrl }
   })
-
-  checkResponseStatus(response, 'Failed while creating public link share')
 }
 
 export const createSpaceLinkShare = async ({
@@ -270,6 +271,7 @@ export const createSpaceLinkShare = async ({
     },
     user
   })
+  checkResponseStatus(response, 'Failed while creating public link space')
 
   const responseData = (await response.json()) as { link: { webUrl: string } }
   const webUrl = responseData.link.webUrl
@@ -278,6 +280,4 @@ export const createSpaceLinkShare = async ({
     key: name,
     link: { name: name, url: webUrl }
   })
-
-  checkResponseStatus(response, 'Failed while creating public link space')
 }
