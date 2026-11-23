@@ -9,7 +9,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { flushPromises } from '@vue/test-utils'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { ClientService, useGetMatchingSpace } from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, ClientService, useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { ListFilesResult } from '@opencloud-eu/web-client/webdav'
 
@@ -22,13 +22,13 @@ describe('FilesDrop view', () => {
   describe('different files view states', () => {
     it('shows the loading spinner during loading', () => {
       const { wrapper } = getMountedWrapper()
-      expect(wrapper.find('app-loading-spinner').exists()).toBeTruthy()
+      expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeTruthy()
     })
     it('shows the "resource-upload"-component after loading', async () => {
       const { wrapper } = getMountedWrapper()
       ;(wrapper.vm as any).loading = false
       await wrapper.vm.$nextTick()
-      expect(wrapper.find('app-loading-spinner').exists()).toBeFalsy()
+      expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeFalsy()
       expect(wrapper.find('resource-upload-stub').exists()).toBeTruthy()
     })
   })

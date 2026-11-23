@@ -123,7 +123,8 @@ import {
   UppyService,
   UploadResult,
   useAuthService,
-  createFileRouteOptions
+  createFileRouteOptions,
+  AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
 import ResourceUpload from '../components/AppBar/Upload/ResourceUpload.vue'
 import DropZone from '../components/DropZone.vue'
