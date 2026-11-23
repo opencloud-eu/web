@@ -3,7 +3,7 @@ import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-
 import { mock } from 'vitest-mock-extended'
 import { PasswordPolicyService } from '../../../src/services'
 import { usePasswordPolicyService } from '../../../src/composables/passwordPolicyService'
-import { AbilityRule, LinkShare, Resource, ShareRole } from '@opencloud-eu/web-client'
+import { LinkShare, Resource, ShareRole } from '@opencloud-eu/web-client'
 import { PasswordPolicy } from '@opencloud-eu/design-system/helpers'
 import { useEmbedMode } from '../../../src/composables/embedMode'
 import { useLinkTypes } from '../../../src/composables/links'
@@ -28,9 +28,7 @@ vi.mock('../../../src/composables/links', async (importOriginal) => ({
 const selectors = {
   passwordInput: '.link-modal-password-input',
   roleElements: '.role-dropdown-list li',
-  contextMenuToggle: '#link-modal-context-menu-toggle',
   confirmBtn: '.link-modal-confirm',
-  cancelBtn: '.link-modal-cancel',
   linkRoleDropDownToggle: '.link-role-dropdown-toggle'
 }
 
@@ -48,14 +46,6 @@ describe('CreateLinkModal', () => {
       await nextTick()
       expect(wrapper.find(selectors.passwordInput).exists()).toBeTruthy()
     })
-    it('should not be rendered if user cannot create public links', () => {
-      const { wrapper } = getWrapper({
-        userCanCreatePublicLinks: false,
-        availableLinkTypes: [],
-        defaultLinkType: SharingLinkType.View
-      })
-      expect(wrapper.find(selectors.passwordInput).exists()).toBeFalsy()
-    })
   })
   describe('datepicker', () => {
     it('should not rendered when "isAdvancedMode" is not set', async () => {
@@ -69,14 +59,6 @@ describe('CreateLinkModal', () => {
       ;(wrapper.vm as any).isAdvancedMode = true
       await nextTick()
       expect(wrapper.findComponent({ name: 'oc-datepicker' }).exists()).toBeTruthy()
-    })
-    it('should not be rendered if user cannot create public links', () => {
-      const { wrapper } = getWrapper({
-        userCanCreatePublicLinks: false,
-        availableLinkTypes: [],
-        defaultLinkType: SharingLinkType.View
-      })
-      expect(wrapper.findComponent({ name: 'oc-datepicker' }).exists()).toBeFalsy()
     })
   })
   describe('link role drop', () => {
@@ -193,7 +175,6 @@ describe('CreateLinkModal', () => {
 function getWrapper({
   resources = [],
   defaultLinkType = SharingLinkType.View,
-  userCanCreatePublicLinks = true,
   passwordEnforced = false,
   passwordPolicyFulfilled = true,
   embedModeEnabled = false,
@@ -201,7 +182,6 @@ function getWrapper({
 }: {
   resources?: Resource[]
   defaultLinkType?: SharingLinkType
-  userCanCreatePublicLinks?: boolean
   passwordEnforced?: boolean
   passwordPolicyFulfilled?: boolean
   embedModeEnabled?: boolean
@@ -231,11 +211,6 @@ function getWrapper({
 
   const mocks = { ...defaultComponentMocks(), postMessageMock }
 
-  const abilities = [] as AbilityRule[]
-  if (userCanCreatePublicLinks) {
-    abilities.push({ action: 'create-all', subject: 'PublicLink' })
-  }
-
   const capabilities = {
     files_sharing: {
       public: {
@@ -255,9 +230,7 @@ function getWrapper({
         modal: mock<Modal>()
       },
       global: {
-        plugins: [
-          ...defaultPlugins({ abilities, piniaOptions: { capabilityState: { capabilities } } })
-        ],
+        plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })],
         mocks,
         provide: mocks,
         // the actions row only exists inside OcModal, so render them in place

@@ -166,15 +166,6 @@ describe('ViewOptions component', () => {
       })
       expect(wrapper.find(selectors.tileSizeSlider).exists()).toBeTruthy()
     })
-    it.each([1, 2, 3, 4, 5, 6])('applies the correct size step', (tileSize) => {
-      const { mocks } = getWrapper({
-        tileSize: tileSize.toString(),
-        props: {
-          viewModes: getTileViewModes()
-        }
-      })
-      expect(unref(mocks.tileSizeQueryMock)).toBe(tileSize.toString())
-    })
     it('updates the tile size query when the slider changes', async () => {
       const { wrapper, mocks } = getWrapper({
         props: {

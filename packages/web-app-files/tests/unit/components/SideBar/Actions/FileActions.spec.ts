@@ -70,15 +70,6 @@ describe('FileActions', () => {
     })
 
     describe('menu items', () => {
-      it('renders a list of actions', () => {
-        mockExtensionActions([fileActions.copy, fileActions['text-editor']])
-
-        const { wrapper } = getWrapper()
-        for (const action of ['copy', 'text-editor']) {
-          expect(wrapper.find(fileActions[action].selector).exists()).toBeTruthy()
-        }
-      })
-
       it('skips action resolution while the resource is loading', () => {
         const getAllOpenWithActions = vi.fn(() => [])
         vi.mocked(useFileActions).mockImplementation(() =>

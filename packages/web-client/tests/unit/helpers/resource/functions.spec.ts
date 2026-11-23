@@ -87,18 +87,6 @@ describe('filterResources', () => {
     ])('should return no file extension when "%s" has whitespace after the last dot', (name) => {
       expect(extractExtensionFromFile({ name } as Resource)).toEqual('')
     })
-    it('should return no file extension for a folder with whitespace after the last dot', () => {
-      expect(extractExtensionFromFile({ name: 'v1.2 docs', type: 'folder' } as Resource)).toEqual(
-        ''
-      )
-    })
-    it.each([
-      { name: 'afolder', isFolder: true },
-      { name: 'afolder', type: 'folder' },
-      { name: 'afolder', type: 'directory' }
-    ])('should return empty string if folder', (resource) => {
-      expect(extractExtensionFromFile(resource as Resource)).toEqual('')
-    })
     it.each([
       { name: 'afolder.with.dot', isFolder: true },
       { name: 'afolder.with.dot', type: 'folder' },

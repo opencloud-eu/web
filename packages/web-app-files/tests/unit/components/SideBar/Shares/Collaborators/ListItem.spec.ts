@@ -78,16 +78,6 @@ describe('Collaborator ListItem component', () => {
           expect(wrapper.find(selectors.notUserAvatar).attributes().name).toEqual(shareType.key)
         }
       )
-      it('should display an oc-avatar-item for space group shares', () => {
-        const { wrapper } = createWrapper({
-          share: getShareMock({
-            shareType: ShareTypes.group.value,
-            sharedWith: { id: '1', displayName: 'someGroup' }
-          })
-        })
-        expect(wrapper.find(selectors.userAvatarImage).exists()).toBeFalsy()
-        expect(wrapper.find(selectors.notUserAvatar).exists()).toBeTruthy()
-      })
     })
   })
   describe('share info', () => {

@@ -2,8 +2,8 @@ import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { ref } from 'vue'
 import { Editor } from '@tiptap/vue-3'
 import { getSchema } from '@tiptap/core'
-import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
-import { useStrategyPlainText } from '../../../../src/editor/composables/strategies/plainText'
+import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../../src/editor/types'
+import { useStrategyPlainText } from '../../../../../src/editor/composables/strategies/plainText'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 vi.mock('vue3-gettext', () => ({

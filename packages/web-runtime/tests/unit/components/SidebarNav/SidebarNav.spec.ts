@@ -43,11 +43,6 @@ describe('OcSidebarNav', () => {
   })
 
   describe('support card', () => {
-    it('renders the support card by default', () => {
-      const { wrapper } = getWrapper()
-      expect(wrapper.find('support-card-stub').exists()).toBeTruthy()
-    })
-
     it('hides the support card when it gets dismissed and remembers it', async () => {
       const { wrapper } = getWrapper()
       await wrapper.findComponent({ name: 'SupportCard' }).vm.$emit('dismiss')

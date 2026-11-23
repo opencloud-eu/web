@@ -22,16 +22,24 @@ describe('setImage', () => {
       })
     })
 
-    it('should be false when canEditImage is false', () => {
-      const space = mock<SpaceResource>({ canEditImage: () => false })
+    it('should be true for an image with preview in a project space when canEditImage is true', () => {
+      const space = mock<SpaceResource>({ canEditImage: () => true, driveType: 'project' })
       getWrapper({
+        currentFolder: mock<Resource>(),
         setup: ({ actions }) => {
-          expect(
-            unref(actions)[0].isVisible({
-              space,
-              resources: [{ id: '1', mimeType: 'image/png' }] as Resource[]
-            })
-          ).toBe(false)
+          expect(unref(actions)[0].isVisible({ space, resources: [getImageResource()] })).toBe(true)
+        }
+      })
+    })
+
+    it('should be false when canEditImage is false', () => {
+      const space = mock<SpaceResource>({ canEditImage: () => false, driveType: 'project' })
+      getWrapper({
+        currentFolder: mock<Resource>(),
+        setup: ({ actions }) => {
+          expect(unref(actions)[0].isVisible({ space, resources: [getImageResource()] })).toBe(
+            false
+          )
         }
       })
     })
@@ -40,8 +48,11 @@ describe('setImage', () => {
       const space = mock<SpaceResource>({ canEditImage: () => true, driveType })
 
       getWrapper({
+        currentFolder: mock<Resource>(),
         setup: ({ actions }) => {
-          expect(unref(actions)[0].isVisible({ space, resources: [space] })).toBe(false)
+          expect(unref(actions)[0].isVisible({ space, resources: [getImageResource()] })).toBe(
+            false
+          )
         }
       })
     })
@@ -97,9 +108,15 @@ describe('setImage', () => {
   })
 })
 
+function getImageResource() {
+  return mock<Resource>({ id: '1', mimeType: 'image/png', hasPreview: () => true })
+}
+
 function getWrapper({
+  currentFolder,
   setup
 }: {
+  currentFolder?: Resource
   setup: (
     instance: ReturnType<typeof useSpaceActionsSetImage>,
     options: {
@@ -125,7 +142,8 @@ function getWrapper({
         provide: mocks,
         pluginOptions: {
           piniaOptions: {
-            userState: { user: { id: '1', onPremisesSamAccountName: 'alice' } as User }
+            userState: { user: { id: '1', onPremisesSamAccountName: 'alice' } as User },
+            resourcesStore: { currentFolder }
           }
         }
       }

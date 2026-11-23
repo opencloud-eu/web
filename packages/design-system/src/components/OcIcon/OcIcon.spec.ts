@@ -41,12 +41,6 @@ describe('OcIcon', () => {
       const { wrapper } = getWrapper({ name: 'settings' })
       expect(wrapper.findComponent(OcInlineSvg).props('src')).toEqual('icons/settings-fill.svg')
     })
-    it('should use the provided name to render the correct fill svg icon', () => {
-      const { wrapper } = getWrapper({ name: 'settings' })
-      const inlineSvg = wrapper.findComponent({ name: 'inline-svg' })
-      expect(inlineSvg.exists()).toBe(true)
-      expect(inlineSvg.attributes('src')).toEqual('icons/settings-fill.svg')
-    })
     it('should use the provided name to render the correct line svg icon', () => {
       const { wrapper } = getWrapper({ name: 'settings', fillType: 'line' })
       const inlineSvg = wrapper.findComponent({ name: 'inline-svg' })

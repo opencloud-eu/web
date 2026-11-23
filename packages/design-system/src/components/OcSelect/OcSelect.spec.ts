@@ -11,7 +11,6 @@ const selectors = {
   clearBtn: '.vs__clear',
   searchInput: '.vs__search',
   ocSpinner: '.oc-spinner',
-  warningMessage: '.oc-text-input-warning',
   errorMessage: '.oc-text-input-danger',
   descriptionMessage: '.oc-text-input-description'
 }

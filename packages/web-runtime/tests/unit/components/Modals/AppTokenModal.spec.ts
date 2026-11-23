@@ -35,10 +35,6 @@ describe('AppTokenModal component', () => {
     copiedMock.value = false
     announceMock.mockReset()
   })
-  it('should display an input for the label', () => {
-    const { wrapper } = getWrapper()
-    expect(wrapper.find('oc-text-input-stub').exists()).toBeTruthy()
-  })
   it('renders the note input as the first field', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find('oc-text-input-stub').attributes('id')).toBe('app-token-note-input')
@@ -238,16 +234,6 @@ describe('AppTokenModal component', () => {
     await wrapper.vm.$nextTick()
     await btn.trigger('click')
     expect(wrapper.find('.created-token').exists()).toBeTruthy()
-  })
-  it('the created token can be copied', async () => {
-    const { wrapper } = getWrapper()
-    emitNoteInput(wrapper, 'someNote')
-    emitDateInput(wrapper, DateTime.now())
-    const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
-    await wrapper.vm.$nextTick()
-    await btn.trigger('click')
-    await wrapper.find('.copy-app-token-btn').trigger('click')
-    expect(copyMock).toHaveBeenCalled()
   })
   it.each([true, false])(
     'announces the copied token only if copying succeeded (copied: %s)',

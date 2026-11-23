@@ -90,7 +90,6 @@ const selectors = {
   search: '#files-global-search',
   noResults: '#no-results',
   searchInput: 'input',
-  searchInputClear: '.oc-search-clear',
   providerListItem: '.provider',
   providerDisplayName: '.provider .display-name',
   providerMoreResultsLink: '.provider .more-results',
@@ -169,7 +168,7 @@ describe('Search Bar portal component', () => {
     providerContacts.previewSearch.search.mockReturnValueOnce({ values: [] })
     wrapper.find(selectors.searchInput).setValue('nothing found')
     await flushPromises()
-    expect(wrapper.find(selectors.noResults)).toBeTruthy()
+    expect(wrapper.find(selectors.noResults).exists()).toBe(true)
   })
   test('stops loading and shows the other results if a provider search fails', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
@@ -1020,32 +1019,15 @@ describe('Search Bar portal component', () => {
     const spyRouterPushStub = wrapper.vm.$router.push
     expect(spyRouterPushStub).not.toHaveBeenCalled()
   })
-  test('focuses search input when pressing "s"', () => {
-    const { wrapper } = getMountedWrapper()
-    const nonEditableTarget = document.createElement('div')
-    document.body.appendChild(nonEditableTarget)
-    nonEditableTarget.focus()
-
-    ;(wrapper.vm as any).onSearchShortcut()
-    nonEditableTarget.remove()
-  })
-  test('focuses search input when pressing "/"', () => {
-    const { wrapper } = getMountedWrapper()
+  test('focuses the search input on the search shortcut', () => {
+    const { wrapper } = getMountedWrapper({ attachTo: document.body })
     const nonEditableTarget = document.createElement('button')
     document.body.appendChild(nonEditableTarget)
     nonEditableTarget.focus()
 
     ;(wrapper.vm as any).onSearchShortcut()
+    expect(document.activeElement).toBe(wrapper.find(selectors.searchInput).element)
     nonEditableTarget.remove()
-  })
-  test('does not focus search input when editable element is already focused', () => {
-    const { wrapper } = getMountedWrapper()
-    const textInput = document.createElement('input')
-    document.body.appendChild(textInput)
-    textInput.focus()
-
-    ;(wrapper.vm as any).onSearchShortcut()
-    textInput.remove()
   })
   test('clears search term on key press esc while input has focus', async () => {
     const { wrapper } = getMountedWrapper()

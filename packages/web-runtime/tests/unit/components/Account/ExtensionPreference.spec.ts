@@ -54,11 +54,7 @@ describe('ExtensionPreference component', () => {
     it('renders extensions as dropdown options', async () => {
       const { wrapper } = getWrapper({ extensionPoint, extensions })
       const options = await getOcSelectOptions(wrapper, selectors.dropdown)
-      expect(options.length).toBe(2)
-      extensions.forEach((extension) => {
-        expect(options.some((option) => option.text() === extension.userPreference.optionLabel))
-          .toBeTruthy
-      })
+      expect(options.map((option) => option.text()).sort()).toEqual(['Foo 1', 'Foo 2'])
     })
     it('renders the default extension first in the options list', async () => {
       const { wrapper } = getWrapper({ extensionPoint, extensions })
@@ -79,12 +75,6 @@ describe('ExtensionPreference component', () => {
       )
       expect(preference.selectedExtensionIds).toEqual([clickedExtension.id])
     })
-  })
-
-  // FIXME: Add tests for extensionPoint with multiple=true as soon as that's fully supported.
-  describe('extensionPoint with multiple=true', () => {
-    it.todo('renders extensions as dropdown options')
-    it.todo('selecting extensions updates the extension preference store')
   })
 })
 

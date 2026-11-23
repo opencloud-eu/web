@@ -1,4 +1,4 @@
-import { useResourceContents } from '../../../src/composables/resources/useResourceContents'
+import { useResourceContents } from '../../../../src/composables/resources/useResourceContents'
 import { mock } from 'vitest-mock-extended'
 import {
   defaultComponentMocks,

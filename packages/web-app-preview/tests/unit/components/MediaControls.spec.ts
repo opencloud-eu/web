@@ -23,10 +23,6 @@ const selectors = {
 
 describe('MediaControls component', () => {
   describe('previous button', () => {
-    it('exists', () => {
-      const { wrapper } = getWrapper()
-      expect(wrapper.find(selectors.controlsPrevious).exists()).toBeTruthy()
-    })
     it('emits "togglePrevious"-event on click', async () => {
       const { wrapper } = getWrapper()
       await wrapper.find(selectors.controlsPrevious).trigger('click')
@@ -34,10 +30,6 @@ describe('MediaControls component', () => {
     })
   })
   describe('next button', () => {
-    it('exists', () => {
-      const { wrapper } = getWrapper()
-      expect(wrapper.find(selectors.controlsNext).exists()).toBeTruthy()
-    })
     it('emits "toggleNext"-event on click', async () => {
       const { wrapper } = getWrapper()
       await wrapper.find(selectors.controlsNext).trigger('click')
@@ -45,10 +37,6 @@ describe('MediaControls component', () => {
     })
   })
   describe('full screen toggle', () => {
-    it('exists', () => {
-      const { wrapper } = getWrapper()
-      expect(wrapper.find(selectors.controlsFullScreen).exists()).toBeTruthy()
-    })
     it('emits "toggleFullScreen"-event on click', async () => {
       const { wrapper } = getWrapper()
       await wrapper.find(selectors.controlsFullScreen).trigger('click')
@@ -57,21 +45,13 @@ describe('MediaControls component', () => {
   })
   describe('size', () => {
     describe('shrink button', () => {
-      it('exists if file is an image', () => {
-        const { wrapper } = getWrapper({ showImageControls: true })
-        expect(wrapper.find(selectors.controlsImageShrink).exists()).toBeTruthy()
-      })
-      it('emits "setZoom"-event on click', async () => {
+      it('emits "setShrink"-event on click', async () => {
         const { wrapper } = getWrapper({ showImageControls: true })
         await wrapper.find(selectors.controlsImageShrink).trigger('click')
-        expect(wrapper.emitted('setShrink')).toBeTruthy
+        expect(wrapper.emitted('setShrink')).toBeTruthy()
       })
     })
     describe('zoom button', () => {
-      it('exists if file is an image', () => {
-        const { wrapper } = getWrapper({ showImageControls: true })
-        expect(wrapper.find(selectors.controlsImageZoom).exists()).toBeTruthy()
-      })
       it('emits "setZoom"-event on click', async () => {
         const { wrapper } = getWrapper({ showImageControls: true })
         await wrapper.find(selectors.controlsImageZoom).trigger('click')
@@ -81,10 +61,6 @@ describe('MediaControls component', () => {
   })
   describe('rotation', () => {
     describe('left button', () => {
-      it('exists if file is an image', () => {
-        const { wrapper } = getWrapper({ showImageControls: true })
-        expect(wrapper.find(selectors.controlsRotateLeft).exists()).toBeTruthy()
-      })
       it('emits "setRotation"-event on click', async () => {
         const { wrapper } = getWrapper({ showImageControls: true })
         await wrapper.find(selectors.controlsRotateLeft).trigger('click')
@@ -92,10 +68,6 @@ describe('MediaControls component', () => {
       })
     })
     describe('right button', () => {
-      it('exists if file is an image', () => {
-        const { wrapper } = getWrapper({ showImageControls: true })
-        expect(wrapper.find(selectors.controlsRotateRight).exists()).toBeTruthy()
-      })
       it('emits "setRotation"-event on click', async () => {
         const { wrapper } = getWrapper({ showImageControls: true })
         await wrapper.find(selectors.controlsRotateRight).trigger('click')
@@ -105,10 +77,6 @@ describe('MediaControls component', () => {
   })
   describe('reset', () => {
     describe('reset button', () => {
-      it('exists if file is an image', () => {
-        const { wrapper } = getWrapper({ showImageControls: true })
-        expect(wrapper.find(selectors.controlsImageReset).exists()).toBeTruthy()
-      })
       it('emits "resetImage"-event on click', async () => {
         const { wrapper } = getWrapper({ showImageControls: true })
         await wrapper.find(selectors.controlsImageReset).trigger('click')
@@ -117,10 +85,6 @@ describe('MediaControls component', () => {
     })
   })
   describe('photo roll toggle', () => {
-    it('exists', () => {
-      const { wrapper } = getWrapper({ showImageControls: true })
-      expect(wrapper.find(selectors.togglePhotoRoll).exists()).toBeTruthy()
-    })
     it('emits "togglePhotoRoll"-event on click', async () => {
       const { wrapper } = getWrapper({ showImageControls: true })
       await wrapper.find(selectors.togglePhotoRoll).trigger('click')
