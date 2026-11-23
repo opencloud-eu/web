@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show the loading spinner on the public upload page [[#4572](https://github.com/opencloud-eu/web/pull/4572)]
 - fix: don't define the mail attachment string twice [[#4566](https://github.com/opencloud-eu/web/pull/4566)]
 - fix: skip disabled resources when selecting all via keyboard [[#4522](https://github.com/opencloud-eu/web/pull/4522)]
 - fix: limit keyboard selection in the spaces overview to the current page [[#4530](https://github.com/opencloud-eu/web/pull/4530)]
@@ -44,6 +45,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update vue monorepo to v3.5.46 [[#4564](https://github.com/opencloud-eu/web/pull/4564)]
 - chore(deps): update hocuspocus monorepo to v4.9.0 [[#4565](https://github.com/opencloud-eu/web/pull/4565)]
 - chore(deps): update dependency focus-trap to v8.2.6 [[#4576](https://github.com/opencloud-eu/web/pull/4576)]
 - chore(deps): update dependency dompurify to v3.5.0 [[#4577](https://github.com/opencloud-eu/web/pull/4577)]
