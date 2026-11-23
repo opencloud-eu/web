@@ -8,7 +8,6 @@ describe('Resource Upload Component', () => {
   describe('file upload', () => {
     it('should render component', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.exists()).toBeTruthy()
       expect(wrapper.html()).toMatchSnapshot()
     })
   })
@@ -16,7 +15,6 @@ describe('Resource Upload Component', () => {
   describe('folder upload', () => {
     it('should render component', () => {
       const { wrapper } = getWrapper({ isFolder: true })
-      expect(wrapper.exists()).toBeTruthy()
       expect(wrapper.html()).toMatchSnapshot()
     })
   })

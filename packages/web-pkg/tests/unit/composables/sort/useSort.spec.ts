@@ -6,10 +6,6 @@ import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 describe('useSort', () => {
-  it('should be valid', () => {
-    expect(useSort).toBeDefined()
-  })
-
   it('does not sort if no sort field was given', () => {
     getComposableWrapper(() => {
       const input: SortOptions<any> = {

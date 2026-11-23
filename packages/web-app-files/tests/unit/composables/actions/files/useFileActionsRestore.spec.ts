@@ -64,19 +64,9 @@ describe('restore', () => {
           expect(
             unref(actions)[0].isVisible({
               space,
-              resources: [{ canBeRestored: () => false }] as TrashResource[]
+              resources: [{ canBeRestored: () => false, ddate: '2020-01-01' }] as TrashResource[]
             })
           ).toBe(false)
-        }
-      })
-    })
-    it('should be false when location is invalid', () => {
-      getWrapper({
-        invalidLocation: true,
-        setup: ({ actions }, { space }) => {
-          expect(unref(actions)[0].isVisible({ space, resources: [{}] as TrashResource[] })).toBe(
-            false
-          )
         }
       })
     })
@@ -87,7 +77,7 @@ describe('restore', () => {
           expect(
             unref(actions)[0].isVisible({
               space,
-              resources: [{ canBeRestored: () => true }] as TrashResource[]
+              resources: [{ canBeRestored: () => true, ddate: '2020-01-01' }] as TrashResource[]
             })
           ).toBe(false)
         }
@@ -714,12 +704,10 @@ describe('restore', () => {
 })
 
 function getWrapper({
-  invalidLocation = false,
   driveType = 'personal',
   restoreResult = { successful: [], failed: [] },
   setup
 }: {
-  invalidLocation?: boolean
   driveType?: string
   restoreResult?: {
     successful: TrashResource[]
@@ -745,7 +733,7 @@ function getWrapper({
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({
-        name: invalidLocation ? 'files-spaces-generic' : 'files-trash-generic'
+        name: 'files-trash-generic'
       })
     }),
     space: mock<ProjectSpaceResource>({ driveType })

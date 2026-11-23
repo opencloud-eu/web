@@ -1,15 +1,15 @@
 import { vi, describe, it, expect } from 'vitest'
 import { ref } from 'vue'
 import { getSchema } from '@tiptap/core'
-import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
+import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../../src/editor/types'
 
 vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (text: string) => text })
 }))
 
-import { useStrategyMarkdown } from '../../../../src/editor/composables/strategies/markdown'
-import { createMockEditor } from '../composables/helpers'
-import type { EditorAction } from '../../../../src/editor/composables/useEditorActions'
+import { useStrategyMarkdown } from '../../../../../src/editor/composables/strategies/markdown'
+import { createMockEditor } from '../helpers'
+import type { EditorAction } from '../../../../../src/editor/composables/useEditorActions'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createStrategy() {

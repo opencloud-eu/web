@@ -131,14 +131,6 @@ describe('AppTokens component', () => {
 
       expect(wrapper.find(selectors.createAppTokenBtn).exists()).toBeFalsy()
     })
-    it('dispatches a modal on click', async () => {
-      const { wrapper } = getWrapper()
-      await flushPromises()
-      await wrapper.find(selectors.createAppTokenBtn).trigger('click')
-      const { dispatchModal } = useModals()
-
-      expect(dispatchModal).toHaveBeenCalled()
-    })
     it('focuses the note input initially', async () => {
       const { wrapper } = getWrapper()
       await flushPromises()

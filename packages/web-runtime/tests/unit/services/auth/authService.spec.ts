@@ -296,7 +296,9 @@ describe('AuthService', () => {
         })
       })
 
-      initAuthService({ authService })
+      const configStore = useConfigStore()
+      configStore.options = { embed: { enabled: true, delegateAuthentication: false } }
+      initAuthService({ authService, configStore })
 
       await authService.initializeContext(mock<RouteLocation>({}))
 
@@ -336,7 +338,9 @@ describe('AuthService', () => {
         })
       })
 
-      initAuthService({ authService })
+      const configStore = useConfigStore()
+      configStore.options = { embed: { enabled: false, delegateAuthentication: true } }
+      initAuthService({ authService, configStore })
 
       await authService.initializeContext(mock<RouteLocation>({}))
 

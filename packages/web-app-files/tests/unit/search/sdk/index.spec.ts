@@ -1,5 +1,5 @@
-import { SDKSearch } from '../../../src/search'
-import { searchLimit } from '../../../src/search/sdk/list'
+import { SDKSearch } from '../../../../src/search'
+import { searchLimit } from '../../../../src/search/sdk/list'
 import { mock } from 'vitest-mock-extended'
 import { createTestingPinia, writable } from '@opencloud-eu/web-test-helpers'
 import { ConfigStore, useCapabilityStore } from '@opencloud-eu/web-pkg'

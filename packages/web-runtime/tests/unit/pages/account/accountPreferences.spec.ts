@@ -7,14 +7,7 @@ import {
   mount
 } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import {
-  Extension,
-  ExtensionPoint,
-  useExtensionRegistry,
-  useMessages,
-  useModals,
-  useResourcesStore
-} from '@opencloud-eu/web-pkg'
+import { useMessages, useModals, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { LanguageOption, SettingsBundle, SettingsValue } from '../../../../src/helpers/settings'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { VueWrapper, flushPromises } from '@vue/test-utils'
@@ -349,16 +342,12 @@ function getWrapper({
   user = mock<User>({ memberOf: [] }),
   capabilities = {},
   spaces = [],
-  isUserContext = true,
-  extensionPoints = [],
-  extensions = []
+  isUserContext = true
 }: {
   user?: User
   capabilities?: Partial<Capabilities['capabilities']>
   spaces?: SpaceResource[]
   isUserContext?: boolean
-  extensionPoints?: ExtensionPoint<Extension>[]
-  extensions?: Extension[]
 } = {}) {
   const plugins = defaultPlugins({
     piniaOptions: {
@@ -370,10 +359,6 @@ function getWrapper({
       capabilityState: { capabilities }
     }
   })
-
-  const { getExtensionPoints, requestExtensions } = useExtensionRegistry()
-  vi.mocked(getExtensionPoints).mockReturnValue(extensionPoints)
-  vi.mocked(requestExtensions).mockReturnValue(extensions)
 
   const mocks = {
     ...defaultComponentMocks(),

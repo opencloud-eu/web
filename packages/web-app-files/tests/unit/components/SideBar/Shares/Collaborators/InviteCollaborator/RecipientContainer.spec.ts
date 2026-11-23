@@ -3,10 +3,6 @@ import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-clie
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { CapabilityStore } from '@opencloud-eu/web-pkg'
 
-vi.mock('../../../../../../../src/helpers/user/avatarUrl', () => ({
-  avatarUrl: vi.fn().mockReturnValue('avatarUrl')
-}))
-
 const getRecipient = (shareType: number = ShareTypes.user.value): CollaboratorAutoCompleteItem => ({
   displayName: 'Albert Einstein',
   id: 'einstein',

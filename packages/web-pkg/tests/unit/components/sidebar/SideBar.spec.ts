@@ -86,7 +86,6 @@ function createWrapper({
     mocks,
     wrapper: shallowMount(SideBar, {
       props: {
-        isOpen: true,
         loading: false,
         availablePanels: [],
         panelContext: mock<SideBarPanelContext<any, any, any>>(),

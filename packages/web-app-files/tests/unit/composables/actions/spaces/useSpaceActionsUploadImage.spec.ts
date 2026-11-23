@@ -6,13 +6,7 @@ import {
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
-import { useSpaceHelpers } from '@opencloud-eu/web-pkg'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-
-vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
-  ...(await importOriginal<any>()),
-  useSpaceHelpers: vi.fn()
-}))
+import { SpaceResource } from '@opencloud-eu/web-client'
 
 describe('uploadImage', () => {
   describe('isVisible property', () => {
@@ -37,7 +31,7 @@ describe('uploadImage', () => {
       })
     })
     it('should be false if canEditImage is false', () => {
-      const spaceMock = mock<SpaceResource>({ canEditImage: () => false })
+      const spaceMock = mock<SpaceResource>({ driveType: 'project', canEditImage: () => false })
 
       getWrapper({
         setup: ({ actions }) => {
@@ -60,10 +54,6 @@ function getWrapper({
     { clientService }: { clientService: ReturnType<typeof defaultComponentMocks>['$clientService'] }
   ) => void
 }) {
-  vi.mocked(useSpaceHelpers).mockReturnValue({
-    getDefaultMetaFolder: () => new Promise(() => mock<Resource>())
-  })
-
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
@@ -74,13 +64,6 @@ function getWrapper({
     wrapper: getComposableWrapper(
       () => {
         const instance = useSpaceActionsUploadImage()
-        unref(instance.actions)[0].handler({
-          resources: [
-            mock<SpaceResource>({
-              id: '1fe58d8b-aa69-4c22-baf7-97dd57479f22'
-            })
-          ]
-        })
         setup(instance, { clientService: mocks.$clientService })
       },
       {

@@ -1,4 +1,4 @@
-import { urlJoin } from '@opencloud-eu/web-client'
+import { urlJoin } from '../../../src/utils'
 
 describe('proper-url-join', () => {
   it.each([

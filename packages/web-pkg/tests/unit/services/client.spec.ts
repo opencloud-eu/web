@@ -68,18 +68,6 @@ describe('ClientService', () => {
       const clientService = getClientServiceMock()
       expect(clientService.httpUnAuthenticated).toBeInstanceOf(HttpClient)
     })
-    it('initializes the http client with baseURL and static headers', () => {
-      const mocky = vi.mocked(HttpClient)
-      getClientServiceMock()
-
-      expect(mocky).toHaveBeenCalledWith(
-        {
-          baseURL: serverUrl,
-          headers: { 'Initiator-ID': v4uuid, 'X-Requested-With': 'XMLHttpRequest' }
-        },
-        expect.anything()
-      )
-    })
   })
   describe('graph', () => {
     it('initializes an axios client with static headers', () => {

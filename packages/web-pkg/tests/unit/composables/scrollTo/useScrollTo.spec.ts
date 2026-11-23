@@ -14,9 +14,6 @@ const mockFilesTopBar = {
 }
 
 describe('useScrollTo', () => {
-  it('should be valid', () => {
-    expect(useScrollTo).toBeDefined()
-  })
   describe('method "scrollToResource"', () => {
     const getHTMLPageObject = () => ({
       getBoundingClientRect: vi.fn(() => ({ bottom: 300, top: 0 })),

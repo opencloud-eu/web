@@ -5,8 +5,7 @@ describe('OcSearchBar', () => {
   const selectors = {
     searchButton: '.oc-search-button',
     searchInput: '.oc-search-input',
-    searchButtonWrapper: '.oc-search-button-wrapper',
-    searchClearButton: '.oc-search-clear'
+    searchButtonWrapper: '.oc-search-button-wrapper'
   }
   it('should have an id', () => {
     const wrapper = getWrapper()
@@ -53,8 +52,7 @@ describe('OcSearchBar', () => {
     })
     it('should not render icon if false', () => {
       const wrapper = getWrapper({ icon: false })
-      const iconStub = wrapper.find('oc-icon-stub[icon="mdi-icon"]')
-      expect(iconStub.exists()).toBeFalsy()
+      expect(wrapper.find('oc-icon-stub').exists()).toBeFalsy()
     })
   })
   describe('loading prop', () => {

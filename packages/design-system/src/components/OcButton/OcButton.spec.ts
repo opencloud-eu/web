@@ -5,7 +5,6 @@ describe('OcButton', () => {
   it('should display slot html', () => {
     const wrapper = getWrapperWithTestSlot()
     const slot = wrapper.find('p')
-    expect(slot).toBeTruthy()
     expect(slot.attributes('class')).toBe('text')
     expect(slot.text()).toBe('Test button')
   })

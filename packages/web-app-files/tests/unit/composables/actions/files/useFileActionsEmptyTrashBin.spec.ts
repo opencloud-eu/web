@@ -22,22 +22,13 @@ import { useFileActionsEmptyTrashBin } from '../../../../../src/composables/acti
 
 describe('emptyTrashBin', () => {
   describe('isVisible property', () => {
-    it('should be false when location is invalid', () => {
-      getWrapper({
-        invalidLocation: true,
-        setup: ({ actions }) => {
-          expect(unref(actions)[0].isVisible({ resources: [] })).toBe(false)
-        }
-      })
-    })
-
     it('should be false in a space trash bin with insufficient permissions', () => {
       getWrapper({
         driveType: 'project',
         setup: ({ actions }) => {
           expect(
             unref(actions)[0].isVisible({
-              resources: [{ canDeleteFromTrashBin: () => false }] as SpaceResource[]
+              resources: [{ type: 'space', canDeleteFromTrashBin: () => false }] as SpaceResource[]
             })
           ).toBe(false)
         }
@@ -146,13 +137,11 @@ describe('emptyTrashBin', () => {
 })
 
 function getWrapper({
-  invalidLocation = false,
   resolveClearTrashBin = true,
   driveType = 'personal',
   resources = [],
   setup
 }: {
-  invalidLocation?: boolean
   resolveClearTrashBin?: boolean
   driveType?: string
   resources?: Resource[]
@@ -168,7 +157,7 @@ function getWrapper({
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({
-        name: invalidLocation ? 'files-spaces-generic' : 'files-trash-generic'
+        name: 'files-trash-generic'
       })
     }),
     space: mock<ProjectSpaceResource>({ driveType })

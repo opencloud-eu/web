@@ -31,7 +31,6 @@ describe('NotFoundMessage', () => {
       const homeButton = wrapper.find(selectors.homeButton)
 
       expect(homeButton.exists()).toBeTruthy()
-      expect(homeButton.find('span')).toBeTruthy()
       expect(homeButton.find('span').text()).toBe('Go to »Personal« page')
     })
 
@@ -106,7 +105,6 @@ describe('NotFoundMessage', () => {
       const reloadLinkButton = wrapper.find(selectors.reloadLinkButton)
 
       expect(reloadLinkButton.exists()).toBeTruthy()
-      expect(reloadLinkButton.find('span')).toBeTruthy()
       expect(reloadLinkButton.find('span').text()).toBe('Reload public link')
     })
 

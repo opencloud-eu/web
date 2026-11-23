@@ -2,14 +2,7 @@ import AccountInformation from '../../../../src/pages/account/accountInformation
 import { flushPromises } from '@vue/test-utils'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import {
-  Extension,
-  ExtensionPoint,
-  OptionsConfig,
-  useExtensionRegistry,
-  useMessages,
-  useUserStore
-} from '@opencloud-eu/web-pkg'
+import { OptionsConfig, useMessages, useUserStore } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { Graph } from '@opencloud-eu/web-client/graph'
 
@@ -157,10 +150,9 @@ describe('account information page', () => {
         expect(wrapper.find('[data-testid="logout"]').exists()).toBe(true)
       })
       it("shouldn't render the logout from active devices if logoutUrl isn't provided", () => {
-        const { wrapper } = getWrapper()
+        const { wrapper } = getWrapper({ logoutUrl: null })
 
-        ;(wrapper.vm as any).logoutUrl = undefined
-        expect(wrapper.find('[data-testid="logout"]').exists()).toBe(true)
+        expect(wrapper.find('[data-testid="logout"]').exists()).toBe(false)
       })
       it('should use url from configuration manager', () => {
         const { wrapper } = getWrapper()
@@ -178,8 +170,7 @@ function getWrapper({
   accountEditLink = undefined,
   isPublicLinkContext = false,
   isUserContext = true,
-  extensionPoints = [],
-  extensions = [],
+  logoutUrl = 'https://account-manager/logout',
   getMe
 }: {
   user?: User
@@ -187,8 +178,7 @@ function getWrapper({
   accountEditLink?: OptionsConfig['accountEditLink']
   isPublicLinkContext?: boolean
   isUserContext?: boolean
-  extensionPoints?: ExtensionPoint<Extension>[]
-  extensions?: Extension[]
+  logoutUrl?: OptionsConfig['logoutUrl']
   getMe?: Graph['users']['getMe']
 } = {}) {
   const plugins = defaultPlugins({
@@ -200,16 +190,12 @@ function getWrapper({
       },
       configState: {
         options: {
-          logoutUrl: 'https://account-manager/logout',
+          ...(logoutUrl && { logoutUrl }),
           ...(accountEditLink && { accountEditLink })
         }
       }
     }
   })
-
-  const { getExtensionPoints, requestExtensions } = useExtensionRegistry()
-  vi.mocked(getExtensionPoints).mockReturnValue(extensionPoints)
-  vi.mocked(requestExtensions).mockReturnValue(extensions)
 
   const mocks = {
     ...defaultComponentMocks(),

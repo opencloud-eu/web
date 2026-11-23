@@ -3,10 +3,6 @@ import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { ref } from 'vue'
 
 describe('useKeyboardActions', () => {
-  it('should be valid', () => {
-    expect(useKeyboardActions).toBeDefined()
-  })
-
   it('should bind keys', () => {
     const wrapper = getWrapper()
     const { keyboardActions } = wrapper.vm

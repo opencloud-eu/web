@@ -3,7 +3,6 @@ import OcColorInput from '../OcColorInput/OcColorInput.vue'
 
 describe('OcColorInput', () => {
   const selectors = {
-    inputField: '.oc-color-input',
     inputMessage: '.oc-color-input-message span',
     descriptionMessage: '.oc-color-input-description',
     errorMessage: '.oc-color-input-danger'

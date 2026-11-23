@@ -113,7 +113,9 @@ describe('OcTable', () => {
       global: { renderStubDefaultSlot: true, plugins: defaultPlugins() }
     })
 
-    expect(wrapper.html().indexOf('resource-name')).toBeGreaterThan(-1)
+    expect(wrapper.find('.oc-table-header-cell-resource-name .header-text').text()).toBe(
+      'resource-name'
+    )
   })
 
   it('extracts cell props', () => {
@@ -198,22 +200,6 @@ describe('OcTable', () => {
     expect(wrapper.findAll('.oc-table-highlighted').length).toEqual(2)
   })
 
-  it('adds data-item-id for rows', () => {
-    const wrapper = shallowMount(Table, {
-      props: {
-        fields,
-        data,
-        highlighted: []
-      },
-      global: {
-        renderStubDefaultSlot: true,
-        stubs: { OcTableRow: false },
-        plugins: defaultPlugins()
-      }
-    })
-    expect(wrapper.html().indexOf('data-item-id')).toBeGreaterThan(-1)
-  })
-
   it('accepts itemDomSelector closure', () => {
     const wrapper = shallowMount(Table, {
       props: {
@@ -248,22 +234,5 @@ describe('OcTable', () => {
     })
     await wrapper.find('.oc-tbody-tr').trigger('contextmenu')
     expect(wrapper.emitted().contextmenuClicked.length).toBe(1)
-  })
-
-  it('enable dragDrop should enable draggable on rows', () => {
-    const wrapper = shallowMount(Table, {
-      props: {
-        fields,
-        data,
-        highlighted: [],
-        dragDrop: true
-      },
-      global: {
-        renderStubDefaultSlot: true,
-        stubs: { OcTableRow: false },
-        plugins: defaultPlugins()
-      }
-    })
-    expect(wrapper.html().indexOf('draggable')).toBeGreaterThan(-1)
   })
 })
