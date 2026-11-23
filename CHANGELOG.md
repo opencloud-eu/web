@@ -1,10 +1,14 @@
 # Changelog
 
-## [8.4.0](https://github.com/opencloud-eu/web/releases/tag/v8.4.0) - 2026-11-23
+## [9.0.0](https://github.com/opencloud-eu/web/releases/tag/v9.0.0) - 2026-11-23
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @butonic, @flash7777, @kulmann, @v-scharf, @xhzeem
+
+### 💥 Breaking changes
+
+- fix: keep view options in local storage only [[#4571](https://github.com/opencloud-eu/web/pull/4571)]
 
 ### 🔒 Security
 
