@@ -11,6 +11,10 @@
 - fix: sanitize inlined SVGs [[#4559](https://github.com/opencloud-eu/web/pull/4559)]
 - chore: check translations for markup after compiling [[#4561](https://github.com/opencloud-eu/web/pull/4561)]
 
+### ✅ Tests
+
+- test(e2e): add favorites tests for spaces and shares [[#4563](https://github.com/opencloud-eu/web/pull/4563)]
+
 ### 🐛 Bug Fixes
 
 - fix: show the loading spinner on the public upload page [[#4572](https://github.com/opencloud-eu/web/pull/4572)]
