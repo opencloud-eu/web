@@ -89,53 +89,44 @@ describe('useLoadAvatars', () => {
       mockGetUserPhoto.mockResolvedValue(mockBlob)
       URL.createObjectURL = vi.fn(() => 'blob:http://example.com/avatar')
 
-      await getWrapper({
-        setup: async ({ enqueueAvatar }) => {
-          const avatarsStore = useAvatarsStore()
-          const userId = 'user123'
+      const { instance } = getWrapper()
+      const avatarsStore = useAvatarsStore()
+      const userId = 'user123'
 
-          enqueueAvatar(userId)
-          await avatarsStore.pendingAvatarsRequests.get(userId)
+      instance.enqueueAvatar(userId)
+      await avatarsStore.pendingAvatarsRequests.get(userId)
 
-          expect(avatarsStore.getAvatar(userId)).toBe('blob:http://example.com/avatar')
-          expect(mockGetUserPhoto).toHaveBeenCalledWith(userId, {
-            responseType: 'blob',
-            signal: expect.any(AbortSignal)
-          })
-        }
+      expect(avatarsStore.getAvatar(userId)).toBe('blob:http://example.com/avatar')
+      expect(mockGetUserPhoto).toHaveBeenCalledWith(userId, {
+        responseType: 'blob',
+        signal: expect.any(AbortSignal)
       })
     })
 
     it('should handle 404 errors and set avatar to null', async () => {
       mockGetUserPhoto.mockRejectedValue({ response: { status: 404 } })
 
-      await getWrapper({
-        setup: async ({ enqueueAvatar }) => {
-          const avatarsStore = useAvatarsStore()
-          const userId = 'user123'
+      const { instance } = getWrapper()
+      const avatarsStore = useAvatarsStore()
+      const userId = 'user123'
 
-          enqueueAvatar(userId)
-          await avatarsStore.pendingAvatarsRequests.get(userId)
+      instance.enqueueAvatar(userId)
+      await avatarsStore.pendingAvatarsRequests.get(userId)
 
-          expect(avatarsStore.getAvatar(userId)).toBe(null)
-        }
-      })
+      expect(avatarsStore.getAvatar(userId)).toBe(null)
     })
 
     it('should clean up abort controller after request completes', async () => {
       mockGetUserPhoto.mockResolvedValue(new Blob())
 
-      await getWrapper({
-        setup: async ({ enqueueAvatar }) => {
-          const avatarsStore = useAvatarsStore()
-          const userId = 'user123'
+      const { instance } = getWrapper()
+      const avatarsStore = useAvatarsStore()
+      const userId = 'user123'
 
-          enqueueAvatar(userId)
-          await avatarsStore.pendingAvatarsRequests.get(userId)
+      instance.enqueueAvatar(userId)
+      await avatarsStore.pendingAvatarsRequests.get(userId)
 
-          expect(avatarsStore.abortControllers.has(userId)).toBe(false)
-        }
-      })
+      expect(avatarsStore.abortControllers.has(userId)).toBe(false)
     })
   })
 
@@ -172,19 +163,16 @@ describe('useLoadAvatars', () => {
         () => new Promise((_, reject) => setTimeout(() => reject({ name: 'AbortError' }), 100))
       )
 
-      await getWrapper({
-        setup: async ({ enqueueAvatar, cancelAvatar }) => {
-          const avatarsStore = useAvatarsStore()
-          const userId = 'user123'
+      const { instance } = getWrapper()
+      const avatarsStore = useAvatarsStore()
+      const userId = 'user123'
 
-          enqueueAvatar(userId)
-          cancelAvatar(userId)
+      instance.enqueueAvatar(userId)
+      instance.cancelAvatar(userId)
 
-          await new Promise((resolve) => setTimeout(resolve, 150))
+      await new Promise((resolve) => setTimeout(resolve, 150))
 
-          expect(avatarsStore.getAvatar(userId)).toBeUndefined()
-        }
-      })
+      expect(avatarsStore.getAvatar(userId)).toBeUndefined()
     })
 
     it('should handle CanceledError from axios', async () => {
@@ -192,35 +180,30 @@ describe('useLoadAvatars', () => {
         () => new Promise((_, reject) => setTimeout(() => reject({ name: 'CanceledError' }), 100))
       )
 
-      await getWrapper({
-        setup: async ({ enqueueAvatar, cancelAvatar }) => {
-          const avatarsStore = useAvatarsStore()
-          const userId = 'user123'
+      const { instance } = getWrapper()
+      const avatarsStore = useAvatarsStore()
+      const userId = 'user123'
 
-          enqueueAvatar(userId)
-          cancelAvatar(userId)
+      instance.enqueueAvatar(userId)
+      instance.cancelAvatar(userId)
 
-          await new Promise((resolve) => setTimeout(resolve, 150))
+      await new Promise((resolve) => setTimeout(resolve, 150))
 
-          expect(avatarsStore.getAvatar(userId)).toBeUndefined()
-        }
-      })
+      expect(avatarsStore.getAvatar(userId)).toBeUndefined()
     })
   })
 })
 
 function getWrapper({
   setup
-}: {
-  setup: (instance: ReturnType<typeof useLoadAvatars>) => void | Promise<void>
-}) {
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useLoadAvatars()
-        setup(instance)
-      },
-      { pluginOptions: { pinia: false } }
-    )
-  }
+}: { setup?: (instance: ReturnType<typeof useLoadAvatars>) => void } = {}) {
+  let instance: ReturnType<typeof useLoadAvatars>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useLoadAvatars()
+      setup?.(instance)
+    },
+    { pluginOptions: { pinia: false } }
+  )
+  return { wrapper, instance }
 }

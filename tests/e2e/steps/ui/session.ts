@@ -7,10 +7,7 @@ import { listenSSE } from '../../support/environment/sse'
 import { expect } from '@playwright/test'
 
 async function createNewSession(world: World, stepUser: string) {
-  const { page } = await world.actorsEnvironment.createActor({
-    key: stepUser,
-    namespace: world.actorsEnvironment.generateNamespace(stepUser)
-  })
+  const { page } = await world.actorsEnvironment.createActor({ key: stepUser })
   return new objects.runtime.Session({ page })
 }
 

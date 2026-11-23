@@ -144,8 +144,6 @@ export class Resource {
     await this.#page.goto(startUrl)
   }
 
-  async open(): Promise<void> {}
-
   async restoreVersion(args: Omit<po.resourceVersionArgs, 'page'>): Promise<void> {
     const startUrl = this.#page.url()
     await po.restoreResourceVersion({ ...args, page: this.#page })
@@ -240,21 +238,6 @@ export class Resource {
 
   getResourceSearchItemLocator(resource: string) {
     return po.getResourceSearchItemLocator({ page: this.#page, resource })
-  }
-
-  getDisplayedResources(args: Omit<po.getDisplayedResourcesArgs, 'page'>): Promise<string[]> {
-    switch (args.keyword) {
-      case 'files list':
-        return po.getDisplayedResourcesFromFilesList(this.#page)
-      case 'search list':
-        return po.getDisplayedResourcesFromSearch(this.#page)
-      case 'Shares':
-        return po.getDisplayedResourcesFromShares(this.#page)
-      case 'trashbin':
-        return po.getDisplayedResourcesFromTrashbin(this.#page)
-      default:
-        throw new Error('Unknown keyword')
-    }
   }
 
   async openFolder(resource: string): Promise<void> {

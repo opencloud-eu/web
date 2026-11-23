@@ -3,7 +3,6 @@ import { Token, User } from '../types'
 import { appConfig } from '../../playwright.config'
 
 export type TokenProviderType = 'keycloak' | null | undefined
-export type TokenEnvironmentType = KeycloakTokenEnvironment | IdpTokenEnvironment
 
 export function TokenEnvironmentFactory(type?: TokenProviderType) {
   switch (type) {
@@ -25,11 +24,6 @@ class IdpTokenEnvironment {
     store.set(user.username, token)
     return token
   }
-
-  deleteToken({ user }: { user: User }): void {
-    const store = appConfig.federatedServer ? federatedTokenStore : createdTokenStore
-    store.delete(user.id)
-  }
 }
 
 class KeycloakTokenEnvironment {
@@ -40,9 +34,5 @@ class KeycloakTokenEnvironment {
   setToken({ user, token }: { user: User; token: Token }): Token {
     keycloakTokenStore.set(user.id, token)
     return token
-  }
-
-  deleteToken({ user }: { user: User }): void {
-    keycloakTokenStore.delete(user.id)
   }
 }

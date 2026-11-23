@@ -328,80 +328,71 @@ describe('spaces', () => {
     })
   })
   describe('method "loadSpaces"', () => {
-    it('correctly loads personal and project spaces', () => {
-      getWrapper({
-        setup: async (instance) => {
-          const spaces = [mock<SpaceResource>({ id: '1' })]
-          const graphClient = mockDeep<Graph>()
-          graphClient.drives.listMyDrives.mockResolvedValue(spaces)
-          await instance.loadSpaces({ graphClient })
+    it('correctly loads personal and project spaces', async () => {
+      const { instance } = getWrapper()
+      const spaces = [mock<SpaceResource>({ id: '1' })]
+      const graphClient = mockDeep<Graph>()
+      graphClient.drives.listMyDrives.mockResolvedValue(spaces)
+      await instance.loadSpaces({ graphClient })
 
-          expect(graphClient.drives.listMyDrives).toHaveBeenCalledTimes(2)
-          expect(graphClient.drives.listMyDrives).toHaveBeenNthCalledWith(
-            1,
-            {
-              orderBy: 'name asc',
-              filter: 'driveType eq personal'
-            },
-            expect.anything()
-          )
-          expect(graphClient.drives.listMyDrives).toHaveBeenNthCalledWith(
-            2,
-            {
-              orderBy: 'name asc',
-              filter: 'driveType eq project'
-            },
-            expect.anything()
-          )
-          expect(instance.spaces.length).toBe(2)
-          expect(instance.spacesLoading).toBeFalsy()
-        }
-      })
+      expect(graphClient.drives.listMyDrives).toHaveBeenCalledTimes(2)
+      expect(graphClient.drives.listMyDrives).toHaveBeenNthCalledWith(
+        1,
+        {
+          orderBy: 'name asc',
+          filter: 'driveType eq personal'
+        },
+        expect.anything()
+      )
+      expect(graphClient.drives.listMyDrives).toHaveBeenNthCalledWith(
+        2,
+        {
+          orderBy: 'name asc',
+          filter: 'driveType eq project'
+        },
+        expect.anything()
+      )
+      expect(instance.spaces.length).toBe(2)
+      expect(instance.spacesLoading).toBeFalsy()
     })
   })
   describe('method "loadMountPoints"', () => {
-    it('correctly loads mount points', () => {
-      getWrapper({
-        setup: async (instance) => {
-          const spaces = [mock<SpaceResource>({ id: '1' })]
-          const graphClient = mockDeep<Graph>()
-          graphClient.drives.listMyDrives.mockResolvedValue(spaces)
-          await instance.loadMountPoints({ graphClient })
+    it('correctly loads mount points', async () => {
+      const { instance } = getWrapper()
+      const spaces = [mock<SpaceResource>({ id: '1' })]
+      const graphClient = mockDeep<Graph>()
+      graphClient.drives.listMyDrives.mockResolvedValue(spaces)
+      await instance.loadMountPoints({ graphClient })
 
-          expect(graphClient.drives.listMyDrives).toHaveBeenCalledTimes(1)
-          expect(graphClient.drives.listMyDrives).toHaveBeenCalledWith(
-            {
-              orderBy: 'name asc',
-              filter: 'driveType eq mountpoint'
-            },
-            expect.anything()
-          )
-          expect(instance.spaces.length).toBe(1)
-          expect(instance.mountPointsInitialized).toBeTruthy()
-        }
-      })
+      expect(graphClient.drives.listMyDrives).toHaveBeenCalledTimes(1)
+      expect(graphClient.drives.listMyDrives).toHaveBeenCalledWith(
+        {
+          orderBy: 'name asc',
+          filter: 'driveType eq mountpoint'
+        },
+        expect.anything()
+      )
+      expect(instance.spaces.length).toBe(1)
+      expect(instance.mountPointsInitialized).toBeTruthy()
     })
   })
   describe('method "reloadProjectSpaces"', () => {
-    it('correctly reloads project spaces', () => {
-      getWrapper({
-        setup: async (instance) => {
-          const spaces = [mock<SpaceResource>({ id: '1' })]
-          const graphClient = mockDeep<Graph>()
-          graphClient.drives.listMyDrives.mockResolvedValue(spaces)
-          await instance.reloadProjectSpaces({ graphClient })
+    it('correctly reloads project spaces', async () => {
+      const { instance } = getWrapper()
+      const spaces = [mock<SpaceResource>({ id: '1' })]
+      const graphClient = mockDeep<Graph>()
+      graphClient.drives.listMyDrives.mockResolvedValue(spaces)
+      await instance.reloadProjectSpaces({ graphClient })
 
-          expect(graphClient.drives.listMyDrives).toHaveBeenCalledTimes(1)
-          expect(graphClient.drives.listMyDrives).toHaveBeenCalledWith(
-            {
-              orderBy: 'name asc',
-              filter: 'driveType eq project'
-            },
-            expect.anything()
-          )
-          expect(instance.spaces.length).toBe(1)
-        }
-      })
+      expect(graphClient.drives.listMyDrives).toHaveBeenCalledTimes(1)
+      expect(graphClient.drives.listMyDrives).toHaveBeenCalledWith(
+        {
+          orderBy: 'name asc',
+          filter: 'driveType eq project'
+        },
+        expect.anything()
+      )
+      expect(instance.spaces.length).toBe(1)
     })
   })
   describe('method "getSpaceMembers"', () => {
@@ -431,37 +422,36 @@ describe('spaces', () => {
     })
   })
   describe('method "getMountPointForSpace"', () => {
-    it('returns a matching mount point', () => {
-      getWrapper({
-        setup: async (instance) => {
-          const graphClient = mockDeep<Graph>()
-          const space = mock<SpaceResource>({ id: '1', driveType: 'project' })
-          const mountpoints = [
-            mock<SpaceResource>({
-              id: '2',
-              driveType: 'mountpoint',
-              root: { remoteItem: { id: space.id } }
-            })
-          ]
-          instance.spaces = mountpoints
-          instance.mountPointsInitialized = true
-          const mountPoint = await instance.getMountPointForSpace({ graphClient, space })
+    it('returns a matching mount point', async () => {
+      const { instance } = getWrapper()
+      const graphClient = mockDeep<Graph>()
+      const space = mock<SpaceResource>({ id: '1', driveType: 'project' })
+      const mountpoints = [
+        mock<SpaceResource>({
+          id: '2',
+          driveType: 'mountpoint',
+          root: { remoteItem: { id: space.id } }
+        })
+      ]
+      instance.spaces = mountpoints
+      instance.mountPointsInitialized = true
+      const mountPoint = await instance.getMountPointForSpace({ graphClient, space })
 
-          expect(mountPoint).toEqual(mountpoints[0])
-        }
-      })
+      expect(mountPoint).toEqual(mountpoints[0])
     })
   })
 })
 
-function getWrapper({ setup }: { setup: (instance: ReturnType<typeof useSpacesStore>) => void }) {
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useSpacesStore()
-        setup(instance)
-      },
-      { pluginOptions: { pinia: false } }
-    )
-  }
+function getWrapper({
+  setup
+}: { setup?: (instance: ReturnType<typeof useSpacesStore>) => void } = {}) {
+  let instance: ReturnType<typeof useSpacesStore>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useSpacesStore()
+      setup?.(instance)
+    },
+    { pluginOptions: { pinia: false } }
+  )
+  return { wrapper, instance }
 }

@@ -3,7 +3,7 @@ import path from 'path'
 import { appConfig } from '../../playwright.config'
 
 // max file creation size is 10GB
-export const MAX_FILE_SIZE = Math.pow(1024, 3) * 10
+const MAX_FILE_SIZE = Math.pow(1024, 3) * 10
 
 export const getBytes = (fileSize: string): number => {
   fileSize = fileSize.replace(/\s/g, '').toLowerCase()

@@ -34,9 +34,7 @@ export interface moveOrCopyMultipleResourceArgs extends Omit<moveOrCopyResourceA
   resources: string[]
 }
 
-export const pasteResource = async (
-  args: Omit<moveOrCopyResourceArgs, 'method'>
-): Promise<void> => {
+const pasteResource = async (args: Omit<moveOrCopyResourceArgs, 'method'>): Promise<void> => {
   const { page, resource, newLocation, action, option } = args
   const frame = page.frameLocator(opencloudFrame)
 

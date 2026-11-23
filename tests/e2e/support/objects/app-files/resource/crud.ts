@@ -44,7 +44,7 @@ export interface createResourceArgs {
   password?: string
 }
 
-export const createNewFolder = async ({
+const createNewFolder = async ({
   page,
   resource
 }: {
@@ -63,7 +63,7 @@ export const createNewFolder = async ({
   await mkcolPromise
 }
 
-export const createNewFileOrFolder = async (args: createResourceArgs): Promise<void> => {
+const createNewFileOrFolder = async (args: createResourceArgs): Promise<void> => {
   const { page, name, type, content, password } = args
   await expect(page.locator(addNewResourceButton)).toBeVisible()
   await expect(page.locator(addNewResourceButton)).toBeEnabled()

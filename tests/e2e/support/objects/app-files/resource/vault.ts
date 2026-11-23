@@ -3,9 +3,9 @@ import util from 'util'
 import { resourceNameSelector } from './shared'
 
 export const vaultSetupPassphraseInput = '#vault-setup-passphrase'
-export const unlockVaultBtn = '#vault-unlock-submit'
+const unlockVaultBtn = '#vault-unlock-submit'
 export const vaultPassphraseInput = '#vault-passphrase'
-export const filesContextLockVaultAction =
+const filesContextLockVaultAction =
   'div[id^="context-menu-drop"] button.oc-files-actions-lock-vault'
 
 export const unlockVault = async ({

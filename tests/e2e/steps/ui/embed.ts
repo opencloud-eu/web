@@ -8,10 +8,7 @@ import { actorPage } from '../../environment/pageObject'
 When(
   '{string} opens the app in embed mode with delegated authentication',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = await world.actorsEnvironment.createActor({
-      key: stepUser,
-      namespace: world.actorsEnvironment.generateNamespace(stepUser)
-    })
+    const { page } = await world.actorsEnvironment.createActor({ key: stepUser })
 
     const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
 

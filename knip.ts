@@ -53,7 +53,12 @@ const config: KnipConfig = {
       ]
     },
     'tests/e2e': {
-      entry: ['steps/**/*.ts', 'support/**/*.ts', 'environment/**/*.ts', 'scripts/**/*.{ts,mjs}']
+      entry: [
+        'steps/**/*.ts',
+        'environment/fixtures.ts',
+        'environment/hooks.ts',
+        'scripts/**/*.{ts,mjs}'
+      ]
     },
     'packages/design-system': {
       entry: ['docs/.vitepress/**/*.{ts,vue}', 'docs/**/*.vue']

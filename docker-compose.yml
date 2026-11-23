@@ -214,7 +214,7 @@ services:
         condition: service_healthy
 
   collabora:
-    image: collabora/code:26.04.6.1.1
+    image: collabora/code:26.04.6.2.1
     environment:
       aliasgroup1: ${OC_URL:-https://host.docker.internal:9200}
       aliasgroup2: https://oc.opencloud.test:10200

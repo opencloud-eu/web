@@ -98,7 +98,7 @@ export interface batchRestoreTrashbinResourcesArgs {
   page: Page
 }
 
-export const selectTrashbinResource = async (page: Page, resource: string): Promise<void> => {
+const selectTrashbinResource = async (page: Page, resource: string): Promise<void> => {
   const resourceCheckbox = page.locator(
     util.format(checkBoxForTrashbin, `/${resource.replace(/^\/+/, '')}`)
   )

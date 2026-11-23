@@ -17,7 +17,7 @@ export const openCloudKeycloakUserRoles: Record<string, string> = {
   'User Light': 'opencloudGuest'
 }
 
-export const getAdminUser = (): User => {
+const getAdminUser = (): User => {
   const usersEnvironment = new UsersEnvironment()
   return usersEnvironment.getUser({ key: 'admin' })
 }
@@ -79,19 +79,6 @@ export const assignRole = async ({ uuid, role }: { uuid: string; role: string })
     user: getKeycloakAdminUser(),
     header: { 'Content-Type': 'application/json' }
   })
-}
-
-export const unAssignRole = async ({ uuid, role }: { uuid: string; role: string }) => {
-  // can't unassign multiple realm roles at once
-  const response = await request({
-    method: 'DELETE',
-    path: urlJoin(realmBasePath, 'users', uuid, 'role-mappings', 'realm'),
-    body: [await getRealmRole(openCloudKeycloakUserRoles[role])],
-    user: getKeycloakAdminUser(),
-    header: { 'Content-Type': 'application/json' }
-  })
-  checkResponseStatus(response, 'Can not delete existing role ')
-  return response
 }
 
 export const deleteUser = async ({ user }: { user: User }): Promise<User> => {

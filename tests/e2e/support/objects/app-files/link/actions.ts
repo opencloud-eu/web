@@ -360,7 +360,7 @@ export const getLinkEditButtonVisibility = async (
   return await page.locator(util.format(editPublicLinkButton, linkName)).isVisible()
 }
 
-export const clearAllPopups = async (page: Page): Promise<void> => {
+const clearAllPopups = async (page: Page): Promise<void> => {
   const count = await page.locator(notificationContainer).evaluate((container) => {
     Object.values(container.children).forEach((child) => {
       container.removeChild(child)
@@ -373,7 +373,7 @@ export const clearAllPopups = async (page: Page): Promise<void> => {
   await expect(page.locator(linkUpdateDialog)).not.toBeVisible()
 }
 
-export const clearCurrentPopup = async (page: Page): Promise<void> => {
+const clearCurrentPopup = async (page: Page): Promise<void> => {
   await expect(page.locator(linkUpdateDialog)).toBeVisible()
   await clearAllPopups(page)
 }

@@ -30,14 +30,11 @@ describe('useUserActionsAddToGroups', () => {
     })
   })
   describe('method "handler"', () => {
-    it('creates a modal', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({ resources: [mock<User>()] })
-          expect(dispatchModal).toHaveBeenCalled()
-        }
-      })
+    it('creates a modal', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({ resources: [mock<User>()] })
+      expect(dispatchModal).toHaveBeenCalled()
     })
   })
 })
@@ -45,12 +42,12 @@ describe('useUserActionsAddToGroups', () => {
 function getWrapper({
   setup
 }: {
-  setup: (instance: ReturnType<typeof useUserActionsAddToGroups>) => void
-}) {
-  return {
-    wrapper: getComposableWrapper(() => {
-      const instance = useUserActionsAddToGroups({ groups: ref([]) })
-      setup(instance)
-    })
-  }
+  setup?: (instance: ReturnType<typeof useUserActionsAddToGroups>) => void
+} = {}) {
+  let instance: ReturnType<typeof useUserActionsAddToGroups>
+  const wrapper = getComposableWrapper(() => {
+    instance = useUserActionsAddToGroups({ groups: ref([]) })
+    setup?.(instance)
+  })
+  return { wrapper, instance }
 }

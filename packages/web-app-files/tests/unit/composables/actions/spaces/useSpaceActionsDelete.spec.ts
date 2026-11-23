@@ -38,65 +38,53 @@ describe('delete', () => {
   })
 
   describe('handler', () => {
-    it('should trigger the delete modal window', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({
-            resources: [
-              mock<SpaceResource>({ id: '1', canBeDeleted: () => true, driveType: 'project' })
-            ]
-          })
-
-          expect(dispatchModal).toHaveBeenCalledTimes(1)
-        }
+    it('should trigger the delete modal window', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({
+        resources: [
+          mock<SpaceResource>({ id: '1', canBeDeleted: () => true, driveType: 'project' })
+        ]
       })
+
+      expect(dispatchModal).toHaveBeenCalledTimes(1)
     })
-    it('should not trigger the delete modal window without any resource to delete', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({
-            resources: [
-              mock<SpaceResource>({ id: '1', canBeDeleted: () => false, driveType: 'project' })
-            ]
-          })
-
-          expect(dispatchModal).toHaveBeenCalledTimes(0)
-        }
+    it('should not trigger the delete modal window without any resource to delete', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({
+        resources: [
+          mock<SpaceResource>({ id: '1', canBeDeleted: () => false, driveType: 'project' })
+        ]
       })
+
+      expect(dispatchModal).toHaveBeenCalledTimes(0)
     })
   })
 
   describe('method "deleteSpace"', () => {
-    it('should show message on success', () => {
-      getWrapper({
-        setup: async ({ deleteSpaces }, { clientService }) => {
-          clientService.graphAuthenticated.drives.deleteDrive.mockResolvedValue()
+    it('should show message on success', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.graphAuthenticated.drives.deleteDrive.mockResolvedValue()
 
-          await deleteSpaces([
-            mock<SpaceResource>({ id: '1', canBeDeleted: () => true, driveType: 'project' })
-          ])
+      await instance.deleteSpaces([
+        mock<SpaceResource>({ id: '1', canBeDeleted: () => true, driveType: 'project' })
+      ])
 
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledTimes(1)
     })
 
-    it('should show message on error', () => {
+    it('should show message on error', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      getWrapper({
-        setup: async ({ deleteSpaces }, { clientService }) => {
-          clientService.graphAuthenticated.drives.deleteDrive.mockRejectedValue(new Error())
-          await deleteSpaces([
-            mock<SpaceResource>({ id: '1', canBeDeleted: () => true, driveType: 'project' })
-          ])
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.graphAuthenticated.drives.deleteDrive.mockRejectedValue(new Error())
+      await instance.deleteSpaces([
+        mock<SpaceResource>({ id: '1', canBeDeleted: () => true, driveType: 'project' })
+      ])
 
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
     })
   })
 })
@@ -104,34 +92,26 @@ describe('delete', () => {
 function getWrapper({
   setup
 }: {
-  setup: (
-    instance: ReturnType<typeof useSpaceActionsDelete>,
-    {
-      clientService
-    }: {
-      clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
-    }
-  ) => void
-}) {
+  setup?: (instance: ReturnType<typeof useSpaceActionsDelete>) => void
+} = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ name: 'files-spaces-projects' })
   })
-  return {
-    mocks,
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useSpaceActionsDelete()
-        setup(instance, { clientService: mocks.$clientService })
-      },
-      {
-        mocks,
-        provide: mocks,
-        pluginOptions: {
-          piniaOptions: {
-            userState: { user: { id: '1', onPremisesSamAccountName: 'alice' } as User }
-          }
+  let instance: ReturnType<typeof useSpaceActionsDelete>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useSpaceActionsDelete()
+      setup?.(instance)
+    },
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: {
+        piniaOptions: {
+          userState: { user: { id: '1', onPremisesSamAccountName: 'alice' } as User }
         }
       }
-    )
-  }
+    }
+  )
+  return { wrapper, instance, mocks }
 }

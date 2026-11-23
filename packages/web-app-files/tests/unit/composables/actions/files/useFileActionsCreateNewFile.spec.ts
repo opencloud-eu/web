@@ -5,12 +5,7 @@ import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-t
 import { RouteLocation } from '@opencloud-eu/web-test-helpers'
 import { ApplicationFileExtension } from '@opencloud-eu/web-pkg'
 import { useFileActionsCreateNewFile } from '../../../../../src/composables/actions/files'
-import {
-  FileActionOptions,
-  useFileActions,
-  useModals,
-  useResourcesStore
-} from '@opencloud-eu/web-pkg'
+import { useFileActions, useModals, useResourcesStore } from '@opencloud-eu/web-pkg'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -28,22 +23,6 @@ describe('useFileActionsCreateNewFile', () => {
 
           const { upsertResource } = useResourcesStore()
           expect(upsertResource).toHaveBeenCalled()
-        }
-      })
-    })
-  })
-
-  describe('createNewFileModal', () => {
-    it('should show modal', () => {
-      const space = mock<SpaceResource>({ id: '1' })
-      getWrapper({
-        space,
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          const fileActionOptions: FileActionOptions = { space, resources: [] } as FileActionOptions
-          await unref(actions)[0].handler(fileActionOptions)
-
-          expect(dispatchModal).toHaveBeenCalled()
         }
       })
     })

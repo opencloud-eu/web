@@ -37,86 +37,67 @@ const vaultCreation = {
 
 describe('useFileActionsCreateNewFolder', () => {
   describe('addNewFolder', () => {
-    it('create new folder', () => {
+    it('create new folder', async () => {
       const space = mock<SpaceResource>({ id: '1' })
-      getWrapper({
-        space,
-        setup: async ({ addNewFolder }) => {
-          await addNewFolder(space, 'myfolder')
-          await nextTick()
+      const { instance } = getWrapper({ space })
+      await instance.addNewFolder(space, 'myfolder')
+      await nextTick()
 
-          const { upsertResource } = useResourcesStore()
-          expect(upsertResource).toHaveBeenCalled()
+      const { upsertResource } = useResourcesStore()
+      expect(upsertResource).toHaveBeenCalled()
 
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledWith({ title: '»myfolder« was created successfully' })
-        }
-      })
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledWith({ title: '»myfolder« was created successfully' })
     })
 
-    it('show error message if createFolder fails', () => {
+    it('show error message if createFolder fails', async () => {
       const consoleErrorMock = vi.spyOn(console, 'error').mockReturnThis()
       const space = mock<SpaceResource>({ id: '1' })
-      getWrapper({
-        resolveCreateFolder: false,
-        space,
-        setup: async ({ addNewFolder }) => {
-          await addNewFolder(space, 'myfolder')
-          await nextTick()
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledWith(
-            expect.objectContaining({
-              title: 'Failed to create folder'
-            })
-          )
-          consoleErrorMock.mockRestore()
-        }
-      })
+      const { instance } = getWrapper({ resolveCreateFolder: false, space })
+      await instance.addNewFolder(space, 'myfolder')
+      await nextTick()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Failed to create folder'
+        })
+      )
+      consoleErrorMock.mockRestore()
     })
 
-    it('adds the remoteItemId if the current space is a share space', () => {
+    it('adds the remoteItemId if the current space is a share space', async () => {
       const space = mock<ShareSpaceResource>({ id: '1', driveType: 'share' })
-      getWrapper({
-        space,
-        setup: async ({ addNewFolder }) => {
-          await addNewFolder(space, 'myfolder')
+      const { instance } = getWrapper({ space })
+      await instance.addNewFolder(space, 'myfolder')
 
-          const { upsertResource } = useResourcesStore()
-          expect(upsertResource).toHaveBeenCalledWith(
-            expect.objectContaining({ remoteItemId: '1' })
-          )
-        }
-      })
+      const { upsertResource } = useResourcesStore()
+      expect(upsertResource).toHaveBeenCalledWith(expect.objectContaining({ remoteItemId: '1' }))
     })
 
-    it('creates an encrypted folder under the vault name and commits its secret', () => {
+    it('creates an encrypted folder under the vault name and commits its secret', async () => {
       const space = mock<SpaceResource>({ id: '1' })
       const finalizeVault = vi.fn()
-      getWrapper({
-        space,
-        setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault })
-          await nextTick()
+      const { instance, mocks } = getWrapper({ space })
+      await instance.addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault })
+      await nextTick()
 
-          expect(mocks.$clientService.webdav.createFolder).toHaveBeenCalledWith(space, {
-            path: '/myfolder.vault'
-          })
-          // the scheme commits the secret once the folder exists
-          expect(finalizeVault).toHaveBeenCalledWith(space, '/')
-          // a new vault stays locked and the user stays put
-          expect(mocks.$router.push).not.toHaveBeenCalled()
+      expect(mocks.$clientService.webdav.createFolder).toHaveBeenCalledWith(space, {
+        path: '/myfolder.vault'
+      })
+      // the scheme commits the secret once the folder exists
+      expect(finalizeVault).toHaveBeenCalledWith(space, '/')
+      // a new vault stays locked and the user stays put
+      expect(mocks.$router.push).not.toHaveBeenCalled()
 
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledWith({
-            title: '»myfolder.vault« was created successfully'
-          })
-        }
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledWith({
+        title: '»myfolder.vault« was created successfully'
       })
     })
 
-    it('names the vault with the marker of the registered scheme', () => {
+    it('names the vault with the marker of the registered scheme', async () => {
       const space = mock<SpaceResource>({ id: '1' })
-      getWrapper({
+      const { instance, mocks } = getWrapper({
         space,
         vaultCreator: {
           creation: {
@@ -124,92 +105,72 @@ describe('useFileActionsCreateNewFolder', () => {
             vaultContentType: 'application/vnd.opencloud.crypt',
             setupComponent
           }
-        },
-        setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault: vi.fn() })
-          await nextTick()
-
-          expect(mocks.$clientService.webdav.createFolder).toHaveBeenCalledWith(space, {
-            path: '/myfolder.crypt'
-          })
         }
+      })
+      await instance.addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault: vi.fn() })
+      await nextTick()
+
+      expect(mocks.$clientService.webdav.createFolder).toHaveBeenCalledWith(space, {
+        path: '/myfolder.crypt'
       })
     })
 
-    it('reports the name the file list shows when extensions are hidden', () => {
+    it('reports the name the file list shows when extensions are hidden', async () => {
       const space = mock<SpaceResource>({ id: '1' })
-      getWrapper({
-        space,
-        areFileExtensionsShown: false,
-        setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault: vi.fn() })
-          await nextTick()
+      const { instance, mocks } = getWrapper({ space, areFileExtensionsShown: false })
+      await instance.addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault: vi.fn() })
+      await nextTick()
 
-          expect(mocks.$clientService.webdav.createFolder).toHaveBeenCalledWith(space, {
-            path: '/myfolder.vault'
-          })
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledWith({
-            title: '»myfolder« was created successfully'
-          })
-        }
+      expect(mocks.$clientService.webdav.createFolder).toHaveBeenCalledWith(space, {
+        path: '/myfolder.vault'
+      })
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledWith({
+        title: '»myfolder« was created successfully'
       })
     })
 
-    it('reports a folder that was created but whose secret could not be committed', () => {
+    it('reports a folder that was created but whose secret could not be committed', async () => {
       const consoleErrorMock = vi.spyOn(console, 'error').mockReturnThis()
       const space = mock<SpaceResource>({ id: '1' })
       const finalizeVault = vi.fn().mockRejectedValue(new Error('proppatch failed'))
-      getWrapper({
-        space,
-        setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault })
-          await nextTick()
+      const { instance, mocks } = getWrapper({ space })
+      await instance.addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault })
+      await nextTick()
 
-          // the folder exists, so it must not be reported as a failed creation
-          expect(mocks.$clientService.webdav.createFolder).toHaveBeenCalled()
-          const { showMessage, showErrorMessage } = useMessages()
-          expect(showMessage).not.toHaveBeenCalled()
-          expect(showErrorMessage).toHaveBeenCalledWith(
-            expect.objectContaining({
-              title: '»myfolder.vault« was created, but its passphrase was not saved'
-            })
-          )
-          consoleErrorMock.mockRestore()
-        }
-      })
+      // the folder exists, so it must not be reported as a failed creation
+      expect(mocks.$clientService.webdav.createFolder).toHaveBeenCalled()
+      const { showMessage, showErrorMessage } = useMessages()
+      expect(showMessage).not.toHaveBeenCalled()
+      expect(showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: '»myfolder.vault« was created, but its passphrase was not saved'
+        })
+      )
+      consoleErrorMock.mockRestore()
     })
 
-    it('does not navigate when creating a plain folder', () => {
+    it('does not navigate when creating a plain folder', async () => {
       const space = mock<SpaceResource>({ id: '1' })
-      getWrapper({
-        space,
-        setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder(space, 'myfolder')
-          await nextTick()
+      const { instance, mocks } = getWrapper({ space })
+      await instance.addNewFolder(space, 'myfolder')
+      await nextTick()
 
-          expect(mocks.$router.push).not.toHaveBeenCalled()
-        }
-      })
+      expect(mocks.$router.push).not.toHaveBeenCalled()
     })
 
-    it('fails instead of creating a plain folder when no vault scheme is registered', () => {
+    it('fails instead of creating a plain folder when no vault scheme is registered', async () => {
       const consoleErrorMock = vi.spyOn(console, 'error').mockReturnThis()
       const space = mock<SpaceResource>({ id: '1' })
-      getWrapper({
-        vaultCreator: null,
-        space,
-        setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder(space, 'myfolder', { encrypt: true })
+      const { instance, mocks } = getWrapper({ vaultCreator: null, space })
+      await instance.addNewFolder(space, 'myfolder', { encrypt: true })
 
-          expect(mocks.$clientService.webdav.createFolder).not.toHaveBeenCalled()
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledWith(
-            expect.objectContaining({ title: 'Failed to create folder' })
-          )
-          consoleErrorMock.mockRestore()
-        }
-      })
+      expect(mocks.$clientService.webdav.createFolder).not.toHaveBeenCalled()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to create folder' })
+      )
+      consoleErrorMock.mockRestore()
     })
   })
 
@@ -276,10 +237,7 @@ function getWrapper({
     creation?: { vaultExtension: string; vaultContentType: string; setupComponent: unknown }
   } | null
   areFileExtensionsShown?: boolean
-  setup: (
-    instance: ReturnType<typeof useFileActionsCreateNewFolder>,
-    mocks: ReturnType<typeof defaultComponentMocks>
-  ) => void
+  setup?: (instance: ReturnType<typeof useFileActionsCreateNewFolder>) => void
 }) {
   vi.mocked(useScrollTo).mockImplementation(() => useScrollToMock())
   vi.mocked(getVaultCreator).mockReturnValue(vaultCreator as any)
@@ -302,19 +260,19 @@ function getWrapper({
     return Promise.reject('error')
   })
 
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useFileActionsCreateNewFolder()
-        setup(instance, mocks)
-      },
-      {
-        mocks,
-        provide: mocks,
-        pluginOptions: {
-          piniaOptions: { resourcesStore: { currentFolder, areFileExtensionsShown } }
-        }
+  let instance: ReturnType<typeof useFileActionsCreateNewFolder>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useFileActionsCreateNewFolder()
+      setup?.(instance)
+    },
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: {
+        piniaOptions: { resourcesStore: { currentFolder, areFileExtensionsShown } }
       }
-    )
-  }
+    }
+  )
+  return { wrapper, instance, mocks }
 }
