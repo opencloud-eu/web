@@ -45,7 +45,7 @@ export const clickResource = async ({
   }
 }
 
-export const createNewFolderInEmbedMode = async ({
+const createNewFolderInEmbedMode = async ({
   page,
   resource
 }: {
@@ -141,7 +141,7 @@ export const breadcrumbResourceNameSelector =
 export const addNewResourceButton = `.oc-app-floating-action-button`
 export const createNewFolderButton = '#new-folder-btn'
 export const resourceNameInput = '.oc-modal input'
-export const filesBatchAction = '.files-app-bar-actions .oc-files-actions-%s-trigger'
+const filesBatchAction = '.files-app-bar-actions .oc-files-actions-%s-trigger'
 export const actionConfirmationButton =
   '//button[contains(@class,"oc-modal-body-actions-confirm") and text()="%s"]'
 export const actionSecondaryConfirmationButton = '.oc-modal-body-actions-secondary'

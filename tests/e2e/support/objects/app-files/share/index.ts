@@ -91,7 +91,7 @@ export class Share {
   }
 
   changeShareLocator(recipient: User): Locator {
-    return po.changeRoleLocator({ page: this.#page, recipient })
+    return po.changeShareLocator({ page: this.#page, recipient })
   }
 
   async openSharingPanel(resource: string): Promise<void> {

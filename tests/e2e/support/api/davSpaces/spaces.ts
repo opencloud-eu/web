@@ -6,13 +6,7 @@ import { getSpaceIdBySpaceName } from '../graph'
 import _ from 'lodash-es/object.js'
 import { createTagsForResource } from '../graph/utils'
 
-export const folderExists = async ({
-  user,
-  path
-}: {
-  user: User
-  path: string
-}): Promise<boolean> => {
+const folderExists = async ({ user, path }: { user: User; path: string }): Promise<boolean> => {
   const getResponse = await request({
     method: 'GET',
     path,
@@ -211,7 +205,7 @@ export const waitForLivePhotoFacet = async (args: {
   await waitForFacet({ ...args, facet: 'live-photo', property: 'content-id' })
 }
 
-export const getDataOfFileInsideSpace = async ({
+const getDataOfFileInsideSpace = async ({
   user,
   pathToFileName,
   spaceType,

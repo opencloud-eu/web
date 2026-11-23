@@ -13,7 +13,6 @@ Feature: Work with an rclone-crypt encrypted vault space
       | id    | role        |
       | Alice | Space Admin |
 
-  @rclone-crypt
   Scenario: Create a vault space, work with its files and share it with a space member
     When "Alice" logs in
     And "Alice" navigates to the projects space page
@@ -71,7 +70,6 @@ Feature: Work with an rclone-crypt encrypted vault space
     And "Brian" closes the file viewer
     And "Brian" logs out
 
-  @rclone-crypt
   Scenario: Reloading an unlocked vault space locks it again
     When "Alice" logs in
     And "Alice" navigates to the projects space page

@@ -9,7 +9,6 @@ Feature: Work with an rclone-crypt encrypted vault
       | id    |
       | Alice |
 
-  @rclone-crypt
   Scenario: create and upload a file into a vault encrypts it on the server
     When "Alice" logs in
     And "Alice" creates the following resources
@@ -50,7 +49,6 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" logs out
 
 
-  @rclone-crypt
   Scenario: An image in a vault opens from the original when the browser reads the format
     When "Alice" logs in
     And "Alice" creates the following resource
@@ -70,7 +68,7 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" closes the file viewer
     And "Alice" logs out
 
-  @rclone-crypt @heic-decoder
+  @heic-decoder
   Scenario: A heic in a vault opens from the original in a browser that decodes heic
     When "Alice" logs in
     And "Alice" creates the following resource
@@ -90,7 +88,7 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" closes the file viewer
     And "Alice" logs out
 
-  @rclone-crypt @no-heic-decoder
+  @no-heic-decoder
   Scenario: A heic in a vault is listed but not fetched in a browser that does not decode heic
     When "Alice" logs in
     And "Alice" creates the following resource
@@ -109,7 +107,6 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" closes the file viewer
     And "Alice" logs out
 
-  @rclone-crypt
   Scenario: Drag-drop a directory tree into a vault
     When "Alice" logs in
     And "Alice" creates the following resource
@@ -128,7 +125,6 @@ Feature: Work with an rclone-crypt encrypted vault
       | PARENT     |
     And "Alice" logs out
 
-  @rclone-crypt
   Scenario: A wrong passphrase is rejected
     When "Alice" logs in
     And "Alice" creates the following resource
@@ -138,7 +134,6 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" fails to enter the vault "my.vault" with the wrong passphrase "definitely-wrong"
     And "Alice" logs out
 
-  @rclone-crypt
   Scenario: A vault root is collaborator-shareable but not public-linkable, its content stays private
     Given "Admin" creates following user using API
       | id    |
@@ -164,7 +159,6 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Brian" should see the content "hello world" in editor "TextEditor"
     And "Brian" logs out
 
-  @rclone-crypt
   Scenario: Rename and download a vault file
     When "Alice" logs in
     And "Alice" creates the following resources
@@ -184,7 +178,6 @@ Feature: Work with an rclone-crypt encrypted vault
       | hello.ocnote | file |
     And "Alice" logs out
 
-  @rclone-crypt
   Scenario: Create normal folder with .vault suffix which will be treated as a vault
     When "Alice" logs in
     And "Alice" creates the following resources
@@ -200,7 +193,6 @@ Feature: Work with an rclone-crypt encrypted vault
       | lorem    | folder |
     And "Alice" logs out
 
-  @rclone-crypt
   Scenario: Vault with content but no integrity token
     When "Alice" logs in
     And "Alice" creates the following resources
@@ -233,7 +225,6 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" closes the file viewer
     And "Alice" logs out
 
-  @rclone-crypt
   Scenario: Create a vault inside a project space
     Given "Admin" creates following user using API
       | id    |

@@ -56,7 +56,6 @@ export interface IAccessDetails {
 export type CollaboratorType = 'user' | 'group' | 'guest'
 
 export default class Collaborator {
-  private static readonly invitePanel = '//*[@id="oc-files-sharing-sidebar"]'
   private static readonly inviteInput = '#files-share-invite-input'
   private static readonly newCollaboratorRoleDropdown = '#files-collaborators-role-button-new'
   private static readonly sendInvitationButton = '#new-collaborators-form-create-button'
@@ -71,8 +70,6 @@ export default class Collaborator {
     '//*[@data-testid="collaborator-group-item-%s" or @data-testid="collaborator-group-item-%s"]'
   private static readonly collaboratorGuestSelector =
     '//*[@data-testid="collaborator-group-item-%s"]'
-  private static readonly collaboratorRoleSelector =
-    '%s//button[contains(@class,"files-recipient-role-select-btn")]/span[text()="%s"]'
   private static readonly removeCollaboratorButton =
     '%s//ul[contains(@class,"collaborator-edit-dropdown-options-list")]//button[contains(@class,"remove-share")]'
   private static readonly setExpirationDateCollaboratorButton =
@@ -304,10 +301,6 @@ export default class Collaborator {
         .locator(util.format(Collaborator.removeExpirationDateCollaboratorButton, collaboratorRow))
         .click()
     ])
-  }
-
-  static waitForInvitePanel(page: Page): Promise<void> {
-    return page.locator(Collaborator.invitePanel).waitFor()
   }
 
   static getCollaboratorUserOrGroupSelector = (collaborator: User | Group, type = 'user') => {

@@ -1337,9 +1337,6 @@ importers:
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
-      luxon:
-        specifier: ^3.7.2
-        version: 3.7.2
       uuid:
         specifier: ^14.0.0
         version: 14.0.3

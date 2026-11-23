@@ -52,7 +52,7 @@ Feature: Upload
 
   Scenario: upload multiple small files
     When "Alice" uploads 50 small files in personal space
-    Then "Alice" should see 50 resources in the personal space files view
+    Then "Alice" should see 50 resources in the files list
     And "Alice" logs out
 
 

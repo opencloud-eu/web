@@ -6,20 +6,6 @@ import { getIdOfFileInsideSpace } from '../davSpaces'
 import { LinksEnvironment, UsersEnvironment } from '../../environment'
 import { securePassword } from '../../store'
 
-export const shareTypes: Readonly<{
-  user: string
-  group: string
-  public: string
-  federated: string
-  space: string
-}> = {
-  user: '0',
-  group: '1',
-  public: '3',
-  federated: '6',
-  space: '7'
-}
-
 export const shareRoles: Readonly<{
   'Can upload': string
   'Can manage': string
@@ -36,7 +22,7 @@ export const shareRoles: Readonly<{
   'Cannot access': 'denied'
 } as const
 
-export const linkShareRoles: Readonly<{
+const linkShareRoles: Readonly<{
   'Can view': string
   'Can upload': string
   'Can edit': string

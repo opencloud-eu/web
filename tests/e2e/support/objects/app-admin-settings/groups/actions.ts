@@ -1,13 +1,10 @@
 import { Page } from '@playwright/test'
 import util from 'util'
-import { selectUser } from '../users/actions'
 
 const newGroupBtn = '.oc-app-floating-action-button'
 const createGroupInput = '#create-group-input-display-name'
 const actionConfirmButton = '.oc-modal-body-actions-confirm'
 const editActionBtnContextMenu = '.context-menu .oc-groups-actions-edit-trigger'
-const editActionBtnQuickActions =
-  '[data-item-id="%s"] .oc-table-data-cell-actions .groups-table-btn-edit'
 const groupTrSelector = 'tr'
 const groupIdSelector = `[data-item-id="%s"] .groups-table-btn-action-dropdown`
 const groupCheckboxSelector = `[data-item-id="%s"]:not(.oc-table-highlighted) input[type=checkbox]`
@@ -130,10 +127,6 @@ export const openEditPanel = async (args: {
     case 'context-menu':
       await page.locator(util.format(groupIdSelector, uuid)).click()
       await page.locator(editActionBtnContextMenu).click()
-      break
-    case 'quick-action':
-      await selectUser({ page, uuid })
-      await page.locator(util.format(editActionBtnQuickActions, uuid)).click()
       break
     default:
       throw new Error(`${action} not implemented`)

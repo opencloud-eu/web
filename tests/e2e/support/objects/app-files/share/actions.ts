@@ -131,10 +131,7 @@ export const disableSync = async (args: ShareStatusArgs): Promise<void> => {
   await clickActionInContextMenu({ page, resource }, 'disable-sync')
 }
 
-export const clickActionInContextMenu = async (
-  args: ShareStatusArgs,
-  action: string
-): Promise<void> => {
+const clickActionInContextMenu = async (args: ShareStatusArgs, action: string): Promise<void> => {
   const { page, resource } = args
   await page.locator(util.format(actionMenuDropdownButton, resource)).click()
 

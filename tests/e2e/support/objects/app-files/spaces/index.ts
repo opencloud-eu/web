@@ -4,6 +4,7 @@ import { File } from '../../../types'
 import * as po from './actions'
 import { spaceLocator } from './utils'
 import { ICollaborator } from '../share/collaborator'
+import { unlockVault } from '../resource/vault'
 
 export class Spaces {
   #page: Page
@@ -54,7 +55,7 @@ export class Spaces {
   }
 
   async unlockVault({ passphrase }: { passphrase: string }): Promise<void> {
-    await po.unlockVaultSpace({ page: this.#page, passphrase })
+    await unlockVault({ page: this.#page, passphrase })
   }
 
   async expectOpen({ key }: { key: string }): Promise<void> {
