@@ -45,6 +45,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency filesize to v11.0.35 [[#4555](https://github.com/opencloud-eu/web/pull/4555)]
 - chore(deps): update vue monorepo to v3.5.46 [[#4564](https://github.com/opencloud-eu/web/pull/4564)]
 - chore(deps): update hocuspocus monorepo to v4.9.0 [[#4565](https://github.com/opencloud-eu/web/pull/4565)]
 - chore(deps): update dependency focus-trap to v8.2.6 [[#4576](https://github.com/opencloud-eu/web/pull/4576)]
