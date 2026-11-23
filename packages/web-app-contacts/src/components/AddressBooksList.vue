@@ -69,7 +69,11 @@ const onSelectAddressBook = async (addressBook: AddressBook) => {
   await runWithDiscardConfirmation(async () => {
     setCurrentAddressBook(addressBook)
     setCurrentContact(null)
-    await loadContacts(unref(currentAccount).accountId, addressBook.id)
+    try {
+      await loadContacts(unref(currentAccount).accountId, addressBook.id)
+    } catch {
+      // the error state is shown in the contacts list
+    }
   })
 }
 </script>

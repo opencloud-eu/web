@@ -4,6 +4,24 @@
       <app-loading-spinner />
     </div>
 
+    <no-content-message
+      v-else-if="addressBooksError"
+      id="contacts-address-books-error"
+      role="alert"
+      class="h-full"
+      icon="error-warning"
+      icon-fill-type="line"
+    >
+      <template #message>
+        <span v-text="$gettext('Address books could not be loaded')" />
+      </template>
+      <template #callToAction>
+        <oc-button class="mt-4" appearance="outline" @click="loadAddressBooksAndContacts">
+          <span v-text="$gettext('Retry')" />
+        </oc-button>
+      </template>
+    </no-content-message>
+
     <template v-else>
       <div class="flex h-full">
         <div
@@ -36,7 +54,8 @@ import {
   useClientService,
   useGroupwareAccountsStore,
   useRouteQuery,
-  AppLoadingSpinner
+  AppLoadingSpinner,
+  NoContentMessage
 } from '@opencloud-eu/web-pkg'
 import { computed, onMounted, onUnmounted, ref, unref } from 'vue'
 import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
@@ -59,7 +78,7 @@ const contactEditor = useContactEditor()
 const { loadCurrentAccount } = accountsStore
 const { setCurrentAddressBook } = addressBooksStore
 const { setCurrentContact } = contactsStore
-const { loadAddressBooks } = useLoadAddressBooks()
+const { loadAddressBooks, error: addressBooksError } = useLoadAddressBooks()
 const { loadContacts } = useLoadContacts()
 const { httpAuthenticated } = useClientService()
 
@@ -156,8 +175,8 @@ const loadAddressBooksAndContacts = async () => {
     }
 
     setCurrentContact(queryContact || null)
-  } catch (error) {
-    console.error('Failed to load contacts view:', error)
+  } catch {
+    // the error state is shown by the address books and contacts loaders
   } finally {
     isLoading.value = false
   }
