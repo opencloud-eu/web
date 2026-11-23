@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { useTask } from 'vue-concurrency'
-import { useClientService, useConfigStore, useMessages } from '@opencloud-eu/web-pkg'
+import { ClientService, useClientService, useConfigStore, useMessages } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { useContactsStore } from './piniaStores/contacts'
 import { parseContactsResponse, type Contact } from '../types'
@@ -29,6 +29,45 @@ const parseContactsPage = (data: unknown): { contacts: Contact[]; total?: number
   }
 }
 
+/**
+ * Loads all pages of a contacts list endpoint, to be used with `yield*` inside a task.
+ * The contacts are collected by id in the given map (pages might overlap), so the contacts of
+ * the pages loaded before a failure are still available to the caller.
+ */
+export function* requestContactPages(
+  clientService: ClientService,
+  url: string,
+  signal: AbortSignal,
+  contacts = new Map<string, Contact>()
+): Generator<Promise<unknown>, Contact[], { data: unknown; headers?: Record<string, string> }> {
+  const usedNextTokens = new Set<string>()
+  let next: string | undefined
+
+  do {
+    const { data, headers } = yield clientService.httpAuthenticated.get(url, {
+      params: { limit: CONTACTS_PAGE_SIZE, ...(next && { next }) },
+      signal
+    })
+    const page = parseContactsPage(data)
+    const previousSize = contacts.size
+    page.contacts.forEach((contact) => contacts.set(contact.id, contact))
+
+    // the API also returns a next token after the last page, so stop at pages without new
+    // contacts and at tokens that have been used already
+    const isComplete =
+      contacts.size === previousSize || (page.total !== undefined && contacts.size >= page.total)
+    next = isComplete ? undefined : headers?.next
+    if (next && usedNextTokens.has(next)) {
+      next = undefined
+    }
+    if (next) {
+      usedNextTokens.add(next)
+    }
+  } while (next)
+
+  return [...contacts.values()]
+}
+
 let loadContactsTask: ReturnType<typeof useTask> | null = null
 const isLoading = computed(() => loadContactsTask?.isRunning ?? false)
 const error = ref<Error>()
@@ -44,37 +83,18 @@ export const useLoadContacts = () => {
   if (!loadContactsTask) {
     loadContactsTask = useTask(function* (signal, accountId: string, addressBookId: string) {
       error.value = undefined
-      // contacts by id, pages might overlap
       const contacts = new Map<string, Contact>()
-      const usedNextTokens = new Set<string>()
-      let next: string | undefined
 
       try {
-        do {
-          const { data, headers } = yield clientService.httpAuthenticated.get(
-            urlJoin(
-              configStore.groupwareUrl,
-              `accounts/${accountId}/addressbooks/${addressBookId}/contacts`
-            ),
-            { params: { limit: CONTACTS_PAGE_SIZE, ...(next && { next }) }, signal }
-          )
-          const page = parseContactsPage(data)
-          const previousSize = contacts.size
-          page.contacts.forEach((contact) => contacts.set(contact.id, contact))
-
-          // the API also returns a next token after the last page, so stop at pages without new
-          // contacts and at tokens that have been used already
-          const isComplete =
-            contacts.size === previousSize ||
-            (page.total !== undefined && contacts.size >= page.total)
-          next = isComplete ? undefined : headers?.next
-          if (next && usedNextTokens.has(next)) {
-            next = undefined
-          }
-          if (next) {
-            usedNextTokens.add(next)
-          }
-        } while (next)
+        yield* requestContactPages(
+          clientService,
+          urlJoin(
+            configStore.groupwareUrl,
+            `accounts/${accountId}/addressbooks/${addressBookId}/contacts`
+          ),
+          signal,
+          contacts
+        )
       } catch (e) {
         if (!contacts.size) {
           console.error('Failed to load contacts:', e)

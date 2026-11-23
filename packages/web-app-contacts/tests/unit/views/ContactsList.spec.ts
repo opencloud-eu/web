@@ -1,24 +1,44 @@
 import { ref } from 'vue'
-import { ContextActionMenu, MenuSection } from '@opencloud-eu/web-pkg'
+import { ContextActionMenu, MenuSection, useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import ContactsList from '../../../src/views/ContactsList.vue'
 import { useLoadContacts } from '../../../src/composables/useLoadContacts'
+import { useLoadAllContacts } from '../../../src/composables/useLoadAllContacts'
 import { useContactsStore } from '../../../src/composables/piniaStores/contacts'
 import { useAddressBooksStore } from '../../../src/composables/piniaStores/addressbooks'
 import type { AddressBook, Contact } from '../../../src/types'
 
 vi.mock('../../../src/composables/useLoadContacts')
+vi.mock('../../../src/composables/useLoadAllContacts')
 
 const contacts: Contact[] = [
-  { id: '1', name: { full: 'Grace Hopper' }, emails: { e: { address: 'grace@example.org' } } },
-  { id: '2', name: { full: 'Ada Lovelace' }, emails: { e: { address: 'ada@example.org' } } }
+  {
+    id: '1',
+    name: { full: 'Grace Hopper' },
+    emails: { e: { address: 'grace@example.org' } },
+    addressBookIds: { book: true }
+  },
+  {
+    id: '2',
+    name: { full: 'Ada Lovelace' },
+    emails: { e: { address: 'ada@example.org' } },
+    addressBookIds: { book: true }
+  }
 ]
+
+const otherContact: Contact = {
+  id: '3',
+  name: { full: 'Adele Goldberg' },
+  addressBookIds: { team: true }
+}
 
 const addressBook: AddressBook = {
   id: 'book',
   name: 'Personal',
   myRights: { mayAdmin: true, mayDelete: true, mayRead: true, mayWrite: true }
 }
+
+const teamAddressBook: AddressBook = { ...addressBook, id: 'team', name: 'Team' }
 
 describe('ContactsList', () => {
   it('renders the contacts sorted by name', () => {
@@ -30,6 +50,42 @@ describe('ContactsList', () => {
   it('shows the empty state without contacts', () => {
     const { wrapper } = getWrapper({ contacts: [] })
     expect(wrapper.find('#contacts-empty').exists()).toBe(true)
+  })
+
+  it('searches the contacts of all address books', async () => {
+    const { wrapper, loadAllContacts } = getWrapper()
+    await wrapper.find('input').setValue('ad')
+
+    expect(loadAllContacts).toHaveBeenCalledWith('account')
+    const items = wrapper.findAll('.contacts-list-item')
+    expect(items.map((item) => item.find('.font-bold').text())).toEqual([
+      'Ada Lovelace',
+      'Adele Goldberg'
+    ])
+    expect(items[0].find('.contacts-list-item-address-book').exists()).toBe(false)
+    expect(items[1].find('.contacts-list-item-address-book').text()).toBe('Team')
+  })
+
+  it('shows the search if only other address books have contacts', () => {
+    const { wrapper } = getWrapper({ contacts: [] })
+    expect(wrapper.find('input').exists()).toBe(true)
+  })
+
+  it('shows that all address books are searched while loading them', async () => {
+    const { wrapper } = getWrapper({ isLoadingAllContacts: true })
+    await wrapper.find('input').setValue('xyz')
+
+    expect(wrapper.find('#contacts-search-all-status').text()).toBe('Searching all address books…')
+    expect(wrapper.find('#contacts-search-empty').exists()).toBe(false)
+  })
+
+  it('shows a notice if other address books could not be searched', async () => {
+    const { wrapper } = getWrapper({ allContactsError: new Error() })
+    await wrapper.find('input').setValue('ad')
+
+    expect(wrapper.find('#contacts-search-all-status').text()).toBe(
+      'Other address books could not be searched'
+    )
   })
 
   it('shows the error state and retries loading', async () => {
@@ -59,9 +115,25 @@ describe('ContactsList', () => {
 function getWrapper({
   contacts: storeContacts = contacts,
   error = undefined,
-  mayWrite = true
-}: { contacts?: Contact[]; error?: Error; mayWrite?: boolean } = {}) {
+  mayWrite = true,
+  isLoadingAllContacts = false,
+  allContactsError = undefined
+}: {
+  contacts?: Contact[]
+  error?: Error
+  mayWrite?: boolean
+  isLoadingAllContacts?: boolean
+  allContactsError?: Error
+} = {}) {
   const reloadContacts = vi.fn()
+  const loadAllContacts = vi.fn()
+  vi.mocked(useLoadAllContacts).mockReturnValue({
+    allContacts: ref([...contacts, otherContact]),
+    loadedAccountId: ref('account'),
+    loadAllContacts,
+    isLoading: ref(isLoadingAllContacts),
+    error: ref(allContactsError)
+  } as unknown as ReturnType<typeof useLoadAllContacts>)
   vi.mocked(useLoadContacts).mockReturnValue({
     isLoading: ref(false),
     error: ref(error),
@@ -71,13 +143,18 @@ function getWrapper({
   const mocks = defaultComponentMocks()
   const plugins = defaultPlugins()
   useContactsStore().contacts = storeContacts
+  const addressBooksStore = useAddressBooksStore()
+  addressBooksStore.addressBooks = [addressBook, teamAddressBook]
   // @ts-expect-error getters are writable in the testing pinia
-  useAddressBooksStore().currentAddressBook = addressBook
+  addressBooksStore.currentAddressBook = addressBook
   // @ts-expect-error getters are writable in the testing pinia
-  useAddressBooksStore().canWriteCurrentAddressBook = mayWrite
+  addressBooksStore.canWriteCurrentAddressBook = mayWrite
+  // @ts-expect-error getters are writable in the testing pinia
+  useGroupwareAccountsStore().currentAccount = { accountId: 'account' }
 
   return {
     reloadContacts,
+    loadAllContacts,
     wrapper: mount(ContactsList, {
       global: {
         plugins,
