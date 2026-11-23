@@ -44,6 +44,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update hocuspocus monorepo to v4.9.0 [[#4565](https://github.com/opencloud-eu/web/pull/4565)]
 - chore(deps): update dependency focus-trap to v8.2.6 [[#4576](https://github.com/opencloud-eu/web/pull/4576)]
 - chore(deps): update dependency dompurify to v3.5.0 [[#4577](https://github.com/opencloud-eu/web/pull/4577)]
 - chore(deps): update shumc/imagor docker tag to v1.10.5 [[#4568](https://github.com/opencloud-eu/web/pull/4568)]
