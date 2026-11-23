@@ -17,6 +17,18 @@
 - fix: sanitize inlined SVGs [[#4559](https://github.com/opencloud-eu/web/pull/4559)]
 - chore: check translations for markup after compiling [[#4561](https://github.com/opencloud-eu/web/pull/4561)]
 
+### 📈 Enhancement
+
+- feat: make the support card collapsible instead of dismissable [[#4590](https://github.com/opencloud-eu/web/pull/4590)]
+- feat: allow dismissing the support card in the sidebar [[#4560](https://github.com/opencloud-eu/web/pull/4560)]
+- feat: read critical versions from a semver range in the version check [[#4551](https://github.com/opencloud-eu/web/pull/4551)]
+- feat: add duplicate action for files and folders [[#4534](https://github.com/opencloud-eu/web/pull/4534)]
+- feat(sharing): hide the invite form when user sharing is disabled [[#4548](https://github.com/opencloud-eu/web/pull/4548)]
+- feat: add favorites for project spaces and share roots [[#4547](https://github.com/opencloud-eu/web/pull/4547)]
+- feat: add easy and sign language menu to the top bar [[#4537](https://github.com/opencloud-eu/web/pull/4537)]
+- feat: add right-to-left layout support [[#3540](https://github.com/opencloud-eu/web/pull/3540)]
+- feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
+
 ### 🐛 Bug Fixes
 
 - fix: enable new button in editable shares within viewer spaces [[#4579](https://github.com/opencloud-eu/web/pull/4579)]
@@ -42,17 +54,6 @@
 ### ✅ Tests
 
 - test(e2e): add favorites tests for spaces and shares [[#4563](https://github.com/opencloud-eu/web/pull/4563)]
-
-### 📈 Enhancement
-
-- feat: allow dismissing the support card in the sidebar [[#4560](https://github.com/opencloud-eu/web/pull/4560)]
-- feat: read critical versions from a semver range in the version check [[#4551](https://github.com/opencloud-eu/web/pull/4551)]
-- feat: add duplicate action for files and folders [[#4534](https://github.com/opencloud-eu/web/pull/4534)]
-- feat(sharing): hide the invite form when user sharing is disabled [[#4548](https://github.com/opencloud-eu/web/pull/4548)]
-- feat: add favorites for project spaces and share roots [[#4547](https://github.com/opencloud-eu/web/pull/4547)]
-- feat: add easy and sign language menu to the top bar [[#4537](https://github.com/opencloud-eu/web/pull/4537)]
-- feat: add right-to-left layout support [[#3540](https://github.com/opencloud-eu/web/pull/3540)]
-- feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
 
 ### 📦️ Dependencies
 
