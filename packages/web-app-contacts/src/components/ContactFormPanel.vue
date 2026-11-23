@@ -138,6 +138,7 @@ const isSubmitDisabled = computed(() => {
     !unref(hasChanges) ||
     !unref(currentAccount)?.accountId ||
     !unref(currentAddressBook)?.id ||
+    !unref(addressBooksStore.canWriteCurrentAddressBook) ||
     hasInvalidContactEmail(unref(formState)) ||
     unref(isCreating) ||
     unref(isUpdating)

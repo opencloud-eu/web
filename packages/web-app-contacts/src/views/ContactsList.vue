@@ -141,7 +141,7 @@ const onSelectContact = (contact: Contact) => {
 }
 
 const getContactMenuSections = (contact: Contact): MenuSection[] => {
-  return [
+  const sections: MenuSection[] = [
     {
       name: 'default',
       items: [
@@ -162,6 +162,13 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
       items: unref(deleteActions)
     }
   ]
+
+  return sections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => item.isVisible({ resources: [contact] }))
+    }))
+    .filter((section) => section.items.length)
 }
 
 watch(

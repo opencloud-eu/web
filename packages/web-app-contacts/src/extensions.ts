@@ -14,6 +14,7 @@ import { storeToRefs } from 'pinia'
 import AddressBooksList from './components/AddressBooksList.vue'
 import { useGettext } from 'vue3-gettext'
 import { useContactEditor } from './composables/useContactEditor'
+import { useAddressBooksStore } from './composables/piniaStores/addressbooks'
 
 export const extensions = (appInfo: ApplicationInformation) => {
   const capabilityStore = useCapabilityStore()
@@ -21,6 +22,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
   const { user } = storeToRefs(userStore)
   const { $gettext } = useGettext()
   const { openCreateContact } = useContactEditor()
+  const addressBooksStore = useAddressBooksStore()
 
   const menuItemExtension: AppMenuItemExtension = {
     id: `app.${appInfo.id}.menuItem`,
@@ -38,6 +40,12 @@ export const extensions = (appInfo: ApplicationInformation) => {
     type: 'floatingActionButton',
     icon: 'add',
     label: () => $gettext('New'),
+    tooltip: () => {
+      if (addressBooksStore.currentAddressBook && !addressBooksStore.canWriteCurrentAddressBook) {
+        return $gettext('This address book is read-only')
+      }
+    },
+    isDisabled: () => !addressBooksStore.canWriteCurrentAddressBook,
     mode: () => 'handler',
     handler: () => {
       openCreateContact()
