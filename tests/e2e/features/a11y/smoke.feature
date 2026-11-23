@@ -204,7 +204,7 @@ Feature: Accessibility checks
     And "Anonymous" checks the accessibility of the whole page on the "public link page"
     And "Alice" logs out
 
-
+  @timeout:300000
   Scenario: check text editor, upload progress and mobile viewport accessibility
     Given the user creates a file "largefile.txt" of "1GB" size in the temp upload directory
     When "Alice" logs in
