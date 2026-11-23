@@ -259,3 +259,105 @@ Feature: Favorites
       | resource |
       | archive  |
     And "Brian" logs out
+
+
+  Scenario: filter favorites
+    Given "Alice" creates the following folder in personal space using API
+      | name     |
+      | projects |
+    And "Alice" creates the following files with mtime into personal space using API
+      | pathToFile | content             | mtimeDeltaDays |
+      | report.pdf | created 29 days ago | -29 days       |
+      | notes.txt  | created 5 days ago  | -5 days        |
+      | todo.txt   | created today       |                |
+    And "Alice" uploads the following local file into personal space using API
+      | localFile      | to        |
+      | testavatar.jpg | photo.jpg |
+    And "Alice" adds the following tags for the following resources using API
+      | resource   | tags    |
+      | report.pdf | finance |
+      | notes.txt  | work    |
+      | todo.txt   | work    |
+    And "Alice" logs in
+    And "Alice" marks the following resources as favorite using "batch action"
+      | resource   |
+      | projects   |
+      | report.pdf |
+      | notes.txt  |
+      | todo.txt   |
+      | photo.jpg  |
+    And "Alice" navigates to the favorites page
+
+    # type
+    When "Alice" selects mediaType "Document" from the filter chip
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource  |
+      | notes.txt |
+      | todo.txt  |
+    But following resources should not be displayed in the files list for user "Alice"
+      | resource   |
+      | projects   |
+      | report.pdf |
+      | photo.jpg  |
+    When "Alice" selects mediaType "Image" from the filter chip
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource  |
+      | notes.txt |
+      | todo.txt  |
+      | photo.jpg |
+    But following resources should not be displayed in the files list for user "Alice"
+      | resource   |
+      | projects   |
+      | report.pdf |
+    When "Alice" clears mediaType filter
+
+    # tags
+    And "Alice" selects tag "work" from the filter chip
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource  |
+      | notes.txt |
+      | todo.txt  |
+    But following resources should not be displayed in the files list for user "Alice"
+      | resource   |
+      | projects   |
+      | report.pdf |
+      | photo.jpg  |
+
+    # tags and last modified combined
+    When "Alice" selects lastModified "today" from the filter chip
+    Then following resource should be displayed in the files list for user "Alice"
+      | resource |
+      | todo.txt |
+    But following resource should not be displayed in the files list for user "Alice"
+      | resource  |
+      | notes.txt |
+    When "Alice" clears tags filter
+
+    # last modified
+    And "Alice" selects lastModified "last 7 days" from the filter chip
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource  |
+      | projects  |
+      | notes.txt |
+      | todo.txt  |
+      | photo.jpg |
+    But following resource should not be displayed in the files list for user "Alice"
+      | resource   |
+      | report.pdf |
+    When "Alice" selects lastModified "last 30 days" from the filter chip
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource   |
+      | projects   |
+      | report.pdf |
+      | notes.txt  |
+      | todo.txt   |
+      | photo.jpg  |
+    When "Alice" clears lastModified filter
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource   |
+      | projects   |
+      | report.pdf |
+      | notes.txt  |
+      | todo.txt   |
+      | photo.jpg  |
+    And "Alice" logs out
