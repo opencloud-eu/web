@@ -90,15 +90,14 @@ config = {
             "suites": [
                 "admin-settings/",
                 "spaces/",
-                "rclone-crypt/",
             ],
         },
         "3": {
             "skip": False,
             "services": ["tika"],
             "suites": [
-                "search",
-                "shares",
+                "search/",
+                "shares/",
             ],
             "extraServerEnvironment": {
                 "FRONTEND_FULL_TEXT_SEARCH_ENABLED": True,
@@ -117,6 +116,12 @@ config = {
                 "embed/",
             ],
         },
+        "rclone-crypt": {
+            "skip": False,
+            "suites": [
+                "rclone-crypt/",
+            ],
+        },
         "preview": {
             "skip": False,
             "services": ["imagor"],
@@ -131,7 +136,7 @@ config = {
         "a11y": {
             "skip": False,
             "suites": [
-                "a11y",
+                "a11y/",
             ],
             "projects": [
                 "chromium",
@@ -232,7 +237,7 @@ config = {
             "fullCiOnly": True,
             "services": ["federation"],
             "suites": [
-                "ocm",
+                "ocm/",
             ],
             "extraServerEnvironment": {
                 "OC_ADD_RUN_SERVICES": "ocm",
@@ -1858,7 +1863,7 @@ def e2eTestsOnKeycloak(ctx):
                          "FORCE_COLOR": "1",
                      },
                      "commands": [
-                         "cd tests/e2e && pnpm bddgen && pnpm playwright test keycloak --project=chromium",
+                         "cd tests/e2e && pnpm bddgen && pnpm playwright test keycloak/ --project=chromium",
                      ],
                  },
              ] + \

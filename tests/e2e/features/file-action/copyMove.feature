@@ -3,36 +3,19 @@ Feature: Copy
   I want to copy/move
   So that I can work safely on a copy or move resource to different location
 
-  Scenario: Copy and move resources in personal space
+  Scenario: copy resources in personal space
     Given "Admin" creates following user using API
       | id    |
       | Alice |
     And "Alice" creates the following folders in personal space using API
-      | name                  |
-      | PARENTCopy1           |
-      | PARENTCopy2           |
-      | PARENTMove            |
-      | PARENTCopy3           |
-      | PARENTCopy4/Sub1/Sub2 |
-      | PARENT                |
-      | PARENT/Sub1/Sub       |
-      | PARENT/Sub2           |
-      | PARENT/Sub3           |
-      | PARENT/Sub4           |
-      | PARENT/Sub5           |
-      | PARENT/my-docs        |
+      | name        |
+      | PARENTCopy1 |
+      | PARENTCopy3 |
     And "Alice" creates the following files into personal space using API
-      | pathToFile               | content                             |
-      | PARENTCopy3/example1.txt | example text                        |
-      | PARENTCopy3/example2.txt | example text                        |
-      | KeyboardExample.txt      | copy with the help of keyboard      |
-      | dragDrop.txt             | copy with the help of drag-drop     |
-      | PARENT/fileToCopy1.txt   | some content                        |
-      | PARENT/fileToCopy2.txt   | some content                        |
-      | PARENT/fileToCopy3.txt   | some content                        |
-      | PARENT/fileToCopy4.txt   | some content                        |
-      | PARENT/fileToCopy5.txt   | some content                        |
-      | PARENT/my-docs/lorem.txt | lorem epsum                         |
+      | pathToFile               | content                        |
+      | PARENTCopy3/example1.txt | example text                   |
+      | PARENTCopy3/example2.txt | example text                   |
+      | KeyboardExample.txt      | copy with the help of keyboard |
     And "Alice" logs in
     And "Alice" reduces the tile size
 
@@ -48,8 +31,30 @@ Feature: Copy
     And "Alice" copies the following resource to a new folder "Personal/new-folder"
       | resource                 |
       | PARENTCopy3/example1.txt |
+    And "Alice" logs out
 
-    And "Alice" moves the following resource using drag-drop
+
+  Scenario: move resources in personal space
+    Given "Admin" creates following user using API
+      | id    |
+      | Alice |
+    And "Alice" creates the following folders in personal space using API
+      | name                  |
+      | PARENTCopy1           |
+      | PARENTCopy2           |
+      | PARENTMove            |
+      | PARENTCopy4/Sub1/Sub2 |
+      | PARENT/my-docs        |
+    And "Alice" creates the following files into personal space using API
+      | pathToFile               | content                         |
+      | dragDrop.txt             | copy with the help of drag-drop |
+      | PARENTCopy1/example1.txt | example text                    |
+      | PARENTCopy1/example2.txt | example text                    |
+      | PARENT/my-docs/lorem.txt | lorem epsum                     |
+    And "Alice" logs in
+    And "Alice" reduces the tile size
+
+    When "Alice" moves the following resource using drag-drop
       | resource     | to          |
       | dragDrop.txt | PARENTCopy2 |
     And "Alice" moves the following resource using dropdown-menu
@@ -70,8 +75,31 @@ Feature: Copy
     And "Alice" moves the following resource to a new folder "Personal/another-folder"
       | resource       |
       | PARENT/my-docs |
+    And "Alice" logs out
 
-    And "Alice" opens the "files" app
+
+  Scenario: copy multiple resources at once in personal space
+    Given "Admin" creates following user using API
+      | id    |
+      | Alice |
+    And "Alice" creates the following folders in personal space using API
+      | name        |
+      | PARENT/Sub1 |
+      | PARENT/Sub2 |
+      | PARENT/Sub3 |
+      | PARENT/Sub4 |
+      | PARENT/Sub5 |
+    And "Alice" creates the following files into personal space using API
+      | pathToFile             | content      |
+      | PARENT/fileToCopy1.txt | some content |
+      | PARENT/fileToCopy2.txt | some content |
+      | PARENT/fileToCopy3.txt | some content |
+      | PARENT/fileToCopy4.txt | some content |
+      | PARENT/fileToCopy5.txt | some content |
+    And "Alice" logs in
+    And "Alice" reduces the tile size
+
+    When "Alice" opens the "files" app
     And "Alice" opens folder "PARENT"
     And "Alice" copies the following resources to "Personal/PARENT/Sub1" at once using dropdown-menu
       | resource        |
@@ -100,6 +128,37 @@ Feature: Copy
       | fileToCopy5.txt |
       | Sub4            |
       | Sub5            |
+    And "Alice" logs out
+
+
+  Scenario: move multiple resources at once in personal space
+    Given "Admin" creates following user using API
+      | id    |
+      | Alice |
+    And "Alice" creates the following folders in personal space using API
+      | name             |
+      | PARENT/Sub1/Sub  |
+      | PARENT/Sub1/Sub4 |
+      | PARENT/Sub1/Sub5 |
+      | PARENT/Sub2      |
+      | PARENT/Sub4      |
+    And "Alice" creates the following files into personal space using API
+      | pathToFile                  | content      |
+      | PARENT/fileToCopy1.txt      | some content |
+      | PARENT/fileToCopy2.txt      | some content |
+      | PARENT/fileToCopy3.txt      | some content |
+      | PARENT/fileToCopy4.txt      | some content |
+      | PARENT/fileToCopy5.txt      | some content |
+      | PARENT/Sub1/fileToCopy1.txt | some content |
+      | PARENT/Sub1/fileToCopy2.txt | some content |
+      | PARENT/Sub1/fileToCopy3.txt | some content |
+      | PARENT/Sub1/fileToCopy4.txt | some content |
+      | PARENT/Sub1/fileToCopy5.txt | some content |
+    And "Alice" logs in
+    And "Alice" reduces the tile size
+
+    When "Alice" opens the "files" app
+    And "Alice" opens folder "PARENT"
     And "Alice" opens folder "Sub1"
     And "Alice" moves the following resources to "Personal/PARENT/Sub1/Sub" at once using dropdown-menu
       | resource        |
