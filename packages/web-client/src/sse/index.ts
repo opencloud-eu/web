@@ -127,7 +127,9 @@ export class SSEAdapter implements EventSource {
 
   fetchProvider(...args: [RequestInfo | URL, RequestInit]) {
     const [resource, config] = args
-    const fetchConfig = { ...config, ...this.fetchOptions }
+    // firefox lets concurrent requests to the same url wait for the cache entry of the first one,
+    // which never completes for an event stream. hence other tabs would never get any events.
+    const fetchConfig: RequestInit = { ...config, cache: 'no-store', ...this.fetchOptions }
     return window.fetch(resource, fetchConfig)
   }
 

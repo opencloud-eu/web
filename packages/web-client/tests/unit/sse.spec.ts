@@ -74,7 +74,7 @@ describe('SSEAdapter', () => {
 
     sseAdapter.fetchProvider(url, fetchOptions)
 
-    expect(mockFetch).toHaveBeenCalledWith(url, { ...fetchOptions })
+    expect(mockFetch).toHaveBeenCalledWith(url, { ...fetchOptions, cache: 'no-store' })
   })
 
   test('it should update the access token in fetch options', () => {
