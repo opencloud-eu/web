@@ -63,25 +63,22 @@ export const useCollaboratorSearch = () => {
     collaborators: CollaboratorAutoCompleteItem[],
     contacts: Contact[] = []
   ): CollaboratorAutoCompleteItem[] {
-    if (!unref(canInviteGuests)) {
-      return []
-    }
-
     const trimmedQuery = (query || '').trim()
-    const queryCandidate = getGuestCandidate(
-      trimmedQuery,
-      trimmedQuery.toLowerCase(),
-      collaborators
-    )
-    const contactCandidates = contacts.map((contact) => {
-      const candidate = getGuestCandidate(contact.email, contact.displayName, collaborators)
-      return candidate && { ...candidate, mail: candidate.id }
-    })
+    const hiddenAccountEmail = isOwnedByHiddenMailUser(collaborators)
+      ? getCanonicalEmail(trimmedQuery)
+      : undefined
 
     const candidates = new Map<string, CollaboratorAutoCompleteItem>()
-    ;[queryCandidate, ...contactCandidates].filter(Boolean).forEach((candidate) => {
+    for (const [address, displayName] of [
+      [trimmedQuery, trimmedQuery.toLowerCase()],
+      ...contacts.map(({ email, displayName }) => [email, displayName])
+    ]) {
+      const candidate = getGuestCandidate(address, displayName, collaborators)
+      if (!candidate || candidate.id === hiddenAccountEmail) {
+        continue
+      }
       candidates.set(candidate.id, candidate)
-    })
+    }
     return [...candidates.values()]
   }
 
@@ -98,14 +95,24 @@ export const useCollaboratorSearch = () => {
     ) {
       return undefined
     }
-    return { id: email, displayName: displayName || email, shareType: ShareTypes.guest.value }
+    return {
+      id: email,
+      displayName: displayName || email,
+      ...(displayName && displayName !== email && { mail: email }),
+      shareType: ShareTypes.guest.value
+    }
+  }
+
+  /**
+   * Whether the search found a single user without a visible mail address, who
+   * then most likely owns the searched address.
+   */
+  function isOwnedByHiddenMailUser(collaborators: CollaboratorAutoCompleteItem[]) {
+    const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)
+    return users.length === 1 && !users[0].mail
   }
 
   function emailBelongsToAccount(email: string, collaborators: CollaboratorAutoCompleteItem[]) {
-    const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)
-    if (users.length === 1 && !users[0].mail) {
-      return true
-    }
     return collaborators.some((c) =>
       [c.mail?.toLowerCase(), c.onPremisesSamAccountName?.toLowerCase()].includes(
         email.toLowerCase()

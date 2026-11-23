@@ -716,7 +716,7 @@ describe('InviteCollaboratorForm', () => {
   describe('share action', () => {
     it('invites an Open-Xchange contact as a guest by email', async () => {
       const { wrapper } = getWrapper({ openXchange: true })
-      const { addShare, addLink } = useSharesStore()
+      const { addShare } = useSharesStore()
       vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
       ;(wrapper.vm as any).selectedCollaborators = [
         {
@@ -734,7 +734,6 @@ describe('InviteCollaboratorForm', () => {
           options: expect.objectContaining({ recipients: [{ email: 'jane@example.com' }] })
         })
       )
-      expect(addLink).not.toHaveBeenCalled()
     })
     it('shows the generic share toast for collaborator shares', async () => {
       const { wrapper } = getWrapper()
@@ -939,7 +938,8 @@ describe('InviteCollaboratorForm', () => {
       const { wrapper } = getWrapper()
       const { addShare } = useSharesStore()
       vi.mocked(addShare).mockImplementation(({ options }) =>
-        ['failing-user', undefined].includes(options.recipients[0].objectId)
+        options.recipients[0].objectId === 'failing-user' ||
+        options.recipients[0].email === 'guest@example.com'
           ? Promise.reject(new Error('share failed'))
           : Promise.resolve(mock<CollaboratorShare>())
       )

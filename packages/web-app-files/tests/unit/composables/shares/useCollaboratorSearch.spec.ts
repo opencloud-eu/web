@@ -55,7 +55,6 @@ describe('useCollaboratorSearch', () => {
         {
           id: 'john@example.com',
           displayName: 'john@example.com',
-          mail: 'john@example.com',
           shareType: ShareTypes.guest.value
         }
       ])
@@ -93,21 +92,60 @@ describe('useCollaboratorSearch', () => {
       ])
     })
     it.each([
+      { name: 'its mail', user: { mail: 'mary@example.com' } },
+      { name: 'its account name', user: { onPremisesSamAccountName: 'mary@example.com' } },
+      { name: 'its mail in another case', user: { mail: 'MARY@Example.com' } },
+      { name: 'its mail with a unicode domain', user: { mail: 'mary@xn--mller-kva.de' } }
+    ])('leaves out a contact whose address matches a user by $name', ({ user }) => {
+      const { instance } = getSearchWrapper()
+      const collaborators = [
+        { id: '1', mail: 'other@example.com', shareType: ShareTypes.user.value },
+        { id: '2', ...user, shareType: ShareTypes.user.value }
+      ] as CollaboratorAutoCompleteItem[]
+      const email = user.mail?.includes('xn--') ? 'mary@müller.de' : 'mary@example.com'
+
+      const candidates = instance.getGuestCandidates('ma', collaborators, [
+        { id: '1', displayName: 'Mary', email }
+      ])
+
+      expect(candidates).toEqual([])
+    })
+    it('offers contacts when the search found a single user without a visible mail', () => {
+      const { instance } = getSearchWrapper()
+      const user = { id: '2', shareType: ShareTypes.user.value } as CollaboratorAutoCompleteItem
+
+      const candidates = instance.getGuestCandidates(
+        'ja',
+        [user],
+        [{ id: '1', displayName: 'Jane Doe', email: 'jane@partner.com' }]
+      )
+
+      expect(candidates).toEqual([expect.objectContaining({ id: 'jane@partner.com' })])
+    })
+    it('leaves out the entered address and its contact when a single user without a visible mail was found', () => {
+      const { instance } = getSearchWrapper()
+      const user = { id: '2', shareType: ShareTypes.user.value } as CollaboratorAutoCompleteItem
+
+      const candidates = instance.getGuestCandidates(
+        'jane@example.com',
+        [user],
+        [
+          { id: '1', displayName: 'Jane', email: 'Jane@example.com' },
+          { id: '2', displayName: 'John', email: 'john@example.com' }
+        ]
+      )
+
+      expect(candidates).toEqual([expect.objectContaining({ id: 'john@example.com' })])
+    })
+    it.each([
       { canInvite: false, guestLinksEnabled: true },
       { canInvite: true, guestLinksEnabled: false }
     ])(
-      'offers no guests when guest invites are not possible (%o)',
+      'can not invite guests when guest invites are not possible (%o)',
       ({ canInvite, guestLinksEnabled }) => {
         const { instance } = getSearchWrapper({ canInvite, guestLinksEnabled })
 
-        const candidates = instance.getGuestCandidates(
-          'jane@example.com',
-          [],
-          [{ id: '1', displayName: 'Jane', email: 'jane@example.com' }]
-        )
-
         expect(unref(instance.canInviteGuests)).toBe(false)
-        expect(candidates).toEqual([])
       }
     )
   })

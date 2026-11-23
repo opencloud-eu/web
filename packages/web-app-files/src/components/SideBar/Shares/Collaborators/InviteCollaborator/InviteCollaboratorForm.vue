@@ -318,15 +318,13 @@ const {
   searchInProgress,
   searchQuery
 } = useCollaboratorAutocomplete('files-share-invite-input', async (query, signal) => {
-  const collaborators = await searchCollaborators(query, {
-    signal,
-    external: unref(isExternalShareRoleType)
-  })
-
   // guests can't be invited to spaces yet
   const guestsPossible =
     !unref(isSpace) && !unref(isExternalShareRoleType) && unref(canInviteGuests)
-  const contacts = guestsPossible ? await searchOpenXchangeContacts(query.trim(), signal) : []
+  const [collaborators, contacts] = await Promise.all([
+    searchCollaborators(query, { signal, external: unref(isExternalShareRoleType) }),
+    guestsPossible ? searchOpenXchangeContacts(query.trim(), signal) : []
+  ])
   const guests = guestsPossible ? getGuestCandidates(query, collaborators, contacts) : []
 
   const results = [...collaborators, ...guests].filter(
