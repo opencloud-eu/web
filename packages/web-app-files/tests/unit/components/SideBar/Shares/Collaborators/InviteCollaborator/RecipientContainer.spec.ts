@@ -25,14 +25,6 @@ describe('InviteCollaborator RecipientContainer', () => {
       label: 'Guest user'
     })
   })
-  it('renders the contact icon and label for address book contact recipients', () => {
-    const recipient = getRecipient(ShareTypes.contact.value)
-    const { wrapper } = getMountedWrapper(recipient)
-    expect((wrapper.vm as any).formattedRecipient.icon).toEqual({
-      name: ShareTypes.contact.icon,
-      label: 'Contact'
-    })
-  })
   it('displays an avatar image if capability is present', async () => {
     const recipient = getRecipient()
     const { wrapper } = getMountedWrapper(recipient, true)

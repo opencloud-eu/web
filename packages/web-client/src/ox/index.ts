@@ -1,12 +1,7 @@
 import { AxiosInstance } from 'axios'
 import { z } from 'zod'
 import { urlJoin } from '../utils'
-import {
-  Contact,
-  ContactSchema,
-  OxAutocompleteResponseSchema,
-  OxComposeSpaceResponseSchema
-} from './types'
+import { Contact, ContactSchema, OxAutocompleteResponseSchema } from './types'
 
 export * from './types'
 
@@ -14,20 +9,8 @@ export * from './types'
 // @see https://documentation.open-xchange.com/7.8.2/middleware/http_api/2_column_identifiers.html
 const COLUMNS = '1,500,555,556,557'
 
-export interface OXMailRecipient {
-  name?: string
-  email: string
-}
-
 export interface OX {
   autocompleteContacts(args: { query: string; signal?: AbortSignal }): Promise<Contact[]>
-  sendMail(args: {
-    from: OXMailRecipient
-    to: OXMailRecipient
-    subject: string
-    htmlContent: string
-    signal?: AbortSignal
-  }): Promise<void>
 }
 
 /**
@@ -59,41 +42,6 @@ export const ox = (axiosClient: AxiosInstance, getApiUrl: () => string | undefin
         .filter((contact) => !!contact.email)
 
       return z.array(ContactSchema).parse(contacts)
-    },
-
-    async sendMail({ from, to, subject, htmlContent, signal }) {
-      const apiUrl = getApiUrl()
-      if (!apiUrl) {
-        throw new Error('Open-Xchange API url is not configured')
-      }
-
-      // 1. open a new composition space
-      const { data: openData } = await axiosClient.post(urlJoin(apiUrl, 'mail', 'compose'), [], {
-        params: { type: 'new' },
-        signal
-      })
-      const { data: space } = OxComposeSpaceResponseSchema.parse(openData)
-
-      // 2. send the message. Addresses are [displayName, email] tuples per the OX Address schema.
-      // A `type=new` composition space has no default `from`/`sender`, so we must set them
-      // explicitly: the middleware rejects the send with a "missing field: from" error otherwise.
-      const sender: [string, string] = [from.name ?? '', from.email]
-      const formData = new FormData()
-      formData.append(
-        'JSON',
-        JSON.stringify({
-          from: sender,
-          sender,
-          to: [[to.name ?? '', to.email]],
-          subject,
-          content: htmlContent,
-          contentType: 'text/html'
-        })
-      )
-
-      await axiosClient.post(urlJoin(apiUrl, 'mail', 'compose', space.id, 'send'), formData, {
-        signal
-      })
     }
   }
 }

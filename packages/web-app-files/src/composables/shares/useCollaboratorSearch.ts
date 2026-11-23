@@ -4,6 +4,7 @@ import * as EmailValidator from 'email-validator'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { call, CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
+import { Contact } from '@opencloud-eu/web-client/ox'
 import {
   useAbility,
   useCapabilityStore,
@@ -15,6 +16,10 @@ export const useCollaboratorSearch = () => {
   const clientService = useClientService()
   const capabilityStore = useCapabilityStore()
   const { can } = useAbility()
+
+  const canInviteGuests = computed(
+    () => capabilityStore.sharingGuestLinksEnabled && can('create-all', 'GuestInvite')
+  )
 
   /**
    * Users and groups matching `query`, each tagged with the share type it would
@@ -50,34 +55,64 @@ export const useCollaboratorSearch = () => {
   }
 
   /**
-   * A guest invite for `query` if it is a mail address that doesn't belong to
-   * one of the `collaborators` found for it.
+   * Guest invites for `query` if it is a mail address and for the address book
+   * `contacts`, leaving out addresses that belong to one of the `collaborators`.
    */
   function getGuestCandidates(
     query: string,
-    collaborators: CollaboratorAutoCompleteItem[]
+    collaborators: CollaboratorAutoCompleteItem[],
+    contacts: Contact[] = []
   ): CollaboratorAutoCompleteItem[] {
     const trimmedQuery = (query || '').trim()
-    const email = getCanonicalEmail(trimmedQuery)
+    const hiddenAccountEmail = isOwnedByHiddenMailUser(collaborators)
+      ? getCanonicalEmail(trimmedQuery)
+      : undefined
+
+    const candidates = new Map<string, CollaboratorAutoCompleteItem>()
+    for (const [address, displayName] of [
+      [trimmedQuery, trimmedQuery.toLowerCase()],
+      ...contacts.map(({ email, displayName }) => [email, displayName])
+    ]) {
+      const candidate = getGuestCandidate(address, displayName, collaborators)
+      if (!candidate || candidate.id === hiddenAccountEmail) {
+        continue
+      }
+      candidates.set(candidate.id, candidate)
+    }
+    return [...candidates.values()]
+  }
+
+  function getGuestCandidate(
+    address: string,
+    displayName: string,
+    collaborators: CollaboratorAutoCompleteItem[]
+  ): CollaboratorAutoCompleteItem | undefined {
+    const email = getCanonicalEmail(address)
     if (
-      !capabilityStore.sharingGuestLinksEnabled ||
-      !can('create-all', 'GuestInvite') ||
       !email ||
-      emailBelongsToAccount(trimmedQuery, collaborators) ||
+      emailBelongsToAccount(address, collaborators) ||
       emailBelongsToAccount(email, collaborators)
     ) {
-      return []
+      return undefined
     }
-    return [
-      { id: email, displayName: trimmedQuery.toLowerCase(), shareType: ShareTypes.guest.value }
-    ]
+    return {
+      id: email,
+      displayName: displayName || email,
+      ...(displayName && displayName !== email && { mail: email }),
+      shareType: ShareTypes.guest.value
+    }
+  }
+
+  /**
+   * Whether the search found a single user without a visible mail address, who
+   * then most likely owns the searched address.
+   */
+  function isOwnedByHiddenMailUser(collaborators: CollaboratorAutoCompleteItem[]) {
+    const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)
+    return users.length === 1 && !users[0].mail
   }
 
   function emailBelongsToAccount(email: string, collaborators: CollaboratorAutoCompleteItem[]) {
-    const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)
-    if (users.length === 1 && !users[0].mail) {
-      return true
-    }
     return collaborators.some((c) =>
       [c.mail?.toLowerCase(), c.onPremisesSamAccountName?.toLowerCase()].includes(
         email.toLowerCase()
@@ -85,7 +120,7 @@ export const useCollaboratorSearch = () => {
     )
   }
 
-  return { searchCollaborators, getGuestCandidates }
+  return { canInviteGuests, searchCollaborators, getGuestCandidates }
 }
 
 /**
