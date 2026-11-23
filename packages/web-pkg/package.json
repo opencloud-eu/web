@@ -114,7 +114,6 @@
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:^",
-    "@types/node": "^26.0.0",
-    "vite-plugin-node-polyfills": "0.28.0"
+    "@types/node": "^26.0.0"
   }
 }

@@ -1,6 +1,11 @@
 import PQueue from 'p-queue'
-import { Resource, isProjectSpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
-import { dirname, join } from 'path'
+import {
+  Resource,
+  dirname,
+  isProjectSpaceResource,
+  isShareSpaceResource,
+  urlJoin
+} from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
@@ -58,7 +63,7 @@ export function useFileActionsDuplicate() {
 
         duplicationTargets.push({
           source: resource,
-          path: join(parentPath, duplicatedName)
+          path: urlJoin(parentPath, duplicatedName)
         })
       } catch (error) {
         console.error(error)
