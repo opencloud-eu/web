@@ -11,12 +11,9 @@
 - fix: sanitize inlined SVGs [[#4559](https://github.com/opencloud-eu/web/pull/4559)]
 - chore: check translations for markup after compiling [[#4561](https://github.com/opencloud-eu/web/pull/4561)]
 
-### ✅ Tests
-
-- test(e2e): add favorites tests for spaces and shares [[#4563](https://github.com/opencloud-eu/web/pull/4563)]
-
 ### 🐛 Bug Fixes
 
+- fix: enable new button in editable shares within viewer spaces [[#4579](https://github.com/opencloud-eu/web/pull/4579)]
 - fix: show the loading spinner on the public upload page [[#4572](https://github.com/opencloud-eu/web/pull/4572)]
 - fix: don't define the mail attachment string twice [[#4566](https://github.com/opencloud-eu/web/pull/4566)]
 - fix: skip disabled resources when selecting all via keyboard [[#4522](https://github.com/opencloud-eu/web/pull/4522)]
@@ -35,6 +32,10 @@
 - fix: wrap long group names in the user groups field [[#4494](https://github.com/opencloud-eu/web/pull/4494)]
 - fix: wrap long text in the preview stage [[#4489](https://github.com/opencloud-eu/web/pull/4489)]
 - fix: disable sidebar toggle on account sub pages [[#4490](https://github.com/opencloud-eu/web/pull/4490)]
+
+### ✅ Tests
+
+- test(e2e): add favorites tests for spaces and shares [[#4563](https://github.com/opencloud-eu/web/pull/4563)]
 
 ### 📈 Enhancement
 
