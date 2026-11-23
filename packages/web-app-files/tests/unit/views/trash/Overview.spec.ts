@@ -143,7 +143,7 @@ describe('TrashOverview', () => {
       { sortDir: SortDir.Desc, expected: ['1', '3', '2'] }
     ])('keeps the personal space on top when sorting $sortDir', async ({ sortDir, expected }) => {
       const spaces = [spaceMocks[2], spaceMocks[0], spaceMocks[1]]
-      const { wrapper } = getWrapper({ spaces, query: { 'sort-by': 'name', 'sort-dir': sortDir } })
+      const { wrapper } = getWrapper({ spaces, sort: { sortBy: 'name', sortDir } })
       await flushPromises()
       expect(getRenderedIds(wrapper)).toEqual(expected)
     })
@@ -160,7 +160,7 @@ describe('TrashOverview', () => {
         ] as SpaceResource[]
         const { wrapper } = getWrapper({
           spaces,
-          query: { 'sort-by': 'indicators', 'sort-dir': sortDir }
+          sort: { sortBy: 'indicators', sortDir }
         })
         await flushPromises()
         expect(getRenderedIds(wrapper)).toEqual(expected)
@@ -174,7 +174,7 @@ describe('TrashOverview', () => {
       async ({ sortDir, expected }) => {
         const { wrapper } = getWrapper({
           viewMode: 'resource-tiles',
-          query: { 'sort-by': 'indicators', 'sort-dir': sortDir }
+          sort: { sortBy: 'indicators', sortDir }
         })
         await flushPromises()
         const tiles = wrapper.findComponent(ResourceTiles)
@@ -298,27 +298,25 @@ function getWrapper({
   stubResourceTable = true,
   areEmptyTrashesShown = true,
   viewMode = 'resource-table',
-  query = {},
+  sort = { sortBy: 'name', sortDir: SortDir.Asc },
   listMyDrives
 }: {
   spaces?: SpaceResource[]
   stubResourceTable?: boolean
   areEmptyTrashesShown?: boolean
   viewMode?: string
-  query?: Record<string, string>
+  sort?: { sortBy: string; sortDir: SortDir }
   listMyDrives?: Graph['drives']['listMyDrives']
 } = {}) {
   window.localStorage.setItem('oc-options_view-mode', viewMode)
   window.localStorage.setItem('oc-options_tiles-size', '1')
+  window.localStorage.setItem('oc-options_trash-overview_sort-by', sort.sortBy)
+  window.localStorage.setItem('oc-options_trash-overview_sort-dir', sort.sortDir)
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({
         name: 'trash-overview',
-        query: {
-          'sort-by': 'name',
-          'sort-dir': 'asc',
-          ...query
-        }
+        query: {}
       })
     })
   }

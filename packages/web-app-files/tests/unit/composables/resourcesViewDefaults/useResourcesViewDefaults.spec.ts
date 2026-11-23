@@ -188,7 +188,6 @@ describe('useResourcesViewDefaults', () => {
         { name: 'largest', prop: 'size', sortable: true, sortDir: SortDir.Desc }
       ]
       const { result } = getWrapper({
-        query: { 'sort-by': 'largest', 'sort-dir': SortDir.Desc },
         resources: [
           { id: '1', name: 'a', type: 'file', size: 1 },
           { id: '2', name: 'b', type: 'file', size: 3 },

@@ -1,5 +1,5 @@
 import { HttpClient } from '../../http'
-import { graph, ocs, ox, webdav } from '@opencloud-eu/web-client'
+import { encodeBase64, graph, ocs, ox, webdav } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
 import { OCS } from '@opencloud-eu/web-client/ocs'
 import { OX } from '@opencloud-eu/web-client/ox'
@@ -165,8 +165,7 @@ export class ClientService {
 
         if (this.authStore.publicLinkPassword) {
           headers['Authorization'] =
-            'Basic ' +
-            Buffer.from(['public', this.authStore.publicLinkPassword].join(':')).toString('base64')
+            'Basic ' + encodeBase64(['public', this.authStore.publicLinkPassword].join(':'))
         }
 
         return headers

@@ -1,7 +1,6 @@
 import { defineConfig, mergeConfig, Plugin, UserConfig, ViteDevServer } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { Target, viteStaticCopy } from 'vite-plugin-static-copy'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tailwindcss from '@tailwindcss/vite'
 import { basename, join } from 'path'
 import { existsSync, readdirSync, readFileSync } from 'fs'
@@ -192,9 +191,6 @@ export default defineConfig(({ mode, command }) => {
       },
       plugins: [
         tailwindcss(),
-        nodePolyfills({
-          exclude: ['crypto']
-        }),
 
         // Module Federation shared deps are registered at runtime in bootstrap.ts.
         // The @module-federation/vite plugin is only used on the remote (extension-sdk) side.

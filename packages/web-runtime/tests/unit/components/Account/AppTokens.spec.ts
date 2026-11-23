@@ -8,6 +8,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { ClientService, useModals } from '@opencloud-eu/web-pkg'
 import { flushPromises } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import { OcTable } from '@opencloud-eu/design-system/components'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import AppTokens from '../../../../src/components/Account/AppTokens.vue'
@@ -52,11 +53,13 @@ describe('AppTokens component', () => {
         expect(table.props('sortDir')).toBe(SortDir.Desc)
         expect(table.props('data').map(({ token }: AppToken) => token)).toEqual(['3', '2', '1'])
       })
-      it('sorts by the sort parameters from the route query', async () => {
-        const { wrapper } = getWrapper({
-          appTokens,
-          query: { 'sort-by': 'expirationDate', 'sort-dir': SortDir.Asc }
-        })
+      afterEach(() => {
+        window.localStorage.clear()
+      })
+
+      it('sorts by the stored sorting', async () => {
+        storeSort('expirationDate', SortDir.Asc)
+        const { wrapper } = getWrapper({ appTokens })
         await flushPromises()
         const table = wrapper.findComponent<typeof OcTable>(selectors.appTokensTable)
 
@@ -65,6 +68,7 @@ describe('AppTokens component', () => {
         expect(table.props('data').map(({ token }: AppToken) => token)).toEqual(['2', '3', '1'])
       })
       it('sorts active tokens before expired ones by status', async () => {
+        storeSort('status', SortDir.Asc)
         const { wrapper } = getWrapper({
           appTokens: [
             {
@@ -79,8 +83,7 @@ describe('AppTokens component', () => {
               created_date: '2021-01-01',
               expiration_date: '2999-01-01'
             }
-          ],
-          query: { 'sort-by': 'status', 'sort-dir': SortDir.Asc }
+          ]
         })
         await flushPromises()
         const table = wrapper.findComponent<typeof OcTable>(selectors.appTokensTable)
@@ -90,17 +93,16 @@ describe('AppTokens component', () => {
           'expired'
         ])
       })
-      it('stores the sort parameters in the route query on sort', async () => {
-        const { wrapper, mocks } = getWrapper({ appTokens })
+      it('sorts the table when it emits "sort"', async () => {
+        const { wrapper } = getWrapper({ appTokens })
         await flushPromises()
         const table = wrapper.findComponent<typeof OcTable>(selectors.appTokensTable)
         table.vm.$emit('sort', { sortBy: 'expirationDate', sortDir: SortDir.Asc })
+        await nextTick()
 
-        expect(mocks.$router.replace).toHaveBeenCalledWith(
-          expect.objectContaining({
-            query: expect.objectContaining({ 'sort-by': 'expirationDate', 'sort-dir': SortDir.Asc })
-          })
-        )
+        expect(table.props('sortBy')).toBe('expirationDate')
+        expect(table.props('sortDir')).toBe(SortDir.Asc)
+        expect(table.props('data').map(({ token }: AppToken) => token)).toEqual(['2', '3', '1'])
       })
     })
     it('does show message if no app tokens found', async () => {
@@ -155,14 +157,17 @@ describe('AppTokens component', () => {
   })
 })
 
+function storeSort(sortBy: string, sortDir: SortDir) {
+  window.localStorage.setItem('oc-options_account-preferences_sort-by', sortBy)
+  window.localStorage.setItem('oc-options_account-preferences_sort-dir', sortDir)
+}
+
 function getWrapper({
   authAppServiceDisabled = false,
-  appTokens = [],
-  query = {}
+  appTokens = []
 }: {
   authAppServiceDisabled?: boolean
   appTokens?: AppToken[]
-  query?: Record<string, string>
 } = {}) {
   const clientService = mockDeep<ClientService>()
 
@@ -174,7 +179,7 @@ function getWrapper({
 
   // assign the query after creating the mock, otherwise missing query params resolve to mock functions
   const currentRoute = mock<RouteLocationNormalizedLoaded>({ name: 'account-preferences' })
-  currentRoute.query = query
+  currentRoute.query = {}
 
   const mocks = { ...defaultComponentMocks({ currentRoute }), $clientService: clientService }
 

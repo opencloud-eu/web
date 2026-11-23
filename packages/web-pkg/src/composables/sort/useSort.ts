@@ -1,7 +1,7 @@
-import { ref, Ref, computed, unref, isRef, MaybeRef } from 'vue'
+import { Ref, computed, unref, toRef, MaybeRef } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
 import { ReadOnlyRef } from '../../utils'
-import { useRouteName, useRouter, useRouteQueryPersisted, QueryValue } from '../router'
-import { SortConstants } from './constants'
+import { useRouteName } from '../router'
 import get from 'lodash-es/get'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 
@@ -24,9 +24,10 @@ export interface SortOptions<T extends object> {
   items: MaybeRef<Array<T>>
   fields: MaybeRef<Array<SortField>>
   sortBy?: MaybeRef<string>
-  sortByQueryName?: MaybeRef<string>
   sortDir?: MaybeRef<SortDir>
-  sortDirQueryName?: MaybeRef<string>
+  /**
+   * The route whose stored sorting gets used, defaults to the current route.
+   */
   routeName?: MaybeRef<string>
   foldersFirst?: MaybeRef<boolean>
   /**
@@ -44,18 +45,18 @@ export interface SortResult<T> {
 }
 
 export function useSort<T extends object>(options: SortOptions<T>): SortResult<T> {
-  const router = useRouter()
-  const sortByRef = createSortByQueryRef(options)
-  const sortDirRef = createSortDirQueryRef(options)
+  const sortByRef: Ref<string> = options.sortBy
+    ? toRef(options.sortBy)
+    : useStoredSortValue(options.routeName, 'sort-by')
+  const sortDirRef: Ref<string> = options.sortDir
+    ? toRef(options.sortDir)
+    : useStoredSortValue(options.routeName, 'sort-dir')
 
   const sortBy = computed(
-    (): string =>
-      firstQueryValue(unref(sortByRef)) || unref(firstSortableField(unref(fields))?.name)
+    (): string => unref(sortByRef) || unref(firstSortableField(unref(fields))?.name)
   )
   const sortDir = computed((): SortDir => {
-    return (
-      sortDirFromQueryValue(unref(sortDirRef)) || defaultSortDirection(unref(sortBy), unref(fields))
-    )
+    return toSortDir(unref(sortDirRef)) || defaultSortDirection(unref(sortBy), unref(fields))
   })
   const fields = options.fields
 
@@ -78,15 +79,8 @@ export function useSort<T extends object>(options: SortOptions<T>): SortResult<T
   })
 
   const handleSort = ({ sortBy, sortDir }: { sortBy: string; sortDir: SortDir }) => {
-    // normally we would just set sortBy and sortDir here, but then the router could lose one of the two changes.
-    // hence we update the router directly by setting both values as query.
-    return router.replace({
-      query: {
-        ...unref(router.currentRoute).query,
-        [unref(options.sortByQueryName) || SortConstants.sortByQueryName]: sortBy,
-        [unref(options.sortDirQueryName) || SortConstants.sortDirQueryName]: sortDir
-      }
-    })
+    sortByRef.value = sortBy
+    sortDirRef.value = sortDir
   }
 
   return {
@@ -97,28 +91,9 @@ export function useSort<T extends object>(options: SortOptions<T>): SortResult<T
   }
 }
 
-function createSortByQueryRef<T extends object>(options: SortOptions<T>): Ref<QueryValue> {
-  if (options.sortBy) {
-    return isRef(options.sortBy) ? options.sortBy : ref(options.sortBy)
-  }
-
-  return useRouteQueryPersisted({
-    name: unref(options.sortByQueryName) || SortConstants.sortByQueryName,
-    defaultValue: unref(firstSortableField(unref(options.fields))?.name),
-    storagePrefix: unref(options.routeName) || unref(useRouteName())
-  })
-}
-
-function createSortDirQueryRef<T extends object>(options: SortOptions<T>): Ref<QueryValue> {
-  if (options.sortDir) {
-    return isRef(options.sortDir) ? options.sortDir : ref(options.sortDir)
-  }
-
-  return useRouteQueryPersisted({
-    name: unref(options.sortDirQueryName) || SortConstants.sortDirQueryName,
-    defaultValue: unref(firstSortableField(unref(options.fields))?.sortDir),
-    storagePrefix: unref(options.routeName) || unref(useRouteName())
-  })
+function useStoredSortValue(routeName: MaybeRef<string>, name: string): Ref<string> {
+  const prefix = unref(routeName) || unref(useRouteName())
+  return useLocalStorage<string>(`oc-options_${prefix}_${name}`, '', { writeDefaults: false })
 }
 
 const firstSortableField = (fields: SortField[]): SortField => {
@@ -277,12 +252,8 @@ const compare = (
   return c * modifier
 }
 
-const firstQueryValue = (value: QueryValue): string => {
-  return Array.isArray(value) ? value[0] : value
-}
-
-const sortDirFromQueryValue = (value: QueryValue): SortDir | null => {
-  switch (firstQueryValue(value)) {
+const toSortDir = (value: string): SortDir | null => {
+  switch (value) {
     case SortDir.Asc:
       return SortDir.Asc
     case SortDir.Desc:

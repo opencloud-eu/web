@@ -1,13 +1,15 @@
 import { resolve } from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import vue from '@vitejs/plugin-vue'
 import pkg from './package.json'
 
 const external = [...Object.keys(pkg.dependencies)]
 
 export default defineConfig({
+  define: {
+    'process.env.PACKAGE_VERSION': JSON.stringify(pkg.version)
+  },
   build: {
     lib: {
       entry: {
@@ -20,11 +22,5 @@ export default defineConfig({
       external
     }
   },
-  plugins: [
-    tailwindcss(),
-    vue(),
-    nodePolyfills({
-      exclude: ['crypto']
-    })
-  ]
+  plugins: [tailwindcss(), vue()]
 })

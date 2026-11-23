@@ -1,3 +1,4 @@
+export * from './base64'
 export * from './bytesToHex'
 export * from './encodePath'
 export * from './path'

@@ -1,5 +1,5 @@
 import { AuthStore, CapabilityStore, ClientService } from '@opencloud-eu/web-pkg'
-import { PublicLinkType } from '@opencloud-eu/web-client'
+import { decodeBase64, encodeBase64, PublicLinkType } from '@opencloud-eu/web-client'
 
 export interface PublicLinkManagerOptions {
   clientService: ClientService
@@ -66,7 +66,7 @@ export class PublicLinkManager {
     const password = sessionStorage.getItem(PublicLinkManager.buildStorageKey(token, 'password'))
     if (password) {
       try {
-        return Buffer.from(password, 'base64').toString()
+        return decodeBase64(password)
       } catch {
         this.clear(token)
       }
@@ -76,7 +76,7 @@ export class PublicLinkManager {
 
   setPassword(token: string, password: string): void {
     if (password.length) {
-      const encodedPassword = Buffer.from(password).toString('base64')
+      const encodedPassword = encodeBase64(password)
       sessionStorage.setItem(PublicLinkManager.buildStorageKey(token, 'password'), encodedPassword)
     } else {
       sessionStorage.removeItem(PublicLinkManager.buildStorageKey(token, 'password'))
