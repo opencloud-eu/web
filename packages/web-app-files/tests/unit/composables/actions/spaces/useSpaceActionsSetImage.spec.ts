@@ -59,26 +59,23 @@ describe('setImage', () => {
   })
 
   describe('handler', () => {
-    it('should create a modal', () => {
+    it('should create a modal', async () => {
       const space = mock<SpaceResource>({ id: '1' })
 
-      getWrapper({
-        setup: async ({ actions }, { clientService }) => {
-          clientService.webdav.getFileContents.mockResolvedValue({ body: new Blob() })
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({
-            space,
-            resources: [
-              {
-                webDavPath: '/spaces/1fe58d8b-aa69-4c22-baf7-97dd57479f22/subfolder/image.png',
-                name: 'image.png'
-              }
-            ] as Resource[]
-          })
-
-          expect(dispatchModal).toHaveBeenCalled()
-        }
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.webdav.getFileContents.mockResolvedValue({ body: new Blob() })
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({
+        space,
+        resources: [
+          {
+            webDavPath: '/spaces/1fe58d8b-aa69-4c22-baf7-97dd57479f22/subfolder/image.png',
+            name: 'image.png'
+          }
+        ] as Resource[]
       })
+
+      expect(dispatchModal).toHaveBeenCalled()
     })
 
     it('should show an error message when loading the image fails', async () => {
@@ -117,13 +114,13 @@ function getWrapper({
   setup
 }: {
   currentFolder?: Resource
-  setup: (
+  setup?: (
     instance: ReturnType<typeof useSpaceActionsSetImage>,
     options: {
       clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
     }
   ) => void
-}) {
+} = {}) {
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
@@ -131,22 +128,22 @@ function getWrapper({
   }
   mocks.$clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>())
 
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useSpaceActionsSetImage()
-        setup(instance, { clientService: mocks.$clientService })
-      },
-      {
-        mocks,
-        provide: mocks,
-        pluginOptions: {
-          piniaOptions: {
-            userState: { user: { id: '1', onPremisesSamAccountName: 'alice' } as User },
-            resourcesStore: { currentFolder }
-          }
+  let instance: ReturnType<typeof useSpaceActionsSetImage>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useSpaceActionsSetImage()
+      setup?.(instance, { clientService: mocks.$clientService })
+    },
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: {
+        piniaOptions: {
+          userState: { user: { id: '1', onPremisesSamAccountName: 'alice' } as User },
+          resourcesStore: { currentFolder }
         }
       }
-    )
-  }
+    }
+  )
+  return { wrapper, instance, mocks }
 }

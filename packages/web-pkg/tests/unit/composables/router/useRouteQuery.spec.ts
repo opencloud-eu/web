@@ -1,6 +1,7 @@
 import { useRouteQuery } from '../../../../src/composables'
 import { Ref, nextTick, computed, ComputedRef, unref } from 'vue'
 import { getComposableWrapper, createRouter } from '@opencloud-eu/web-test-helpers'
+import { flushPromises } from '@vue/test-utils'
 
 describe('useRouteQuery', () => {
   it('is reactive', async () => {
@@ -60,88 +61,90 @@ describe('useRouteQuery', () => {
     expect(wrapper.find('#fooValue').element.innerHTML).toBe('1')
   })
 
-  it('has a default value if route query is not set', () => {
+  it('has a default value if route query is not set', async () => {
     const router = createRouter()
 
     const mocks = { $router: router }
+    let fooQuery: Ref
     getComposableWrapper(
-      async () => {
-        const fooQuery = useRouteQuery('foo', 'defaultValue')
-
-        expect(fooQuery.value).toBe('defaultValue')
-
-        router.push({ path: '/', query: { foo: 'foo-1' } })
-        await nextTick()
-        expect(fooQuery.value).toBe('foo-1')
-
-        router.push({})
-        expect(fooQuery.value).toBe('defaultValue')
+      () => {
+        fooQuery = useRouteQuery('foo', 'defaultValue')
       },
       { mocks, provide: mocks }
     )
+
+    expect(fooQuery.value).toBe('defaultValue')
+
+    await router.push({ path: '/', query: { foo: 'foo-1' } })
+    expect(fooQuery.value).toBe('foo-1')
+
+    await router.push({ path: '/' })
+    expect(fooQuery.value).toBe('defaultValue')
   })
 
-  it('should update on route query change', () => {
+  it('should update on route query change', async () => {
     const router = createRouter()
 
     const mocks = { $router: router }
+    let fooQuery: Ref
+    let barQuery: Ref
     getComposableWrapper(
-      async () => {
-        const fooQuery = useRouteQuery('foo')
-        const barQuery = useRouteQuery('bar')
-
-        router.push({ path: '/', query: { foo: 'foo-1' } })
-        await nextTick()
-        expect(fooQuery.value).toBe('foo-1')
-        expect(barQuery.value).toBeFalsy()
-
-        router.push({ query: { foo: 'foo-2' } })
-        expect(fooQuery.value).toBe('foo-2')
-        expect(barQuery.value).toBeFalsy()
-
-        router.push({ query: { foo: 'foo-3', bar: 'bar-1' } })
-        expect(fooQuery.value).toBe('foo-3')
-        expect(barQuery.value).toBe('bar-1')
+      () => {
+        fooQuery = useRouteQuery('foo')
+        barQuery = useRouteQuery('bar')
       },
       { mocks, provide: mocks }
     )
+
+    await router.push({ path: '/', query: { foo: 'foo-1' } })
+    expect(fooQuery.value).toBe('foo-1')
+    expect(barQuery.value).toBeFalsy()
+
+    await router.push({ path: '/', query: { foo: 'foo-2' } })
+    expect(fooQuery.value).toBe('foo-2')
+    expect(barQuery.value).toBeFalsy()
+
+    await router.push({ path: '/', query: { foo: 'foo-3', bar: 'bar-1' } })
+    expect(fooQuery.value).toBe('foo-3')
+    expect(barQuery.value).toBe('bar-1')
   })
 
-  it('should be undefined if route changes and query is not present', () => {
+  it('should be undefined if route changes and query is not present', async () => {
     const router = createRouter()
 
     const mocks = { $router: router }
+    let fooQuery: Ref
     getComposableWrapper(
-      async () => {
-        const fooQuery = useRouteQuery('foo')
-
-        router.push({ path: '/home', query: { foo: 'bar' } })
-        await nextTick()
-        expect(fooQuery.value).toBe('bar')
-
-        router.push({ path: '/sub' })
-        expect(fooQuery.value).toBeUndefined()
+      () => {
+        fooQuery = useRouteQuery('foo')
       },
       { mocks, provide: mocks }
     )
+
+    await router.push({ path: '/home', query: { foo: 'bar' } })
+    expect(fooQuery.value).toBe('bar')
+
+    await router.push({ path: '/sub' })
+    expect(fooQuery.value).toBeUndefined()
   })
 
-  it('should update route query', () => {
+  it('should update route query', async () => {
     const router = createRouter()
 
     const mocks = { $router: router }
+    let fooQuery: Ref
     getComposableWrapper(
-      async () => {
-        const fooQuery = useRouteQuery('foo')
-
-        router.push({ path: '/home' })
-        expect(fooQuery.value).toBeUndefined()
-
-        fooQuery.value = 'changedThroughRef'
-        await nextTick()
-        expect(unref(router.currentRoute).query.foo).toBe('changedThroughRef')
+      () => {
+        fooQuery = useRouteQuery('foo')
       },
       { mocks, provide: mocks }
     )
+
+    await router.push({ path: '/home' })
+    expect(fooQuery.value).toBeUndefined()
+
+    fooQuery.value = 'changedThroughRef'
+    await flushPromises()
+    expect(unref(router.currentRoute).query.foo).toBe('changedThroughRef')
   })
 })

@@ -11,98 +11,70 @@ import { SpaceResource } from '@opencloud-eu/web-client'
 
 describe('editDescription', () => {
   describe('handler', () => {
-    it('should trigger the editDescription modal window with one resource', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({ resources: [{ id: '1' } as SpaceResource] })
+    it('should trigger the editDescription modal window with one resource', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({ resources: [{ id: '1' } as SpaceResource] })
 
-          expect(dispatchModal).toHaveBeenCalledTimes(1)
-        }
-      })
+      expect(dispatchModal).toHaveBeenCalledTimes(1)
     })
-    it('should not trigger the editDescription modal window with no resource', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({ resources: [] })
+    it('should not trigger the editDescription modal window with no resource', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({ resources: [] })
 
-          expect(dispatchModal).toHaveBeenCalledTimes(0)
-        }
-      })
+      expect(dispatchModal).toHaveBeenCalledTimes(0)
     })
   })
 
   describe('method "editDescriptionSpace"', () => {
-    it('should show message on success', () => {
-      getWrapper({
-        setup: async ({ editDescriptionSpace }, { clientService }) => {
-          clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(
-            mock<SpaceResource>()
-          )
-          await editDescriptionSpace(mock<SpaceResource>(), 'doesntmatter')
+    it('should show message on success', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(
+        mock<SpaceResource>()
+      )
+      await instance.editDescriptionSpace(mock<SpaceResource>(), 'doesntmatter')
 
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledTimes(1)
     })
-    it('should only send the description, not the cached space name', () => {
-      getWrapper({
-        setup: async ({ editDescriptionSpace }, { clientService }) => {
-          clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(
-            mock<SpaceResource>()
-          )
-          await editDescriptionSpace(mock<SpaceResource>({ id: '1', name: 'old' }), 'new')
+    it('should only send the description, not the cached space name', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(
+        mock<SpaceResource>()
+      )
+      await instance.editDescriptionSpace(mock<SpaceResource>({ id: '1', name: 'old' }), 'new')
 
-          expect(clientService.graphAuthenticated.drives.updateDrive).toHaveBeenCalledWith('1', {
-            description: 'new'
-          })
-        }
+      expect(mocks.$clientService.graphAuthenticated.drives.updateDrive).toHaveBeenCalledWith('1', {
+        description: 'new'
       })
     })
 
-    it('should show message on error', () => {
+    it('should show message on error', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      getWrapper({
-        setup: async ({ editDescriptionSpace }, { clientService }) => {
-          clientService.graphAuthenticated.drives.updateDrive.mockRejectedValue(new Error())
-          await editDescriptionSpace(mock<SpaceResource>(), 'doesntmatter')
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.graphAuthenticated.drives.updateDrive.mockRejectedValue(new Error())
+      await instance.editDescriptionSpace(mock<SpaceResource>(), 'doesntmatter')
 
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
     })
   })
 })
 
-function getWrapper({
-  setup
-}: {
-  setup: (
-    instance: ReturnType<typeof useSpaceActionsEditDescription>,
-    {
-      clientService
-    }: {
-      clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
-    }
-  ) => void
-}) {
+function getWrapper() {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ name: 'files-spaces-projects' })
   })
-  return {
-    mocks,
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useSpaceActionsEditDescription()
-        setup(instance, { clientService: mocks.$clientService })
-      },
-      {
-        mocks,
-        provide: mocks
-      }
-    )
-  }
+  let instance: ReturnType<typeof useSpaceActionsEditDescription>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useSpaceActionsEditDescription()
+    },
+    {
+      mocks,
+      provide: mocks
+    }
+  )
+  return { wrapper, instance, mocks }
 }

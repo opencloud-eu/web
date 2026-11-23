@@ -145,32 +145,29 @@ describe('restore', () => {
     })
   })
   describe('handler', () => {
-    it('should skip spaces the current user is no member of', () => {
-      getWrapper({
-        setup: async ({ actions }, { clientService }) => {
-          clientService.graphAuthenticated.drives.createDrive.mockResolvedValue(
-            mock<SpaceResource>({ id: '3', name: 'Moon (1)' })
-          )
-          clientService.webdav.listFiles.mockResolvedValue({ children: [] } as ListFilesResult)
-          const otherSpace = mock<SpaceResource>({
-            id: 'other',
-            disabled: false,
-            driveType: 'project'
-          })
-          const memberSpace = mock<SpaceResource>({
-            id: '1',
-            name: 'Moon',
-            disabled: false,
-            driveType: 'project',
-            spaceImageData: null,
-            spaceReadmeData: null,
-            spaceQuota: { total: 1 }
-          })
-          await unref(actions)[0].handler({ resources: [otherSpace, memberSpace] })
-          expect(clientService.webdav.listFiles).toHaveBeenCalledTimes(1)
-          expect(clientService.webdav.listFiles).toHaveBeenCalledWith(memberSpace)
-        }
+    it('should skip spaces the current user is no member of', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.graphAuthenticated.drives.createDrive.mockResolvedValue(
+        mock<SpaceResource>({ id: '3', name: 'Moon (1)' })
+      )
+      mocks.$clientService.webdav.listFiles.mockResolvedValue({ children: [] } as ListFilesResult)
+      const otherSpace = mock<SpaceResource>({
+        id: 'other',
+        disabled: false,
+        driveType: 'project'
       })
+      const memberSpace = mock<SpaceResource>({
+        id: '1',
+        name: 'Moon',
+        disabled: false,
+        driveType: 'project',
+        spaceImageData: null,
+        spaceReadmeData: null,
+        spaceQuota: { total: 1 }
+      })
+      await unref(instance.actions)[0].handler({ resources: [otherSpace, memberSpace] })
+      expect(mocks.$clientService.webdav.listFiles).toHaveBeenCalledTimes(1)
+      expect(mocks.$clientService.webdav.listFiles).toHaveBeenCalledWith(memberSpace)
     })
     it('should show an error message for spaces the current user is no member of', async () => {
       let instance: ReturnType<typeof useSpaceActionsDuplicate>
@@ -226,71 +223,58 @@ describe('restore', () => {
     })
   })
   describe('method "duplicateSpace"', () => {
-    it('should not create a space if the files of the space can not be read', () => {
+    it('should not create a space if the files of the space can not be read', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      getWrapper({
-        setup: async ({ duplicateSpace }, { clientService }) => {
-          clientService.webdav.listFiles.mockRejectedValue(new Error())
-          await duplicateSpace(spaces[0])
-          expect(clientService.graphAuthenticated.drives.createDrive).not.toHaveBeenCalled()
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.webdav.listFiles.mockRejectedValue(new Error())
+      await instance.duplicateSpace(spaces[0])
+      expect(mocks.$clientService.graphAuthenticated.drives.createDrive).not.toHaveBeenCalled()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
     })
-    it('should show error message on error', () => {
+    it('should show error message on error', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      getWrapper({
-        setup: async ({ duplicateSpace }, { clientService }) => {
-          clientService.graphAuthenticated.drives.createDrive.mockRejectedValue(new Error())
-          await duplicateSpace(spaces[0])
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.graphAuthenticated.drives.createDrive.mockRejectedValue(new Error())
+      await instance.duplicateSpace(spaces[0])
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
+    })
+    it('should show message on success', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.graphAuthenticated.drives.createDrive.mockResolvedValue(
+        mock<SpaceResource>({
+          id: '1',
+          name: 'Moon (1)'
+        })
+      )
+      mocks.$clientService.webdav.listFiles.mockResolvedValue({ children: [] } as ListFilesResult)
+      await instance.duplicateSpace(spaces[0])
+      expect(mocks.$clientService.graphAuthenticated.drives.createDrive).toHaveBeenCalledWith({
+        description: 'To the moon',
+        name: 'Moon (1)',
+        quota: {
+          total: Math.pow(10, 9)
         }
       })
+      const spacesStore = useSpacesStore()
+      expect(spacesStore.upsertSpace).toHaveBeenCalled()
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalled()
     })
-    it('should show message on success', () => {
-      getWrapper({
-        setup: async ({ duplicateSpace }, { clientService }) => {
-          clientService.graphAuthenticated.drives.createDrive.mockResolvedValue(
-            mock<SpaceResource>({
-              id: '1',
-              name: 'Moon (1)'
-            })
-          )
-          clientService.webdav.listFiles.mockResolvedValue({ children: [] } as ListFilesResult)
-          await duplicateSpace(spaces[0])
-          expect(clientService.graphAuthenticated.drives.createDrive).toHaveBeenCalledWith({
-            description: 'To the moon',
-            name: 'Moon (1)',
-            quota: {
-              total: Math.pow(10, 9)
-            }
-          })
-          const spacesStore = useSpacesStore()
-          expect(spacesStore.upsertSpace).toHaveBeenCalled()
-          const { showMessage } = useMessages()
-          expect(showMessage).toHaveBeenCalled()
-        }
-      })
-    })
-    it('should upsert a space as resource on the projects page', () => {
-      getWrapper({
-        currentRouteName: 'files-spaces-projects',
-        setup: async ({ duplicateSpace }, { clientService }) => {
-          clientService.graphAuthenticated.drives.createDrive.mockResolvedValue(
-            mock<SpaceResource>({
-              id: '1',
-              name: 'Moon (1)'
-            })
-          )
-          clientService.webdav.listFiles.mockResolvedValue({ children: [] } as ListFilesResult)
-          await duplicateSpace(spaces[0])
+    it('should upsert a space as resource on the projects page', async () => {
+      const { instance, mocks } = getWrapper({ currentRouteName: 'files-spaces-projects' })
+      mocks.$clientService.graphAuthenticated.drives.createDrive.mockResolvedValue(
+        mock<SpaceResource>({
+          id: '1',
+          name: 'Moon (1)'
+        })
+      )
+      mocks.$clientService.webdav.listFiles.mockResolvedValue({ children: [] } as ListFilesResult)
+      await instance.duplicateSpace(spaces[0])
 
-          const { upsertResource } = useResourcesStore()
-          expect(upsertResource).toHaveBeenCalled()
-        }
-      })
+      const { upsertResource } = useResourcesStore()
+      expect(upsertResource).toHaveBeenCalled()
     })
     describe('when copying some files fails', () => {
       let instance: ReturnType<typeof useSpaceActionsDuplicate>
@@ -413,32 +397,24 @@ function getWrapper({
   abilities = [{ action: 'create-all', subject: 'Drive' }],
   currentRouteName = 'files-spaces-generic'
 }: {
-  setup: (
-    instance: ReturnType<typeof useSpaceActionsDuplicate>,
-    {
-      clientService
-    }: {
-      clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
-    }
-  ) => void
+  setup?: (instance: ReturnType<typeof useSpaceActionsDuplicate>) => void
   abilities?: AbilityRule[]
   currentRouteName?: string
-}) {
+} = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ name: currentRouteName })
   })
-  return {
-    mocks,
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useSpaceActionsDuplicate()
-        setup(instance, { clientService: mocks.$clientService })
-      },
-      {
-        mocks,
-        provide: mocks,
-        pluginOptions: { abilities, piniaOptions: { spacesState: { spaces } } }
-      }
-    )
-  }
+  let instance: ReturnType<typeof useSpaceActionsDuplicate>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useSpaceActionsDuplicate()
+      setup?.(instance)
+    },
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: { abilities, piniaOptions: { spacesState: { spaces } } }
+    }
+  )
+  return { wrapper, instance, mocks }
 }

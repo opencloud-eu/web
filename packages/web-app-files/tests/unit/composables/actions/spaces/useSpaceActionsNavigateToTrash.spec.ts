@@ -78,15 +78,12 @@ describe('navigateToSpace', () => {
     })
   })
   describe('handler', () => {
-    it('should redirect to respective trash', () => {
-      const { mocks } = getWrapper({
-        setup: async ({ actions }) => {
-          await unref(actions)[0].handler({
-            resources: [mock<SpaceResource>()]
-          })
-          expect(mocks.$router.push).toHaveBeenCalled()
-        }
+    it('should redirect to respective trash', async () => {
+      const { instance, mocks } = getWrapper()
+      await unref(instance.actions)[0].handler({
+        resources: [mock<SpaceResource>()]
       })
+      expect(mocks.$router.push).toHaveBeenCalled()
     })
   })
 })
@@ -94,22 +91,21 @@ describe('navigateToSpace', () => {
 function getWrapper({
   setup
 }: {
-  setup: (instance: ReturnType<typeof useSpaceActionsNavigateToTrash>) => void
-}) {
+  setup?: (instance: ReturnType<typeof useSpaceActionsNavigateToTrash>) => void
+} = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ name: 'files-spaces-projects' })
   })
-  return {
-    mocks,
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useSpaceActionsNavigateToTrash()
-        setup(instance)
-      },
-      {
-        mocks,
-        provide: mocks
-      }
-    )
-  }
+  let instance: ReturnType<typeof useSpaceActionsNavigateToTrash>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useSpaceActionsNavigateToTrash()
+      setup?.(instance)
+    },
+    {
+      mocks,
+      provide: mocks
+    }
+  )
+  return { wrapper, instance, mocks }
 }

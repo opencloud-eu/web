@@ -52,16 +52,13 @@ describe('useUserActionsDelete', () => {
     })
   })
   describe('method "deleteUsers"', () => {
-    it('should successfully delete all given users and reload the users list', () => {
-      getWrapper({
-        setup: async ({ deleteUsers }, { clientService }) => {
-          const user = mock<User>({ id: '1' })
-          await deleteUsers([user])
-          expect(clientService.graphAuthenticated.users.deleteUser).toHaveBeenCalledWith(user.id)
-          const { removeUsers } = useUserSettingsStore()
-          expect(removeUsers).toHaveBeenCalled()
-        }
-      })
+    it('should successfully delete all given users and reload the users list', async () => {
+      const { instance, mocks } = getWrapper()
+      const user = mock<User>({ id: '1' })
+      await instance.deleteUsers([user])
+      expect(mocks.$clientService.graphAuthenticated.users.deleteUser).toHaveBeenCalledWith(user.id)
+      const { removeUsers } = useUserSettingsStore()
+      expect(removeUsers).toHaveBeenCalled()
     })
     it('should only remove the successfully deleted users from the list', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
@@ -86,7 +83,7 @@ describe('useUserActionsDelete', () => {
 function getWrapper({
   setup
 }: {
-  setup: (
+  setup?: (
     instance: ReturnType<typeof useUserActionsDelete>,
     {
       clientService
@@ -94,15 +91,15 @@ function getWrapper({
       clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
     }
   ) => void
-}) {
+} = {}) {
   const mocks = defaultComponentMocks()
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useUserActionsDelete()
-        setup(instance, { clientService: mocks.$clientService })
-      },
-      { mocks, provide: mocks }
-    )
-  }
+  let instance: ReturnType<typeof useUserActionsDelete>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useUserActionsDelete()
+      setup?.(instance, { clientService: mocks.$clientService })
+    },
+    { mocks, provide: mocks }
+  )
+  return { wrapper, instance, mocks }
 }

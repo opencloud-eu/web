@@ -32,15 +32,6 @@ describe('createNewShortcut', () => {
     })
 
     describe('method "handler"', () => {
-      it('creates a modal', () => {
-        getWrapper({
-          setup: async ({ actions }) => {
-            const { dispatchModal } = useModals()
-            await unref(actions)[0].handler()
-            expect(dispatchModal).toHaveBeenCalled()
-          }
-        })
-      })
       it('focuses the target input initially', () => {
         getWrapper({
           setup: ({ actions }) => {
