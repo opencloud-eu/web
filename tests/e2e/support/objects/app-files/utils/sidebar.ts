@@ -27,21 +27,6 @@ const openForResource = async ({
   await page.locator(contextMenu).locator('.oc-files-actions-show-details-trigger').click()
 }
 
-export const openPanelForResource = async ({
-  page,
-  resource,
-  panel
-}: {
-  page: Page
-  resource: string
-  panel: string
-}): Promise<void> => {
-  await page.locator(util.format(contextMenuSelector, resource)).waitFor()
-  await page.locator(util.format(contextMenuSelector, resource)).click()
-  await page.locator(contextMenu).waitFor()
-  await page.locator(contextMenu).locator(`.oc-files-actions-show-${panel}-trigger`).click()
-}
-
 const openGlobal = async ({ page }: { page: Page }): Promise<void> => {
   await page.locator('#files-toggle-sidebar').click()
 }

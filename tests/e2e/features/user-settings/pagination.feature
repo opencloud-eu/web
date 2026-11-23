@@ -17,7 +17,7 @@ Feature: check pagination in files, spaces and trash overviews
        | pathToFile           | content                |
        | .hidden-testFile.txt | This is a hidden file. |
     And "Alice" logs in
-    When "Alice" navigates to page "2" of the personal space files view
+    When "Alice" navigates to page "2" of the files list
     And "Alice" opens the following file in texteditor
       | resource        |
       | testfile50.txt |
@@ -29,18 +29,18 @@ Feature: check pagination in files, spaces and trash overviews
       | resource      |
       | testfile1.txt |
     And "Alice" should see the text "111 items with 1 kB in total (56 files including 1 hidden, 55 folders)" at the footer of the page
-    And "Alice" should see 10 resources in the personal space files view
+    And "Alice" should see 10 resources in the files list
     And "Alice" enables the option to display the hidden file
-    And "Alice" should see 11 resources in the personal space files view
+    And "Alice" should see 11 resources in the files list
     And "Alice" changes the items per page to "500"
-    And "Alice" should not see the pagination in the personal space files view
+    And "Alice" should not see the pagination in the files list
 
     # copy all resources to project space and check the pagination there
     And "Alice" creates space "New" from all resources using the context menu
     And "Alice" navigates to the project space "New"
-    And "Alice" should not see the pagination in the project space files view
+    And "Alice" should not see the pagination in the files list
     And "Alice" changes the items per page to "50"
-    And "Alice" navigates to page "3" of the project space files view
+    And "Alice" navigates to page "3" of the files list
     And "Alice" opens the following file in texteditor
       | resource        |
       | testfile50.txt |
@@ -52,9 +52,9 @@ Feature: check pagination in files, spaces and trash overviews
       | resource      |
       | testfile1.txt |
     And "Alice" should see the text "112 items with 172 kB in total (56 files, 56 folders)" at the footer of the page
-    And "Alice" should see 12 resources in the project space files view
+    And "Alice" should see 12 resources in the files list
     And "Alice" disables the option to display the hidden file
-    And "Alice" should see 10 resources in the project space files view
+    And "Alice" should see 10 resources in the files list
     And "Alice" logs out
 
 

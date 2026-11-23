@@ -88,7 +88,7 @@ export const createSpace = async ({
   return resBody.id
 }
 
-export const updateSpaceSpecialSection = async ({
+const updateSpaceSpecialSection = async ({
   user,
   spaceId,
   type,

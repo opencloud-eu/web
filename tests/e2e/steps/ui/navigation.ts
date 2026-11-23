@@ -131,14 +131,6 @@ When(
 )
 
 When(
-  '{string} navigates to page {string} of the personal/project space files view',
-  async ({ world }: { world: World }, stepUser: string, pageNumber: string) => {
-    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
-    await resourceObject.changePage({ pageNumber })
-  }
-)
-
-When(
   '{string} changes the items per page to {string}',
   async ({ world }: { world: World }, stepUser: string, itemsPerPage: string): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
@@ -152,23 +144,6 @@ Then(
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     const actualText = await resourceObject.getFileListFooterText()
     expect(actualText).toBe(expectedText)
-  }
-)
-
-Then(
-  '{string} should see {int} resources in the personal/project space files view',
-  async ({ world }: { world: World }, stepUser: string, expectedNumberOfResources: number) => {
-    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
-    const actualNumberOfResources = await resourceObject.countNumberOfResourcesInThePage()
-    expect(actualNumberOfResources).toBe(expectedNumberOfResources)
-  }
-)
-
-Then(
-  '{string} should not see the pagination in the personal/project space files view',
-  async ({ world }: { world: World }, stepUser: string) => {
-    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
-    await resourceObject.expectPageNumberNotToBeVisible()
   }
 )
 

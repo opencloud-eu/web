@@ -205,11 +205,6 @@ export const getFileListFooterText = ({ page }: { page: Page }): Promise<string>
   return page.locator(footerTextSelector).textContent()
 }
 
-export interface expectNumberOfResourcesInThePageToBeArgs {
-  page: Page
-  numberOfResources: number
-}
-
 export const countNumberOfResourcesInThePage = async ({
   page
 }: {
