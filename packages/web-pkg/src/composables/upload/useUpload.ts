@@ -10,6 +10,7 @@ import { useAuthStore, useCapabilityStore } from '../piniaStores'
 import { XHRUploadOptions } from '@uppy/xhr-upload'
 import { useClientService } from '../clientService'
 import { useGettext } from 'vue3-gettext'
+import { encodeBase64 } from '@opencloud-eu/web-client'
 
 interface UploadOptions {
   uppyService: UppyService
@@ -28,8 +29,7 @@ export function useUpload(options: UploadOptions) {
 
     if (authStore.publicLinkPassword) {
       headers['Authorization'] =
-        'Basic ' +
-        Buffer.from(['public', authStore.publicLinkPassword].join(':')).toString('base64')
+        'Basic ' + encodeBase64(['public', authStore.publicLinkPassword].join(':'))
     } else if (authStore.accessToken && !authStore.publicLinkPassword) {
       headers['Authorization'] = 'Bearer ' + authStore.accessToken
     }

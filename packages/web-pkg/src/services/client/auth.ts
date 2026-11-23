@@ -1,3 +1,5 @@
+import { encodeBase64 } from '@opencloud-eu/web-client'
+
 export interface AuthParameters {
   accessToken?: string
   publicLinkToken?: string
@@ -19,8 +21,7 @@ export class Auth {
     return {
       ...(this.publicLinkToken && { 'public-token': this.publicLinkToken }),
       ...(this.publicLinkPassword && {
-        Authorization:
-          'Basic ' + Buffer.from(['public', this.publicLinkPassword].join(':')).toString('base64')
+        Authorization: 'Basic ' + encodeBase64(['public', this.publicLinkPassword].join(':'))
       }),
       ...(this.accessToken &&
         !this.publicLinkPassword &&
