@@ -123,7 +123,6 @@ import {
   onBeforeUnmount,
   onMounted,
   ref,
-  Ref,
   unref,
   useTemplateRef,
   watch
@@ -138,14 +137,14 @@ import {
   Key,
   Modifier,
   queryItemAsString,
-  sortHelper,
   useAppNavigation,
   useFullScreenMode,
   useGetMatchingSpace,
   useKeyboardActions,
   useRoute,
   useRouteQuery,
-  useRouter
+  useRouter,
+  useSort
 } from '@opencloud-eu/web-pkg'
 import MediaControls from './components/MediaControls.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
@@ -156,7 +155,6 @@ import PhotoRoll from './components/PhotoRoll.vue'
 import { MediaFile } from './helpers/types'
 import { canOpen } from './helpers/canOpen'
 import { useFileTypes, useImageControls, useMediaFileLoader } from './composables'
-import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { useSwipe } from '@vueuse/core'
 
 const {
@@ -176,9 +174,6 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const route = useRoute()
-const contextRouteQuery = useRouteQuery('contextRouteQuery') as unknown as Ref<
-  Record<string, string>
->
 
 const { isFileTypeAudio, isFileTypeImage, isFileTypeVideo } = useFileTypes()
 const { getMatchingSpace } = useGetMatchingSpace()
@@ -225,29 +220,12 @@ const space = computed(() => {
   return getMatchingSpace(unref(activeMediaFile).resource)
 })
 
-const sortBy = computed(() => {
-  if (!unref(contextRouteQuery)) {
-    return 'name'
-  }
-  return unref(contextRouteQuery)['sort-by'] ?? 'name'
-})
-const sortDir = computed<SortDir>(() => {
-  if (!unref(contextRouteQuery)) {
-    return SortDir.Asc
-  }
-  return (unref(contextRouteQuery)['sort-dir'] as SortDir) ?? SortDir.Asc
-})
-
 const fileIdQuery = useRouteQuery('fileId')
 const fileId = computed(() => queryItemAsString(unref(fileIdQuery)))
 const requestedFileName = computed(() => unref(currentFileContext?.fileName))
 
-const buildMediaFiles = () => {
-  if (!activeFiles) {
-    return
-  }
-
-  const filteredFiles = activeFiles.filter((file) => {
+const openableFiles = computed(() => {
+  return (activeFiles || []).filter((file) => {
     if (
       unref(currentFileContext.routeQuery)?.['q_share-visibility'] === 'hidden' &&
       !(file as IncomingShareResource).hidden
@@ -264,11 +242,21 @@ const buildMediaFiles = () => {
 
     return canOpen(file) && file.canDownload()
   })
+})
 
-  const sortFields = determineResourceTableSortFields(filteredFiles[0])
-  const sortedFiles = sortHelper(filteredFiles, sortFields, unref(sortBy), unref(sortDir))
+// same order as the list the preview was opened from
+const { items: sortedFiles } = useSort({
+  items: openableFiles,
+  fields: computed(() => determineResourceTableSortFields(unref(openableFiles)[0])),
+  routeName: currentFileContext?.routeName
+})
 
-  mediaFiles.value = sortedFiles.map((file) => {
+const buildMediaFiles = () => {
+  if (!activeFiles) {
+    return
+  }
+
+  mediaFiles.value = unref(sortedFiles).map((file) => {
     return {
       id: file.id,
       name: file.name,

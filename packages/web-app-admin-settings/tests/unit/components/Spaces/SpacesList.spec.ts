@@ -213,27 +213,13 @@ describe('SpacesList', () => {
     })
   })
   describe('sorting', () => {
-    it.each(['name', 'members', 'totalQuota', 'usedQuota', 'remainingQuota'])(
-      'writes the sort parameters for property "%s" to the route query',
-      (prop) => {
-        const { wrapper, mocks } = getWrapper({ mountType: shallowMount, spaces: spaceMocks })
-        const table = wrapper.findComponent(OcTable)
-        table.vm.$emit('sort', { sortBy: prop, sortDir: SortDir.Asc })
-        expect(mocks.$router.replace).toHaveBeenCalledWith({
-          query: expect.objectContaining({ 'sort-by': prop, 'sort-dir': SortDir.Asc })
-        })
-        table.vm.$emit('sort', { sortBy: prop, sortDir: SortDir.Desc })
-        expect(mocks.$router.replace).toHaveBeenCalledWith({
-          query: expect.objectContaining({ 'sort-by': prop, 'sort-dir': SortDir.Desc })
-        })
-      }
-    )
-    it('writes the sort parameters to the route query when the table emits "sort"', () => {
-      const { wrapper, mocks } = getWrapper({ spaces: [spaceMocks[0]] })
-      wrapper.findComponent(OcTable).vm.$emit('sort', { sortBy: 'members', sortDir: SortDir.Desc })
-      expect(mocks.$router.replace).toHaveBeenCalledWith({
-        query: expect.objectContaining({ 'sort-by': 'members', 'sort-dir': SortDir.Desc })
-      })
+    it('sorts the table when it emits "sort"', async () => {
+      const { wrapper } = getWrapper({ mountType: shallowMount, spaces: spaceMocks })
+      const table = wrapper.findComponent(OcTable)
+      table.vm.$emit('sort', { sortBy: 'members', sortDir: SortDir.Desc })
+      await flushPromises()
+      expect(table.props('sortBy')).toBe('members')
+      expect(table.props('sortDir')).toBe(SortDir.Desc)
     })
   })
   it('shows only filtered spaces if filter applied', async () => {

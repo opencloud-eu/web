@@ -1,11 +1,89 @@
-import { ref, unref } from 'vue'
+import { nextTick, ref, unref } from 'vue'
 import { SortableItem, SortOptions, useSort } from '../../../../src/composables'
 import { spaceTableSortFields } from '../../../../src/helpers'
 import { Resource } from '@opencloud-eu/web-client'
-import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { mock } from 'vitest-mock-extended'
+import { RouteLocation } from 'vue-router'
 
 describe('useSort', () => {
+  describe('stored sorting', () => {
+    const fields = [
+      { name: 'name', sortable: true, sortDir: SortDir.Asc },
+      { name: 'size', sortable: true, sortDir: SortDir.Desc }
+    ]
+    const items = [
+      { id: '1', name: 'a', size: 2 },
+      { id: '2', name: 'b', size: 1 },
+      { id: '3', name: 'c', size: 3 }
+    ]
+
+    function getSort(routeName?: string) {
+      const mocks = defaultComponentMocks({
+        currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
+      })
+      let result: ReturnType<typeof useSort<(typeof items)[number]>>
+      getComposableWrapper(
+        () => {
+          result = useSort({ items, fields, routeName })
+        },
+        { mocks, provide: mocks }
+      )
+      return result
+    }
+
+    beforeEach(() => {
+      window.localStorage.clear()
+    })
+
+    it('uses the first sortable field and its direction without writing them', () => {
+      const { sortBy, sortDir } = getSort()
+
+      expect(unref(sortBy)).toBe('name')
+      expect(unref(sortDir)).toBe(SortDir.Asc)
+      expect(window.localStorage.length).toBe(0)
+    })
+
+    it('uses the stored sorting of the current route', () => {
+      window.localStorage.setItem('oc-options_files-spaces-generic_sort-by', 'size')
+      window.localStorage.setItem('oc-options_files-spaces-generic_sort-dir', SortDir.Asc)
+
+      const { sortBy, sortDir, items: sortedItems } = getSort()
+
+      expect(unref(sortBy)).toBe('size')
+      expect(unref(sortDir)).toBe(SortDir.Asc)
+      expect(unref(sortedItems).map(({ id }) => id)).toEqual(['2', '1', '3'])
+      expect(window.localStorage.getItem('oc-options_files-spaces-generic_sort-dir')).toBe(
+        SortDir.Asc
+      )
+    })
+
+    it('uses the stored sorting of the given route', () => {
+      window.localStorage.setItem('oc-options_files-common-favorites_sort-by', 'size')
+
+      const { sortBy, sortDir } = getSort('files-common-favorites')
+
+      expect(unref(sortBy)).toBe('size')
+      expect(unref(sortDir)).toBe(SortDir.Desc)
+    })
+
+    it('stores the sorting per route', async () => {
+      const { sortBy, sortDir, handleSort } = getSort()
+
+      handleSort({ sortBy: 'size', sortDir: SortDir.Asc })
+      await nextTick()
+
+      expect(unref(sortBy)).toBe('size')
+      expect(unref(sortDir)).toBe(SortDir.Asc)
+      expect(window.localStorage.getItem('oc-options_files-spaces-generic_sort-by')).toBe('size')
+      expect(window.localStorage.getItem('oc-options_files-spaces-generic_sort-dir')).toBe(
+        SortDir.Asc
+      )
+      expect(window.localStorage.length).toBe(2)
+    })
+  })
+
   it('does not sort if no sort field was given', () => {
     getComposableWrapper(() => {
       const input: SortOptions<any> = {

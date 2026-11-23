@@ -1,6 +1,6 @@
 import Projects from '../../../../src/views/spaces/Projects.vue'
 import { mock } from 'vitest-mock-extended'
-import { nextTick, ref } from 'vue'
+import { nextTick } from 'vue'
 import {
   queryItemAsString,
   useExtensionRegistry,
@@ -30,7 +30,6 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn(),
   appDefaults: vi.fn(),
-  useRouteQueryPersisted: vi.fn().mockImplementation(() => ref('resource-table')),
   useFileActions: vi.fn()
 }))
 
@@ -126,11 +125,12 @@ describe('Projects view', () => {
     })
   })
   describe('sorting', () => {
+    afterEach(() => {
+      window.localStorage.clear()
+    })
+
     it('renders the filtered spaces sorted by name', async () => {
-      const { wrapper } = getMountedWrapper({
-        spaces: spacesResources,
-        query: { 'sort-by': 'name', 'sort-dir': 'asc' }
-      })
+      const { wrapper } = getMountedWrapper({ spaces: spacesResources })
       await flushPromises()
       const resources = wrapper.findComponent(ResourceTable).props('resources')
       expect(resources.map(({ id }) => id)).toEqual(['2', '1'])
@@ -141,10 +141,9 @@ describe('Projects view', () => {
         { ...spacesResources[0], id: 'unrestricted', spaceQuota: { total: 0 } },
         { ...spacesResources[0], id: 'large', spaceQuota: { total: 1000 } }
       ] as unknown as SpaceResource[]
-      const { wrapper } = getMountedWrapper({
-        spaces,
-        query: { 'sort-by': 'totalQuota', 'sort-dir': 'desc' }
-      })
+      window.localStorage.setItem('oc-options_files-spaces-projects_sort-by', 'totalQuota')
+      window.localStorage.setItem('oc-options_files-spaces-projects_sort-dir', 'desc')
+      const { wrapper } = getMountedWrapper({ spaces })
       await flushPromises()
       const resources = wrapper.findComponent(ResourceTable).props('resources')
       expect(resources.map(({ id }) => id)).toEqual(['unrestricted', 'large', 'small'])

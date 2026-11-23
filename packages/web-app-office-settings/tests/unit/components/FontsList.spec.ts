@@ -10,6 +10,10 @@ const font = (family: string, extra: Partial<Font> = {}) =>
 const fonts = [font('Roboto', { version: '1.0' }), font('Lato')]
 
 describe('FontsList', () => {
+  afterEach(() => {
+    window.localStorage.clear()
+  })
+
   it('renders the table when the filter matches', () => {
     const { wrapper } = getWrapper({ filterTerm: 'rob' })
     expect((wrapper.vm as any).filteredFonts.map((f: Font) => f.family)).toEqual(['Roboto'])
@@ -30,8 +34,10 @@ describe('FontsList', () => {
   it.each([
     { sortDir: SortDir.Asc, expected: ['Lato', 'Roboto'] },
     { sortDir: SortDir.Desc, expected: ['Roboto', 'Lato'] }
-  ])('sorts by name from the route query ($sortDir)', ({ sortDir, expected }) => {
-    const { wrapper } = getWrapper({ query: { 'sort-by': 'family', 'sort-dir': sortDir } })
+  ])('sorts by the stored name sorting ($sortDir)', ({ sortDir, expected }) => {
+    window.localStorage.setItem('oc-options_route_sort-by', 'family')
+    window.localStorage.setItem('oc-options_route_sort-dir', sortDir)
+    const { wrapper } = getWrapper()
     expect((wrapper.vm as any).items.map((f: Font) => f.family)).toEqual(expected)
   })
 
@@ -59,15 +65,13 @@ describe('FontsList', () => {
 
 function getWrapper({
   filterTerm = '',
-  stubs = {},
-  query = {}
+  stubs = {}
 }: {
   filterTerm?: string
   stubs?: Record<string, any>
-  query?: Record<string, string>
 } = {}) {
   const mocks = defaultComponentMocks({
-    currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
+    currentRoute: { name: 'route', path: '/', query: {}, meta: {} } as RouteLocationNormalizedLoaded
   })
   return {
     mocks,
