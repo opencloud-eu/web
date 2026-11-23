@@ -8,6 +8,9 @@ import pkg from './package.json'
 const external = [...Object.keys(pkg.dependencies)]
 
 export default defineConfig({
+  define: {
+    'process.env.PACKAGE_VERSION': JSON.stringify(pkg.version)
+  },
   build: {
     lib: {
       entry: {
