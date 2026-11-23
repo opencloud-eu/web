@@ -76,7 +76,10 @@ Feature: yjs conflict handling
     Then "Alice" should see the text "Alice keeps typing" in the text-editor
     And "Alice" logs out
 
-  Scenario: editor without unsaved changes shows an external file update right away
+  Scenario: editor without unsaved changes shows an external file update right away and users joining later see it
+    Given "Admin" creates following user using API
+      | id    |
+      | Carol |
     When "Alice" uploads the following local file into space "Team" using API
       | localFile        | to               |
       | textfile.ocnote  | textfile.ocnote  |
@@ -84,9 +87,10 @@ Feature: yjs conflict handling
     When "Alice" logs in
     And "Alice" opens the "files" app
     And "Alice" navigates to the project space "Team"
-    And "Alice" adds following user to the project space
+    And "Alice" adds following users to the project space
       | user  | role     | kind |
       | Brian | Can edit | user |
+      | Carol | Can view | user |
     And "Alice" opens file "textfile.ocnote" via "text-editor" using the context menu
     And "Alice" should see the following yjs status
       | status    |
@@ -108,6 +112,11 @@ Feature: yjs conflict handling
       | status    |
       | Connected |
 
+    When "Carol" logs in
+    And "Carol" navigates to the project space "Team"
+    And "Carol" opens file "textfile.ocnote" via "text-editor" using the context menu
+    Then "Carol" should see the text "some random text" in the text-editor
+
     When "Brian" logs in
     And "Brian" navigates to the project space "Team"
     And "Brian" opens file "textfile.ocnote" via "text-editor" using the context menu
@@ -117,38 +126,7 @@ Feature: yjs conflict handling
     Then "Brian" should see the text "some random text" in the text-editor
     And "Alice" logs out
     And "Brian" logs out
-
-  Scenario: viewer joining after an external file update sees the current version
-    When "Alice" uploads the following local file into space "Team" using API
-      | localFile        | to               |
-      | textfile.ocnote  | textfile.ocnote  |
-
-    And "Alice" logs in
-    And "Alice" opens the "files" app
-    And "Alice" navigates to the project space "Team"
-    And "Alice" adds following user to the project space
-      | user  | role     | kind |
-      | Brian | Can view | user |
-    And "Alice" opens file "textfile.ocnote" via "text-editor" using the context menu
-    And "Alice" should see the following yjs status
-      | status    |
-      | Connected |
-    And "Alice" enters the text "Alice says hello" in editor "TextEditor"
-    And "Alice" sees the current file as dirty
-    And "Alice" saves the file viewer
-
-    # external update
-    When "Alice" uploads the following local file into space "Team" using API
-      | localFile        | to               |
-      | textfile.ocnote  | textfile.ocnote  |
-    Then "Alice" should see the text "some random text" in the text-editor
-
-    When "Brian" logs in
-    And "Brian" navigates to the project space "Team"
-    And "Brian" opens file "textfile.ocnote" via "text-editor" using the context menu
-    Then "Brian" should see the text "some random text" in the text-editor
-    And "Alice" logs out
-    And "Brian" logs out
+    And "Carol" logs out
 
   Scenario: external file update doesn't overwrite unsaved local changes
     When "Alice" uploads the following local file into space "Team" using API

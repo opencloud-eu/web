@@ -14,34 +14,17 @@ Feature: Motion photo indicator
     And "Alice" logs in
     And "Alice" opens the "files" app
 
-
-  Scenario: motion photo badge is shown in tiles and table view
+  Scenario: motion photo is marked and its embedded video plays
     When "Alice" switches to the "tiles" view
     Then "Alice" should see the motion photo badge on resource "motionphoto-playable.jpg"
     When "Alice" switches to the "table" view
     Then "Alice" should see the motion photo badge on resource "motionphoto-playable.jpg"
-    And "Alice" logs out
-
-
-  Scenario: motion photo badge is shown in the media viewer preview strip
     When "Alice" opens the following file in mediaviewer
       | resource                 |
       | motionphoto-playable.jpg |
     Then "Alice" should see the motion photo badge in the media viewer for resource "motionphoto-playable.jpg"
-    And "Alice" closes the file viewer
-    And "Alice" logs out
-
-
-  Scenario: motion photo playback control is shown in the media viewer
-    When "Alice" opens the following file in mediaviewer
-      | resource                 |
-      | motionphoto-playable.jpg |
-    Then "Alice" should see the motion photo control in the media viewer
-    And "Alice" closes the file viewer
-    And "Alice" logs out
-
-
-  Scenario: motion photo can be played inline from the sidebar
-    When "Alice" plays the motion photo inline from the sidebar for resource "motionphoto-playable.jpg"
+    And "Alice" should see the motion photo control in the media viewer
+    When "Alice" closes the file viewer
+    And "Alice" plays the motion photo inline from the sidebar for resource "motionphoto-playable.jpg"
     Then "Alice" should see the motion photo video loaded in the sidebar
     And "Alice" logs out

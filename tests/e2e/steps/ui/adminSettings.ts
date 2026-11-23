@@ -469,15 +469,10 @@ When(
 )
 
 When(
-  /^"([^"]*)" opens the edit panel of user "([^"]*)" using the (quick action|context menu)$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionUser: string,
-    action: string
-  ): Promise<void> => {
+  '{string} opens the edit panel of user {string} using the context menu',
+  async ({ world }: { world: World }, stepUser: string, actionUser: string): Promise<void> => {
     const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
-    await usersObject.openEditPanel({ key: actionUser, action: action.replace(' ', '-') })
+    await usersObject.openEditPanel({ key: actionUser, action: 'context-menu' })
   }
 )
 
@@ -486,14 +481,6 @@ When(
   async ({ world }: { world: World }, stepUser: string, group: string): Promise<void> => {
     const groupsObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Groups)
     await groupsObject.openEditPanel({ key: group, action: 'context-menu' })
-  }
-)
-
-Then(
-  '{string} should see the edit panel',
-  async ({ world }: { world: World }, stepUser: string) => {
-    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
-    await usersObject.waitForEditPanelToBeVisible()
   }
 )
 

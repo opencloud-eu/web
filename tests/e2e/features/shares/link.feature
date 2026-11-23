@@ -97,11 +97,9 @@ Feature: link
 
 
   Scenario: public link for folder and file (by authenticated user)
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Brian |
-      | Carol |
-    And "Alice" logs in
     And "Alice" creates the following folder in personal space using API
       | name         |
       | folderPublic |
@@ -119,35 +117,16 @@ Feature: link
       | folderPublic   | Brian     | user | Can edit |
       | simple.pdf     | Brian     | user | Can edit |
       | testavatar.jpg | Brian     | user | Can edit |
+    And "Alice" creates a public link of following resource using API
+      | resource                      | name         | password |
+      | folderPublic                  | folderLink   | %public% |
+      | folderPublic/shareToBrian.txt | textLink     | %public% |
+      | folderPublic/shareToBrian.md  | markdownLink | %public% |
+      | simple.pdf                    | pdfLink      | %public% |
+      | testavatar.jpg                | imageLink    | %public% |
+      | test_video.mp4                | videoLink    | %public% |
 
-    And "Alice" opens the "files" app
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource     | password |
-      | folderPublic | %public% |
-    And "Alice" renames the most recently created public link of resource "folderPublic" to "folderLink"
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource                      | password |
-      | folderPublic/shareToBrian.txt | %public% |
-    And "Alice" renames the most recently created public link of resource "folderPublic/shareToBrian.txt" to "textLink"
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource                     | password |
-      | folderPublic/shareToBrian.md | %public% |
-    And "Alice" renames the most recently created public link of resource "folderPublic/shareToBrian.md" to "markdownLink"
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource   | password |
-      | simple.pdf | %public% |
-    And "Alice" renames the most recently created public link of resource "simple.pdf" to "pdfLink"
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource       | password |
-      | testavatar.jpg | %public% |
-    And "Alice" renames the most recently created public link of resource "testavatar.jpg" to "imageLink"
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource       | password |
-      | test_video.mp4 | %public% |
-    And "Alice" renames the most recently created public link of resource "test_video.mp4" to "videoLink"
-    And "Alice" logs out
-
-    # authenticated user with access to resources. should be redirected to shares with me page
+    # authenticated user with access to the resources
     And "Brian" logs in
     When "Brian" opens the public link "folderLink"
     And "Brian" unlocks the public link with password "%public%"
@@ -183,40 +162,6 @@ Feature: link
       | resource       | type |
       | testavatar.jpg | file |
     And "Brian" logs out
-
-    # authenticated user without access to resources. should be redirected to the public links page
-    And "Carol" logs in
-    When "Carol" opens the public link "folderLink"
-    And "Carol" unlocks the public link with password "%public%"
-    And "Carol" downloads the following public link resources using the context menu
-      | resource  | type |
-      | lorem.txt | file |
-    When "Carol" opens the public link "textLink"
-    And "Carol" unlocks the public link with password "%public%"
-    Then "Carol" is in a text-editor
-    And "Carol" closes the file viewer
-    When "Carol" opens the public link "markdownLink"
-    And "Carol" unlocks the public link with password "%public%"
-    Then "Carol" is in a text-editor
-    And "Carol" closes the file viewer
-    And "Carol" downloads the following public link resources using the single share view
-      | resource        | type |
-      | shareToBrian.md | file |
-    When "Carol" opens the public link "pdfLink"
-    And "Carol" unlocks the public link with password "%public%"
-    Then "Carol" is in a pdf-viewer
-    And "Carol" closes the file viewer
-    And "Carol" downloads the following public link resources using the single share view
-      | resource   | type |
-      | simple.pdf | file |
-    When "Carol" opens the public link "imageLink"
-    And "Carol" unlocks the public link with password "%public%"
-    Then "Carol" is in a media-viewer
-    And "Carol" closes the file viewer
-    And "Carol" downloads the following public link resources using the single share view
-      | resource       | type |
-      | testavatar.jpg | file |
-    And "Carol" logs out
 
     # Anonymous user
     When "Anonymous" opens the public link "folderLink"

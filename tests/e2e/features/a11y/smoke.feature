@@ -1,8 +1,7 @@
 @a11y
 Feature: Accessibility checks
 
-  @timeout:300000
-  Scenario: check files view wrapper accessibility
+  Background:
     Given "Admin" creates following users using API
       | id    |
       | Alice |
@@ -39,13 +38,14 @@ Feature: Accessibility checks
       | resource | recipient | type  | role     |
       | parent   | Brian     | user  | Can edit |
       | parent   | sales     | group | Can edit |
-    And the user creates a file "largefile.txt" of "1GB" size in the temp upload directory
 
+
+  @timeout:300000
+  Scenario: check files view wrapper accessibility
     ## checks login page
     When "Alice" logs in
     And "Brian" logs in
 
-    ## 1. check files-view-wrapper
     # personal space
     And "Alice" opens the "files" app
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
@@ -88,8 +88,21 @@ Feature: Accessibility checks
     And "Alice" checks the accessibility of the DOM selector "#files-global-search-options" on the "search preview"
     And "Alice" reloads the page
 
+    # space page
+    And "Alice" navigates to the project space "my_space"
+    And "Alice" checks the accessibility of the DOM selector "#files-view" on the "project space page"
+    And "Brian" navigates to the projects space page
+    And "Brian" checks the accessibility of the DOM selector "#files-view" on the "project spaces page"
 
-    ## 2. check accesability on top bar
+    And "Alice" logs out
+    And "Brian" logs out
+
+
+  Scenario: check top bar, left sidebar, account page and app store accessibility
+    When "Brian" logs in
+    And "Brian" opens the "files" app
+
+    # top bar
     And "Brian" checks the accessibility of the DOM selector "#oc-topbar" on the "top bar"
 
     # search panel
@@ -104,12 +117,10 @@ Feature: Accessibility checks
     And "Brian" opens the apps menu
     And "Brian" checks the accessibility of the DOM selector "#app-switcher-dropdown.oc-drop" on the "apps menu"
 
-
-    ## 3. left sidebar web-nav-sidebar
+    # left sidebar web-nav-sidebar
     And "Brian" checks the accessibility of the DOM selector "#web-nav-sidebar" on the "left sidebar"
 
-
-    ## 4. account page
+    # account page
     And "Brian" opens the user menu
     And "Brian" opens "Profile" on the user menu
     And "Brian" checks the accessibility of the DOM selector "#account-information" on the "account menu->profile"
@@ -126,8 +137,15 @@ Feature: Accessibility checks
     And "Brian" opens "GDPR" on the user menu
     And "Brian" checks the accessibility of the DOM selector "#account-gdpr" on the "account menu->gdpr"
 
+    # app store
+    And "Brian" navigates to the app store
+    And "Brian" checks the accessibility of the whole page on the "app store"
+    And "Brian" logs out
 
-    ## 5. admin-settings-view-wrapper
+
+  Scenario: check admin settings accessibility
+    When "Brian" logs in
+
     # general
     And "Brian" opens the "admin-settings" app
     And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->general"
@@ -156,17 +174,13 @@ Feature: Accessibility checks
     And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->spaces"
     And "Brian" lists the members of project space "my_space" using a sidebar panel
     And "Brian" checks the accessibility of the DOM selector "#sidebar-panel-space-share" on the "admin settings->spaces->members sidebar panel"
+    And "Brian" logs out
 
 
-    ## 6. space page
-    And "Alice" navigates to the project space "my_space"
-    And "Alice" checks the accessibility of the DOM selector "#files-view" on the "project space page"
-    And "Brian" opens the "files" app
-    And "Brian" navigates to the projects space page
-    And "Brian" checks the accessibility of the DOM selector "#files-view" on the "project spaces page"
+  Scenario: check right sidebar and public link page accessibility
+    When "Alice" logs in
 
-
-    ## 7. app-sidebar (right sidebar)
+    # app-sidebar (right sidebar)
     And "Alice" opens the "files" app
     And "Alice" opens the right sidebar of the resource "lorem.txt"
     And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-details" on the "right sidebar"
@@ -182,28 +196,28 @@ Feature: Accessibility checks
       | resource | role             | password |
       | parent   | Secret File Drop | %public% |
 
-    ## 8. public link page
+    # public link page
     And "Anonymous" opens the public link "Unnamed link"
     And "Anonymous" checks the accessibility of the DOM selector "#opencloud" on the "public link page->before unlock"
     And "Anonymous" unlocks the public link with password "%public%"
     And "Anonymous" checks the accessibility of the DOM selector "#files" on the "public link page"
     And "Anonymous" checks the accessibility of the whole page on the "public link page"
+    And "Alice" logs out
 
 
-    ## 9. app store
-    And "Brian" navigates to the app store
-    And "Brian" checks the accessibility of the whole page on the "app store"
+  Scenario: check text editor, upload progress and mobile viewport accessibility
+    Given the user creates a file "largefile.txt" of "1GB" size in the temp upload directory
+    When "Alice" logs in
 
-
-    ## 10. text editor
+    # text editor
     And "Alice" opens the "files" app
+    And "Alice" switches to the "table" view
     And "Alice" opens file "lorem.txt" via "text-editor" using the context menu
     And "Alice" checks the accessibility of the DOM selector ".oc-text-editor .ProseMirror" on the "text editor content"
     And "Alice" checks the accessibility of the whole page on the "text editor"
     And "Alice" closes the file viewer
 
-
-    ## 11. upload progress
+    # upload progress
     And "Alice" starts uploading the following large resources from the temp upload directory
       | resource      |
       | largefile.txt |
@@ -211,11 +225,8 @@ Feature: Accessibility checks
     And "Alice" checks the accessibility of the DOM selector "#upload-info" on the "upload info with progress"
     And "Alice" cancels the file upload
 
-
-    ## 12. mobile viewport
+    # mobile viewport
     And "Alice" switches to the "mobile" viewport
     And "Alice" checks the accessibility of the whole page on the "personal space page (mobile)"
     And "Alice" switches to the "desktop" viewport
-
     And "Alice" logs out
-    And "Brian" logs out
