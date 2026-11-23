@@ -4,6 +4,7 @@ import * as EmailValidator from 'email-validator'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { call, CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
+import { Contact } from '@opencloud-eu/web-client/ox'
 import {
   useAbility,
   useCapabilityStore,
@@ -15,6 +16,10 @@ export const useCollaboratorSearch = () => {
   const clientService = useClientService()
   const capabilityStore = useCapabilityStore()
   const { can } = useAbility()
+
+  const canInviteGuests = computed(
+    () => capabilityStore.sharingGuestLinksEnabled && can('create-all', 'GuestInvite')
+  )
 
   /**
    * Users and groups matching `query`, each tagged with the share type it would
@@ -50,27 +55,50 @@ export const useCollaboratorSearch = () => {
   }
 
   /**
-   * A guest invite for `query` if it is a mail address that doesn't belong to
-   * one of the `collaborators` found for it.
+   * Guest invites for `query` if it is a mail address and for the address book
+   * `contacts`, leaving out addresses that belong to one of the `collaborators`.
    */
   function getGuestCandidates(
     query: string,
-    collaborators: CollaboratorAutoCompleteItem[]
+    collaborators: CollaboratorAutoCompleteItem[],
+    contacts: Contact[] = []
   ): CollaboratorAutoCompleteItem[] {
-    const trimmedQuery = (query || '').trim()
-    const email = getCanonicalEmail(trimmedQuery)
-    if (
-      !capabilityStore.sharingGuestLinksEnabled ||
-      !can('create-all', 'GuestInvite') ||
-      !email ||
-      emailBelongsToAccount(trimmedQuery, collaborators) ||
-      emailBelongsToAccount(email, collaborators)
-    ) {
+    if (!unref(canInviteGuests)) {
       return []
     }
-    return [
-      { id: email, displayName: trimmedQuery.toLowerCase(), shareType: ShareTypes.guest.value }
-    ]
+
+    const trimmedQuery = (query || '').trim()
+    const queryCandidate = getGuestCandidate(
+      trimmedQuery,
+      trimmedQuery.toLowerCase(),
+      collaborators
+    )
+    const contactCandidates = contacts.map((contact) => {
+      const candidate = getGuestCandidate(contact.email, contact.displayName, collaborators)
+      return candidate && { ...candidate, mail: candidate.id }
+    })
+
+    const candidates = new Map<string, CollaboratorAutoCompleteItem>()
+    ;[queryCandidate, ...contactCandidates].filter(Boolean).forEach((candidate) => {
+      candidates.set(candidate.id, candidate)
+    })
+    return [...candidates.values()]
+  }
+
+  function getGuestCandidate(
+    address: string,
+    displayName: string,
+    collaborators: CollaboratorAutoCompleteItem[]
+  ): CollaboratorAutoCompleteItem | undefined {
+    const email = getCanonicalEmail(address)
+    if (
+      !email ||
+      emailBelongsToAccount(address, collaborators) ||
+      emailBelongsToAccount(email, collaborators)
+    ) {
+      return undefined
+    }
+    return { id: email, displayName: displayName || email, shareType: ShareTypes.guest.value }
   }
 
   function emailBelongsToAccount(email: string, collaborators: CollaboratorAutoCompleteItem[]) {
@@ -85,7 +113,7 @@ export const useCollaboratorSearch = () => {
     )
   }
 
-  return { searchCollaborators, getGuestCandidates }
+  return { canInviteGuests, searchCollaborators, getGuestCandidates }
 }
 
 /**
