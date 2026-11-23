@@ -128,6 +128,7 @@ describe('Preview app', () => {
     while (wrappers.length) {
       wrappers.pop().unmount()
     }
+    window.localStorage.clear()
   })
 
   describe('Preloading', () => {
@@ -608,6 +609,24 @@ describe('Preview app', () => {
         ])
         expect(names).toEqual(['clip.mp4', 'logo.svg', 'secret.heic', 'secret.jpg', 'song.mp3'])
       })
+    })
+
+    it('sorts the files like the list they were opened from', () => {
+      window.localStorage.setItem('oc-options_files-common-favorites_sort-dir', 'desc')
+      const { wrapper } = createShallowMountWrapper({
+        currentFileContext: { routeName: 'files-common-favorites' }
+      })
+      expect(
+        ((wrapper.vm as any).mediaFiles as { name: string }[]).map(({ name }) => name)
+      ).toEqual([
+        'sleeping_dog.gif',
+        'lonely_sloth_very_sad.gif',
+        'labrador.gif',
+        'happy_hippo.gif',
+        'elephant.png',
+        'cat_murr_murr.gif',
+        'bear.png'
+      ])
     })
 
     it('should hide hidden shares if the share visibility query is not set to "hidden"', () => {

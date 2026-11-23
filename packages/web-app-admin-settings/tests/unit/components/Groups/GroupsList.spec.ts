@@ -34,31 +34,26 @@ afterEach(() => {
 describe('GroupsList', () => {
   describe('sorting', () => {
     it.each([
-      { query: {}, expected: ['admins', 'users'] },
-      {
-        query: { 'sort-by': 'displayName', 'sort-dir': SortDir.Asc },
-        expected: ['admins', 'users']
-      },
-      {
-        query: { 'sort-by': 'displayName', 'sort-dir': SortDir.Desc },
-        expected: ['users', 'admins']
-      }
-    ])('sorts by display name based on the route query $query', ({ query, expected }) => {
+      { sort: undefined, expected: ['admins', 'users'] },
+      { sort: { sortBy: 'displayName', sortDir: SortDir.Asc }, expected: ['admins', 'users'] },
+      { sort: { sortBy: 'displayName', sortDir: SortDir.Desc }, expected: ['users', 'admins'] }
+    ])('sorts by display name based on the stored sorting $sort', ({ sort, expected }) => {
       const { wrapper } = getWrapper({
         groups: [{ displayName: 'users' }, { displayName: 'admins' }] as Group[],
-        query
+        sort
       })
       expect(getTableData(wrapper).map((g) => g.displayName)).toEqual(expected)
     })
-    it('writes the sort parameters to the route query when the table emits "sort"', () => {
-      const { wrapper, mocks } = getWrapper({ groups: getGroupMocks() })
+    it('sorts the table when it emits "sort"', async () => {
+      const { wrapper } = getWrapper({
+        groups: [{ displayName: 'admins' }, { displayName: 'users' }] as Group[]
+      })
       wrapper.findComponent(OcTable).vm.$emit('sort', {
         sortBy: 'displayName',
         sortDir: SortDir.Desc
       })
-      expect(mocks.$router.replace).toHaveBeenCalledWith({
-        query: expect.objectContaining({ 'sort-by': 'displayName', 'sort-dir': SortDir.Desc })
-      })
+      await nextTick()
+      expect(getTableData(wrapper).map((g) => g.displayName)).toEqual(['users', 'admins'])
     })
   })
 
@@ -218,6 +213,7 @@ function getWrapper({
   groups = [],
   selectedGroups = [],
   query = {},
+  sort,
   filterTerm = '',
   realCheckboxes = false
 }: {
@@ -225,11 +221,16 @@ function getWrapper({
   groups?: Group[]
   selectedGroups?: Group[]
   query?: Record<string, string>
+  sort?: { sortBy: string; sortDir: SortDir }
   filterTerm?: string
   realCheckboxes?: boolean
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
+  if (sort) {
+    window.localStorage.setItem('oc-options_route_sort-by', sort.sortBy)
+    window.localStorage.setItem('oc-options_route_sort-dir', sort.sortDir)
+  }
   const mocks = defaultComponentMocks({
     currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
   })

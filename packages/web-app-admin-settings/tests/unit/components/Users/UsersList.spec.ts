@@ -22,6 +22,9 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 // unmount after each test, otherwise stale lists react to the global click events and key presses
 enableAutoUnmount(afterEach)
+afterEach(() => {
+  window.localStorage.clear()
+})
 
 describe('UsersList', () => {
   describe('select all checkbox', () => {
@@ -67,39 +70,42 @@ describe('UsersList', () => {
     it.each([
       { sortDir: SortDir.Asc, expected: ['admin', 'user'] },
       { sortDir: SortDir.Desc, expected: ['user', 'admin'] }
-    ])('sorts by display name from the route query ($sortDir)', ({ sortDir, expected }) => {
+    ])('sorts by display name from the stored sorting ($sortDir)', ({ sortDir, expected }) => {
       const { wrapper } = getWrapper({
         users: [{ displayName: 'user' }, { displayName: 'admin' }] as User[],
-        query: { 'sort-by': 'displayName', 'sort-dir': sortDir }
+        sort: { sortBy: 'displayName', sortDir: sortDir }
       })
       expect(getTableData(wrapper).map((u) => u.displayName)).toEqual(expected)
     })
     it.each([
       { sortDir: SortDir.Asc, expected: ['1', '2'] },
       { sortDir: SortDir.Desc, expected: ['2', '1'] }
-    ])('sorts by role display name from the route query ($sortDir)', ({ sortDir, expected }) => {
+    ])('sorts by role display name from the stored sorting ($sortDir)', ({ sortDir, expected }) => {
       const { wrapper } = getWrapper({
         users: [
           { id: '2', appRoleAssignments: [{ appRoleId: '2' }] },
           { id: '1', appRoleAssignments: [{ appRoleId: '1' }] }
         ] as User[],
-        query: { 'sort-by': 'role', 'sort-dir': sortDir }
+        sort: { sortBy: 'role', sortDir: sortDir }
       })
       expect(getTableData(wrapper).map((u) => u.id)).toEqual(expected)
     })
     it('treats users without "accountEnabled" as enabled when sorting by login', () => {
       const { wrapper } = getWrapper({
         users: [{ id: '1' }, { id: '2', accountEnabled: false }] as User[],
-        query: { 'sort-by': 'accountEnabled', 'sort-dir': SortDir.Asc }
+        sort: { sortBy: 'accountEnabled', sortDir: SortDir.Asc }
       })
       expect(getTableData(wrapper).map((u) => u.id)).toEqual(['2', '1'])
     })
-    it('writes the sort parameters to the route query when the table emits "sort"', () => {
-      const { wrapper, mocks } = getWrapper({ users: getUserMocks() })
-      wrapper.findComponent(OcTable).vm.$emit('sort', { sortBy: 'mail', sortDir: SortDir.Desc })
-      expect(mocks.$router.replace).toHaveBeenCalledWith({
-        query: expect.objectContaining({ 'sort-by': 'mail', 'sort-dir': SortDir.Desc })
+    it('sorts the table when it emits "sort"', async () => {
+      const { wrapper } = getWrapper({
+        users: [{ displayName: 'admin' }, { displayName: 'user' }] as User[]
       })
+      wrapper
+        .findComponent(OcTable)
+        .vm.$emit('sort', { sortBy: 'displayName', sortDir: SortDir.Desc })
+      await nextTick()
+      expect(getTableData(wrapper).map((u) => u.displayName)).toEqual(['user', 'admin'])
     })
   })
   it('should show the user details on details button click', async () => {
@@ -264,14 +270,14 @@ function getWrapper({
   mountType = shallowMount,
   users = [],
   selectedUsers = [],
-  query = {},
+  sort,
   searchTerm,
   realCheckboxes = false
 }: {
   mountType?: typeof mount
   users?: User[]
   selectedUsers?: User[]
-  query?: Record<string, string>
+  sort?: { sortBy: string; sortDir: SortDir }
   searchTerm?: string
   realCheckboxes?: boolean
 } = {}) {
@@ -282,8 +288,12 @@ function getWrapper({
   }
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
+  if (sort) {
+    window.localStorage.setItem('oc-options_route_sort-by', sort.sortBy)
+    window.localStorage.setItem('oc-options_route_sort-dir', sort.sortDir)
+  }
   const mocks = defaultComponentMocks({
-    currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
+    currentRoute: { name: 'route', path: '/', query: {}, meta: {} } as RouteLocationNormalizedLoaded
   })
   return {
     mocks,

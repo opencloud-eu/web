@@ -7,8 +7,7 @@ import { useAppDefaults, useAppsStore, useConfigStore } from '@opencloud-eu/web-
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useAppDefaults: vi.fn(),
-  useRouteQueryPersisted: vi.fn()
+  useAppDefaults: vi.fn()
 }))
 vi.mocked(useAppDefaults).mockImplementation(() => useAppDefaultsMock())
 

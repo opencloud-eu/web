@@ -25,8 +25,7 @@ import { flushPromises } from '@vue/test-utils'
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn(),
-  useAppDefaults: vi.fn(),
-  useRouteQueryPersisted: vi.fn()
+  useAppDefaults: vi.fn()
 }))
 vi.mocked(useAppDefaults).mockImplementation(() => useAppDefaultsMock({}))
 
