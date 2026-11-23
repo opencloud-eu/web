@@ -48,6 +48,8 @@ const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
 const tilesSlider = '#tiles-size-slider'
 const previewFavoriteButton = '.preview-controls-favorite'
+const spaceHeaderContextMenuButton = '#space-context-btn'
+const spaceHeaderFavoriteAction = '#space-context-drop .oc-files-actions-favorite-trigger'
 const filesContextMenu = 'div[id^="context-menu-drop"]'
 // actions with a route are rendered as links, so match on the action handler instead of buttons
 const enabledActionLabel =
@@ -474,7 +476,7 @@ export const markAsFavorite = async ({
   resources
 }: {
   page: Page
-  method: 'context menu' | 'batch action' | 'preview'
+  method: 'context menu' | 'batch action' | 'preview' | 'space header'
   resources: string[]
 }): Promise<void> => {
   const waitForFollowResponse = (): Promise<Response> =>
@@ -514,6 +516,16 @@ export const markAsFavorite = async ({
       await postPromise
       break
     }
+
+    case 'space header': {
+      const postPromise = waitForFollowResponse()
+      await page.locator(spaceHeaderContextMenuButton).click()
+      const favoriteBtn = page.locator(spaceHeaderFavoriteAction)
+      await expect(favoriteBtn).toHaveAttribute('aria-label', 'Add to favorites')
+      await favoriteBtn.click()
+      await postPromise
+      break
+    }
   }
 }
 
@@ -523,7 +535,7 @@ export const unmarkAsFavorite = async ({
   resources
 }: {
   page: Page
-  method: 'context menu' | 'batch action'
+  method: 'context menu' | 'batch action' | 'space header'
   resources: string[]
 }): Promise<void> => {
   const waitForUnfollowResponse = (): Promise<Response> =>
@@ -555,7 +567,27 @@ export const unmarkAsFavorite = async ({
       await Promise.all(deletePromises)
       break
     }
+
+    case 'space header': {
+      const deletePromise = waitForUnfollowResponse()
+      await page.locator(spaceHeaderContextMenuButton).click()
+      const removeFavoriteBtn = page.locator(spaceHeaderFavoriteAction)
+      await expect(removeFavoriteBtn).toHaveAttribute('aria-label', 'Remove from favorites')
+      await removeFavoriteBtn.click()
+      await deletePromise
+      break
+    }
   }
+}
+
+export const getFavoriteIndicator = ({
+  page,
+  resource
+}: {
+  page: Page
+  resource: string
+}): Locator => {
+  return page.locator(util.format(resourceNameSelector, resource)).locator('.oc-resource-favorite')
 }
 
 export const expectResourceNotShareable = async ({
