@@ -105,13 +105,15 @@ Feature: Search
     When "Alice" searches "strängéनेपालीName" using the global search and the "all files" filter and presses enter
     And "Alice" enables the option to search title only
     Then following resources should be displayed in the files list for user "Alice"
+      | resource          |
       | strängéनेपालीName |
 
     # deleting folder from search result and search deleted resource
     When "Alice" deletes the following resource using the context menu
       | resource          | from |
       | strängéनेपालीName |      |
-    And "Alice" searches "forDeleting" using the global search and the "all files" filter
+    And "Alice" opens the "files" app
+    And "Alice" searches "strängéनेपालीName" using the global search and the "all files" filter
     Then following resource should not be displayed in the search list for user "Alice"
       | resource          |
       | strängéनेपालीName |

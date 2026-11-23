@@ -9,11 +9,12 @@ import { waitProcessingToFinish } from '../../support/objects/app-files/fileEven
 import { pageObjectFor, actorPage } from '../../environment/pageObject'
 
 Then(
-  /^following resources? (should|should not) be displayed in the (?:files list|Shares|trashbin) for user "([^"]*)"$/,
+  /^following resources? (should|should not) be displayed in the (?:files list|Shares|trashbin) for user "([^"]*)"( without a reload)?$/,
   async (
     { world }: { world: World },
     actionType: string,
     stepUser: string,
+    withoutReload: string,
     stepTable: DataTable
   ): Promise<void> => {
     const page = actorPage(world, stepUser)
@@ -21,7 +22,7 @@ Then(
     const isFavoritesPage = page.url().includes('/favorites')
 
     for (const info of stepTable.hashes()) {
-      if (isFavoritesPage) {
+      if (isFavoritesPage && !withoutReload) {
         // In the favorites page, the resource may not be immediately visible due the search index update delay.
         await expect(async () => {
           const isVisible = await resourceObject.getResourceLocator(info.resource).isVisible()

@@ -381,7 +381,7 @@ Feature: server sent events
     
     # tab 2 check that the resource is displayed without a reload
     When "Alice" switches to tab 2
-    Then following resource should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice" without a reload
       | resource    |
       | example.txt |
 
@@ -394,7 +394,7 @@ Feature: server sent events
 
     # tab 2 check that the resource is not displayed without a reload
     When "Alice" switches to tab 2
-    Then following resource should not be displayed in the files list for user "Alice"
+    Then following resource should not be displayed in the files list for user "Alice" without a reload
       | resource    |
       | example.txt |
     And "Alice" logs out

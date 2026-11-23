@@ -1,19 +1,19 @@
-import { errors, Page } from '@playwright/test'
+import { errors, Locator, Page } from '@playwright/test'
 import util from 'util'
 
 const acceptedShareItem =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//span[@data-test-user-name="%s"]'
-const syncEnabled =
-  '//*[@data-test-resource-name="%s"]//ancestor::tr//span[contains(@class, "sync-enabled")]'
+const resourceItem = '//*[@data-test-resource-name="%s"]/ancestor::*[self::li or self::tr]'
+export const syncedIndicator = '[data-test-indicator-type="resource-synced"]'
 
-export const resourceIsSynced = ({
+export const getSyncedIndicatorLocator = ({
   page,
   resource
 }: {
   page: Page
   resource: string
-}): Promise<boolean> => {
-  return page.locator(util.format(syncEnabled, resource)).isVisible()
+}): Locator => {
+  return page.locator(util.format(resourceItem, resource)).locator(syncedIndicator)
 }
 
 export const isAcceptedSharePresent = async ({

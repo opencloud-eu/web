@@ -97,13 +97,10 @@ export const deleteUser = async ({ user }: { user: User }): Promise<User> => {
     user: getKeycloakAdminUser()
   })
   checkResponseStatus(response, 'Failed to delete keycloak user: ' + user.id)
-  if (response.ok) {
-    try {
-      const usersEnvironment = new UsersEnvironment()
-      usersEnvironment.removeCreatedUser({ key: user.id })
-    } catch (e) {
-      console.error('Error removing Keycloak user:', e)
-    }
+  try {
+    usersEnvironment.removeCreatedUser({ key: user.id })
+  } catch (e) {
+    console.error('Error removing Keycloak user:', e)
   }
   return user
 }
