@@ -438,6 +438,9 @@ export const reduceTileSize = async ({ page }: { page: Page }): Promise<void> =>
   const slider = page.locator(tilesSlider)
   await slider.focus()
   await page.keyboard.press('ArrowLeft')
+  // close the view options again, the open drop covers resources in the list
+  await page.keyboard.press('Escape')
+  await expect(slider).toBeHidden()
 }
 
 export const openRightSidebar = async ({
