@@ -24,6 +24,7 @@
         )
       "
     />
+    <app-loading-spinner v-else-if="isLoading" />
     <no-content-message
       v-else-if="!appTokens.length"
       img-src="images/illustrations/app-tokens.svg"
@@ -105,6 +106,7 @@
 <script setup lang="ts">
 import { call } from '@opencloud-eu/web-client'
 import {
+  AppLoadingSpinner,
   formatDateFromISO,
   useAuthStore,
   useClientService,
@@ -145,6 +147,10 @@ const loadTokensTask = useTask(function* (signal) {
     authAppServiceDisabled.value = true
   }
 }).restartable()
+
+const isLoading = computed(() => {
+  return !unref(appTokens).length && (!loadTokensTask.last || loadTokensTask.isRunning)
+})
 
 const deleteAppToken = async ({ token }: AppToken) => {
   try {
