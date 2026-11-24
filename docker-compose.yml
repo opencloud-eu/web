@@ -277,7 +277,7 @@ services:
     restart: 'no'
 
   traefik:
-    image: traefik:v3.7.19
+    image: traefik:v3.8.0
     restart: unless-stopped
     entrypoint:
       [
