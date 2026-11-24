@@ -1,4 +1,5 @@
 import { mock, mockDeep } from 'vitest-mock-extended'
+import { AxiosResponse } from 'axios'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import {
   defaultComponentMocks,
@@ -6,7 +7,7 @@ import {
   mockAxiosResolve,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { ClientService, useModals } from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, ClientService, useModals } from '@opencloud-eu/web-pkg'
 import { flushPromises } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { OcTable } from '@opencloud-eu/design-system/components'
@@ -105,6 +106,43 @@ describe('AppTokens component', () => {
         expect(table.props('data').map(({ token }: AppToken) => token)).toEqual(['2', '3', '1'])
       })
     })
+    it('shows a loading spinner instead of the empty state while loading', async () => {
+      let resolveTokens: (value: AxiosResponse) => void
+      const { wrapper } = getWrapper({
+        tokensRequest: new Promise((resolve) => {
+          resolveTokens = resolve
+        })
+      })
+      await flushPromises()
+
+      expect(wrapper.find(selectors.noAppTokensAvailable).exists()).toBeFalsy()
+      expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeTruthy()
+
+      resolveTokens(mockAxiosResolve([]))
+      await flushPromises()
+
+      expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeFalsy()
+      expect(wrapper.find(selectors.noAppTokensAvailable).exists()).toBeTruthy()
+    })
+    it('keeps the table instead of the loading spinner while reloading', async () => {
+      const appToken: AppToken = {
+        token: '1',
+        label: 'a',
+        created_date: '2021-01-01',
+        expiration_date: '2999-01-01'
+      }
+      const { wrapper, mocks } = getWrapper({ appTokens: [appToken] })
+      await flushPromises()
+      mocks.$clientService.httpAuthenticated.get.mockReturnValue(new Promise(() => undefined))
+      await wrapper.find(selectors.createAppTokenBtn).trigger('click')
+      const { dispatchModal } = useModals()
+      const { onCreated } = vi.mocked(dispatchModal).mock.calls[0][0].customComponentAttrs()
+      ;(onCreated as () => void)()
+      await flushPromises()
+
+      expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeFalsy()
+      expect(wrapper.find(selectors.appTokensTable).exists()).toBeTruthy()
+    })
     it('does show message if no app tokens found', async () => {
       const { wrapper } = getWrapper()
       await flushPromises()
@@ -164,14 +202,18 @@ function storeSort(sortBy: string, sortDir: SortDir) {
 
 function getWrapper({
   authAppServiceDisabled = false,
-  appTokens = []
+  appTokens = [],
+  tokensRequest
 }: {
   authAppServiceDisabled?: boolean
   appTokens?: AppToken[]
+  tokensRequest?: Promise<AxiosResponse>
 } = {}) {
   const clientService = mockDeep<ClientService>()
 
-  if (authAppServiceDisabled) {
+  if (tokensRequest) {
+    clientService.httpAuthenticated.get.mockReturnValue(tokensRequest)
+  } else if (authAppServiceDisabled) {
     clientService.httpAuthenticated.get.mockRejectedValue(new Error())
   } else {
     clientService.httpAuthenticated.get.mockResolvedValue(mockAxiosResolve(appTokens))
