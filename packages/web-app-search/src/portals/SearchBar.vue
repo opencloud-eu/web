@@ -72,7 +72,7 @@
     >
       <oc-list class="oc-list-divider p-2">
         <li
-          v-if="loading"
+          v-if="loading || isSearchPending"
           class="flex justify-center items-center text-role-on-surface-variant py-1 px-2 text-sm"
         >
           <oc-spinner size="small" :aria-hidden="true" aria-label="" />
@@ -199,6 +199,8 @@ const searchResults = ref<
   }[]
 >([])
 const loading = ref(false)
+// true between a term change and the debounced search, so the preview doesn't show "No results" meanwhile
+const isSearchPending = ref(false)
 let latestSearchId = 0
 const currentFolderAvailable = ref(false)
 
@@ -286,6 +288,7 @@ const useScope = computed(() => {
 
 async function search() {
   const searchId = ++latestSearchId
+  isSearchPending.value = false
   searchResults.value = []
   if (!unref(term)?.trim()) {
     loading.value = false
@@ -321,9 +324,14 @@ async function search() {
   }
   loading.value = false
 
-  // only report the preview the user is looking at, not searches in the background
-  // or searches that settle after the preview got closed (e.g. by opening the results page)
-  if (!unref(isPreviewOpen) || !unref(searchBarRef)?.contains(document.activeElement)) {
+  // only report the preview the user is looking at, not searches in the background,
+  // searches that settle after the preview got closed (e.g. by opening the results page)
+  // or searches that are outdated by a pending one, while the preview shows "Searching ..."
+  if (
+    unref(isSearchPending) ||
+    !unref(isPreviewOpen) ||
+    !unref(searchBarRef)?.contains(document.activeElement)
+  ) {
     return
   }
   if (searchError) {
@@ -358,6 +366,7 @@ function onKeyUpEnter() {
 
   // the preview gets hidden, a pending preview search would only cancel the results search
   debouncedSearch.cancel()
+  isSearchPending.value = false
 
   if (unref(optionsDrop)) {
     unref(optionsDrop)?.hide()
@@ -437,6 +446,9 @@ watch([term, scope, useScope], ([newTerm], [oldTerm]) => {
     restoreSearchFromRoute.value = false
     return
   }
+  isSearchPending.value = !!unref(term)?.trim()
+  // the active preview element belongs to the previous results, which are hidden while the search is pending
+  activePreviewIndex.value = null
   debouncedSearch()
 })
 
