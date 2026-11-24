@@ -235,7 +235,8 @@ const onSearch = () => {
 const clearSearch = () => {
   model.value = ''
   if (!typeAhead) {
-    onSearch()
+    // a parent-bound model still holds the old term in this tick
+    emit('search', '')
   }
 }
 

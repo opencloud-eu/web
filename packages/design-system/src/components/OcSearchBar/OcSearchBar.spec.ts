@@ -203,6 +203,16 @@ describe('OcSearchBar', () => {
       expect(wrapper.emitted('search').at(-1)).toEqual([''])
       expect(onParentKeydown).not.toHaveBeenCalled()
     })
+    it('searches with an empty term if the parent binds the term', async () => {
+      const wrapper = getMountedWrapper({
+        modelValue: 'a',
+        'onUpdate:modelValue': (value: string) => wrapper.setProps({ modelValue: value })
+      })
+
+      await wrapper.find(selectors.searchInput).trigger('keydown', { key: 'Escape' })
+
+      expect(wrapper.emitted('search')).toEqual([['']])
+    })
     it('leaves the event to others if there is nothing to clear', async () => {
       const wrapper = getMountedWrapper()
       const onParentKeydown = vi.fn()
