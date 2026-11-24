@@ -1,4 +1,4 @@
-import Uppy, { BasePlugin, UnknownPlugin, UppyFile } from '@uppy/core'
+import Uppy, { BasePlugin, State, UnknownPlugin, UppyFile } from '@uppy/core'
 import Tus from '@uppy/tus'
 import { TusOptions } from '@uppy/tus'
 import XHRUpload, { XHRUploadOptions } from '@uppy/xhr-upload'
@@ -88,6 +88,10 @@ export class UppyService {
   uploadInputs: HTMLInputElement[] = []
   uploadFolderMap: Record<string, Resource> = {}
   private heldBackFiles = new Map<string, OcUppyFile>()
+  private runningUploadIds?: {
+    currentUploads: State<OcUppyMeta, OcUppyBody>['currentUploads']
+    ids: Set<string>
+  }
 
   constructor({ language }: UppyServiceOptions) {
     const { $gettext } = language
@@ -365,9 +369,15 @@ export class UppyService {
   }
 
   private isInRunningUpload(fileId: string) {
-    return Object.values(this.uppy.getState().currentUploads).some(({ fileIDs }) =>
-      fileIDs.includes(fileId)
-    )
+    // uppy replaces `currentUploads` on change, so the id set stays valid while it's the same object
+    const { currentUploads } = this.uppy.getState()
+    if (this.runningUploadIds?.currentUploads !== currentUploads) {
+      this.runningUploadIds = {
+        currentUploads,
+        ids: new Set(Object.values(currentUploads).flatMap(({ fileIDs }) => fileIDs))
+      }
+    }
+    return this.runningUploadIds.ids.has(fileId)
   }
 
   addFiles(files: OcMinimalUppyFile[] | File[]) {

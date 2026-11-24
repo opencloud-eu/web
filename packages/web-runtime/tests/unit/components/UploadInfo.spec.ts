@@ -1,8 +1,9 @@
 import UploadInfo from '../../../src/components/UploadInfo.vue'
+import UploadInfoItem from '../../../src/components/UploadInfoItem.vue'
 import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
-import { ResourceListItem, OcUppyFile } from '@opencloud-eu/web-pkg'
-import { defineComponent, h, nextTick } from 'vue'
-import { DavHttpError, HttpError } from '@opencloud-eu/web-client'
+import { OcUppyFile } from '@opencloud-eu/web-pkg'
+import { Component, defineComponent, h, nextTick } from 'vue'
+import { HttpError } from '@opencloud-eu/web-client'
 
 const selectors = {
   overlay: '#upload-info',
@@ -216,244 +217,7 @@ describe('UploadInfo component', () => {
       const info = wrapper.find(selectors.info.items)
       expect(info.exists()).toBeTruthy()
 
-      const uploadedItems = wrapper.findAll(selectors.info.item)
-      expect(uploadedItems.length).toBe(2)
-    })
-    it('tells screen readers the status of each item', async () => {
-      const { wrapper } = getShallowWrapper()
-      const vm = wrapper.vm as any
-      vm.showInfo = true
-      vm.infoExpanded = true
-      vm.uploads = Object.fromEntries(
-        ['success', 'cancelled', 'error', undefined].map((status, i) => [
-          i,
-          { name: `file${i}`, path: '/', type: 'file', status, meta: { uploadId: i } }
-        ])
-      )
-      await nextTick()
-
-      const statuses = () => wrapper.findAll(selectors.itemStatus).map((s) => s.text())
-      expect(statuses()).toEqual(['Uploaded', 'Cancelled', 'Failed', 'Uploading'])
-
-      vm.togglePauseUploads()
-      await nextTick()
-      expect(statuses()).toEqual(['Uploaded', 'Cancelled', 'Failed', 'Paused'])
-    })
-    it('should show a message on the failed uploaded files', async () => {
-      const { wrapper } = getShallowWrapper()
-      ;(wrapper.vm as any).showInfo = true
-      ;(wrapper.vm as any).infoExpanded = true
-      ;(((wrapper.vm as any).uploads = {
-        '1': {
-          name: 'file',
-          path: '/',
-          type: 'file',
-          meta: { uploadId: '1' }
-        } as unknown as OcUppyFile,
-        '2': {
-          name: 'file2',
-          path: '/',
-          type: 'file',
-          meta: { uploadId: '2' }
-        } as unknown as OcUppyFile,
-        '3': {
-          name: 'file3',
-          path: '/',
-          type: 'file',
-          meta: { uploadId: '3' }
-        } as unknown as OcUppyFile
-      }),
-        ((wrapper.vm as any).errors = {
-          1: new HttpError('', undefined),
-          2: new HttpError('', undefined)
-        }))
-      await nextTick()
-
-      const info = wrapper.find(selectors.info.items)
-      expect(info.exists()).toBeTruthy()
-
-      const infoMessages = wrapper.findAll(selectors.message)
-      expect(infoMessages.length).toBe(2)
-      expect(infoMessages.at(0).text()).toBe('Unknown error')
-      expect(infoMessages.at(1).text()).toBe('Unknown error')
-    })
-    it('shows the message of an XML error response', async () => {
-      const { wrapper } = getShallowWrapper()
-      ;(wrapper.vm as any).showInfo = true
-      ;(wrapper.vm as any).infoExpanded = true
-      ;(wrapper.vm as any).uploads = {
-        '1': {
-          name: 'file',
-          path: '/',
-          type: 'file',
-          meta: { uploadId: '1' }
-        } as unknown as OcUppyFile
-      }
-      ;(wrapper.vm as any).errors = {
-        1: new HttpError(
-          'tus: unexpected response while creating upload, originated from request (method: POST, url: x, response code: 400, response text: <?xml version="1.0" encoding="UTF-8"?><d:error xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns"><s:exception>Sabre\\DAV\\Exception\\BadRequest</s:exception><s:message>name too long</s:message></d:error>, request id: n/a)',
-          undefined
-        )
-      }
-      await nextTick()
-
-      expect(wrapper.find(selectors.message).text()).toBe('name too long')
-    })
-    it.each([
-      {
-        source: 'file upload',
-        isFolder: false,
-        error: new HttpError(
-          'tus: unexpected response while creating upload, originated from request (method: POST, url: x, response code: 423, response text: , request id: n/a)',
-          undefined
-        ),
-        message: 'This item is locked'
-      },
-      {
-        source: 'folder creation',
-        isFolder: true,
-        error: new HttpError('locked', undefined, 423),
-        message: "The folder you're uploading to is locked"
-      }
-    ])(
-      'shows the locked message when a $source hits a locked resource',
-      async ({ isFolder, error, message }) => {
-        const { wrapper } = getShallowWrapper()
-        ;(wrapper.vm as any).showInfo = true
-        ;(wrapper.vm as any).infoExpanded = true
-        ;(wrapper.vm as any).uploads = {
-          '1': {
-            name: 'item',
-            path: '/',
-            type: isFolder ? 'folder' : 'file',
-            meta: { uploadId: '1', isFolder }
-          } as unknown as OcUppyFile
-        }
-        ;(wrapper.vm as any).errors = { 1: error }
-        await nextTick()
-
-        expect(wrapper.find(selectors.message).text()).toBe(message)
-      }
-    )
-    it.each([
-      {
-        error: new DavHttpError(
-          'name validation failed: must not contain \\',
-          undefined,
-          undefined,
-          400
-        ),
-        message: 'name validation failed: must not contain \\',
-        reason: 'a server message'
-      },
-      {
-        error: new DavHttpError('', undefined, undefined, 507),
-        message: 'Quota exceeded',
-        reason: 'status 507'
-      },
-      {
-        error: new DavHttpError('', undefined, undefined, 500),
-        message: 'Unknown error',
-        reason: 'no server message'
-      },
-      { error: new Error('Failed to fetch'), message: 'Unknown error', reason: 'a network error' }
-    ])('shows "$message" for a failed folder creation with $reason', async ({ error, message }) => {
-      const { wrapper } = getShallowWrapper()
-      ;(wrapper.vm as any).showInfo = true
-      ;(wrapper.vm as any).infoExpanded = true
-      ;(wrapper.vm as any).uploads = {
-        '1': {
-          name: 'folder',
-          path: '/',
-          type: 'folder',
-          meta: { uploadId: '1', isFolder: true }
-        } as unknown as OcUppyFile
-      }
-      ;(wrapper.vm as any).errors = { 1: error }
-      await nextTick()
-
-      expect(wrapper.find(selectors.message).text()).toBe(message)
-    })
-    it('does not show the technical message of a non-webdav error with a status', async () => {
-      const { wrapper } = getShallowWrapper()
-      ;(wrapper.vm as any).showInfo = true
-      ;(wrapper.vm as any).infoExpanded = true
-      ;(wrapper.vm as any).uploads = {
-        '1': {
-          name: 'file',
-          path: '/',
-          type: 'file',
-          meta: { uploadId: '1' }
-        } as unknown as OcUppyFile
-      }
-      ;(wrapper.vm as any).errors = {
-        1: Object.assign(
-          new Error('Failed request with status: 500. Internal Server Error request-Id: 1f2e3d'),
-          { statusCode: 500 }
-        )
-      }
-      await nextTick()
-
-      expect(wrapper.find(selectors.message).text()).toBe('Unknown error')
-    })
-    it.each([
-      { status: 423, responseText: '', message: 'This item is locked' },
-      { status: 507, responseText: '', message: 'Quota exceeded' },
-      {
-        status: 500,
-        responseText:
-          '<?xml version="1.0" encoding="UTF-8"?><d:error xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns"><s:exception>Sabre\\DAV\\Exception</s:exception><s:message>internal server error</s:message></d:error>',
-        message: 'internal server error'
-      },
-      { status: 500, responseText: '', message: 'Unknown error' }
-    ])(
-      'shows "$message" for a failed xhr upload with status $status',
-      async ({ status, responseText, message }) => {
-        const { wrapper } = getShallowWrapper()
-        ;(wrapper.vm as any).showInfo = true
-        ;(wrapper.vm as any).infoExpanded = true
-        ;(wrapper.vm as any).uploads = {
-          '1': {
-            name: 'file',
-            path: '/',
-            type: 'file',
-            meta: { uploadId: '1' }
-          } as unknown as OcUppyFile
-        }
-        ;(wrapper.vm as any).errors = {
-          1: Object.assign(
-            new Error(
-              'This looks like a network error, the endpoint might be blocked by an internet provider or a firewall.'
-            ),
-            { request: { status, responseText } }
-          )
-        }
-        await nextTick()
-
-        expect(wrapper.find(selectors.message).text()).toBe(message)
-      }
-    )
-    it('folder is clickable', async () => {
-      const { wrapper } = getShallowWrapper()
-      ;(wrapper.vm as any).showInfo = true
-      ;(wrapper.vm as any).infoExpanded = true
-      ;(wrapper.vm as any).uploads = {
-        '1': {
-          name: 'file',
-          type: 'folder',
-          targetRoute: { params: { driveAliasAndItem: 'some/drive/alias' } },
-          path: '',
-          meta: { uploadId: '1', isFolder: true }
-        } as unknown as OcUppyFile
-      }
-      await nextTick()
-
-      const info = wrapper.find(selectors.info.items)
-      expect(info.exists()).toBeTruthy()
-      const resourceStub = wrapper.findComponent<typeof ResourceListItem>(
-        `${selectors.info.item} resource-list-item-stub`
-      )
-      expect(resourceStub.props().isResourceClickable).toBeTruthy()
+      expect(wrapper.findAllComponents(UploadInfoItem).length).toBe(2)
     })
   })
   describe('retry', () => {
@@ -642,6 +406,94 @@ describe('UploadInfo component', () => {
       )
     })
   })
+  describe('upload progress', () => {
+    const file = { meta: { uploadId: '1' } }
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('applies progress events at a bounded rate', () => {
+      const { wrapper, handlers } = getWrapperWithHandlers()
+      const vm = wrapper.vm as any
+      vm.bytesTotal = 100
+
+      for (let i = 1; i <= 10; i++) {
+        handlers['upload-progress']({ file, progress: { bytesUploaded: i } })
+      }
+      expect(vm.bytesUploaded).toBe(1)
+
+      vi.advanceTimersByTime(500)
+      expect(vm.bytesUploaded).toBe(10)
+    })
+    it('sums up the progress of several files', () => {
+      const { wrapper, handlers } = getWrapperWithHandlers()
+      const vm = wrapper.vm as any
+      vm.bytesTotal = 100
+
+      handlers['upload-progress']({ file, progress: { bytesUploaded: 10 } })
+      handlers['upload-progress']({
+        file: { meta: { uploadId: '2' } },
+        progress: { bytesUploaded: 5 }
+      })
+      handlers['upload-progress']({ file, progress: { bytesUploaded: 20 } })
+      vi.advanceTimersByTime(500)
+
+      expect(vm.bytesUploaded).toBe(25)
+    })
+    it('drops a pending update when the progress gets reset', () => {
+      const { wrapper, handlers } = getWrapperWithHandlers()
+      const vm = wrapper.vm as any
+      vm.bytesTotal = 100
+
+      handlers['upload-progress']({ file, progress: { bytesUploaded: 10 } })
+      handlers['upload-progress']({ file, progress: { bytesUploaded: 100 } })
+      vm.resetProgress()
+      vi.advanceTimersByTime(500)
+
+      expect(vm.bytesUploaded).toBe(0)
+      expect(vm.inFinalization).toBe(false)
+    })
+    it('does not re-render the listed items', async () => {
+      const renderItem = vi.fn()
+      const UploadInfoItemStub = defineComponent({
+        name: 'UploadInfoItem',
+        props: {
+          item: { type: Object, required: true },
+          error: { type: Object, default: undefined },
+          uploadsPaused: Boolean
+        },
+        setup() {
+          return () => {
+            renderItem()
+            return h('li')
+          }
+        }
+      })
+      const { wrapper, handlers } = getWrapperWithHandlers({ UploadInfoItem: UploadInfoItemStub })
+      const vm = wrapper.vm as any
+      vm.showInfo = true
+      vm.infoExpanded = true
+      vm.runningUploads = 1
+      vm.bytesTotal = 100
+      vm.uploads = { '1': { name: 'file', meta: { uploadId: '1' } } }
+      await nextTick()
+      expect(renderItem).toHaveBeenCalled()
+      renderItem.mockClear()
+
+      for (let i = 1; i <= 5; i++) {
+        handlers['upload-progress']({ file, progress: { bytesUploaded: i * 10 } })
+        vi.advanceTimersByTime(500)
+        await nextTick()
+      }
+
+      expect(vm.remainingTime).toBeDefined()
+      expect(renderItem).not.toHaveBeenCalled()
+    })
+  })
   describe('unmount', () => {
     it('unsubscribes all uppy service handlers', () => {
       const { wrapper, mocks } = getShallowWrapper()
@@ -669,8 +521,8 @@ describe('UploadInfo component', () => {
   })
 })
 
-function getWrapperWithHandlers() {
-  const { wrapper, mocks } = getShallowWrapper()
+function getWrapperWithHandlers(stubs: Record<string, Component> = {}) {
+  const { wrapper, mocks } = getShallowWrapper(stubs)
   const handlers: Record<string, (...args: unknown[]) => void> = {}
   for (const [event, handler] of mocks.$uppyService.subscribe.mock.calls) {
     handlers[event] = handler
@@ -678,7 +530,7 @@ function getWrapperWithHandlers() {
   return { wrapper, mocks, handlers }
 }
 
-function getShallowWrapper() {
+function getShallowWrapper(stubs: Record<string, Component> = {}) {
   const mocks = {
     ...defaultComponentMocks()
   }
@@ -691,7 +543,7 @@ function getShallowWrapper() {
         plugins: [...defaultPlugins()],
         mocks,
         provide: mocks,
-        stubs: { OcHiddenAnnouncer: OcHiddenAnnouncerStub }
+        stubs: { OcHiddenAnnouncer: OcHiddenAnnouncerStub, ...stubs }
       }
     })
   }

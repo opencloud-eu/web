@@ -129,52 +129,13 @@
         :class="{ 'max-h-[calc(50vh-100px)]': showErrorLog }"
       >
         <ul class="oc-list">
-          <li v-for="(item, idx) in uploads" :key="idx">
-            <span class="flex items-center">
-              <oc-icon
-                v-if="item.status === 'error'"
-                name="close"
-                size-class="size-4"
-                color="var(--oc-role-error)"
-              />
-              <oc-icon v-else-if="item.status === 'success'" name="check" size-class="size-4" />
-              <oc-icon v-else-if="item.status === 'cancelled'" name="close" size-class="size-4" />
-              <oc-icon v-else-if="uploadsPaused" name="pause" size-class="size-4" />
-              <div v-else class="flex"><oc-spinner size="small" /></div>
-              <span class="upload-info-item-status sr-only" v-text="getUploadItemStatus(item)" />
-              <resource-list-item
-                v-if="displayFileAsResource(item)"
-                :key="item.path"
-                class="ms-2 min-w-0"
-                :resource="item as Resource"
-                :is-path-displayed="true"
-                :is-resource-clickable="isResourceClickable(item)"
-                :parent-folder-name="parentFolderName(item)"
-                :link="resourceLink(item)"
-                :parent-folder-link="parentFolderLink(item)"
-              />
-              <span v-else class="flex items-center truncate">
-                <resource-icon
-                  :resource="item as Resource"
-                  size="large"
-                  class="file_info__icon mx-2"
-                />
-                <resource-name
-                  :name="item.name"
-                  :extension="item.extension"
-                  :type="item.type"
-                  full-path=""
-                  :is-path-displayed="false"
-                />
-              </span>
-            </span>
-            <span
-              v-if="getUploadItemMessage(item)"
-              class="upload-info-message ms-1 text-sm"
-              :class="getUploadItemClass(item)"
-              v-text="getUploadItemMessage(item)"
-            ></span>
-          </li>
+          <upload-info-item
+            v-for="(item, id) in uploads"
+            :key="id"
+            :item="item"
+            :error="errors[id]"
+            :uploads-paused="uploadsPaused"
+          />
         </ul>
       </div>
       <oc-error-log
@@ -190,41 +151,23 @@
 
 <script setup lang="ts">
 import { ref, watch, unref, computed, useTemplateRef, onBeforeUnmount } from 'vue'
-import { isUndefined } from 'lodash-es'
+import { throttle } from 'lodash-es'
 import { getSpeed } from '@uppy/utils'
-import {
-  DavHttpError,
-  HttpError,
-  Resource,
-  urlJoin,
-  extractParentFolderName
-} from '@opencloud-eu/web-client'
+import { urlJoin } from '@opencloud-eu/web-client'
 import {
   OcUppyFile,
-  queryItemAsString,
   UppyService,
   UppyServiceTopics,
   useService,
-  formatFileSize,
-  ResourceListItem,
-  ResourceIcon,
-  ResourceName
+  formatFileSize
 } from '@opencloud-eu/web-pkg'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 import { OcHiddenAnnouncer } from '@opencloud-eu/design-system/components'
+import UploadInfoItem, { UploadError, UploadResult } from './UploadInfoItem.vue'
 
-type UploadResult = OcUppyFile & {
-  path?: string
-  targetRoute?: RouteLocationNamedRaw
-  status?: string
-  filesCount?: number
-  successCount?: number
-  errorCount?: number
-}
-
-// @uppy/xhr-upload attaches the failed XMLHttpRequest to its errors
-type UploadError = HttpError & { request?: XMLHttpRequest }
+// same interval uppy uses for its total progress
+const PROGRESS_UPDATE_INTERVAL = 500
 
 const uppyService = useService<UppyService>('$uppyService')
 const { $gettext, $ngettext, current: currentLanguage } = useGettext()
@@ -245,7 +188,9 @@ const runningUploads = ref(0) // all uploads (not files!) that are in progress c
 const bytesTotal = ref(0)
 const bytesUploaded = ref(0)
 const uploadSpeed = ref(0)
-const filesInEstimation = ref<Record<string, number>>({})
+// progress events arrive too often to be reactive, they get applied via updateProgressInfo
+const bytesUploadedPerFile = new Map<string, number>()
+let latestBytesUploaded = 0
 const timeStarted = ref<Date>(null)
 let timePaused: number
 const remainingTime = ref<string>(undefined)
@@ -436,9 +381,11 @@ function cleanOverlay() {
 }
 
 function resetProgress() {
+  updateProgressInfo.cancel()
   bytesTotal.value = 0
   bytesUploaded.value = 0
-  filesInEstimation.value = {}
+  bytesUploadedPerFile.clear()
+  latestBytesUploaded = 0
   timeStarted.value = null
   remainingTime.value = undefined
   inPreparation.value = true
@@ -457,65 +404,6 @@ function closeInfo() {
     // we can safely remove all failed files if no uploads are running and the overlay is closed
     uppyService.removeFailedFiles()
   }
-}
-
-function displayFileAsResource(file: UploadResult) {
-  return !!file.targetRoute
-}
-
-function isResourceClickable(file: UploadResult) {
-  return file.meta.isFolder === true
-}
-
-function resourceLink(file: UploadResult) {
-  if (!file.meta.isFolder) {
-    return {}
-  }
-  return {
-    ...file.targetRoute,
-    params: {
-      ...file.targetRoute.params,
-      driveAliasAndItem: urlJoin(
-        queryItemAsString(file.targetRoute.params.driveAliasAndItem),
-        file.name,
-        {
-          leadingSlash: false
-        }
-      )
-    },
-    query: {
-      ...file.targetRoute.query,
-      ...(!isUndefined(file.meta.fileId) && { fileId: file.meta.fileId })
-    }
-  }
-}
-
-function parentFolderLink(file: UploadResult) {
-  return {
-    ...file.targetRoute,
-    query: {
-      ...file.targetRoute.query,
-      ...(!isUndefined(file.meta.currentFolderId) && { fileId: file.meta.currentFolderId })
-    }
-  }
-}
-
-function parentFolderName(file: UploadResult) {
-  const { meta } = file
-  const parentFolder = extractParentFolderName(file as Resource)
-  if (parentFolder) {
-    return parentFolder
-  }
-
-  if (meta.driveType === 'personal') {
-    return $gettext('Personal')
-  }
-
-  if (meta.driveType === 'public') {
-    return $gettext('Public link')
-  }
-
-  return meta.spaceName
 }
 
 function buildRouteFromUppyResource(resource: OcUppyFile): RouteLocationNamedRaw {
@@ -595,81 +483,36 @@ function retryUploads() {
   uppyService.retryAllUploads()
 }
 
-function getUploadItemStatus(item: UploadResult) {
-  switch (item.status) {
-    case 'error':
-      return $gettext('Failed')
-    case 'success':
-      return $gettext('Uploaded')
-    case 'cancelled':
-      return $gettext('Cancelled')
-  }
-  return unref(uploadsPaused) ? $gettext('Paused') : $gettext('Uploading')
-}
+const updateProgressInfo = throttle(function () {
+  bytesUploaded.value = latestBytesUploaded
 
-function getUploadItemMessage(item: UploadResult) {
-  const error = unref(errors)[item.meta.uploadId]
+  const timeElapsed = Date.now() - unref(timeStarted).getTime()
 
-  if (!error) {
+  uploadSpeed.value = getSpeed({
+    bytesUploaded: latestBytesUploaded,
+    uploadStarted: unref(timeStarted).getTime(),
+    bytesTotal: unref(bytesTotal)
+  })
+
+  const progressPercent = (100 * latestBytesUploaded) / unref(bytesTotal)
+  if (progressPercent === 0) {
     return
   }
+  const totalTimeNeededInMilliseconds = (timeElapsed / progressPercent) * 100
+  const remainingMilliseconds = totalTimeNeededInMilliseconds - timeElapsed
 
-  // TODO: Remove extraction code as soon as https://github.com/tus/tus-js-client/issues/448 is solved
-  const formatErrorToObject = ({ message, request }: UploadError) => {
-    // tus-js-client puts the response into the message, @uppy/xhr-upload into the request
-    const tusResponseCode = message.match(/response code: (\d+)/)?.[1]
-    const responseCode = tusResponseCode ? parseInt(tusResponseCode, 10) : request?.status
-    const responseText = tusResponseCode
-      ? message.match(/response text: ([\s\S]+?), request id/)?.[1] || '{}'
-      : request?.responseText || '{}'
-    let errorBody: { error?: { code?: string; message?: string } }
-    try {
-      errorBody = JSON.parse(responseText)
-    } catch {
-      errorBody = {
-        error: { message: responseText.match(/<s:message>([\s\S]*?)<\/s:message>/)?.[1] }
-      }
-    }
-
-    return {
-      responseCode: responseCode || null,
-      errorCode: errorBody?.error?.code,
-      errorMessage: errorBody?.error?.message
-    }
+  remainingTime.value = getRemainingTime(remainingMilliseconds)
+  if (progressPercent === 100) {
+    inFinalization.value = true
   }
-
-  // folders are created via webdav, its errors carry the status and the server message directly
-  const errorObject =
-    error instanceof DavHttpError
-      ? { responseCode: error.statusCode, errorMessage: error.message }
-      : formatErrorToObject(error)
-  if (error.statusCode === 423 || errorObject.responseCode === 423) {
-    return item.meta.isFolder
-      ? $gettext("The folder you're uploading to is locked")
-      : $gettext('This item is locked')
-  }
-
-  switch (errorObject.responseCode) {
-    case 507:
-      return $gettext('Quota exceeded')
-    default:
-      return errorObject.errorMessage
-        ? $gettext(errorObject.errorMessage)
-        : $gettext('Unknown error')
-  }
-}
-
-const getUploadItemClass = (item: UploadResult) => {
-  return unref(errors)[item.meta.uploadId]
-    ? 'upload-info-danger text-role-error'
-    : 'upload-info-success'
-}
+}, PROGRESS_UPDATE_INTERVAL)
 
 const subscriptions: { topic: UppyServiceTopics; token: string }[] = []
 function subscribe<T>(topic: UppyServiceTopics, callback: (data?: T) => void) {
   subscriptions.push({ topic, token: uppyService.subscribe<T>(topic, callback) })
 }
 onBeforeUnmount(() => {
+  updateProgressInfo.cancel()
   for (const { topic, token } of subscriptions) {
     uppyService.unsubscribe(topic, token)
   }
@@ -746,33 +589,11 @@ subscribe(
       inPreparation.value = false
     }
 
-    if (filesInEstimation.value[file.meta.uploadId] === undefined) {
-      filesInEstimation.value[file.meta.uploadId] = 0
-    }
+    const previousBytes = bytesUploadedPerFile.get(file.meta.uploadId) ?? 0
+    latestBytesUploaded += progress.bytesUploaded - previousBytes
+    bytesUploadedPerFile.set(file.meta.uploadId, progress.bytesUploaded)
 
-    const byteIncrease = progress.bytesUploaded - filesInEstimation.value[file.meta.uploadId]
-    bytesUploaded.value += byteIncrease
-    filesInEstimation.value[file.meta.uploadId] = progress.bytesUploaded
-
-    const timeElapsed = Date.now() - unref(timeStarted).getTime()
-
-    uploadSpeed.value = getSpeed({
-      bytesUploaded: unref(bytesUploaded),
-      uploadStarted: unref(timeStarted).getTime(),
-      bytesTotal: unref(bytesTotal)
-    })
-
-    const progressPercent = (100 * unref(bytesUploaded)) / unref(bytesTotal)
-    if (progressPercent === 0) {
-      return
-    }
-    const totalTimeNeededInMilliseconds = (timeElapsed / progressPercent) * 100
-    const remainingMilliseconds = totalTimeNeededInMilliseconds - timeElapsed
-
-    remainingTime.value = getRemainingTime(remainingMilliseconds)
-    if (progressPercent === 100) {
-      inFinalization.value = true
-    }
+    updateProgressInfo()
   }
 )
 subscribe('uploadError', ({ file, error }: { file: OcUppyFile; error: Error }) => {
