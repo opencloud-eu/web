@@ -169,6 +169,75 @@ describe('PasswordPolicyService', () => {
       })
     })
   })
+  describe('method "missing"', () => {
+    it.each([
+      [{} as PasswordPolicyCapability, true, '', { mustNotBeEmpty: false }],
+      [{} as PasswordPolicyCapability, true, 'o', { mustNotBeEmpty: true }],
+      [{ min_characters: 3 }, false, 'ow', { atLeastCharacters: false }],
+      [{ min_characters: 3 }, false, 'owl', { atLeastCharacters: true }],
+      [{ max_characters: 3 }, false, 'owls', { atMostCharacters: false }],
+      [{ max_characters: 3 }, false, 'owl', { atMostCharacters: true }],
+      [{ min_uppercase_characters: 2 }, false, 'Owl', { atLeastUppercaseCharacters: false }],
+      [{ min_uppercase_characters: 2 }, false, 'OWl', { atLeastUppercaseCharacters: true }],
+      [{ min_lowercase_characters: 2 }, false, 'OWl', { atLeastLowercaseCharacters: false }],
+      [{ min_lowercase_characters: 2 }, false, 'Owl', { atLeastLowercaseCharacters: true }],
+      [{ min_digits: 2 }, false, 'owl1', { atLeastDigits: false }],
+      [{ min_digits: 2 }, false, 'owl12', { atLeastDigits: true }],
+      [{ min_special_characters: 2 }, false, 'owl!', { mustContain: false }],
+      [{ min_special_characters: 2 }, false, 'owl!#', { mustContain: true }],
+      [
+        { min_characters: 4, min_digits: 1 },
+        false,
+        'owl1',
+        { atLeastCharacters: true, atLeastDigits: true }
+      ],
+      [
+        { min_characters: 4, min_digits: 1 },
+        false,
+        'owls',
+        { atLeastCharacters: true, atLeastDigits: false }
+      ]
+    ])(
+      'capability "%s", enforcePassword "%s", password "%s"',
+      (
+        capability: PasswordPolicyCapability,
+        enforcePassword: boolean,
+        password: string,
+        expected: Record<string, boolean>
+      ) => {
+        const { passwordPolicyService, store } = getWrapper(capability)
+        passwordPolicyService.initialize(store)
+        const policy = passwordPolicyService.getPolicy({ enforcePassword })
+        const result = policy.missing(password)
+
+        expect(
+          Object.fromEntries(result.rules.map(({ code, verified }) => [code, verified]))
+        ).toEqual(expected)
+        expect(policy.check(password)).toBe(Object.values(expected).every(Boolean))
+      }
+    )
+    it('explains the rule with its message and format', () => {
+      const { passwordPolicyService, store } = getWrapper({ min_special_characters: 2 })
+      passwordPolicyService.initialize(store)
+
+      expect(passwordPolicyService.getPolicy().missing('owl').rules).toEqual([
+        {
+          code: 'mustContain',
+          message: '%{param1}+ special characters',
+          helperMessage: expect.any(String),
+          format: [2],
+          verified: false
+        }
+      ])
+    })
+  })
+  describe('method "check"', () => {
+    it('rejects a non-string password', () => {
+      const { passwordPolicyService, store } = getWrapper({} as PasswordPolicyCapability)
+      passwordPolicyService.initialize(store)
+      expect(passwordPolicyService.getPolicy().check(undefined)).toBe(false)
+    })
+  })
   describe('generating password', () => {
     it('does not exceed the maximum length', () => {
       const { passwordPolicyService, store } = getWrapper({ max_characters: 8 })
@@ -210,7 +279,7 @@ const getWrapper = (capability: PasswordPolicyCapability) => {
   return {
     store,
     passwordPolicyService: new PasswordPolicyService({
-      language: { current: 'en' } as Language
+      language: { current: 'en', $gettext: (msg: string) => msg } as Language
     })
   }
 }

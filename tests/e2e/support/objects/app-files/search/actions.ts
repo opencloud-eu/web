@@ -2,12 +2,11 @@ import { expect, Locator, Page } from '@playwright/test'
 import util from 'util'
 
 const searchResultMessageSelector = '//p[@class="text-role-on-surface-variant"]'
-const selectTagDropdownSelector =
-  '//div[contains(@class,"files-search-filter-tags")]//button[contains(@class,"oc-filter-chip-button")]'
+const selectTagDropdownSelector = '.item-filter-tags .oc-filter-chip-button'
 const tagFilterChipSelector = '//button[contains(@data-test-value,"%s")]'
 const mediaTypeFilterSelector = '.item-filter-mediaType'
 const mediaTypeFilterItem = '[data-test-id="media-type-%s"]'
-const mediaTypeOutside = '.files-search-result-filter'
+const searchResultFilterSelector = '.files-search-result-filter'
 const clearFilterSelector = '.item-filter-%s .oc-filter-chip-clear'
 const lastModifiedFilterSelector = '.item-filter-lastModified'
 const lastModifiedFilterItem = '[data-test-value="%s"]'
@@ -56,7 +55,15 @@ export const selectTagFilter = async ({
     await expect(tagOption).toBeVisible({ timeout: 5000 })
   }).toPass({ timeout: 30000 })
 
-  await tagOption.click()
+  await Promise.all([
+    page.waitForResponse(
+      (resp) =>
+        resp.url().includes('/dav/spaces') &&
+        resp.status() === 207 &&
+        resp.request().method() === 'REPORT'
+    ),
+    tagOption.click()
+  ])
 }
 
 export const selectMediaTypeFilter = async ({
@@ -76,7 +83,13 @@ export const selectMediaTypeFilter = async ({
     ),
     page.locator(util.format(mediaTypeFilterItem, mediaType.toLowerCase())).click()
   ])
-  await page.locator(mediaTypeOutside).click()
+  // the mediaType filter allows multiple choices and stays open, close it
+  const searchResultFilter = page.locator(searchResultFilterSelector)
+  if (await searchResultFilter.isVisible()) {
+    await searchResultFilter.click()
+    return
+  }
+  await page.keyboard.press('Escape')
 }
 
 export const selectLastModifiedFilter = async ({

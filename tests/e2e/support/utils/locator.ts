@@ -1,30 +1,45 @@
-import { Locator } from '@playwright/test'
+import { Locator, expect } from '@playwright/test'
 import { getSSEEvents } from '../environment/sse'
 import { appConfig } from '../../playwright.config'
 
-export const waitForEvent = (locator: Locator, type: keyof SVGElementEventMap): Promise<void> =>
-  locator.evaluate(
-    (element, arg) =>
-      new Promise<void>((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-          clearTimeout(timeoutId)
-          reject(
-            new Error(
-              `locator.evaluate: Timeout ${arg.timeout}ms exceeded. Waiting for event: ${arg.type}`
-            )
-          )
-        }, arg.timeout)
+// waits until the CSS transitions of the element (e.g. a sliding sidebar panel) have finished,
+// also passes if there is no transition at all, e.g. with reduced motion
+export async function waitForTransitionsToEnd(locator: Locator): Promise<void> {
+  await expect
+    .poll(() =>
+      locator.evaluate(
+        (element) =>
+          element.getAnimations().filter((animation) => animation instanceof CSSTransition).length
+      )
+    )
+    .toBe(0)
+}
 
-        const finalizer = () => {
-          element.removeEventListener(arg.type, finalizer)
-          clearTimeout(timeoutId)
-          resolve()
-        }
+// clicks the trigger until the target shows up, for drops that sometimes ignore the first click
+export async function clickUntilVisible(trigger: Locator, target: Locator): Promise<void> {
+  await expect(async () => {
+    if (!(await target.isVisible())) {
+      await trigger.click()
+    }
+    await expect(target).toBeVisible({ timeout: 1000 })
+  }).toPass({ timeout: appConfig.minTimeout * 2 * 1000 })
+}
 
-        element.addEventListener(arg.type, finalizer)
-      }),
-    { type, timeout: appConfig.timeout * 1000 }
-  )
+// clicks the trigger until the target has the class, e.g. a sidebar panel select click
+// that firefox sometimes ignores right after the sidebar got opened
+export async function clickUntilClass(
+  trigger: Locator,
+  target: Locator,
+  className: string
+): Promise<void> {
+  await expect(async () => {
+    const classes = (await target.getAttribute('class', { timeout: 1000 })) || ''
+    if (!classes.split(/\s+/).includes(className)) {
+      await trigger.click({ timeout: 2000 })
+    }
+    await expect(target).toContainClass(className, { timeout: 2000 })
+  }).toPass({ timeout: appConfig.minTimeout * 3 * 1000 })
+}
 
 export const buildXpathLiteral = (value: string) => {
   switch (true) {

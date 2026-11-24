@@ -5,6 +5,7 @@ import { sidebar } from '../utils'
 import { clickResource } from '../resource/actions'
 import { User } from '../../../types'
 import { syncedIndicator } from './utils'
+import { locatorUtils } from '../../../utils'
 
 const invitePanel = '#oc-files-sharing-sidebar'
 const quickShareButton =
@@ -85,14 +86,10 @@ export const createShare = async (args: createShareArgs): Promise<void> => {
   }
   const federatedShare = recipients[0].shareType
   if (federatedShare) {
-    await page.locator(userTypeFilter).click()
-    if (!(await page.locator(userTypeFilterDropdown).isVisible())) {
-      // wait and retry changing share user type
-      console.info('[INFO] Federated share type not applied, retrying...')
-      await page.waitForTimeout(1000)
-      await page.locator(userTypeFilter).click()
-    }
-    await page.locator(userTypeFilterDropdown).waitFor()
+    await locatorUtils.clickUntilVisible(
+      page.locator(userTypeFilter),
+      page.locator(userTypeFilterDropdown)
+    )
     await page.locator(userTypeSelector).filter({ hasText: federatedShare }).click()
     await page.locator(selectedUserTypeLabel).filter({ hasText: federatedShare }).waitFor()
   }

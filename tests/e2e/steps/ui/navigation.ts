@@ -20,29 +20,47 @@ Then(
     const page = actorPage(world, stepUser)
     const resourceObject = new objects.applicationFiles.Resource({ page })
     const isFavoritesPage = page.url().includes('/favorites')
+    const resources = stepTable.hashes().map(({ resource }) => resource)
+    const shouldBeVisible = actionType === 'should'
 
-    for (const info of stepTable.hashes()) {
-      if (isFavoritesPage && !withoutReload) {
-        // In the favorites page, the resource may not be immediately visible due the search index update delay.
-        await expect(async () => {
-          const isVisible = await resourceObject.getResourceLocator(info.resource).isVisible()
-          if (isVisible !== (actionType === 'should')) {
-            await page.reload()
-            await page.locator('#app-loading-spinner').waitFor({ state: 'detached' })
-          }
-          expect(isVisible).toBe(actionType === 'should')
-        }).toPass({ timeout: appConfig.timeout * 1000 })
-      } else if (actionType === 'should') {
-        await expect(resourceObject.getResourceLocator(info.resource)).toBeVisible({
-          timeout: appConfig.timeout * 1000
-        })
-      } else {
-        await expect(resourceObject.getResourceLocator(info.resource)).not.toBeVisible()
+    async function checkResources(timeout: number, notVisibleTimeout?: number): Promise<void> {
+      for (const resource of resources) {
+        const locator = resourceObject.getResourceLocator(resource)
+        if (shouldBeVisible) {
+          await expect(locator).toBeVisible({ timeout })
+        } else {
+          await expect(locator).not.toBeVisible({ timeout: notVisibleTimeout })
+        }
       }
+    }
 
-      if (actionType === 'should') {
-        await waitProcessingToFinish(page, info.resource)
-      }
+    if (isFavoritesPage && !withoutReload) {
+      // the favorites are loaded from the search index, which is updated asynchronously.
+      let attempt = 0
+      await expect(async () => {
+        if (attempt++ > 0) {
+          await Promise.all([
+            page.waitForResponse(
+              (resp) =>
+                resp.url().includes('/dav/spaces') &&
+                resp.status() === 207 &&
+                resp.request().method() === 'REPORT'
+            ),
+            page.reload()
+          ])
+          await page.locator('#app-loading-spinner').waitFor({ state: 'detached' })
+        }
+        await checkResources(1000, 1000)
+      }).toPass({ intervals: [1000, 2000, 5000], timeout: appConfig.timeout * 1000 })
+    } else {
+      await checkResources(appConfig.timeout * 1000)
+    }
+
+    if (!shouldBeVisible) {
+      return
+    }
+    for (const resource of resources) {
+      await waitProcessingToFinish(page, resource)
     }
   }
 )

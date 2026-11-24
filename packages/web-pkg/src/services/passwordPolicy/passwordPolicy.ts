@@ -6,13 +6,14 @@ import {
   AtLeastUppercaseCharactersRule,
   AtMostCharactersRule,
   MustContainRule,
-  MustNotBeEmptyRule
+  MustNotBeEmptyRule,
+  PasswordPolicyRule,
+  PasswordPolicyRuleOptions
 } from './rules'
+import type { PasswordPolicy } from '@opencloud-eu/design-system/helpers'
+import { PasswordPolicyValidator } from './passwordPolicyValidator'
 import { PasswordPolicyCapability } from '@opencloud-eu/web-client/ocs'
 import { CapabilityStore } from '../../composables'
-
-// @ts-ignore
-import { PasswordPolicy } from 'password-sheriff'
 
 export const PasswordPolicyRuleId = {
   atLeastCharacters: 'atLeastCharacters',
@@ -103,7 +104,7 @@ export class PasswordPolicyService {
     enforcePassword = false,
     excludeRules = []
   }: PasswordPolicyOptions = {}): void {
-    const ruleset: Record<PasswordPolicyRuleId, unknown> = {
+    const ruleset: Record<PasswordPolicyRuleId, PasswordPolicyRule> = {
       atLeastCharacters: new AtLeastCharactersRule({ ...this.language }),
       atMostCharacters: new AtMostCharactersRule({ ...this.language }),
       mustNotBeEmpty: new MustNotBeEmptyRule({ ...this.language }),
@@ -112,7 +113,7 @@ export class PasswordPolicyService {
       atLeastDigits: new AtLeastDigitsRule({ ...this.language }),
       mustContain: new MustContainRule({ ...this.language })
     }
-    const rules = {} as Partial<Record<PasswordPolicyRuleId, unknown>>
+    const rules = {} as Partial<Record<PasswordPolicyRuleId, PasswordPolicyRuleOptions>>
 
     if (enforcePassword && !this.hasRules()) {
       rules.mustNotBeEmpty = {}
@@ -153,7 +154,7 @@ export class PasswordPolicyService {
       delete rules[ruleId]
     }
 
-    this.policy = new PasswordPolicy(rules, ruleset)
+    this.policy = new PasswordPolicyValidator(rules, ruleset)
   }
 
   public getPolicy(options: PasswordPolicyOptions = {}): PasswordPolicy {

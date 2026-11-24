@@ -125,6 +125,44 @@ describe('useThemeStore', () => {
 
       expect(store.availableThemes.length).toBe(themeConfig.clients.web.themes.length)
     })
+    it('deep merges common config, web defaults and each theme', () => {
+      const themeConfig: ThemeConfigType = {
+        common: { name: 'OpenCloud', urls: { imprint: 'common-imprint', privacy: 'privacy' } },
+        clients: {
+          web: {
+            defaults: {
+              urls: { imprint: 'web-imprint' },
+              designTokens: { roles: { primary: 'blue', secondary: 'gray' } }
+            },
+            themes: [
+              { label: 'light', isDark: false },
+              { label: 'dark', isDark: true, designTokens: { roles: { primary: 'black' } } }
+            ]
+          }
+        }
+      }
+
+      const store = useThemeStore()
+      store.initializeThemes(themeConfig)
+
+      expect(store.availableThemes).toEqual([
+        {
+          name: 'OpenCloud',
+          urls: { imprint: 'web-imprint', privacy: 'privacy' },
+          designTokens: { roles: { primary: 'blue', secondary: 'gray' } },
+          label: 'light',
+          isDark: false
+        },
+        {
+          name: 'OpenCloud',
+          urls: { imprint: 'web-imprint', privacy: 'privacy' },
+          designTokens: { roles: { primary: 'black', secondary: 'gray' } },
+          label: 'dark',
+          isDark: true
+        }
+      ])
+      expect(themeConfig.clients.web.defaults.designTokens.roles.primary).toBe('blue')
+    })
     describe('currentTheme', () => {
       it.each([true, false])('gets set based on the OS setting', (isDark) => {
         vi.mocked(usePreferredDark).mockReturnValue(computed(() => isDark))

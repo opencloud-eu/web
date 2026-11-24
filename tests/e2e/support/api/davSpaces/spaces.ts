@@ -3,7 +3,6 @@ import { User } from '../../types'
 import { urlJoin, encodeWebDavPath } from '../../utils/urlJoin'
 import { XMLParser } from 'fast-xml-parser'
 import { getSpaceIdBySpaceName } from '../graph'
-import _ from 'lodash-es/object.js'
 import { createTagsForResource } from '../graph/utils'
 
 const folderExists = async ({ user, path }: { user: User; path: string }): Promise<boolean> => {
@@ -255,7 +254,7 @@ const getDataOfFileInsideSpace = async ({
   checkResponseStatus(response, `Failed while getting information of file ${pathToFileName}`)
   const xmlParser = new XMLParser()
   const fileData = xmlParser.parse(await response.text())
-  return _.get(fileData, '[d:multistatus][d:response]')
+  return fileData?.['d:multistatus']?.['d:response']
 }
 
 export const getIdOfFileInsideSpace = async ({
@@ -280,12 +279,12 @@ export const getIdOfFileInsideSpace = async ({
   if (fileDataResponse.constructor.name === 'Array') {
     for (const key in fileDataResponse) {
       if (fileDataResponse[key]['d:propstat'][0]['d:prop']['oc:name'] === pathToFileName) {
-        return _.get(fileDataResponse[key], '[d:propstat][0][d:prop][oc:fileid]')
+        return fileDataResponse[key]['d:propstat'][0]['d:prop']['oc:fileid']
       }
     }
   } else {
     // extract file id form the response
-    return _.get(fileDataResponse, '[d:propstat][0][d:prop][oc:fileid]')
+    return fileDataResponse?.['d:propstat']?.[0]?.['d:prop']?.['oc:fileid']
   }
 }
 

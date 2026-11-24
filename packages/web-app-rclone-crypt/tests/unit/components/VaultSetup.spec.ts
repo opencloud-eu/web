@@ -32,7 +32,7 @@ function getWrapper() {
   const mocks = defaultComponentMocks()
   const passwordPolicy = mock<ReturnType<PasswordPolicyService['getPolicy']>>()
   passwordPolicy.check.mockReturnValue(false)
-  passwordPolicy.missing.mockReturnValue({ rules: [], verified: false })
+  passwordPolicy.missing.mockReturnValue({ rules: [] })
   mocks.$passwordPolicyService.getPolicy.mockReturnValue(passwordPolicy)
 
   return {

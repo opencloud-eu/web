@@ -1,11 +1,11 @@
 import { computed, onScopeDispose, ref, unref } from 'vue'
 import { debounce } from 'lodash-es'
-import * as EmailValidator from 'email-validator'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { call, CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
 import { Contact } from '@opencloud-eu/web-client/ox'
 import {
+  isValidEmail,
   useAbility,
   useCapabilityStore,
   useClientService,
@@ -142,7 +142,7 @@ function getCanonicalEmail(email: string) {
   }
   const address = `${email.slice(0, at)}@${asciiDomain}`
   // the validator doesn't allow `--` in the top-level domain, so punycode ones would fail
-  if (!EmailValidator.validate(address.replace(/\.xn--([a-z0-9-]+)$/i, '.xn$1'))) {
+  if (!isValidEmail(address.replace(/\.xn--([a-z0-9-]+)$/i, '.xn$1'))) {
     return undefined
   }
   return address.toLowerCase()

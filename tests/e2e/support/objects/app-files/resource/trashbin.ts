@@ -31,10 +31,7 @@ export const deleteResourceTrashbin = async (args: deleteResourceTrashbinArgs): 
   const resourceCheckbox = page.locator(
     util.format(checkBoxForTrashbin, `/${resource.replace(/^\/+/, '')}`)
   )
-  await new Promise((resolve) => setTimeout(resolve, 5000))
-  if (!(await resourceCheckbox.isChecked())) {
-    await resourceCheckbox.click()
-  }
+  await resourceCheckbox.check()
 
   await page.locator(permanentDeleteButton).first().click()
   await Promise.all([

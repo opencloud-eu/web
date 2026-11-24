@@ -1,7 +1,8 @@
-import { Page, expect } from '@playwright/test'
+import { Page, Response, expect } from '@playwright/test'
 import util from 'util'
 import { Group, User } from '../../../types'
 import { getActualExpiryDate } from '../../../utils/datePicker'
+import { locatorUtils } from '../../../utils'
 
 export interface ICollaborator {
   collaborator: User | Group
@@ -106,27 +107,24 @@ export default class Collaborator {
     ])
     await collaboratorInputLocator.focus()
     await page.locator('.vs--open').waitFor()
-    const dropdownItemLocator = page.locator(
-      util.format(Collaborator.collaboratorDropdownItem, collaborator.displayName)
-    )
-    await page.waitForTimeout(200)
-    await dropdownItemLocator.click()
+    await page
+      .locator(util.format(Collaborator.collaboratorDropdownItem, collaborator.displayName))
+      .click()
   }
 
   static async sendInvitation(page: Page, collaborators: string[]): Promise<void> {
-    const checkResponses = []
-    for (let i = 0; i < collaborators.length; i++) {
-      checkResponses.push(
-        page.waitForResponse((resp) => {
-          return (
-            resp.url().endsWith('invite') &&
-            resp.status() === 200 &&
-            resp.request().method() === 'POST'
-          )
-        })
-      )
+    // one invite request per collaborator, a failed one must not leave the wait hanging
+    const inviteResponses: Response[] = []
+    const allInvitesSent = page.waitForResponse((resp) => {
+      if (resp.url().endsWith('invite') && resp.request().method() === 'POST') {
+        inviteResponses.push(resp)
+      }
+      return inviteResponses.length === collaborators.length
+    })
+    await Promise.all([allInvitesSent, page.locator(Collaborator.sendInvitationButton).click()])
+    for (const response of inviteResponses) {
+      expect(response.status(), `invite request ${response.url()}`).toBe(200)
     }
-    await Promise.all([...checkResponses, page.locator(Collaborator.sendInvitationButton).click()])
   }
 
   static async inviteCollaborators(args: InviteCollaboratorsArgs): Promise<void> {
@@ -156,12 +154,11 @@ export default class Collaborator {
       itemSelector = util.format(Collaborator.collaboratorRoleItemSelector, '')
     }
 
-    await page.locator(dropdownSelector).click()
-    const isDropVisible = await page.locator('.files-recipient-role-drop').isVisible()
-    if (!isDropVisible) {
-      // the drop sometimes doesn't show after the first click for some reason, click again
-      await page.locator(dropdownSelector).click()
-    }
+    // the drop sometimes doesn't show after the first click for some reason
+    await locatorUtils.clickUntilVisible(
+      page.locator(dropdownSelector),
+      page.locator('.files-recipient-role-drop')
+    )
     return await page.click(util.format(itemSelector, role))
   }
 

@@ -72,7 +72,9 @@ describe('useCollaboratorSearch', () => {
         [user],
         [
           { id: '1', displayName: 'Mary', email: 'Mary@example.com' },
-          { id: '2', displayName: 'Invalid', email: 'not-an-email' }
+          { id: '2', displayName: 'Invalid', email: 'not-an-email' },
+          { id: '3', displayName: 'No TLD', email: 'mary@example' },
+          { id: '4', displayName: 'Space', email: 'ma ry@example.com' }
         ]
       )
 

@@ -20,7 +20,7 @@ Then(
 )
 
 When(
-  '{string} selects tag {string} from the search result filter chip',
+  /^"([^"]*)" selects tag "([^"]*)" from the (?:search result )?filter chip$/,
   async ({ world }: { world: World }, stepUser: string, tag: string): Promise<void> => {
     const searchObject = pageObjectFor(world, stepUser, objects.applicationFiles.Search)
     await searchObject.selectTagFilter({ tag })
@@ -35,14 +35,14 @@ When(
   }
 )
 When(
-  '{string} selects mediaType {string} from the search result filter chip',
+  /^"([^"]*)" selects mediaType "([^"]*)" from the (?:search result )?filter chip$/,
   async ({ world }: { world: World }, stepUser: string, mediaType: string): Promise<void> => {
     const searchObject = pageObjectFor(world, stepUser, objects.applicationFiles.Search)
     await searchObject.selectMediaTypeFilter({ mediaType })
   }
 )
 When(
-  '{string} selects lastModified {string} from the search result filter chip',
+  /^"([^"]*)" selects lastModified "([^"]*)" from the (?:search result )?filter chip$/,
   async ({ world }: { world: World }, stepUser: string, lastModified: string): Promise<void> => {
     const searchObject = pageObjectFor(world, stepUser, objects.applicationFiles.Search)
     await searchObject.selectlastModifiedFilter({ lastModified })
