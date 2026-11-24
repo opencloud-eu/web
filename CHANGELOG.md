@@ -20,6 +20,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show a loading spinner while app tokens are loading [[#4602](https://github.com/opencloud-eu/web/pull/4602)]
 - fix: wrap long names on the encrypted folder setup page [[#4600](https://github.com/opencloud-eu/web/pull/4600)]
 - fix: let Back leave Deleted files for users without project spaces [[#4599](https://github.com/opencloud-eu/web/pull/4599)]
 - fix: clear the admin Users search on Escape [[#4601](https://github.com/opencloud-eu/web/pull/4601)]
