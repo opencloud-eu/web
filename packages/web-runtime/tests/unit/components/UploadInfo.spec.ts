@@ -642,6 +642,19 @@ describe('UploadInfo component', () => {
       )
     })
   })
+  describe('unmount', () => {
+    it('unsubscribes all uppy service handlers', () => {
+      const { wrapper, mocks } = getShallowWrapper()
+      const topics = mocks.$uppyService.subscribe.mock.calls.map(([topic]) => topic)
+
+      wrapper.unmount()
+
+      expect(topics.length).toBeGreaterThan(0)
+      expect(mocks.$uppyService.unsubscribe.mock.calls).toEqual(
+        topics.map((topic) => [topic, `${topic}-token`])
+      )
+    })
+  })
   describe('getRemainingTime method', () => {
     it.each([
       { ms: 1000, expected: 'Few seconds left' },
@@ -669,6 +682,7 @@ function getShallowWrapper() {
   const mocks = {
     ...defaultComponentMocks()
   }
+  mocks.$uppyService.subscribe.mockImplementation((topic) => `${topic}-token`)
 
   return {
     mocks,

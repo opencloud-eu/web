@@ -27,14 +27,14 @@ import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 let getConflictsMock = vi.fn()
 let displayOverwriteDialogMock = vi.fn()
 
-vi.mock('../../src/helpers/resource/actions', () => {
+vi.mock('../../src/helpers/resource/actions', async (importOriginal) => {
   const UploadResourceConflict = vi.fn(
     class {
       getConflicts = getConflictsMock
       displayOverwriteDialog = displayOverwriteDialogMock
     }
   )
-  return { UploadResourceConflict }
+  return { ...(await importOriginal<object>()), UploadResourceConflict }
 })
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -463,6 +463,28 @@ describe('HandleUpload', () => {
         )
         expect(instance.checkQuotaExceeded([folder, ...files])).toBe(true)
       })
+      it.each([
+        { relativeFolder: '', quotaExceeded: false },
+        { relativeFolder: 'folder', quotaExceeded: true }
+      ])(
+        'subtracts the size of an existing file only for top level files (relativeFolder: "$relativeFolder")',
+        ({ relativeFolder, quotaExceeded }) => {
+          const space = mock<SpaceResource>({
+            driveType: 'project',
+            id: '1',
+            spaceQuota: { remaining: 50 },
+            isOwner: () => true
+          })
+          const existing = mock<Resource>({ name: 'a.txt', size: 80 })
+          const { instance } = getWrapper({ spaces: [space], resources: [existing] })
+          const file = mock<OcUppyFile>({
+            name: 'a.txt',
+            meta: { spaceId: '1', routeName: locationSpacesGeneric.name as string, relativeFolder },
+            data: { size: 100 } as Blob
+          })
+          expect(instance.checkQuotaExceeded([file])).toBe(quotaExceeded)
+        }
+      )
       it('still blocks the upload if one of the files has an unknown size', () => {
         const space = mock<SpaceResource>({
           driveType: 'project',
@@ -915,6 +937,7 @@ const getWrapper = ({
   conflictHandlerResult = [],
   mergedFolders = [] as string[],
   spaces = [],
+  resources = [mock<Resource>()],
   uploadFolderForId = {} as Record<string, Resource>
 } = {}) => {
   getConflictsMock = vi.fn(() => conflicts)
@@ -932,7 +955,7 @@ const getWrapper = ({
   createTestingPinia({
     initialState: {
       spaces: { spaces },
-      resources: { currentFolder: mock<Resource>({ path: '/' }), resources: [mock<Resource>()] }
+      resources: { currentFolder: mock<Resource>({ path: '/' }), resources }
     }
   })
 

@@ -76,6 +76,46 @@ describe('upload helper', () => {
         { name: 'dupf', type: 'folder', existingIsFolder: false }
       ])
     })
+    it('should report a folder conflict once for all files inside the folder', () => {
+      const currentFiles = [mockDeep<Resource>({ name: 'folder', isFolder: true })]
+      const filesToUpload = ['a', 'b', 'c'].map((name) =>
+        mockDeep<OcUppyFile>({
+          name,
+          meta: { relativePath: `/folder/${name}`, relativeFolder: '/folder' }
+        })
+      )
+      const instance = getResourceConflictInstance({ currentFiles })
+
+      expect(instance.getConflicts(filesToUpload)).toEqual([
+        { name: 'folder', type: 'folder', existingIsFolder: true }
+      ])
+    })
+    it('should not report nested files matching the name of an existing resource', () => {
+      const currentFiles = [mockDeep<Resource>({ name: 'a.txt', isFolder: false })]
+      const filesToUpload = [
+        mockDeep<OcUppyFile>({
+          name: 'a.txt',
+          meta: { relativePath: '/newFolder/a.txt', relativeFolder: '/newFolder' }
+        })
+      ]
+      const instance = getResourceConflictInstance({ currentFiles })
+
+      expect(instance.getConflicts(filesToUpload)).toEqual([])
+    })
+    it('should use the first existing resource of a name', () => {
+      const currentFiles = [
+        mockDeep<Resource>({ name: 'dup', isFolder: false }),
+        mockDeep<Resource>({ name: 'dup', isFolder: true })
+      ]
+      const filesToUpload = [
+        mockDeep<OcUppyFile>({ name: 'dup', meta: { relativePath: '', relativeFolder: '' } })
+      ]
+      const instance = getResourceConflictInstance({ currentFiles })
+
+      expect(instance.getConflicts(filesToUpload)).toEqual([
+        { name: 'dup', type: 'file', existingIsFolder: false }
+      ])
+    })
   })
   describe('method "resolveFileExists"', () => {
     it.each([

@@ -189,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, unref, computed, useTemplateRef } from 'vue'
+import { ref, watch, unref, computed, useTemplateRef, onBeforeUnmount } from 'vue'
 import { isUndefined } from 'lodash-es'
 import { getSpeed } from '@uppy/utils'
 import {
@@ -203,6 +203,7 @@ import {
   OcUppyFile,
   queryItemAsString,
   UppyService,
+  UppyServiceTopics,
   useService,
   formatFileSize,
   ResourceListItem,
@@ -664,7 +665,17 @@ const getUploadItemClass = (item: UploadResult) => {
     : 'upload-info-success'
 }
 
-uppyService.subscribe('uploadStarted', () => {
+const subscriptions: { topic: UppyServiceTopics; token: string }[] = []
+function subscribe<T>(topic: UppyServiceTopics, callback: (data?: T) => void) {
+  subscriptions.push({ topic, token: uppyService.subscribe<T>(topic, callback) })
+}
+onBeforeUnmount(() => {
+  for (const { topic, token } of subscriptions) {
+    uppyService.unsubscribe(topic, token)
+  }
+})
+
+subscribe('uploadStarted', () => {
   if (!unref(remainingTime)) {
     remainingTime.value = $gettext('Calculating estimated time...')
   }
@@ -683,7 +694,7 @@ uppyService.subscribe('uploadStarted', () => {
   runningUploads.value += 1
   inFinalization.value = false
 })
-uppyService.subscribe('addedForUpload', (files: OcUppyFile[]) => {
+subscribe('addedForUpload', (files: OcUppyFile[]) => {
   // only count root level files and folders
   itemsInProgressCount.value += files.filter((f) => !f.meta.relativeFolder).length
 
@@ -715,7 +726,7 @@ uppyService.subscribe('addedForUpload', (files: OcUppyFile[]) => {
     }
   }
 })
-uppyService.subscribe('uploadCompleted', () => {
+subscribe('uploadCompleted', () => {
   runningUploads.value -= 1
 
   if (!unref(runningUploads)) {
@@ -724,10 +735,10 @@ uppyService.subscribe('uploadCompleted', () => {
     resetProgress()
   }
 })
-uppyService.subscribe('progress', (value: number) => {
+subscribe('progress', (value: number) => {
   totalProgress.value = value
 })
-uppyService.subscribe(
+subscribe(
   'upload-progress',
   ({ file, progress }: { file: OcUppyFile; progress: { bytesUploaded: number } }) => {
     if (!unref(timeStarted)) {
@@ -764,7 +775,7 @@ uppyService.subscribe(
     }
   }
 )
-uppyService.subscribe('uploadError', ({ file, error }: { file: OcUppyFile; error: Error }) => {
+subscribe('uploadError', ({ file, error }: { file: OcUppyFile; error: Error }) => {
   if (unref(errors)[file.meta.uploadId]) {
     return
   }
@@ -793,7 +804,7 @@ uppyService.subscribe('uploadError', ({ file, error }: { file: OcUppyFile; error
     handleTopLevelFolderUpdate(file, 'error')
   }
 })
-uppyService.subscribe('uploadSuccess', (file: OcUppyFile) => {
+subscribe('uploadSuccess', (file: OcUppyFile) => {
   // item inside folder
   if (!uploads.value[file.meta.uploadId] || file.meta.relativeFolder) {
     if (!file.meta.isFolder && file.meta.topLevelFolderId) {

@@ -3,7 +3,7 @@ import { Language } from 'vue3-gettext'
 import { Ref, unref } from 'vue'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { Resource, SpaceResource, basename, dirname, urlJoin } from '@opencloud-eu/web-client'
-import { UploadResourceConflict } from './helpers/resource'
+import { getResourcesByName, UploadResourceConflict } from './helpers/resource'
 import {
   ExtensionRegistry,
   VaultEngine,
@@ -221,6 +221,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
 
   checkQuotaExceeded(filesToUpload: OcUppyFile[], mergedFolders: string[] = []): boolean {
     let quotaExceeded = false
+    const resourcesByName = getResourcesByName(this.resourcesStore.resources)
 
     const uploadSizeSpaceMapping = filesToUpload.reduce((acc, uppyFile) => {
       let targetUploadSpace: SpaceResource
@@ -248,9 +249,9 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         return acc
       }
 
-      const existingFile = this.resourcesStore.resources.find(
-        (c) => !uppyFile.meta.relativeFolder && c.name === uppyFile.name
-      )
+      const existingFile = uppyFile.meta.relativeFolder
+        ? undefined
+        : resourcesByName.get(uppyFile.name)
       const existingFileSize = existingFile ? Number(existingFile.size) : 0
       // remote files may have an unknown size, which would turn the sum into NaN
       const uploadSize = (uppyFile.data.size || 0) - existingFileSize
@@ -464,11 +465,11 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
 
     await createDirectoryLevel(directoryTree)
 
+    const folderFileSet = new Set(folderFiles)
     return {
       filesToUpload: filesToUpload.filter(
         (f) =>
-          !folderFiles.includes(f) &&
-          !failedFolders.some((r) => f.meta.relativeFolder.startsWith(r))
+          !folderFileSet.has(f) && !failedFolders.some((r) => f.meta.relativeFolder.startsWith(r))
       ),
       folderFiles
     }

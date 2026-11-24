@@ -18,20 +18,23 @@ function fitToMaxBytes(base: string, suffix: string): string {
 export const resolveFileNameDuplicate = (
   name: string,
   extension: string,
-  existingResources: Pick<Resource, 'name'>[],
+  existingResources: Pick<Resource, 'name'>[] | ReadonlySet<string>,
   iteration = 1
 ): string => {
+  const existingNames = Array.isArray(existingResources)
+    ? new Set(existingResources.map((r) => r.name))
+    : existingResources
   const nameWithoutExtension = extension ? withoutExtension(name, extension) : name
   // dot files like ".env" and names not ending with the extension get the suffix appended
-  const potentialName =
-    nameWithoutExtension && nameWithoutExtension !== name
+  const hasExtension = nameWithoutExtension && nameWithoutExtension !== name
+  for (; ; iteration++) {
+    const potentialName = hasExtension
       ? fitToMaxBytes(nameWithoutExtension, ` (${iteration}).${extension}`)
       : fitToMaxBytes(name, ` (${iteration})`)
-  const hasConflict = existingResources.some((f) => f.name === potentialName)
-  if (!hasConflict) {
-    return potentialName
+    if (!existingNames.has(potentialName)) {
+      return potentialName
+    }
   }
-  return resolveFileNameDuplicate(name, extension, existingResources, iteration + 1)
 }
 
 export const isResourceBeeingMovedToSameLocation = (
