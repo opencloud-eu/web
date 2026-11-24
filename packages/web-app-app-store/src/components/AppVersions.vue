@@ -9,11 +9,14 @@
         v-for="(version, index) in visibleVersions"
         :key="version.version"
         :data-item-id="version.version"
-        class="app-version flex items-center gap-2 py-1 border-b border-role-surface-container-highest last:border-b-0"
+        class="app-version grid grid-cols-[minmax(0,max-content)_1fr] items-center gap-2 py-1 border-b border-role-surface-container-highest last:border-b-0"
       >
         <span class="flex flex-col">
-          <span class="flex items-center gap-2 h-5">
-            <span class="app-version-number text-sm font-semibold" v-text="`v${version.version}`" />
+          <span class="flex items-center gap-2 min-h-5">
+            <span
+              class="app-version-number text-sm font-semibold wrap-anywhere"
+              v-text="`v${version.version}`"
+            />
             <oc-tag v-if="index === 0" size="xsmall" rounded class="app-version-latest">
               {{ $gettext('Latest') }}
             </oc-tag>
@@ -31,7 +34,7 @@
             v-text="'-'"
           />
         </span>
-        <span class="flex items-center gap-2 ms-auto">
+        <span class="flex items-center gap-2 justify-self-end">
           <span
             v-if="getVersionRange(version)"
             class="app-version-opencloud-range text-sm text-role-on-surface-variant"
