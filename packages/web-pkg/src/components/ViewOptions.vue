@@ -180,14 +180,22 @@ const isTileSizeSliderShown = computed(() => {
 })
 
 const infiniteScrollEnabled = useIsInfiniteScrollEnabled()
+const infiniteScrollOptionLabel = computed(() => $gettext('∞'))
+
+function isInfiniteScrollOption(value: string) {
+  return (
+    value === unref(infiniteScrollOptionLabel) || value === PaginationConstants.infiniteScrollValue
+  )
+}
+
 const itemsPerPageSelection = computed<string>({
   get() {
     return unref(hasInfiniteScroll) && unref(infiniteScrollEnabled)
-      ? PaginationConstants.infiniteScrollValue
+      ? unref(infiniteScrollOptionLabel)
       : unref(itemsPerPage).toString()
   },
   set(value: string) {
-    const infiniteScrollSelected = value === PaginationConstants.infiniteScrollValue
+    const infiniteScrollSelected = isInfiniteScrollOption(value)
     infiniteScrollEnabled.value = infiniteScrollSelected
     if (!infiniteScrollSelected) {
       itemsPerPage.value = Number(value)
@@ -195,15 +203,25 @@ const itemsPerPageSelection = computed<string>({
   }
 })
 
-const paginationOptionsList = computed(() =>
-  unref(hasInfiniteScroll) &&
-  !unref(paginationOptions).includes(PaginationConstants.infiniteScrollValue)
-    ? [...unref(paginationOptions), PaginationConstants.infiniteScrollValue]
-    : unref(paginationOptions)
-)
+const paginationOptionsList = computed(() => {
+  const options = unref(paginationOptions)
+  if (!unref(hasInfiniteScroll)) {
+    return options
+  }
+
+  const numericOptions = options.filter(
+    (option) => option !== PaginationConstants.infiniteScrollValue
+  )
+  const label = unref(infiniteScrollOptionLabel)
+  if (numericOptions.includes(label)) {
+    return numericOptions
+  }
+
+  return [...numericOptions, label]
+})
 
 const setItemsPerPage = (value: PageSizeOption) => {
-  const infiniteScrollSelected = value.toString() === PaginationConstants.infiniteScrollValue
+  const infiniteScrollSelected = isInfiniteScrollOption(value.toString())
   itemsPerPageSelection.value = value.toString()
   if (!infiniteScrollSelected && parseInt(queryItemAsString(unref(currentPageQuery))) > 1) {
     return router.replace({ query: { ...unref(currentRoute).query, page: '1' } })

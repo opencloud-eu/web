@@ -6,10 +6,9 @@ export abstract class PaginationConstants {
    * infinite scrolling: all items are rendered cumulatively while the user is
    * approaching the end of the list, no further numbering is needed.
    *
-   * The symbol is used as the option label and selection value, so it does not
-   * need to be translated.
+   * The option label is translated separately in ViewOptions.
    */
-  static readonly infiniteScrollValue: string = '∞'
+  static readonly infiniteScrollValue: string = 'all'
   static readonly infiniteScrollStorageKey: string = 'oc-options_files-infinite-scroll'
   static readonly optionsWithInfiniteScroll: Array<string> = [
     ...PaginationConstants.options,

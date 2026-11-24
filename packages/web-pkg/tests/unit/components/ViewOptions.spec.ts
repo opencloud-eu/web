@@ -8,7 +8,11 @@ import {
 import { mock } from 'vitest-mock-extended'
 import ViewOptions from '../../../src/components/ViewOptions.vue'
 import ViewModeSwitch from '../../../src/components/ViewModeSwitch.vue'
-import { FolderViewModeConstants, useResourcesStore } from '../../../src/composables'
+import {
+  FolderViewModeConstants,
+  PaginationConstants,
+  useResourcesStore
+} from '../../../src/composables'
 import { FolderView } from '../../../src'
 import { OcPageSize, OcSwitch } from '@opencloud-eu/design-system/components'
 
@@ -98,11 +102,25 @@ describe('ViewOptions component', () => {
         wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
       ).toBe('50')
     })
+    it('maps the internal infinite scrolling value to the translated option label', async () => {
+      expect(PaginationConstants.infiniteScrollValue).toBe('all')
+      const { wrapper } = getWrapper({ props: { hasInfiniteScroll: true } })
+      wrapper
+        .findComponent<typeof OcPageSize>(selectors.pageSizeSelect)
+        .vm.$emit('change', PaginationConstants.infiniteScrollValue)
+      await wrapper.vm.$nextTick()
+
+      expect(window.localStorage.getItem('oc-options_files-infinite-scroll')).toBe('true')
+      expect(
+        wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
+      ).toBe('∞')
+    })
     it('offers the infinite scrolling option when enabled', () => {
       const { wrapper } = getWrapper({ props: { hasInfiniteScroll: true } })
       const options = wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props()
         .options as string[]
       expect(options).toContain('∞')
+      expect(options).not.toContain(PaginationConstants.infiniteScrollValue)
     })
     it('does not offer the infinite scrolling option when disabled', () => {
       const { wrapper } = getWrapper()
@@ -120,6 +138,20 @@ describe('ViewOptions component', () => {
       const options = wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props()
         .options as string[]
       expect(options).toEqual(['20', '50', '100', '250', '500', '∞'])
+    })
+    it('replaces the internal infinite scrolling value with the translated option label', () => {
+      const { wrapper } = getWrapper({
+        props: {
+          hasInfiniteScroll: true,
+          paginationOptions: [
+            ...PaginationConstants.options,
+            PaginationConstants.infiniteScrollValue
+          ]
+        }
+      })
+      const options = wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props()
+        .options as string[]
+      expect(options).toEqual([...PaginationConstants.options, '∞'])
     })
   })
   describe('hidden files toggle', () => {
