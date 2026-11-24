@@ -1,5 +1,5 @@
 import { mock } from 'vitest-mock-extended'
-import { defineComponent, h, nextTick, reactive, ref, toValue, unref } from 'vue'
+import { defineComponent, h, nextTick, type PropType, reactive, ref, toValue, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import type { Resource, ShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { HttpError } from '@opencloud-eu/web-client'
@@ -123,11 +123,20 @@ function updateRoute() {
   return (guard as any)({}, {})
 }
 
+const wrappedComponentProps = {
+  resource: { type: Object as PropType<Resource>, default: null as Resource },
+  currentContent: { type: String, default: '' }
+}
+
 const wrappedComponent = defineComponent({
-  props: {
-    resource: { type: Object, default: null },
-    currentContent: { type: String, default: '' }
-  },
+  props: wrappedComponentProps,
+  template: '<div />'
+})
+
+// Without Yjs, apps edit by declaring `update:currentContent`.
+const editorComponent = defineComponent({
+  props: wrappedComponentProps,
+  emits: ['update:currentContent'],
   template: '<div />'
 })
 
@@ -366,6 +375,9 @@ function setup({
     },
     registerDeleteCallback(callback: () => void) {
       slotProps['onRegister:onDeleteResourceCallback'](callback)
+    },
+    registerFlushContentCallback(callback: () => void | Promise<void>) {
+      slotProps['onRegister:onFlushContentCallback'](callback)
     },
     deleteFile,
     downloadFile,
@@ -1690,6 +1702,290 @@ describe('AppWrapper — save callback', () => {
     await expect(s.pressCtrlS()).resolves.toBeUndefined()
 
     expect(consoleErrorSpy).toHaveBeenCalled()
+  })
+})
+
+describe('AppWrapper — flush content callback', () => {
+  // The test app emits its edits only from the callback, so a save proves the callback ran.
+  async function openFileWithUnflushedEdit(content: string) {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    const flushContent = vi.fn(() => s.edit(content))
+    s.registerFlushContentCallback(flushContent)
+    return { s, flushContent }
+  }
+
+  function expectSaved(s: ReturnType<typeof setup>, content: string) {
+    expect(s.putFileContents).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({ content })
+    )
+  }
+
+  it('saves the content the app emits in the callback', async () => {
+    const { s } = await openFileWithUnflushedEdit('flushed content')
+
+    await s.clickTopBarAction('save-file')
+
+    expectSaved(s, 'flushed content')
+  })
+
+  it('saves on Ctrl+S what the app emits in the callback, flushing once', async () => {
+    const { s, flushContent } = await openFileWithUnflushedEdit('flushed content')
+
+    await s.pressCtrlS()
+
+    expectSaved(s, 'flushed content')
+    expect(flushContent).toHaveBeenCalledOnce()
+  })
+
+  it('does not save on Ctrl+S when the app emits nothing new', async () => {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    const flushContent = vi.fn()
+    s.registerFlushContentCallback(flushContent)
+
+    await s.pressCtrlS()
+
+    expect(flushContent).toHaveBeenCalledOnce()
+    expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+
+  it('autosaves what the app emits in the callback', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const { s, flushContent } = await openFileWithUnflushedEdit('flushed content')
+
+    await vi.advanceTimersByTimeAsync(130_000)
+
+    expectSaved(s, 'flushed content')
+    expect(flushContent).toHaveBeenCalledOnce()
+  })
+
+  it('does not autosave when the app emits nothing new', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    const flushContent = vi.fn()
+    s.registerFlushContentCallback(flushContent)
+
+    await vi.advanceTimersByTimeAsync(130_000)
+
+    expect(flushContent).toHaveBeenCalledOnce()
+    expect(s.putFileContents).not.toHaveBeenCalled()
+    expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
+  })
+
+  it('saves what the app emits in the callback before a download', async () => {
+    const { s } = await openFileWithUnflushedEdit('flushed content')
+
+    await s.clickTopBarAction('download-file')
+
+    expectSaved(s, 'flushed content')
+    expect(s.downloadFile).toHaveBeenCalled()
+  })
+
+  it('asks before the route leaves when the app emits changes in the callback', async () => {
+    const { s, flushContent } = await openFileWithUnflushedEdit('flushed content')
+    const { dispatchModal } = useModals()
+
+    void leaveRoute()
+    await flushPromises()
+
+    expect(flushContent).toHaveBeenCalledOnce()
+    expect(dispatchModal).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Unsaved changes' })
+    )
+    expect(s.unregisterAppBarExtension).not.toHaveBeenCalled()
+  })
+
+  it('lets the route leave when the app emits nothing new', async () => {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    s.registerFlushContentCallback(vi.fn())
+
+    expect(await leaveRoute()).toBe(true)
+    expect(useModals().dispatchModal).not.toHaveBeenCalled()
+  })
+
+  it('opens "Save as" once the app emitted its content in the callback', async () => {
+    const { s } = await openFileWithUnflushedEdit('flushed content')
+    const { dispatchModal } = useModals()
+    let contentOnOpen: string
+    vi.mocked(dispatchModal).mockImplementation(() => {
+      contentOnOpen = s.currentContent()
+      return undefined
+    })
+
+    await s.clickTopBarAction('save-as')
+
+    expect(dispatchModal).toHaveBeenCalledWith(expect.objectContaining({ title: 'Save as' }))
+    expect(contentOnOpen).toBe('flushed content')
+  })
+
+  it('waits for a save started while the app flushes, then saves what it emitted once', async () => {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    await s.edit('edited content')
+    const flush = deferred<void>()
+    const flushContent = vi
+      .fn()
+      .mockImplementationOnce(() => flush.promise.then(() => s.edit('flushed later')))
+      .mockResolvedValue(undefined)
+    s.registerFlushContentCallback(flushContent)
+
+    void s.pressCtrlS()
+    // a second save starts while the first flush is still running
+    const saving = s.clickTopBarAction('save-file')
+    await flushPromises()
+    expect(s.putFileContents).not.toHaveBeenCalled()
+    flush.resolve()
+    await saving
+
+    expect(s.putFileContents).toHaveBeenCalledOnce()
+    expectSaved(s, 'flushed later')
+  })
+
+  it.each([
+    { name: 'Ctrl+S', save: (s: ReturnType<typeof setup>) => s.pressCtrlS() },
+    {
+      name: 'the save action',
+      save: (s: ReturnType<typeof setup>) => s.clickTopBarAction('save-file')
+    }
+  ])(
+    'leaves without asking once a save on $name, still flushing on leave, finished',
+    async ({ save }) => {
+      const { s, flushContent } = await openFileWithUnflushedEdit('flushed content')
+      const flush = deferred<void>()
+      flushContent.mockImplementationOnce(() => flush.promise.then(() => s.edit('flushed content')))
+      const { dispatchModal } = useModals()
+
+      void save(s)
+      const leaving = leaveRoute()
+      await flushPromises()
+      flush.resolve()
+      await flushPromises()
+
+      expect(dispatchModal).not.toHaveBeenCalled()
+      expect(await leaving).toBe(true)
+      expect(s.putFileContents).toHaveBeenCalledOnce()
+      expectSaved(s, 'flushed content')
+    }
+  )
+
+  it('stops calling the callback of the app for the previous file', async () => {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    const flushContent = vi.fn().mockRejectedValue(new Error('nope'))
+    s.registerFlushContentCallback(flushContent)
+    s.currentFileContext.value = mock<FileContext>({ space: mock<any>(), path: `/${FILE_B.name}` })
+    await nextTick()
+    await s.rejectResource(new Error('not found'))
+
+    const leaving = leaveRoute()
+    await flushPromises()
+
+    expect(flushContent).not.toHaveBeenCalled()
+    expect(useModals().dispatchModal).not.toHaveBeenCalled()
+    expect(await leaving).toBe(true)
+  })
+
+  it('lets the route leave without waiting for the app once the file is in the trash', async () => {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    s.registerDeleteCallback(vi.fn())
+    const flushContent = vi.fn(() => new Promise<void>(() => undefined))
+    s.registerFlushContentCallback(flushContent)
+    s.resourcesDeleted([FILE_A])
+
+    expect(await leaveRoute()).toBe(true)
+    expect(flushContent).not.toHaveBeenCalled()
+  })
+
+  describe('when the callback fails', () => {
+    async function openFileWithFailingFlush() {
+      const s = await openFile({ yjsEnabled: false, component: editorComponent })
+      await s.edit('edited content')
+      s.registerFlushContentCallback(vi.fn().mockRejectedValue(new Error('nope')))
+      return s
+    }
+
+    it.each([
+      {
+        name: 'the save action',
+        save: (s: ReturnType<typeof setup>) => s.clickTopBarAction('save-file')
+      },
+      { name: 'Ctrl+S', save: (s: ReturnType<typeof setup>) => s.pressCtrlS() }
+    ])('does not save stale content on $name', async ({ save }) => {
+      const s = await openFileWithFailingFlush()
+
+      await save(s)
+
+      expect(s.putFileContents).not.toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to save "a.md"' })
+      )
+      expect(consoleErrorSpy).toHaveBeenCalled()
+    })
+
+    it('does not autosave stale content', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true })
+      const s = await openFileWithFailingFlush()
+
+      await vi.advanceTimersByTimeAsync(130_000)
+
+      expect(s.putFileContents).not.toHaveBeenCalled()
+    })
+
+    it('does not open "Save as" with stale content', async () => {
+      const s = await openFileWithFailingFlush()
+
+      await s.clickTopBarAction('save-as')
+
+      expect(useModals().dispatchModal).not.toHaveBeenCalled()
+    })
+
+    it('still asks before the route leaves with unsaved changes', async () => {
+      await openFileWithFailingFlush()
+      const { dispatchModal } = useModals()
+
+      void leaveRoute()
+      await flushPromises()
+
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Unsaved changes' })
+      )
+    })
+
+    it('asks before the route leaves, even without changes it knows of', async () => {
+      const s = await openFile({ yjsEnabled: false, component: editorComponent })
+      s.registerFlushContentCallback(vi.fn().mockRejectedValue(new Error('nope')))
+      const { dispatchModal } = useModals()
+
+      void leaveRoute()
+      await flushPromises()
+
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Unsaved changes' })
+      )
+      expect(s.unregisterAppBarExtension).not.toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
+    })
+
+    it('keeps the file on delete, even without changes it knows of', async () => {
+      const s = await openFile({ yjsEnabled: false, component: editorComponent })
+      s.registerFlushContentCallback(vi.fn().mockRejectedValue(new Error('nope')))
+
+      await s.clickTopBarAction('delete')
+
+      expect(s.putFileContents).not.toHaveBeenCalled()
+      expect(s.deleteFile).not.toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to delete "a.md"' })
+      )
+    })
+
+    it('still downloads the file, without saving stale content', async () => {
+      const s = await openFileWithFailingFlush()
+
+      await s.clickTopBarAction('download-file')
+
+      expect(s.putFileContents).not.toHaveBeenCalled()
+      expect(s.downloadFile).toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledOnce()
+    })
   })
 })
 

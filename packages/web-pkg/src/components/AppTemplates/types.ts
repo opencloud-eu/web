@@ -80,6 +80,21 @@ export interface AppWrapperSlotHandlers {
   'onUpdate:currentContent': (value: unknown) => void
   'onRegister:onDeleteResourceCallback': (value: () => void) => void
   'onRegister:onSaveCallback': (value: (content: unknown) => void | Promise<void>) => void
+  /**
+   * For apps that turn edits into content only on demand, e.g. because it is expensive. AppWrapper
+   * awaits the callback before each decision about the content (save, autosave, Ctrl+S, "Save as",
+   * download, delete, leaving the app). The app emits `update:currentContent` in it, and nothing
+   * when nothing changed: new content counts as a change and triggers autosaves. Autosave calls it
+   * on every interval, so the nothing-changed case has to be cheap.
+   *
+   * On each edit, the app still has to emit some value other than the saved content, e.g. a marker
+   * the callback later replaces, since the Save action and a closing tab only look at `isDirty`.
+   * The callback may run again before an earlier call settled, and it must settle, since saves and
+   * navigation wait for it. It must not call `onSave`, which would wait for the callback. A
+   * rejection drops the save and counts as unsaved changes. AppWrapper reports it to the user, so
+   * the app shouldn't show an error of its own.
+   */
+  'onRegister:onFlushContentCallback': (value: () => void | Promise<void>) => void
   'onDelete:resource': () => void
 }
 

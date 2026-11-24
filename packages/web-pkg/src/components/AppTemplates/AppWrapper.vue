@@ -209,6 +209,7 @@ let deleteResourceEventToken = ''
 let isResourceDeleted = false
 let appOnDeleteResourceCallback: (() => void) | null = null
 let appOnSaveCallback: ((content: unknown) => void | Promise<void>) | null = null
+let appOnFlushContentCallback: (() => void | Promise<void>) | null = null
 
 const extensionRegistry = useExtensionRegistry()
 const topBarExtensionId = 'app.app-wrapper.app-top-bar'
@@ -365,6 +366,29 @@ const isLoading = computed(() => {
  */
 function flushPendingContent() {
   yjsSession?.flushContent()
+}
+
+/**
+ * Brings `currentContent` and `isDirty` up to date: the app emits the edits it turns into content
+ * only on demand, then the session catches up. Resolves to false when the app failed and may hold
+ * back edits. A save would report them as saved, so callers drop it, and the user is told unless
+ * `reportFailure` is false.
+ */
+async function flushContent({ reportFailure = true } = {}) {
+  try {
+    await appOnFlushContentCallback?.()
+  } catch (e) {
+    console.error('Error running the app flush content callback', e)
+    if (reportFailure) {
+      showErrorMessage({
+        title: $gettext('Failed to save "%{resource}"', { resource: unref(resource).name }),
+        desc: $gettext('The app could not provide your latest changes.')
+      })
+    }
+    return false
+  }
+  flushPendingContent()
+  return true
 }
 
 // `beforeunload` can't wait for a flush, so a pending change counts as unsaved there.
@@ -641,6 +665,8 @@ watch(
       // the previous file's content.
       loading.value = true
       loadingError.value = undefined
+      // the app registers it again once it is mounted for the new file
+      appOnFlushContentCallback = null
 
       try {
         await loadResourceTask.perform()
@@ -785,7 +811,18 @@ function applySavedResource(etag: string, saved: Resource | null = null) {
   resourcesStore.updateResourceField({ id: current.id, field: 'etag', value: etag })
 }
 
+/** Resolves to true once saved, to null when there was nothing to save, to false when it failed. */
 const saveFileTask = useTask(function* () {
+  if (isResourceDeleted) {
+    return false
+  }
+  // inside the task, so a save counts as running while the app flushes and others wait for it
+  if (!(yield flushContent())) {
+    return false
+  }
+  if (!unref(isDirty)) {
+    return null
+  }
   const newContent = unref(currentContent)
   // Pin the Y.Doc state behind `newContent`; the doc usually moves on while
   // the PUT is in flight.
@@ -857,7 +894,8 @@ async function runSaveCallback(content: unknown): Promise<void> {
   }
 }
 
-const save = async () => {
+/** Resolves like `saveFileTask`, once a running save finished. */
+async function save() {
   // `saveFileTask` drops a save started while another one runs, and a dropped instance never
   // settles. No await between the check and `perform`, so concurrent callers can't race in.
   let runningSaveResult: boolean | null = null
@@ -865,22 +903,15 @@ const save = async () => {
     runningSaveResult = await saveFileTask.last
   }
   // retrying right away would fail the same way and show the error again
-  if (runningSaveResult === false || isResourceDeleted) {
+  if (runningSaveResult === false) {
     return false
-  }
-
-  flushPendingContent()
-  if (runningSaveResult && !unref(isDirty)) {
-    return true
   }
 
   const saved = await saveFileTask.perform()
-  if (!saved) {
-    return false
+  if (saved) {
+    await runSaveCallback(unref(serverContent))
   }
-
-  await runSaveCallback(unref(serverContent))
-  return true
+  return saved
 }
 
 const { saveAction, saveAsAction } = useFileActionsSave({
@@ -890,7 +921,8 @@ const { saveAction, saveAsAction } = useFileActionsSave({
   isReadOnly,
   onSave: async () => {
     await save()
-  }
+  },
+  flushContent
 })
 
 let autosaveIntervalId: ReturnType<typeof setInterval> = null
@@ -915,8 +947,7 @@ onMounted(() => {
   if (editorOptions.autosaveEnabled && !disableAutoSave) {
     autosaveIntervalId = setInterval(
       async () => {
-        flushPendingContent()
-        if (!unref(isDirty) || unref(isConflicted) || saveFileTask.isRunning) {
+        if (unref(isConflicted) || saveFileTask.isRunning) {
           return
         }
         if (await save()) {
@@ -949,10 +980,6 @@ onBeforeUnmount(() => {
 
 const { bindKeyAction } = useKeyboardActions({ skipDisabledKeyBindingsCheck: true })
 bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, () => {
-  flushPendingContent()
-  if (!unref(isDirty)) {
-    return
-  }
   save()
 })
 
@@ -965,15 +992,15 @@ const actionOptions = computed<FileActionOptions>(() => ({
 }))
 
 /**
- * Whether there are changes to save, once a running save finished and the session flushed. A
- * running save may miss the latest changes.
+ * Whether there are changes to save, once a running save finished and the app and the session
+ * flushed. A running save may miss the latest changes, and an app that failed to flush may have
+ * some.
  */
 async function hasChangesToSave() {
   while (saveFileTask.isRunning) {
     await saveFileTask.last
   }
-  flushPendingContent()
-  return unref(isDirty)
+  return !(await flushContent({ reportFailure: false })) || unref(isDirty)
 }
 
 /**
@@ -1010,7 +1037,7 @@ async function deleteFileActionInterceptor(
 ) {
   if (await hasChangesToSave()) {
     // a conflicted session can't save without overwriting the update from outside this window
-    const saved = !unref(isConflicted) && (await save())
+    const saved = !unref(isConflicted) && (await save()) !== false
     if (!saved) {
       showErrorMessage({
         title: $gettext('Failed to delete "%{resource}"', { resource: unref(resource).name }),
@@ -1149,7 +1176,7 @@ onBeforeRouteLeave(async () => {
         }
       },
       async onConfirm() {
-        if (!(await save())) {
+        if ((await save()) === false) {
           resolve(false)
           return
         }
@@ -1205,6 +1232,10 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers & { key:
 
   'onRegister:onSaveCallback': (value: (content: unknown) => void | Promise<void>) => {
     appOnSaveCallback = value
+  },
+
+  'onRegister:onFlushContentCallback': (value: () => void | Promise<void>) => {
+    appOnFlushContentCallback = value
   },
 
   'onDelete:resource': () => {
