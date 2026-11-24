@@ -61,6 +61,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#4553](https://github.com/opencloud-eu/web/pull/4553)]
+- chore(deps): update traefik docker tag to v3.8.0 [[#4612](https://github.com/opencloud-eu/web/pull/4612)]
 - chore(deps): update dependency typescript-eslint to v8.74.0 [[#4608](https://github.com/opencloud-eu/web/pull/4608)]
 - chore(deps): update dependency @vueuse/core to v15.1.0 [[#4593](https://github.com/opencloud-eu/web/pull/4593)]
 - chore(deps): update collabora/code docker tag to v26.04.6.2.1 [[#4567](https://github.com/opencloud-eu/web/pull/4567)]
