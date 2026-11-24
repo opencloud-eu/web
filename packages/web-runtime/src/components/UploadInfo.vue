@@ -192,7 +192,13 @@
 import { ref, watch, unref, computed, useTemplateRef } from 'vue'
 import { isUndefined } from 'lodash-es'
 import { getSpeed } from '@uppy/utils'
-import { HttpError, Resource, urlJoin, extractParentFolderName } from '@opencloud-eu/web-client'
+import {
+  DavHttpError,
+  HttpError,
+  Resource,
+  urlJoin,
+  extractParentFolderName
+} from '@opencloud-eu/web-client'
 import {
   OcUppyFile,
   queryItemAsString,
@@ -631,7 +637,11 @@ function getUploadItemMessage(item: UploadResult) {
     }
   }
 
-  const errorObject = formatErrorToObject(error)
+  // folders are created via webdav, its errors carry the status and the server message directly
+  const errorObject =
+    error instanceof DavHttpError
+      ? { responseCode: error.statusCode, errorMessage: error.message }
+      : formatErrorToObject(error)
   if (error.statusCode === 423 || errorObject.responseCode === 423) {
     return item.meta.isFolder
       ? $gettext("The folder you're uploading to is locked")
