@@ -14,6 +14,7 @@
 
 ### 🔒 Security
 
+- fix: set the folder hint for screen readers as plain text [[#4589](https://github.com/opencloud-eu/web/pull/4589)]
 - fix: sanitize inlined SVGs [[#4559](https://github.com/opencloud-eu/web/pull/4559)]
 - chore: check translations for markup after compiling [[#4561](https://github.com/opencloud-eu/web/pull/4561)]
 
