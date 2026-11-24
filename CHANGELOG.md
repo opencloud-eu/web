@@ -20,6 +20,10 @@
 
 ### 🐛 Bug Fixes
 
+- fix: wrap long names on the encrypted folder setup page [[#4600](https://github.com/opencloud-eu/web/pull/4600)]
+- fix: let Back leave Deleted files for users without project spaces [[#4599](https://github.com/opencloud-eu/web/pull/4599)]
+- fix: clear the admin Users search on Escape [[#4601](https://github.com/opencloud-eu/web/pull/4601)]
+- fix: keep long app versions from overlapping the release date [[#4603](https://github.com/opencloud-eu/web/pull/4603)]
 - fix: keep the invite hint visible next to long names [[#4609](https://github.com/opencloud-eu/web/pull/4609)]
 - fix: show searching instead of no results while the preview search is pending [[#4611](https://github.com/opencloud-eu/web/pull/4611)]
 - fix: show the server message for failed folders in the upload info [[#4610](https://github.com/opencloud-eu/web/pull/4610)]
