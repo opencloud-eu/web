@@ -43,6 +43,21 @@ async function LogOutUser({ world }: { world: World }, stepUser: string): Promis
 
 When('{string} logs out', LogOutUser)
 
+When(
+  '{string} logs out and logs in again in the same browser',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    // unlike "logs out", the browser context and with it the local storage is kept
+    const page = actorPage(world, stepUser)
+    const sessionObject = new objects.runtime.Session({ page })
+    const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
+
+    await sessionObject.logout()
+    await page.goto(appConfig.baseUrl)
+    await sessionObject.login(user)
+    await page.locator('#web-content').waitFor()
+  }
+)
+
 Then('{string} fails to log in', async ({ world }: { world: World }, stepUser: string) => {
   const sessionObject = await createNewSession(world, stepUser)
   const page = actorPage(world, stepUser)
