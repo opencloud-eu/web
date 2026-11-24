@@ -67,6 +67,15 @@ describe('AutocompleteItem component', () => {
         '(already shared)'
       )
     })
+    it('adds the share type and the hint to the title of the name', () => {
+      const { wrapper } = createWrapper(
+        { shareType: ShareTypes.guest.value, displayName: 'Alice Hansen' },
+        'already shared'
+      )
+      expect(
+        wrapper.find('.files-collaborators-autocomplete-username').attributes('title')
+      ).toEqual('Alice Hansen (Guest) (already shared)')
+    })
     it('hides the hint if not given', () => {
       const { wrapper } = createWrapper({})
       expect(wrapper.find('.files-collaborators-autocomplete-hint').exists()).toBeFalsy()
