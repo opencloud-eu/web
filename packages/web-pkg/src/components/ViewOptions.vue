@@ -182,10 +182,8 @@ const isTileSizeSliderShown = computed(() => {
 const infiniteScrollEnabled = useIsInfiniteScrollEnabled()
 const infiniteScrollOptionLabel = computed(() => $gettext('∞'))
 
-function isInfiniteScrollOption(value: string) {
-  return (
-    value === unref(infiniteScrollOptionLabel) || value === PaginationConstants.infiniteScrollValue
-  )
+function isInfiniteScrollLabel(value: string) {
+  return value === unref(infiniteScrollOptionLabel)
 }
 
 const itemsPerPageSelection = computed<string>({
@@ -195,7 +193,7 @@ const itemsPerPageSelection = computed<string>({
       : unref(itemsPerPage).toString()
   },
   set(value: string) {
-    const infiniteScrollSelected = isInfiniteScrollOption(value)
+    const infiniteScrollSelected = isInfiniteScrollLabel(value)
     infiniteScrollEnabled.value = infiniteScrollSelected
     if (!infiniteScrollSelected) {
       itemsPerPage.value = Number(value)
@@ -209,19 +207,16 @@ const paginationOptionsList = computed(() => {
     return options
   }
 
-  const numericOptions = options.filter(
-    (option) => option !== PaginationConstants.infiniteScrollValue
-  )
   const label = unref(infiniteScrollOptionLabel)
-  if (numericOptions.includes(label)) {
-    return numericOptions
+  if (options.includes(label)) {
+    return options
   }
 
-  return [...numericOptions, label]
+  return [...options, label]
 })
 
 const setItemsPerPage = (value: PageSizeOption) => {
-  const infiniteScrollSelected = isInfiniteScrollOption(value.toString())
+  const infiniteScrollSelected = isInfiniteScrollLabel(value.toString())
   itemsPerPageSelection.value = value.toString()
   if (!infiniteScrollSelected && parseInt(queryItemAsString(unref(currentPageQuery))) > 1) {
     return router.replace({ query: { ...unref(currentRoute).query, page: '1' } })

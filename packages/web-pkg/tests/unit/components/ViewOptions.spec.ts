@@ -102,25 +102,12 @@ describe('ViewOptions component', () => {
         wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
       ).toBe('50')
     })
-    it('maps the internal infinite scrolling value to the translated option label', async () => {
-      expect(PaginationConstants.infiniteScrollValue).toBe('all')
-      const { wrapper } = getWrapper({ props: { hasInfiniteScroll: true } })
-      wrapper
-        .findComponent<typeof OcPageSize>(selectors.pageSizeSelect)
-        .vm.$emit('change', PaginationConstants.infiniteScrollValue)
-      await wrapper.vm.$nextTick()
-
-      expect(window.localStorage.getItem('oc-options_files-infinite-scroll')).toBe('true')
-      expect(
-        wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
-      ).toBe('∞')
-    })
     it('offers the infinite scrolling option when enabled', () => {
+      expect(PaginationConstants.infiniteScrollValue).toBe('all')
       const { wrapper } = getWrapper({ props: { hasInfiniteScroll: true } })
       const options = wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props()
         .options as string[]
-      expect(options).toContain('∞')
-      expect(options).not.toContain(PaginationConstants.infiniteScrollValue)
+      expect(options).toEqual([...PaginationConstants.options, '∞'])
     })
     it('does not offer the infinite scrolling option when disabled', () => {
       const { wrapper } = getWrapper()
@@ -138,20 +125,6 @@ describe('ViewOptions component', () => {
       const options = wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props()
         .options as string[]
       expect(options).toEqual(['20', '50', '100', '250', '500', '∞'])
-    })
-    it('replaces the internal infinite scrolling value with the translated option label', () => {
-      const { wrapper } = getWrapper({
-        props: {
-          hasInfiniteScroll: true,
-          paginationOptions: [
-            ...PaginationConstants.options,
-            PaginationConstants.infiniteScrollValue
-          ]
-        }
-      })
-      const options = wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props()
-        .options as string[]
-      expect(options).toEqual([...PaginationConstants.options, '∞'])
     })
   })
   describe('hidden files toggle', () => {
