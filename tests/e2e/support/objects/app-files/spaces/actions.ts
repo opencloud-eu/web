@@ -46,6 +46,7 @@ const createSpaceAdvancedSectionHeader = '.create-space-advanced .oc-section-hea
 const createSpaceQuotaSearchField = '#create-space-quota-input .vs__search'
 const createSpaceImageUploadButton = '.create-space-image-select'
 const createSpaceImageClearButton = '.create-space-image-clear'
+const imageCropperSelection = '#image-cropper-selection'
 const createSpaceMembersSearchField = '#create-space-members-input'
 const dropdownOpen = '.vs--open'
 const dropdownOption = '.vs__dropdown-option'
@@ -139,7 +140,10 @@ export const createSpaceOption = async (args: createSpaceOptionArgs): Promise<st
       page.locator(createSpaceImageUploadButton).click()
     ])
     await fileChooser.setFiles(image.path)
-    await page.locator(actionConfirmButton).last().click()
+    await page
+      .locator('.oc-modal', { has: page.locator(imageCropperSelection) })
+      .locator(actionConfirmButton)
+      .click()
     await expect(page.locator(createSpaceImageClearButton)).toBeVisible()
   }
   if (subtitle) {

@@ -301,8 +301,9 @@ export const copyEnteredPassword = async (page: Page): Promise<void> => {
 
 export const generatePassword = async (page: Page): Promise<void> => {
   await page.locator(generatePasswordButton).click()
-  const generatedPassword = await page.locator(editPublicLinkPasswordInput).inputValue()
-  expect(generatedPassword).toMatch(expectedRegexForGeneratedPassword)
+  await expect(page.locator(editPublicLinkPasswordInput)).toHaveValue(
+    expectedRegexForGeneratedPassword
+  )
 }
 
 export const setPassword = async (page: Page): Promise<void> => {

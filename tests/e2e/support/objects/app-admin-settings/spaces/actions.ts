@@ -16,9 +16,7 @@ const selectedQuotaValueField = '.vs__dropdown-toggle'
 const spacesQuotaSearchField = '.oc-modal .vs__search'
 const appSidebarDiv = '#app-sidebar'
 const toggleSidebarButton = '#files-toggle-sidebar'
-const sideBarActive = '.sidebar-panel.is-active-root-panel'
 const sideBarCloseButton = '.sidebar-panel .header__close:visible'
-const sideBarBackButton = '.sidebar-panel .header__back:visible'
 const sideBarActionButtons = `#sidebar-panel-%s-select`
 const siderBarActionPanel = `#sidebar-panel-%s`
 const spaceMembersDiv = '[data-testid="space-members"]'
@@ -236,16 +234,13 @@ export const openSpaceAdminActionSidebarPanel = async (args: {
   action: string
 }): Promise<void> => {
   const { page, action } = args
-  const currentPanel = page.locator(sideBarActive)
-  const backButton = currentPanel.locator(sideBarBackButton)
-  if (await backButton.count()) {
-    await backButton.click()
-    await locatorUtils.waitForEvent(currentPanel, 'transitionend')
-  }
-  const panelSelector = page.locator(util.format(sideBarActionButtons, action))
   const nextPanel = page.locator(util.format(siderBarActionPanel, action))
-  await panelSelector.click()
-  await locatorUtils.waitForEvent(nextPanel, 'transitionend')
+  await locatorUtils.clickUntilClass(
+    page.locator(util.format(sideBarActionButtons, action)),
+    nextPanel,
+    'is-active-sub-panel'
+  )
+  await locatorUtils.waitForTransitionsToEnd(nextPanel)
 }
 
 export const listSpaceMembers = async (args: {
