@@ -20,6 +20,7 @@
 
 ### ✅ Tests
 
+- test: add e2e tests for sorting the files list [[#4619](https://github.com/opencloud-eu/web/pull/4619)]
 - test: add e2e test for the favorites filters [[#4592](https://github.com/opencloud-eu/web/pull/4592)]
 - test(e2e): add favorites tests for spaces and shares [[#4563](https://github.com/opencloud-eu/web/pull/4563)]
 
