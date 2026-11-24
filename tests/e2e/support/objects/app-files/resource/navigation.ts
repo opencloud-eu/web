@@ -25,6 +25,10 @@ const createNewShortcutButton = '#new-shortcut-btn'
 const shortcutResorceInput = '#create-shortcut-modal-url-input'
 const filesViewOptionButton = '#files-view-options-btn'
 const hiddenFilesToggleButton = '//*[@data-testid="files-switch-hidden-files"]//button'
+const foldersFirstToggleButton = '//*[@data-testid="files-switch-folders-first"]//button'
+const sortHeaderCellSelector = '#files-view th.oc-table-header-cell-%s'
+const sortButtonSelector = '.oc-button-sort'
+const filesTableResourceNameSelector = '#files-view tbody tr [data-test-resource-name]'
 const noLinkMessage = '#web .oc-link-resolve [data-testid="error-message"]'
 const listItemPageSelector = '//*[contains(@class,"oc-pagination-list-item-page") and text()="%s"]'
 const itemsPerPageDropDownOptionSelector =
@@ -161,6 +165,58 @@ export const showHiddenResources = async (page: Page): Promise<void> => {
   await page.locator(hiddenFilesToggleButton).click()
   // close the files view option
   await page.locator(filesViewOptionButton).click()
+}
+
+export const toggleFoldersFirst = async (page: Page): Promise<void> => {
+  await page.locator(filesViewOptionButton).click()
+  await page.locator(foldersFirstToggleButton).click()
+  // close the files view option
+  await page.locator(filesViewOptionButton).click()
+}
+
+export interface sortResourcesArgs {
+  page: Page
+  column: string
+  order: 'asc' | 'desc'
+}
+
+export const sortResources = async (args: sortResourcesArgs): Promise<void> => {
+  const { page, column, order } = args
+  const fieldNames: Record<string, string> = {
+    name: 'name',
+    size: 'size',
+    modified: 'mdate'
+  }
+  const fieldName = fieldNames[column.toLowerCase()]
+  if (!fieldName) {
+    throw new Error(`unknown sort column "${column}"`)
+  }
+  const ariaSort = order === 'asc' ? 'ascending' : 'descending'
+  const headerCell = page.locator(util.format(sortHeaderCellSelector, fieldName))
+  // the first click sorts in the default direction of the column, the next one toggles it
+  for (let i = 0; i < 2; i++) {
+    if ((await headerCell.getAttribute('aria-sort')) === ariaSort) {
+      break
+    }
+    await headerCell.locator(sortButtonSelector).click()
+  }
+  await expect(headerCell).toHaveAttribute('aria-sort', ariaSort)
+}
+
+export const expectResourcesOrder = async (args: {
+  page: Page
+  resources: string[]
+}): Promise<void> => {
+  const { page, resources } = args
+  // only the given resources are compared, others in the list are ignored
+  await expect
+    .poll(async () => {
+      const names = await page
+        .locator(filesTableResourceNameSelector)
+        .evaluateAll((elements) => elements.map((el) => el.getAttribute('data-test-resource-name')))
+      return names.filter((name) => resources.includes(name))
+    })
+    .toEqual(resources)
 }
 
 export const expectThatPublicLinkIsDeleted = async (args: {

@@ -109,6 +109,35 @@ When(
 )
 
 When(
+  '{string} enables/disables the option to sort folders first',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.toggleFoldersFirst()
+  }
+)
+
+When(
+  /^"([^"]*)" sorts the files list by "([^"]*)" (asc|desc)$/,
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    column: string,
+    order: 'asc' | 'desc'
+  ): Promise<void> => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.sortResources({ column, order })
+  }
+)
+
+Then(
+  '{string} should see the resources in the files list in the following order',
+  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.expectResourcesOrder(stepTable.hashes().map(({ resource }) => resource))
+  }
+)
+
+When(
   '{string} switches to the {string} view',
   async (
     { world }: { world: World },
