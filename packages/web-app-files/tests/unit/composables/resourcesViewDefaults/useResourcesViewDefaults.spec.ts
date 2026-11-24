@@ -208,7 +208,7 @@ describe('useResourcesViewDefaults', () => {
       { length: 250 },
       (_, i) => ({ id: `${i + 1}`, name: `file-${i + 1}`, type: 'file' }) as Resource
     )
-    const routes = [{ path: '/files', component: {} }]
+    const routes = [{ path: '/files/:folder?', component: {} }]
 
     const setInfiniteScroll = (enabled: boolean) => {
       useIsInfiniteScrollEnabled().value = enabled
@@ -306,6 +306,41 @@ describe('useResourcesViewDefaults', () => {
     it('strips a legacy page param of 1', async () => {
       setInfiniteScroll(true)
       const { $router, result } = await mountWithRoute('/files?page=1')
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(0, 100))
+    })
+    it('strips a page param carried into another folder', async () => {
+      setInfiniteScroll(true)
+      const $router = createRouter({ routes })
+      await $router.push('/files')
+      getWrapper({ router: $router, resources })
+      await flushPromises()
+
+      await $router.push('/files/subfolder?page=5')
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+    })
+    it('does not apply a pending legacy page to another folder', async () => {
+      setInfiniteScroll(true)
+      const $router = createRouter({ routes })
+      await $router.push('/files/parent?page=3')
+      const infiniteScrollResetKey = ref('parent')
+      const { result } = getWrapper({
+        router: $router,
+        resources: [] as Resource[],
+        infiniteScrollResetKey
+      })
+      await flushPromises()
+
+      await $router.push('/files/child?page=3')
+      useResourcesStore().initResourceList({
+        currentFolder: { id: 'child' } as unknown as Resource,
+        resources
+      })
+      infiniteScrollResetKey.value = 'child'
       await flushPromises()
 
       expect(unref($router.currentRoute).query.page).toBeUndefined()

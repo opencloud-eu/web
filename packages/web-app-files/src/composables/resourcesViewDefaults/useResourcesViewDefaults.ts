@@ -205,6 +205,22 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     }
   }
 
+  /**
+   * A page query belongs to the folder route it was created for. When the view is
+   * reused for another folder, a carried-over param must not be treated as a
+   * legacy deep link for the new folder.
+   */
+  const folderRouteKey = computed(() => {
+    const route = unref(router.currentRoute)
+    return `${route.path}|${queryItemAsString(route.query.fileId) || ''}`
+  })
+  watch(folderRouteKey, () => {
+    pendingLegacyPageCount = null
+    if (unref(isInfiniteScrollEnabled)) {
+      clearPageQuery()
+    }
+  })
+
   watch(
     isInfiniteScrollEnabled,
     (isInfiniteScroll, wasInfiniteScroll) => {
