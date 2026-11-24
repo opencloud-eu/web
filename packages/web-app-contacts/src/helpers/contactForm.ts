@@ -1,5 +1,5 @@
 import type { Contact } from '../types'
-import * as EmailValidator from 'email-validator'
+import { isValidEmail } from '@opencloud-eu/web-pkg'
 
 export type ContactFormState = {
   firstName: string
@@ -30,7 +30,7 @@ export const isContactEmailInvalid = (email: string) => {
     return false
   }
 
-  return !EmailValidator.validate(trimmedEmail)
+  return !isValidEmail(trimmedEmail)
 }
 
 export const createContactPayload = (

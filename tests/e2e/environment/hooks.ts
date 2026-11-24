@@ -1,7 +1,6 @@
 import { Before, After, AfterAll } from './fixtures'
 import { appConfig } from '../playwright.config'
 import { api, environment, utils, store } from '../support'
-import { v4 as uuidv4 } from 'uuid'
 import { Group, User } from '../support/types'
 import { World } from './world'
 
@@ -23,7 +22,7 @@ Before(async ({ world }) => {
     }
   }
 
-  world.uniquePrefix = uuidv4().substring(0, 8)
+  world.uniquePrefix = crypto.randomUUID().substring(0, 8)
   world.a11yEnabled = world.tags?.includes('@a11y') ?? false
 })
 
