@@ -1759,6 +1759,19 @@ describe('AppWrapper — flush content callback', () => {
     expect(flushContent).toHaveBeenCalledOnce()
   })
 
+  it('does not autosave when the app emits nothing new', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    const flushContent = vi.fn()
+    s.registerFlushContentCallback(flushContent)
+
+    await vi.advanceTimersByTimeAsync(130_000)
+
+    expect(flushContent).toHaveBeenCalledOnce()
+    expect(s.putFileContents).not.toHaveBeenCalled()
+    expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
+  })
+
   it('saves what the app emits in the callback before a download', async () => {
     const { s } = await openFileWithUnflushedEdit('flushed content')
 

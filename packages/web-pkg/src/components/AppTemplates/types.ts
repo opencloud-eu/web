@@ -90,8 +90,9 @@ export interface AppWrapperSlotHandlers {
    * On each edit, the app still has to emit some value other than the saved content, e.g. a marker
    * the callback later replaces, since the Save action and a closing tab only look at `isDirty`.
    * The callback may run again before an earlier call settled, and it must settle, since saves and
-   * navigation wait for it. A rejection drops the save and counts as unsaved changes. AppWrapper
-   * reports it to the user, so the app shouldn't show an error of its own.
+   * navigation wait for it. It must not call `onSave`, which would wait for the callback. A
+   * rejection drops the save and counts as unsaved changes. AppWrapper reports it to the user, so
+   * the app shouldn't show an error of its own.
    */
   'onRegister:onFlushContentCallback': (value: () => void | Promise<void>) => void
   'onDelete:resource': () => void
