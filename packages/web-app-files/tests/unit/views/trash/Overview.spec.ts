@@ -73,14 +73,15 @@ describe('TrashOverview', () => {
     await flushPromises()
     expect(wrapper.find('no-content-message-stub').exists()).toBeTruthy()
   })
-  it('should navigate to single space trash if only one space exists', async () => {
+  it('should replace the route with the single space trash if only one space exists', async () => {
     const { mocks } = getWrapper({ spaces: [spaceMocks[0]] })
     await flushPromises()
-    expect(mocks.$router.push).toHaveBeenCalledWith({
+    expect(mocks.$router.replace).toHaveBeenCalledWith({
       name: 'files-trash-generic',
       params: { driveAliasAndItem: spaceMocks[0].getDriveAliasAndItem(undefined) },
       query: { fileId: spaceMocks[0].fileId }
     })
+    expect(mocks.$router.push).not.toHaveBeenCalled()
   })
   describe('failed load', () => {
     beforeEach(() => {
@@ -103,7 +104,7 @@ describe('TrashOverview', () => {
         listMyDrives: () => Promise.reject(new Error('Network Error'))
       })
       await flushPromises()
-      expect(mocks.$router.push).toHaveBeenCalledWith(
+      expect(mocks.$router.replace).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'files-trash-generic' })
       )
     })
@@ -122,7 +123,7 @@ describe('TrashOverview', () => {
       await flushPromises()
       const { showErrorMessage } = useMessages()
       expect(showErrorMessage).not.toHaveBeenCalled()
-      expect(mocks.$router.push).not.toHaveBeenCalled()
+      expect(mocks.$router.replace).not.toHaveBeenCalled()
     })
   })
   describe('view states', () => {

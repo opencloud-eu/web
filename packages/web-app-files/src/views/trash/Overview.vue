@@ -337,7 +337,7 @@ onMounted(async () => {
   }
 
   if (unref(spaces).length === 1 && !isProjectSpaceResource(unref(spaces)[0])) {
-    return router.push(getTrashLink(unref(spaces)[0]))
+    return router.replace(getTrashLink(unref(spaces)[0]))
   }
 })
 </script>
