@@ -10,10 +10,6 @@ export abstract class PaginationConstants {
    */
   static readonly infiniteScrollValue: string = 'all'
   static readonly infiniteScrollStorageKey: string = 'oc-options_files-infinite-scroll'
-  static readonly optionsWithInfiniteScroll: Array<string> = [
-    ...PaginationConstants.options,
-    PaginationConstants.infiniteScrollValue
-  ]
   /**
    * Amount of items the list grows by per step in infinite scroll mode.
    * (Equals the default amount of items per page.)
