@@ -1,14 +1,15 @@
 {
   "calendars": {
     "accountId": "e",
-    "state": "sai",
+    "state": "sae",
     "list": [
       {
         "id": "b",
         "name": "Stalwart Calendar (alan@example.org)",
-        "isSubscribed": false,
-        "isVisible": false,
+        "isSubscribed": true,
+        "isVisible": true,
         "isDefault": true,
+        "includeInAvailability": "all",
         "myRights": {
           "mayReadFreeBusy": true,
           "mayReadItems": true,
@@ -30,7 +31,9 @@
           "b": true
         },
         "isOrigin": true,
-        "uid": "",
+        "uid": "4adec981-95d9-419a-9db3-cf29388da036",
+        "created": "2026-11-24T11:07:35Z",
+        "updated": "2026-11-24T11:07:35Z",
         "title": "Tagesplanung",
         "description": "Review mit dem Team",
         "locations": {
@@ -40,7 +43,7 @@
         },
         "privacy": "public",
         "timeZone": "Europe/Berlin",
-        "start": "2026-09-15T09:00:00",
+        "start": "2026-11-25T09:00:00",
         "duration": "PT45M",
         "status": "confirmed"
       },
@@ -50,10 +53,12 @@
           "b": true
         },
         "isOrigin": true,
-        "uid": "",
+        "uid": "ffd2f4f8-46b8-4271-890d-4449965bcc98",
+        "created": "2026-11-24T11:07:35Z",
+        "updated": "2026-11-24T11:07:35Z",
         "title": "Konferenz",
         "showWithoutTime": true,
-        "start": "2026-09-17T00:00:00",
+        "start": "2026-11-26T00:00:00",
         "duration": "P2D"
       }
     ],

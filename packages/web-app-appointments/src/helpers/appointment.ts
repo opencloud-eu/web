@@ -79,6 +79,7 @@ export const normalizeCalendar = (calendar: RawCalendar): Calendar => {
     name: calendar.name || calendar.title || calendar.displayName || id,
     color: calendar.color,
     isDefault: calendar.isDefault,
+    isVisible: calendar.isVisible,
     sortOrder: calendar.sortOrder
   }
 }

@@ -8,7 +8,7 @@ import {
 import { parseCalendarEventsResponse, parseCalendarsResponse } from '../../src/types'
 
 /**
- * The fixture holds verbatim responses of the OpenCloud Groupware API backed by Stalwart
+ * The fixture holds verbatim responses of the OpenCloud Groupware API backed by Stalwart 1.2
  * (`GET /groupware/accounts/{accountId}/calendars` and `.../calendars/{calendarId}/events`).
  */
 describe('Groupware API responses', () => {
@@ -21,6 +21,7 @@ describe('Groupware API responses', () => {
         name: 'Stalwart Calendar (alan@example.org)',
         color: undefined,
         isDefault: true,
+        isVisible: true,
         sortOrder: undefined
       }
     ])
@@ -40,8 +41,8 @@ describe('Groupware API responses', () => {
         title: 'Tagesplanung',
         description: 'Review mit dem Team',
         location: 'OpenCloud Office',
-        start: '2026-09-15T09:00:00',
-        end: '2026-09-15T09:45:00.000+02:00',
+        start: '2026-11-25T09:00:00',
+        end: '2026-11-25T09:45:00.000+01:00',
         timeZone: 'Europe/Berlin',
         allDay: false,
         status: 'confirmed',
@@ -50,8 +51,8 @@ describe('Groupware API responses', () => {
       expect.objectContaining({
         id: 'c',
         title: 'Konferenz',
-        start: '2026-09-17T00:00:00',
-        end: '2026-09-19T00:00:00.000+00:00',
+        start: '2026-11-26T00:00:00',
+        end: '2026-11-28T00:00:00.000+00:00',
         allDay: true
       })
     ])
@@ -61,10 +62,10 @@ describe('Groupware API responses', () => {
     const appointments = normalizeAppointments(parseCalendarEventsResponse(responses.events))
     const occurrencesByDay = groupAppointmentOccurrencesByDay(
       createAppointmentOccurrences(appointments),
-      getMonthGridDateRange(new Date(2026, 8, 1))
+      getMonthGridDateRange(new Date(2026, 10, 1))
     )
 
-    // The two day "Konferenz" ends exclusively on the 19th, so it does not cover that day.
-    expect(Object.keys(occurrencesByDay)).toEqual(['2026-09-15', '2026-09-17', '2026-09-18'])
+    // The two day "Konferenz" ends exclusively on the 28th, so it does not cover that day.
+    expect(Object.keys(occurrencesByDay)).toEqual(['2026-11-25', '2026-11-26', '2026-11-27'])
   })
 })

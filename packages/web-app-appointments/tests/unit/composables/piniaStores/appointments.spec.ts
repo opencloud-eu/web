@@ -96,6 +96,18 @@ describe('appointments store', () => {
     expect(store.selectedCalendarIds).toEqual(['personal'])
   })
 
+  it('does not select hidden calendars initially', () => {
+    const store = useAppointmentsStore()
+
+    store.setCalendars([
+      calendar({ id: 'personal', isVisible: true }),
+      calendar({ id: 'team', isVisible: false }),
+      calendar({ id: 'shared' })
+    ])
+
+    expect(store.selectedCalendarIds).toEqual(['personal', 'shared'])
+  })
+
   it('orders the calendars by their sort order', () => {
     const store = useAppointmentsStore()
 

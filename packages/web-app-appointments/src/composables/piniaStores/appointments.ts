@@ -93,9 +93,10 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     )
 
     if (!unref(hasInitializedCalendarSelection)) {
-      // `isVisible` is not taken into account: Stalwart reports it as false even for the default
-      // calendar, which would leave the calendar empty initially.
-      selectedCalendarIds.value = data.map(({ id }) => id)
+      // JMAP calendars are visible unless `isVisible` says otherwise
+      selectedCalendarIds.value = data
+        .filter(({ isVisible }) => isVisible !== false)
+        .map(({ id }) => id)
       hasInitializedCalendarSelection.value = true
       return
     }

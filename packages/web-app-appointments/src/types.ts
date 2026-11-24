@@ -110,6 +110,7 @@ export const CalendarSchema = z.object({
   displayName: optionalString,
   color: optionalString,
   isDefault: optionalBoolean,
+  isVisible: optionalBoolean,
   sortOrder: z
     .number()
     .nullish()
@@ -184,6 +185,7 @@ export type Calendar = {
   name: string
   color?: string
   isDefault?: boolean
+  isVisible?: boolean
   sortOrder?: number
 }
 
