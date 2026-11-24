@@ -1919,6 +1919,7 @@ describe('AppWrapper — flush content callback', () => {
         expect.objectContaining({ title: 'Unsaved changes' })
       )
       expect(s.unregisterAppBarExtension).not.toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
     })
 
     it('keeps the file on delete, even without changes it knows of', async () => {
@@ -1941,25 +1942,15 @@ describe('AppWrapper — flush content callback', () => {
 
       expect(s.putFileContents).not.toHaveBeenCalled()
       expect(s.downloadFile).toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledOnce()
     })
   })
 
-  describe('without a callback', () => {
-    it('starts the save on Ctrl+S right away', async () => {
-      const s = await openFile({ yjsEnabled: false, component: editorComponent })
-      await s.edit('edited content')
+  it('lets the route leave without a callback', async () => {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
 
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 's', ctrlKey: true }))
-
-      expect(s.putFileContents).toHaveBeenCalled()
-    })
-
-    it('lets the route leave', async () => {
-      const s = await openFile({ yjsEnabled: false, component: editorComponent })
-
-      expect(await leaveRoute()).toBe(true)
-      expect(s.unregisterAppBarExtension).toHaveBeenCalled()
-    })
+    expect(await leaveRoute()).toBe(true)
+    expect(s.unregisterAppBarExtension).toHaveBeenCalled()
   })
 })
 

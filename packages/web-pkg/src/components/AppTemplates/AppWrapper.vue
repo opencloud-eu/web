@@ -369,32 +369,26 @@ function flushPendingContent() {
 }
 
 /**
- * Lets the wrapped app emit the edits it only turns into content on demand. Callers check for the
- * callback first, so apps without one don't get an await. Resolves to false when the app failed.
+ * Brings `currentContent` and `isDirty` up to date: the app emits the edits it turns into content
+ * only on demand, then the session catches up. Resolves to false when the app failed and may hold
+ * back edits. A save would report them as saved, so callers drop it, and the user is told unless
+ * `reportFailure` is false.
  */
-async function flushAppContent() {
+async function flushContent({ reportFailure = true } = {}) {
   try {
-    await appOnFlushContentCallback()
-    return true
+    await appOnFlushContentCallback?.()
   } catch (e) {
     console.error('Error running the app flush content callback', e)
+    if (reportFailure) {
+      showErrorMessage({
+        title: $gettext('Failed to save "%{resource}"', { resource: unref(resource).name }),
+        desc: $gettext('The app could not provide your latest changes.')
+      })
+    }
     return false
   }
-}
-
-/**
- * Like `flushAppContent`, before a save. Saving the content the app failed to update would report
- * its latest edits as saved, so the save has to be dropped.
- */
-async function flushAppContentForSave() {
-  if (await flushAppContent()) {
-    return true
-  }
-  showErrorMessage({
-    title: $gettext('Failed to save "%{resource}"', { resource: unref(resource).name }),
-    desc: $gettext('The app could not provide your latest changes.')
-  })
-  return false
+  flushPendingContent()
+  return true
 }
 
 // `beforeunload` can't wait for a flush, so a pending change counts as unsaved there.
@@ -915,10 +909,7 @@ async function saveCurrentContent() {
 }
 
 async function save() {
-  if (appOnFlushContentCallback && !(await flushAppContentForSave())) {
-    return false
-  }
-  return saveCurrentContent()
+  return (await flushContent()) && saveCurrentContent()
 }
 
 const { saveAction, saveAsAction } = useFileActionsSave({
@@ -929,13 +920,7 @@ const { saveAction, saveAsAction } = useFileActionsSave({
   onSave: async () => {
     await save()
   },
-  flushContent: async () => {
-    if (appOnFlushContentCallback && !(await flushAppContentForSave())) {
-      return false
-    }
-    flushPendingContent()
-    return true
-  }
+  flushContent
 })
 
 let autosaveIntervalId: ReturnType<typeof setInterval> = null
@@ -960,11 +945,12 @@ onMounted(() => {
   if (editorOptions.autosaveEnabled && !disableAutoSave) {
     autosaveIntervalId = setInterval(
       async () => {
-        if (appOnFlushContentCallback && !(await flushAppContentForSave())) {
-          return
-        }
-        flushPendingContent()
-        if (!unref(isDirty) || unref(isConflicted) || saveFileTask.isRunning) {
+        if (
+          !(await flushContent()) ||
+          !unref(isDirty) ||
+          unref(isConflicted) ||
+          saveFileTask.isRunning
+        ) {
           return
         }
         if (await saveCurrentContent()) {
@@ -997,11 +983,7 @@ onBeforeUnmount(() => {
 
 const { bindKeyAction } = useKeyboardActions({ skipDisabledKeyBindingsCheck: true })
 bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, async () => {
-  if (appOnFlushContentCallback && !(await flushAppContentForSave())) {
-    return
-  }
-  flushPendingContent()
-  if (!unref(isDirty)) {
+  if (!(await flushContent()) || !unref(isDirty)) {
     return
   }
   saveCurrentContent()
@@ -1024,11 +1006,7 @@ async function hasChangesToSave() {
   while (saveFileTask.isRunning) {
     await saveFileTask.last
   }
-  if (appOnFlushContentCallback && !(await flushAppContent())) {
-    return true
-  }
-  flushPendingContent()
-  return unref(isDirty)
+  return !(await flushContent({ reportFailure: false })) || unref(isDirty)
 }
 
 /**

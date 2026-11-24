@@ -81,16 +81,14 @@ export interface AppWrapperSlotHandlers {
   'onRegister:onDeleteResourceCallback': (value: () => void) => void
   'onRegister:onSaveCallback': (value: (content: unknown) => void | Promise<void>) => void
   /**
-   * For apps that only turn their edits into content on demand, e.g. because it is expensive.
-   * AppWrapper awaits the callback before every decision about the content (save, autosave,
-   * Ctrl+S, "Save as", download, delete, leaving the app), and the app emits
-   * `update:currentContent` with its latest content in it.
+   * For apps that turn edits into content only on demand, e.g. because it is expensive. AppWrapper
+   * awaits the callback before each decision about the content (save, autosave, Ctrl+S, "Save as",
+   * download, delete, leaving the app). The app emits `update:currentContent` in it, and nothing
+   * when nothing changed: new content counts as a change and triggers autosaves.
    *
-   * It doesn't replace marking the file dirty: the Save action stays disabled and a closing tab
-   * only looks at `isDirty`, so the app still has to emit something when the user edits.
-   * When nothing changed, it should return without emitting: new content counts as a change and
-   * triggers autosaves. It can be called again while an earlier call still runs, and it must
-   * settle, because saves and navigation wait for it. A rejection drops the save and counts as
+   * The app still has to emit something on each edit, since the Save action and a closing tab only
+   * look at `isDirty`. The callback may run again before an earlier call settled, and it must
+   * settle, since saves and navigation wait for it. A rejection drops the save and counts as
    * unsaved changes.
    */
   'onRegister:onFlushContentCallback': (value: () => void | Promise<void>) => void
