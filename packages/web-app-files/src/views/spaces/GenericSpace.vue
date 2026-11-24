@@ -369,7 +369,7 @@ const focusAndAnnounceBreadcrumb = (sameRoute: boolean) => {
 
   const invisibleHint = document.createElement('p')
   invisibleHint.className = 'sr-only oc-breadcrumb-sr'
-  invisibleHint.innerHTML = translatedHint
+  invisibleHint.textContent = translatedHint
 
   activeBreadcrumb.append(invisibleHint)
   if (sameRoute) {
