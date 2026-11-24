@@ -20,10 +20,4 @@ export abstract class PaginationConstants {
    * (Equals the default amount of items per page.)
    */
   static readonly infiniteScrollChunk: number = Number(PaginationConstants.perPageDefault)
-  /**
-   * The scroll sentinel can still sit inside the look-ahead zone right after an
-   * append. Cap consecutive appends in that case and wait for the user to scroll
-   * (and the sentinel to leave and re-enter the look-ahead zone) again.
-   */
-  static readonly infiniteScrollAppendCap: number = 3
 }

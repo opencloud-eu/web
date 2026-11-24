@@ -78,6 +78,7 @@
                 <more-items-spacer
                   v-if="isInfiniteScrollEnabled"
                   :all-loaded="allLoaded"
+                  :recheck-key="paginatedResources.length"
                   @load-more="loadMore"
                 />
                 <pagination v-else :pages="paginationPages" :current-page="paginationPage" />

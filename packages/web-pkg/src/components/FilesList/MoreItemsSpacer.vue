@@ -14,15 +14,21 @@
     >
       {{ $gettext('Show more') }}
     </oc-button>
-    <div v-else ref="sentinel" class="h-px w-full" data-testid="files-infinite-scroll-sentinel" />
+    <div
+      v-else
+      :key="recheckKey"
+      ref="sentinel"
+      class="h-px w-full"
+      data-testid="files-infinite-scroll-sentinel"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, unref, Ref, watch } from 'vue'
+import { ref, Ref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
-import { PaginationConstants, useFilesViewScrollContainer } from '../../composables'
+import { useFilesViewScrollContainer } from '../../composables'
 
 export interface Props {
   /**
@@ -36,13 +42,19 @@ export interface Props {
    * @default '100% 0%'
    */
   rootMargin?: string
+  /**
+   * Change this whenever the rendered items change. It replaces the sentinel so
+   * that it is observed again even when it stayed inside the look-ahead zone
+   * during the append.
+   */
+  recheckKey?: PropertyKey
 }
 
 export interface Emits {
   (e: 'loadMore'): void
 }
 
-const { allLoaded = false, rootMargin = undefined } = defineProps<Props>()
+const { allLoaded = false, rootMargin = undefined, recheckKey = undefined } = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const { $gettext } = useGettext()
@@ -51,43 +63,21 @@ const isIntersectionObserverSupported = typeof window?.IntersectionObserver === 
 
 const scrollContainer = useFilesViewScrollContainer()
 const sentinel = ref<Element>()
-const consecutiveLoads = ref(0)
 
-/**
- * The sentinel can still sit inside the look-ahead zone right after an append
- * (e.g. short items in a high viewport). Cap consecutive appends and wait for the
- * user scrolling, so that the sentinel leaves and re-enters the look-ahead zone.
- */
-const onVisible = () => {
-  if (unref(consecutiveLoads) >= PaginationConstants.infiniteScrollAppendCap) {
-    return
-  }
+function onVisible() {
   emit('loadMore')
-  consecutiveLoads.value++
 }
-const onHidden = () => {
-  consecutiveLoads.value = 0
-}
-/**
- * The sentinel unmounts once everything is rendered and remounts when the list
- * grows again (e.g. after resources were deleted). The observation then starts
- * from scratch.
- */
-watch(
-  () => allLoaded,
-  (isLoaded) => {
-    if (!isLoaded) {
-      consecutiveLoads.value = 0
-    }
-  }
-)
 
+/**
+ * A fresh sentinel is mounted after every append. IntersectionObserver only
+ * reports intersection changes, so re-observing is necessary when the previous
+ * sentinel never left the look-ahead zone.
+ */
 useIsVisible({
   target: sentinel as Ref<Element>,
   root: scrollContainer,
-  mode: 'showHide',
+  mode: 'show',
   rootMargin,
-  onVisibleCallback: onVisible,
-  onHiddenCallback: onHidden
+  onVisibleCallback: onVisible
 })
 </script>

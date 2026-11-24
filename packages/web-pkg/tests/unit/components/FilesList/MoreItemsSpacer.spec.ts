@@ -1,6 +1,9 @@
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import { enableAutoUnmount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import MoreItemsSpacer from '../../../../src/components/FilesList/MoreItemsSpacer.vue'
+
+enableAutoUnmount(afterEach)
 
 const selectors = {
   sentinel: '[data-testid="files-infinite-scroll-sentinel"]',
@@ -31,6 +34,9 @@ class FakeIntersectionObserver {
   disconnect() {
     this.targets = []
   }
+  isObserved(target: Element) {
+    return this.targets.includes(target)
+  }
   trigger(target: Element, isIntersecting: boolean) {
     this.callback([{ target, isIntersecting } as unknown as IntersectionObserverEntry])
   }
@@ -39,6 +45,7 @@ class FakeIntersectionObserver {
 describe('MoreItemsSpacer', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
+    FakeIntersectionObserver.instances = []
   })
 
   describe('when IntersectionObserver is supported', () => {
@@ -64,20 +71,37 @@ describe('MoreItemsSpacer', () => {
       observer.trigger(sentinel, true)
 
       expect(emittedLoadMore(wrapper)).toBe(1)
+      expect(observer.isObserved(sentinel)).toBe(false)
     })
-    it('caps consecutive appends while the sentinel stays visible', async () => {
-      const { wrapper, observer, sentinel } = await getWrapper()
+    it('re-observes the sentinel on every recheck while it stays visible', async () => {
+      let recheckKey = 100
+      const { wrapper, observer } = await getWrapper({ recheckKey })
+      let currentObserver = observer
+      let currentSentinel = wrapper.find(selectors.sentinel).element
 
       for (let i = 0; i < 5; i++) {
-        observer.trigger(sentinel, true)
+        const previousSentinel = currentSentinel
+        currentObserver.trigger(currentSentinel, true)
+        expect(emittedLoadMore(wrapper)).toBe(i + 1)
+
+        recheckKey += 100
+        await wrapper.setProps({ recheckKey })
+
+        currentSentinel = wrapper.find(selectors.sentinel).element
+        currentObserver = FakeIntersectionObserver.instances.at(-1)
+        expect(currentSentinel).not.toBe(previousSentinel)
+        expect(currentObserver.isObserved(currentSentinel)).toBe(true)
       }
-      // the appends are capped, the sentinel has to leave the look-ahead zone first
-      expect(emittedLoadMore(wrapper)).toBe(3)
+    })
+    it('does not re-observe the sentinel when the recheck key is unchanged', async () => {
+      const { wrapper, observer, sentinel } = await getWrapper({ recheckKey: 100 })
 
-      observer.trigger(sentinel, false)
       observer.trigger(sentinel, true)
+      await nextTick()
 
-      expect(emittedLoadMore(wrapper)).toBe(4)
+      expect(wrapper.find(selectors.sentinel).element).toBe(sentinel)
+      expect(observer.isObserved(sentinel)).toBe(false)
+      expect(emittedLoadMore(wrapper)).toBe(1)
     })
   })
 
@@ -107,7 +131,7 @@ describe('MoreItemsSpacer', () => {
   })
 })
 
-async function getWrapper(propsData = {} as { allLoaded?: boolean }) {
+async function getWrapper(propsData = {} as { allLoaded?: boolean; recheckKey?: PropertyKey }) {
   const wrapper = mount(MoreItemsSpacer, {
     props: propsData,
     global: {
@@ -123,7 +147,7 @@ async function getWrapper(propsData = {} as { allLoaded?: boolean }) {
   const sentinel = sentinelWrapper.exists() ? sentinelWrapper.element : null
   /**
    * The observer is cached by the design system for the given root and root
-   * margin, all mounts in this spec share the fake instance.
+   * margin, so use the most recently created fake instance.
    */
   const observer = FakeIntersectionObserver.instances.at(-1)
 
