@@ -58,7 +58,7 @@ describe('OcTextInputPassword', () => {
   describe('password policy', () => {
     function getPolicyWrapper(value: string, verified: boolean, attrs = {}) {
       const policy: PasswordPolicy = {
-        rules: [{}],
+        rules: { minLength: {} },
         check: () => verified,
         missing: () => ({
           rules: [{ code: 'minLength', message: '%{param1}+ letters', format: [8], verified }]
@@ -103,7 +103,7 @@ describe('OcTextInputPassword', () => {
 })
 
 const passwordPolicy: PasswordPolicy = {
-  rules: [],
+  rules: {},
   check: () => true,
   missing: () => ({ rules: [] })
 }
