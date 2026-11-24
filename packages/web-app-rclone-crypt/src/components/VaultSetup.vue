@@ -4,7 +4,7 @@
       <resource-icon :resource="iconResource" size-class="size-8" class="rounded-sm shrink-0" />
       <div class="min-w-0">
         <p
-          class="mt-0 mb-1 font-semibold"
+          class="mt-0 mb-1 font-semibold wrap-anywhere"
           v-text="$gettext('%{vaultName} is end-to-end encrypted', { vaultName: displayName })"
         />
         <p class="m-0 text-sm">
