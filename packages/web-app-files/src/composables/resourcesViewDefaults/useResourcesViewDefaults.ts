@@ -225,7 +225,7 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     isInfiniteScrollEnabled,
     (isInfiniteScroll, wasInfiniteScroll) => {
       if (isInfiniteScroll) {
-        const page = parseInt(queryItemAsString(unref(router.currentRoute).query.page)) || 1
+        const page = parseInt(queryItemAsString(unref(router.currentRoute).query.page), 10) || 1
 
         if (wasInfiniteScroll === undefined) {
           // legacy deep links that carry ?page=N still point to the resource the user

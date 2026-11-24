@@ -218,7 +218,7 @@ const paginationOptionsList = computed(() => {
 const setItemsPerPage = (value: PageSizeOption) => {
   const infiniteScrollSelected = isInfiniteScrollLabel(value.toString())
   itemsPerPageSelection.value = value.toString()
-  if (!infiniteScrollSelected && parseInt(queryItemAsString(unref(currentPageQuery))) > 1) {
+  if (!infiniteScrollSelected && parseInt(queryItemAsString(unref(currentPageQuery)), 10) > 1) {
     return router.replace({ query: { ...unref(currentRoute).query, page: '1' } })
   }
 }
