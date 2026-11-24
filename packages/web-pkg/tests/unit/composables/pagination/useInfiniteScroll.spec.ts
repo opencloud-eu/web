@@ -1,4 +1,4 @@
-import { nextTick, ref, Ref, unref } from 'vue'
+import { nextTick, ref, Ref, unref, MaybeRefOrGetter } from 'vue'
 import { InfiniteScrollResult, useInfiniteScroll } from '../../../../src/composables'
 import { eventBus } from '../../../../src/services'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
@@ -206,6 +206,17 @@ describe('useInfiniteScroll', () => {
 
       expect(unref(result.renderedCount)).toBe(100)
     })
+    it('resets to a single chunk when a resetOn getter changes', async () => {
+      const items = ref(getItems(250))
+      const filterTerm = ref('')
+      const { result } = getWrapper(items, { resetOn: [() => filterTerm.value] })
+
+      result.loadMore()
+      filterTerm.value = 'test'
+      await nextTick()
+
+      expect(unref(result.renderedCount)).toBe(100)
+    })
   })
 })
 
@@ -220,7 +231,7 @@ function getWrapper(
   }: {
     enabled?: Ref<boolean>
     resetKey?: Ref<string>
-    resetOn?: Array<Ref<unknown>>
+    resetOn?: Array<MaybeRefOrGetter<unknown>>
   } = {}
 ): { wrapper: VueWrapper; result: InfiniteScrollResult<Item> } {
   let result!: InfiniteScrollResult<Item>

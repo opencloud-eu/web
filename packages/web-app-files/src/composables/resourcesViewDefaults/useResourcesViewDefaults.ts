@@ -1,4 +1,4 @@
-import { nextTick, computed, unref, Ref, watch, MaybeRef } from 'vue'
+import { nextTick, computed, unref, Ref, watch, MaybeRef, MaybeRefOrGetter } from 'vue'
 import { fileList } from '../../helpers/ui'
 import {
   usePagination,
@@ -60,7 +60,7 @@ interface ResourcesViewDefaultsOptions<T, U extends any[], R extends Resource = 
    * Resets the rendered items in infinite scroll mode to one chunk whenever any of
    * these values change, e.g. when a filter within the view changes.
    */
-  infiniteScrollResetOn?: MaybeRef<Array<Ref<unknown> | (() => unknown)>>
+  infiniteScrollResetOn?: MaybeRef<Array<MaybeRefOrGetter<unknown>>>
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {

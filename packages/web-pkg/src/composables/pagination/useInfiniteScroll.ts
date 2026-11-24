@@ -1,11 +1,13 @@
 import {
   ComputedRef,
   MaybeRef,
+  MaybeRefOrGetter,
   Ref,
   computed,
   nextTick,
   onBeforeUnmount,
   ref,
+  toValue,
   unref,
   watch
 } from 'vue'
@@ -44,7 +46,7 @@ export interface InfiniteScrollOptions<T> {
    * Resets the rendered items to a single chunk whenever any of these values
    * change, e.g. when a filter within the view changes.
    */
-  resetOn?: MaybeRef<Array<unknown>>
+  resetOn?: MaybeRef<Array<MaybeRefOrGetter<unknown>>>
 }
 
 export interface InfiniteScrollResult<T> {
@@ -106,7 +108,7 @@ export function useInfiniteScroll<T>(options: InfiniteScrollOptions<T>): Infinit
   }
 
   watch(() => unref(options.resetKey), resetRenderedCount)
-  watch(() => (unref(options.resetOn) || []).map((refValue) => unref(refValue)), resetRenderedCount)
+  watch(() => (unref(options.resetOn) || []).map(toValue), resetRenderedCount)
 
   const navigateHandler = async ({
     resourceId,
