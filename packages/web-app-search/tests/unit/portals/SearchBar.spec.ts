@@ -430,6 +430,94 @@ describe('Search Bar portal component', () => {
       })
     })
   })
+  describe('while the search is debounced', () => {
+    beforeEach(async () => {
+      vi.useFakeTimers()
+      const { debounce: realDebounce } =
+        await vi.importActual<typeof import('lodash-es')>('lodash-es')
+      vi.mocked(debounce).mockImplementationOnce(realDebounce)
+      providerFiles.previewSearch.search.mockReturnValue({ values: [] })
+      providerContacts.previewSearch.search.mockReturnValue({ values: [] })
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    test('shows "Searching ..." instead of "No results" until the search for the term finished', async () => {
+      const { wrapper } = getMountedWrapper()
+      await wrapper.find(selectors.searchInput).setValue('nothing')
+      await wrapper.find(selectors.searchInput).setValue('nothing found')
+
+      expect(providerFiles.previewSearch.search).not.toHaveBeenCalled()
+      expect(wrapper.find(selectors.noResults).exists()).toBe(false)
+      expect(wrapper.text()).toContain('Searching ...')
+
+      await vi.runAllTimersAsync()
+      expect(providerFiles.previewSearch.search).toHaveBeenCalledTimes(1)
+      expect(wrapper.find(selectors.noResults).exists()).toBe(true)
+    })
+    test('does not show "Searching ..." for a term of spaces only', async () => {
+      const { wrapper } = getMountedWrapper()
+      await wrapper.find(selectors.searchInput).setValue('   ')
+      expect(wrapper.text()).not.toContain('Searching ...')
+    })
+    test('stops showing "Searching ..." when the pending search gets cancelled by Enter', async () => {
+      const { wrapper } = getMountedWrapper()
+      await wrapper.find(selectors.searchInput).setValue('albert')
+      await wrapper.find(selectors.searchInput).trigger('keyup.enter')
+      await vi.runAllTimersAsync()
+
+      expect(providerFiles.previewSearch.search).not.toHaveBeenCalled()
+      expect(wrapper.text()).not.toContain('Searching ...')
+    })
+    test('opens the results page for the new term on Enter after arrow navigation and typing', async () => {
+      providerFiles.previewSearch.search.mockReturnValue({
+        values: [{ id: 'f1', data: 'albert.txt' }]
+      })
+      const { wrapper, mocks } = getMountedWrapper({
+        providers: [providerFiles],
+        attachTo: document.body
+      })
+      await wrapper.find(selectors.searchInput).setValue('albert')
+      await vi.runAllTimersAsync()
+      await wrapper.find(selectors.searchInput).trigger('keyup.down')
+      expect((wrapper.vm as any).activePreviewIndex).toBe(0)
+
+      await wrapper.find(selectors.searchInput).setValue('alberta')
+      await wrapper.find(selectors.searchInput).trigger('keyup.enter')
+
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: expect.objectContaining({ term: 'alberta', provider: 'files.sdk' })
+        })
+      )
+    })
+    test('announces nothing for a search that settles while a newer one is pending', async () => {
+      const { wrapper } = getMountedWrapper({
+        providers: [providerFiles],
+        attachTo: document.body
+      })
+      let resolveSearch: (result: SearchResult) => void
+      providerFiles.previewSearch.search.mockImplementationOnce(
+        () => new Promise((resolve) => (resolveSearch = resolve))
+      )
+      const input = wrapper.find<HTMLInputElement>(selectors.searchInput)
+      input.element.focus()
+      await input.setValue('albert')
+      await vi.advanceTimersByTimeAsync(500)
+      expect(providerFiles.previewSearch.search).toHaveBeenCalledTimes(1)
+
+      await input.setValue('alberta')
+      resolveSearch({ values: [mock<SearchResult['values'][number]>()], totalResults: 12 })
+      await vi.advanceTimersByTimeAsync(100)
+      expect(wrapper.text()).toContain('Searching ...')
+      expect(announceMock).not.toHaveBeenCalledWith(expect.stringMatching(/.+/))
+
+      await vi.runAllTimersAsync()
+      expect(providerFiles.previewSearch.search).toHaveBeenCalledTimes(2)
+      expect(announceMock).toHaveBeenLastCalledWith('No results')
+    })
+  })
   describe('results announcement', () => {
     afterEach(() => {
       announceMock.mockReset()
