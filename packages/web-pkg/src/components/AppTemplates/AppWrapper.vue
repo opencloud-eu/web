@@ -665,6 +665,8 @@ watch(
       // the previous file's content.
       loading.value = true
       loadingError.value = undefined
+      // the app registers it again once it is mounted for the new file
+      appOnFlushContentCallback = null
 
       try {
         await loadResourceTask.perform()
@@ -809,7 +811,18 @@ function applySavedResource(etag: string, saved: Resource | null = null) {
   resourcesStore.updateResourceField({ id: current.id, field: 'etag', value: etag })
 }
 
+/** Resolves to true once saved, to null when there was nothing to save, to false when it failed. */
 const saveFileTask = useTask(function* () {
+  if (isResourceDeleted) {
+    return false
+  }
+  // inside the task, so a save counts as running while the app flushes and others wait for it
+  if (!(yield flushContent())) {
+    return false
+  }
+  if (!unref(isDirty)) {
+    return null
+  }
   const newContent = unref(currentContent)
   // Pin the Y.Doc state behind `newContent`; the doc usually moves on while
   // the PUT is in flight.
@@ -881,8 +894,8 @@ async function runSaveCallback(content: unknown): Promise<void> {
   }
 }
 
-/** Saves `currentContent` as it is, for callers that just flushed the app to check `isDirty`. */
-async function saveCurrentContent() {
+/** Resolves like `saveFileTask`, once a running save finished. */
+async function save() {
   // `saveFileTask` drops a save started while another one runs, and a dropped instance never
   // settles. No await between the check and `perform`, so concurrent callers can't race in.
   let runningSaveResult: boolean | null = null
@@ -890,26 +903,15 @@ async function saveCurrentContent() {
     runningSaveResult = await saveFileTask.last
   }
   // retrying right away would fail the same way and show the error again
-  if (runningSaveResult === false || isResourceDeleted) {
+  if (runningSaveResult === false) {
     return false
-  }
-
-  flushPendingContent()
-  if (runningSaveResult && !unref(isDirty)) {
-    return true
   }
 
   const saved = await saveFileTask.perform()
-  if (!saved) {
-    return false
+  if (saved) {
+    await runSaveCallback(unref(serverContent))
   }
-
-  await runSaveCallback(unref(serverContent))
-  return true
-}
-
-async function save() {
-  return (await flushContent()) && saveCurrentContent()
+  return saved
 }
 
 const { saveAction, saveAsAction } = useFileActionsSave({
@@ -945,15 +947,10 @@ onMounted(() => {
   if (editorOptions.autosaveEnabled && !disableAutoSave) {
     autosaveIntervalId = setInterval(
       async () => {
-        if (
-          !(await flushContent()) ||
-          !unref(isDirty) ||
-          unref(isConflicted) ||
-          saveFileTask.isRunning
-        ) {
+        if (unref(isConflicted) || saveFileTask.isRunning) {
           return
         }
-        if (await saveCurrentContent()) {
+        if (await save()) {
           autosavePopup()
         }
       },
@@ -982,11 +979,8 @@ onBeforeUnmount(() => {
 })
 
 const { bindKeyAction } = useKeyboardActions({ skipDisabledKeyBindingsCheck: true })
-bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, async () => {
-  if (!(await flushContent()) || !unref(isDirty)) {
-    return
-  }
-  saveCurrentContent()
+bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, () => {
+  save()
 })
 
 // the store entry carries updates of file actions like favorite or hide, `resource` doesn't
@@ -1043,7 +1037,7 @@ async function deleteFileActionInterceptor(
 ) {
   if (await hasChangesToSave()) {
     // a conflicted session can't save without overwriting the update from outside this window
-    const saved = !unref(isConflicted) && (await save())
+    const saved = !unref(isConflicted) && (await save()) !== false
     if (!saved) {
       showErrorMessage({
         title: $gettext('Failed to delete "%{resource}"', { resource: unref(resource).name }),
@@ -1182,7 +1176,7 @@ onBeforeRouteLeave(async () => {
         }
       },
       async onConfirm() {
-        if (!(await save())) {
+        if ((await save()) === false) {
           resolve(false)
           return
         }
