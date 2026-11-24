@@ -11,7 +11,6 @@
         :has-pagination="true"
         :batch-actions-loading="batchActionsLoading"
         :view-modes="viewModes"
-        :view-mode-default="FolderViewModeConstants.defaultModeName"
       >
         <template #actions>
           <div class="flex items-center justify-between w-full my-2">
@@ -20,10 +19,10 @@
               <oc-contextual-helper
                 :list="spacesHelpList"
                 :title="$gettext('Spaces')"
-                class="ml-1"
+                class="ms-1"
               />
             </div>
-            <div class="flex justify-end flex-wrap items-end w-full sm:w-auto ml-auto">
+            <div class="flex justify-end flex-wrap items-end w-full sm:w-auto ms-auto">
               <oc-search-bar
                 v-model="filterTerm"
                 is-filter
@@ -113,7 +112,7 @@
                   :class="{ 'rounded-sm': isResourceInSelection(resource) }"
                 />
               </template>
-              <space-image v-else :space="resource" class="mr-2" />
+              <space-image v-else :space="resource" class="me-2" />
             </template>
             <template #actions="{ resource }">
               <oc-button
@@ -185,7 +184,8 @@ import {
   FileSideBar,
   MoreItemsSpacer,
   NoContentMessage,
-  useSideBar
+  useSideBar,
+  useMessages
 } from '@opencloud-eu/web-pkg'
 import {
   isProjectSpaceResource,
@@ -225,6 +225,7 @@ const filterTerm = ref('')
 const resourcesStore = useResourcesStore()
 const { imagesLoading } = storeToRefs(spacesStore)
 const { openSideBarPanel } = useSideBar()
+const { showErrorMessage } = useMessages()
 
 const { setSelection, initResourceList, clearResourceList, setAncestorMetaData } = resourcesStore
 const { areDisabledSpacesShown } = storeToRefs(resourcesStore)
@@ -232,10 +233,16 @@ const { areDisabledSpacesShown } = storeToRefs(resourcesStore)
 const loadResourcesTask = useTask(function* (signal) {
   clearResourceList()
   setAncestorMetaData({})
-  yield spacesStore.reloadProjectSpaces({
-    graphClient: clientService.graphAuthenticated,
-    signal
-  })
+  try {
+    yield spacesStore.reloadProjectSpaces({
+      graphClient: clientService.graphAuthenticated,
+      signal
+    })
+  } catch (e) {
+    console.error(e)
+    showErrorMessage({ title: $gettext('Failed to load spaces'), errors: [e] })
+  }
+  // on failure, the spaces known so far are still listed
   initResourceList({ currentFolder: null, resources: unref(runtimeSpaces) })
 })
 
@@ -332,7 +339,7 @@ watch(selectedResourcesIds, async (ids) => {
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
 const keyActions = useKeyboardActions()
-useKeyboardFileNavigation(keyActions, sortedResources, viewMode)
+useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 useKeyboardFileActions(keyActions)
 
@@ -360,7 +367,15 @@ const getRemainingQuota = (space: SpaceResource) => {
 }
 
 onMounted(async () => {
-  await loadResourcesTask.perform()
+  try {
+    await loadResourcesTask.perform()
+  } catch (e) {
+    // leaving the view cancels the load
+    if (e === 'cancel') {
+      return
+    }
+    throw e
+  }
 
   loadPreviewToken = eventBus.subscribe(
     'app.files.spaces.uploaded-image',

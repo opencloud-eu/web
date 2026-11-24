@@ -1,6 +1,6 @@
 {
   "name": "@opencloud-eu/web-test-helpers",
-  "version": "8.2.2",
+  "version": "8.3.0",
   "description": "OpenCloud web test helpers",
   "license": "AGPL-3.0",
   "private": false,
@@ -41,8 +41,8 @@
     "vue": "^3.5.10"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "@vitejs/plugin-vue": "6.0.10",
+    "@types/node": "^26.0.0",
+    "@vitejs/plugin-vue": "6.0.11",
     "vite": "^8.0.3"
   },
   "dependencies": {

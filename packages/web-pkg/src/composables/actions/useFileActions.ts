@@ -11,7 +11,7 @@ import { useRouter } from '../router'
 import { Action, FileAction, FileActionOptions } from './types'
 import { useWindowOpen } from './useWindowOpen'
 import { ActionExtension, useAppsStore, useConfigStore, useExtensionRegistry } from '../piniaStores'
-import { ApplicationFileExtension } from '../../apps'
+import { ApplicationFileExtension, isResourceSupportedByFileExtension } from '../../apps'
 import { storeToRefs } from 'pinia'
 import { useEmbedMode } from '../embedMode'
 import { RouteRecordName } from 'vue-router'
@@ -91,21 +91,7 @@ export const useFileActions = () => {
 
             const resource = resources[0]
 
-            // Cheap extension/mimeType matching runs first.
-            if (resource.extension && fileExtension.extension) {
-              if (resource.extension.toLowerCase() !== fileExtension.extension.toLowerCase()) {
-                return false
-              }
-            } else if (resource.mimeType && fileExtension.mimeType) {
-              const resourceMimeType = resource.mimeType.toLowerCase()
-              const extensionMimeType = fileExtension.mimeType.toLowerCase()
-              if (
-                resourceMimeType !== extensionMimeType &&
-                resourceMimeType.split('/')[0] !== extensionMimeType
-              ) {
-                return false
-              }
-            } else {
+            if (!isResourceSupportedByFileExtension(resource, fileExtension)) {
               return false
             }
 
@@ -120,10 +106,6 @@ export const useFileActions = () => {
             // External editor apps (Collabora, …) load the file server-side,
             // so they cannot handle vault-protected files.
             if (resource.isInVault && fileExtension.app?.startsWith('external-')) {
-              return false
-            }
-
-            if (fileExtension.canOpen?.(resource) === false) {
               return false
             }
 

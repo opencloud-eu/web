@@ -98,7 +98,11 @@ describe('CreateUserModal', () => {
   describe('email validation', () => {
     it.each([
       { email: 'jana@', error: 'Please enter a valid email' },
-      { email: 'jana@opencloud.eu', error: '' }
+      { email: 'jana', error: 'Please enter a valid email' },
+      { email: 'jana@opencloud', error: 'Please enter a valid email' },
+      { email: 'ja na@opencloud.eu', error: 'Please enter a valid email' },
+      { email: 'jana@opencloud.eu', error: '' },
+      { email: 'jana.doe+tag@sub.opencloud.eu', error: '' }
     ])('shows "$error" for "$email"', async ({ email, error }) => {
       const { wrapper } = getWrapper()
       await setInput(wrapper, selectors.email, email)

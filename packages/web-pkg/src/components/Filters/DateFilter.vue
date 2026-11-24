@@ -33,7 +33,7 @@
               @click="toggleItemSelection(item)"
             >
               <div class="flex items-center truncate">
-                <div class="truncate ml-2">
+                <div class="truncate ms-2">
                   <slot name="item" :item="item" />
                 </div>
               </div>
@@ -54,7 +54,7 @@
               @click="dateRangeClicked = true"
             >
               <div class="flex items-center truncate">
-                <div class="truncate ml-2">
+                <div class="truncate ms-2">
                   <span v-text="$gettext('Custom date range')" />
                 </div>
               </div>
@@ -68,7 +68,8 @@
           class="date-filter-range-panel absolute top-0 p-2 bg-role-surface"
           :class="{
             'transform-[translateX(0)] visible': dateRangeClicked,
-            'transform-[translateX(100%)] invisible': !dateRangeClicked
+            'transform-[translateX(100%)] rtl:transform-[translateX(-100%)] invisible':
+              !dateRangeClicked
           }"
         >
           <div class="flex items-center justify-between mb-4">
@@ -90,32 +91,34 @@
               <oc-icon name="close" />
             </oc-button>
           </div>
-          <div class="mt-2">
-            <oc-datepicker
-              :label="$gettext('From')"
-              :is-clearable="true"
-              :current-date="fromDate"
-              :is-dark="currentTheme.isDark"
-              @date-changed="
-                (value: { date: DateTime; error: boolean }) => setDateRangeDate(value, 'from')
-              "
-            />
-            <oc-datepicker
-              :label="$gettext('To')"
-              :is-clearable="true"
-              :current-date="toDate"
-              :min-date="fromDate ? fromDate : undefined"
-              :is-dark="currentTheme.isDark"
-              @date-changed="
-                (value: { date: DateTime; error: boolean }) => setDateRangeDate(value, 'to')
-              "
-            />
-          </div>
-          <div class="date-filter-apply-btn text-end">
-            <oc-button size="small" :disabled="!dateRangeValid" @click="applyDateRangeFilter">
-              {{ $gettext('Apply') }}
-            </oc-button>
-          </div>
+          <form autocomplete="off" @submit.prevent="applyDateRangeFilter">
+            <div class="mt-2">
+              <oc-datepicker
+                :label="$gettext('From')"
+                :is-clearable="true"
+                :current-date="fromDate"
+                :is-dark="currentTheme.isDark"
+                @date-changed="
+                  (value: { date: DateTime; error: boolean }) => setDateRangeDate(value, 'from')
+                "
+              />
+              <oc-datepicker
+                :label="$gettext('To')"
+                :is-clearable="true"
+                :current-date="toDate"
+                :min-date="fromDate ? fromDate : undefined"
+                :is-dark="currentTheme.isDark"
+                @date-changed="
+                  (value: { date: DateTime; error: boolean }) => setDateRangeDate(value, 'to')
+                "
+              />
+            </div>
+            <div class="date-filter-apply-btn text-end">
+              <oc-button size="small" :disabled="!dateRangeValid" submit="submit">
+                {{ $gettext('Apply') }}
+              </oc-button>
+            </div>
+          </form>
         </div>
       </template>
     </oc-filter-chip>
@@ -270,6 +273,9 @@ const dateRangeOption = computed(() => {
 })
 
 const applyDateRangeFilter = async () => {
+  if (!unref(dateRangeValid)) {
+    return
+  }
   selectedItem.value = unref(dateRangeOption)
   await setRouteQuery()
   unref(filterChip).hideDrop()

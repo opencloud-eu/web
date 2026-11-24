@@ -6,10 +6,10 @@ import {
   isShareSpaceResource,
   isProjectSpaceResource,
   isSpaceResource,
-  isTrashResource
+  isTrashResource,
+  dirname
 } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
-import { dirname } from 'path'
 import { computed, markRaw, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {

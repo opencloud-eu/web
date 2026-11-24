@@ -1,14 +1,25 @@
 import { computed, onScopeDispose, ref, unref } from 'vue'
 import { debounce } from 'lodash-es'
-import * as EmailValidator from 'email-validator'
 import { useTask } from 'vue-concurrency'
+import { useGettext } from 'vue3-gettext'
 import { call, CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
-import { useAbility, useCapabilityStore, useClientService } from '@opencloud-eu/web-pkg'
+import { Contact } from '@opencloud-eu/web-client/ox'
+import {
+  isValidEmail,
+  useAbility,
+  useCapabilityStore,
+  useClientService,
+  useMessages
+} from '@opencloud-eu/web-pkg'
 
 export const useCollaboratorSearch = () => {
   const clientService = useClientService()
   const capabilityStore = useCapabilityStore()
   const { can } = useAbility()
+
+  const canInviteGuests = computed(
+    () => capabilityStore.sharingGuestLinksEnabled && can('create-all', 'GuestInvite')
+  )
 
   /**
    * Users and groups matching `query`, each tagged with the share type it would
@@ -44,34 +55,64 @@ export const useCollaboratorSearch = () => {
   }
 
   /**
-   * A guest invite for `query` if it is a mail address that doesn't belong to
-   * one of the `collaborators` found for it.
+   * Guest invites for `query` if it is a mail address and for the address book
+   * `contacts`, leaving out addresses that belong to one of the `collaborators`.
    */
   function getGuestCandidates(
     query: string,
-    collaborators: CollaboratorAutoCompleteItem[]
+    collaborators: CollaboratorAutoCompleteItem[],
+    contacts: Contact[] = []
   ): CollaboratorAutoCompleteItem[] {
     const trimmedQuery = (query || '').trim()
-    const email = getCanonicalEmail(trimmedQuery)
+    const hiddenAccountEmail = isOwnedByHiddenMailUser(collaborators)
+      ? getCanonicalEmail(trimmedQuery)
+      : undefined
+
+    const candidates = new Map<string, CollaboratorAutoCompleteItem>()
+    for (const [address, displayName] of [
+      [trimmedQuery, trimmedQuery.toLowerCase()],
+      ...contacts.map(({ email, displayName }) => [email, displayName])
+    ]) {
+      const candidate = getGuestCandidate(address, displayName, collaborators)
+      if (!candidate || candidate.id === hiddenAccountEmail) {
+        continue
+      }
+      candidates.set(candidate.id, candidate)
+    }
+    return [...candidates.values()]
+  }
+
+  function getGuestCandidate(
+    address: string,
+    displayName: string,
+    collaborators: CollaboratorAutoCompleteItem[]
+  ): CollaboratorAutoCompleteItem | undefined {
+    const email = getCanonicalEmail(address)
     if (
-      !capabilityStore.sharingGuestLinksEnabled ||
-      !can('create-all', 'GuestInvite') ||
       !email ||
-      emailBelongsToAccount(trimmedQuery, collaborators) ||
+      emailBelongsToAccount(address, collaborators) ||
       emailBelongsToAccount(email, collaborators)
     ) {
-      return []
+      return undefined
     }
-    return [
-      { id: email, displayName: trimmedQuery.toLowerCase(), shareType: ShareTypes.guest.value }
-    ]
+    return {
+      id: email,
+      displayName: displayName || email,
+      ...(displayName && displayName !== email && { mail: email }),
+      shareType: ShareTypes.guest.value
+    }
+  }
+
+  /**
+   * Whether the search found a single user without a visible mail address, who
+   * then most likely owns the searched address.
+   */
+  function isOwnedByHiddenMailUser(collaborators: CollaboratorAutoCompleteItem[]) {
+    const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)
+    return users.length === 1 && !users[0].mail
   }
 
   function emailBelongsToAccount(email: string, collaborators: CollaboratorAutoCompleteItem[]) {
-    const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)
-    if (users.length === 1 && !users[0].mail) {
-      return true
-    }
     return collaborators.some((c) =>
       [c.mail?.toLowerCase(), c.onPremisesSamAccountName?.toLowerCase()].includes(
         email.toLowerCase()
@@ -79,7 +120,7 @@ export const useCollaboratorSearch = () => {
     )
   }
 
-  return { searchCollaborators, getGuestCandidates }
+  return { canInviteGuests, searchCollaborators, getGuestCandidates }
 }
 
 /**
@@ -101,7 +142,7 @@ function getCanonicalEmail(email: string) {
   }
   const address = `${email.slice(0, at)}@${asciiDomain}`
   // the validator doesn't allow `--` in the top-level domain, so punycode ones would fail
-  if (!EmailValidator.validate(address.replace(/\.xn--([a-z0-9-]+)$/i, '.xn$1'))) {
+  if (!isValidEmail(address.replace(/\.xn--([a-z0-9-]+)$/i, '.xn$1'))) {
     return undefined
   }
   return address.toLowerCase()
@@ -109,15 +150,21 @@ function getCanonicalEmail(email: string) {
 
 /**
  * `fetchResults` returns the list to show, so each caller decides which sources
- * it searches and who it leaves out.
+ * it searches and who it leaves out. `inputId` is the search input the results
+ * belong to.
  */
 export const useCollaboratorAutocomplete = (
+  inputId: string,
   fetchResults: (query: string, signal: AbortSignal) => Promise<CollaboratorAutoCompleteItem[]>
 ) => {
   const capabilityStore = useCapabilityStore()
+  const { showErrorMessage } = useMessages()
+  const { $gettext } = useGettext()
 
   const searchQuery = ref('')
   const searchInProgress = ref(false)
+  // a failed search has no results to show, so the list mustn't claim that nobody matched
+  const searchFailed = ref(false)
   const autocompleteResults = ref<CollaboratorAutoCompleteItem[]>([])
   const minSearchLength = computed(() => capabilityStore.sharingSearchMinLength)
 
@@ -126,6 +173,13 @@ export const useCollaboratorAutocomplete = (
       autocompleteResults.value = yield* call(fetchResults(query, signal))
     } catch (e) {
       console.error(e)
+      searchFailed.value = true
+      if (isSearchShown(query)) {
+        showErrorMessage({
+          title: $gettext('Failed to search for users and groups'),
+          errors: [e]
+        })
+      }
     }
     searchInProgress.value = false
   }).restartable()
@@ -136,10 +190,25 @@ export const useCollaboratorAutocomplete = (
 
   onScopeDispose(() => fetchRecipients.cancel())
 
+  /**
+   * Whether the user still looks at the search for `query`: not after the input
+   * got cleared, changed or left.
+   */
+  function isSearchShown(query: string) {
+    const input = document.getElementById(inputId) as HTMLInputElement
+    return (
+      !!input &&
+      document.activeElement === input &&
+      input.value.trim() === query.trim() &&
+      query.trim().length >= unref(minSearchLength)
+    )
+  }
+
   function onSearch(query: string) {
     fetchRecipients.cancel()
     fetchRecipientsTask.cancelAll()
     autocompleteResults.value = []
+    searchFailed.value = false
     searchQuery.value = query
 
     if (query.trim().length < unref(minSearchLength)) {
@@ -153,8 +222,10 @@ export const useCollaboratorAutocomplete = (
 
   return {
     autocompleteResults,
+    isSearchShown,
     minSearchLength,
     onSearch,
+    searchFailed,
     searchInProgress,
     searchQuery
   }

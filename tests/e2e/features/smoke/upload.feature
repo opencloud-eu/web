@@ -32,6 +32,9 @@ Feature: Upload
       | new-lorem-big.txt | replace   |
       | lorem.txt         | skip      |
       | textfile.txt      | keep both |
+    Then following resource should be displayed in the files list for user "Alice"
+      | resource         |
+      | textfile (1).txt |
     And "Alice" creates the following resources
       | resource              | type     | content      |
       | PARENT                | folder   |              |
@@ -52,7 +55,7 @@ Feature: Upload
 
   Scenario: upload multiple small files
     When "Alice" uploads 50 small files in personal space
-    Then "Alice" should see 50 resources in the personal space files view
+    Then "Alice" should see 50 resources in the files list
     And "Alice" logs out
 
 

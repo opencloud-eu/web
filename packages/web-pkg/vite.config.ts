@@ -1,18 +1,14 @@
-import { join, resolve } from 'path'
+import { resolve } from 'path'
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig, searchForWorkspaceRoot } from 'vite'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import pkg from './package.json'
 
-const projectRootDir = searchForWorkspaceRoot(process.cwd())
 const external = [...Object.keys(pkg.dependencies)]
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      crypto: join(projectRootDir, 'polyfills/crypto.js')
-    }
+  define: {
+    'process.env.PACKAGE_VERSION': JSON.stringify(pkg.version)
   },
   build: {
     lib: {
@@ -26,11 +22,5 @@ export default defineConfig({
       external
     }
   },
-  plugins: [
-    tailwindcss(),
-    vue(),
-    nodePolyfills({
-      exclude: ['crypto']
-    })
-  ]
+  plugins: [tailwindcss(), vue()]
 })

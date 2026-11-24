@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { Ref, computed, ref, unref } from 'vue'
-import { isProjectSpaceResource, SpaceResource, type Resource } from '@opencloud-eu/web-client'
-import { getParentPaths } from '../../helpers'
+import { SpaceResource, type Resource } from '@opencloud-eu/web-client'
+import { countResources, getParentPaths } from '../../helpers'
 import { AncestorMetaData, AncestorMetaDataValue } from '../../types'
 import { DavProperty, WebDAV } from '@opencloud-eu/web-client/webdav'
 import { useSpacesStore } from './spaces'
@@ -25,25 +25,7 @@ export const useResourcesStore = defineStore('resources', () => {
     return res
   })
 
-  const totalResourcesCount = computed(() => {
-    const fileCount = unref(resources).filter(({ type }) => type === 'file').length
-    const hiddenFileCount = unref(resources).filter(
-      ({ type, name }) => type === 'file' && name.startsWith('.')
-    ).length
-    const folderCount = unref(resources).filter(({ type }) => type === 'folder').length
-    const hiddenFolderCount = unref(resources).filter(
-      ({ type, name }) => type === 'folder' && name.startsWith('.')
-    ).length
-    const spaceCount = unref(resources).filter(isProjectSpaceResource).length
-
-    return {
-      files: fileCount,
-      hiddenFiles: hiddenFileCount,
-      folders: folderCount,
-      hiddenFolders: hiddenFolderCount,
-      spaces: spaceCount
-    }
-  })
+  const totalResourcesCount = computed(() => countResources(unref(resources)))
 
   const setResources = (file: Resource[]) => {
     resources.value = file

@@ -3,6 +3,7 @@ import {
   queryItemAsString,
   useGetMatchingSpace,
   useRouteQuery,
+  useItemsPerPage,
   useClientService,
   useRouter,
   createFileRouteOptions,
@@ -22,8 +23,7 @@ import {
   Modifier,
   useKeyboardActions
 } from '@opencloud-eu/web-pkg'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { dirname } from 'path'
+import { Resource, SpaceResource, dirname } from '@opencloud-eu/web-client'
 import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
@@ -76,10 +76,7 @@ export const useFileActionsDeleteResources = () => {
     return parseInt(queryItemAsString(unref(currentPageQuery)))
   })
 
-  const itemsPerPageQuery = useRouteQuery('items-per-page', '1')
-  const itemsPerPage = computed(() => {
-    return parseInt(queryItemAsString(unref(itemsPerPageQuery)))
-  })
+  const itemsPerPage = useItemsPerPage()
 
   const resources = computed(() => {
     return cloneStateObject<Resource[]>(unref(resourcesToDelete))

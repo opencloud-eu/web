@@ -6,6 +6,10 @@ import { mock } from 'vitest-mock-extended'
 import { h } from 'vue'
 
 describe('OcSidebarNav', () => {
+  afterEach(() => {
+    window.localStorage.clear()
+  })
+
   it('renders navItems into a list', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.html()).toMatchSnapshot()
@@ -39,7 +43,8 @@ describe('OcSidebarNav', () => {
   })
 
   describe('support card', () => {
-    it('renders the support card by default', () => {
+    it('keeps rendering the support card when it was dismissed before', () => {
+      window.localStorage.setItem('oc_supportCardDismissed', 'true')
       const { wrapper } = getWrapper()
       expect(wrapper.find('support-card-stub').exists()).toBeTruthy()
     })

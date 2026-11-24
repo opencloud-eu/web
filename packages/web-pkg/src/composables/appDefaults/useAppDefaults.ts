@@ -1,7 +1,6 @@
 import { computed, unref, Ref } from 'vue'
 import { useRouter, useRoute, useRouteParam } from '../router'
 import { ClientService } from '../../services'
-import { basename } from 'path'
 
 import { FileContext } from './types'
 import {
@@ -19,7 +18,7 @@ import { RequestResult, useRequest } from '../authContext'
 import { useClientService } from '../clientService'
 import { MaybeRef } from '../../utils'
 import { useDriveResolver } from '../driveResolver'
-import { isShareSpaceResource, urlJoin } from '@opencloud-eu/web-client'
+import { isShareSpaceResource, urlJoin, basename } from '@opencloud-eu/web-client'
 import { useAppsStore, useAuthStore } from '../piniaStores'
 import { storeToRefs } from 'pinia'
 

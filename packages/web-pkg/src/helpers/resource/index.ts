@@ -1,5 +1,6 @@
 export * from './sameResource'
 export * from './conflictHandling'
+export * from './countResources'
 export * from './filter'
 export * from './icon'
 export * from './isItemInCurrentFolder'

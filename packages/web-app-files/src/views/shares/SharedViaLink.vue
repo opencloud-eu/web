@@ -79,7 +79,11 @@
               @load-more="loadMore"
             />
             <pagination v-else :pages="paginationPages" :current-page="paginationPage" />
-            <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
+            <list-info
+              v-if="paginatedResources.length > 0"
+              class="w-full my-2"
+              :matching-count="matchingCount"
+            />
           </template>
         </component>
       </template>
@@ -119,7 +123,6 @@ import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
 import { folderViewsSharedViaLinkExtensionPoint } from '../../extensionPoints'
-import { v4 as uuidV4 } from 'uuid'
 import { useGettext } from 'vue3-gettext'
 import Fuse from 'fuse.js'
 
@@ -173,6 +176,11 @@ const {
   infiniteScrollResetOn: [filterTerm]
 })
 
+const matchingCount = computed(() => {
+  const isFiltered = !!unref(filterTerm)
+  return isFiltered ? unref(sortedResources).length : undefined
+})
+
 const { triggerDefaultAction } = useFileActions()
 
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
@@ -217,7 +225,7 @@ resourcesStore.$onAction(async (action) => {
 const breadcrumbs = computed(() => {
   return [
     {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: $gettext('Shares'),
       onClick: () => loadResources(),
       isStaticNav: true

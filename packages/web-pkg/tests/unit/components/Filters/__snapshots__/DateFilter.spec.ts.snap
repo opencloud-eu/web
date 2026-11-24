@@ -2,26 +2,10 @@
 
 exports[`DateFilter > can use a custom attribute as display name 1`] = `
 "<div data-v-e73bd97a="" class="date-filter flex overflow-hidden [&amp;_label]:text-sm date-filter-users">
-  <div data-v-e73bd97a="" class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 rounded-md h-[32px] max-w-40 focus:z-90 transition-[gap] px-3" id="oc-filter-chip-4">
+  <div data-v-e73bd97a="" class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 rounded-md h-[32px] max-w-40 focus:z-1 transition-[gap] px-3" id="oc-filter-chip-4">
       <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" unique-ids="false" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" unique-ids="false" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
+      <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" unique-ids="false" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
+      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ms-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" unique-ids="false" aria-hidden="true" focusable="false" class="size-4"></svg></span>
     </button>
     <div toggle="#oc-filter-chip-4" title="Users" class="oc-filter-chip-drop" mode="click" padding-size="small" close-on-click="false">
       <ul data-v-e73bd97a="" class="oc-list">
@@ -29,7 +13,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
             <!--v-if-->
             <!-- @slot Content of the button -->
             <div data-v-e73bd97a="" class="flex items-center truncate">
-              <div data-v-e73bd97a="" class="truncate ml-2">today</div>
+              <div data-v-e73bd97a="" class="truncate ms-2">today</div>
             </div>
             <div data-v-e73bd97a="" class="flex">
               <!--v-if-->
@@ -39,7 +23,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
             <!--v-if-->
             <!-- @slot Content of the button -->
             <div data-v-e73bd97a="" class="flex items-center truncate">
-              <div data-v-e73bd97a="" class="truncate ml-2">yesterday</div>
+              <div data-v-e73bd97a="" class="truncate ms-2">yesterday</div>
             </div>
             <div data-v-e73bd97a="" class="flex">
               <!--v-if-->
@@ -49,67 +33,53 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
             <!--v-if-->
             <!-- @slot Content of the button -->
             <div data-v-e73bd97a="" class="flex items-center truncate">
-              <div data-v-e73bd97a="" class="truncate ml-2"><span data-v-e73bd97a="">Custom date range</span></div>
+              <div data-v-e73bd97a="" class="truncate ms-2"><span data-v-e73bd97a="">Custom date range</span></div>
             </div>
             <div data-v-e73bd97a="" class="flex">
               <!--v-if-->
             </div>
           </button></li>
       </ul>
-      <div data-v-e73bd97a="" class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] invisible">
+      <div data-v-e73bd97a="" class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] rtl:transform-[translateX(-100%)] invisible">
         <div data-v-e73bd97a="" class="flex items-center justify-between mb-4"><button data-v-e73bd97a="" type="button" aria-label="Go back to filter options" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-back">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" unique-ids="false" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5 rtl:-scale-x-100"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" unique-ids="false" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button> <span data-v-e73bd97a="">Custom date range</span> <button data-v-e73bd97a="" type="button" aria-label="Close filter" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-close">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" unique-ids="false" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" unique-ids="false" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button></div>
-        <div data-v-e73bd97a="" class="mt-2">
-          <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-5">From
-              <!--v-if-->
-            </label>
-            <div class="relative">
-              <!--v-if--> <input id="oc-textinput-5" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-0" value="">
-              <!--v-if-->
+        <form data-v-e73bd97a="" autocomplete="off">
+          <div data-v-e73bd97a="" class="mt-2">
+            <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-5">From
+                <!--v-if-->
+              </label>
+              <div class="relative">
+                <!--v-if--> <input id="oc-textinput-5" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-0" value="">
+                <!--v-if-->
+              </div>
+              <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
+                <!--v-if-->
+              </div>
+              <div id="v-0"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
             </div>
-            <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
-              <!--v-if-->
+            <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-6">To
+                <!--v-if-->
+              </label>
+              <div class="relative">
+                <!--v-if--> <input id="oc-textinput-6" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-1" value="">
+                <!--v-if-->
+              </div>
+              <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
+                <!--v-if-->
+              </div>
+              <div id="v-1"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
             </div>
-            <div id="v-0"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
           </div>
-          <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-6">To
+          <div data-v-e73bd97a="" class="date-filter-apply-btn text-end"><button data-v-e73bd97a="" type="submit" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
               <!--v-if-->
-            </label>
-            <div class="relative">
-              <!--v-if--> <input id="oc-textinput-6" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-1" value="">
-              <!--v-if-->
-            </div>
-            <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
-              <!--v-if-->
-            </div>
-            <div id="v-1"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
-          </div>
-        </div>
-        <div data-v-e73bd97a="" class="date-filter-apply-btn text-end"><button data-v-e73bd97a="" type="button" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
-            <!--v-if-->
-            <!-- @slot Content of the button --> Apply
-          </button></div>
+              <!-- @slot Content of the button --> Apply
+            </button></div>
+        </form>
       </div>
     </div>
     <!--v-if-->
@@ -119,26 +89,10 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
 
 exports[`DateFilter > renders all items 1`] = `
 "<div data-v-e73bd97a="" class="date-filter flex overflow-hidden [&amp;_label]:text-sm date-filter-users">
-  <div data-v-e73bd97a="" class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 rounded-md h-[32px] max-w-40 focus:z-90 transition-[gap] px-3" id="oc-filter-chip-1">
+  <div data-v-e73bd97a="" class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 rounded-md h-[32px] max-w-40 focus:z-1 transition-[gap] px-3" id="oc-filter-chip-1">
       <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" unique-ids="false" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" unique-ids="false" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
+      <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" unique-ids="false" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
+      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ms-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" unique-ids="false" aria-hidden="true" focusable="false" class="size-4"></svg></span>
     </button>
     <div toggle="#oc-filter-chip-1" title="Users" class="oc-filter-chip-drop" mode="click" padding-size="small" close-on-click="false">
       <ul data-v-e73bd97a="" class="oc-list">
@@ -146,7 +100,7 @@ exports[`DateFilter > renders all items 1`] = `
             <!--v-if-->
             <!-- @slot Content of the button -->
             <div data-v-e73bd97a="" class="flex items-center truncate">
-              <div data-v-e73bd97a="" class="truncate ml-2">today</div>
+              <div data-v-e73bd97a="" class="truncate ms-2">today</div>
             </div>
             <div data-v-e73bd97a="" class="flex">
               <!--v-if-->
@@ -156,7 +110,7 @@ exports[`DateFilter > renders all items 1`] = `
             <!--v-if-->
             <!-- @slot Content of the button -->
             <div data-v-e73bd97a="" class="flex items-center truncate">
-              <div data-v-e73bd97a="" class="truncate ml-2">yesterday</div>
+              <div data-v-e73bd97a="" class="truncate ms-2">yesterday</div>
             </div>
             <div data-v-e73bd97a="" class="flex">
               <!--v-if-->
@@ -166,67 +120,53 @@ exports[`DateFilter > renders all items 1`] = `
             <!--v-if-->
             <!-- @slot Content of the button -->
             <div data-v-e73bd97a="" class="flex items-center truncate">
-              <div data-v-e73bd97a="" class="truncate ml-2"><span data-v-e73bd97a="">Custom date range</span></div>
+              <div data-v-e73bd97a="" class="truncate ms-2"><span data-v-e73bd97a="">Custom date range</span></div>
             </div>
             <div data-v-e73bd97a="" class="flex">
               <!--v-if-->
             </div>
           </button></li>
       </ul>
-      <div data-v-e73bd97a="" class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] invisible">
+      <div data-v-e73bd97a="" class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] rtl:transform-[translateX(-100%)] invisible">
         <div data-v-e73bd97a="" class="flex items-center justify-between mb-4"><button data-v-e73bd97a="" type="button" aria-label="Go back to filter options" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-back">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" unique-ids="false" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5 rtl:-scale-x-100"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" unique-ids="false" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button> <span data-v-e73bd97a="">Custom date range</span> <button data-v-e73bd97a="" type="button" aria-label="Close filter" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-close">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" unique-ids="false" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" unique-ids="false" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button></div>
-        <div data-v-e73bd97a="" class="mt-2">
-          <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-2">From
-              <!--v-if-->
-            </label>
-            <div class="relative">
-              <!--v-if--> <input id="oc-textinput-2" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-0" value="">
-              <!--v-if-->
+        <form data-v-e73bd97a="" autocomplete="off">
+          <div data-v-e73bd97a="" class="mt-2">
+            <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-2">From
+                <!--v-if-->
+              </label>
+              <div class="relative">
+                <!--v-if--> <input id="oc-textinput-2" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-0" value="">
+                <!--v-if-->
+              </div>
+              <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
+                <!--v-if-->
+              </div>
+              <div id="v-0"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
             </div>
-            <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
-              <!--v-if-->
+            <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-3">To
+                <!--v-if-->
+              </label>
+              <div class="relative">
+                <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-1" value="">
+                <!--v-if-->
+              </div>
+              <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
+                <!--v-if-->
+              </div>
+              <div id="v-1"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
             </div>
-            <div id="v-0"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
           </div>
-          <div data-v-e73bd97a="" class="oc-date-picker"><label class="inline-block mb-0.5" for="oc-textinput-3">To
+          <div data-v-e73bd97a="" class="date-filter-apply-btn text-end"><button data-v-e73bd97a="" type="submit" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
               <!--v-if-->
-            </label>
-            <div class="relative">
-              <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input h-9" type="date" teleport-id="v-1" value="">
-              <!--v-if-->
-            </div>
-            <div class="oc-text-input-message flex align-center text-sm mt-1 min-h-4.5">
-              <!--v-if-->
-            </div>
-            <div id="v-1"></div> <span class="sr-only oc-hidden-announcer" aria-live="polite" aria-atomic="true"></span>
-          </div>
-        </div>
-        <div data-v-e73bd97a="" class="date-filter-apply-btn text-end"><button data-v-e73bd97a="" type="button" disabled="" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
-            <!--v-if-->
-            <!-- @slot Content of the button --> Apply
-          </button></div>
+              <!-- @slot Content of the button --> Apply
+            </button></div>
+        </form>
       </div>
     </div>
     <!--v-if-->

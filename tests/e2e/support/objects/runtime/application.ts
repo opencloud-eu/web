@@ -80,8 +80,6 @@ export class Application {
   }
 
   async closeSidebar(): Promise<void> {
-    // await sidebar transitions
-    await new Promise((resolve) => setTimeout(resolve, 250))
     await this.#page
       .locator(closeSidebarSubPanelBtn)
       .or(this.#page.locator(closeSidebarRootPanelBtn))

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-modal-background fixed left-0 top-0 z-[var(--z-index-modal)] flex items-center justify-center flex-row flex-wrap size-full"
+    class="oc-modal-background fixed inset-s-0 top-0 z-[var(--z-index-modal)] flex items-center justify-center flex-row flex-wrap size-full"
     :class="{ 'bg-black/40': active }"
   >
     <focus-trap
@@ -62,7 +62,7 @@
               :class="{ 'mb-0': !hasInput }"
             >
               <span class="text" v-text="contextualHelperLabel" />
-              <oc-contextual-helper class="pl-1" v-bind="contextualHelperData" />
+              <oc-contextual-helper class="ps-1" v-bind="contextualHelperData" />
             </div>
             <oc-text-input
               v-if="hasInput"
@@ -86,7 +86,7 @@
 
         <div
           v-if="!hideActions"
-          class="oc-modal-body-actions shrink-0 flex justify-end p-4 text-right"
+          class="oc-modal-body-actions shrink-0 flex justify-end p-4 text-end"
         >
           <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
             <oc-button
@@ -99,14 +99,9 @@
             <div v-if="actionsId" :id="actionsId" class="contents" />
             <oc-button
               v-if="!hideConfirmButton"
-              class="oc-modal-body-actions-confirm ml-2"
+              class="oc-modal-body-actions-confirm ms-2"
               :appearance="buttonConfirmAppearance"
-              :disabled="
-                isLoading ||
-                buttonConfirmDisabled ||
-                !!inputError ||
-                (hasInput && inputRequiredMark && !userInputValue)
-              "
+              :disabled="isConfirmDisabled"
               :show-spinner="showSpinner"
               @click="confirm"
               >{{ $gettext(confirmLabel) }}
@@ -431,8 +426,17 @@ const onDocumentKeydown = (event: KeyboardEvent) => {
 
 useEventListener(document, 'keydown', onDocumentKeydown)
 
+const isConfirmDisabled = computed(() => {
+  return (
+    isLoading ||
+    buttonConfirmDisabled ||
+    !!inputError ||
+    (hasInput && inputRequiredMark && !unref(userInputValue))
+  )
+})
+
 const confirm = () => {
-  if (buttonConfirmDisabled || inputError) {
+  if (unref(isConfirmDisabled)) {
     return
   }
   emit('confirm', unref(userInputValue))

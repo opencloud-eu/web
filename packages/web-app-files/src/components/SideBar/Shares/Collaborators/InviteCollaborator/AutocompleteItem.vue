@@ -6,7 +6,7 @@
   >
     <user-avatar
       v-if="isAnyUserShareType"
-      class="mr-2"
+      class="me-2"
       :user-id="item.id"
       :user-name="item.displayName"
     />
@@ -16,18 +16,26 @@
       :name="shareTypeKey"
       :icon="shareTypeIcon"
       icon-size="medium"
-      class="mr-2"
+      class="me-2"
     />
     <div class="truncate">
-      <span class="files-collaborators-autocomplete-username" :title="item.displayName">
-        <oc-filter-highlight :text="item.displayName" :term="term" />
-      </span>
-      <template v-if="!isAnyPrimaryShareType">
-        <span
-          class="files-collaborators-autocomplete-share-type"
-          v-text="`(${$gettext(shareType.label)})`"
-        />
-      </template>
+      <div class="flex gap-1">
+        <span class="files-collaborators-autocomplete-username truncate min-w-0" :title="title">
+          <oc-filter-highlight :text="item.displayName" :term="term" />
+        </span>
+        <span v-if="shareTypeLabel || hint" class="shrink-0">
+          <span
+            v-if="shareTypeLabel"
+            class="files-collaborators-autocomplete-share-type"
+            v-text="`(${shareTypeLabel})`"
+          />
+          <span
+            v-if="hint"
+            class="files-collaborators-autocomplete-hint ms-1"
+            v-text="`(${hint})`"
+          />
+        </span>
+      </div>
       <div
         v-if="additionalInfo"
         class="files-collaborators-autocomplete-additionalInfo text-sm truncate"
@@ -48,14 +56,22 @@
 
 <script setup lang="ts">
 import { computed, unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
 import { UserAvatar } from '@opencloud-eu/web-pkg'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
-const { item, term = '' } = defineProps<{
+const {
+  item,
+  term = '',
+  hint = ''
+} = defineProps<{
   item: CollaboratorAutoCompleteItem
   term?: string
+  hint?: string
 }>()
+
+const { $gettext } = useGettext()
 
 const additionalInfo = computed(() => {
   return item.mail || item.onPremisesSamAccountName
@@ -82,6 +98,21 @@ const isAnyUserShareType = computed(() => {
 })
 const isAnyPrimaryShareType = computed(() => {
   return [ShareTypes.user.key, ShareTypes.group.key].includes(unref(shareTypeKey))
+})
+const shareTypeLabel = computed(() => {
+  if (unref(isAnyPrimaryShareType)) {
+    return ''
+  }
+  return $gettext(unref(shareType).label)
+})
+const title = computed(() => {
+  return [
+    item.displayName,
+    unref(shareTypeLabel) && `(${unref(shareTypeLabel)})`,
+    hint && `(${hint})`
+  ]
+    .filter(Boolean)
+    .join(' ')
 })
 const collaboratorClass = computed(() => {
   return `files-collaborators-search-${unref(shareTypeKey)}`

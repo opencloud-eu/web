@@ -25,6 +25,47 @@ describe('useFileActionsCreateSpaceFromResource', () => {
     vi.restoreAllMocks()
   })
 
+  describe('default space quota', () => {
+    it('is enabled when the selection fits into the default quota', () => {
+      const resources = [mock<Resource>({ size: 40 }), mock<Resource>({ size: '60' })]
+      const { action, space } = getWrapper({ resources, defaultQuota: 100 })
+
+      expect(action.isDisabled({ space, resources })).toBe(false)
+    })
+
+    it('is disabled with a tooltip when the selection exceeds the default quota', () => {
+      const resources = [mock<Resource>({ size: 60 }), mock<Resource>({ size: '60' })]
+      const { action, space } = getWrapper({ resources, defaultQuota: 100 })
+
+      expect(action.isDisabled({ space, resources })).toBe(true)
+      expect(action.disabledTooltip({ space, resources })).toBe(
+        'The selection exceeds the default space quota (max. 100 B)'
+      )
+    })
+
+    it('is enabled for any size when the default quota is unlimited', () => {
+      const resources = [mock<Resource>({ size: 10 ** 12 })]
+      const { action, space } = getWrapper({ resources, defaultQuota: 0 })
+
+      expect(action.isDisabled({ space, resources })).toBe(false)
+    })
+  })
+
+  it('prefills the space name and creates the space with it on confirm', async () => {
+    const resources = [mock<Resource>({ name: 'a.txt' })]
+    const { action, space, createSpace } = getWrapper({ resources })
+
+    action.handler({ space, resources })
+
+    const { dispatchModal } = useModals()
+    const { inputValue, onConfirm } = vi.mocked(dispatchModal).mock.calls[0][0]
+    expect(inputValue).toBe('New space')
+
+    await onConfirm(inputValue)
+
+    expect(createSpace).toHaveBeenCalledWith('New space')
+  })
+
   it('shows a success message when the space was created and all files were copied', async () => {
     const resources = [mock<Resource>({ name: 'a.txt' }), mock<Resource>({ name: 'b.txt' })]
     const { confirm, mocks, createdSpace } = getWrapper({ resources })
@@ -146,13 +187,15 @@ function getWrapper({
   createSpaceError,
   copyErrors = {},
   folderChildren = [],
-  listFilesError
+  listFilesError,
+  defaultQuota = 0
 }: {
   resources: Resource[]
   createSpaceError?: Error
   copyErrors?: Record<string, Error>
   folderChildren?: Resource[]
   listFilesError?: Error
+  defaultQuota?: number
 }) {
   const space = mock<SpaceResource>({ id: 'personal', driveType: 'personal' })
   const createdSpace = mock<SpaceResource>({ id: 'new-space' })
@@ -188,7 +231,15 @@ function getWrapper({
     () => {
       instance = useFileActionsCreateSpaceFromResource()
     },
-    { mocks, provide: mocks }
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: {
+        piniaOptions: {
+          capabilityState: { capabilities: { spaces: { default_quota: defaultQuota } } }
+        }
+      }
+    }
   )
 
   async function confirm(spaceName: string) {
@@ -198,5 +249,12 @@ function getWrapper({
     await onConfirm(spaceName)
   }
 
-  return { confirm, mocks, space, createdSpace, createSpace }
+  return {
+    action: unref(instance.actions)[0],
+    confirm,
+    mocks,
+    space,
+    createdSpace,
+    createSpace
+  }
 }

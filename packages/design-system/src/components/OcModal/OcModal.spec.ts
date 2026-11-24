@@ -74,15 +74,35 @@ describe('OcModal', () => {
   })
 
   describe('enter key on the input', () => {
-    const mountInputModal = () =>
+    const mountInputModal = (props: Record<string, unknown> = {}) =>
       mount(Modal, {
         global: {
           renderStubDefaultSlot: true,
           plugins: [...defaultPlugins()],
           stubs: { 'focus-trap': true }
         },
-        props: inputProps
+        props: { ...inputProps, ...props }
       })
+
+    it('does not emit confirm while a required input is empty', async () => {
+      const wrapper = mountInputModal({ inputValue: undefined, inputRequiredMark: true })
+      await wrapper.find('.oc-modal-body-input input').trigger('keydown', { key: 'Enter' })
+      expect(wrapper.emitted('confirm')).toBeUndefined()
+    })
+
+    it('emits confirm once a required input has a value', async () => {
+      const wrapper = mountInputModal({ inputValue: undefined, inputRequiredMark: true })
+      const input = wrapper.find('.oc-modal-body-input input')
+      await input.setValue('Space')
+      await input.trigger('keydown', { key: 'Enter' })
+      expect(wrapper.emitted('confirm')).toEqual([['Space']])
+    })
+
+    it('does not emit confirm while loading', async () => {
+      const wrapper = mountInputModal({ isLoading: true })
+      await wrapper.find('.oc-modal-body-input input').trigger('keydown', { key: 'Enter' })
+      expect(wrapper.emitted('confirm')).toBeUndefined()
+    })
 
     it('emits confirm', async () => {
       const wrapper = mountInputModal()

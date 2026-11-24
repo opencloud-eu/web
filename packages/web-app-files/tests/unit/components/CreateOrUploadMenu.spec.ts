@@ -33,7 +33,7 @@ describe('CreateOrUploadMenu component', () => {
   describe('action buttons', () => {
     it('should show and be enabled if file creation is possible', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.find(elSelector.uploadBtn)).toBeTruthy()
+      expect(wrapper.find(elSelector.uploadBtn).exists()).toBeTruthy()
       expect(wrapper.find(elSelector.newFolderBtn).exists()).toBeTruthy()
       expect(wrapper.html()).toMatchSnapshot()
     })

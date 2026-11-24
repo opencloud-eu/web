@@ -46,20 +46,22 @@ get_playwright_version() {
     echo "$playwright_version"
 }
 
-# Function to check if the cache exists for the given commit ID
+# Function to check if the browsers cache exists for the given playwright version
+# usage: check_browsers_cache <browser>...
 check_browsers_cache() {
     get_playwright_version
 
-    playwright_cache=$(mc find s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/playwright-browsers.tar.gz 2>&1 | grep 'Object does not exist')
+    for browser in "$@"; do
+        if ! mc stat s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/$browser.tar.gz > /dev/null 2>&1
+        then
+            echo "Playwright v$playwright_version $browser doesn't exist in cache."
+            ENV="BROWSER_CACHE_FOUND=false\n"
+            return
+        fi
+    done
 
-    if [[ "$playwright_cache" != "" ]]
-    then
-        echo "Playwright v$playwright_version supported browsers doesn't exist in cache."
-        ENV="BROWSER_CACHE_FOUND=false\n"
-    else
-      echo "Playwright v$playwright_version supported browsers found in cache."
-      ENV="BROWSER_CACHE_FOUND=true\n"
-    fi
+    echo "Playwright v$playwright_version browsers found in cache."
+    ENV="BROWSER_CACHE_FOUND=true\n"
 }
 
 
@@ -69,10 +71,10 @@ if [[ "$1" == "" ]]; then
     echo -e "  get_latest_opencloud_commit_id \t get the latest OpenCloud commit ID"
     echo -e "  check_opencloud_cache \t\t check if the cache exists for the given commit ID"
     echo -e "  get_playwright_version \t get the playwright version from package.json"
-    echo -e "  check_browsers_cache \t check if the browsers cache exists for the given playwright version"
+    echo -e "  check_browsers_cache <browser>... \t check if the browsers cache exists for the given playwright version"
     exit 1
 fi
 
-$1
+"$@"
 
 echo -e $ENV >> .woodpecker.env

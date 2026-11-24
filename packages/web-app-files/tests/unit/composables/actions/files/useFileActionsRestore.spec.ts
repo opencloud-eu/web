@@ -64,19 +64,9 @@ describe('restore', () => {
           expect(
             unref(actions)[0].isVisible({
               space,
-              resources: [{ canBeRestored: () => false }] as TrashResource[]
+              resources: [{ canBeRestored: () => false, ddate: '2020-01-01' }] as TrashResource[]
             })
           ).toBe(false)
-        }
-      })
-    })
-    it('should be false when location is invalid', () => {
-      getWrapper({
-        invalidLocation: true,
-        setup: ({ actions }, { space }) => {
-          expect(unref(actions)[0].isVisible({ space, resources: [{}] as TrashResource[] })).toBe(
-            false
-          )
         }
       })
     })
@@ -87,7 +77,7 @@ describe('restore', () => {
           expect(
             unref(actions)[0].isVisible({
               space,
-              resources: [{ canBeRestored: () => true }] as TrashResource[]
+              resources: [{ canBeRestored: () => true, ddate: '2020-01-01' }] as TrashResource[]
             })
           ).toBe(false)
         }
@@ -136,33 +126,29 @@ describe('restore', () => {
     })
   })
 
-  it('should request parent folder on collecting restore conflicts', () => {
-    getWrapper({
-      setup: async ({ collectConflicts }, { space, clientService }) => {
-        const resource = { id: '1', path: '1', name: '1' } as TrashResource
-        await collectConflicts(space, [resource])
+  it('should request parent folder on collecting restore conflicts', async () => {
+    const { instance, mocks } = getWrapper()
+    const { space, $clientService: clientService } = mocks
+    const resource = { id: '1', path: '1', name: '1' } as TrashResource
+    await instance.collectConflicts(space, [resource])
 
-        expect(clientService.webdav.listFiles).toHaveBeenCalledWith(expect.anything(), {
-          path: '.'
-        })
-      }
+    expect(clientService.webdav.listFiles).toHaveBeenCalledWith(expect.anything(), {
+      path: '.'
     })
   })
 
-  it('should collect duplicates within resources apart from conflicts', () => {
-    getWrapper({
-      setup: async ({ collectConflicts }, { space }) => {
-        const resourceOne = { id: '1', path: '1', name: '1' } as TrashResource
-        const resourceTwo = { id: '2', path: '1', name: '1' } as TrashResource
-        const { conflicts, batchDuplicates } = await collectConflicts(space, [
-          resourceOne,
-          resourceTwo
-        ])
+  it('should collect duplicates within resources apart from conflicts', async () => {
+    const { instance, mocks } = getWrapper()
+    const { space } = mocks
+    const resourceOne = { id: '1', path: '1', name: '1' } as TrashResource
+    const resourceTwo = { id: '2', path: '1', name: '1' } as TrashResource
+    const { conflicts, batchDuplicates } = await instance.collectConflicts(space, [
+      resourceOne,
+      resourceTwo
+    ])
 
-        expect(conflicts).toEqual([])
-        expect(batchDuplicates).toEqual([resourceTwo])
-      }
-    })
+    expect(conflicts).toEqual([])
+    expect(batchDuplicates).toEqual([resourceTwo])
   })
 
   it.each([
@@ -374,19 +360,17 @@ describe('restore', () => {
     expect(useRestoreWorker().startWorker).not.toHaveBeenCalled()
   })
 
-  it('should find conflict by the encrypted path of a locked vault resource', () => {
-    getWrapper({
-      setup: async ({ collectConflicts }, { space, clientService }) => {
-        clientService.webdav.listFiles.mockResolvedValue({
-          resource: mock<Resource>(),
-          children: [mock<Resource>({ name: 'enc' })]
-        })
-        const resource = { id: '1', path: '/my.vault/enc', name: 'file.txt' } as TrashResource
-        const { conflicts } = await collectConflicts(space, [resource])
-
-        expect(conflicts).toContain(resource)
-      }
+  it('should find conflict by the encrypted path of a locked vault resource', async () => {
+    const { instance, mocks } = getWrapper()
+    const { space, $clientService: clientService } = mocks
+    clientService.webdav.listFiles.mockResolvedValue({
+      resource: mock<Resource>(),
+      children: [mock<Resource>({ name: 'enc' })]
     })
+    const resource = { id: '1', path: '/my.vault/enc', name: 'file.txt' } as TrashResource
+    const { conflicts } = await instance.collectConflicts(space, [resource])
+
+    expect(conflicts).toContain(resource)
   })
 
   describe('vault conflicts', () => {
@@ -628,15 +612,13 @@ describe('restore', () => {
     expect(vi.mocked(startWorker).mock.calls[0][0].overwriteIds).toEqual(expected)
   })
 
-  it('should add files without conflict to resolved resources', () => {
-    getWrapper({
-      setup: async ({ collectConflicts }, { space }) => {
-        const resource = { id: '1', path: '1', name: '1' } as TrashResource
-        const { resolvedResources } = await collectConflicts(space, [resource])
+  it('should add files without conflict to resolved resources', async () => {
+    const { instance, mocks } = getWrapper()
+    const { space } = mocks
+    const resource = { id: '1', path: '1', name: '1' } as TrashResource
+    const { resolvedResources } = await instance.collectConflicts(space, [resource])
 
-        expect(resolvedResources).toContain(resource)
-      }
-    })
+    expect(resolvedResources).toContain(resource)
   })
 
   describe('items restored elsewhere already', () => {
@@ -714,18 +696,16 @@ describe('restore', () => {
 })
 
 function getWrapper({
-  invalidLocation = false,
   driveType = 'personal',
   restoreResult = { successful: [], failed: [] },
   setup
 }: {
-  invalidLocation?: boolean
   driveType?: string
   restoreResult?: {
     successful: TrashResource[]
     failed: { resource: TrashResource; error: HttpError }[]
   }
-  setup: (
+  setup?: (
     instance: ReturnType<typeof useFileActionsRestore>,
     {
       space
@@ -735,7 +715,7 @@ function getWrapper({
       clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
     }
   ) => void
-}) {
+} = {}) {
   vi.mocked(useRestoreWorker).mockReturnValue({
     startWorker: vi.fn().mockImplementation((_, callback) => {
       callback(restoreResult)
@@ -745,7 +725,7 @@ function getWrapper({
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({
-        name: invalidLocation ? 'files-spaces-generic' : 'files-trash-generic'
+        name: 'files-trash-generic'
       })
     }),
     space: mock<ProjectSpaceResource>({ driveType })
@@ -755,21 +735,20 @@ function getWrapper({
   })
   mocks.$clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(mock<SpaceResource>())
 
-  return {
-    mocks,
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useFileActionsRestore()
-        setup(instance, {
-          space: mocks.space,
-          router: mocks.$router,
-          clientService: mocks.$clientService
-        })
-      },
-      {
-        mocks,
-        provide: mocks
-      }
-    )
-  }
+  let instance: ReturnType<typeof useFileActionsRestore>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useFileActionsRestore()
+      setup?.(instance, {
+        space: mocks.space,
+        router: mocks.$router,
+        clientService: mocks.$clientService
+      })
+    },
+    {
+      mocks,
+      provide: mocks
+    }
+  )
+  return { wrapper, instance, mocks }
 }

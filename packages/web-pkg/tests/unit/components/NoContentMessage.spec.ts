@@ -13,6 +13,16 @@ describe('NoContentMessage', () => {
   })
 
   describe('image', () => {
+    it('renders an svg illustration through the sanitizing inline svg component', () => {
+      const { wrapper } = getWrapper({}, { imgSrc: 'empty.svg' })
+      expect(wrapper.find('oc-inline-svg-stub').attributes('src')).toBe('empty.svg')
+      expect(wrapper.find('oc-image-stub').exists()).toBe(false)
+    })
+    it('renders an image illustration as image', () => {
+      const { wrapper } = getWrapper({}, { imgSrc: 'empty.png' })
+      expect(wrapper.find('oc-image-stub').attributes('src')).toBe('empty.png')
+      expect(wrapper.find('oc-inline-svg-stub').exists()).toBe(false)
+    })
     it('hides a decorative svg illustration from assistive technologies', () => {
       const { wrapper } = getWrapper({}, { imgSrc: 'empty.svg' })
       const image = wrapper.find('.no-content-message-image')

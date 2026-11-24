@@ -1,6 +1,6 @@
 import { Page, Locator } from '@playwright/test'
 import * as po from './actions'
-import { isAcceptedSharePresent, resourceIsSynced } from './utils'
+import { isAcceptedSharePresent, getSyncedIndicatorLocator } from './utils'
 import { ICollaborator, IAccessDetails } from './collaborator'
 import { User } from '../../../types'
 export class Share {
@@ -51,8 +51,8 @@ export class Share {
     return await isAcceptedSharePresent({ page: this.#page, resource, owner })
   }
 
-  async resourceIsSynced(resource: string): Promise<boolean> {
-    return await resourceIsSynced({ page: this.#page, resource })
+  getSyncedIndicatorLocator(resource: string): Locator {
+    return getSyncedIndicatorLocator({ page: this.#page, resource })
   }
 
   async addExpirationDate({
@@ -91,7 +91,7 @@ export class Share {
   }
 
   changeShareLocator(recipient: User): Locator {
-    return po.changeRoleLocator({ page: this.#page, recipient })
+    return po.changeShareLocator({ page: this.#page, recipient })
   }
 
   async openSharingPanel(resource: string): Promise<void> {

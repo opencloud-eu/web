@@ -28,10 +28,11 @@ describe('SideBar', () => {
       expect(wrapper.find('oc-bottom-drawer-stub').attributes('arialabel')).toBe('Sidebar')
     })
     it('closes the sidebar on unmount', () => {
-      const { wrapper } = createWrapper({ isMobile: true })
-      expect(wrapper.emitted('close')).toBeUndefined()
+      const onClose = vi.fn()
+      const { wrapper } = createWrapper({ isMobile: true, props: { onClose } })
+      expect(onClose).not.toHaveBeenCalled()
       wrapper.unmount()
-      expect(wrapper.emitted('close')).toBeDefined()
+      expect(onClose).toHaveBeenCalled()
     })
     describe('bottom drawer clicked', () => {
       it('does not close when clicking a generic element inside', () => {
@@ -85,7 +86,6 @@ function createWrapper({
     mocks,
     wrapper: shallowMount(SideBar, {
       props: {
-        isOpen: true,
         loading: false,
         availablePanels: [],
         panelContext: mock<SideBarPanelContext<any, any, any>>(),

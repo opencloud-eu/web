@@ -2,7 +2,7 @@ import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
 import { CollaboratorAutoCompleteItem, ShareRole, ShareTypes } from '@opencloud-eu/web-client'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { SpaceMemberInvite } from '@opencloud-eu/web-pkg'
+import { SpaceMemberInvite, useMessages } from '@opencloud-eu/web-pkg'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import SpaceMemberSelect from '../../../../../src/components/Modals/CreateSpace/SpaceMemberSelect.vue'
 import RoleDropdown from '../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
@@ -144,6 +144,24 @@ describe('SpaceMemberSelect search', () => {
     await flushPromises()
 
     expect(document.querySelectorAll('.vs__dropdown-option').length).toBe(1)
+    wrapper.unmount()
+  })
+
+  it('reports a failed search instead of showing no results', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const { wrapper, mocks } = getWrapper({ attachTo: document.body })
+    mocks.$clientService.graphAuthenticated.users.listUsers.mockRejectedValueOnce(
+      new Error('search failed')
+    )
+    const input = wrapper.find<HTMLInputElement>('#create-space-members-input')
+    input.element.focus()
+    await input.setValue('mar')
+    await flushPromises()
+
+    expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Failed to search for users and groups' })
+    )
+    expect(wrapper.text()).not.toContain('No users or groups found.')
     wrapper.unmount()
   })
 })

@@ -96,8 +96,10 @@ x-opencloud-server: &opencloud-service
     - oc.opencloud.test:${DOCKER_HOST:-host-gateway}
   restart: unless-stopped
   depends_on:
-    - traefik
-    - tika-service
+    traefik:
+      condition: service_started
+    tika:
+      condition: service_healthy
 
 services:
   opencloud:
@@ -161,6 +163,8 @@ services:
         condition: service_started
       imagor:
         condition: service_started
+      tika:
+        condition: service_healthy
 
   opencloud-federated:
     <<: *opencloud-service
@@ -170,6 +174,17 @@ services:
       OC_URL: https://oc.opencloud.test:10200
       OC_CORS_ALLOW_ORIGINS: https://oc.opencloud.test:10201
       OCM_WEBAPP_TEMPLATE: https://oc.opencloud.test:10201/o/{{.Token}}/{relative-path-to-shared-resource}
+      OC_ADD_RUN_SERVICES: collaboration
+      PROXY_CSP_CONFIG_FILE_LOCATION: /etc/opencloud/csp.yaml
+      # Collabora configuration
+      COLLABORA_DOMAIN: host.docker.internal:9980
+      COLLABORATION_WOPI_SRC: https://oc.opencloud.test:10200
+      COLLABORATION_APP_NAME: 'CollaboraOnline'
+      COLLABORATION_APP_PRODUCT: 'Collabora'
+      COLLABORATION_APP_ADDR: https://host.docker.internal:9980
+      COLLABORATION_APP_ICON: https://host.docker.internal:9980/favicon.ico
+      COLLABORATION_APP_INSECURE: '${OC_INSECURE:-true}'
+      COLLABORATION_CS3API_DATAGATEWAY_INSECURE: '${OC_INSECURE:-true}'
     labels:
       traefik.enable: true
       traefik.docker.network: ${COMPOSE_PROJECT_NAME:-web}_traefik
@@ -183,6 +198,7 @@ services:
       - default
     volumes:
       - ./dev/docker/traefik/certificates:/certificates:ro
+      - ./dev/docker/opencloud/csp.yaml:/etc/opencloud/csp.yaml
       - ./dev/docker/opencloud/password-policy-banned-passwords.txt:/etc/opencloud/password-policy-banned-passwords.txt
       - ./dev/docker/opencloud.idp.config.yaml:/etc/opencloud/idp.yaml
       - ./dev/docker/opencloud-ca:/var/lib/opencloud/proxy
@@ -191,18 +207,25 @@ services:
       - ./dev/docker/opencloud/app-registry.yaml:/etc/opencloud/app-registry.yaml
       - opencloud-federated-config:/etc/opencloud
       - ${OC_WEB_CONFIG:-./dev/docker/opencloud.web-federated.config.json}:/web/config.json:ro
+    depends_on:
+      collabora:
+        condition: service_healthy
+      tika:
+        condition: service_healthy
 
   collabora:
-    image: collabora/code:26.04.5.2.1
+    image: collabora/code:26.04.6.2.1
     environment:
       aliasgroup1: ${OC_URL:-https://host.docker.internal:9200}
-      extra_params: --o:ssl.enable=false --o:ssl.ssl_verification=false --o:welcome.enable=false --o:home_mode.enable=true --o:ssl.termination=true --o:net.frame_ancestors=${OC_URL:-https://host.docker.internal:9200} --o:net.lok_allow.host[14]=${OC_URL:-https://host.docker.internal:9200}
+      aliasgroup2: https://oc.opencloud.test:10200
+      extra_params: --o:ssl.enable=false --o:ssl.ssl_verification=false --o:welcome.enable=false --o:home_mode.enable=true --o:ssl.termination=true --o:net.frame_ancestors=${OC_URL:-https://host.docker.internal:9200} --o:net.lok_allow.host[14]=${OC_URL:-https://host.docker.internal:9200} --o:net.lok_allow.host[15]=https://oc.opencloud.test:10200
       username: ${COLLABORA_ADMIN_USER:-admin}
       password: ${COLLABORA_ADMIN_PASSWORD:-admin}
     cap_add:
       - MKNOD
     extra_hosts:
       - host.docker.internal:${DOCKER_HOST:-host-gateway}
+      - oc.opencloud.test:${DOCKER_HOST:-host-gateway}
     healthcheck:
       interval: 15s
       timeout: 10s
@@ -254,7 +277,7 @@ services:
     restart: 'no'
 
   traefik:
-    image: traefik:v3.7.17
+    image: traefik:v3.8.0
     restart: unless-stopped
     entrypoint:
       [
@@ -313,15 +336,6 @@ services:
         aliases:
           - ${STALWART_DOMAIN:-stalwart.opencloud.test}
 
-  tika-service:
-    image: dadarek/wait-for-dependencies:latest
-    container_name: web_tika_service
-    depends_on:
-      - tika
-    command: 'tika:9998'
-    networks:
-      - traefik
-
   tika:
     image: apache/tika:4.3.0-SNAPSHOT
     container_name: web_tika
@@ -344,7 +358,7 @@ services:
       start_period: 5s
 
   imagor:
-    image: shumc/imagor:1.10.1
+    image: shumc/imagor:1.10.5
     container_name: web_imagor
     restart: unless-stopped
     environment:
@@ -359,7 +373,7 @@ services:
       - default
 
   mailpit:
-    image: axllent/mailpit:v1.33.1
+    image: axllent/mailpit:v1.34.0
     container_name: web_mailpit
     ports:
       - '127.0.0.1:8025:8025' # web UI and REST API

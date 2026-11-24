@@ -28,7 +28,7 @@
                 filter-name="shareType"
               >
                 <template #item="{ item, term }">
-                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
+                  <span class="ms-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
                 </template>
               </item-filter>
             </div>
@@ -104,7 +104,11 @@
               @load-more="loadMore"
             />
             <pagination v-else :pages="paginationPages" :current-page="paginationPage" />
-            <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
+            <list-info
+              v-if="paginatedResources.length > 0"
+              class="w-full my-2"
+              :matching-count="matchingCount"
+            />
           </template>
         </component>
       </template>
@@ -150,7 +154,6 @@ import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { folderViewsSharedWithOthersExtensionPoint } from '../../extensionPoints'
-import { v4 as uuidV4 } from 'uuid'
 import Fuse from 'fuse.js'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
@@ -215,6 +218,11 @@ const {
   infiniteScrollResetOn: [filterTerm, selectedShareTypesQuery]
 })
 
+const matchingCount = computed(() => {
+  const isFiltered = !!unref(filterTerm) || !!queryItemAsString(unref(selectedShareTypesQuery))
+  return isFiltered ? unref(sortedResources).length : undefined
+})
+
 const { triggerDefaultAction } = useFileActions()
 
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
@@ -222,7 +230,7 @@ const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 const breadcrumbs = computed(() => {
   return [
     {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: $gettext('Shares'),
       onClick: () => loadResources(),
       isStaticNav: true

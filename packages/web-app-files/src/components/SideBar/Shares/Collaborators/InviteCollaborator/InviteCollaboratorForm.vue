@@ -2,9 +2,9 @@
   <div
     id="new-collaborators-form"
     data-testid="new-collaborators-form"
-    class="[&_.vs\_\_actions]:!flex-nowrap [&_.vs\_\_search]:min-w-40 mb-4"
+    class="[&_.vs\_\_actions]:!flex-nowrap [&_.vs\_\_search]:min-w-40 [--vs-state-disabled-bg:transparent] [--vs-state-disabled-color:var(--oc-role-on-surface)] [&_.vs\_\_dropdown-option--disabled]:opacity-60 mb-4"
   >
-    <div>
+    <div @keydown.enter.capture="onInviteInputEnter">
       <div class="flex justify-between mb-1">
         <div class="flex items-center">
           <label :aria-hidden="true" for="files-share-invite-input" class="inline-block">
@@ -13,7 +13,7 @@
           <oc-contextual-helper
             v-if="contextualHelper?.isEnabled"
             v-bind="contextualHelper?.data"
-            class="pl-1"
+            class="ps-1"
           />
         </div>
         <copy-private-link :resource="resource" />
@@ -25,12 +25,13 @@
         :placeholder="selectedCollaboratorsPlaceholder"
         :model-value="selectedCollaborators"
         :options="autocompleteResults"
+        :selectable="isRecipientSelectable"
         :loading="searchInProgress"
         :multiple="true"
         :filterable="false"
         :dropdown-should-open="
           ({ open, search }: DropDownShouldOpenOptions) =>
-            open && search.trim().length >= minSearchLength && !searchInProgress
+            open && search.trim().length >= minSearchLength && !searchInProgress && !searchFailed
         "
         :label="label"
         :label-hidden="true"
@@ -40,7 +41,11 @@
         @close="onClose"
       >
         <template #option="option">
-          <autocomplete-item :item="option" :term="searchQuery" />
+          <autocomplete-item
+            :item="option"
+            :term="searchQuery"
+            :hint="getExistingShareHint(option)"
+          />
         </template>
         <template #no-options>
           <span v-text="noOptionsLabel" />
@@ -61,7 +66,7 @@
           <oc-filter-chip
             v-if="showShareTypeFilter"
             :filter-label="$gettext('Share type')"
-            class="invite-form-share-role-type [&_.oc-filter-chip-button]:py-0 [&_.oc-filter-chip-button]:h-6 [&_.oc-filter-chip-button]:pr-0 [&_.oc-drop]:w-3xs"
+            class="invite-form-share-role-type [&_.oc-filter-chip-button]:py-0 [&_.oc-filter-chip-button]:h-6 [&_.oc-filter-chip-button]:pe-0 [&_.oc-drop]:w-3xs"
             raw
             close-on-click
             size="small"
@@ -104,12 +109,12 @@
         <expiration-date-indicator
           v-if="expirationDate"
           :expiration-date="DateTime.fromISO(expirationDate)"
-          class="ml-1 p-1"
+          class="ms-1 p-1"
           data-testid="recipient-info-expiration-date"
         />
         <oc-button
           id="show-more-share-options-btn"
-          class="ml-1 p-1"
+          class="ms-1 p-1"
           :aria-label="$gettext('Show more actions')"
           appearance="raw"
         >
@@ -140,7 +145,7 @@
         <oc-button
           id="new-collaborators-form-create-button"
           key="new-collaborator-save-button"
-          class="ml-2 px-7"
+          class="ms-2 px-7"
           data-testid="new-collaborators-form-create-button"
           :disabled="!isValid || saving"
           :appearance="saving ? 'outline' : 'filled'"
@@ -191,12 +196,9 @@ import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { DriveRecipient } from '@opencloud-eu/web-client/graph/generated'
 import ExpirationDateIndicator from '../../ExpirationDateIndicator.vue'
-import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
+import { ContextualHelper, isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
-import {
-  useInviteContactViaEmail,
-  useOpenXchangeContacts
-} from '../../../../../composables/openXchange'
+import { useOpenXchangeContacts } from '../../../../../composables/openXchange'
 
 type DropDownShouldOpenOptions = { open: boolean; search: string }
 
@@ -226,9 +228,8 @@ const sharesStore = useSharesStore()
 const { addShare } = sharesStore
 const { collaboratorShares } = storeToRefs(sharesStore)
 
-const { searchCollaborators, getGuestCandidates } = useCollaboratorSearch()
+const { canInviteGuests, searchCollaborators, getGuestCandidates } = useCollaboratorSearch()
 const { searchContacts: searchOpenXchangeContacts } = useOpenXchangeContacts()
-const { inviteContact } = useInviteContactViaEmail()
 
 const showMoreShareOptionsDropRef = useTemplateRef<typeof OcDrop>('showMoreShareOptionsDropRef')
 const announcer = useTemplateRef<typeof OcHiddenAnnouncer>('announcer')
@@ -308,45 +309,87 @@ const createSharesConcurrentRequests = computed(() => {
   return configStore.options.concurrentRequests.shares.create
 })
 
-const { autocompleteResults, minSearchLength, onSearch, searchInProgress, searchQuery } =
-  useCollaboratorAutocomplete(async (query, signal) => {
-    const collaborators = await searchCollaborators(query, {
-      signal,
-      external: unref(isExternalShareRoleType)
-    }).catch((error) => {
-      // the list shows its no results label after a failed search, too
-      if (!signal.aborted) {
-        announceResults(query, [])
+const {
+  autocompleteResults,
+  isSearchShown,
+  minSearchLength,
+  onSearch,
+  searchFailed,
+  searchInProgress,
+  searchQuery
+} = useCollaboratorAutocomplete('files-share-invite-input', async (query, signal) => {
+  // guests can't be invited to spaces yet
+  const guestsPossible =
+    !unref(isSpace) && !unref(isExternalShareRoleType) && unref(canInviteGuests)
+  const [collaborators, contacts] = await Promise.all([
+    searchCollaborators(query, { signal, external: unref(isExternalShareRoleType) }),
+    guestsPossible ? searchOpenXchangeContacts(query.trim(), signal) : []
+  ])
+  const guests = guestsPossible ? getGuestCandidates(query, collaborators, contacts) : []
+
+  const results = [...collaborators, ...guests].filter(
+    (collaborator: CollaboratorAutoCompleteItem) => {
+      if (collaborator.id === userStore.user.id) {
+        return false
       }
-      throw error
-    })
 
-    const isSpace = !unref(resource) || isSpaceResource(unref(resource))
-    const contacts = isSpace ? [] : await searchOpenXchangeContacts(query.trim(), signal)
-
-    // guests can't be invited to spaces yet
-    const guests =
-      isSpace || unref(isExternalShareRoleType) ? [] : getGuestCandidates(query, collaborators)
-
-    const results = [...collaborators, ...contacts, ...guests].filter(
-      (collaborator: CollaboratorAutoCompleteItem) => {
-        if (collaborator.id === userStore.user.id) {
-          return false
-        }
-
-        const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
-        const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
-        const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
-
-        return !selected && !exists
-      }
-    )
-    // a newer search replaced this one, even if a source swallowed the abort
-    if (!signal.aborted) {
-      announceResults(query, results)
+      return !unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
     }
-    return results
+  )
+  // a newer search replaced this one, even if a source swallowed the abort
+  if (!signal.aborted) {
+    announceResults(query, results)
+  }
+  return results
+})
+
+const isSpace = computed(() => !unref(resource) || isSpaceResource(unref(resource)))
+
+// ordered by precedence, a recipient with several shares gets the first matching kind
+const existingShareKindOrder = ['direct', 'spaceMember', 'folder'] as const
+type ExistingShareKind = (typeof existingShareKindOrder)[number]
+
+// existing recipients stay in the results, so searching for them doesn't come back empty
+const existingShareKinds = computed(() => {
+  const kinds = new Map<string, ExistingShareKind>()
+  unref(collaboratorShares).forEach(({ sharedWith, indirect, resourceId }) => {
+    let kind: ExistingShareKind = 'direct'
+    if (indirect) {
+      // members of a project space are loaded as shares on the space root
+      kind = resourceId === unref(space)?.id ? 'spaceMember' : 'folder'
+    }
+    const current = kinds.get(sharedWith.id)
+    if (
+      !current ||
+      existingShareKindOrder.indexOf(kind) < existingShareKindOrder.indexOf(current)
+    ) {
+      kinds.set(sharedWith.id, kind)
+    }
   })
+  return kinds
+})
+
+function getExistingShareKind({ id }: CollaboratorAutoCompleteItem) {
+  return unref(existingShareKinds).get(id)
+}
+
+function getExistingShareHint(collaborator: CollaboratorAutoCompleteItem) {
+  switch (getExistingShareKind(collaborator)) {
+    case 'direct':
+      return unref(isSpace) ? $gettext('already a member') : $gettext('already shared')
+    case 'spaceMember':
+      return $gettext('space member')
+    case 'folder':
+      return $gettext('shared via folder')
+    default:
+      return ''
+  }
+}
+
+// recipients with indirect access can still get a direct share, e.g. with another role
+function isRecipientSelectable(collaborator: CollaboratorAutoCompleteItem) {
+  return getExistingShareKind(collaborator) !== 'direct'
+}
 
 function onSearchInput(query: string) {
   // a pending announcement belongs to a search that is outdated now
@@ -360,36 +403,11 @@ const share = async () => {
   const saveQueue = new PQueue({ concurrency: unref(createSharesConcurrentRequests) })
   const savePromises: Promise<void>[] = []
   const errors: { displayName: string; error: Error }[] = []
-  const contactErrors: { displayName: string; error: Error }[] = []
   const addedShares: CollaboratorShare[] = []
   const failedCollaborators: CollaboratorAutoCompleteItem[] = []
-  let invitedContactCount = 0
 
   unref(selectedCollaborators).forEach((collaborator) => {
     const { id, shareType, displayName } = collaborator
-
-    if (shareType === ShareTypes.contact.value) {
-      // address book contacts are not OpenCloud users: create a public link
-      // and email it to them, never a collaborator share
-      savePromises.push(
-        saveQueue.add(async () => {
-          try {
-            await inviteContact({
-              space: unref(space),
-              resource: unref(resource),
-              contact: collaborator
-            })
-            invitedContactCount++
-          } catch (error) {
-            console.error(error)
-            contactErrors.push({ displayName, error })
-            failedCollaborators.push(collaborator)
-            throw error
-          }
-        })
-      )
-      return
-    }
 
     const isGuest = shareType === ShareTypes.guest.value
 
@@ -445,28 +463,9 @@ const share = async () => {
     showMessage({ title: $gettext('Share was added successfully') })
   }
 
-  if (invitedContactCount > 0) {
-    showMessage({
-      title: $ngettext(
-        'Sent a read-only link to %{count} contact',
-        'Sent read-only links to %{count} contacts',
-        invitedContactCount,
-        { count: invitedContactCount.toString() }
-      )
-    })
-  }
-
   errors.forEach((e) => {
     showErrorMessage({
       title: $gettext('Failed to add share for "%{displayName}"', {
-        displayName: e.displayName
-      }),
-      errors: [e.error]
-    })
-  })
-  contactErrors.forEach((e) => {
-    showErrorMessage({
-      title: $gettext('Failed to send invite link for "%{displayName}"', {
         displayName: e.displayName
       }),
       errors: [e.error]
@@ -511,20 +510,20 @@ const noOptionsLabel = computed(() => {
 })
 
 function announceResults(query: string, results: CollaboratorAutoCompleteItem[]) {
-  // only announce what the list shows: not after the input got cleared, changed or left
-  const input = document.getElementById('files-share-invite-input') as HTMLInputElement
-  if (
-    document.activeElement !== input ||
-    input.value.trim() !== query.trim() ||
-    query.trim().length < unref(minSearchLength)
-  ) {
+  // only announce what the list shows
+  if (!isSearchShown(query)) {
     return
   }
-  const count = results.length
+  // the keyboard skips unselectable results, so they are named here instead of counted
+  const count = results.filter(isRecipientSelectable).length
+  const unselectable = results
+    .filter((r) => !isRecipientSelectable(r))
+    .map((r) => `${r.displayName} (${getExistingShareHint(r)})`)
+  const countLabel = count
+    ? $ngettext('%{count} result', '%{count} results', count, { count: count.toString() })
+    : ''
   unref(announcer)?.announce(
-    count
-      ? $ngettext('%{count} result', '%{count} results', count, { count: count.toString() })
-      : unref(noOptionsLabel)
+    [countLabel, ...unselectable].filter(Boolean).join(', ') || unref(noOptionsLabel)
   )
 }
 
@@ -535,6 +534,21 @@ const showShareTypeFilter = computed(
 const isValid = computed(() => {
   return unref(selectedCollaborators).length > 0
 })
+
+// captured before the select handles Enter, so an Enter that picks a typed recipient doesn't share
+function onInviteInputEnter(event: KeyboardEvent) {
+  if (
+    (event.target as HTMLElement).id !== 'files-share-invite-input' ||
+    isComposingEvent(event) ||
+    (event.target as HTMLInputElement).value.trim() ||
+    !unref(isValid) ||
+    unref(saving)
+  ) {
+    return
+  }
+  event.preventDefault()
+  share()
+}
 const selectedCollaboratorsPlaceholder = computed(() => {
   return inviteLabel || $gettext('Search')
 })

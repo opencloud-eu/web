@@ -32,7 +32,8 @@ translations: ./translations.json
 	@for app in $(APPS); \
 	do \
 		(cd $$app && pnpm exec vue-gettext-compile --config ../../gettext.config.cjs); \
-	done; \
+	done && \
+	node ../../../dev/scripts/check-translations.ts $(foreach app,$(APPS),$(app)/l10n/translations.json)
 
 .PHONY: push
 push:

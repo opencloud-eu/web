@@ -17,7 +17,7 @@
     </account-heading>
     <avatar-upload class="account-page-avatar bg-role-surface-container rounded-xl p-4">
       <account-label
-        class="text-center md:text-left"
+        class="text-center md:text-start"
         :label="$gettext('Profile picture')"
         :description="
           $gettext('Max. %{size}MB, JPG, PNG', { size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString() })
@@ -64,7 +64,7 @@
           />
           <span v-else-if="groupNames">{{ groupNames }}</span>
           <span
-            v-else
+            v-else-if="!groupNamesLoadFailed"
             data-testid="group-names-empty"
             v-text="$gettext('You are not part of any group')"
           />
@@ -96,6 +96,7 @@ import {
   useAuthStore,
   useClientService,
   useConfigStore,
+  useMessages,
   useSpacesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
@@ -103,7 +104,7 @@ import AccountTable from '../../components/Account/AccountTable.vue'
 import AccountHeading from '../../components/Account/AccountHeading.vue'
 import AccountLabel from '../../components/Account/AccountLabel.vue'
 import QuotaInformation from '../../components/Account/QuotaInformation.vue'
-import { computed, onMounted, unref } from 'vue'
+import { computed, onMounted, ref, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useTask } from 'vue-concurrency'
 import { call } from '@opencloud-eu/web-client'
@@ -113,6 +114,7 @@ const configStore = useConfigStore()
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const spacesStore = useSpacesStore()
+const { showErrorMessage } = useMessages()
 
 const { user } = storeToRefs(userStore)
 const accountEditLink = computed(() => configStore.options.accountEditLink)
@@ -126,6 +128,8 @@ const groupNames = computed(() => {
   return (unref(user).memberOf || []).map((group) => group.displayName).join(', ')
 })
 
+const groupNamesLoadFailed = ref(false)
+
 // group memberships are only shown here, so they're not loaded during bootstrap
 const loadGroupNamesTask = useTask(function* (signal) {
   try {
@@ -135,6 +139,8 @@ const loadGroupNamesTask = useTask(function* (signal) {
     userStore.setUser({ ...unref(user), memberOf })
   } catch (e) {
     console.error(e)
+    groupNamesLoadFailed.value = true
+    showErrorMessage({ title: $gettext('Failed to load group memberships'), errors: [e] })
   }
 })
 

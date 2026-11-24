@@ -1,4 +1,5 @@
 import { mock, mockDeep } from 'vitest-mock-extended'
+import { AxiosResponse } from 'axios'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import {
   defaultComponentMocks,
@@ -6,8 +7,9 @@ import {
   mockAxiosResolve,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { ClientService, useModals } from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, ClientService, useModals } from '@opencloud-eu/web-pkg'
 import { flushPromises } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import { OcTable } from '@opencloud-eu/design-system/components'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import AppTokens from '../../../../src/components/Account/AppTokens.vue'
@@ -52,11 +54,13 @@ describe('AppTokens component', () => {
         expect(table.props('sortDir')).toBe(SortDir.Desc)
         expect(table.props('data').map(({ token }: AppToken) => token)).toEqual(['3', '2', '1'])
       })
-      it('sorts by the sort parameters from the route query', async () => {
-        const { wrapper } = getWrapper({
-          appTokens,
-          query: { 'sort-by': 'expirationDate', 'sort-dir': SortDir.Asc }
-        })
+      afterEach(() => {
+        window.localStorage.clear()
+      })
+
+      it('sorts by the stored sorting', async () => {
+        storeSort('expirationDate', SortDir.Asc)
+        const { wrapper } = getWrapper({ appTokens })
         await flushPromises()
         const table = wrapper.findComponent<typeof OcTable>(selectors.appTokensTable)
 
@@ -65,6 +69,7 @@ describe('AppTokens component', () => {
         expect(table.props('data').map(({ token }: AppToken) => token)).toEqual(['2', '3', '1'])
       })
       it('sorts active tokens before expired ones by status', async () => {
+        storeSort('status', SortDir.Asc)
         const { wrapper } = getWrapper({
           appTokens: [
             {
@@ -79,8 +84,7 @@ describe('AppTokens component', () => {
               created_date: '2021-01-01',
               expiration_date: '2999-01-01'
             }
-          ],
-          query: { 'sort-by': 'status', 'sort-dir': SortDir.Asc }
+          ]
         })
         await flushPromises()
         const table = wrapper.findComponent<typeof OcTable>(selectors.appTokensTable)
@@ -90,18 +94,54 @@ describe('AppTokens component', () => {
           'expired'
         ])
       })
-      it('stores the sort parameters in the route query on sort', async () => {
-        const { wrapper, mocks } = getWrapper({ appTokens })
+      it('sorts the table when it emits "sort"', async () => {
+        const { wrapper } = getWrapper({ appTokens })
         await flushPromises()
         const table = wrapper.findComponent<typeof OcTable>(selectors.appTokensTable)
         table.vm.$emit('sort', { sortBy: 'expirationDate', sortDir: SortDir.Asc })
+        await nextTick()
 
-        expect(mocks.$router.replace).toHaveBeenCalledWith(
-          expect.objectContaining({
-            query: expect.objectContaining({ 'sort-by': 'expirationDate', 'sort-dir': SortDir.Asc })
-          })
-        )
+        expect(table.props('sortBy')).toBe('expirationDate')
+        expect(table.props('sortDir')).toBe(SortDir.Asc)
+        expect(table.props('data').map(({ token }: AppToken) => token)).toEqual(['2', '3', '1'])
       })
+    })
+    it('shows a loading spinner instead of the empty state while loading', async () => {
+      let resolveTokens: (value: AxiosResponse) => void
+      const { wrapper } = getWrapper({
+        tokensRequest: new Promise((resolve) => {
+          resolveTokens = resolve
+        })
+      })
+      await flushPromises()
+
+      expect(wrapper.find(selectors.noAppTokensAvailable).exists()).toBeFalsy()
+      expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeTruthy()
+
+      resolveTokens(mockAxiosResolve([]))
+      await flushPromises()
+
+      expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeFalsy()
+      expect(wrapper.find(selectors.noAppTokensAvailable).exists()).toBeTruthy()
+    })
+    it('keeps the table instead of the loading spinner while reloading', async () => {
+      const appToken: AppToken = {
+        token: '1',
+        label: 'a',
+        created_date: '2021-01-01',
+        expiration_date: '2999-01-01'
+      }
+      const { wrapper, mocks } = getWrapper({ appTokens: [appToken] })
+      await flushPromises()
+      mocks.$clientService.httpAuthenticated.get.mockReturnValue(new Promise(() => undefined))
+      await wrapper.find(selectors.createAppTokenBtn).trigger('click')
+      const { dispatchModal } = useModals()
+      const { onCreated } = vi.mocked(dispatchModal).mock.calls[0][0].customComponentAttrs()
+      ;(onCreated as () => void)()
+      await flushPromises()
+
+      expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeFalsy()
+      expect(wrapper.find(selectors.appTokensTable).exists()).toBeTruthy()
     })
     it('does show message if no app tokens found', async () => {
       const { wrapper } = getWrapper()
@@ -131,14 +171,6 @@ describe('AppTokens component', () => {
 
       expect(wrapper.find(selectors.createAppTokenBtn).exists()).toBeFalsy()
     })
-    it('dispatches a modal on click', async () => {
-      const { wrapper } = getWrapper()
-      await flushPromises()
-      await wrapper.find(selectors.createAppTokenBtn).trigger('click')
-      const { dispatchModal } = useModals()
-
-      expect(dispatchModal).toHaveBeenCalled()
-    })
     it('focuses the note input initially', async () => {
       const { wrapper } = getWrapper()
       await flushPromises()
@@ -163,18 +195,25 @@ describe('AppTokens component', () => {
   })
 })
 
+function storeSort(sortBy: string, sortDir: SortDir) {
+  window.localStorage.setItem('oc-options_account-preferences_sort-by', sortBy)
+  window.localStorage.setItem('oc-options_account-preferences_sort-dir', sortDir)
+}
+
 function getWrapper({
   authAppServiceDisabled = false,
   appTokens = [],
-  query = {}
+  tokensRequest
 }: {
   authAppServiceDisabled?: boolean
   appTokens?: AppToken[]
-  query?: Record<string, string>
+  tokensRequest?: Promise<AxiosResponse>
 } = {}) {
   const clientService = mockDeep<ClientService>()
 
-  if (authAppServiceDisabled) {
+  if (tokensRequest) {
+    clientService.httpAuthenticated.get.mockReturnValue(tokensRequest)
+  } else if (authAppServiceDisabled) {
     clientService.httpAuthenticated.get.mockRejectedValue(new Error())
   } else {
     clientService.httpAuthenticated.get.mockResolvedValue(mockAxiosResolve(appTokens))
@@ -182,7 +221,7 @@ function getWrapper({
 
   // assign the query after creating the mock, otherwise missing query params resolve to mock functions
   const currentRoute = mock<RouteLocationNormalizedLoaded>({ name: 'account-preferences' })
-  currentRoute.query = query
+  currentRoute.query = {}
 
   const mocks = { ...defaultComponentMocks({ currentRoute }), $clientService: clientService }
 

@@ -31,7 +31,7 @@
                 filter-name="shareType"
               >
                 <template #item="{ item, term }">
-                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
+                  <span class="ms-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
                 </template>
               </item-filter>
               <item-filter
@@ -56,7 +56,7 @@
                   <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
                 </template>
                 <template #item="{ item, term }">
-                  <span class="ml-2"
+                  <span class="ms-2"
                     ><oc-filter-highlight :text="item.displayName" :term="term"
                   /></span>
                 </template>
@@ -95,6 +95,8 @@
           :view-size="viewSize"
           :sort-fields="sortFields"
           :term="filterTerm"
+          :tab-items="tabItems"
+          :matching-count="matchingCount"
           @load-more="loadMore"
         />
       </template>
@@ -134,7 +136,6 @@ import { defaultFuseOptions, escapeFuseQuery } from '@opencloud-eu/web-pkg'
 import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { omit, uniq } from 'lodash-es'
 import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
-import { v4 as uuidV4 } from 'uuid'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const appsStore = useAppsStore()
@@ -148,8 +149,12 @@ const selectedShareTypesQuery = useRouteQuery('q_shareType')
 const selectedSharedByQuery = useRouteQuery('q_sharedBy')
 const scrollToQuery = useRouteQuery('scrollTo')
 
+function isInVisibilityTab({ hidden }: IncomingShareResource) {
+  return !!hidden === unref(areHiddenFilesShown)
+}
+
 function filterShares(shares: IncomingShareResource[]) {
-  let result = shares.filter(({ hidden }) => !!hidden === unref(areHiddenFilesShown))
+  let result = shares.filter(isInVisibilityTab)
 
   const selectedShareTypes = queryItemAsString(unref(selectedShareTypesQuery))?.split('+')
   if (selectedShareTypes?.length) {
@@ -205,10 +210,21 @@ const {
 
 const { $gettext } = useGettext()
 
+const tabItems = computed(() =>
+  (resourcesStore.resources as IncomingShareResource[]).filter(isInVisibilityTab)
+)
+const matchingCount = computed(() => {
+  const isFiltered =
+    !!unref(filterTerm).trim() ||
+    !!queryItemAsString(unref(selectedShareTypesQuery)) ||
+    !!queryItemAsString(unref(selectedSharedByQuery))
+  return isFiltered ? unref(sortedResources).length : undefined
+})
+
 const breadcrumbs = computed(() => {
   return [
     {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: $gettext('Shares'),
       onClick: () => loadResources(),
       isStaticNav: true

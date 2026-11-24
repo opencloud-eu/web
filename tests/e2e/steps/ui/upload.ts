@@ -3,7 +3,6 @@ import { DataTable } from 'playwright-bdd'
 import path from 'path'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
-import { appConfig } from '../../playwright.config'
 import * as runtimeFs from '../../support/utils/runtimeFs'
 import { pageObjectFor } from '../../environment/pageObject'
 
@@ -46,10 +45,7 @@ When(
         to: info.to,
         resources: [
           world.filesEnvironment.getFile({
-            name: path.join(
-              runtimeFs.getTempUploadPath().replace(appConfig.assetsPath, ''),
-              info.resource
-            )
+            name: path.join('temp', info.resource)
           })
         ],
         option: info.option
@@ -99,7 +95,7 @@ When(
 
       files.push(
         world.filesEnvironment.getFile({
-          name: path.join(runtimeFs.getTempUploadPath().replace(appConfig.assetsPath, ''), file)
+          name: path.join('temp', file)
         })
       )
     }

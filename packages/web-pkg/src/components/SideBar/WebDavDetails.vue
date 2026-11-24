@@ -4,7 +4,7 @@
     <div class="truncate" :title="webDavPath" v-text="webDavPath" />
     <oc-button
       v-oc-tooltip="$gettext('Copy WebDAV path')"
-      class="ml-2"
+      class="ms-2"
       appearance="raw"
       size="small"
       :aria-label="$gettext('Copy WebDAV path to clipboard')"
@@ -19,7 +19,7 @@
     <div class="truncate" :title="webDavUrl" v-text="webDavUrl" />
     <oc-button
       v-oc-tooltip="$gettext('Copy WebDAV URL')"
-      class="ml-2"
+      class="ms-2"
       appearance="raw"
       size="small"
       :aria-label="$gettext('Copy WebDAV URL to clipboard')"

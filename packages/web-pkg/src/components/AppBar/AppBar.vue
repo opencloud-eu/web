@@ -40,8 +40,6 @@
             :has-folders-first="hasFoldersFirst"
             :has-pagination="hasPagination"
             :has-infinite-scroll="hasInfiniteScroll"
-            per-page-storage-prefix="files"
-            :view-mode-default="viewModeDefault"
           />
         </div>
       </div>
@@ -108,7 +106,6 @@ import ContextActions from '../FilesList/ContextActions.vue'
 import ViewOptions from '../ViewOptions.vue'
 import { FolderView } from '../../ui/types'
 import {
-  FolderViewModeConstants,
   useAbility,
   useFileActions,
   useIsTopBarSticky,
@@ -122,7 +119,6 @@ import { storeToRefs } from 'pinia'
 import { RouteLocationRaw } from 'vue-router'
 
 const {
-  viewModeDefault = FolderViewModeConstants.defaultModeName,
   breadcrumbs = [],
   breadcrumbsContextActionsItems = [],
   viewModes = [],
@@ -137,7 +133,6 @@ const {
   batchActionsLoading = false,
   space = undefined
 } = defineProps<{
-  viewModeDefault?: string
   breadcrumbs?: BreadcrumbItem[]
   breadcrumbsContextActionsItems?: Resource[]
   viewModes?: FolderView[]

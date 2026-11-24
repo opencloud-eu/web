@@ -2,7 +2,8 @@ import { Capabilities } from '@opencloud-eu/web-client/ocs'
 import {
   ApplicationInformation,
   AppMenuItemExtension,
-  useExtensionRegistry
+  useExtensionRegistry,
+  WebThemeType
 } from '@opencloud-eu/web-pkg'
 import { mock } from 'vitest-mock-extended'
 import { computed } from 'vue'
@@ -18,10 +19,6 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 describe('Top Bar component', () => {
-  it('Displays applications menu', () => {
-    const { wrapper } = getWrapper()
-    expect(wrapper.find('applications-menu-stub').exists()).toBeTruthy()
-  })
   it('hides the applications menu in a guest context', () => {
     const { wrapper } = getWrapper({ userContextReady: false, guestContextReady: true })
     expect(wrapper.find('applications-menu-stub').exists()).toBeFalsy()
@@ -59,6 +56,22 @@ describe('Top Bar component', () => {
       expect(wrapper.find('router-link-stub').exists()).toBeFalsy()
     })
   })
+  describe('sidebar toggle', () => {
+    it('is enabled on a files route', () => {
+      const { wrapper } = getWrapper({
+        currentRoute: getRoute({ name: 'files-spaces-generic', parentName: 'files' })
+      })
+      expect(wrapper.find('side-bar-toggle-stub').attributes('disabled')).toBe('false')
+    })
+    it.each([
+      { name: 'account-preferences', parentName: 'account' },
+      { name: 'account-information', parentName: 'account' },
+      { name: 'notFound' }
+    ])('is disabled on the runtime page $name', (route) => {
+      const { wrapper } = getWrapper({ currentRoute: getRoute(route) })
+      expect(wrapper.find('side-bar-toggle-stub').attributes('disabled')).toBe('true')
+    })
+  })
   describe('notifications bell', () => {
     it('should display in authenticated context if announced via capabilities', () => {
       const { wrapper } = getWrapper({
@@ -82,6 +95,19 @@ describe('Top Bar component', () => {
         capabilities: { notifications: { 'ocs-endpoints': [] } }
       })
       expect(wrapper.find('notifications-stub').exists()).toBeFalsy()
+    })
+  })
+  describe('universal access dropdown', () => {
+    it.each([
+      { easyLanguage: 'https://easy-language.url' },
+      { signLanguage: 'https://sign-language.url' }
+    ])('shows if a url is set (%o)', (urls) => {
+      const { wrapper } = getWrapper({ themeUrls: urls })
+      expect(wrapper.find('universal-access-dropdown-stub').exists()).toBeTruthy()
+    })
+    it('hides if no url is set', () => {
+      const { wrapper } = getWrapper({ themeUrls: {} })
+      expect(wrapper.find('universal-access-dropdown-stub').exists()).toBeFalsy()
     })
   })
   it.each(['applications-menu', 'feedback-link', 'notifications', 'user-menu'])(
@@ -134,13 +160,15 @@ const getWrapper = ({
   userContextReady = true,
   guestContextReady = false,
   hideLogo = false,
-  currentRoute = undefined
+  currentRoute = mock<RouteLocationNormalizedLoaded>({ name: '', path: '', matched: [] }),
+  themeUrls
 }: {
   capabilities?: Partial<Capabilities['capabilities']>
   userContextReady?: boolean
   guestContextReady?: boolean
   hideLogo?: boolean
   currentRoute?: RouteLocationNormalizedLoaded
+  themeUrls?: WebThemeType['urls']
 } = {}) => {
   const mocks = { ...defaultComponentMocks({ currentRoute }) }
 
@@ -148,7 +176,8 @@ const getWrapper = ({
     piniaOptions: {
       authState: { userContextReady, guestContextReady },
       capabilityState: { capabilities },
-      configState: { options: { disableFeedbackLink: false, hideLogo } }
+      configState: { options: { disableFeedbackLink: false, hideLogo } },
+      ...(themeUrls && { themeState: { currentTheme: { urls: themeUrls } as WebThemeType } })
     }
   })
 

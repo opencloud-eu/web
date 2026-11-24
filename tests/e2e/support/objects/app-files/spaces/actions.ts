@@ -6,6 +6,7 @@ import Collaborator, { ICollaborator } from '../share/collaborator'
 import { createLink } from '../link/actions'
 import { File } from '../../../types'
 import { closeNotifications } from '../../../utils/closeNotifications'
+import { unlockVault, vaultPassphraseInput, vaultSetupPassphraseInput } from '../resource/vault'
 
 const newSpaceMenuButton = '.oc-app-floating-action-button'
 const spaceContextMenuButton = '#space-context-btn'
@@ -32,9 +33,6 @@ const spaceHeaderSubtitleSelector = '.space-header p.font-semibold'
 const spaceHeaderReadmeSelector = '.markdown-container-content'
 const spaceDetailsQuotaSelector = '#sidebar-panel-details-space .space-quota'
 const encryptSpaceSwitch = '[data-testid="create-space-encrypt"] [data-testid="oc-switch-btn"]'
-const vaultSetupPassphraseInput = '#vault-setup-passphrase'
-const vaultPassphraseInput = '#vault-passphrase'
-const vaultUnlockButton = '#vault-unlock-submit'
 const vaultNameSelector = '[data-testid="vault-name"]'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
@@ -48,6 +46,7 @@ const createSpaceAdvancedSectionHeader = '.create-space-advanced .oc-section-hea
 const createSpaceQuotaSearchField = '#create-space-quota-input .vs__search'
 const createSpaceImageUploadButton = '.create-space-image-select'
 const createSpaceImageClearButton = '.create-space-image-clear'
+const imageCropperSelection = '#image-cropper-selection'
 const createSpaceMembersSearchField = '#create-space-members-input'
 const dropdownOpen = '.vs--open'
 const dropdownOption = '.vs__dropdown-option'
@@ -61,12 +60,12 @@ const openCustomizeMenu = async (page: Page): Promise<void> => {
   await page.locator(customizeMenuTrigger).click()
 }
 
-export const openSharingPanel = async (page: Page): Promise<void> => {
+const openSharingPanel = async (page: Page): Promise<void> => {
   await sidebar.open({ page })
   await sidebar.openPanel({ page, name: 'space-share' })
 }
 
-export const openActivitiesPanel = async (page: Page): Promise<void> => {
+const openActivitiesPanel = async (page: Page): Promise<void> => {
   await sidebar.open({ page })
   await sidebar.openPanel({ page, name: 'activities' })
 }
@@ -141,7 +140,10 @@ export const createSpaceOption = async (args: createSpaceOptionArgs): Promise<st
       page.locator(createSpaceImageUploadButton).click()
     ])
     await fileChooser.setFiles(image.path)
-    await page.locator(actionConfirmButton).last().click()
+    await page
+      .locator('.oc-modal', { has: page.locator(imageCropperSelection) })
+      .locator(actionConfirmButton)
+      .click()
     await expect(page.locator(createSpaceImageClearButton)).toBeVisible()
   }
   if (subtitle) {
@@ -186,14 +188,6 @@ export const createSpaceOption = async (args: createSpaceOptionArgs): Promise<st
   return id
 }
 
-export const unlockVaultSpace = async (args: { page: Page; passphrase: string }): Promise<void> => {
-  const { page, passphrase } = args
-  const unlockButton = page.locator(vaultUnlockButton)
-  await expect(unlockButton).toBeDisabled()
-  await page.locator(vaultPassphraseInput).fill(passphrase)
-  await unlockButton.click()
-}
-
 export const openVaultSpace = async (args: {
   page: Page
   id: string
@@ -201,7 +195,7 @@ export const openVaultSpace = async (args: {
 }): Promise<void> => {
   const { page, id, passphrase } = args
   await page.locator(util.format(spaceIdSelector, id)).click()
-  await unlockVaultSpace({ page, passphrase })
+  await unlockVault({ page, passphrase })
   await page.locator(spaceHeaderSelector).waitFor()
 }
 

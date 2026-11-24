@@ -13,7 +13,7 @@ import {
   FolderViewExtension,
   FolderView,
   useRouter,
-  useRouteQueryPersisted
+  useIsInfiniteScrollEnabled
 } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
 import {
@@ -120,16 +120,8 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
 
   const { refresh: refreshFileListHeaderPosition, y: fileListHeaderY } = useFileListHeaderPosition()
 
-  const currentViewModeQuery = useRouteQuery(
-    FolderViewModeConstants.queryName,
-    FolderViewModeConstants.defaultModeName
-  )
-  const currentViewMode = computed((): string => queryItemAsString(currentViewModeQuery.value))
-  const viewMode = useViewMode(currentViewMode)
-
-  const currentTilesSizeQuery = useRouteQuery('tiles-size', '1')
-  const currentTilesSize = computed((): string => String(currentTilesSizeQuery.value))
-  const viewSize = useViewSize(currentTilesSize)
+  const viewMode = useViewMode()
+  const viewSize = useViewSize()
 
   const viewModes = computed(() => {
     return [
@@ -167,22 +159,15 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     pinFirst: options.pinFirst
   })
   const router = useRouter()
-  const perPageSelection = useRouteQueryPersisted({
-    name: PaginationConstants.perPageQueryName,
-    defaultValue: PaginationConstants.perPageDefault,
-    storagePrefix: 'files'
-  })
-  const isInfiniteScrollEnabled = computed(
-    () => queryItemAsString(unref(perPageSelection)) === PaginationConstants.infiniteScrollValue
-  )
+  const isInfiniteScrollEnabled = useIsInfiniteScrollEnabled()
 
   const {
     items: legacyPaginatedItems,
     total: paginationPages,
-    page: paginationPage
+    page: paginationPage,
+    perPage: legacyPerPage
   } = usePagination<T>({
     items,
-    perPageStoragePrefix: 'files',
     enabled: computed(() => !unref(isInfiniteScrollEnabled))
   })
 
@@ -220,44 +205,36 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     }
   }
 
-  watch(perPageSelection, (newVal, oldVal) => {
-    const newSelection = queryItemAsString(unref(newVal))
-    const oldSelection = queryItemAsString(unref(oldVal))
-    const isInfinite = (selection: string) => selection === PaginationConstants.infiniteScrollValue
-
-    if (isInfinite(newSelection) && !isInfinite(oldSelection)) {
-      // handing over from numbered pagination: keep rendering everything the user
-      // had already scrolled to, then strip the no longer relevant page param
-      const page = parseInt(queryItemAsString(unref(router.currentRoute).query.page)) || 1
-      const wasPerPage = parseInt(oldSelection) || parseInt(PaginationConstants.perPageDefault)
-      renderedCount.value = Math.max(unref(renderedCount), page * wasPerPage)
-      clearPageQuery()
-      pendingLegacyPageCount = null
-    }
-
-    if (!isInfinite(newSelection) && isInfinite(oldSelection)) {
-      // handing over to numbered pagination: write back the equivalent last-viewed
-      // page (ceil keeps the last viewed chunk visible instead of an empty boundary)
-      pendingLegacyPageCount = null
-      const perPage = parseInt(newSelection) || parseInt(PaginationConstants.perPageDefault)
-      const page = Math.max(1, Math.ceil(unref(renderedCount) / perPage))
-      pageQuery.value = String(page)
-    }
-  })
-
   watch(
     isInfiniteScrollEnabled,
-    (isInfiniteScroll) => {
-      // legacy deep links that carry ?page=N still point to the resource the user
-      // wants to see: retain how many items they refer to and strip the param,
-      // which has no meaning in infinite scroll mode
-      pendingLegacyPageCount = null
+    (isInfiniteScroll, wasInfiniteScroll) => {
       if (isInfiniteScroll) {
         const page = parseInt(queryItemAsString(unref(router.currentRoute).query.page)) || 1
-        if (page > 1) {
-          pendingLegacyPageCount = page * PaginationConstants.infiniteScrollChunk
+
+        if (wasInfiniteScroll === undefined) {
+          // legacy deep links that carry ?page=N still point to the resource the user
+          // wants to see: retain how many items they refer to and strip the param,
+          // which has no meaning in infinite scroll mode
+          if (page > 1) {
+            pendingLegacyPageCount = page * PaginationConstants.infiniteScrollChunk
+          }
+        } else if (!wasInfiniteScroll) {
+          // handing over from numbered pagination: keep rendering everything the user
+          // had already scrolled to, then strip the no longer relevant page param
+          renderedCount.value = Math.max(unref(renderedCount), page * unref(legacyPerPage))
+          pendingLegacyPageCount = null
         }
+
         clearPageQuery()
+        return
+      }
+
+      if (wasInfiniteScroll) {
+        // handing over to numbered pagination: write back the equivalent last-viewed
+        // page (ceil keeps the last viewed chunk visible instead of an empty boundary)
+        pendingLegacyPageCount = null
+        const page = Math.max(1, Math.ceil(unref(renderedCount) / unref(legacyPerPage)))
+        pageQuery.value = String(page)
       }
     },
     { immediate: true }

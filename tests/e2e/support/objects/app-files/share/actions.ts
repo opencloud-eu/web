@@ -1,9 +1,11 @@
-import { Page, Locator } from '@playwright/test'
+import { Page, Locator, expect } from '@playwright/test'
 import util from 'util'
 import Collaborator, { ICollaborator, IAccessDetails } from './collaborator'
 import { sidebar } from '../utils'
 import { clickResource } from '../resource/actions'
 import { User } from '../../../types'
+import { syncedIndicator } from './utils'
+import { locatorUtils } from '../../../utils'
 
 const invitePanel = '#oc-files-sharing-sidebar'
 const quickShareButton =
@@ -20,8 +22,7 @@ const actionsDropdownTriggerButton =
 const selectAllCheckbox =
   '//input[@type="checkbox" and (@id="tiles-view-select-all" or @id="resource-table-select-all")]'
 const acceptButton = '.oc-files-actions-enable-sync-trigger'
-const pendingShareItem =
-  '//div[@id="files-shared-with-me-pending-section"]//tr[contains(@class,"oc-tbody-tr")]'
+const sharedWithMeItem = '#files-shared-with-me-view :is(.oc-tbody-tr, .oc-tiles-item)'
 const showMoreOptionsButton = '#show-more-share-options-btn'
 const calendarDatePickerId = 'recipient-datepicker-btn'
 const informMessage = '//div[contains(@class,"oc-notification-message-title")]'
@@ -85,14 +86,10 @@ export const createShare = async (args: createShareArgs): Promise<void> => {
   }
   const federatedShare = recipients[0].shareType
   if (federatedShare) {
-    await page.locator(userTypeFilter).click()
-    if (!(await page.locator(userTypeFilterDropdown).isVisible())) {
-      // wait and retry changing share user type
-      console.info('[INFO] Federated share type not applied, retrying...')
-      await page.waitForTimeout(1000)
-      await page.locator(userTypeFilter).click()
-    }
-    await page.locator(userTypeFilterDropdown).waitFor()
+    await locatorUtils.clickUntilVisible(
+      page.locator(userTypeFilter),
+      page.locator(userTypeFilterDropdown)
+    )
     await page.locator(userTypeSelector).filter({ hasText: federatedShare }).click()
     await page.locator(selectedUserTypeLabel).filter({ hasText: federatedShare }).waitFor()
   }
@@ -110,20 +107,12 @@ export const enableSync = async (args: ShareStatusArgs): Promise<void> => {
 }
 
 export const syncAllShares = async ({ page }: { page: Page }): Promise<void> => {
+  const shares = page.locator(sharedWithMeItem)
+  await expect(shares.first()).toBeVisible()
+  const numberOfShares = await shares.count()
   await page.locator(selectAllCheckbox).click()
-  const numberOfPendingShares = await page.locator(pendingShareItem).count()
-  const checkResponses = []
-  for (let i = 0; i < numberOfPendingShares; i++) {
-    checkResponses.push(
-      page.waitForResponse(
-        (resp) =>
-          resp.url().includes('root/children') &&
-          resp.status() === 201 &&
-          resp.request().method() === 'POST'
-      )
-    )
-  }
-  await Promise.all([...checkResponses, page.locator(acceptButton).click()])
+  await page.locator(acceptButton).click()
+  await expect(shares.locator(syncedIndicator)).toHaveCount(numberOfShares)
 }
 
 export const disableSync = async (args: ShareStatusArgs): Promise<void> => {
@@ -131,10 +120,7 @@ export const disableSync = async (args: ShareStatusArgs): Promise<void> => {
   await clickActionInContextMenu({ page, resource }, 'disable-sync')
 }
 
-export const clickActionInContextMenu = async (
-  args: ShareStatusArgs,
-  action: string
-): Promise<void> => {
+const clickActionInContextMenu = async (args: ShareStatusArgs, action: string): Promise<void> => {
   const { page, resource } = args
   await page.locator(util.format(actionMenuDropdownButton, resource)).click()
 

@@ -3,7 +3,7 @@
     <div
       class="app-details-gallery-image relative flex items-center justify-center w-full aspect-16/10 rounded-lg overflow-hidden bg-role-surface-container"
     >
-      <app-official-badge :app="app" class="absolute top-2 left-2 z-10" />
+      <app-official-badge :app="app" class="absolute top-2 inset-s-2 z-10" />
       <app-badge-ribbon :app="app" />
       <oc-image
         v-if="currentImage"

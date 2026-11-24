@@ -73,7 +73,6 @@ describe('OcTextInput', () => {
     textInputMessage: '.oc-text-input-message span',
     clearInputButton: '.oc-text-input-btn-clear',
     inputField: '.oc-text-input',
-    infoIcon: '.oc-text-input-message .oc-icon',
     showPasswordToggleBtn: '.oc-text-input-show-password-toggle',
     copyPasswordBtn: '.oc-text-input-copy-password-button',
     generatePasswordBtn: '.oc-text-input-generate-password-button'
@@ -187,6 +186,7 @@ describe('OcTextInput', () => {
           { active: true, pass: false }
         )
         await wrapper.find(selectors.inputField).setValue('pass')
+        expect(wrapper.emitted('passwordChallengeFailed')).toBeTruthy()
         expect(wrapper.emitted('passwordChallengeCompleted')).toBeFalsy()
       })
       it('should emit "passwordChallengeCompleted" if password matches criteria', async () => {

@@ -74,6 +74,7 @@ const OptionsConfigSchema = z.object({
       fileTypes: z.array(z.string()).optional(),
       chooseFileName: z.boolean().optional(),
       chooseFileNameSuggestion: z.string().optional(),
+      allowVault: z.boolean().optional(),
       submitButtonTitle: z.string().optional()
     })
     .optional(),

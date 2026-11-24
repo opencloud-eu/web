@@ -5,7 +5,7 @@
       :aria-hidden="true"
       :for="id"
       class="inline-block"
-      :class="{ 'mr-2': inlineLabel, 'mb-0.5': !inlineLabel }"
+      :class="{ 'me-2': inlineLabel, 'mb-0.5': !inlineLabel }"
     >
       {{ label }}
       <span v-if="requiredMark" class="text-role-error" aria-hidden="true">*</span>
@@ -13,7 +13,7 @@
     <oc-contextual-helper
       v-if="contextualHelper?.isEnabled"
       v-bind="contextualHelper?.data"
-      class="pl-1"
+      class="ps-1"
     />
     <vue-select
       ref="selectRef"
@@ -33,7 +33,7 @@
         'oc-select-keyboard-navigation': keyboardNavigation
       }"
       :dropdown-should-open="dropdownShouldOpen"
-      :map-keydown="mapKeydown"
+      :map-keydown="composeKeydownMap"
       v-bind="$attrs"
       @update:model-value="emit('update:modelValue', $event)"
       @click="dropdownEnabled = true"
@@ -52,7 +52,7 @@
           :aria-required="requiredMark ? 'true' : undefined"
           :aria-describedby="selectedOptionId"
           :aria-label="accessibleLabel"
-          @input="emit('search:input', ($event.target as HTMLInputElement).value)"
+          @input="onSearchInput"
           v-on="events"
         />
       </template>
@@ -72,10 +72,10 @@
           :class="{ 'vs__selected-readonly': option.readonly }"
         >
           <slot name="selected-option" v-bind="option">
-            <oc-icon v-if="readOnly && !multiple" name="lock" class="mr-1" size-class="size-4" />
+            <oc-icon v-if="readOnly && !multiple" name="lock" class="me-1" size-class="size-4" />
             {{ resolveOptionLabel(option) }}
           </slot>
-          <span v-if="multiple" class="flex items-center ml-2 mr-1 empty:hidden">
+          <span v-if="multiple" class="flex items-center ms-2 me-1 empty:hidden">
             <oc-icon
               v-if="option.readonly || readOnly"
               class="vs__deselect-lock"
@@ -116,7 +116,7 @@
         size-class="size-4"
         fill-type="line"
         aria-hidden="true"
-        class="mr-1"
+        class="me-1"
       />
       <span
         :id="`${id}-message`"
@@ -235,7 +235,13 @@ export interface Props {
    * @default true
    */
   hasBorder?: boolean
+  /**
+   * @docs Customizes the keydown handlers of `vue-select`, keyed by key code. Enter is wrapped (the list opens first), Escape is always handled by this component, so a mapping for it is ignored.
+   */
+  mapKeydown?: (map: KeydownMap) => KeydownMap
 }
+
+type KeydownMap = Record<number, (e: KeyboardEvent) => void>
 
 export interface Emits {
   /**
@@ -292,7 +298,8 @@ const {
   readOnly = false,
   positionFixed = false,
   requiredMark = false,
-  hasBorder = true
+  hasBorder = true,
+  mapKeydown: mapKeydownProp = null
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
@@ -332,11 +339,14 @@ const keyboardNavigation = ref(false)
 const enterKeyCode = 13
 const escapeKeyCode = 27
 
-function mapKeydown(map: Record<number, (e: KeyboardEvent) => void>) {
+function composeKeydownMap(defaultMap: KeydownMap) {
+  const map = mapKeydownProp ? mapKeydownProp(defaultMap) : defaultMap
   return {
     ...map,
     [enterKeyCode]: (e: KeyboardEvent) => {
       if (!unref(dropdownEnabled)) {
+        // only opens the list, must not submit a surrounding form
+        e.preventDefault()
         dropdownEnabled.value = true
         return
       }
@@ -385,6 +395,12 @@ function syncOpenState(e: MouseEvent) {
     return
   }
   unref(selectRef).open = false
+}
+
+// covers input without a keydown, e.g. a paste from the context menu
+function onSearchInput(e: Event) {
+  dropdownEnabled.value = true
+  emit('search:input', (e.target as HTMLInputElement).value)
 }
 
 function onKeydown(e: KeyboardEvent) {

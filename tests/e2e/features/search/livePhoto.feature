@@ -19,38 +19,17 @@ Feature: Live photo indicator
     And "Alice" logs in
     And "Alice" opens the "files" app
 
-
-  @live-photo
-  Scenario: live photo badge is shown in tiles and table view
+  Scenario: live photo is marked and its paired video of another folder plays
     When "Alice" switches to the "tiles" view
     Then "Alice" should see the motion photo badge on resource "livephoto.jpg"
     When "Alice" switches to the "table" view
     Then "Alice" should see the motion photo badge on resource "livephoto.jpg"
-    And "Alice" logs out
-
-
-  @live-photo
-  Scenario: live photo badge is shown in the media viewer preview strip
     When "Alice" opens the following file in mediaviewer
       | resource      |
       | livephoto.jpg |
     Then "Alice" should see the motion photo badge in the media viewer for resource "livephoto.jpg"
-    And "Alice" closes the file viewer
-    And "Alice" logs out
-
-
-  @live-photo
-  Scenario: live photo playback control is shown in the media viewer
-    When "Alice" opens the following file in mediaviewer
-      | resource      |
-      | livephoto.jpg |
-    Then "Alice" should see the motion photo control in the media viewer
-    And "Alice" closes the file viewer
-    And "Alice" logs out
-
-
-  @live-photo
-  Scenario: live photo plays the paired video of another folder inline from the sidebar
-    When "Alice" plays the motion photo inline from the sidebar for resource "livephoto.jpg"
+    And "Alice" should see the motion photo control in the media viewer
+    When "Alice" closes the file viewer
+    And "Alice" plays the motion photo inline from the sidebar for resource "livephoto.jpg"
     Then "Alice" should see the motion photo video loaded in the sidebar
     And "Alice" logs out

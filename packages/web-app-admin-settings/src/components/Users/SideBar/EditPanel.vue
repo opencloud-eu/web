@@ -1,6 +1,11 @@
 <template>
-  <div id="user-edit-panel" class="flex-1 flex flex-col p-2">
-    <form id="user-edit-form" class="flex-1 flex flex-col" autocomplete="off">
+  <div id="user-edit-panel" class="flex-1 flex flex-col p-2" @keydown.esc="onEscape">
+    <form
+      id="user-edit-form"
+      class="flex-1 flex flex-col"
+      autocomplete="off"
+      @submit.prevent="onSubmit"
+    >
       <section class="bg-role-surface-container rounded-xl px-4 pt-3 pb-1">
         <h3 class="font-semibold text-sm mt-0 mb-1" v-text="$gettext('Profile')" />
         <oc-text-input
@@ -97,6 +102,7 @@
           @selected-option-change="changeSelectedGroupOption"
         />
       </section>
+      <input type="submit" class="hidden" />
       <compare-save-dialog
         v-model:saved="saved"
         class="mt-auto pt-4"
@@ -104,14 +110,13 @@
         :compare-object="editUser"
         :confirm-button-disabled="invalidFormData"
         @revert="revertChanges"
-        @confirm="onEditUser({ user, editUser })"
+        @confirm="onSubmit"
       ></compare-save-dialog>
     </form>
   </div>
 </template>
 <script setup lang="ts">
 import { computed, nextTick, ref, unref, watch } from 'vue'
-import * as EmailValidator from 'email-validator'
 import {
   CompareSaveDialog,
   QuotaSelect,
@@ -119,14 +124,14 @@ import {
   useCapabilityStore,
   useMessages,
   useSpacesStore,
-  useAuthService
+  useAuthService,
+  isValidEmail
 } from '@opencloud-eu/web-pkg'
 import GroupSelect from '../GroupSelect.vue'
 import { cloneDeep, isEmpty, isEqual, omit } from 'lodash-es'
 import { AppRole, AppRoleAssignment, Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { useClientService } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
-import { diff } from 'deep-object-diff'
 import { useUserSettingsStore } from '../../../composables/stores/userSettings'
 import { useUserNameValidation } from '../../../composables/users'
 import { useGettext } from 'vue3-gettext'
@@ -231,20 +236,20 @@ async function onUpdateUserDrive(editUser: User) {
   }
 }
 
-function getGraphEditUserPayload(user: User) {
-  return omit(user, ['drive', 'appRoleAssignments', 'memberOf'])
+// nested objects (e.g. passwordProfile) are sent whole if anything in them changed
+function getGraphEditUserPayload(user: User, editUser: User): Partial<User> {
+  const fields = Object.entries(omit(editUser, ['drive', 'appRoleAssignments', 'memberOf']))
+  const changedFields = fields.filter(([key, value]) => !isEqual(value, user[key as keyof User]))
+  return Object.fromEntries(changedFields)
 }
 
 async function onEditUser({ user, editUser }: { user: User; editUser: User }) {
   try {
     const client = clientService.graphAuthenticated
-    const graphEditUserPayload = diff(
-      getGraphEditUserPayload(user),
-      getGraphEditUserPayload(editUser)
-    ) as User
+    const graphEditUserPayload = getGraphEditUserPayload(user, editUser)
 
     if (!isEmpty(graphEditUserPayload)) {
-      await client.users.editUser(editUser.id, graphEditUserPayload)
+      await client.users.editUser(editUser.id, graphEditUserPayload as User)
       // the password can't be reloaded, so it must not stay as unsaved change if a later step fails
       delete editUser.passwordProfile
     }
@@ -333,6 +338,21 @@ const invalidFormData = computed(() => {
   return Object.values(unref(formData)).some((v) => !v.valid)
 })
 
+// guards against overlapping saves, e.g. a held Enter key or Enter plus a Save click
+let isSubmitting = false
+
+async function onSubmit() {
+  if (isSubmitting || unref(invalidFormData) || isEqual(user, unref(editUser))) {
+    return
+  }
+  isSubmitting = true
+  try {
+    await onEditUser({ user, editUser: unref(editUser) })
+  } finally {
+    isSubmitting = false
+  }
+}
+
 const showQuota = computed(() => {
   return unref(editUser).drive?.quota
 })
@@ -408,7 +428,7 @@ function validateDisplayName() {
 function validateEmail() {
   formData.value.email.valid = false
 
-  if (!EmailValidator.validate(unref(editUser).mail)) {
+  if (!isValidEmail(unref(editUser).mail)) {
     formData.value.email.errorMessage = $gettext('Please enter a valid email')
     return false
   }
@@ -424,6 +444,16 @@ function revertChanges() {
     formDataValue.valid = true
     formDataValue.errorMessage = ''
   })
+}
+
+function onEscape(event: KeyboardEvent) {
+  if (isEqual(user, unref(editUser))) {
+    return
+  }
+  // keeps the table navigation from deselecting the item, the next Escape does that
+  event.preventDefault()
+  event.stopPropagation()
+  revertChanges()
 }
 
 function onUpdateRole(role: AppRoleAssignment) {

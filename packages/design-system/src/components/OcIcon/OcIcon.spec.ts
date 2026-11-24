@@ -1,6 +1,7 @@
 import { mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
 import { nextTick, ref, Ref } from 'vue'
 import OcIcon from './OcIcon.vue'
+import OcInlineSvg from '../OcInlineSvg/OcInlineSvg.vue'
 import { iconIsDarkInjectionKey } from '../../helpers'
 
 describe('OcIcon', () => {
@@ -15,12 +16,30 @@ describe('OcIcon', () => {
       expect(wrapper.find('button').classes()).toContain('min-h-0')
     })
   })
+  describe('text direction', () => {
+    it.each(['arrow-left-s', 'arrow-right', 'arrow-drop-right', 'arrow-go-back', 'share-forward'])(
+      'mirrors the directional icon "%s" in right-to-left layouts',
+      (name) => {
+        const { wrapper } = getWrapper({ name })
+        expect(wrapper.find('span').classes()).toContain('rtl:-scale-x-100')
+      }
+    )
+    it('mirrors a directional icon passed via the icon prop', () => {
+      const { wrapper } = getWrapper({ icon: { name: 'arrow-left-s', fillType: 'line' } })
+      expect(wrapper.find('span').classes()).toContain('rtl:-scale-x-100')
+    })
+    it.each(['info', 'arrow-up-s', 'align-left'])(
+      'does not mirror the icon "%s" in right-to-left layouts',
+      (name) => {
+        const { wrapper } = getWrapper({ name })
+        expect(wrapper.find('span').classes()).not.toContain('rtl:-scale-x-100')
+      }
+    )
+  })
   describe('src', () => {
-    it('should use the provided name to render the correct fill svg icon', () => {
+    it('renders the svg icon through the sanitizing inline svg component', () => {
       const { wrapper } = getWrapper({ name: 'settings' })
-      const inlineSvg = wrapper.findComponent({ name: 'inline-svg' })
-      expect(inlineSvg.exists()).toBe(true)
-      expect(inlineSvg.attributes('src')).toEqual('icons/settings-fill.svg')
+      expect(wrapper.findComponent(OcInlineSvg).props('src')).toEqual('icons/settings-fill.svg')
     })
     it('should use the provided name to render the correct line svg icon', () => {
       const { wrapper } = getWrapper({ name: 'settings', fillType: 'line' })

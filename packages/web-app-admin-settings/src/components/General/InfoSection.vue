@@ -2,7 +2,7 @@
   <div>
     <div class="flex items-center">
       <div
-        class="flex items-center justify-center bg-role-chrome w-[80px] h-[80px] rounded-full overflow-hidden mr-8"
+        class="flex items-center justify-center bg-role-chrome w-[80px] h-[80px] rounded-full overflow-hidden me-8"
       >
         <img :src="currentTheme.logo" class="px-2" alt="OpenCloud logo" />
       </div>

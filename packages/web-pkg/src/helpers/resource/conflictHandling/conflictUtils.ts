@@ -1,6 +1,19 @@
-import { dirname } from 'path'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, dirname } from '@opencloud-eu/web-client'
+import { RESOURCE_NAME_MAX_BYTES } from '../../../constants'
 import { withoutExtension } from '../../fileExtension'
+import { getTextByteSize } from '../../textByteSize'
+
+// cuts the base by whole code points so base and suffix fit into the max name bytes
+function fitToMaxBytes(base: string, suffix: string): string {
+  if (getTextByteSize(base + suffix) <= RESOURCE_NAME_MAX_BYTES) {
+    return base + suffix
+  }
+  const chars = Array.from(base)
+  while (chars.length && getTextByteSize(chars.join('') + suffix) > RESOURCE_NAME_MAX_BYTES) {
+    chars.pop()
+  }
+  return chars.join('').trimEnd() + suffix
+}
 
 export const resolveFileNameDuplicate = (
   name: string,
@@ -12,8 +25,8 @@ export const resolveFileNameDuplicate = (
   // dot files like ".env" and names not ending with the extension get the suffix appended
   const potentialName =
     nameWithoutExtension && nameWithoutExtension !== name
-      ? `${nameWithoutExtension} (${iteration}).${extension}`
-      : `${name} (${iteration})`
+      ? fitToMaxBytes(nameWithoutExtension, ` (${iteration}).${extension}`)
+      : fitToMaxBytes(name, ` (${iteration})`)
   const hasConflict = existingResources.some((f) => f.name === potentialName)
   if (!hasConflict) {
     return potentialName

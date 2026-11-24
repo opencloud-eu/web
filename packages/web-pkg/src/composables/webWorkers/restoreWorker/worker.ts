@@ -1,6 +1,5 @@
 import PQueue from 'p-queue'
-import { dirname } from 'path'
-import { webdav as _webdav, urlJoin } from '@opencloud-eu/web-client'
+import { webdav as _webdav, urlJoin, dirname } from '@opencloud-eu/web-client'
 import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import type { WorkerTopic } from '../../piniaStores/webWorkers'
 import type { WebDAV } from '@opencloud-eu/web-client/webdav'

@@ -1,5 +1,4 @@
 import { computed, unref, watch } from 'vue'
-import { v4 as uuidV4 } from 'uuid'
 import {
   OcTusOptions,
   OcUppyBody,
@@ -11,6 +10,7 @@ import { useAuthStore, useCapabilityStore } from '../piniaStores'
 import { XHRUploadOptions } from '@uppy/xhr-upload'
 import { useClientService } from '../clientService'
 import { useGettext } from 'vue3-gettext'
+import { encodeBase64 } from '@opencloud-eu/web-client'
 
 interface UploadOptions {
   uppyService: UppyService
@@ -29,13 +29,12 @@ export function useUpload(options: UploadOptions) {
 
     if (authStore.publicLinkPassword) {
       headers['Authorization'] =
-        'Basic ' +
-        Buffer.from(['public', authStore.publicLinkPassword].join(':')).toString('base64')
+        'Basic ' + encodeBase64(['public', authStore.publicLinkPassword].join(':'))
     } else if (authStore.accessToken && !authStore.publicLinkPassword) {
       headers['Authorization'] = 'Bearer ' + authStore.accessToken
     }
 
-    headers['X-Request-ID'] = uuidV4()
+    headers['X-Request-ID'] = crypto.randomUUID()
     headers['Accept-Language'] = language.current
     headers['Initiator-ID'] = clientService.initiatorId
     // tells the server to not send a `Www-Authenticate` header, which would trigger the browser's native login dialog

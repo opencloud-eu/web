@@ -34,6 +34,17 @@ describe('MobileChapterSelect component', () => {
     expect(wrapper.find('#epub_reader_chapter_toggle').text()).toContain('Chapter 1')
   })
 
+  it('exposes the full chapter labels as native titles on the truncated toggle and options', () => {
+    const wrapper = getWrapper()
+
+    expect(wrapper.find('#epub_reader_chapter_toggle span').attributes('title')).toBe('Chapter 1')
+    const optionLabels = wrapper.findAll('.epub-reader-chapter-option span')
+    expect(optionLabels.map((label) => label.attributes('title'))).toEqual([
+      'Chapter 1',
+      'Chapter 2'
+    ])
+  })
+
   it('marks only the selected chapter option as current for screen readers', () => {
     const wrapper = getWrapper()
 

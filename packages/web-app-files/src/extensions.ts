@@ -1,6 +1,7 @@
 import {
   ApplicationInformation,
   Extension,
+  CustomComponentExtension,
   FloatingActionButtonExtension,
   isLocationCommonActive,
   isLocationGuestActive,
@@ -30,6 +31,8 @@ import { useSpaceActionsCreate } from './composables/actions/spaces/useSpaceActi
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import CreateOrUploadMenu from './components/CreateOrUploadMenu.vue'
+import DefaultSpaceHeader from './components/Spaces/DefaultSpaceHeader.vue'
+import { genericSpaceHeaderExtensionPoint } from './extensionPoints'
 import { APPID } from './appid'
 
 export const extensions = (appInfo: ApplicationInformation) => {
@@ -68,6 +71,12 @@ export const extensions = (appInfo: ApplicationInformation) => {
     ...folderViewExtensions,
     ...sideBarPanelExtensions,
     vaultIndicator,
+    {
+      id: 'com.github.opencloud-eu.web.files.default-space-header',
+      extensionPointIds: [genericSpaceHeaderExtensionPoint.id],
+      type: 'customComponent',
+      content: markRaw(DefaultSpaceHeader)
+    } as CustomComponentExtension,
     {
       id: 'com.github.opencloud-eu.web.files.search',
       extensionPointIds: ['app.search.provider'],
@@ -132,19 +141,20 @@ export const extensions = (appInfo: ApplicationInformation) => {
           return true
         }
 
-        // permission checks on the space are preferred over the current folder,
-        // as the current folder resets on every navigation, causing a button flicker.
+        // space is checked first, as the current folder resets on every navigation,
+        // causing a button flicker.
         const space = unref(currentSpace)
         if (space) {
-          if (!isPublicSpaceResource(space)) {
-            return space.canUpload({ user: userStore.user }) !== true
-          }
           // public spaces have no graph permissions, check link permission
-          if (space.publicLinkPermission !== undefined) {
-            return !(space.publicLinkPermission & SharePermissionBit.Create)
+          const spaceAllowsUpload = isPublicSpaceResource(space)
+            ? !!(space.publicLinkPermission & SharePermissionBit.Create)
+            : space.canUpload({ user: userStore.user }) === true
+          if (spaceAllowsUpload) {
+            return false
           }
         }
 
+        // folder may grant more than the space, e.g. a share with edit permissions in a viewer space
         return !unref(currentFolder)?.canUpload({ user: userStore.user })
       },
       mode: () => {

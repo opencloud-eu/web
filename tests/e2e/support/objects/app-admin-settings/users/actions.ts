@@ -1,12 +1,10 @@
-import { Page, Locator } from '@playwright/test'
+import { Page, Locator, expect } from '@playwright/test'
 import util from 'util'
 import { UsersEnvironment } from '../../../environment'
 
 const appBar = '#admin-settings-app-bar'
 const userIdSelector = `[data-item-id="%s"] .users-table-btn-action-dropdown`
 const editActionBtnContextMenu = '.context-menu .oc-users-actions-edit-trigger'
-const editActionBtnQuickActions =
-  '[data-item-id="%s"] .oc-table-data-cell-actions .users-table-btn-edit'
 const editPanel = '.sidebar-panel__body-EditPanel:visible'
 const closeEditPanel = '.sidebar-panel__header .header__close'
 const deleteActionBtn = '.oc-users-actions-delete-trigger'
@@ -264,8 +262,8 @@ export const changeUser = async (args: {
   value: string
 }): Promise<unknown> => {
   const { page, attribute, value, uuid } = args
-  await page.locator(util.format(userInput, attribute)).fill(value)
-  await page.locator(util.format(userInput, attribute)).press('Enter')
+  const input = page.locator(util.format(userInput, attribute))
+  await input.fill(value)
 
   if (attribute === 'role') {
     await page.locator(util.format(roleValueDropDown, value)).click()
@@ -280,6 +278,8 @@ export const changeUser = async (args: {
     ])
   }
 
+  // async validation (e.g. user name check) must finish before Enter submits
+  await expect(page.locator(compareDialogConfirm)).toBeEnabled()
   return Promise.all([
     page.waitForResponse(
       (resp) =>
@@ -287,7 +287,7 @@ export const changeUser = async (args: {
         resp.status() === 200 &&
         resp.request().method() === 'PATCH'
     ),
-    page.locator(compareDialogConfirm).click()
+    input.press('Enter')
   ])
 }
 
@@ -370,9 +370,6 @@ export const openEditPanel = async (args: {
       await page.locator(util.format(userIdSelector, uuid)).click()
       await page.locator(editActionBtnContextMenu).click()
       break
-    case 'quick-action':
-      await page.locator(util.format(editActionBtnQuickActions, uuid)).click()
-      break
     default:
       throw new Error(`${action} not implemented`)
   }
@@ -417,11 +414,6 @@ export const deleteUserUsingBatchAction = async (args: {
   }
 
   await Promise.all([...checkResponses, page.locator(actionConfirmButton).click()])
-}
-
-export const waitForEditPanelToBeVisible = async (args: { page: Page }): Promise<void> => {
-  const { page } = args
-  await page.locator(editPanel).waitFor()
 }
 
 const getGroupId = (group: string): string => {

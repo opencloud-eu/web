@@ -37,7 +37,8 @@ Feature: share
       | name               |
       | folder_to_shared   |
       | folder_to_shared_2 |
-    Then "Brian" should not see a sync status for the folder "shared_folder"
+    Then "Brian" should see a sync status for the folder "folder_to_shared"
+    And "Brian" should not see a sync status for the folder "shared_folder"
     When "Brian" enables the sync for the following share using the context menu
       | name          |
       | shared_folder |

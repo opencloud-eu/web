@@ -24,18 +24,17 @@
 <script setup lang="ts">
 import { NodeViewContent, nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
 import { useGettext } from 'vue3-gettext'
-import { v4 as uuidV4 } from 'uuid'
 
 defineProps(nodeViewProps)
 const { $gettext } = useGettext()
-const hintId = `frontmatter-hint-${uuidV4()}`
-const labelId = `frontmatter-label-${uuidV4()}`
+const hintId = `frontmatter-hint-${crypto.randomUUID()}`
+const labelId = `frontmatter-label-${crypto.randomUUID()}`
 </script>
 
 <style scoped>
 .text-editor-frontmatter-label {
   position: absolute;
-  right: 8px;
+  inset-inline-end: 8px;
   top: 4px;
   display: inline-flex;
   align-items: center;

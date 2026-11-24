@@ -1,5 +1,5 @@
 <template>
-  <main class="flex app-content size-full rounded-l-xl">
+  <main class="flex app-content size-full rounded-s-xl">
     <app-loading-spinner v-if="loading" />
     <template v-else>
       <div class="admin-settings-wrapper flex w-full flex-1 h-full flex-nowrap sm:flex-wrap">
@@ -32,9 +32,7 @@
                     :has-file-extensions="false"
                     :has-folders-first="false"
                     :has-pagination="true"
-                    :pagination-options="paginationOptions"
                     :per-page-default="perPageDefault"
-                    per-page-storage-prefix="admin-settings"
                   />
                 </div>
               </div>
@@ -105,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { perPageDefault, paginationOptions } from '../defaults'
+import { perPageDefault } from '../defaults'
 import {
   Action,
   AppLoadingSpinner,

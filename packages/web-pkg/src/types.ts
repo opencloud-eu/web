@@ -22,7 +22,8 @@ export type FederatedConnection = FederatedUser & {
 export interface UpdateChannel {
   current_version: string
   url: string
-  critical: string[]
+  /** semver range of the versions with a critical update, e.g. `1.0.0 - 3.0.0 || 5.x` */
+  critical_range?: string
 }
 
 export interface Updates {

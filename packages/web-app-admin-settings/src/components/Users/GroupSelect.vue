@@ -18,9 +18,9 @@
             :userid="id"
             :user-name="displayName"
             :width="16"
-            class="flex self-center mr-2"
+            class="flex self-center me-2"
           />
-          <span>{{ displayName }}</span>
+          <span class="wrap-anywhere">{{ displayName }}</span>
         </span>
       </template>
       <template #option="{ displayName, id }">
@@ -30,9 +30,9 @@
               :userid="id"
               :user-name="displayName"
               :width="16"
-              class="flex self-center mr-2"
+              class="flex self-center me-2"
             />
-            <span>{{ displayName }}</span>
+            <span class="wrap-anywhere">{{ displayName }}</span>
           </span>
         </div>
       </template>

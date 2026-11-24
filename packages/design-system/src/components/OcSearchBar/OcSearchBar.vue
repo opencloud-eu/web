@@ -14,13 +14,14 @@
         :placeholder="placeholder"
         type="search"
         @keydown.enter="onSearch"
+        @keydown.esc="onEscape"
         @keyup="$emit('keyup', $event)"
       />
       <slot name="locationFilter" />
       <oc-button
         v-if="icon"
         :aria-label="$gettext('Search')"
-        class="absolute top-[50%] transform-[translateY(-50%)] right-0 p-1 mx-3 mb-4 mt-0"
+        class="absolute top-[50%] transform-[translateY(-50%)] inset-e-0 p-1 mx-3 mb-4 mt-0"
         appearance="raw"
         no-hover
         @click.prevent.stop="$emit('advancedSearch', $event)"
@@ -35,7 +36,7 @@
     </div>
     <div v-if="!buttonHidden" class="oc-search-button-wrapper">
       <oc-button
-        class="oc-search-button z-0 ml-4 rounded-l-none transform-[translateX(-1px)]"
+        class="oc-search-button z-0 ms-4 rounded-s-none transform-[translateX(-1px)] rtl:transform-[translateX(1px)]"
         appearance="filled"
         :size="small ? 'small' : 'medium'"
         :disabled="loading || model.length < 1"
@@ -48,7 +49,7 @@
       v-if="showCancelButton"
       :appearance="cancelButtonAppearance"
       :color-role="cancelButtonColorRole"
-      class="ml-4"
+      class="ms-4"
       no-hover
       @click="onCancel"
     >
@@ -208,7 +209,7 @@ const inputClass = computed(() => {
     'focus:bg-none'
   ]
   if (!buttonHidden) {
-    classes.push(...['oc-search-input-button', 'rounded-r-none'])
+    classes.push(...['oc-search-input-button', 'rounded-e-none'])
   }
   if (small) {
     classes.push(...['leading-7', 'h-8'])
@@ -216,9 +217,9 @@ const inputClass = computed(() => {
     classes.push('h-9')
   }
   if (isRounded) {
-    classes.push(...['rounded-4xl', 'pl-4', icon ? 'pr-10' : 'pr-4', 'py-4'])
+    classes.push(...['rounded-4xl', 'ps-4', icon ? 'pe-10' : 'pe-4', 'py-4'])
   } else if (icon) {
-    classes.push('pr-10')
+    classes.push('pe-10')
   }
   return classes
 })
@@ -231,12 +232,32 @@ const onSearch = () => {
   emit('search', trimQuery ? unref(model).trim() : unref(model))
 }
 
-const onCancel = () => {
+const clearSearch = () => {
   model.value = ''
   if (!typeAhead) {
-    onSearch()
+    // a parent-bound model still holds the old term in this tick
+    emit('search', '')
   }
+}
+
+const onCancel = () => {
+  clearSearch()
   cancelHandler()
+}
+
+// browsers differ on Escape in search inputs (Firefox doesn't clear), so handle it consistently
+const onEscape = (event: KeyboardEvent) => {
+  if (!showCancelButton && !unref(model)) {
+    return
+  }
+  // a surrounding modal stays open, the next Escape closes it
+  event.preventDefault()
+  event.stopPropagation()
+  if (showCancelButton) {
+    onCancel()
+    return
+  }
+  clearSearch()
 }
 </script>
 

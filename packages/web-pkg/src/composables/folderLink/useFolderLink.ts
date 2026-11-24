@@ -3,12 +3,13 @@ import {
   extractParentFolderName,
   isProjectSpaceResource,
   isShareRoot,
-  isShareSpaceResource
+  isShareSpaceResource,
+  dirname,
+  urlJoin
 } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { unref } from 'vue'
 import { useGetMatchingSpace } from '../spaces'
-import path, { dirname } from 'path'
 import { ResourceRouteResolverOptions, useResourceRouteResolver } from '../filesList'
 import { createLocationGuest, createLocationShares, createLocationSpaces } from '../../router'
 import { useAuthStore, useCapabilityStore } from '../piniaStores'
@@ -24,11 +25,11 @@ export const useFolderLink = (options: ResourceRouteResolverOptions = {}) => {
     const space = unref(options.space) || getMatchingSpace(resource)
 
     if (isProjectSpaceResource(space)) {
-      return path.join($gettext('Spaces'), space.name)
+      return urlJoin($gettext('Spaces'), space.name, { leadingSlash: false })
     }
 
     if (isShareSpaceResource(space)) {
-      return path.join($gettext('Shares'), space.name)
+      return urlJoin($gettext('Shares'), space.name, { leadingSlash: false })
     }
 
     return space.name

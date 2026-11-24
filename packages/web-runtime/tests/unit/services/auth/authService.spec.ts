@@ -296,7 +296,9 @@ describe('AuthService', () => {
         })
       })
 
-      initAuthService({ authService })
+      const configStore = useConfigStore()
+      configStore.options = { embed: { enabled: true, delegateAuthentication: false } }
+      initAuthService({ authService, configStore })
 
       await authService.initializeContext(mock<RouteLocation>({}))
 
@@ -336,7 +338,9 @@ describe('AuthService', () => {
         })
       })
 
-      initAuthService({ authService })
+      const configStore = useConfigStore()
+      configStore.options = { embed: { enabled: false, delegateAuthentication: true } }
+      initAuthService({ authService, configStore })
 
       await authService.initializeContext(mock<RouteLocation>({}))
 
@@ -397,8 +401,8 @@ describe('AuthService', () => {
 
       const promise = authService.handleAuthError(userContextRoute)
       await vi.runAllTimersAsync()
-      await promise
 
+      await expect(promise).resolves.toBe(false)
       expect(signinSilent).toHaveBeenCalledTimes(5)
       expect(removeUser).toHaveBeenCalledWith('authError')
     })
@@ -420,8 +424,8 @@ describe('AuthService', () => {
 
       const promise = authService.handleAuthError(userContextRoute)
       await vi.runAllTimersAsync()
-      await promise
 
+      await expect(promise).resolves.toBe(true)
       expect(signinSilent).toHaveBeenCalledTimes(1)
       expect(removeUser).not.toHaveBeenCalled()
     })
@@ -575,7 +579,7 @@ describe('AuthService', () => {
         status: 401,
         data: { error_type: 'session_expired', permissionId: 'expired-permission-id' }
       } as AxiosResponse)
-      await authService.handleAuthError(guestLinkRoute, error)
+      await expect(authService.handleAuthError(guestLinkRoute, error)).resolves.toBe(false)
 
       expect(replace).toHaveBeenCalledWith({
         name: 'renewGuestLink',
@@ -759,6 +763,36 @@ describe('AuthService', () => {
 
       expect(removeUser).toHaveBeenCalledWith('authError')
     })
+    it('replaces the public link page with the link resolver on a 401', async () => {
+      const authService = new AuthService()
+      const clear = vi.fn()
+      const router = createRouter()
+      const push = vi.spyOn(router, 'push').mockResolvedValue(undefined)
+      const replace = vi.spyOn(router, 'replace').mockResolvedValue(undefined)
+      initAuthService({ authService, router })
+      Object.defineProperty(authService, 'publicLinkManager', { value: { clear } })
+
+      await expect(
+        authService.handleAuthError(
+          {
+            name: 'files-public-link',
+            fullPath: '/files/link/public/token/sub',
+            meta: { authContext: 'publicLink' },
+            params: { driveAliasAndItem: 'public/token/sub' },
+            query: {}
+          } as unknown as RouteLocation,
+          new DavHttpError('', undefined, undefined, 401)
+        )
+      ).resolves.toBe(false)
+
+      expect(clear).toHaveBeenCalledWith('token')
+      expect(replace).toHaveBeenCalledWith({
+        name: 'resolvePublicLink',
+        params: { token: 'token' },
+        query: { redirectUrl: '/files/link/public/token/sub' }
+      })
+      expect(push).not.toHaveBeenCalled()
+    })
     it('re-resolves a public link on a 401 even with a guest context around', async () => {
       const authService = new AuthService()
       const clear = vi.fn()
@@ -767,25 +801,27 @@ describe('AuthService', () => {
       })
 
       const router = createRouter()
-      const push = vi.spyOn(router, 'push').mockResolvedValue(undefined)
+      const replace = vi.spyOn(router, 'replace').mockResolvedValue(undefined)
       const { authStore } = initAuthService({ authService, router })
       Object.defineProperty(authService, 'publicLinkManager', { value: { clear } })
       authStore.setGuestContext('permission-id', 'share-id')
       localStorage.setItem('oc.guestPermissionId', 'permission-id')
 
-      await authService.handleAuthError(
-        {
-          name: 'files-public-link',
-          fullPath: '/s/token',
-          meta: { authContext: 'publicLink' },
-          params: { token: 'token' },
-          query: {}
-        } as unknown as RouteLocation,
-        new DavHttpError('', undefined, undefined, 401)
-      )
+      await expect(
+        authService.handleAuthError(
+          {
+            name: 'files-public-link',
+            fullPath: '/s/token',
+            meta: { authContext: 'publicLink' },
+            params: { token: 'token' },
+            query: {}
+          } as unknown as RouteLocation,
+          new DavHttpError('', undefined, undefined, 401)
+        )
+      ).resolves.toBe(false)
 
       expect(clear).toHaveBeenCalledWith('token')
-      expect(push).toHaveBeenCalledWith({
+      expect(replace).toHaveBeenCalledWith({
         name: 'resolvePublicLink',
         params: { token: 'token' },
         query: { redirectUrl: '/s/token' }

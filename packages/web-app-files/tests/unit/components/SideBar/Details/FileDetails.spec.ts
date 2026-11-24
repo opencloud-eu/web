@@ -219,11 +219,6 @@ describe('Details SideBar Panel', () => {
       const { wrapper } = createWrapper({ resource, isGuestContext: true })
       expect(wrapper.find(selectors.tags).exists()).toBeFalsy()
     })
-    it('does not show for root folders', () => {
-      const resource = getResourceMock({ path: '/' })
-      const { wrapper } = createWrapper({ resource })
-      expect(wrapper.find(selectors.tags).exists()).toBeTruthy()
-    })
     it('shows as disabled when permission not set', () => {
       const resource = getResourceMock({ canEditTags: false })
       const { wrapper } = createWrapper({ resource })

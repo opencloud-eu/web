@@ -10,12 +10,14 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { nextTick } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
+import { Graph } from '@opencloud-eu/web-client/graph'
 import {
   eventBus,
   FolderViewExtension,
   ResourceTable,
   ResourceTiles,
-  useExtensionRegistry
+  useExtensionRegistry,
+  useMessages
 } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { flushPromises } from '@vue/test-utils'
@@ -71,13 +73,57 @@ describe('TrashOverview', () => {
     await flushPromises()
     expect(wrapper.find('no-content-message-stub').exists()).toBeTruthy()
   })
-  it('should navigate to single space trash if only one space exists', async () => {
+  it('should replace the route with the single space trash if only one space exists', async () => {
     const { mocks } = getWrapper({ spaces: [spaceMocks[0]] })
     await flushPromises()
-    expect(mocks.$router.push).toHaveBeenCalledWith({
+    expect(mocks.$router.replace).toHaveBeenCalledWith({
       name: 'files-trash-generic',
       params: { driveAliasAndItem: spaceMocks[0].getDriveAliasAndItem(undefined) },
       query: { fileId: spaceMocks[0].fileId }
+    })
+    expect(mocks.$router.push).not.toHaveBeenCalled()
+  })
+  describe('failed load', () => {
+    beforeEach(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    })
+
+    it('shows an error message', async () => {
+      const error = new Error('Request failed with status code 500')
+      getWrapper({ listMyDrives: () => Promise.reject(error) })
+      await flushPromises()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith({
+        title: 'Failed to load trash bins',
+        errors: [error]
+      })
+    })
+    it('still navigates to the single space trash', async () => {
+      const { mocks } = getWrapper({
+        spaces: [spaceMocks[0]],
+        listMyDrives: () => Promise.reject(new Error('Network Error'))
+      })
+      await flushPromises()
+      expect(mocks.$router.replace).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'files-trash-generic' })
+      )
+    })
+    it('stays silent when leaving the view cancels the load', async () => {
+      const { wrapper, mocks } = getWrapper({
+        spaces: [spaceMocks[0]],
+        listMyDrives: (_, { signal }) =>
+          new Promise((_, reject) => {
+            signal.addEventListener('abort', () =>
+              reject(new DOMException('The operation was aborted.', 'AbortError'))
+            )
+          })
+      })
+      await flushPromises()
+      wrapper.unmount()
+      await flushPromises()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).not.toHaveBeenCalled()
+      expect(mocks.$router.replace).not.toHaveBeenCalled()
     })
   })
   describe('view states', () => {
@@ -98,7 +144,7 @@ describe('TrashOverview', () => {
       { sortDir: SortDir.Desc, expected: ['1', '3', '2'] }
     ])('keeps the personal space on top when sorting $sortDir', async ({ sortDir, expected }) => {
       const spaces = [spaceMocks[2], spaceMocks[0], spaceMocks[1]]
-      const { wrapper } = getWrapper({ spaces, query: { 'sort-by': 'name', 'sort-dir': sortDir } })
+      const { wrapper } = getWrapper({ spaces, sort: { sortBy: 'name', sortDir } })
       await flushPromises()
       expect(getRenderedIds(wrapper)).toEqual(expected)
     })
@@ -115,7 +161,7 @@ describe('TrashOverview', () => {
         ] as SpaceResource[]
         const { wrapper } = getWrapper({
           spaces,
-          query: { 'sort-by': 'indicators', 'sort-dir': sortDir }
+          sort: { sortBy: 'indicators', sortDir }
         })
         await flushPromises()
         expect(getRenderedIds(wrapper)).toEqual(expected)
@@ -128,7 +174,8 @@ describe('TrashOverview', () => {
       'offers the name and status sort in the tiles view with $expected active',
       async ({ sortDir, expected }) => {
         const { wrapper } = getWrapper({
-          query: { 'view-mode': 'resource-tiles', 'sort-by': 'indicators', 'sort-dir': sortDir }
+          viewMode: 'resource-tiles',
+          sort: { sortBy: 'indicators', sortDir }
         })
         await flushPromises()
         const tiles = wrapper.findComponent(ResourceTiles)
@@ -251,24 +298,26 @@ function getWrapper({
   spaces = spaceMocks,
   stubResourceTable = true,
   areEmptyTrashesShown = true,
-  query = {}
+  viewMode = 'resource-table',
+  sort = { sortBy: 'name', sortDir: SortDir.Asc },
+  listMyDrives
 }: {
   spaces?: SpaceResource[]
   stubResourceTable?: boolean
   areEmptyTrashesShown?: boolean
-  query?: Record<string, string>
+  viewMode?: string
+  sort?: { sortBy: string; sortDir: SortDir }
+  listMyDrives?: Graph['drives']['listMyDrives']
 } = {}) {
+  window.localStorage.setItem('oc-options_view-mode', viewMode)
+  window.localStorage.setItem('oc-options_tiles-size', '1')
+  window.localStorage.setItem('oc-options_trash-overview_sort-by', sort.sortBy)
+  window.localStorage.setItem('oc-options_trash-overview_sort-dir', sort.sortDir)
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({
         name: 'trash-overview',
-        query: {
-          'view-mode': 'resource-table',
-          'tiles-size': '1',
-          'sort-by': 'name',
-          'sort-dir': 'asc',
-          ...query
-        }
+        query: {}
       })
     })
   }
@@ -282,7 +331,6 @@ function getWrapper({
     })
   ]
 
-  const viewMode = query['view-mode'] || 'resource-table'
   const extensions = [
     {
       id: `com.github.opencloud-eu.web.files.folder-view.${viewMode}`,
@@ -302,6 +350,9 @@ function getWrapper({
   )
 
   mocks.$clientService.graphAuthenticated.drives.listMyDrives.mockResolvedValue(spaceMocks)
+  if (listMyDrives) {
+    mocks.$clientService.graphAuthenticated.drives.listMyDrives.mockImplementation(listMyDrives)
+  }
 
   return {
     mocks,

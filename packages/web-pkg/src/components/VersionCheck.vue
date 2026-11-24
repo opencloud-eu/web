@@ -2,12 +2,12 @@
   <div v-if="isEnabled">
     <div v-if="isLoading" class="version-check-loading flex items-center">
       <span v-text="$gettext('Checking for updates')" />
-      <oc-spinner class="ml-1" size="xsmall" />
+      <oc-spinner class="ms-1" size="xsmall" />
     </div>
     <template v-else>
       <div v-if="!updateAvailable" class="version-check-no-updates flex items-center">
         <span v-text="$gettext('Up to date')" />
-        <oc-icon class="ml-0.5" name="checkbox-circle" size-class="size-3" fill-type="line" />
+        <oc-icon class="ms-0.5" name="checkbox-circle" size-class="size-3" fill-type="line" />
       </div>
       <oc-button
         v-else
@@ -28,8 +28,8 @@
       </oc-button>
       <oc-tag
         v-if="showCritical"
-        class="version-check-critical !bg-red-200 !text-red-900 border-0 ml-1"
-        size="small"
+        class="version-check-critical !bg-red-200 !text-red-900 border-0 ms-1"
+        size="xsmall"
       >
         <span v-text="$gettext('Critical')" />
       </oc-tag>
@@ -43,7 +43,7 @@ import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useAbility, useCapabilityStore, useUpdatesStore } from '../composables'
 import { UpdateChannel } from '../types'
-import { compareVersions } from '../utils'
+import { compareVersions, satisfiesVersionRange } from '../utils'
 
 const { $gettext } = useGettext()
 const capabilityStore = useCapabilityStore()
@@ -65,11 +65,23 @@ const serverEdition = capabilityStore.status.edition || 'rolling'
 const currentServerVersion = capabilityStore.status.productversion
 const currentServerVersionSanitized = currentServerVersion.split('+')[0]
 
+function isCriticalVersion({ critical_range }: UpdateChannel) {
+  if (!critical_range) {
+    return false
+  }
+  try {
+    return satisfiesVersionRange(currentServerVersionSanitized, critical_range)
+  } catch (e) {
+    console.error(e)
+    return false
+  }
+}
+
 const showCritical = computed(() => {
-  return (
-    unref(updateData)?.critical.includes(currentServerVersionSanitized) &&
-    ability.can('read-all', 'Setting')
-  )
+  if (!unref(updateData) || !ability.can('read-all', 'Setting')) {
+    return false
+  }
+  return isCriticalVersion(unref(updateData))
 })
 
 watch(

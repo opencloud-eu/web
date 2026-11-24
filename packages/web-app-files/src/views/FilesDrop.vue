@@ -123,7 +123,8 @@ import {
   UppyService,
   UploadResult,
   useAuthService,
-  createFileRouteOptions
+  createFileRouteOptions,
+  AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
 import ResourceUpload from '../components/AppBar/Upload/ResourceUpload.vue'
 import DropZone from '../components/DropZone.vue'
@@ -199,11 +200,11 @@ const resolveToInternalLocation = (path: string) => {
   const internalSpace = getInternalSpace(unref(fileId).split('!')[0])
   if (internalSpace) {
     const routeOpts = createFileRouteOptions(internalSpace, { fileId: unref(fileId), path })
-    return router.push(createLocationSpaces('files-spaces-generic', routeOpts))
+    return router.replace(createLocationSpaces('files-spaces-generic', routeOpts))
   }
 
   // no internal space found -> share -> resolve via private link as it holds all the necessary logic
-  return router.push({ name: 'resolvePrivateLink', params: { fileId: unref(fileId) } })
+  return router.replace({ name: 'resolvePrivateLink', params: { fileId: unref(fileId) } })
 }
 
 const resolvePublicLink = async () => {

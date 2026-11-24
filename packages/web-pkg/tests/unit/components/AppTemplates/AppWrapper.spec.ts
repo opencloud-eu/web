@@ -1,5 +1,5 @@
 import { mock } from 'vitest-mock-extended'
-import { defineComponent, h, nextTick, reactive, ref, toValue, unref } from 'vue'
+import { defineComponent, h, nextTick, type PropType, reactive, ref, toValue, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import type { Resource, ShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { HttpError } from '@opencloud-eu/web-client'
@@ -22,6 +22,7 @@ import AppWrapper from '../../../../src/components/AppTemplates/AppWrapper.vue'
 import type { YjsSession, YjsStatus } from '../../../../src/composables/yjs'
 import type { FileContentOptions, FileContext } from '../../../../src/composables/appDefaults'
 import type { FileAction } from '../../../../src/composables/actions'
+import type { ApplicationFileExtension } from '../../../../src/apps'
 import { eventBus } from '../../../../src/services'
 import { ResourceNotFoundError } from '../../../../src/errors'
 import {
@@ -79,10 +80,18 @@ const FILE_A = mock<Resource>({
   id: 'storage$space!file-a',
   fileId: 'storage$space!file-a',
   name: 'a.md',
+  extension: 'md',
+  isFolder: false,
   etag: 'etag-a',
   permissions: 'RDNVW'
 })
-const FILE_B = mock<Resource>({ id: 'storage$space!file-b', name: 'b.md', permissions: 'RDNVW' })
+const FILE_B = mock<Resource>({
+  id: 'storage$space!file-b',
+  name: 'b.md',
+  extension: 'md',
+  isFolder: false,
+  permissions: 'RDNVW'
+})
 
 // The wrapper loads text as raw bytes to detect files that are not valid UTF-8. No `mock()`: it
 // empties the ArrayBuffer.
@@ -114,15 +123,35 @@ function updateRoute() {
   return (guard as any)({}, {})
 }
 
+const wrappedComponentProps = {
+  resource: { type: Object as PropType<Resource>, default: null as Resource },
+  currentContent: { type: String, default: '' }
+}
+
 const wrappedComponent = defineComponent({
+  props: wrappedComponentProps,
+  template: '<div />'
+})
+
+// Without Yjs, apps edit by declaring `update:currentContent`.
+const editorComponent = defineComponent({
+  props: wrappedComponentProps,
+  emits: ['update:currentContent'],
+  template: '<div />'
+})
+
+// A viewer like the PDF viewer, which embeds the file via a URL.
+const urlComponent = defineComponent({
   props: {
     resource: { type: Object, default: null },
-    currentContent: { type: String, default: '' }
+    url: { type: String, default: '' }
   },
   template: '<div />'
 })
 
 function setup({
+  component = wrappedComponent as ReturnType<typeof defineComponent>,
+  getUrlForResource = vi.fn().mockResolvedValue('blob:file-url'),
   yjsEnabled = true,
   status = 'connected' as YjsStatus,
   // Whether the room can account for the write that caused a save conflict.
@@ -146,6 +175,7 @@ function setup({
   isGuestContext = false,
   fileContext = mock<FileContext>({ space: mock<any>(), path: '/a.md' }),
   fileContentOptions = undefined as FileContentOptions,
+  fileExtensions = [{ app: 'test-app', extension: 'md' }] as ApplicationFileExtension[],
   // Receives the errors Vue would otherwise report as unhandled.
   errorHandler = undefined as (err: unknown) => void
 } = {}) {
@@ -193,6 +223,7 @@ function setup({
       getFileContents,
       putFileContents,
       closeApp,
+      getUrlForResource,
       folderLoadingError: ref(folderLoadingError)
     })
   )
@@ -235,7 +266,8 @@ function setup({
   const piniaPlugins = defaultPlugins({
     piniaOptions: {
       appsState: {
-        apps: { 'test-app': { id: 'test-app', name: 'Test App', meta: { fileSizeLimit } } }
+        apps: { 'test-app': { id: 'test-app', name: 'Test App', meta: { fileSizeLimit } } },
+        fileExtensions
       },
       authState: { accessToken: sse ? 'token' : undefined, guestContextReady: isGuestContext },
       capabilityState: { capabilities: { core: { 'support-sse': sse } as any } }
@@ -279,7 +311,7 @@ function setup({
     },
     props: {
       applicationId: 'test-app',
-      wrappedComponent,
+      wrappedComponent: component,
       ...(yjsEnabled ? { yjs: { makeAdapter: () => mock<any>() } } : {}),
       ...(fileContentOptions ? { fileContentOptions } : {})
     },
@@ -309,6 +341,7 @@ function setup({
     closeApp,
     getFileInfo,
     getFileContents,
+    getUrlForResource,
     unregisterAppBarExtension,
     wasWrittenByRoom,
     beginSave,
@@ -342,6 +375,9 @@ function setup({
     },
     registerDeleteCallback(callback: () => void) {
       slotProps['onRegister:onDeleteResourceCallback'](callback)
+    },
+    registerFlushContentCallback(callback: () => void | Promise<void>) {
+      slotProps['onRegister:onFlushContentCallback'](callback)
     },
     deleteFile,
     downloadFile,
@@ -427,6 +463,54 @@ describe('AppWrapper — ESC close behavior', () => {
       document.removeEventListener('keydown', documentKeydownSpy)
     }
   })
+
+  function pressEscapeOn(el: Element) {
+    el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+  }
+
+  it('closes the app on Escape from the top bar outside of the app', () => {
+    const s = setup({ yjsEnabled: false })
+    const topBar = document.createElement('div')
+    topBar.className = 'oc-app-top-bar'
+    const saveButton = topBar.appendChild(document.createElement('button'))
+    document.body.appendChild(topBar)
+    try {
+      pressEscapeOn(saveButton)
+      expect(s.closeApp).toHaveBeenCalledTimes(1)
+    } finally {
+      topBar.remove()
+      s.wrapper.unmount()
+    }
+  })
+  it('closes the app on Escape while the focus is on the body', () => {
+    const s = setup({ yjsEnabled: false })
+    pressEscapeOn(document.body)
+    expect(s.closeApp).toHaveBeenCalledTimes(1)
+    s.wrapper.unmount()
+  })
+  it('ignores Escape from other elements outside of the app', () => {
+    const s = setup({ yjsEnabled: false })
+    const other = document.body.appendChild(document.createElement('button'))
+    try {
+      pressEscapeOn(other)
+      expect(s.closeApp).not.toHaveBeenCalled()
+    } finally {
+      other.remove()
+      s.wrapper.unmount()
+    }
+  })
+  it('ignores Escape while a modal is open', () => {
+    const s = setup({ yjsEnabled: false })
+    const modal = document.body.appendChild(document.createElement('div'))
+    modal.setAttribute('aria-modal', 'true')
+    try {
+      pressEscapeOn(document.body)
+      expect(s.closeApp).not.toHaveBeenCalled()
+    } finally {
+      modal.remove()
+      s.wrapper.unmount()
+    }
+  })
 })
 
 describe('AppWrapper — missing drive alias', () => {
@@ -452,9 +536,36 @@ describe('AppWrapper — missing drive alias', () => {
       const s = setup({ yjsEnabled: false, currentRoute, isGuestContext })
       await flushPromises()
 
-      expect(s.routerPush).toHaveBeenCalledWith(
+      expect(s.routerReplace).toHaveBeenCalledWith(
         expect.objectContaining({ query: expect.objectContaining({ contextRouteName }) })
       )
+    }
+  )
+
+  it.each([
+    {
+      driveType: 'personal',
+      space: mock<SpaceResource>({
+        driveType: 'personal',
+        getDriveAliasAndItem: () => 'personal/admin/sub/a.md'
+      }),
+      driveAliasAndItem: 'personal/admin/sub/a.md'
+    },
+    { driveType: 'share', space: shareSpace, driveAliasAndItem: 'share/Invited/sub/a.md' }
+  ])(
+    'replaces the route with the full app route in a $driveType space',
+    async ({ space, driveAliasAndItem }) => {
+      getResourceContextSpy.mockResolvedValue({ space, path: '/sub/a.md' })
+      const s = setup({ yjsEnabled: false, currentRoute })
+      await flushPromises()
+
+      expect(s.routerReplace).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: expect.objectContaining({ driveAliasAndItem }),
+          query: expect.objectContaining({ fileId: 'file-id' })
+        })
+      )
+      expect(s.routerPush).not.toHaveBeenCalled()
     }
   )
 
@@ -475,7 +586,7 @@ describe('AppWrapper — missing drive alias', () => {
     })
     // Like the router: the new route changes the file context, which restarts
     // the loading while the first run is still waiting for the route change.
-    s.routerPush.mockImplementationOnce(async (to: any) => {
+    s.routerReplace.mockImplementationOnce(async (to: any) => {
       route.params.driveAliasAndItem = to.params.driveAliasAndItem
       s.currentFileContext.value = mock<FileContext>({ space: mock<any>(), path: '/sub/a.md' })
       await flushPromises()
@@ -485,7 +596,7 @@ describe('AppWrapper — missing drive alias', () => {
     await s.resolveResource(FILE_A)
     await s.resolveContent('content of a')
 
-    expect(s.routerPush).toHaveBeenCalledTimes(1)
+    expect(s.routerReplace).toHaveBeenCalledTimes(1)
     expect(s.currentContent()).toBe('content of a')
     expect(errorHandler).not.toHaveBeenCalled()
   })
@@ -582,6 +693,158 @@ describe('AppWrapper — loading a file that does not exist', () => {
 
     expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(true)
     expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
+  })
+})
+
+describe('AppWrapper — file types the app did not register', () => {
+  const htmlFile = mock<Resource>({
+    id: 'storage$space!evil',
+    name: 'evil.html',
+    extension: 'html',
+    mimeType: 'text/html',
+    isFolder: false,
+    permissions: 'RDNVW'
+  })
+
+  it('refuses to load the file', async () => {
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    await s.resolveResource(htmlFile)
+
+    const errorScreen = s.wrapper.findComponent({ name: 'ErrorScreen' })
+    expect(errorScreen.exists()).toBe(true)
+    expect(errorScreen.props('message')).toContain('evil.html')
+    expect(s.getFileContents).not.toHaveBeenCalled()
+  })
+
+  it('refuses a file type only another app registered', async () => {
+    const s = setup({
+      yjsEnabled: false,
+      fileExtensions: [
+        { app: 'test-app', extension: 'md' },
+        { app: 'other-app', extension: 'html' }
+      ]
+    })
+    await nextTick()
+    await s.resolveResource(htmlFile)
+
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+    expect(s.getFileContents).not.toHaveBeenCalled()
+  })
+
+  it('loads a file type the app registered', async () => {
+    const s = await openFile({ yjsEnabled: false })
+
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
+    expect(s.getFileContents).toHaveBeenCalledTimes(1)
+  })
+
+  describe('in a viewer that embeds the file via a URL', () => {
+    const fileExtensions = [{ app: 'test-app', extension: 'pdf' }]
+
+    it('creates no URL for the file', async () => {
+      const s = setup({ yjsEnabled: false, component: urlComponent, fileExtensions })
+      await nextTick()
+      await s.resolveResource(htmlFile)
+
+      expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+      expect(s.getUrlForResource).not.toHaveBeenCalled()
+    })
+
+    it('creates the URL for a file type the app registered', async () => {
+      const s = setup({ yjsEnabled: false, component: urlComponent, fileExtensions })
+      await nextTick()
+      await s.resolveResource(
+        mock<Resource>({
+          id: 'storage$space!pdf',
+          name: 'a.pdf',
+          extension: 'pdf',
+          isFolder: false,
+          permissions: 'R'
+        })
+      )
+
+      expect(s.getUrlForResource).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('at the root of a public folder link', () => {
+    // reva names the link root after the token, so it has no extension
+    const linkRoot = mock<Resource>({
+      id: 'storage$space!link-root',
+      name: 'DFvfUJqnFIEvcHU',
+      path: '/',
+      extension: '',
+      mimeType: 'httpd/unix-directory',
+      isFolder: true,
+      permissions: 'R'
+    })
+    const folderComponent = defineComponent({
+      props: { resource: { type: Object, default: null } },
+      template: '<div />'
+    })
+
+    async function openLinkRoot(fileExtensions: ApplicationFileExtension[]) {
+      const s = setup({ yjsEnabled: false, component: folderComponent, fileExtensions })
+      s.currentFileContext.value = mock<FileContext>({
+        space: mock<any>({ driveType: 'public', publicLinkPermission: 1 }),
+        path: '/'
+      })
+      await nextTick()
+      await s.resolveResource(linkRoot)
+      return s
+    }
+
+    it('opens it in an app that registered a folder type', async () => {
+      const s = await openLinkRoot([{ app: 'test-app', extension: 'pastebin', type: 'folder' }])
+
+      expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
+    })
+
+    it('refuses it in an app that registered only file types', async () => {
+      const s = await openLinkRoot([{ app: 'test-app', extension: 'md' }])
+
+      expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+    })
+
+    it('refuses it when only another app registered a folder type', async () => {
+      const s = await openLinkRoot([
+        { app: 'test-app', extension: 'md' },
+        { app: 'other-app', extension: 'pastebin', type: 'folder' }
+      ])
+
+      expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+    })
+
+    it('refuses a folder below the root that lacks the registered extension', async () => {
+      const s = setup({
+        yjsEnabled: false,
+        component: folderComponent,
+        fileExtensions: [{ app: 'test-app', extension: 'pastebin', type: 'folder' }]
+      })
+      s.currentFileContext.value = mock<FileContext>({
+        space: mock<any>({ driveType: 'public', publicLinkPermission: 1 }),
+        path: '/sub'
+      })
+      await nextTick()
+      await s.resolveResource(
+        mock<Resource>({ ...linkRoot, id: 'storage$space!sub', name: 'sub', path: '/sub' })
+      )
+
+      expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+    })
+  })
+
+  it('refuses a file switched to while another file is open', async () => {
+    const s = await openFile({ yjsEnabled: false })
+
+    s.currentFileContext.value = mock<FileContext>({ space: mock<any>(), path: '/evil.html' })
+    await nextTick()
+    await s.resolveResource(htmlFile)
+
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+    expect(s.wrapper.find('.slot-content').exists()).toBe(false)
+    expect(s.getFileContents).toHaveBeenCalledTimes(1)
   })
 })
 
@@ -760,7 +1023,7 @@ describe('AppWrapper - renaming the open file', () => {
     await s.rejectResource(new HttpError('Resource not found', undefined, 404))
     s.currentFileContext.value = fileContext('/folder/a.md')
     await nextTick()
-    await s.resolveResource(fileA)
+    await s.resolveResource({ ...fileA })
     await s.resolveContent('content of a')
 
     expect(s.getFileInfo).toHaveBeenCalledTimes(3)
@@ -930,7 +1193,14 @@ describe('AppWrapper — changes still pending in the session', () => {
     const s = setup()
     await nextTick()
     await s.resolveResource(
-      mock<Resource>({ id: 'storage$space!ro', name: 'ro.md', etag: 'e', permissions: 'R' })
+      mock<Resource>({
+        id: 'storage$space!ro',
+        name: 'ro.md',
+        extension: 'md',
+        isFolder: false,
+        etag: 'e',
+        permissions: 'R'
+      })
     )
     await s.resolveContent('content of a')
 
@@ -1435,6 +1705,290 @@ describe('AppWrapper — save callback', () => {
   })
 })
 
+describe('AppWrapper — flush content callback', () => {
+  // The test app emits its edits only from the callback, so a save proves the callback ran.
+  async function openFileWithUnflushedEdit(content: string) {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    const flushContent = vi.fn(() => s.edit(content))
+    s.registerFlushContentCallback(flushContent)
+    return { s, flushContent }
+  }
+
+  function expectSaved(s: ReturnType<typeof setup>, content: string) {
+    expect(s.putFileContents).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({ content })
+    )
+  }
+
+  it('saves the content the app emits in the callback', async () => {
+    const { s } = await openFileWithUnflushedEdit('flushed content')
+
+    await s.clickTopBarAction('save-file')
+
+    expectSaved(s, 'flushed content')
+  })
+
+  it('saves on Ctrl+S what the app emits in the callback, flushing once', async () => {
+    const { s, flushContent } = await openFileWithUnflushedEdit('flushed content')
+
+    await s.pressCtrlS()
+
+    expectSaved(s, 'flushed content')
+    expect(flushContent).toHaveBeenCalledOnce()
+  })
+
+  it('does not save on Ctrl+S when the app emits nothing new', async () => {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    const flushContent = vi.fn()
+    s.registerFlushContentCallback(flushContent)
+
+    await s.pressCtrlS()
+
+    expect(flushContent).toHaveBeenCalledOnce()
+    expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+
+  it('autosaves what the app emits in the callback', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const { s, flushContent } = await openFileWithUnflushedEdit('flushed content')
+
+    await vi.advanceTimersByTimeAsync(130_000)
+
+    expectSaved(s, 'flushed content')
+    expect(flushContent).toHaveBeenCalledOnce()
+  })
+
+  it('does not autosave when the app emits nothing new', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    const flushContent = vi.fn()
+    s.registerFlushContentCallback(flushContent)
+
+    await vi.advanceTimersByTimeAsync(130_000)
+
+    expect(flushContent).toHaveBeenCalledOnce()
+    expect(s.putFileContents).not.toHaveBeenCalled()
+    expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
+  })
+
+  it('saves what the app emits in the callback before a download', async () => {
+    const { s } = await openFileWithUnflushedEdit('flushed content')
+
+    await s.clickTopBarAction('download-file')
+
+    expectSaved(s, 'flushed content')
+    expect(s.downloadFile).toHaveBeenCalled()
+  })
+
+  it('asks before the route leaves when the app emits changes in the callback', async () => {
+    const { s, flushContent } = await openFileWithUnflushedEdit('flushed content')
+    const { dispatchModal } = useModals()
+
+    void leaveRoute()
+    await flushPromises()
+
+    expect(flushContent).toHaveBeenCalledOnce()
+    expect(dispatchModal).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Unsaved changes' })
+    )
+    expect(s.unregisterAppBarExtension).not.toHaveBeenCalled()
+  })
+
+  it('lets the route leave when the app emits nothing new', async () => {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    s.registerFlushContentCallback(vi.fn())
+
+    expect(await leaveRoute()).toBe(true)
+    expect(useModals().dispatchModal).not.toHaveBeenCalled()
+  })
+
+  it('opens "Save as" once the app emitted its content in the callback', async () => {
+    const { s } = await openFileWithUnflushedEdit('flushed content')
+    const { dispatchModal } = useModals()
+    let contentOnOpen: string
+    vi.mocked(dispatchModal).mockImplementation(() => {
+      contentOnOpen = s.currentContent()
+      return undefined
+    })
+
+    await s.clickTopBarAction('save-as')
+
+    expect(dispatchModal).toHaveBeenCalledWith(expect.objectContaining({ title: 'Save as' }))
+    expect(contentOnOpen).toBe('flushed content')
+  })
+
+  it('waits for a save started while the app flushes, then saves what it emitted once', async () => {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    await s.edit('edited content')
+    const flush = deferred<void>()
+    const flushContent = vi
+      .fn()
+      .mockImplementationOnce(() => flush.promise.then(() => s.edit('flushed later')))
+      .mockResolvedValue(undefined)
+    s.registerFlushContentCallback(flushContent)
+
+    void s.pressCtrlS()
+    // a second save starts while the first flush is still running
+    const saving = s.clickTopBarAction('save-file')
+    await flushPromises()
+    expect(s.putFileContents).not.toHaveBeenCalled()
+    flush.resolve()
+    await saving
+
+    expect(s.putFileContents).toHaveBeenCalledOnce()
+    expectSaved(s, 'flushed later')
+  })
+
+  it.each([
+    { name: 'Ctrl+S', save: (s: ReturnType<typeof setup>) => s.pressCtrlS() },
+    {
+      name: 'the save action',
+      save: (s: ReturnType<typeof setup>) => s.clickTopBarAction('save-file')
+    }
+  ])(
+    'leaves without asking once a save on $name, still flushing on leave, finished',
+    async ({ save }) => {
+      const { s, flushContent } = await openFileWithUnflushedEdit('flushed content')
+      const flush = deferred<void>()
+      flushContent.mockImplementationOnce(() => flush.promise.then(() => s.edit('flushed content')))
+      const { dispatchModal } = useModals()
+
+      void save(s)
+      const leaving = leaveRoute()
+      await flushPromises()
+      flush.resolve()
+      await flushPromises()
+
+      expect(dispatchModal).not.toHaveBeenCalled()
+      expect(await leaving).toBe(true)
+      expect(s.putFileContents).toHaveBeenCalledOnce()
+      expectSaved(s, 'flushed content')
+    }
+  )
+
+  it('stops calling the callback of the app for the previous file', async () => {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    const flushContent = vi.fn().mockRejectedValue(new Error('nope'))
+    s.registerFlushContentCallback(flushContent)
+    s.currentFileContext.value = mock<FileContext>({ space: mock<any>(), path: `/${FILE_B.name}` })
+    await nextTick()
+    await s.rejectResource(new Error('not found'))
+
+    const leaving = leaveRoute()
+    await flushPromises()
+
+    expect(flushContent).not.toHaveBeenCalled()
+    expect(useModals().dispatchModal).not.toHaveBeenCalled()
+    expect(await leaving).toBe(true)
+  })
+
+  it('lets the route leave without waiting for the app once the file is in the trash', async () => {
+    const s = await openFile({ yjsEnabled: false, component: editorComponent })
+    s.registerDeleteCallback(vi.fn())
+    const flushContent = vi.fn(() => new Promise<void>(() => undefined))
+    s.registerFlushContentCallback(flushContent)
+    s.resourcesDeleted([FILE_A])
+
+    expect(await leaveRoute()).toBe(true)
+    expect(flushContent).not.toHaveBeenCalled()
+  })
+
+  describe('when the callback fails', () => {
+    async function openFileWithFailingFlush() {
+      const s = await openFile({ yjsEnabled: false, component: editorComponent })
+      await s.edit('edited content')
+      s.registerFlushContentCallback(vi.fn().mockRejectedValue(new Error('nope')))
+      return s
+    }
+
+    it.each([
+      {
+        name: 'the save action',
+        save: (s: ReturnType<typeof setup>) => s.clickTopBarAction('save-file')
+      },
+      { name: 'Ctrl+S', save: (s: ReturnType<typeof setup>) => s.pressCtrlS() }
+    ])('does not save stale content on $name', async ({ save }) => {
+      const s = await openFileWithFailingFlush()
+
+      await save(s)
+
+      expect(s.putFileContents).not.toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to save "a.md"' })
+      )
+      expect(consoleErrorSpy).toHaveBeenCalled()
+    })
+
+    it('does not autosave stale content', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true })
+      const s = await openFileWithFailingFlush()
+
+      await vi.advanceTimersByTimeAsync(130_000)
+
+      expect(s.putFileContents).not.toHaveBeenCalled()
+    })
+
+    it('does not open "Save as" with stale content', async () => {
+      const s = await openFileWithFailingFlush()
+
+      await s.clickTopBarAction('save-as')
+
+      expect(useModals().dispatchModal).not.toHaveBeenCalled()
+    })
+
+    it('still asks before the route leaves with unsaved changes', async () => {
+      await openFileWithFailingFlush()
+      const { dispatchModal } = useModals()
+
+      void leaveRoute()
+      await flushPromises()
+
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Unsaved changes' })
+      )
+    })
+
+    it('asks before the route leaves, even without changes it knows of', async () => {
+      const s = await openFile({ yjsEnabled: false, component: editorComponent })
+      s.registerFlushContentCallback(vi.fn().mockRejectedValue(new Error('nope')))
+      const { dispatchModal } = useModals()
+
+      void leaveRoute()
+      await flushPromises()
+
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Unsaved changes' })
+      )
+      expect(s.unregisterAppBarExtension).not.toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
+    })
+
+    it('keeps the file on delete, even without changes it knows of', async () => {
+      const s = await openFile({ yjsEnabled: false, component: editorComponent })
+      s.registerFlushContentCallback(vi.fn().mockRejectedValue(new Error('nope')))
+
+      await s.clickTopBarAction('delete')
+
+      expect(s.putFileContents).not.toHaveBeenCalled()
+      expect(s.deleteFile).not.toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to delete "a.md"' })
+      )
+    })
+
+    it('still downloads the file, without saving stale content', async () => {
+      const s = await openFileWithFailingFlush()
+
+      await s.clickTopBarAction('download-file')
+
+      expect(s.putFileContents).not.toHaveBeenCalled()
+      expect(s.downloadFile).toHaveBeenCalled()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledOnce()
+    })
+  })
+})
+
 describe('AppWrapper — Yjs session gate', () => {
   it('stays disabled until the body for the current resource has arrived', async () => {
     const s = setup()
@@ -1518,6 +2072,7 @@ describe('AppWrapper — resource identity across a save', () => {
       id: 'share-mount-id',
       fileId: 'storage$space!real-file-id',
       name: 'shared.md',
+      extension: 'md',
       path: '/',
       etag: 'etag-open',
       size: 10,
@@ -1899,7 +2454,14 @@ describe('AppWrapper — locked session', () => {
     const s = setup()
     await nextTick()
     await s.resolveResource(
-      mock<Resource>({ id: 'storage$space!ro', name: 'ro.md', etag: 'e', permissions: 'R' })
+      mock<Resource>({
+        id: 'storage$space!ro',
+        name: 'ro.md',
+        extension: 'md',
+        isFolder: false,
+        etag: 'e',
+        permissions: 'R'
+      })
     )
     await s.resolveContent('content of a')
     await s.edit('edited content')

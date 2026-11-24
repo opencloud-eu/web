@@ -2,7 +2,7 @@ import UploadInfo from '../../../src/components/UploadInfo.vue'
 import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ResourceListItem, OcUppyFile } from '@opencloud-eu/web-pkg'
 import { defineComponent, h, nextTick } from 'vue'
-import { HttpError } from '@opencloud-eu/web-client'
+import { DavHttpError, HttpError } from '@opencloud-eu/web-client'
 
 const selectors = {
   overlay: '#upload-info',
@@ -336,6 +336,67 @@ describe('UploadInfo component', () => {
       }
     )
     it.each([
+      {
+        error: new DavHttpError(
+          'name validation failed: must not contain \\',
+          undefined,
+          undefined,
+          400
+        ),
+        message: 'name validation failed: must not contain \\',
+        reason: 'a server message'
+      },
+      {
+        error: new DavHttpError('', undefined, undefined, 507),
+        message: 'Quota exceeded',
+        reason: 'status 507'
+      },
+      {
+        error: new DavHttpError('', undefined, undefined, 500),
+        message: 'Unknown error',
+        reason: 'no server message'
+      },
+      { error: new Error('Failed to fetch'), message: 'Unknown error', reason: 'a network error' }
+    ])('shows "$message" for a failed folder creation with $reason', async ({ error, message }) => {
+      const { wrapper } = getShallowWrapper()
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).infoExpanded = true
+      ;(wrapper.vm as any).uploads = {
+        '1': {
+          name: 'folder',
+          path: '/',
+          type: 'folder',
+          meta: { uploadId: '1', isFolder: true }
+        } as unknown as OcUppyFile
+      }
+      ;(wrapper.vm as any).errors = { 1: error }
+      await nextTick()
+
+      expect(wrapper.find(selectors.message).text()).toBe(message)
+    })
+    it('does not show the technical message of a non-webdav error with a status', async () => {
+      const { wrapper } = getShallowWrapper()
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).infoExpanded = true
+      ;(wrapper.vm as any).uploads = {
+        '1': {
+          name: 'file',
+          path: '/',
+          type: 'file',
+          meta: { uploadId: '1' }
+        } as unknown as OcUppyFile
+      }
+      ;(wrapper.vm as any).errors = {
+        1: Object.assign(
+          new Error('Failed request with status: 500. Internal Server Error request-Id: 1f2e3d'),
+          { statusCode: 500 }
+        )
+      }
+      await nextTick()
+
+      expect(wrapper.find(selectors.message).text()).toBe('Unknown error')
+    })
+    it.each([
       { status: 423, responseText: '', message: 'This item is locked' },
       { status: 507, responseText: '', message: 'Quota exceeded' },
       {
@@ -510,6 +571,27 @@ describe('UploadInfo component', () => {
       expect(vm.itemsInProgressCount).toBe(0)
       expect(wrapper.find(selectors.closeButton).exists()).toBeTruthy()
       expect(vm.uploads.folder.status).toBe('success')
+    })
+  })
+  describe('failed files of earlier uploads', () => {
+    it('removes them when an upload starts while nothing is uploading', () => {
+      const { mocks, handlers } = getWrapperWithHandlers()
+      handlers.uploadStarted()
+      handlers.uploadCompleted()
+      mocks.$uppyService.removeFailedFiles.mockClear()
+
+      handlers.uploadStarted()
+
+      expect(mocks.$uppyService.removeFailedFiles).toHaveBeenCalledTimes(1)
+    })
+    it('keeps them when an upload starts while another one is still running or being prepared', () => {
+      const { mocks, handlers } = getWrapperWithHandlers()
+      handlers.uploadStarted()
+      mocks.$uppyService.removeFailedFiles.mockClear()
+
+      handlers.uploadStarted()
+
+      expect(mocks.$uppyService.removeFailedFiles).not.toHaveBeenCalled()
     })
   })
   describe('pause and resume', () => {

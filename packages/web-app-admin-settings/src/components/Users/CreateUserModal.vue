@@ -51,8 +51,7 @@
 <script setup lang="ts">
 import { useGettext } from 'vue3-gettext'
 import { computed, ref, unref, watch } from 'vue'
-import * as EmailValidator from 'email-validator'
-import { Modal, eventBus, useClientService, useMessages } from '@opencloud-eu/web-pkg'
+import { Modal, eventBus, isValidEmail, useClientService, useMessages } from '@opencloud-eu/web-pkg'
 import { useUserNameValidation } from '../../composables/users'
 
 type FormField = 'userName' | 'displayName' | 'email' | 'password'
@@ -150,7 +149,7 @@ function validateDisplayName() {
 }
 
 function validateEmail() {
-  if (!EmailValidator.validate(unref(user).mail)) {
+  if (!isValidEmail(unref(user).mail)) {
     return setFieldError('email', $gettext('Please enter a valid email'))
   }
 

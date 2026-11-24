@@ -4,7 +4,7 @@ import { useResourcesViewDefaultsMock } from '../../../tests/mocks/useResourcesV
 import { defineComponent, h, ref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import { mockDeep, mock } from 'vitest-mock-extended'
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   defaultPlugins,
   defaultStubs,
@@ -80,6 +80,35 @@ describe('Favorites view', () => {
       expect((wrapper.vm as any).emptyStateDescription).toBe(
         'Try refining the search term or filters to get results'
       )
+    })
+  })
+  describe('resource table', () => {
+    function getTableColumns(files: Resource[]) {
+      const { wrapper } = getMountedWrapper({ files, stubTable: false })
+      return wrapper
+        .findAll('th')
+        .map((th) => th.classes().find((c) => c.startsWith('oc-table-header-cell-')))
+    }
+
+    it('shows the file columns', () => {
+      const file = getTableResource({ id: 'file1', name: 'file.txt', type: 'file' })
+      expect(getTableColumns([file])).toEqual(
+        expect.arrayContaining([
+          'oc-table-header-cell-name',
+          'oc-table-header-cell-indicators',
+          'oc-table-header-cell-size',
+          'oc-table-header-cell-mdate'
+        ])
+      )
+    })
+    it('does not add space columns for a favorite project space', () => {
+      const file = getTableResource({ id: 'file1', name: 'file.txt', type: 'file' })
+      const space = {
+        ...getTableResource({ id: 'space1', name: 'Space', type: 'space' }),
+        driveType: 'project',
+        spaceQuota: { total: 10, used: 1, remaining: 9 }
+      } as unknown as SpaceResource
+      expect(getTableColumns([file, space])).toEqual(getTableColumns([file]))
     })
   })
   describe('scrollTo', () => {
@@ -211,6 +240,24 @@ describe('Favorites view', () => {
   })
 })
 
+function getTableResource(resource: Partial<Resource>): Resource {
+  return {
+    path: `/${resource.name}`,
+    size: 5,
+    mdate: 'Mon, 1 Jan 2024 10:00:00 GMT',
+    tags: [],
+    starred: true,
+    isFolder: false,
+    getDomSelector: () => resource.id,
+    canDownload: () => true,
+    canRename: () => false,
+    canBeDeleted: () => false,
+    isReceivedShare: () => false,
+    isMounted: () => false,
+    ...resource
+  } as Resource
+}
+
 function getMountedWrapper({
   mocks = {},
   files = [],
@@ -219,7 +266,8 @@ function getMountedWrapper({
   lastModifiedParam = ref<string | null>(null),
   mediaTypeParam = ref<string | null>(null),
   tagParam = ref<string | null>(null),
-  tags = []
+  tags = [],
+  stubTable = true
 }: {
   mocks?: Record<string, unknown>
   files?: Resource[]
@@ -229,6 +277,7 @@ function getMountedWrapper({
   mediaTypeParam?: ReturnType<typeof ref<string | null>>
   tagParam?: ReturnType<typeof ref<string | null>>
   tags?: string[]
+  stubTable?: boolean
 } = {}) {
   const plugins = defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })
 
@@ -265,7 +314,8 @@ function getMountedWrapper({
         stubs: {
           ...defaultStubs,
           'app-bar': AppBarStub,
-          ItemFilter: true
+          ItemFilter: true,
+          'resource-table': stubTable
         }
       }
     }),

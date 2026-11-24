@@ -46,7 +46,7 @@ describe('setIcon', () => {
         setup: ({ actions }) => {
           expect(
             unref(actions)[0].isVisible({
-              resources: [mock<SpaceResource>({ canEditImage: () => false })]
+              resources: [mock<SpaceResource>({ driveType: 'project', canEditImage: () => false })]
             })
           ).toBe(false)
         }
@@ -65,25 +65,19 @@ describe('setIcon', () => {
     })
   })
   describe('handler', () => {
-    it('should trigger the setIcon modal window with one resource', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({ resources: [{ id: '1' } as SpaceResource] })
+    it('should trigger the setIcon modal window with one resource', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({ resources: [{ id: '1' } as SpaceResource] })
 
-          expect(dispatchModal).toHaveBeenCalledTimes(1)
-        }
-      })
+      expect(dispatchModal).toHaveBeenCalledTimes(1)
     })
-    it('should not trigger the setIcon modal window with no resource', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({ resources: [] })
+    it('should not trigger the setIcon modal window with no resource', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({ resources: [] })
 
-          expect(dispatchModal).toHaveBeenCalledTimes(0)
-        }
-      })
+      expect(dispatchModal).toHaveBeenCalledTimes(0)
     })
   })
   describe('method "setIconSpace"', () => {
@@ -132,15 +126,8 @@ describe('setIcon', () => {
 function getWrapper({
   setup
 }: {
-  setup: (
-    instance: ReturnType<typeof useSpaceActionsSetIcon>,
-    {
-      clientService
-    }: {
-      clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
-    }
-  ) => void
-}) {
+  setup?: (instance: ReturnType<typeof useSpaceActionsSetIcon>) => void
+} = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
   })
@@ -152,17 +139,16 @@ function getWrapper({
     mock<Resource>({ fileId: 'image-id' })
   )
 
-  return {
-    mocks,
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useSpaceActionsSetIcon()
-        setup(instance, { clientService: mocks.$clientService })
-      },
-      {
-        mocks,
-        provide: mocks
-      }
-    )
-  }
+  let instance: ReturnType<typeof useSpaceActionsSetIcon>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useSpaceActionsSetIcon()
+      setup?.(instance)
+    },
+    {
+      mocks,
+      provide: mocks
+    }
+  )
+  return { wrapper, instance, mocks }
 }

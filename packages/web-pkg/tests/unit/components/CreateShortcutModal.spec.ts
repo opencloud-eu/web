@@ -17,6 +17,12 @@ describe('CreateShortcutModal', () => {
     expect(wrapper.emitted('update:confirmDisabled')).toEqual([[true]])
   })
 
+  it('emits confirm on form submit', async () => {
+    const { wrapper } = getWrapper()
+    await wrapper.find('form').trigger('submit')
+    expect(wrapper.emitted('confirm')).toHaveLength(1)
+  })
+
   it('marks the name input as required for assistive technologies', () => {
     const { filename } = getWrapper()
     expect(filename.attributes('aria-required')).toBe('true')

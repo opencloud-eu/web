@@ -5,7 +5,7 @@
   />
   <teleport defer :to="`#${modalActionsTarget(modal)}`">
     <oc-button
-      class="oc-modal-body-actions-secondary ml-2"
+      class="oc-modal-body-actions-secondary ms-2"
       :disabled="modal.isLoading"
       @click="onClose"
     >

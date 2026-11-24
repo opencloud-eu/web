@@ -1,6 +1,6 @@
 <template>
   <div id="oc-file-versions-sidebar">
-    <div v-if="versions.length" class="ml-2">
+    <div v-if="versions.length" class="ms-2">
       <oc-list class="oc-timeline">
         <li v-for="(item, index) in versions" :key="index">
           <div class="flex items-center justify-between gap-2">
@@ -45,12 +45,12 @@
         </li>
       </oc-list>
     </div>
-    <div v-else>
-      <p
-        data-testid="file-versions-no-versions"
-        v-text="$gettext('No versions available for this file')"
-      />
-    </div>
+    <side-bar-no-selection
+      v-else
+      data-testid="file-versions-no-versions"
+      img-src="images/illustrations/versions.svg"
+      :message="$gettext('No versions available for this file')"
+    />
   </div>
 </template>
 <script setup lang="ts">
@@ -58,6 +58,7 @@ import {
   formatRelativeDateFromHTTP,
   formatDateFromJSDate,
   formatFileSize,
+  SideBarNoSelection,
   useClientService,
   useDownloadFile,
   useMessages,

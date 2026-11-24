@@ -2,6 +2,7 @@
   <video
     ref="video"
     :key="`media-video-${file.id}`"
+    class="max-w-[calc(100cqw-10px)] max-h-[calc(100cqh-10px)]"
     controls
     preload="preload"
     :autoplay="isAutoPlayEnabled"
@@ -12,7 +13,7 @@
   </video>
 </template>
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, unref, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, unref, useTemplateRef, watch } from 'vue'
 import { MediaFile } from '../../helpers/types'
 
 const { file, isAutoPlayEnabled = true } = defineProps<{
@@ -26,11 +27,6 @@ const emit = defineEmits<{
 }>()
 
 const video = useTemplateRef('video')
-const resizeVideoDimensions = () => {
-  const stageMedia: HTMLElement = document.querySelector('.stage_media')
-  video.value.style.maxHeight = `${stageMedia.offsetHeight - 10}px`
-  video.value.style.maxWidth = `${stageMedia.offsetWidth - 10}px`
-}
 
 const sourceType = computed(() => {
   if (file.mimeType === 'video/quicktime') {
@@ -110,13 +106,4 @@ watch(
     element.load()
   }
 )
-
-onMounted(() => {
-  resizeVideoDimensions()
-  window.addEventListener('resize', resizeVideoDimensions)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', resizeVideoDimensions)
-})
 </script>

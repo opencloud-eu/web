@@ -27,8 +27,10 @@ Feature: spaces management
       | id    | role        |
       | Alice | Space Admin |
       | Brian | Space Admin |
-    When "Alice" creates the project space using API "team A"
-    And "Alice" creates the project space using API "team B"
+    When "Alice" creates the following project spaces using API
+      | name   |
+      | team A |
+      | team B |
     And "Alice" logs in
     When "Alice" opens the "admin-settings" app
     And "Alice" navigates to the project spaces management page
@@ -58,10 +60,12 @@ Feature: spaces management
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the project space using API "team A"
-    And "Alice" creates the project space using API "team B"
-    And "Alice" creates the project space using API "team C"
-    And "Alice" creates the project space using API "team D"
+    And "Alice" creates the following project spaces using API
+      | name   |
+      | team A |
+      | team B |
+      | team C |
+      | team D |
     And "Alice" logs in
     When "Alice" opens the "admin-settings" app
     And "Alice" navigates to the project spaces management page
@@ -153,14 +157,6 @@ Feature: spaces management
     And "Alice" opens the "admin-settings" app
     And "Alice" navigates to the project spaces management page
     And "Alice" updates quota of the following spaces to "50" using the batch-actions
-      | name   |
-      | team A |
-      | team B |
-    And "Alice" disables the following spaces using the batch-actions
-      | name   |
-      | team A |
-      | team B |
-    And "Alice" enables the following spaces using the batch-actions
       | name   |
       | team A |
       | team B |

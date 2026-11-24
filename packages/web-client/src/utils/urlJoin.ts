@@ -3,7 +3,8 @@
  * but without the query handling.
  */
 
-const urlRegExp = /^(\w+:\/\/[^/?]+)?(.*?)$/
+// dotAll so line terminators in names don't break the match
+const urlRegExp = /^(\w+:\/\/[^/?]+)?(.*?)$/s
 
 export interface UrlJoinOptions {
   /**

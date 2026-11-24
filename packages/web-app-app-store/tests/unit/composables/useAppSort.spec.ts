@@ -23,6 +23,10 @@ const apps = [
 ]
 
 describe('useAppSort', () => {
+  afterEach(() => {
+    window.localStorage.clear()
+  })
+
   it('sorts by name by default', () => {
     const { sortedApps } = getWrapper()
     expect(sortedApps.value.map(({ name }) => name)).toEqual([
@@ -38,15 +42,22 @@ describe('useAppSort', () => {
   ])(
     'sorts by the first release date (%s), apps without one count as oldest',
     (sortDir, expected) => {
-      const { sortedApps } = getWrapper({ 'sort-by': 'release', 'sort-dir': sortDir })
+      window.localStorage.setItem('oc-options_app-store-list_sort-by', 'release')
+      window.localStorage.setItem('oc-options_app-store-list_sort-dir', sortDir)
+      const { sortedApps } = getWrapper()
       expect(sortedApps.value.map(({ name }) => name)).toEqual(expected)
     }
   )
 })
 
-function getWrapper(query: Record<string, string> = {}) {
+function getWrapper() {
   const mocks = defaultComponentMocks({
-    currentRoute: { query, path: '/', name: 'app-store-list', meta: {} } as unknown as RouteLocation
+    currentRoute: {
+      query: {},
+      path: '/',
+      name: 'app-store-list',
+      meta: {}
+    } as unknown as RouteLocation
   })
   let result: ReturnType<typeof useAppSort>
   getComposableWrapper(

@@ -14,8 +14,7 @@
       <template #description="{ item }">
         <span v-html="item.description.replace(/`([^`]+)`/g, '<code>$1</code>')" />
         <span v-if="item.default">
-          Defaults to <code>{{ item.default }}</code
-          >.</span
+          Defaults to <code>{{ item.default }}</code>.</span
         >
       </template>
     </oc-table>

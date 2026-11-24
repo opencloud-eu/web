@@ -31,12 +31,11 @@
 import { computed } from 'vue'
 import { NodeViewContent, nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
 import { useGettext } from 'vue3-gettext'
-import { v4 as uuidV4 } from 'uuid'
 
 const props = defineProps(nodeViewProps)
 const { $gettext } = useGettext()
 
-const hintId = `code-block-hint-${uuidV4()}`
+const hintId = `code-block-hint-${crypto.randomUUID()}`
 
 type LanguageOption = {
   label: string
@@ -86,7 +85,7 @@ const isReadonly = computed(() => props.editor.isEditable === false)
 <style scoped>
 .text-editor-code-block-language {
   position: absolute;
-  right: 12px;
+  inset-inline-end: 12px;
   top: 4px;
   display: inline-flex;
   align-items: center;
@@ -99,8 +98,8 @@ const isReadonly = computed(() => props.editor.isEditable === false)
 }
 
 .text-editor-code-block-select {
-  text-align: right;
-  text-align-last: right;
+  text-align: end;
+  text-align-last: end;
   field-sizing: content;
   width: auto;
   min-width: 0;

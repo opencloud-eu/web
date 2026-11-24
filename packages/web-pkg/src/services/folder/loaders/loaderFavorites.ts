@@ -5,6 +5,7 @@ import { isLocationCommonActive } from '../../../router'
 import { unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { getVaultClaim, markVaultStatus } from '../../../helpers/vault'
+import { getProjectSpaceOfRootItem } from '../../../helpers/spaces'
 import { escapeKqlValue } from '../../../helpers/searchFilters'
 import { queryItemAsString } from '../../../composables/appDefaults'
 import { LocationQuery } from '../../../composables/router'
@@ -75,11 +76,24 @@ export class FolderLoaderFavorites implements FolderLoader {
       //   - KEEP the vault *root* (clear-text name, so users can find/favorite
       //     their vault) and flag it so the share/copy/move guards engage and it
       //     can't be public-linked or copied out from here.
-      const visible = (resources as Resource[]).filter((resource) => {
-        const space = findSpaceById(resource.storageId)
-        const claim = space ? getVaultClaim(extensionRegistry, space, resource.path) : null
-        return !claim?.encryptsNames || claim.vaultRoot === resource.path
-      })
+      const visible = (resources as Resource[])
+        .filter((resource) => {
+          const space = findSpaceById(resource.storageId)
+          const claim = space ? getVaultClaim(extensionRegistry, space, resource.path) : null
+          return !claim?.encryptsNames || claim.vaultRoot === resource.path
+        })
+        .map((resource) => {
+          // show favorite project spaces as spaces (e.g. with their image), like the search does
+          const projectSpace = getProjectSpaceOfRootItem(
+            spacesStore.spaces,
+            resource.parentFolderId
+          )
+          if (!projectSpace) {
+            return resource
+          }
+          spacesStore.updateSpaceField({ id: projectSpace.id, field: 'starred', value: true })
+          return projectSpace
+        })
       for (const resource of visible) {
         const space = findSpaceById(resource.storageId)
         if (space) {

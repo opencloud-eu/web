@@ -24,6 +24,18 @@ describe('OcResourceName', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
 
+  it('keeps the name and extension left-to-right regardless of the interface direction', () => {
+    const wrapper = shallowMount(Name, {
+      props: { fullPath, name, extension, type },
+      global: { stubs: { OcFilterHighlight: false } }
+    })
+
+    const fullName = wrapper.find('.oc-resource-full-name')
+    expect(fullName.attributes('dir')).toBe('ltr')
+    expect(fullName.find('.oc-resource-basename').exists()).toBeTruthy()
+    expect(fullName.find('.oc-resource-extension').exists()).toBeTruthy()
+  })
+
   it('renders folder names with dots completely in the basename', () => {
     const wrapper = shallowMount(Name, {
       props: {

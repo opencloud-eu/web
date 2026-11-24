@@ -10,7 +10,8 @@
       no-hover
     >
       <span
-        class="min-w-0 flex-1 truncate text-left"
+        class="min-w-0 flex-1 truncate text-start"
+        :title="selectedChapter?.label"
         v-text="selectedChapter?.label || $gettext('Chapter')"
       />
       <oc-icon name="arrow-drop-down" size-class="size-4" />
@@ -37,7 +38,7 @@
             appearance="raw"
             @click="onChapterClick(chapter)"
           >
-            <span class="truncate" v-text="chapter.label" />
+            <span class="truncate" :title="chapter.label" v-text="chapter.label" />
           </oc-button>
         </li>
       </oc-list>

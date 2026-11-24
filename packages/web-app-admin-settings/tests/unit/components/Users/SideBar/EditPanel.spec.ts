@@ -97,6 +97,28 @@ describe('EditPanel', () => {
       expect(getInput(wrapper, selectors.displayNameInput).props('errorMessage')).toBe('')
       expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeFalsy()
     })
+    it('reverts the changes on Escape without passing it on', async () => {
+      const { wrapper } = getWrapper()
+      const onParentKeydown = vi.fn()
+      wrapper.element.parentElement.addEventListener('keydown', onParentKeydown)
+      await setInput(wrapper, selectors.displayNameInput, 'jana')
+
+      const event = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true, bubbles: true })
+      wrapper.element.dispatchEvent(event)
+      await nextTick()
+
+      expect(getInput(wrapper, selectors.displayNameInput).props('modelValue')).toBe('jan')
+      expect(event.defaultPrevented).toBe(true)
+      expect(onParentKeydown).not.toHaveBeenCalled()
+    })
+    it('leaves Escape to others without changes', () => {
+      const { wrapper } = getWrapper()
+
+      const event = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true, bubbles: true })
+      wrapper.element.dispatchEvent(event)
+
+      expect(event.defaultPrevented).toBe(false)
+    })
   })
 
   describe('user name validation', () => {
@@ -169,20 +191,26 @@ describe('EditPanel', () => {
   })
 
   describe('email validation', () => {
-    it('accepts a valid email', async () => {
-      const { wrapper } = getWrapper()
-      await setInput(wrapper, selectors.emailInput, 'jan@opencloud.eu')
-      expect(getInput(wrapper, selectors.emailInput).props('errorMessage')).toBe('')
-      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeFalsy()
-    })
-    it('shows an error for an invalid email', async () => {
-      const { wrapper } = getWrapper()
-      await setInput(wrapper, selectors.emailInput, '')
-      expect(getInput(wrapper, selectors.emailInput).props('errorMessage')).toBe(
-        'Please enter a valid email'
-      )
-      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeTruthy()
-    })
+    it.each(['jan@opencloud.eu', 'jan.doe+tag@sub.opencloud.eu'])(
+      'accepts a valid email "%s"',
+      async (email) => {
+        const { wrapper } = getWrapper()
+        await setInput(wrapper, selectors.emailInput, email)
+        expect(getInput(wrapper, selectors.emailInput).props('errorMessage')).toBe('')
+        expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeFalsy()
+      }
+    )
+    it.each(['', 'jan', 'jan@opencloud', 'jan@@opencloud.eu', 'jan doe@opencloud.eu'])(
+      'shows an error for an invalid email "%s"',
+      async (email) => {
+        const { wrapper } = getWrapper()
+        await setInput(wrapper, selectors.emailInput, email)
+        expect(getInput(wrapper, selectors.emailInput).props('errorMessage')).toBe(
+          'Please enter a valid email'
+        )
+        expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeTruthy()
+      }
+    )
   })
 
   describe('password validation', () => {
@@ -249,6 +277,48 @@ describe('EditPanel', () => {
 
       expect(editUser).toHaveBeenCalledWith('2', { onPremisesSamAccountName: 'jana' })
       expect(mocks.$authService.signinSilent).not.toHaveBeenCalled()
+    })
+
+    it('saves valid changes on form submit', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { getUser, editUser } = mocks.$clientService.graphAuthenticated.users
+      await setInput(wrapper, selectors.displayNameInput, 'jana')
+      getUser.mockResolvedValue(mock<User>({ id: '2', displayName: 'jana' }))
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(editUser).toHaveBeenCalledWith('2', { displayName: 'jana' })
+    })
+    it('sends only the changed fields', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { getUser, editUser } = mocks.$clientService.graphAuthenticated.users
+      await setInput(wrapper, selectors.displayNameInput, 'jana')
+      await setInput(wrapper, selectors.emailInput, 'jana@opencloud.eu')
+      await setInput(wrapper, selectors.passwordInput, 'secret123')
+      getUser.mockResolvedValue(mock<User>({ id: '2' }))
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(editUser).toHaveBeenCalledWith('2', {
+        displayName: 'jana',
+        mail: 'jana@opencloud.eu',
+        passwordProfile: { password: 'secret123' }
+      })
+    })
+    it('does not save on form submit without changes', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(mocks.$clientService.graphAuthenticated.users.editUser).not.toHaveBeenCalled()
+    })
+    it('does not save on form submit with invalid data', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await setInput(wrapper, selectors.emailInput, '')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(mocks.$clientService.graphAuthenticated.users.editUser).not.toHaveBeenCalled()
     })
 
     describe('when a part of the changes fails to save', () => {

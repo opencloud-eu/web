@@ -29,13 +29,17 @@ export const useVaultIndicator = (): ResourceIndicatorExtension => {
         return
       }
       const space = isSpaceResource(resource) ? resource : getMatchingSpace(resource)
-      const claim = space ? getVaultClaim(extensionRegistry, space, resource.path) : null
+      if (!space) {
+        return
+      }
+      const claim = getVaultClaim(extensionRegistry, space, resource.path)
       if (!claim) {
         return
       }
 
       const vaultRoot = claim.vaultRoot
-      const unlocked = vaultStore.isUnlocked(resource.storageId, vaultRoot)
+      // share spaces have a space id that differs from the resource's storageId
+      const unlocked = vaultStore.isUnlocked(space.id, vaultRoot)
 
       // The vault-root resource itself is what users see when browsing the
       // parent folder - show open vs. closed lock so the unlock state is

@@ -2,7 +2,6 @@ import FileShares from '../../../../../src/components/SideBar/Shares/FileShares.
 import { mock } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { v4 as uuidV4 } from 'uuid'
 import { CollaboratorShare, ShareRole, ShareTypes } from '@opencloud-eu/web-client'
 import {
   defaultPlugins,
@@ -30,7 +29,7 @@ const buildCollaborators = (amount: number): CollaboratorShare[] =>
   Array.from({ length: amount }, () => getCollaborator())
 
 const getCollaborator = (): CollaboratorShare => ({
-  id: uuidV4(),
+  id: crypto.randomUUID(),
   sharedWith: {
     id: 'einstein',
     displayName: 'Albert Einstein'
@@ -41,7 +40,7 @@ const getCollaborator = (): CollaboratorShare => ({
   },
   permissions: [],
   role: mock<ShareRole>(),
-  resourceId: uuidV4(),
+  resourceId: crypto.randomUUID(),
   indirect: false,
   shareType: ShareTypes.user.value,
   createdDateTime: '2024-01-01'
@@ -58,6 +57,12 @@ describe('FileShares', () => {
       const resource = mock<Resource>()
       const { wrapper } = getWrapper({ resource, canShare: false })
       expect(wrapper.find('invite-collaborator-form-stub').exists()).toBeFalsy()
+    })
+    it('does not render the form when user sharing is disabled', () => {
+      const resource = mock<Resource>({ type: 'file' })
+      const { wrapper } = getWrapper({ resource, canShare: true, userSharingEnabled: false })
+      expect(wrapper.find('invite-collaborator-form-stub').exists()).toBeFalsy()
+      expect(wrapper.text()).toContain('Sharing with people is disabled.')
     })
   })
 
@@ -173,15 +178,6 @@ describe('FileShares', () => {
       expect(wrapper.findAll('#space-collaborators-list li').length).toBe(2)
     })
   })
-
-  describe('"deleteShareConfirmation" method', () => {
-    it('dispatches a modal', () => {
-      const { wrapper } = getWrapper()
-      const { dispatchModal } = useModals()
-      ;(wrapper.vm as any).deleteShareConfirmation(mock<CollaboratorShare>())
-      expect(dispatchModal).toHaveBeenCalled()
-    })
-  })
 })
 
 function getWrapper({
@@ -192,7 +188,8 @@ function getWrapper({
   spaceMembers = [],
   user = undefined,
   ancestorMetaData = {},
-  canShare = true
+  canShare = true,
+  userSharingEnabled = undefined
 }: {
   mountType?: typeof mount
   resource?: Resource
@@ -202,6 +199,7 @@ function getWrapper({
   user?: User
   ancestorMetaData?: AncestorMetaData
   canShare?: boolean
+  userSharingEnabled?: boolean
 } = {}) {
   vi.mocked(useCanShare).mockReturnValue({ canShare: () => canShare })
 
@@ -221,6 +219,11 @@ function getWrapper({
                 options: { contextHelpers: true }
               },
               sharesState: { collaboratorShares: collaborators },
+              ...(userSharingEnabled !== undefined && {
+                capabilityState: {
+                  capabilities: { files_sharing: { user: { enabled: userSharingEnabled } } }
+                }
+              }),
               resourcesStore: { ancestorMetaData }
             }
           })

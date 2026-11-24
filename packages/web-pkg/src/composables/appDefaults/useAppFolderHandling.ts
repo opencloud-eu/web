@@ -1,12 +1,12 @@
 import { Ref, ref, unref, MaybeRef } from 'vue'
-import { dirname } from 'path'
 import { ClientService, folderService } from '../../services'
 import { useAppFileHandling } from './useAppFileHandling'
 import {
   HttpError,
   isSearchResource,
   isShareSpaceResource,
-  Resource
+  Resource,
+  dirname
 } from '@opencloud-eu/web-client'
 import { FileContext } from './types'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
@@ -134,7 +134,8 @@ export function useAppFolderHandling({
       }
     } catch (error) {
       if (error.statusCode === 401) {
-        return authService.handleAuthError(unref(currentRoute), error)
+        await authService.handleAuthError(unref(currentRoute), error)
+        return
       }
       resourcesStore.setCurrentFolder(null)
       folderLoadingError.value = error

@@ -231,9 +231,13 @@ When(
     condition: string,
     resource: string
   ): Promise<void> {
-    const shouldSee = condition === 'should'
     const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
-    expect(await shareObject.resourceIsSynced(resource)).toBe(shouldSee)
+    const syncedIndicator = shareObject.getSyncedIndicatorLocator(resource)
+    if (condition === 'should') {
+      await expect(syncedIndicator).toBeVisible()
+      return
+    }
+    await expect(syncedIndicator).toBeHidden()
   }
 )
 

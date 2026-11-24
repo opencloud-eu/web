@@ -1,7 +1,6 @@
 import NotFoundMessage from '../../../../src/components/FilesList/NotFoundMessage.vue'
-import { PublicSpaceResource, SpaceResource, Resource } from '@opencloud-eu/web-client'
+import { PublicSpaceResource, SpaceResource, Resource, urlJoin } from '@opencloud-eu/web-client'
 import { MockProxy, mock } from 'vitest-mock-extended'
-import { join } from 'path'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { OcButton } from '@opencloud-eu/design-system/components'
 import { RouteLocationNamedRaw, RouteLocationNormalizedLoaded } from 'vue-router'
@@ -31,7 +30,6 @@ describe('NotFoundMessage', () => {
       const homeButton = wrapper.find(selectors.homeButton)
 
       expect(homeButton.exists()).toBeTruthy()
-      expect(homeButton.find('span')).toBeTruthy()
       expect(homeButton.find('span').text()).toBe('Go to »Personal« page')
     })
 
@@ -97,7 +95,7 @@ describe('NotFoundMessage', () => {
         driveType: 'public'
       })
       space.getDriveAliasAndItem.mockImplementation((resource) =>
-        join('public/1234', resource.path)
+        urlJoin('public/1234', resource.path, { leadingSlash: false })
       )
     })
 
@@ -106,7 +104,6 @@ describe('NotFoundMessage', () => {
       const reloadLinkButton = wrapper.find(selectors.reloadLinkButton)
 
       expect(reloadLinkButton.exists()).toBeTruthy()
-      expect(reloadLinkButton.find('span')).toBeTruthy()
       expect(reloadLinkButton.find('span').text()).toBe('Reload public link')
     })
 

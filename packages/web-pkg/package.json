@@ -1,6 +1,6 @@
 {
   "name": "@opencloud-eu/web-pkg",
-  "version": "8.2.2",
+  "version": "8.3.0",
   "description": "OpenCloud web pkg",
   "license": "AGPL-3.0",
   "main": "src/index.ts",
@@ -91,7 +91,6 @@
     "@vueuse/core": "^15.0.0",
     "axios": "^1.13.6",
     "cropperjs": "^2.0.0",
-    "deepmerge": "^4.3.1",
     "dompurify": "^3.3.3",
     "filesize": "^11.0.14",
     "fuse.js": "^7.1.0",
@@ -102,12 +101,9 @@
     "marked": "catalog:tiptap",
     "oidc-client-ts": "^3.5.0",
     "p-queue": "^9.1.0",
-    "password-sheriff": "^2.0.0",
     "pinia": "^4.0.0",
     "qs": "^6.15.0",
-    "uuid": "^14.0.0",
     "vue-concurrency": "^5.0.3",
-    "vue-inline-svg": "^5.0.0",
     "vue-router": "^5.0.4",
     "vue3-gettext": "4.0.1",
     "y-protocols": "^1.0.7",
@@ -116,8 +112,6 @@
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:^",
-    "@types/lodash-es": "4.17.12",
-    "@types/node": "^25.5.0",
-    "vite-plugin-node-polyfills": "0.28.0"
+    "@types/node": "^26.0.0"
   }
 }

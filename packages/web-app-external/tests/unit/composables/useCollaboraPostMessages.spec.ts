@@ -359,6 +359,7 @@ describe('useCollaboraPostMessages', () => {
     it.each([
       { path: '/', storageId: 'storage-1' },
       { path: '/other', storageId: 'storage-1' },
+      { path: '/folder-sibling', storageId: 'storage-1' },
       { path: '/folder', storageId: 'storage-2' }
     ])('shows an error for a location outside of the current folder (%o)', async (targetFolder) => {
       const postMessage = vi.fn()

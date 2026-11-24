@@ -54,6 +54,30 @@ describe('AnnouncementSection', () => {
     expect(useMessages().showMessage).toHaveBeenCalled()
   })
 
+  it('saves changed text on form submit', async () => {
+    const { wrapper, clientService } = getWrapper()
+    await flushPromises()
+
+    await setBannerText(wrapper, 'Maintenance')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(clientService.httpAuthenticated.put).toHaveBeenCalledWith(
+      'announcement',
+      expect.objectContaining({ bannerText: 'Maintenance' })
+    )
+  })
+
+  it('does not save on form submit without changes', async () => {
+    const { wrapper, clientService } = getWrapper({ bannerText: 'Hi' })
+    await flushPromises()
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(clientService.httpAuthenticated.put).not.toHaveBeenCalled()
+  })
+
   it('removes the announcement when saving with an empty banner text', async () => {
     const { wrapper, clientService } = getWrapper({
       enabled: true,

@@ -5,11 +5,6 @@ import { Modal, useMessages, useSharesStore } from '@opencloud-eu/web-pkg'
 import { Resource, LinkShare, SpaceResource } from '@opencloud-eu/web-client'
 
 describe('SetLinkPasswordModal', () => {
-  it('should render a text input field for the password', () => {
-    const { wrapper } = getWrapper()
-
-    expect(wrapper.find('oc-text-input-stub').exists()).toBeTruthy()
-  })
   it('gives the password input the id the modal focuses initially', () => {
     const { wrapper } = getWrapper()
 

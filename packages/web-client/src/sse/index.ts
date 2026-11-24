@@ -54,6 +54,7 @@ export class SSEAdapter implements EventSource {
   fetchOptions: FetchEventSourceInit
   private abortController: AbortController
   private eventListenerMap: Record<string, ((event: MessageEvent) => any)[]>
+  private started = false
 
   readyState: number
   readonly withCredentials: boolean
@@ -71,11 +72,23 @@ export class SSEAdapter implements EventSource {
     this.fetchOptions = fetchOptions
     this.abortController = new AbortController()
     this.eventListenerMap = {}
-    this.readyState = this.CONNECTING
+    if (!this.hasCredentials()) {
+      this.readyState = this.CLOSED
+      return
+    }
     this.connect()
   }
 
+  // a request without credentials only yields 401s and endless retries
+  private hasCredentials() {
+    return (
+      !!this.fetchOptions.headers?.['Authorization'] || this.fetchOptions.credentials === 'include'
+    )
+  }
+
   private connect() {
+    this.started = true
+    this.readyState = this.CONNECTING
     return fetchEventSource(this.url, {
       openWhenHidden: true,
       signal: this.abortController.signal,
@@ -114,7 +127,9 @@ export class SSEAdapter implements EventSource {
 
   fetchProvider(...args: [RequestInfo | URL, RequestInit]) {
     const [resource, config] = args
-    const fetchConfig = { ...config, ...this.fetchOptions }
+    // firefox lets concurrent requests to the same url wait for the cache entry of the first one,
+    // which never completes for an event stream. hence other tabs would never get any events.
+    const fetchConfig: RequestInit = { ...config, cache: 'no-store', ...this.fetchOptions }
     return window.fetch(resource, fetchConfig)
   }
 
@@ -143,10 +158,17 @@ export class SSEAdapter implements EventSource {
 
   updateAccessToken(token: string) {
     this.fetchOptions.headers['Authorization'] = `Bearer ${token}`
+    if (!this.started) {
+      this.connect()
+    }
   }
 
   updateLanguage(language: string) {
     this.fetchOptions.headers['Accept-Language'] = language
+
+    if (!this.started) {
+      return
+    }
 
     // Force reconnect, to make the language change effect instantly
     this.close()

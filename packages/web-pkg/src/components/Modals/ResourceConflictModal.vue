@@ -10,19 +10,19 @@
     />
   </div>
   <teleport defer :to="`#${modalActionsTarget(modal)}`">
-    <oc-button class="oc-modal-body-actions-cancel ml-2" @click="onSkip">
+    <oc-button class="oc-modal-body-actions-cancel ms-2" @click="onSkip">
       {{ $gettext('Skip') }}
     </oc-button>
     <oc-button
       v-if="!hideSecondaryAction"
-      class="oc-modal-body-actions-secondary ml-2"
+      class="oc-modal-body-actions-secondary ms-2"
       @click="onConfirmSecondary"
     >
       {{ confirmSecondaryText }}
     </oc-button>
     <oc-button
       v-if="!hideKeepBoth"
-      class="oc-modal-body-actions-confirm ml-2"
+      class="oc-modal-body-actions-confirm ms-2"
       appearance="filled"
       @click="onConfirm"
     >

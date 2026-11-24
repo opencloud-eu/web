@@ -37,6 +37,8 @@
           :view-size="viewSize"
           :sort-fields="sortFields"
           :term="filterTerm"
+          :tab-items="tabItems"
+          :matching-count="matchingCount"
           @load-more="loadMore"
         />
       </template>
@@ -49,7 +51,6 @@
 import Fuse from 'fuse.js'
 import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { v4 as uuidV4 } from 'uuid'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
 import {
   AppBar,
@@ -60,6 +61,7 @@ import {
   eventBus,
   useGetMatchingSpace,
   useKeyboardActions,
+  useResourcesStore,
   useRoute,
   useRouter
 } from '@opencloud-eu/web-pkg'
@@ -76,6 +78,7 @@ const { $gettext } = useGettext()
 const router = useRouter()
 const route = useRoute()
 const { getMatchingSpace } = useGetMatchingSpace()
+const resourcesStore = useResourcesStore()
 
 const filterTerm = ref('')
 
@@ -115,9 +118,14 @@ const {
   infiniteScrollResetOn: [filterTerm]
 })
 
+const tabItems = computed(() => resourcesStore.resources as IncomingShareResource[])
+const matchingCount = computed(() =>
+  unref(filterTerm).trim() ? unref(sortedResources).length : undefined
+)
+
 const breadcrumbs = computed(() => [
   {
-    id: uuidV4(),
+    id: crypto.randomUUID(),
     text: $gettext('Shares'),
     onClick: () => loadResources(),
     isStaticNav: true

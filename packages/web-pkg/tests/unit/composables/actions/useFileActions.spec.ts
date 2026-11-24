@@ -24,7 +24,8 @@ const actionOptions: GetFileActionsOptions = {
       id: '1',
       canDownload: () => true,
       mimeType: 'text/plain',
-      extension: 'txt'
+      extension: 'txt',
+      isFolder: false
     })
   ],
   space: null
@@ -152,6 +153,7 @@ describe('fileActions', () => {
           canDownload: () => true,
           mimeType: 'image/heic',
           extension: 'heic',
+          isFolder: false,
           hasPreview: () => hasPreview
         })
       ]
@@ -188,7 +190,8 @@ describe('fileActions', () => {
                   id: '1',
                   canDownload: () => false,
                   mimeType: 'text/plain',
-                  extension: 'txt'
+                  extension: 'txt',
+                  isFolder: false
                 })
               ]
             })

@@ -1,5 +1,4 @@
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { Graph } from '@opencloud-eu/web-client/graph'
 import { mockDeep } from 'vitest-mock-extended'
 import {
   AppLoadingSpinner,
@@ -26,8 +25,7 @@ import { flushPromises } from '@vue/test-utils'
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn(),
-  useAppDefaults: vi.fn(),
-  useRouteQueryPersisted: vi.fn()
+  useAppDefaults: vi.fn()
 }))
 vi.mocked(useAppDefaults).mockImplementation(() => useAppDefaultsMock({}))
 
@@ -203,8 +201,6 @@ describe('Spaces view', () => {
     expect(wrapper.findComponent(SpacesList).props('filterTerm')).toBe('Some')
   })
   it('should render no content message if no spaces found', async () => {
-    const graph = mockDeep<Graph>()
-    graph.drives.listAllDrives.mockResolvedValue([])
     const { wrapper } = getWrapper({ spaces: [] })
     await flushPromises()
     expect(wrapper.find(selectors.noContentMessageStub).exists()).toBeTruthy()

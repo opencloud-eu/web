@@ -202,9 +202,10 @@ describe('file events', () => {
         path: '/renamed'
       })
       expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'renamed' })
+        expect.objectContaining({ name: 'renamed', remoteItemId: mocks.shareSpace.id })
       )
-      expect(mocks.router.push).toHaveBeenCalled()
+      expect(mocks.router.replace).toHaveBeenCalled()
+      expect(mocks.router.push).not.toHaveBeenCalled()
     })
     it('does not add a resource restored outside of the current folder', async () => {
       const mocks = getShareMocks()
@@ -281,6 +282,54 @@ describe('file events', () => {
         expect.objectContaining({ space: mocks.shareSpace })
       )
     })
+    describe('resources loaded via events', () => {
+      // the share space of a resource is resolved by its remote item id, e.g. to delete or open it
+      it('carry the share space id as remote item id when uploaded', async () => {
+        const mocks = getShareMocks()
+        mocks.resourceQueue.add.mockImplementation((task) => Promise.resolve(task({})))
+        mockGetFileInfo(mocks, {
+          id: 'space1!file1',
+          name: 'file1',
+          parentFolderId: 'space1!sharedFolder'
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: 'space1!file1',
+          spaceid: 'space1',
+          parentitemid: 'space1!sharedFolder',
+          initiatorid: 'remote1'
+        })
+        await onSSEProcessingFinishedEvent({ sseData, ...mocks })
+        expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(
+          expect.objectContaining({ path: '/file1', remoteItemId: mocks.shareSpace.id })
+        )
+      })
+      it('carry the share space id as remote item id when renamed', async () => {
+        const resourceToRename = mock<Resource>({
+          id: 'space1!file1',
+          name: 'file1',
+          path: '/file1',
+          storageId: 'space1',
+          parentFolderId: 'space1!sharedFolder',
+          remoteItemId: 'shareJail!share1'
+        })
+        const mocks = getShareMocks([resourceToRename])
+        mockGetFileInfo(mocks, {
+          id: 'space1!file1',
+          name: 'renamed',
+          parentFolderId: 'space1!sharedFolder'
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: resourceToRename.id,
+          spaceid: 'space1',
+          parentitemid: resourceToRename.parentFolderId,
+          initiatorid: 'remote1'
+        })
+        await onSSEItemRenamedEvent({ sseData, ...mocks })
+        expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(
+          expect.objectContaining({ name: 'renamed', remoteItemId: mocks.shareSpace.id })
+        )
+      })
+    })
     it('ignores events of other spaces', async () => {
       const mocks = getShareMocks()
       const sseData = mock<EventSchemaType>({
@@ -334,14 +383,22 @@ describe('file events', () => {
       expect(mocks.resourcesStore.setCurrentFolder).not.toHaveBeenCalled()
     })
     it.each(['files-spaces-generic', 'files-public-link', 'files-guest-link'])(
-      'calls "setCurrentFolder" and updates the "%s" route when resource is current folder and has been renamed',
+      'calls "setCurrentFolder" and replaces the "%s" route when resource is current folder and has been renamed',
       async (currentRouteName) => {
         const resourceToRename = mock<Resource>({
           id: 'currenFolder!currentFolder',
+          fileId: 'currenFolder!currentFolder',
           storageId: 'space1',
           parentFolderId: 'space1'
         })
-        const mocks = getMocks({ resources: [resourceToRename], currentRouteName })
+        const mocks = getMocks({
+          resources: [resourceToRename],
+          currentRoute: mock<RouteLocation>({
+            name: currentRouteName,
+            // a stale file id shows that the values of the new route win over the current query
+            query: { fileId: 'currenFolder!stale', 'sort-by': 'name', details: 'sharing' }
+          })
+        })
         mocks.clientService.webdav.getFileInfo.mockResolvedValue(
           mock<Resource>({ ...resourceToRename, name: 'folder2', parentFolderId: 'space1' })
         )
@@ -353,9 +410,13 @@ describe('file events', () => {
         await onSSEItemRenamedEvent({ sseData, ...mocks })
         expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
         expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalled()
-        expect(mocks.router.push).toHaveBeenCalledWith(
-          expect.objectContaining({ name: currentRouteName })
+        expect(mocks.router.replace).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: currentRouteName,
+            query: { fileId: 'currenFolder!currentFolder', 'sort-by': 'name', details: 'sharing' }
+          })
         )
+        expect(mocks.router.push).not.toHaveBeenCalled()
         expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
       }
     )
@@ -445,6 +506,7 @@ describe('file events', () => {
       expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.setCurrentFolder).not.toHaveBeenCalled()
       expect(mocks.router.push).not.toHaveBeenCalled()
+      expect(mocks.router.replace).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
     })
   })
@@ -1132,6 +1194,82 @@ describe('file events', () => {
       expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
     })
   })
+  describe('favorite events of a project space', () => {
+    // the event carries the id of the space root, its parent is the space itself
+    const projectSpace = mock<SpaceResource>({ id: 'storage$space', driveType: 'project' })
+    const sseData = mock<EventSchemaType>({
+      itemid: 'storage$space!space',
+      parentitemid: projectSpace.id,
+      spaceid: projectSpace.id
+    })
+
+    it.each([
+      { handler: onSSEItemFavoriteAddedEvent, starred: true },
+      { handler: onSSEItemFavoriteRemovedEvent, starred: false }
+    ])('$handler.name updates the space and the listed space', async ({ handler, starred }) => {
+      const mocks = getMocks({ resources: [projectSpace], spaces: [projectSpace] })
+      await handler({ sseData, ...mocks })
+      const update = { id: projectSpace.id, field: 'starred', value: starred }
+      expect(mocks.spacesStore.updateSpaceField).toHaveBeenCalledWith(update)
+      expect(mocks.resourcesStore.updateResourceField).toHaveBeenCalledWith(update)
+    })
+    it('adds the space to the favorites view', async () => {
+      const mocks = getMocks({
+        spaces: [projectSpace],
+        currentRouteName: 'files-common-favorites'
+      })
+      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
+      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(projectSpace)
+    })
+    it('removes the space from the favorites view', async () => {
+      const mocks = getMocks({
+        resources: [projectSpace],
+        spaces: [projectSpace],
+        currentRouteName: 'files-common-favorites'
+      })
+      await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([projectSpace])
+    })
+    it('keeps the space as current folder instead of replacing it with a copy', async () => {
+      const mocks = getMocks({ currentFolder: projectSpace, spaces: [projectSpace] })
+      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
+      expect(mocks.spacesStore.updateSpaceField).toHaveBeenCalledWith({
+        id: projectSpace.id,
+        field: 'starred',
+        value: true
+      })
+      expect(mocks.resourcesStore.setCurrentFolder).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('favorite events of a received share', () => {
+    // received shares are listed by their share id, the event carries the id of the shared item
+    const share = mock<Resource>({ id: 'shareJail!share1', fileId: 'space1!sharedFolder' })
+    const sseData = mock<EventSchemaType>({
+      itemid: share.fileId,
+      parentitemid: 'space1!parent',
+      spaceid: 'space1'
+    })
+
+    it('updates the listed share', async () => {
+      const mocks = getMocks({ resources: [share] })
+      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.updateResourceField).toHaveBeenCalledWith({
+        id: share.id,
+        field: 'starred',
+        value: true
+      })
+    })
+    it('updates the share as current folder', async () => {
+      const mocks = getMocks({ currentFolder: share })
+      await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalledWith(
+        expect.objectContaining({ id: share.id, starred: false })
+      )
+    })
+  })
+
   describe('during a running folder load', () => {
     it.each(
       [

@@ -15,7 +15,7 @@
         <oc-switch
           v-model:checked="encrypt"
           :label="$gettext('End-to-end encrypt this folder')"
-          class="inline-flex flex-row-reverse [&>span:first-child]:flex-row-reverse [&>span:first-child]:ml-2"
+          class="inline-flex flex-row-reverse [&>span:first-child]:flex-row-reverse [&>span:first-child]:ms-2"
         >
           <oc-icon
             :name="encrypt ? 'lock-2' : 'lock-unlock'"
@@ -24,7 +24,7 @@
           />
         </oc-switch>
         <p
-          class="mt-1 mb-0 ml-12 text-sm text-role-on-surface-variant"
+          class="mt-1 mb-0 ms-12 text-sm text-role-on-surface-variant"
           v-text="
             $gettext(
               'Extra secure: unreadable without an extra password. Lose it and the files are lost too. Collaboration features are limited.'
@@ -44,13 +44,13 @@
     <teleport defer :to="`#${modalActionsTarget(modal)}`">
       <oc-button
         v-if="step === 'setup'"
-        class="oc-modal-body-actions-cancel ml-2"
+        class="oc-modal-body-actions-cancel ms-2"
         @click="step = 'name'"
       >
         {{ $gettext('Back') }}
       </oc-button>
       <oc-button
-        class="oc-modal-body-actions-confirm ml-2"
+        class="oc-modal-body-actions-confirm ms-2"
         appearance="filled"
         submit="submit"
         :form="formId"
@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { computed, ref, unref, useId, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { join } from 'path'
+import { urlJoin } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -169,7 +169,7 @@ watch(encrypt, (on) => {
 
 function validate(name: string) {
   const resource = {
-    path: join(unref(currentFolder).path, name),
+    path: urlJoin(unref(currentFolder).path, name),
     name,
     isFolder: true
   } as Resource

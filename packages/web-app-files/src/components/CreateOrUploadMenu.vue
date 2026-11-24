@@ -90,7 +90,7 @@
         >
           <resource-icon :resource="getIconResource(fileAction)" />
           <span>{{ fileAction.label() }}</span>
-          <span v-if="areFileExtensionsShown && fileAction.ext" class="ml-auto text-sm">
+          <span v-if="areFileExtensionsShown && fileAction.ext" class="ms-auto text-sm">
             {{ fileAction.ext }}
           </span>
         </oc-button>
@@ -107,7 +107,7 @@
         >
           <resource-icon :resource="shortcutIconResource" />
           <span v-text="$gettext('Shortcut')" />
-          <span v-if="areFileExtensionsShown" class="ml-auto text-sm" v-text="'url'" />
+          <span v-if="areFileExtensionsShown" class="ms-auto text-sm" v-text="'url'" />
         </oc-button>
       </li>
     </oc-list>

@@ -1,5 +1,5 @@
 import { unref } from 'vue'
-import { DeepMockProxy, mock, mockDeep } from 'vitest-mock-extended'
+import { mock, mockDeep } from 'vitest-mock-extended'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
@@ -35,7 +35,7 @@ describe('editReadmeContent', () => {
       })
     })
     it('should be false if canEditReadme is false', () => {
-      const spaceMock = mock<SpaceResource>({ canEditReadme: () => false })
+      const spaceMock = mock<SpaceResource>({ driveType: 'project', canEditReadme: () => false })
 
       getWrapper({
         setup: ({ actions }) => {
@@ -49,65 +49,56 @@ describe('editReadmeContent', () => {
     })
   })
   describe('method "handler"', () => {
-    it('opens the readme a space already has', () => {
+    it('opens the readme a space already has', async () => {
       const readme = mock<Resource>({ id: 'readme-id' })
-      getWrapper({
-        setup: async ({ actions }, { triggerDefaultAction, clientService }) => {
-          clientService.webdav.getFileInfo.mockResolvedValue(readme)
+      const { instance, mocks } = getWrapper()
+      mocks.clientService.webdav.getFileInfo.mockResolvedValue(readme)
 
-          await unref(actions)[0].handler({ resources: [spaceWithReadme] })
+      await unref(instance.actions)[0].handler({ resources: [spaceWithReadme] })
 
-          expect(clientService.webdav.getFileInfo).toHaveBeenCalledWith(spaceWithReadme, {
-            path: '.space/readme.md'
-          })
-          expect(clientService.webdav.putFileContents).not.toHaveBeenCalled()
-          expect(triggerDefaultAction).toHaveBeenCalledWith({
-            space: spaceWithReadme,
-            resources: [readme]
-          })
-        }
+      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalledWith(spaceWithReadme, {
+        path: '.space/readme.md'
+      })
+      expect(mocks.clientService.webdav.putFileContents).not.toHaveBeenCalled()
+      expect(mocks.triggerDefaultAction).toHaveBeenCalledWith({
+        space: spaceWithReadme,
+        resources: [readme]
       })
     })
 
-    it('opens an on-disk readme that the drive does not know about', () => {
+    it('opens an on-disk readme that the drive does not know about', async () => {
       const readme = mock<Resource>({ id: 'readme-id' })
       const space = mock<SpaceResource>({ id: '1', name: 'space', spaceReadmeData: undefined })
-      getWrapper({
-        setup: async ({ actions }, { triggerDefaultAction, clientService }) => {
-          clientService.webdav.getFileInfo.mockResolvedValue(readme)
+      const { instance, mocks } = getWrapper()
+      mocks.clientService.webdav.getFileInfo.mockResolvedValue(readme)
 
-          await unref(actions)[0].handler({ resources: [space] })
+      await unref(instance.actions)[0].handler({ resources: [space] })
 
-          expect(clientService.webdav.getFileInfo).toHaveBeenCalledWith(space, {
-            path: '.space/readme.md'
-          })
-          expect(clientService.webdav.putFileContents).not.toHaveBeenCalled()
-          expect(triggerDefaultAction).toHaveBeenCalledWith({ space, resources: [readme] })
-        }
+      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalledWith(space, {
+        path: '.space/readme.md'
       })
+      expect(mocks.clientService.webdav.putFileContents).not.toHaveBeenCalled()
+      expect(mocks.triggerDefaultAction).toHaveBeenCalledWith({ space, resources: [readme] })
     })
 
-    it('creates a readme for a space that has none yet', () => {
+    it('creates a readme for a space that has none yet', async () => {
       const readme = mock<Resource>({ id: 'readme-id' })
       const space = mock<SpaceResource>({ id: '1', name: 'space', spaceReadmeData: undefined })
-      getWrapper({
-        setup: async ({ actions }, { triggerDefaultAction, clientService }) => {
-          clientService.webdav.getFileInfo.mockRejectedValue(
-            mock<Error>({ statusCode: 404 } as any)
-          )
-          clientService.webdav.listFiles.mockResolvedValue({ children: [] } as any)
-          clientService.webdav.createFolder.mockResolvedValue(mock<Resource>({ id: 'meta' }))
-          clientService.webdav.putFileContents.mockResolvedValue(readme)
+      const { instance, mocks } = getWrapper()
+      mocks.clientService.webdav.getFileInfo.mockRejectedValue(
+        mock<Error>({ statusCode: 404 } as any)
+      )
+      mocks.clientService.webdav.listFiles.mockResolvedValue({ children: [] } as any)
+      mocks.clientService.webdav.createFolder.mockResolvedValue(mock<Resource>({ id: 'meta' }))
+      mocks.clientService.webdav.putFileContents.mockResolvedValue(readme)
 
-          await unref(actions)[0].handler({ resources: [space] })
+      await unref(instance.actions)[0].handler({ resources: [space] })
 
-          expect(clientService.webdav.putFileContents).toHaveBeenCalledWith(
-            space,
-            expect.objectContaining({ fileName: 'readme.md' })
-          )
-          expect(triggerDefaultAction).toHaveBeenCalledWith({ space, resources: [readme] })
-        }
-      })
+      expect(mocks.clientService.webdav.putFileContents).toHaveBeenCalledWith(
+        space,
+        expect.objectContaining({ fileName: 'readme.md' })
+      )
+      expect(mocks.triggerDefaultAction).toHaveBeenCalledWith({ space, resources: [readme] })
     })
 
     it('shows an error message when loading the readme fails', async () => {
@@ -140,12 +131,9 @@ function getWrapper({
   setup,
   triggerDefaultAction = vi.fn()
 }: {
-  setup: (
-    instance: ReturnType<typeof useSpaceActionsEditReadmeContent>,
-    mocks: { triggerDefaultAction: () => void; clientService: DeepMockProxy<ClientService> }
-  ) => void
+  setup?: (instance: ReturnType<typeof useSpaceActionsEditReadmeContent>) => void
   triggerDefaultAction?: () => void
-}) {
+} = {}) {
   vi.mocked(useFileActions).mockReturnValue(
     mock<ReturnType<typeof useFileActions>>({
       triggerDefaultAction
@@ -156,21 +144,20 @@ function getWrapper({
   clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(mock<SpaceResource>())
   const mocks = { triggerDefaultAction, clientService }
 
-  return {
-    mocks,
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useSpaceActionsEditReadmeContent()
-        setup(instance, mocks)
-      },
-      {
-        provide: { $clientService: clientService },
-        pluginOptions: {
-          piniaOptions: {
-            userState: { user: { id: '1', onPremisesSamAccountName: 'alice' } as User }
-          }
+  let instance: ReturnType<typeof useSpaceActionsEditReadmeContent>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useSpaceActionsEditReadmeContent()
+      setup?.(instance)
+    },
+    {
+      provide: { $clientService: clientService },
+      pluginOptions: {
+        piniaOptions: {
+          userState: { user: { id: '1', onPremisesSamAccountName: 'alice' } as User }
         }
       }
-    )
-  }
+    }
+  )
+  return { wrapper, instance, mocks }
 }

@@ -5,15 +5,7 @@ exports[`access denied page > renders component 1`] = `
   <!--v-if-->
   <div class="oc-card-body p-6 sm:p-8">
     <div class="flex flex-col gap-6">
-      <div class="flex flex-col gap-4"><span class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-role-secondary-container"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/user-line.svg" unique-ids="false" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-hidden="true" focusable="false" style="fill: var(--oc-role-on-secondary-container);" class="size-5"></svg></span></span>
+      <div class="flex flex-col gap-4"><span class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-role-secondary-container"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/user-line.svg" unique-ids="false" aria-hidden="true" focusable="false" style="fill: var(--oc-role-on-secondary-container);" class="size-5"></svg></span></span>
         <div class="flex flex-col gap-1">
           <h2 class="my-0 text-2xl font-bold">Not logged in</h2>
           <p class="my-0 text-role-on-surface-variant">This could be because of a routine safety log out, or because your account is either inactive or not yet authorized for use. Please try logging in after a while or seek help from your Administrator.</p>

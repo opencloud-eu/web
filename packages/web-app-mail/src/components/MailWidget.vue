@@ -4,7 +4,7 @@
     class="z-[var(--z-index-modal)] transition absolute inset-0 md:fixed md:inset-0 pointer-events-auto md:pointer-events-none bg-transparent"
   >
     <div
-      class="oc-mail-compose-widget pointer-events-auto absolute bg-role-surface border-0 md:border md:border-role-outline-variant flex flex-col md:rounded-xl top-0 left-0 right-0 bottom-0 md:top-auto md:bottom-2 md:left-auto md:right-8 md:w-[720px] md:h-[800px]"
+      class="oc-mail-compose-widget pointer-events-auto absolute bg-role-surface border-0 md:border md:border-role-outline-variant flex flex-col md:rounded-xl top-0 inset-s-0 inset-e-0 bottom-0 md:top-auto md:bottom-2 md:inset-s-auto md:inset-e-8 md:w-[720px] md:h-[800px]"
     >
       <div class="flex items-center justify-between px-4 py-2">
         <h2
@@ -54,7 +54,7 @@
               v-model="composeState.attachments"
               :account-id="currentAccountId"
             />
-            <div class="ml-auto flex items-center min-w-0">
+            <div class="ms-auto flex items-center min-w-0">
               <MailSavedHint v-if="showSavedHint" />
             </div>
           </div>
@@ -69,6 +69,8 @@
     :hide-actions="true"
     hide-cancel-button
     element-class="mail-compose-modal"
+    :active="!activeModal"
+    @cancel="requestClose"
   >
     <template #headerActions>
       <oc-button
@@ -108,7 +110,7 @@
               v-model="composeState.attachments"
               :account-id="currentAccountId"
             />
-            <div class="ml-auto flex items-center min-w-0">
+            <div class="ms-auto flex items-center min-w-0">
               <MailSavedHint v-if="showSavedHint" />
             </div>
           </div>
@@ -141,7 +143,10 @@ import type { Mail, Mailbox, MailAddress } from '../types'
 type ComposeAttachment = ComposeFormState['attachments'][number]
 
 const { $gettext } = useGettext()
-const { dispatchModal } = useModals()
+const modalsStore = useModals()
+const { dispatchModal } = modalsStore
+// dispatched modals (e.g. unsaved changes) sit on top and must get the Escape
+const { activeModal } = storeToRefs(modalsStore)
 const router = useRouter()
 const appliedDraftId = ref<string | null>(null)
 

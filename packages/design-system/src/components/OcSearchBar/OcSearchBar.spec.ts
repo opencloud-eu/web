@@ -5,8 +5,7 @@ describe('OcSearchBar', () => {
   const selectors = {
     searchButton: '.oc-search-button',
     searchInput: '.oc-search-input',
-    searchButtonWrapper: '.oc-search-button-wrapper',
-    searchClearButton: '.oc-search-clear'
+    searchButtonWrapper: '.oc-search-button-wrapper'
   }
   it('should have an id', () => {
     const wrapper = getWrapper()
@@ -53,8 +52,7 @@ describe('OcSearchBar', () => {
     })
     it('should not render icon if false', () => {
       const wrapper = getWrapper({ icon: false })
-      const iconStub = wrapper.find('oc-icon-stub[icon="mdi-icon"]')
-      expect(iconStub.exists()).toBeFalsy()
+      expect(wrapper.find('oc-icon-stub').exists()).toBeFalsy()
     })
   })
   describe('loading prop', () => {
@@ -191,6 +189,62 @@ describe('OcSearchBar', () => {
       expect(wrapper.emitted('search')).toBeFalsy()
     })
   })
+  describe('escape key', () => {
+    it('clears the term, searches again and stops the event', async () => {
+      const wrapper = getMountedWrapper()
+      const searchInput = wrapper.find(selectors.searchInput)
+      await searchInput.setValue('a')
+      const onParentKeydown = vi.fn()
+      wrapper.element.addEventListener('keydown', onParentKeydown)
+
+      await searchInput.trigger('keydown', { key: 'Escape' })
+
+      expect((searchInput.element as HTMLInputElement).value).toBe('')
+      expect(wrapper.emitted('search').at(-1)).toEqual([''])
+      expect(onParentKeydown).not.toHaveBeenCalled()
+    })
+    it('searches with an empty term if the parent binds the term', async () => {
+      const wrapper = getMountedWrapper({
+        modelValue: 'a',
+        'onUpdate:modelValue': (value: string) => wrapper.setProps({ modelValue: value })
+      })
+
+      await wrapper.find(selectors.searchInput).trigger('keydown', { key: 'Escape' })
+
+      expect(wrapper.emitted('search')).toEqual([['']])
+    })
+    it('leaves the event to others if there is nothing to clear', async () => {
+      const wrapper = getMountedWrapper()
+      const onParentKeydown = vi.fn()
+      wrapper.element.addEventListener('keydown', onParentKeydown)
+
+      await wrapper.find(selectors.searchInput).trigger('keydown', { key: 'Escape' })
+
+      expect(wrapper.emitted('search')).toBeFalsy()
+      expect(onParentKeydown).toHaveBeenCalled()
+    })
+    it('calls the cancel handler if the cancel button is shown', async () => {
+      const cancelHandler = vi.fn()
+      const wrapper = getMountedWrapper({ showCancelButton: true, typeAhead: true, cancelHandler })
+      const onParentKeydown = vi.fn()
+      wrapper.element.addEventListener('keydown', onParentKeydown)
+
+      await wrapper.find(selectors.searchInput).trigger('keydown', { key: 'Escape' })
+
+      expect(cancelHandler).toHaveBeenCalled()
+      expect(onParentKeydown).not.toHaveBeenCalled()
+    })
+    it('does not call the cancel handler if the cancel button is hidden', async () => {
+      const cancelHandler = vi.fn()
+      const wrapper = getMountedWrapper({ cancelHandler })
+      const searchInput = wrapper.find(selectors.searchInput)
+      await searchInput.setValue('a')
+
+      await searchInput.trigger('keydown', { key: 'Escape' })
+
+      expect(cancelHandler).not.toHaveBeenCalled()
+    })
+  })
 })
 
 function getWrapper(props = {}) {
@@ -205,9 +259,9 @@ function getWrapper(props = {}) {
     }
   })
 }
-function getMountedWrapper() {
+function getMountedWrapper(props = {}) {
   return mount(OcSearchBar, {
-    props: { label: 'abc' },
+    props: { label: 'abc', ...props },
     global: {
       plugins: [...defaultPlugins()]
     }

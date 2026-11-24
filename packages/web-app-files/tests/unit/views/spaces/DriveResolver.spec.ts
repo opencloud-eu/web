@@ -73,10 +73,11 @@ describe('DriveResolver view', () => {
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
-    expect(mocks.$router.push).toHaveBeenCalledWith({
+    expect(mocks.$router.replace).toHaveBeenCalledWith({
       name: locationPublicUpload.name,
       params: { token: space.id }
     })
+    expect(mocks.$router.push).not.toHaveBeenCalled()
   })
   it('sets the real file id of a public folder link after a reload', async () => {
     const space = mock<SpaceResource>({
@@ -127,9 +128,10 @@ describe('DriveResolver view', () => {
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
-    expect(mocks.$router.push).toHaveBeenCalledWith(
+    expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'files-spaces-generic' })
     )
+    expect(mocks.$router.push).not.toHaveBeenCalled()
   })
   it('redirects to private link if user has access to the resource via a share', async () => {
     const space = mock<SpaceResource>({
@@ -148,11 +150,12 @@ describe('DriveResolver view', () => {
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
-    expect(mocks.$router.push).toHaveBeenCalledWith(
+    expect(mocks.$router.replace).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'resolvePrivateLink'
       })
     )
+    expect(mocks.$router.push).not.toHaveBeenCalled()
   })
   it('redirects to private link if no drive alias but a fileId is given', async () => {
     const { wrapper, mocks } = getMountedWrapper({ driveAliasAndItem: '' })

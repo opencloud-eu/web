@@ -1,33 +1,36 @@
 <template>
-  <oc-text-input
-    id="edit-password-current-input"
-    v-model="currentPassword"
-    :label="$gettext('Current password')"
-    type="password"
-    autocomplete="current-password"
-    :fix-message-line="true"
-    required-mark
-  />
-  <oc-text-input
-    v-model="newPassword"
-    :label="$gettext('New password')"
-    type="password"
-    autocomplete="new-password"
-    :fix-message-line="true"
-    :error-message="newPasswordErrorMessage"
-    required-mark
-    @change="validatePasswordConfirm"
-  />
-  <oc-text-input
-    v-model="newPasswordConfirm"
-    :label="$gettext('Repeat new password')"
-    type="password"
-    autocomplete="new-password"
-    :fix-message-line="true"
-    :error-message="passwordConfirmErrorMessage"
-    required-mark
-    @change="validatePasswordConfirm"
-  />
+  <form @submit.prevent="emit('confirm')">
+    <oc-text-input
+      id="edit-password-current-input"
+      v-model="currentPassword"
+      :label="$gettext('Current password')"
+      type="password"
+      autocomplete="current-password"
+      :fix-message-line="true"
+      required-mark
+    />
+    <oc-text-input
+      v-model="newPassword"
+      :label="$gettext('New password')"
+      type="password"
+      autocomplete="new-password"
+      :fix-message-line="true"
+      :error-message="newPasswordErrorMessage"
+      required-mark
+      @change="validatePasswordConfirm"
+    />
+    <oc-text-input
+      v-model="newPasswordConfirm"
+      :label="$gettext('Repeat new password')"
+      type="password"
+      autocomplete="new-password"
+      :fix-message-line="true"
+      :error-message="passwordConfirmErrorMessage"
+      required-mark
+      @change="validatePasswordConfirm"
+    />
+    <input type="submit" class="hidden" />
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -38,6 +41,7 @@ import { Modal, useClientService, useMessages } from '@opencloud-eu/web-pkg'
 defineProps<{ modal: Modal }>()
 
 const emit = defineEmits<{
+  (e: 'confirm'): void
   (e: 'update:confirmDisabled', value: boolean): void
 }>()
 

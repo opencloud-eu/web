@@ -1,7 +1,7 @@
 <template>
   <div class="no-content-message flex flex-col justify-center items-center text-center">
     <component
-      :is="isSvg ? InlineSvg : 'oc-image'"
+      :is="isSvg ? 'oc-inline-svg' : 'oc-image'"
       v-if="imgSrc"
       :src="imgSrcWithVersion"
       class="mb-4 no-content-message-image"
@@ -29,10 +29,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import InlineSvg from 'vue-inline-svg'
 import { FillType, Icon, addVersionToAssetUrl } from '@opencloud-eu/design-system/helpers'
-
-InlineSvg.name = 'inline-svg'
 
 const {
   icon = '',

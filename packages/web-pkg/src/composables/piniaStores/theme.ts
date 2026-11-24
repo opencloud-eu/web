@@ -1,4 +1,4 @@
-import merge from 'deepmerge'
+import merge from 'lodash-es/merge'
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
 import { StorageSerializers, useLocalStorage, usePreferredDark } from '@vueuse/core'
@@ -17,7 +17,9 @@ const CommonSection = z.object({
       accessDeniedHelp: z.string().optional(),
       imprint: z.string().optional(),
       privacy: z.string().optional(),
-      accessibility: z.string().optional()
+      accessibility: z.string().optional(),
+      easyLanguage: z.string().optional(),
+      signLanguage: z.string().optional()
     })
     .optional(),
   shareRoles: z
@@ -134,9 +136,9 @@ export const useThemeStore = defineStore('theme', () => {
   const initializeThemes = (themeConfig: ThemeConfigType) => {
     const commonThemeConfig = themeConfig.common as WebThemeType
     const webThemeConfig = themeConfig.clients.web.defaults as WebThemeType
-    const baseTheme = merge(commonThemeConfig, webThemeConfig)
+    const baseTheme = merge({}, commonThemeConfig, webThemeConfig)
     availableThemes.value = themeConfig.clients.web.themes.map((theme) => {
-      return merge(baseTheme, theme)
+      return merge({}, baseTheme, theme)
     })
     setThemeFromStorageOrSystem()
   }

@@ -131,6 +131,7 @@ import {
   useClientService,
   useGetMatchingSpace,
   useLoadPreview,
+  useMessages,
   useResourcesStore,
   useRouter,
   useSpacesStore,
@@ -161,6 +162,7 @@ const { $gettext, $ngettext } = language
 const clientService = useClientService()
 const resourcesStore = useResourcesStore()
 const { getMatchingSpace } = useGetMatchingSpace()
+const { showErrorMessage } = useMessages()
 
 const { areEmptyTrashesShown } = storeToRefs(resourcesStore)
 const filterTerm = ref('')
@@ -222,14 +224,22 @@ const spaces = computed(() =>
 const loadResourcesTask = useTask(function* (signal) {
   resourcesStore.clearResourceList()
 
-  const fetchedSpaces = yield* call(
-    clientService.graphAuthenticated.drives.listMyDrives(
-      {
-        select: ['@libre.graph.hasTrashedItems']
-      },
-      { signal }
+  let fetchedSpaces: SpaceResource[]
+  try {
+    fetchedSpaces = yield* call(
+      clientService.graphAuthenticated.drives.listMyDrives(
+        {
+          select: ['@libre.graph.hasTrashedItems']
+        },
+        { signal }
+      )
     )
-  )
+  } catch (e) {
+    console.error(e)
+    // the spaces known so far don't tell whether their trash bins hold items, so none are listed
+    showErrorMessage({ title: $gettext('Failed to load trash bins'), errors: [e] })
+    return
+  }
 
   const reloadedSpaces = fetchedSpaces
     .filter(
@@ -326,10 +336,18 @@ const getTrashLink = (space: SpaceResource) =>
   })
 
 onMounted(async () => {
-  await loadResourcesTask.perform()
+  try {
+    await loadResourcesTask.perform()
+  } catch (e) {
+    // leaving the view cancels the load
+    if (e === 'cancel') {
+      return
+    }
+    throw e
+  }
 
   if (unref(spaces).length === 1 && !isProjectSpaceResource(unref(spaces)[0])) {
-    return router.push(getTrashLink(unref(spaces)[0]))
+    return router.replace(getTrashLink(unref(spaces)[0]))
   }
 })
 </script>

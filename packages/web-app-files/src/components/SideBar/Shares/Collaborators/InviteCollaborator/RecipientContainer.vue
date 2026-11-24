@@ -76,12 +76,6 @@ const getRecipientIcon = (): Recipient['icon'] => {
         label: $gettext('Guest user')
       }
 
-    case ShareTypes.contact.value:
-      return {
-        name: ShareTypes.contact.icon,
-        label: $gettext('Contact')
-      }
-
     case ShareTypes.remote.value:
       return {
         name: ShareTypes.remote.icon,

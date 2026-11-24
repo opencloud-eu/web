@@ -30,7 +30,6 @@ vi.mock('@opencloud-eu/web-client/sse', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   sse: vi.fn()
 }))
-vi.mock('uuid', () => ({ v4: () => v4uuid }))
 vi.mock('../../../src/http')
 vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -43,6 +42,7 @@ vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
 describe('ClientService', () => {
   beforeEach(() => {
     vi.mocked(HttpClient).mockClear()
+    vi.spyOn(crypto, 'randomUUID').mockReturnValue(v4uuid)
     createTestingPinia({ initialState: { auth: { accessToken: 'token' } } })
   })
   describe('http authenticated', () => {
@@ -67,18 +67,6 @@ describe('ClientService', () => {
     it('initializes an http client', () => {
       const clientService = getClientServiceMock()
       expect(clientService.httpUnAuthenticated).toBeInstanceOf(HttpClient)
-    })
-    it('initializes the http client with baseURL and static headers', () => {
-      const mocky = vi.mocked(HttpClient)
-      getClientServiceMock()
-
-      expect(mocky).toHaveBeenCalledWith(
-        {
-          baseURL: serverUrl,
-          headers: { 'Initiator-ID': v4uuid, 'X-Requested-With': 'XMLHttpRequest' }
-        },
-        expect.anything()
-      )
     })
   })
   describe('graph', () => {

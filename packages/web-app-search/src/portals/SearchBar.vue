@@ -46,7 +46,7 @@
     <oc-button
       v-oc-tooltip="$gettext('Display search bar')"
       :aria-label="$gettext('Click to display and focus the search bar')"
-      class="inline-flex sm:hidden p-0.5 -m-0.5 mr-5.5"
+      class="inline-flex sm:hidden p-0.5 -m-0.5 me-5.5"
       appearance="raw-inverse"
       color-role="chrome"
       no-hover
@@ -72,11 +72,11 @@
     >
       <oc-list class="oc-list-divider p-2">
         <li
-          v-if="loading"
+          v-if="loading || isSearchPending"
           class="flex justify-center items-center text-role-on-surface-variant py-1 px-2 text-sm"
         >
           <oc-spinner size="small" :aria-hidden="true" aria-label="" />
-          <span class="ml-2">{{ $gettext('Searching ...') }}</span>
+          <span class="ms-2">{{ $gettext('Searching ...') }}</span>
         </li>
         <li v-else-if="showNoResults" id="no-results" class="flex justify-center py-1 px-2 text-sm">
           {{ $gettext('No results') }}
@@ -199,6 +199,8 @@ const searchResults = ref<
   }[]
 >([])
 const loading = ref(false)
+// true between a term change and the debounced search, so the preview doesn't show "No results" meanwhile
+const isSearchPending = ref(false)
 let latestSearchId = 0
 const currentFolderAvailable = ref(false)
 
@@ -218,7 +220,7 @@ function updateLocationFilterInputPadding() {
   }
 
   if (!unref(locationFilterAvailable)) {
-    inputElement.style.paddingRight = ''
+    inputElement.style.paddingInlineEnd = ''
     return
   }
 
@@ -226,16 +228,16 @@ function updateLocationFilterInputPadding() {
     '#files-global-search-filter'
   ) as HTMLElement
   if (!locationFilterElement) {
-    inputElement.style.paddingRight = ''
+    inputElement.style.paddingInlineEnd = ''
     return
   }
 
   if (locationFilterElement.offsetWidth <= 0) {
-    inputElement.style.paddingRight = ''
+    inputElement.style.paddingInlineEnd = ''
     return
   }
 
-  inputElement.style.paddingRight = `${Math.ceil(locationFilterElement.offsetWidth) + 36}px`
+  inputElement.style.paddingInlineEnd = `${Math.ceil(locationFilterElement.offsetWidth) + 36}px`
 }
 
 watch(isMobile, () => {
@@ -286,6 +288,7 @@ const useScope = computed(() => {
 
 async function search() {
   const searchId = ++latestSearchId
+  isSearchPending.value = false
   searchResults.value = []
   if (!unref(term)?.trim()) {
     loading.value = false
@@ -321,9 +324,14 @@ async function search() {
   }
   loading.value = false
 
-  // only report the preview the user is looking at, not searches in the background
-  // or searches that settle after the preview got closed (e.g. by opening the results page)
-  if (!unref(isPreviewOpen) || !unref(searchBarRef)?.contains(document.activeElement)) {
+  // only report the preview the user is looking at, not searches in the background,
+  // searches that settle after the preview got closed (e.g. by opening the results page)
+  // or searches that are outdated by a pending one, while the preview shows "Searching ..."
+  if (
+    unref(isSearchPending) ||
+    !unref(isPreviewOpen) ||
+    !unref(searchBarRef)?.contains(document.activeElement)
+  ) {
     return
   }
   if (searchError) {
@@ -358,6 +366,7 @@ function onKeyUpEnter() {
 
   // the preview gets hidden, a pending preview search would only cancel the results search
   debouncedSearch.cancel()
+  isSearchPending.value = false
 
   if (unref(optionsDrop)) {
     unref(optionsDrop)?.hide()
@@ -437,6 +446,9 @@ watch([term, scope, useScope], ([newTerm], [oldTerm]) => {
     restoreSearchFromRoute.value = false
     return
   }
+  isSearchPending.value = !!unref(term)?.trim()
+  // the active preview element belongs to the previous results, which are hidden while the search is pending
+  activePreviewIndex.value = null
   debouncedSearch()
 })
 
@@ -473,7 +485,7 @@ onBeforeUnmount(() => {
 function getFocusableElements() {
   const elements = [document.querySelector('.more-results')]
   elements.push(...Array.from(document.querySelectorAll('li.preview')))
-  return elements as HTMLElement[]
+  return elements.filter(Boolean) as HTMLElement[]
 }
 
 const showNoResults = computed(() => {
@@ -506,6 +518,11 @@ function onClear() {
 
 function findNextPreviewIndex(previous = false) {
   const elements = getFocusableElements()
+  // the preview is loading or has no results, so there is nothing to navigate
+  if (!elements.length) {
+    return null
+  }
+
   let index =
     activePreviewIndex.value !== null ? activePreviewIndex.value : previous ? elements.length : -1
   const increment = previous ? -1 : 1

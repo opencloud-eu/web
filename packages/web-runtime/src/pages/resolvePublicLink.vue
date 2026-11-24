@@ -16,7 +16,7 @@
       <oc-text-input
         ref="passwordInput"
         v-model="password"
-        :error-message="wrongPasswordMessage"
+        :error-message="passwordErrorMessage"
         :label="passwordFieldLabel"
         type="password"
       />
@@ -138,6 +138,10 @@ const loadPublicSpaceTask = useTask(function* (signal) {
   }
 })
 
+/**
+ * Resolves to `false` if the password couldn't be checked because of a temporary error (e.g. a 5xx
+ * or a network error), so the password form stays for another try.
+ */
 const verifyPasswordTask = useTask(function* (signal) {
   try {
     loadedSpace.value = yield clientService.webdav.getFileInfo(
@@ -145,23 +149,25 @@ const verifyPasswordTask = useTask(function* (signal) {
       {},
       { signal }
     )
-    if (!isPublicSpaceResource(unref(loadedSpace))) {
-      const e: any = new Error($gettext('The resource is not a public link.'))
-      e.resource = unref(loadedSpace)
-      throw e
-    }
   } catch (e) {
     if (e.statusCode === 401) {
       throw e
     }
-    throw new Error($gettext('The resource could not be located, it may not exist anymore.'))
+    if (e.statusCode === 404) {
+      throw new Error($gettext('The resource could not be located, it may not exist anymore.'))
+    }
+    console.error(e)
+    return false
   }
-})
-const wrongPassword = computed(() => {
-  if (verifyPasswordTask.isError) {
-    return verifyPasswordTask.last.error.statusCode === 401
+
+  if (!isPublicSpaceResource(unref(loadedSpace))) {
+    const e: any = new Error(
+      $gettext('The resource could not be located, it may not exist anymore.')
+    )
+    e.resource = unref(loadedSpace)
+    throw e
   }
-  return false
+  return true
 })
 
 const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boolean) {
@@ -177,23 +183,28 @@ const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boole
   )
 
   if (passwordRequired) {
+    let isPasswordChecked: boolean
     try {
-      yield verifyPasswordTask.perform()
+      isPasswordChecked = yield verifyPasswordTask.perform()
     } catch (e) {
       authStore.clearPublicLinkContext()
       console.error(e, e.resource)
       throw e
     }
+    if (!isPasswordChecked) {
+      authStore.clearPublicLinkContext()
+      return
+    }
   }
 
   const url = queryItemAsString(unref(redirectUrl))
   if (url) {
-    router.push(parsePathQuery(url))
+    router.replace(parsePathQuery(url))
     return
   }
 
   if (unref(loadedSpace).publicLinkPermission === SharePermissionBit.Create) {
-    router.push({
+    router.replace({
       name: 'files-public-upload',
       params: { token: unref(token) },
       query: { fileId: unref(publicLinkSpace).fileId }
@@ -205,7 +216,7 @@ const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boole
 
   const { resource, path } = yield* call(getTargetResource(signal))
 
-  router.push(
+  router.replace(
     getLinkTargetRoute({
       space: unref(loadedSpace),
       resource,
@@ -345,9 +356,12 @@ const cardIcon = computed(() => {
 const passwordFieldLabel = computed(() => {
   return $gettext('Password')
 })
-const wrongPasswordMessage = computed(() => {
-  if (unref(wrongPassword)) {
+const passwordErrorMessage = computed(() => {
+  if (verifyPasswordTask.isError && verifyPasswordTask.last.error.statusCode === 401) {
     return $gettext('Incorrect password')
+  }
+  if (verifyPasswordTask.last?.value === false) {
+    return $gettext('The password could not be verified. Please try again.')
   }
   return null
 })

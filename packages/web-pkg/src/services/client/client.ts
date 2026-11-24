@@ -1,11 +1,10 @@
 import { HttpClient } from '../../http'
-import { graph, ocs, ox, webdav } from '@opencloud-eu/web-client'
+import { encodeBase64, graph, ocs, ox, webdav } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
 import { OCS } from '@opencloud-eu/web-client/ocs'
 import { OX } from '@opencloud-eu/web-client/ox'
 import { AuthParameters } from './auth'
 import axios, { InternalAxiosRequestConfig } from 'axios'
-import { v4 as uuidV4 } from 'uuid'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
 import { Language } from 'vue3-gettext'
 import { FetchEventSourceInit } from '@microsoft/fetch-event-source'
@@ -22,7 +21,7 @@ const createFetchOptions = (
     headers: {
       ...(authParams.accessToken && { Authorization: `Bearer ${authParams.accessToken}` }),
       'Accept-Language': language,
-      'X-Request-ID': uuidV4(),
+      'X-Request-ID': crypto.randomUUID(),
       'X-Requested-With': 'XMLHttpRequest'
     },
     ...(withCredentials && { credentials: 'include' })
@@ -48,7 +47,7 @@ export class ClientService {
   private oxClient: OX
   private webDavClient: WebDAV
 
-  public initiatorId = uuidV4()
+  public initiatorId: string = crypto.randomUUID()
 
   private staticHeaders: Record<string, string> = {
     'Initiator-ID': this.initiatorId,
@@ -166,8 +165,7 @@ export class ClientService {
 
         if (this.authStore.publicLinkPassword) {
           headers['Authorization'] =
-            'Basic ' +
-            Buffer.from(['public', this.authStore.publicLinkPassword].join(':')).toString('base64')
+            'Basic ' + encodeBase64(['public', this.authStore.publicLinkPassword].join(':'))
         }
 
         return headers
@@ -197,7 +195,7 @@ export class ClientService {
   > {
     return {
       'Accept-Language': this.currentLanguage,
-      'X-Request-ID': uuidV4(),
+      'X-Request-ID': crypto.randomUUID(),
       ...(useAuth &&
         this.authStore.accessToken && { Authorization: 'Bearer ' + this.authStore.accessToken })
     }

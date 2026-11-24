@@ -27,35 +27,33 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 // unmount after each test, otherwise stale lists react to the global click events and key presses
 enableAutoUnmount(afterEach)
+afterEach(() => {
+  window.localStorage.clear()
+})
 
 describe('GroupsList', () => {
   describe('sorting', () => {
     it.each([
-      { query: {}, expected: ['admins', 'users'] },
-      {
-        query: { 'sort-by': 'displayName', 'sort-dir': SortDir.Asc },
-        expected: ['admins', 'users']
-      },
-      {
-        query: { 'sort-by': 'displayName', 'sort-dir': SortDir.Desc },
-        expected: ['users', 'admins']
-      }
-    ])('sorts by display name based on the route query $query', ({ query, expected }) => {
+      { sort: undefined, expected: ['admins', 'users'] },
+      { sort: { sortBy: 'displayName', sortDir: SortDir.Asc }, expected: ['admins', 'users'] },
+      { sort: { sortBy: 'displayName', sortDir: SortDir.Desc }, expected: ['users', 'admins'] }
+    ])('sorts by display name based on the stored sorting $sort', ({ sort, expected }) => {
       const { wrapper } = getWrapper({
         groups: [{ displayName: 'users' }, { displayName: 'admins' }] as Group[],
-        query
+        sort
       })
       expect(getTableData(wrapper).map((g) => g.displayName)).toEqual(expected)
     })
-    it('writes the sort parameters to the route query when the table emits "sort"', () => {
-      const { wrapper, mocks } = getWrapper({ groups: getGroupMocks() })
+    it('sorts the table when it emits "sort"', async () => {
+      const { wrapper } = getWrapper({
+        groups: [{ displayName: 'admins' }, { displayName: 'users' }] as Group[]
+      })
       wrapper.findComponent(OcTable).vm.$emit('sort', {
         sortBy: 'displayName',
         sortDir: SortDir.Desc
       })
-      expect(mocks.$router.replace).toHaveBeenCalledWith({
-        query: expect.objectContaining({ 'sort-by': 'displayName', 'sort-dir': SortDir.Desc })
-      })
+      await nextTick()
+      expect(getTableData(wrapper).map((g) => g.displayName)).toEqual(['users', 'admins'])
     })
   })
 
@@ -79,6 +77,7 @@ describe('GroupsList', () => {
 
   describe('pagination', () => {
     it('shows the last page when the current page runs out of filtered groups', async () => {
+      window.localStorage.setItem('oc-options_items-per-page', '1')
       const { wrapper } = getWrapper({
         groups: [
           { id: '1', displayName: 'admins' },
@@ -86,7 +85,7 @@ describe('GroupsList', () => {
           { id: '3', displayName: 'users' }
         ] as Group[],
         filterTerm: 'admins',
-        query: { page: '2', 'items-per-page': '1' }
+        query: { page: '2' }
       })
       expect(getTableData(wrapper).map((g) => g.displayName)).toEqual(['admins2'])
 
@@ -214,6 +213,7 @@ function getWrapper({
   groups = [],
   selectedGroups = [],
   query = {},
+  sort,
   filterTerm = '',
   realCheckboxes = false
 }: {
@@ -221,11 +221,16 @@ function getWrapper({
   groups?: Group[]
   selectedGroups?: Group[]
   query?: Record<string, string>
+  sort?: { sortBy: string; sortDir: SortDir }
   filterTerm?: string
   realCheckboxes?: boolean
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
+  if (sort) {
+    window.localStorage.setItem('oc-options_route_sort-by', sort.sortBy)
+    window.localStorage.setItem('oc-options_route_sort-dir', sort.sortDir)
+  }
   const mocks = defaultComponentMocks({
     currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
   })

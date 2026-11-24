@@ -1,5 +1,5 @@
 <template>
-  <main class="flex app-content size-full rounded-l-xl">
+  <main class="flex app-content size-full rounded-s-xl">
     <app-loading-spinner v-if="fontsLoading" />
     <template v-else>
       <div class="flex w-full flex-1 h-full flex-nowrap sm:flex-wrap">

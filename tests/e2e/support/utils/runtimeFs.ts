@@ -3,12 +3,12 @@ import path from 'path'
 import { appConfig } from '../../playwright.config'
 
 // max file creation size is 10GB
-export const MAX_FILE_SIZE = Math.pow(1024, 3) * 10
+const MAX_FILE_SIZE = Math.pow(1024, 3) * 10
 
 export const getBytes = (fileSize: string): number => {
   fileSize = fileSize.replace(/\s/g, '').toLowerCase()
   const size = parseFloat(fileSize.match(/([\d.]+)/)[0])
-  const type = fileSize.match(/[kKmMgGbB]{1,2}/)[0]
+  const type = fileSize.match(/[kKmMgGbB]{1,2}/)?.[0]
 
   let sizeInbytes = size
 
@@ -19,6 +19,7 @@ export const getBytes = (fileSize: string): number => {
   switch (type) {
     case 'b':
       sizeInbytes = size
+      break
     case 'kb':
       sizeInbytes = size * 1024
       break
@@ -39,11 +40,28 @@ export const getBytes = (fileSize: string): number => {
   return sizeInbytes
 }
 
-export const getTempUploadPath = (): string => {
-  if (!fs.existsSync(appConfig.tempAssetsPath)) {
-    fs.mkdirSync(appConfig.tempAssetsPath)
+// every parallel worker gets its own temp directory, so a finished scenario
+// doesn't remove the files of a scenario that is still running in another worker
+function getWorkerTempPath(): string {
+  return path.join(appConfig.tempAssetsPath, `worker-${process.env.TEST_PARALLEL_INDEX || '0'}`)
+}
+
+// resolves a path relative to the fixtures folder, "temp/<file>" points to the temp directory of the current worker
+export function resolveAssetPath(name: string): string {
+  const relativePath = path.normalize(name).replace(/^[/\\]+/, '')
+  const tempDir = path.relative(appConfig.assetsPath, appConfig.tempAssetsPath)
+  if (relativePath.startsWith(tempDir + path.sep)) {
+    return path.join(getWorkerTempPath(), relativePath.slice(tempDir.length + 1))
   }
-  return appConfig.tempAssetsPath
+  return path.join(appConfig.assetsPath, relativePath)
+}
+
+export const getTempUploadPath = (): string => {
+  const tempPath = getWorkerTempPath()
+  if (!fs.existsSync(tempPath)) {
+    fs.mkdirSync(tempPath, { recursive: true })
+  }
+  return tempPath
 }
 
 export const createFileWithSize = (
@@ -87,7 +105,5 @@ export const createFile = (
 }
 
 export const removeTempUploadDirectory = () => {
-  if (fs.existsSync(appConfig.tempAssetsPath)) {
-    fs.rmSync(appConfig.tempAssetsPath, { recursive: true })
-  }
+  fs.rmSync(getWorkerTempPath(), { recursive: true, force: true })
 }

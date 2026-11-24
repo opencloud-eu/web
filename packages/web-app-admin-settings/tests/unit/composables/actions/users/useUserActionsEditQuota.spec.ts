@@ -67,14 +67,11 @@ describe('useUserActionsEditQuota', () => {
     })
   })
   describe('handler', () => {
-    it('should create a modal', () => {
-      getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({ resources: [] })
-          expect(dispatchModal).toHaveBeenCalled()
-        }
-      })
+    it('should create a modal', async () => {
+      const { instance } = getWrapper()
+      const { dispatchModal } = useModals()
+      await unref(instance.actions)[0].handler({ resources: [] })
+      expect(dispatchModal).toHaveBeenCalled()
     })
   })
 })
@@ -84,22 +81,22 @@ function getWrapper({
   setup
 }: {
   canEditSpaceQuota?: boolean
-  setup: (instance: ReturnType<typeof useUserActionsEditQuota>) => void
-}) {
+  setup?: (instance: ReturnType<typeof useUserActionsEditQuota>) => void
+} = {}) {
   const mocks = defaultComponentMocks()
 
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useUserActionsEditQuota()
-        setup(instance)
-      },
-      {
-        mocks,
-        pluginOptions: {
-          abilities: canEditSpaceQuota ? [{ action: 'set-quota-all', subject: 'Drive' }] : []
-        }
+  let instance: ReturnType<typeof useUserActionsEditQuota>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useUserActionsEditQuota()
+      setup?.(instance)
+    },
+    {
+      mocks,
+      pluginOptions: {
+        abilities: canEditSpaceQuota ? [{ action: 'set-quota-all', subject: 'Drive' }] : []
       }
-    )
-  }
+    }
+  )
+  return { wrapper, instance, mocks }
 }

@@ -30,6 +30,8 @@ The `aria-label` of the loading spinner can be set via `loading-accessible-label
 
 The most basic use case requires a `label` property. The components emits a `search` event when the user submits the form via `Enter` or by clicking the search button.
 
+`Escape` clears a non-empty search term and is not passed on, so e.g. a surrounding modal only closes on the next `Escape`. If the cancel button is shown, `Escape` acts like a click on it and calls the `cancel-handler`.
+
 ::: livecode {path=/components/OcSearchBar/default.vue}
 <<< @/components/OcSearchBar/default.vue
 :::

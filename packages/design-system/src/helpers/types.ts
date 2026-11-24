@@ -27,7 +27,7 @@ export interface PasswordPolicyRule {
 }
 
 export interface PasswordPolicy {
-  rules: unknown[]
+  rules: Record<string, unknown>
 
   check(password: string): boolean
 

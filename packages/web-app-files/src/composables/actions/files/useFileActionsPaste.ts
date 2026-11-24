@@ -1,5 +1,4 @@
 import { storeToRefs } from 'pinia'
-import { dirname } from 'path'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -8,7 +7,8 @@ import {
   isPersonalSpaceResource,
   isProjectSpaceResource,
   isPublicSpaceResource,
-  isShareSpaceResource
+  isShareSpaceResource,
+  dirname
 } from '@opencloud-eu/web-client'
 import {
   ClipboardActions,

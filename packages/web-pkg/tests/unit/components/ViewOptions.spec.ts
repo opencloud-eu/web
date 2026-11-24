@@ -1,4 +1,3 @@
-import { ref, unref } from 'vue'
 import {
   defaultPlugins,
   defaultComponentMocks,
@@ -9,20 +8,15 @@ import {
 import { mock } from 'vitest-mock-extended'
 import ViewOptions from '../../../src/components/ViewOptions.vue'
 import ViewModeSwitch from '../../../src/components/ViewModeSwitch.vue'
-import {
-  FolderViewModeConstants,
-  useResourcesStore,
-  useRouteQuery,
-  useRouteQueryPersisted
-} from '../../../src/composables'
+import { FolderViewModeConstants, useResourcesStore } from '../../../src/composables'
 import { FolderView } from '../../../src'
 import { OcPageSize, OcSwitch } from '@opencloud-eu/design-system/components'
 
-vi.mock('../../../src/composables/router', async (importOriginal) => ({
-  ...(await importOriginal<any>()),
-  useRouteQueryPersisted: vi.fn(),
-  useRouteQuery: vi.fn()
-}))
+const storageKeys = {
+  perPage: 'oc-options_items-per-page',
+  viewMode: 'oc-options_view-mode',
+  tileSize: 'oc-options_tiles-size'
+}
 
 const selectors = {
   pageSizeSelect: '.oc-page-size',
@@ -34,6 +28,10 @@ const selectors = {
 }
 
 describe('ViewOptions component', () => {
+  afterEach(() => {
+    window.localStorage.clear()
+  })
+
   describe('pagination', () => {
     it('does not show when disabled', () => {
       const { wrapper } = getWrapper({ props: { hasPagination: false } })
@@ -46,42 +44,59 @@ describe('ViewOptions component', () => {
         wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
       ).toBe(perPage)
     })
-    it('sets the correct files page limit', () => {
-      const perPage = '100'
-      const newItemsPerPage = '500'
-      const { wrapper, mocks } = getWrapper({ perPage })
-      ;(wrapper.vm as any).setItemsPerPage(newItemsPerPage)
-      expect(mocks.$router.replace).toHaveBeenCalledWith(
-        expect.objectContaining({
-          query: expect.objectContaining({ 'items-per-page': newItemsPerPage })
-        })
-      )
+    it('falls back to the default files page limit', () => {
+      const { wrapper } = getWrapper({ perPage: '', props: { perPageDefault: '50' } })
+      expect(
+        wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
+      ).toBe('50')
+    })
+    it('stores the files page limit', async () => {
+      const { wrapper } = getWrapper({ perPage: '100' })
+      wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).vm.$emit('change', 500)
+      await wrapper.vm.$nextTick()
+
+      expect(window.localStorage.getItem(storageKeys.perPage)).toBe('500')
+      expect(
+        wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
+      ).toBe('500')
     })
     it('resets the page to 1 if current page is > 1', () => {
-      const perPage = '100'
-      const newItemsPerPage = '500'
-      const { wrapper, mocks } = getWrapper({ perPage, currentPage: '2' })
-      ;(wrapper.vm as any).setItemsPerPage(newItemsPerPage)
-      expect(mocks.$router.replace).toHaveBeenCalledWith(
-        expect.objectContaining({
-          query: expect.objectContaining({ 'items-per-page': newItemsPerPage, page: '1' })
-        })
-      )
+      const { wrapper, mocks } = getWrapper({ perPage: '100', query: { page: '2' } })
+      wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).vm.$emit('change', 500)
+
+      expect(mocks.$router.replace).toHaveBeenCalledWith({ query: { page: '1' } })
     })
-    it('does not reset the page while handing over to infinite scrolling', () => {
+    it('does not reset the page while handing over to infinite scrolling', async () => {
       const perPage = '100'
       const newItemsPerPage = '∞'
       const { wrapper, mocks } = getWrapper({
         perPage,
-        currentPage: '2',
+        query: { page: '2' },
         props: { hasInfiniteScroll: true }
       })
-      ;(wrapper.vm as any).setItemsPerPage(newItemsPerPage)
-      expect(mocks.$router.replace).toHaveBeenCalledWith(
-        expect.objectContaining({
-          query: expect.objectContaining({ 'items-per-page': newItemsPerPage, page: '2' })
-        })
-      )
+      wrapper
+        .findComponent<typeof OcPageSize>(selectors.pageSizeSelect)
+        .vm.$emit('change', newItemsPerPage)
+      await wrapper.vm.$nextTick()
+
+      expect(mocks.$router.replace).not.toHaveBeenCalled()
+      expect(window.localStorage.getItem('oc-options_files-infinite-scroll')).toBe('true')
+      expect(window.localStorage.getItem(storageKeys.perPage)).toBe(perPage)
+      expect(
+        wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
+      ).toBe(newItemsPerPage)
+    })
+    it('stores the numeric page limit when leaving infinite scrolling', async () => {
+      window.localStorage.setItem('oc-options_files-infinite-scroll', 'true')
+      const { wrapper } = getWrapper({ perPage: '100', props: { hasInfiniteScroll: true } })
+      wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).vm.$emit('change', 50)
+      await wrapper.vm.$nextTick()
+
+      expect(window.localStorage.getItem('oc-options_files-infinite-scroll')).toBe('false')
+      expect(window.localStorage.getItem(storageKeys.perPage)).toBe('50')
+      expect(
+        wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
+      ).toBe('50')
     })
     it('offers the infinite scrolling option when enabled', () => {
       const { wrapper } = getWrapper({ props: { hasInfiniteScroll: true } })
@@ -165,29 +180,33 @@ describe('ViewOptions component', () => {
       })
       expect(wrapper.find(selectors.viewModeSwitch).exists()).toBeTruthy()
     })
-    it('updates the view mode query when a view mode gets selected', () => {
-      const { wrapper, mocks } = getWrapper({
+    it('stores the view mode', async () => {
+      const { wrapper } = getWrapper({
         props: { viewModes: getTileViewModes() },
         viewMode: FolderViewModeConstants.name.tiles
       })
       wrapper.findComponent(ViewModeSwitch).vm.$emit('select', getTileViewModes()[1])
-      expect(unref(mocks.viewModeQueryMock)).toBe(FolderViewModeConstants.name.table)
+      await wrapper.vm.$nextTick()
+
+      expect(window.localStorage.getItem(storageKeys.viewMode)).toBe(
+        FolderViewModeConstants.name.table
+      )
+      expect(wrapper.findComponent(ViewModeSwitch).props('currentViewMode')).toBe(
+        FolderViewModeConstants.name.table
+      )
     })
-  })
-  describe('view mode and tile size queries', () => {
-    it('are not registered if no viewModes are passed', () => {
-      vi.mocked(useRouteQueryPersisted).mockClear()
-      getWrapper()
-      const names = vi.mocked(useRouteQueryPersisted).mock.calls.map(([{ name }]) => name)
-      expect(names).not.toContain(FolderViewModeConstants.queryName)
-      expect(names).not.toContain(FolderViewModeConstants.tilesSizeQueryName)
-    })
-    it('are registered if viewModes are passed', () => {
-      vi.mocked(useRouteQueryPersisted).mockClear()
-      getWrapper({ props: { viewModes: getTileViewModes() } })
-      const names = vi.mocked(useRouteQueryPersisted).mock.calls.map(([{ name }]) => name)
-      expect(names).toContain(FolderViewModeConstants.queryName)
-      expect(names).toContain(FolderViewModeConstants.tilesSizeQueryName)
+    it('does not touch the stored view mode and tile size without view modes', async () => {
+      const { wrapper } = getWrapper({
+        viewMode: FolderViewModeConstants.name.tiles,
+        tileSize: '4'
+      })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find(selectors.tileSizeSlider).exists()).toBeFalsy()
+      expect(window.localStorage.getItem(storageKeys.viewMode)).toBe(
+        FolderViewModeConstants.name.tiles
+      )
+      expect(window.localStorage.getItem(storageKeys.tileSize)).toBe('4')
     })
   })
   describe('tile size slider', () => {
@@ -204,17 +223,8 @@ describe('ViewOptions component', () => {
       })
       expect(wrapper.find(selectors.tileSizeSlider).exists()).toBeTruthy()
     })
-    it.each([1, 2, 3, 4, 5, 6])('applies the correct size step', (tileSize) => {
-      const { mocks } = getWrapper({
-        tileSize: tileSize.toString(),
-        props: {
-          viewModes: getTileViewModes()
-        }
-      })
-      expect(unref(mocks.tileSizeQueryMock)).toBe(tileSize.toString())
-    })
-    it('updates the tile size query when the slider changes', async () => {
-      const { wrapper, mocks } = getWrapper({
+    it('stores the tile size when the slider changes', async () => {
+      const { wrapper } = getWrapper({
         props: {
           viewModes: getTileViewModes()
         },
@@ -222,8 +232,9 @@ describe('ViewOptions component', () => {
       })
 
       await wrapper.find<HTMLInputElement>(selectors.tileSizeSlider).setValue('4')
+      await wrapper.vm.$nextTick()
 
-      expect(unref(mocks.tileSizeQueryMock)).toBe('4')
+      expect(window.localStorage.getItem(storageKeys.tileSize)).toBe('4')
     })
   })
 })
@@ -248,41 +259,27 @@ function getWrapper({
   viewMode = FolderViewModeConstants.name.table,
   tileSize = '1',
   props = {},
-  currentPage = '1'
+  query = {}
 }: {
   perPage?: string
   viewMode?: string
   tileSize?: string
   props?: PartialComponentProps<typeof ViewOptions>
-  currentPage?: string
+  query?: Record<string, string>
 } = {}) {
-  vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => ref(perPage))
-  const viewModeQueryMock = ref(viewMode)
-  const tileSizeQueryMock = ref(tileSize)
-  if (props.viewModes?.length) {
-    vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => viewModeQueryMock)
-    vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => tileSizeQueryMock)
+  if (perPage) {
+    window.localStorage.setItem(storageKeys.perPage, perPage)
   }
-  vi.mocked(useRouteQuery).mockImplementationOnce(() => ref(currentPage))
+  window.localStorage.setItem(storageKeys.viewMode, viewMode)
+  window.localStorage.setItem(storageKeys.tileSize, tileSize)
 
-  const mocks = {
-    ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({
-        name: 'files',
-        path: '/files',
-        query: { page: currentPage }
-      })
-    }),
-    viewModeQueryMock,
-    tileSizeQueryMock
-  }
+  const mocks = defaultComponentMocks({
+    currentRoute: mock<RouteLocation>({ name: 'files', path: '/files', query })
+  })
   return {
     mocks,
     wrapper: mount(ViewOptions, {
-      props: {
-        perPageStoragePrefix: '',
-        ...props
-      },
+      props,
       global: {
         mocks,
         provide: mocks,

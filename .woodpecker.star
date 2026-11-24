@@ -7,10 +7,10 @@ ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:4.3.0-SNAPSHOT"
 
 # renovate: datasource=docker depName=shumc/imagor
-IMAGOR = "shumc/imagor:1.10.1"
+IMAGOR = "shumc/imagor:1.10.5"
 
 # renovate: datasource=docker depName=collabora/code
-COLLABORA_CODE = "collabora/code:26.04.5.2.1"
+COLLABORA_CODE = "collabora/code:26.04.6.2.1"
 
 # renovate: datasource=docker depName=quay.io/keycloak/keycloak
 KEYCLOAK = "quay.io/keycloak/keycloak:26.7.3"
@@ -18,7 +18,6 @@ MINIO_MC = "quay.io/opencloudeu/minio-mc-ci:1.0"
 OC_CI_BAZEL_BUILDIFIER = "quay.io/opencloudeu/bazel-buildifier-ci:latest"
 OC_CI_GOLANG = "quay.io/opencloudeu/golang-ci:1.26"
 OC_CI_NODEJS = "quay.io/opencloudeu/nodejs-ci:24"
-OC_CI_NODEJS_ALPINE = "quay.io/opencloudeu/nodejs-alpine-ci:24"
 OC_CI_WAIT_FOR = "quay.io/opencloudeu/wait-for-ci:latest"
 
 # renovate: datasource=docker depName=ghcr.io/euro-office/documentserver
@@ -55,8 +54,10 @@ dir = {
     "openCloudRevaDataRoot": "/srv/app/tmp/opencloud/opencloud/data/",
     "federatedOpenCloudConfig": "/woodpecker/src/github.com/opencloud-eu/web/web/tests/woodpecker/config-opencloud-federated.json",
     "ocmProviders": "/woodpecker/src/github.com/opencloud-eu/web/web/tests/woodpecker/providers.json",
-    "playwrightBrowsersArchive": "/woodpecker/src/github.com/opencloud-eu/web/web/playwright-browsers.tar.gz",
 }
+
+# every browser gets its own archive in the browsers cache
+PLAYWRIGHT_BROWSERS = ["chromium", "firefox", "webkit"]
 
 config = {
     "app": "web",
@@ -73,34 +74,30 @@ config = {
     "check-types": True,
     "e2e": {
         "1": {
-            "earlyFail": True,
             "skip": False,
             "suites": [
                 "journeys/",
                 "smoke/",
             ],
-            "browsers": [
+            "projects": [
                 "chromium",
                 "firefox",
                 "webkit",
             ],
         },
         "2": {
-            "earlyFail": True,
             "skip": False,
             "suites": [
                 "admin-settings/",
                 "spaces/",
-                "rclone-crypt/",
             ],
         },
         "3": {
-            "earlyFail": True,
             "skip": False,
-            "tikaNeeded": True,
+            "services": ["tika"],
             "suites": [
-                "search",
-                "shares",
+                "search/",
+                "shares/",
             ],
             "extraServerEnvironment": {
                 "FRONTEND_FULL_TEXT_SEARCH_ENABLED": True,
@@ -110,7 +107,6 @@ config = {
             },
         },
         "4": {
-            "earlyFail": True,
             "skip": False,
             "suites": [
                 "navigation/",
@@ -120,10 +116,15 @@ config = {
                 "embed/",
             ],
         },
-        "preview": {
-            "earlyFail": True,
+        "rclone-crypt": {
             "skip": False,
-            "imagorNeeded": True,
+            "suites": [
+                "rclone-crypt/",
+            ],
+        },
+        "preview": {
+            "skip": False,
+            "services": ["imagor"],
             "suites": [
                 "preview/",
             ],
@@ -133,12 +134,11 @@ config = {
             },
         },
         "a11y": {
-            "earlyFail": True,
             "skip": False,
             "suites": [
-                "a11y",
+                "a11y/",
             ],
-            "browsers": [
+            "projects": [
                 "chromium",
                 "firefox",
                 "webkit",
@@ -146,6 +146,8 @@ config = {
         },
         "app-provider": {
             "skip": False,
+            "services": ["collabora"],
+            "failOnUncaughtConsoleError": False,
             "suites": [
                 "app-provider/",
             ],
@@ -173,6 +175,9 @@ config = {
         },
         "app-provider-euro-office": {
             "skip": False,
+            "fullCiOnly": True,
+            "services": ["euro-office"],
+            "failOnUncaughtConsoleError": False,
             "suites": [
                 "app-provider-euro-office/",
             ],
@@ -198,6 +203,8 @@ config = {
         },
         "yjs": {
             "skip": False,
+            "services": ["yjs"],
+            "failOnUncaughtConsoleError": False,
             "suites": [
                 "yjs/",
             ],
@@ -226,11 +233,11 @@ config = {
             },
         },
         "ocm": {
-            "earlyFail": True,
             "skip": False,
-            "federationServer": True,
+            "fullCiOnly": True,
+            "services": ["federation"],
             "suites": [
-                "ocm",
+                "ocm/",
             ],
             "extraServerEnvironment": {
                 "OC_ADD_RUN_SERVICES": "ocm",
@@ -247,9 +254,17 @@ config = {
             "suites": [
                 "mobile-view/",
             ],
+            # a nested list runs all its projects in one pipeline
+            "projects": [
+                ["mobile-chromium", "mobile-webkit", "ipad-chromium", "ipad-landscape-webkit"],
+            ],
         },
         "localization-de": {
             "skip": False,
+            "titleTrigger": "localization-de",
+            "testEnvironment": {
+                "RUN_LOCALIZATION_TEST_FOR_LANG": "de",
+            },
             "suites": [
                 "a11y/smoke",
             ],
@@ -682,7 +697,7 @@ def unitTests(ctx):
                  [
                      {
                          "name": "unit-tests",
-                         "image": OC_CI_NODEJS_ALPINE,
+                         "image": OC_CI_NODEJS,
                          "commands": [
                              "pnpm test:unit --coverage",
                          ],
@@ -704,16 +719,14 @@ def unitTests(ctx):
 def e2eTests(ctx):
     default = {
         "skip": False,
-        "logLevel": "2",
-        "db": "mysql:5.5",
         "suites": [],
-        "features": [],
-        "tikaNeeded": False,
-        "imagorNeeded": False,
-        "federationServer": False,
-        "failOnUncaughtConsoleError": False,
+        "services": [],
+        "fullCiOnly": False,
+        "titleTrigger": "",
+        "failOnUncaughtConsoleError": True,
         "extraServerEnvironment": {},
-        "browsers": ["chromium"],
+        "testEnvironment": {},
+        "projects": ["chromium"],
     }
 
     e2e_trigger = [
@@ -726,90 +739,80 @@ def e2eTests(ctx):
         event["tag"],
     ]
 
+    title = ctx.build.title.lower()
     pipelines = []
-    params = {}
     matrices = config["e2e"]
 
     for suite, matrix in matrices.items():
+        params = {}
         for item in default:
             params[item] = matrix[item] if item in matrix else default[item]
-
-        if "app-provider-euro-office" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
-            continue
-
-        if "ocm" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
-            continue
-
-        if "localization-de" in suite and "localization-de" not in ctx.build.title.lower():
-            continue
 
         if params["skip"]:
             continue
 
-        browsers_for_suite = params["browsers"]
+        if params["fullCiOnly"] and "full-ci" not in title and ctx.build.event != "cron":
+            continue
 
-        for browser_name in browsers_for_suite:
+        if params["titleTrigger"] and params["titleTrigger"] not in title:
+            continue
+
+        if not params["suites"]:
+            print("Error: No suites defined for e2e test suite '%s'" % suite)
+            return []
+
+        for projects in params["projects"]:
+            if type(projects) != "list":
+                projects = [projects]
+
             environment = {
                 "OC_BASE_URL": "opencloud:9200",
-                "FAIL_ON_UNCAUGHT_CONSOLE_ERR": True,
-                "PLAYWRIGHT_BROWSERS_PATH": "tests/e2e/.playwright",
+                "FAIL_ON_UNCAUGHT_CONSOLE_ERR": params["failOnUncaughtConsoleError"],
+                "PLAYWRIGHT_BROWSERS_PATH": "%s/tests/e2e/.playwright" % dir["web"],
                 "TERM": "xterm-256color",
                 "FORCE_COLOR": "1",
             }
+            environment.update(params["testEnvironment"])
+
+            browsers = []
+            for project in projects:
+                browser = projectBrowser(project)
+                if browser not in browsers:
+                    browsers.append(browser)
+
+            # uncaught console errors only fail chromium runs
+            if "chromium" not in browsers:
+                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
 
             steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
                     installPnpm() + \
-                    restoreBrowsersCache(browser_name) + \
+                    restoreBrowsersCache(browsers) + \
                     restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
                     restoreOpenCloudCache()
 
-            if "app-provider-euro-office" in suite:
-                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
-                steps += euroOfficeService() + \
-                         waitForWebOffice("https://euro-office:443") + \
-                         openCloudService(params["extraServerEnvironment"])
+            for service in params["services"]:
+                steps += e2eServiceSteps(service)
 
-            elif "app-provider" in suite:
-                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
-                steps += collaboraService() + \
-                         waitForWebOffice("https://collabora:9980") + \
-                         openCloudService(params["extraServerEnvironment"])
+            steps += openCloudService(params["extraServerEnvironment"])
 
-            elif "yjs" in suite:
-                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
-                steps += yjsService() + \
-                         openCloudService(params["extraServerEnvironment"])
+            if "federation" in params["services"]:
+                steps += openCloudService(params["extraServerEnvironment"], "federation")
 
-            elif "ocm" in suite:
-                steps += openCloudService(params["extraServerEnvironment"]) + \
-                         (openCloudService(params["extraServerEnvironment"], "federation") if params["federationServer"] else [])
+            # chromium comes from the browsers cache, the others are still installed on every run
+            install_browsers = [b for b in browsers if b != "chromium"]
+
+            command = "cd tests/e2e && pnpm bddgen && "
+            if install_browsers:
+                command += "pnpm playwright install %s --with-deps && " % " ".join(install_browsers)
+            command += "pnpm playwright test %s %s" % (
+                " ".join(params["suites"]),
+                " ".join(["--project=%s" % p for p in projects]),
+            )
+
+            if len(projects) == 1:
+                pipeline_name = "e2e-tests-%s-%s" % (suite, projects[0])
             else:
-                # OpenCloud specific steps
-                steps += (tikaService() if params["tikaNeeded"] else []) + \
-                         (imagorService() if params["imagorNeeded"] else []) + \
-                         openCloudService(params["extraServerEnvironment"])
-
-            if browser_name == "firefox" or browser_name == "webkit":
-                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
-
-            command = "cd tests/e2e && pnpm bddgen && pnpm playwright install '%s' --with-deps && pnpm playwright test --project='%s' " % (browser_name, browser_name)
-
-            if "suites" in matrix:
-                command += "%s" % " ".join(params["suites"])
-            elif "features" in matrix:
-                command += "%s" % " ".join(params["features"])
-            else:
-                print("Error: No suites or features defined for e2e test suite '%s'" % suite)
-                return []
-
-            if "mobile-view" in suite:
-                command = "cd tests/e2e && pnpm bddgen && pnpm playwright install chromium webkit && pnpm playwright test '%s' --project=mobile-chromium --project=mobile-webkit --project=ipad-chromium --project=ipad-landscape-webkit" % suite
                 pipeline_name = "e2e-tests-%s" % suite
-            else:
-                pipeline_name = "e2e-tests-%s-%s" % (suite, browser_name)
-
-            if "localization-de" in suite:
-                command = "pnpm playwright install chromium --with-deps && cd tests/e2e && pnpm bddgen && RUN_LOCALIZATION_TEST_FOR_LANG=de playwright test a11y --project=chromium"
 
             steps += [{
                          "name": "e2e-tests",
@@ -830,6 +833,27 @@ def e2eTests(ctx):
             })
 
     return pipelines
+
+def e2eServiceSteps(service):
+    if service == "tika":
+        return tikaService()
+    if service == "imagor":
+        return imagorService()
+    if service == "collabora":
+        return collaboraService() + waitForWebOffice("https://collabora:9980")
+    if service == "euro-office":
+        return euroOfficeService() + waitForWebOffice("https://euro-office:443")
+    if service == "yjs":
+        return yjsService()
+
+    # the federation server is started after opencloud in e2eTests
+    return []
+
+def projectBrowser(project):
+    for browser in PLAYWRIGHT_BROWSERS:
+        if browser in project:
+            return browser
+    return project
 
 def notifyMatrixCheckSteps():
     pipelines = []
@@ -902,22 +926,21 @@ def installBrowsers():
     return [{
         "name": "install-browsers",
         "image": OC_CI_NODEJS,
-        "environment": {
-            "PLAYWRIGHT_BROWSERS_PATH": "tests/e2e/.playwright",
-        },
         "commands": [
             ". ./.woodpecker.env",
             "if $BROWSER_CACHE_FOUND; then exit 0; fi",
-            "pnpm exec playwright install",
-            "pnpm exec playwright install --list",
-            "tar -czvf %s -C tests/e2e .playwright" % dir["playwrightBrowsersArchive"],
+            "for browser in %s; do" % " ".join(PLAYWRIGHT_BROWSERS) +
+            " PLAYWRIGHT_BROWSERS_PATH=/tmp/$browser/.playwright pnpm exec playwright install $browser;" +
+            " tar -czf $browser.tar.gz -C /tmp/$browser .playwright;" +
+            " done",
+            "ls -lh *.tar.gz",
         ],
     }]
 
 def typeCheck():
     return [{
         "name": "type-check",
-        "image": OC_CI_NODEJS_ALPINE,
+        "image": OC_CI_NODEJS,
         "commands": [
             "pnpm check:types",
         ],
@@ -926,7 +949,7 @@ def typeCheck():
 def lint():
     return [{
         "name": "lint",
-        "image": OC_CI_NODEJS_ALPINE,
+        "image": OC_CI_NODEJS,
         "commands": [
             "pnpm lint",
         ],
@@ -936,14 +959,14 @@ def formatCheck():
     return [
         {
             "name": "format-check",
-            "image": OC_CI_NODEJS_ALPINE,
+            "image": OC_CI_NODEJS,
             "commands": [
                 "pnpm format:check",
             ],
         },
         {
             "name": "show-diff",
-            "image": OC_CI_NODEJS_ALPINE,
+            "image": OC_CI_NODEJS,
             "commands": [
                 "pnpm format:write",
                 "git diff",
@@ -1785,7 +1808,7 @@ def keycloakService():
 def e2eTestsOnKeycloak(ctx):
     steps = restoreBuildArtifactCache(ctx, "pnpm", ".pnpm-store") + \
             installPnpm() + \
-            restoreBrowsersCache("chromium") + \
+            restoreBrowsersCache(["chromium"]) + \
             ldapService() + \
             keycloakService() + \
             restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
@@ -1835,12 +1858,12 @@ def e2eTestsOnKeycloak(ctx):
                          "OC_BASE_URL": "opencloud:9200",
                          "KEYCLOAK": True,
                          "KEYCLOAK_HOST": "keycloak:8443",
-                         "PLAYWRIGHT_BROWSERS_PATH": "tests/e2e/.playwright",
+                         "PLAYWRIGHT_BROWSERS_PATH": "%s/tests/e2e/.playwright" % dir["web"],
                          "TERM": "xterm-256color",
                          "FORCE_COLOR": "1",
                      },
                      "commands": [
-                         "cd tests/e2e && pnpm playwright install chromium && pnpm bddgen && pnpm playwright test keycloak --project=chromium",
+                         "cd tests/e2e && pnpm bddgen && pnpm playwright test keycloak/ --project=chromium",
                      ],
                  },
              ] + \
@@ -1885,7 +1908,7 @@ def cacheBrowsers():
                 "if $BROWSER_CACHE_FOUND; then exit 0; fi",
                 "playwright_version=$(bash tests/woodpecker/script.sh get_playwright_version)",
                 "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
-                "mc cp -r -a %s s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/" % dir["playwrightBrowsersArchive"],
+                "mc cp -a %s s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/" % " ".join(["%s.tar.gz" % b for b in PLAYWRIGHT_BROWSERS]),
                 "mc ls --recursive s3/$CACHE_BUCKET/web",
             ],
         },
@@ -1899,30 +1922,23 @@ def checkBrowsersCache():
         "commands": [
             "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
             "mc ls --recursive s3/$CACHE_BUCKET/web",
-            "bash tests/woodpecker/script.sh check_browsers_cache",
+            "bash tests/woodpecker/script.sh check_browsers_cache %s" % " ".join(PLAYWRIGHT_BROWSERS),
         ],
     }]
 
-def restoreBrowsersCache(browser):
-    return [
-        {
-            "name": "restore-browsers-cache",
-            "image": MINIO_MC,
-            "environment": minio_mc_environment,
-            "commands": [
-                "playwright_version=$(bash tests/woodpecker/script.sh get_playwright_version)",
-                "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
-                "mc cp -r -a s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/playwright-browsers.tar.gz %s" % dir["web"],
-            ],
-        },
-        {
-            "name": "unzip-browsers-cache",
-            "image": OC_CI_GOLANG,
-            "commands": [
-                "tar -xvf %s -C ." % dir["playwrightBrowsersArchive"],
-            ],
-        },
-    ]
+def restoreBrowsersCache(browsers):
+    return [{
+        "name": "restore-browsers-cache",
+        "image": MINIO_MC,
+        "environment": minio_mc_environment,
+        "commands": [
+            "playwright_version=$(bash tests/woodpecker/script.sh get_playwright_version)",
+            "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
+        ] + [
+            "mc cat s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/%s.tar.gz | tar -xzf - -C tests/e2e" % browser
+            for browser in browsers
+        ],
+    }]
 
 def waitForWebOffice(office_url = ""):
     if office_url == "":

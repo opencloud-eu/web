@@ -1,16 +1,22 @@
 import { useUserActionsDelete } from '../../../../../src/composables/actions/users/useUserActionsDelete'
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
+import { flushPromises } from '@vue/test-utils'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { useCapabilityStore, useModals, useUserStore } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   getComposableWrapper,
+  RouteLocation,
   writable
 } from '@opencloud-eu/web-test-helpers'
 import { useUserSettingsStore } from '../../../../../src/composables/stores/userSettings'
 
 describe('useUserActionsDelete', () => {
+  afterEach(() => {
+    window.localStorage.clear()
+  })
+
   describe('method "isVisible"', () => {
     it.each([
       { resources: [], disabledViaCapability: false, isVisible: false },
@@ -52,16 +58,13 @@ describe('useUserActionsDelete', () => {
     })
   })
   describe('method "deleteUsers"', () => {
-    it('should successfully delete all given users and reload the users list', () => {
-      getWrapper({
-        setup: async ({ deleteUsers }, { clientService }) => {
-          const user = mock<User>({ id: '1' })
-          await deleteUsers([user])
-          expect(clientService.graphAuthenticated.users.deleteUser).toHaveBeenCalledWith(user.id)
-          const { removeUsers } = useUserSettingsStore()
-          expect(removeUsers).toHaveBeenCalled()
-        }
-      })
+    it('should successfully delete all given users and reload the users list', async () => {
+      const { instance, mocks } = getWrapper()
+      const user = mock<User>({ id: '1' })
+      await instance.deleteUsers([user])
+      expect(mocks.$clientService.graphAuthenticated.users.deleteUser).toHaveBeenCalledWith(user.id)
+      const { removeUsers } = useUserSettingsStore()
+      expect(removeUsers).toHaveBeenCalled()
     })
     it('should only remove the successfully deleted users from the list', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
@@ -80,13 +83,31 @@ describe('useUserActionsDelete', () => {
       const { removeUsers } = useUserSettingsStore()
       expect(removeUsers).toHaveBeenCalledWith([deleted])
     })
+    it.each(['0', 'abc'])(
+      'moves to the last page with the default items per page for the invalid stored value %s',
+      async (itemsPerPage) => {
+        window.localStorage.setItem('oc-options_items-per-page', itemsPerPage)
+        const { instance, mocks } = getWrapper({ query: { page: '5' } })
+        useUserSettingsStore().users = Array.from({ length: 60 }, (_, i) =>
+          mock<User>({ id: `${i}` })
+        )
+        await instance.deleteUsers([mock<User>({ id: 'deleted' })])
+        await flushPromises()
+
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
+          expect.objectContaining({ query: expect.objectContaining({ page: '2' }) })
+        )
+      }
+    )
   })
 })
 
 function getWrapper({
-  setup
+  setup,
+  query = {}
 }: {
-  setup: (
+  query?: Record<string, string>
+  setup?: (
     instance: ReturnType<typeof useUserActionsDelete>,
     {
       clientService
@@ -94,15 +115,17 @@ function getWrapper({
       clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
     }
   ) => void
-}) {
-  const mocks = defaultComponentMocks()
-  return {
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useUserActionsDelete()
-        setup(instance, { clientService: mocks.$clientService })
-      },
-      { mocks, provide: mocks }
-    )
-  }
+} = {}) {
+  const mocks = defaultComponentMocks({
+    currentRoute: mock<RouteLocation>({ path: '/users', query })
+  })
+  let instance: ReturnType<typeof useUserActionsDelete>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useUserActionsDelete()
+      setup?.(instance, { clientService: mocks.$clientService })
+    },
+    { mocks, provide: mocks }
+  )
+  return { wrapper, instance, mocks }
 }

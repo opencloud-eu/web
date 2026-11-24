@@ -13,7 +13,7 @@
           <oc-image
             :src="logoWithVersion"
             :alt="sidebarLogoAlt"
-            class="oc-logo-image align-middle ml-1 h-[28px] md:h-[36px] w-auto select-none"
+            class="oc-logo-image align-middle ms-1 h-[28px] md:h-[36px] w-auto select-none"
           />
         </picture>
       </router-link>
@@ -25,10 +25,11 @@
       <template v-if="!isEmbedModeEnabled">
         <custom-component-target :extension-point="topBarRightExtensionPoint" />
         <feedback-link v-if="isFeedbackLinkEnabled" v-bind="feedbackLinkOptions" />
+        <universal-access-dropdown v-if="isUniversalAccessEnabled" />
         <notifications v-if="isNotificationBellEnabled" />
         <side-bar-toggle
           v-if="isSideBarToggleVisible"
-          :disabled="isSideBarToggleDisabled"
+          :disabled="isRuntimePageActive"
           class="hidden sm:flex"
         />
         <applications-menu
@@ -49,6 +50,7 @@ import UserMenu from './UserMenu.vue'
 import Notifications from './Notifications.vue'
 import FeedbackLink from './FeedbackLink.vue'
 import SideBarToggle from './SideBarToggle.vue'
+import UniversalAccessDropdown from './UniversalAccessDropdown.vue'
 import {
   CustomComponentTarget,
   createLocationGuest,
@@ -126,9 +128,6 @@ const homeLink = computed(() => {
 const isSideBarToggleVisible = computed(() => {
   return authStore.userContextReady || authStore.publicLinkContextReady || authStore.isGuestContext
 })
-const isSideBarToggleDisabled = computed(() => {
-  return isRuntimeRoute(unref(router.currentRoute))
-})
 
 const sidebarLogoAlt = computed(() => {
   if (authStore.publicLinkContextReady && !authStore.userContextReady) {
@@ -161,6 +160,9 @@ const logoWithVersion = computed(() => {
 const logoMobileWithVersion = computed(() => {
   const logo = unref(currentTheme).logoMobile || unref(currentTheme).logo
   return addVersionToAssetUrl(logo)
+})
+const isUniversalAccessEnabled = computed(() => {
+  return !!(unref(currentTheme).urls?.easyLanguage || unref(currentTheme).urls?.signLanguage)
 })
 </script>
 <style scoped>

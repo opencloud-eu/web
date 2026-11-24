@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="px-4 pb-4 pt-4">
-        <div class="rounded-xl bg-role-surface">
+        <form class="rounded-xl bg-role-surface" autocomplete="off" @submit.prevent="onSubmit">
           <div class="overflow-auto px-4 py-4 pb-6">
             <ContactCreateForm
               :model-value="unref(createFormState)"
@@ -34,14 +34,14 @@
               <oc-button
                 appearance="filled"
                 class="min-w-[120px]"
+                submit="submit"
                 :disabled="unref(isSubmitDisabled)"
-                @click="onSubmit"
               >
                 <span v-text="$gettext('Save')" />
               </oc-button>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   </div>
@@ -52,6 +52,8 @@
     :title="$gettext('New contact')"
     :hide-actions="true"
     hide-cancel-button
+    :active="!activeModal"
+    @cancel="requestClose"
   >
     <template #headerActions>
       <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="requestClose">
@@ -60,7 +62,7 @@
     </template>
 
     <template #content>
-      <div class="flex min-h-0 flex-1 flex-col">
+      <form class="flex min-h-0 flex-1 flex-col" autocomplete="off" @submit.prevent="onSubmit">
         <div class="flex-1 min-h-0 overflow-auto pb-6">
           <ContactCreateForm
             :model-value="unref(createFormState)"
@@ -71,13 +73,13 @@
           <oc-button
             appearance="filled"
             class="min-w-[120px]"
+            submit="submit"
             :disabled="unref(isSubmitDisabled)"
-            @click="onSubmit"
           >
             <span v-text="$gettext('Save')" />
           </oc-button>
         </div>
-      </div>
+      </form>
     </template>
   </oc-modal>
 </template>
@@ -85,7 +87,8 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useGroupwareAccountsStore, useMessages } from '@opencloud-eu/web-pkg'
+import { storeToRefs } from 'pinia'
+import { useGroupwareAccountsStore, useMessages, useModals } from '@opencloud-eu/web-pkg'
 import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { useContactsStore } from '../composables/piniaStores/contacts'
 import { useContactEditor } from '../composables/useContactEditor'
@@ -103,6 +106,8 @@ defineProps<{
 
 const { $gettext } = useGettext()
 const { showErrorMessage } = useMessages()
+// dispatched modals (e.g. discard confirmation) sit on top and must get the Escape
+const { activeModal } = storeToRefs(useModals())
 
 const accountsStore = useGroupwareAccountsStore()
 const addressBooksStore = useAddressBooksStore()
@@ -149,12 +154,12 @@ const showSaveError = (error: unknown) => {
 }
 
 const onSubmit = async () => {
-  const accountId = unref(currentAccount)?.accountId
-  const addressBookId = unref(currentAddressBook)?.id
-
-  if (!accountId || !addressBookId || !unref(hasCreateChanges)) {
+  if (unref(isSubmitDisabled)) {
     return
   }
+
+  const accountId = unref(currentAccount)?.accountId
+  const addressBookId = unref(currentAddressBook)?.id
 
   try {
     const createdContact = await createContact(

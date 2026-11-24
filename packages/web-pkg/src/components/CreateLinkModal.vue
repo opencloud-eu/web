@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-between pb-2">
     <div v-if="isAdvancedMode" class="flex items-center">
-      <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
+      <oc-icon class="me-2" :name="selectedTypeIcon" fill-type="line" />
       <link-role-dropdown
         :model-value="selectedType"
         :available-link-type-options="availableLinkTypes"
@@ -9,7 +9,7 @@
       />
     </div>
     <div v-else class="flex items-center">
-      <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
+      <oc-icon class="me-2" :name="selectedTypeIcon" fill-type="line" />
       <div class="flex flex-col">
         <span class="font-semibold" v-text="selectedTypeDisplayName" />
         <span class="text-sm" v-text="selectedTypeDescription" />
@@ -27,7 +27,7 @@
       <span v-text="$gettext('Options')" />
     </oc-button>
   </div>
-  <div class="mb-4 ml-[30px]">
+  <form autocomplete="off" class="mb-4 ms-[30px]" @submit.prevent="$emit('confirm')">
     <oc-text-input
       v-if="isAdvancedMode"
       :key="passwordInputKey"
@@ -43,7 +43,7 @@
     />
     <div v-else-if="password.value" class="text-sm text-role-on-surface-variant">
       <span v-text="$gettext('Password:')" />
-      <span v-text="password.value" />
+      <span dir="ltr" v-text="password.value" />
     </div>
     <oc-datepicker
       v-if="isAdvancedMode"
@@ -54,9 +54,10 @@
       :is-dark="currentTheme.isDark"
       @date-changed="onExpiryDateChanged"
     />
-  </div>
+    <input type="submit" class="hidden" />
+  </form>
   <teleport defer :to="`#${modalActionsTarget(modal)}`">
-    <div class="ml-2" :class="{ 'oc-button-group': password.value }">
+    <div class="ms-2" :class="{ 'oc-button-group': password.value }">
       <oc-button
         class="link-modal-confirm oc-modal-body-actions-confirm"
         appearance="filled"
@@ -103,10 +104,9 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { v4 as uuidV4 } from 'uuid'
 import { upperFirst } from 'lodash-es'
 import { useGettext } from 'vue3-gettext'
-import { ComponentPublicInstance, computed, ref, reactive, unref, onMounted } from 'vue'
+import { ComponentPublicInstance, computed, ref, reactive, unref, onMounted, watch } from 'vue'
 import {
   usePasswordPolicyService,
   useEmbedMode,
@@ -140,9 +140,10 @@ const {
   space?: SpaceResource
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'cancel'): void
   (e: 'confirm', options?: { copyPassword?: boolean }): void
+  (e: 'update:confirmDisabled', value: boolean): void
 }>()
 
 const clientService = useClientService()
@@ -180,7 +181,7 @@ const confirmPasswordButtonText = computed(() => {
   return $gettext('Copy link and password')
 })
 
-const passwordInputKey = ref(uuidV4())
+const passwordInputKey = ref(crypto.randomUUID())
 const roleRefs = ref<Record<string, RoleRef>>({})
 
 const selectedExpiry = ref<DateTime>()
@@ -236,8 +237,15 @@ const passwordPolicyFulfilled = computed(() => {
   return passwordPolicy.check(unref(password).value)
 })
 
+const isFormInvalid = computed(() => {
+  return !unref(passwordPolicyFulfilled) || unref(isInvalidExpiryDate)
+})
+
+// lets the modal wrapper ignore a confirm on Enter while the form is invalid
+watch(isFormInvalid, (invalid) => emit('update:confirmDisabled', invalid), { immediate: true })
+
 const confirmButtonDisabled = computed(() => {
-  return !unref(passwordPolicyFulfilled) || unref(isInvalidExpiryDate) || modal.isLoading
+  return unref(isFormInvalid) || modal.isLoading
 })
 
 const createLinkHandler = async () => {

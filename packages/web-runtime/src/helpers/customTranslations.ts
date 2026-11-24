@@ -1,5 +1,4 @@
 import { ConfigStore } from '@opencloud-eu/web-pkg'
-import { v4 as uuidV4 } from 'uuid'
 import merge from 'lodash-es/merge'
 import { Translations } from 'vue3-gettext'
 
@@ -11,7 +10,7 @@ export const loadCustomTranslations = async ({
   const customTranslations = {}
   for (const customTranslation of configStore.customTranslations) {
     const customTranslationResponse = await fetch(customTranslation.url, {
-      headers: { 'X-Request-ID': uuidV4() }
+      headers: { 'X-Request-ID': crypto.randomUUID() }
     })
     if (customTranslationResponse.status !== 200) {
       console.error(

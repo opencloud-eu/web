@@ -1,7 +1,18 @@
-import { computed, ComputedRef, onBeforeUnmount, unref, MaybeRef, ref, Ref, watch } from 'vue'
+import {
+  computed,
+  ComputedRef,
+  onBeforeUnmount,
+  unref,
+  MaybeRef,
+  ref,
+  Ref,
+  watch,
+  WritableComputedRef
+} from 'vue'
 import { queryItemAsString } from '../appDefaults'
-import { useRouteQuery, useRouteQueryPersisted, useRouter } from '../router'
+import { useRouteQuery, useRouter } from '../router'
 import { PaginationConstants } from './constants'
+import { useLocalStorage } from '@vueuse/core'
 import { eventBus } from '../../services'
 import { findIndex } from 'lodash-es'
 import { Item } from '@opencloud-eu/web-client'
@@ -11,8 +22,6 @@ interface PaginationOptions<T> {
   page?: MaybeRef<number>
   perPage?: MaybeRef<number>
   perPageDefault?: string
-  perPageQueryName?: string
-  perPageStoragePrefix: string
   /**
    * Gates the `app.files.navigate.page` subscription, e.g. so that infinite
    * scrolling does not interfere with the numbered pagination. Defaults to true.
@@ -71,7 +80,7 @@ export function usePagination<T>(options: PaginationOptions<T>): PaginationResul
 function createNavigatePageSubscription<T>(
   options: PaginationOptions<T>,
   perPage: ComputedRef<number>
-): Ref<string> {
+): Ref<string | null> {
   const navigatePageToken = ref<string | null>(null)
   const router = useRouter()
 
@@ -128,18 +137,38 @@ function createPerPageRef<T>(options: PaginationOptions<T>): ComputedRef<number>
     return computed(() => unref(options.perPage))
   }
 
-  const perPageDefault = options.perPageDefault || PaginationConstants.perPageDefault
-  const perPageQuery = useRouteQueryPersisted({
-    name: options.perPageQueryName || PaginationConstants.perPageQueryName,
-    defaultValue: perPageDefault,
-    storagePrefix: options.perPageStoragePrefix
+  return useItemsPerPage(options.perPageDefault)
+}
+
+/**
+ * The items per page of paginated lists, shared by all apps. Only the default differs per app.
+ */
+export function useItemsPerPage(
+  defaultValue = PaginationConstants.perPageDefault
+): WritableComputedRef<number> {
+  const fallback = parseInt(defaultValue)
+  const itemsPerPage = useLocalStorage<number>('oc-options_items-per-page', fallback, {
+    writeDefaults: false
   })
-  return computed(() => {
-    // the route query is populated asynchronously, so it can still be missing on
-    // the first render. Falling back to the default keeps `items` from returning
-    // the whole (potentially huge) list for one render pass. Values below 1 (e.g.
-    // from a manipulated URL) would break the page count, so they fall back too.
-    const perPage = parseInt(queryItemAsString(unref(perPageQuery)))
-    return isNaN(perPage) || perPage < 1 ? parseInt(perPageDefault) : perPage
+
+  return computed({
+    get() {
+      // values below 1 (e.g. from manipulated storage) would break the page count, so they fall back to the default
+      const value = unref(itemsPerPage)
+      return isNaN(value) || value < 1 ? fallback : value
+    },
+    set(value) {
+      itemsPerPage.value = value
+    }
+  })
+}
+
+/**
+ * Infinite scrolling is a files-only display mode. Keep it separate from the
+ * numeric items-per-page setting shared by all paginated apps.
+ */
+export function useIsInfiniteScrollEnabled(): Ref<boolean> {
+  return useLocalStorage<boolean>(PaginationConstants.infiniteScrollStorageKey, false, {
+    writeDefaults: false
   })
 }

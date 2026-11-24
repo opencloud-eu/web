@@ -18,7 +18,7 @@
       </oc-button>
       <oc-contextual-helper
         v-if="isDisabledRole"
-        class="ml-1 files-permission-actions-list"
+        class="ms-1 files-permission-actions-list"
         :text="customPermissionsText"
         :title="$gettext('Custom permissions')"
       />
@@ -49,7 +49,7 @@
             @click="selectRole(role)"
           >
             <span class="flex items-center">
-              <oc-icon :name="role.icon" class="pl-2 pr-4" fill-type="line" />
+              <oc-icon :name="role.icon" class="ps-2 pe-4" fill-type="line" />
               <role-item :role="role" />
             </span>
             <span class="flex">
@@ -64,7 +64,6 @@
 
 <script setup lang="ts">
 import RoleItem from '../Shared/RoleItem.vue'
-import { v4 as uuidV4 } from 'uuid'
 import { inject, computed, ref, unref, Ref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { ShareRole } from '@opencloud-eu/web-client'
@@ -175,7 +174,7 @@ watch(
 
 const roleButtonId = computed(() => {
   if (domSelector) {
-    return `files-collaborators-role-button-${domSelector}-${uuidV4()}`
+    return `files-collaborators-role-button-${domSelector}-${crypto.randomUUID()}`
   }
   return 'files-collaborators-role-button-new'
 })

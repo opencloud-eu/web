@@ -27,7 +27,8 @@ import {
   useFileActionsDelete,
   useFileActionsRestore,
   useFileActionsDownloadFile,
-  useFileActionFallbackToDownload
+  useFileActionFallbackToDownload,
+  useFileActionsDuplicate
 } from '../actions'
 import { unref } from 'vue'
 
@@ -55,6 +56,7 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: restoreActions } = useFileActionsRestore()
   const { actions: downloadFileActions } = useFileActionsDownloadFile()
   const { actions: fallbackToDownloadActions } = useFileActionFallbackToDownload()
+  const { actions: duplicateActions } = useFileActionsDuplicate()
 
   const { actions: deleteActions } = useFileActionsDelete()
   const deleteAction = unref(deleteActions).find(({ name }) => name === 'delete')
@@ -191,6 +193,15 @@ export const useFileActions = (): ActionExtension[] => {
       action: {
         ...unref(permanentLinkActions)[0],
         category: 'secondary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.duplicate',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(duplicateActions)[0],
+        category: 'tertiary'
       }
     },
     {

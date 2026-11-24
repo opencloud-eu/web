@@ -26,3 +26,20 @@ document.head.appendChild(base)
 
 // never stub the highlighting primitive, otherwise text assertions lose the highlighted text
 config.global.stubs = { ...config.global.stubs, FilterHighlight: false }
+
+// happy-dom returns an empty nodeName via Node.prototype, which DOMPurify relies on
+const nodeNameGetter = Object.getOwnPropertyDescriptor(Node.prototype, 'nodeName').get
+Object.defineProperty(Node.prototype, 'nodeName', {
+  configurable: true,
+  get() {
+    let proto = Object.getPrototypeOf(this)
+    while (proto && proto !== Node.prototype) {
+      const descriptor = Object.getOwnPropertyDescriptor(proto, 'nodeName')
+      if (descriptor?.get) {
+        return descriptor.get.call(this)
+      }
+      proto = Object.getPrototypeOf(proto)
+    }
+    return nodeNameGetter.call(this)
+  }
+})

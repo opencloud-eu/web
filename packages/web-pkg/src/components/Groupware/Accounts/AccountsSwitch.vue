@@ -11,7 +11,7 @@
     <div v-else class="flex justify-between items-center w-full">
       <div class="flex items-center truncate">
         <oc-avatar :user-name="currentAccount?.name || ''" />
-        <div class="flex flex-col items-start ml-5 truncate">
+        <div class="flex flex-col items-start ms-5 truncate">
           <span
             class="font-bold max-w-full truncate"
             :title="currentAccount?.name || ''"
@@ -25,7 +25,7 @@
           />
         </div>
       </div>
-      <oc-icon class="ml-2" name="more-2" />
+      <oc-icon class="ms-2" name="more-2" />
     </div>
   </oc-button>
   <oc-drop :title="$gettext('Accounts')" class="w-md" toggle="#account-list-toggle" close-on-click>
@@ -42,7 +42,7 @@
           <div class="flex justify-between items-center w-full">
             <div class="flex items-center truncate">
               <oc-avatar :user-name="account.name" />
-              <div class="flex flex-col items-start ml-5 truncate">
+              <div class="flex flex-col items-start ms-5 truncate">
                 <span
                   class="font-bold max-w-full truncate"
                   :title="account.name"
@@ -58,7 +58,7 @@
             </div>
             <oc-icon
               v-if="account.accountId === currentAccount.accountId"
-              class="ml-2"
+              class="ms-2"
               name="check"
             />
           </div>

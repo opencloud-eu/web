@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`ContextMenuQuickAction component > renders component 1`] = `
-"<button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1" id="context-menu-trigger-1" data-test-context-menu-resource-name="function(...args) {
+"<button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ms-1 p-1" id="context-menu-trigger-1" data-test-context-menu-resource-name="function(...args) {
 		markDirty(DIRTY_MOCK_STATES, namedObject[name]);
 		if (prototypeMock) markDirty(DIRTY_MOCK_STATES, prototypeMock);
 		registerCalls(args, state, prototypeState);
@@ -19,7 +19,7 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 		const context = new.target ? void 0 : this;
 		const [instanceIndex, instancePrototypeIndex] = registerInstance(context, state, prototypeState);
 		const [contextIndex, contextPrototypeIndex] = registerContext(context, state, prototypeState);
-		const implementation = config.onceMockImplementations.shift() || config.mockImplementation || prototypeConfig?.onceMockImplementations.shift() || prototypeConfig?.mockImplementation || original || noopImplementation;
+		const implementation = ArrayPrototypeShift(config.onceMockImplementations) || config.mockImplementation || prototypeConfig &amp;&amp; ArrayPrototypeShift(prototypeConfig.onceMockImplementations) || prototypeConfig?.mockImplementation || original || noopImplementation;
 		let returnValue;
 		let thrownValue;
 		let didThrow = false;
@@ -33,7 +33,7 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 					mock,
 					implementation === noopImplementation ? void 0 : implementation
 				);
-				returnValue = Reflect.construct(implementation, args, new.target);
+				returnValue = ReflectConstruct(implementation, args, new.target);
 				// jest calls this before the implementation, but we have to resolve this _after_
 				// because we cannot do it before the \`Reflect.construct\` called the custom implementation.
 				// fortunately, the constructor is always an empty function because \`prototypeMethods\`
@@ -45,7 +45,7 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 					if (prototypeMock !== mock.prototype[prop]) continue;
 					const isMock = isMockFunction(prototypeMock);
 					const prototypeState = isMock ? prototypeMock.mock : void 0;
-					const prototypeConfig = isMock ? MOCK_CONFIGS.get(prototypeMock) : void 0;
+					const prototypeConfig = isMock ? WeakMapPrototypeGet(MOCK_CONFIGS, prototypeMock) : void 0;
 					returnValue[prop] = createMockInstance({
 						originalImplementation: keepMembersImplementation ? prototypeConfig?.mockOriginal : void 0,
 						prototypeState,
@@ -53,11 +53,11 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 						keepMembersImplementation
 					});
 				}
-			} else returnValue = implementation.apply(this, args);
+			} else returnValue = ReflectApply(implementation, this, args);
 		} catch (error) {
 			thrownValue = error;
 			didThrow = true;
-			if (error instanceof TypeError &amp;&amp; error.message.includes(&quot;is not a constructor&quot;)) console.warn(\`[vitest] The \${namedObject[name].getMockName()} mock did not use 'function' or 'class' in its implementation, see https://vitest.dev/api/vi#vi-spyon for examples.\`);
+			if (error instanceof TypeError &amp;&amp; StringPrototypeIncludes(error.message, &quot;is not a constructor&quot;)) console.warn(\`[vitest] The \${namedObject[name].getMockName()} mock did not use 'function' or 'class' in its implementation, see https://vitest.dev/api/vi#vi-spyon for examples.\`);
 			throw error;
 		} finally {
 			if (didThrow) {
@@ -90,15 +90,7 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 		return returnValue;
 	}">
   <!--v-if-->
-  <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" unique-ids="false" transform-source="(svg) => {
-			if (__props.accessibleLabel !== &quot;&quot;) {
-				const title = document.createElement(&quot;title&quot;);
-				title.setAttribute(&quot;id&quot;, svgTitleId.value);
-				title.appendChild(document.createTextNode(__props.accessibleLabel));
-				svg.insertBefore(title, svg.firstChild);
-			};
-			return svg;
-		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
+  <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" unique-ids="false" aria-hidden="true" focusable="false" class="size-5"></svg></span>
 </button>
 
 <transition-stub name="oc-drop" appear="false" persisted="false" css="true">

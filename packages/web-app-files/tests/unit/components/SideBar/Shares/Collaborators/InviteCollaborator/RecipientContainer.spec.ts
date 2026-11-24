@@ -3,10 +3,6 @@ import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-clie
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { CapabilityStore } from '@opencloud-eu/web-pkg'
 
-vi.mock('../../../../../../../src/helpers/user/avatarUrl', () => ({
-  avatarUrl: vi.fn().mockReturnValue('avatarUrl')
-}))
-
 const getRecipient = (shareType: number = ShareTypes.user.value): CollaboratorAutoCompleteItem => ({
   displayName: 'Albert Einstein',
   id: 'einstein',
@@ -27,14 +23,6 @@ describe('InviteCollaborator RecipientContainer', () => {
     expect((wrapper.vm as any).formattedRecipient.icon).toEqual({
       name: ShareTypes.guest.icon,
       label: 'Guest user'
-    })
-  })
-  it('renders the contact icon and label for address book contact recipients', () => {
-    const recipient = getRecipient(ShareTypes.contact.value)
-    const { wrapper } = getMountedWrapper(recipient)
-    expect((wrapper.vm as any).formattedRecipient.icon).toEqual({
-      name: ShareTypes.contact.icon,
-      label: 'Contact'
     })
   })
   it('displays an avatar image if capability is present', async () => {

@@ -167,8 +167,6 @@ describe('ShortcutTargetInput', () => {
     expect(wrapper.findAll('.selectable-item')[1].classes()).toContain('active')
     await keydown('ArrowDown')
     expect(wrapper.find('.selectable-item.active').exists()).toBe(false)
-    await keydown('Enter')
-    expect(wrapper.emitted('select')).toBeUndefined()
     await keydown('ArrowUp')
     await keydown('Enter')
     expect(wrapper.emitted('select')).toEqual([
@@ -221,6 +219,18 @@ describe('ShortcutTargetInput', () => {
     expect(wrapper.emitted('select')).toEqual([
       [`${window.location.origin}/f/report.pdf-id`, 'report.pdf']
     ])
+  })
+
+  it('lets Enter submit the form and hides the suggestions when none is highlighted', async () => {
+    search.mockResolvedValueOnce({ values: [result('report.pdf')], totalResults: 1 })
+    const { input, keydown, drop } = setup()
+    await input('report')
+    await vi.advanceTimersByTimeAsync(200)
+    const event = await keydown('Enter')
+    expect(event.defaultPrevented).toBe(false)
+    expect(event.stopPropagation).not.toHaveBeenCalled()
+    expect(drop.vm.hide).toHaveBeenCalled()
+    expect(wrapper.emitted('select')).toBeUndefined()
   })
 
   it('closes suggestions with Escape before allowing the modal to handle another Escape', async () => {

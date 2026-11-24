@@ -34,9 +34,7 @@ export interface moveOrCopyMultipleResourceArgs extends Omit<moveOrCopyResourceA
   resources: string[]
 }
 
-export const pasteResource = async (
-  args: Omit<moveOrCopyResourceArgs, 'method'>
-): Promise<void> => {
+const pasteResource = async (args: Omit<moveOrCopyResourceArgs, 'method'>): Promise<void> => {
   const { page, resource, newLocation, action, option } = args
   const frame = page.frameLocator(opencloudFrame)
 
@@ -329,10 +327,9 @@ export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<
         source.dragTo(target)
       ])
 
-      await Promise.all([
-        page.locator(util.format(resourceNameSelector, resourceBase)),
-        page.locator(util.format(resourceNameSelector, newLocation)).click()
-      ])
+      await expect(source).toBeHidden()
+      await target.click()
+      await expect(source).toBeVisible()
 
       break
     }
@@ -355,17 +352,9 @@ export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<
         source.dragTo(target)
       ])
 
-      await Promise.all([
-        page.locator(util.format(resourceNameSelector, resourceBase)),
-        page
-          .locator(
-            util.format(
-              breadcrumbResourceNameSelector,
-              utils.locatorUtils.buildXpathLiteral(newLocation)
-            )
-          )
-          .click()
-      ])
+      await expect(source).toBeHidden()
+      await target.click()
+      await expect(source).toBeVisible()
 
       break
     }

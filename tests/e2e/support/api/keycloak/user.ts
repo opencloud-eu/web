@@ -17,7 +17,7 @@ export const openCloudKeycloakUserRoles: Record<string, string> = {
   'User Light': 'opencloudGuest'
 }
 
-export const getAdminUser = (): User => {
+const getAdminUser = (): User => {
   const usersEnvironment = new UsersEnvironment()
   return usersEnvironment.getUser({ key: 'admin' })
 }
@@ -81,19 +81,6 @@ export const assignRole = async ({ uuid, role }: { uuid: string; role: string })
   })
 }
 
-export const unAssignRole = async ({ uuid, role }: { uuid: string; role: string }) => {
-  // can't unassign multiple realm roles at once
-  const response = await request({
-    method: 'DELETE',
-    path: urlJoin(realmBasePath, 'users', uuid, 'role-mappings', 'realm'),
-    body: [await getRealmRole(openCloudKeycloakUserRoles[role])],
-    user: getKeycloakAdminUser(),
-    header: { 'Content-Type': 'application/json' }
-  })
-  checkResponseStatus(response, 'Can not delete existing role ')
-  return response
-}
-
 export const deleteUser = async ({ user }: { user: User }): Promise<User> => {
   // first delete OpenCloud user
   // deletes the user data
@@ -110,13 +97,10 @@ export const deleteUser = async ({ user }: { user: User }): Promise<User> => {
     user: getKeycloakAdminUser()
   })
   checkResponseStatus(response, 'Failed to delete keycloak user: ' + user.id)
-  if (response.ok) {
-    try {
-      const usersEnvironment = new UsersEnvironment()
-      usersEnvironment.removeCreatedUser({ key: user.id })
-    } catch (e) {
-      console.error('Error removing Keycloak user:', e)
-    }
+  try {
+    usersEnvironment.removeCreatedUser({ key: user.id })
+  } catch (e) {
+    console.error('Error removing Keycloak user:', e)
   }
   return user
 }

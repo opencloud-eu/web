@@ -9,11 +9,12 @@ import { waitProcessingToFinish } from '../../support/objects/app-files/fileEven
 import { pageObjectFor, actorPage } from '../../environment/pageObject'
 
 Then(
-  /^following resources? (should|should not) be displayed in the (?:files list|Shares|trashbin) for user "([^"]*)"$/,
+  /^following resources? (should|should not) be displayed in the (?:files list|Shares|trashbin) for user "([^"]*)"( without a reload)?$/,
   async (
     { world }: { world: World },
     actionType: string,
     stepUser: string,
+    withoutReload: string,
     stepTable: DataTable
   ): Promise<void> => {
     const page = actorPage(world, stepUser)
@@ -21,7 +22,7 @@ Then(
     const isFavoritesPage = page.url().includes('/favorites')
 
     for (const info of stepTable.hashes()) {
-      if (isFavoritesPage) {
+      if (isFavoritesPage && !withoutReload) {
         // In the favorites page, the resource may not be immediately visible due the search index update delay.
         await expect(async () => {
           const isVisible = await resourceObject.getResourceLocator(info.resource).isVisible()
@@ -131,14 +132,6 @@ When(
 )
 
 When(
-  '{string} navigates to page {string} of the personal/project space files view',
-  async ({ world }: { world: World }, stepUser: string, pageNumber: string) => {
-    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
-    await resourceObject.changePage({ pageNumber })
-  }
-)
-
-When(
   '{string} changes the items per page to {string}',
   async ({ world }: { world: World }, stepUser: string, itemsPerPage: string): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
@@ -152,23 +145,6 @@ Then(
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     const actualText = await resourceObject.getFileListFooterText()
     expect(actualText).toBe(expectedText)
-  }
-)
-
-Then(
-  '{string} should see {int} resources in the personal/project space files view',
-  async ({ world }: { world: World }, stepUser: string, expectedNumberOfResources: number) => {
-    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
-    const actualNumberOfResources = await resourceObject.countNumberOfResourcesInThePage()
-    expect(actualNumberOfResources).toBe(expectedNumberOfResources)
-  }
-)
-
-Then(
-  '{string} should not see the pagination in the personal/project space files view',
-  async ({ world }: { world: World }, stepUser: string) => {
-    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
-    await resourceObject.expectPageNumberNotToBeVisible()
   }
 )
 
@@ -440,7 +416,7 @@ When(
   async (
     { world }: { world: World },
     stepUser: string,
-    method: 'context menu' | 'batch action' | 'preview',
+    method: 'context menu' | 'batch action' | 'preview' | 'space header',
     stepTable: DataTable
   ): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)

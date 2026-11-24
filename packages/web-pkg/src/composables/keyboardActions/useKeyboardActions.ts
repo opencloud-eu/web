@@ -1,6 +1,5 @@
 import { useEventListener } from '@vueuse/core'
 import { Ref, ref, unref } from 'vue'
-import { v4 as uuidV4 } from 'uuid'
 
 interface KeyboardActionsOptions {
   skipDisabledKeyBindingsCheck?: boolean
@@ -171,7 +170,7 @@ export const useKeyboardActions = (options?: KeyboardActionsOptions): KeyboardAc
     callback: KeyActionCallback,
     { preventDefault = true }: { preventDefault?: boolean } = {}
   ): string => {
-    const id = uuidV4()
+    const id = crypto.randomUUID()
     actions.value.push({
       id,
       ...keys,

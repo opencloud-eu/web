@@ -1,16 +1,16 @@
 export abstract class PaginationConstants {
   static readonly perPageDefault: string = '100'
-  static readonly perPageQueryName: string = 'items-per-page'
   static readonly options = ['20', '50', '100', '250', '500']
   /**
    * Selecting this option switches the file views from numbered pagination to
    * infinite scrolling: all items are rendered cumulatively while the user is
    * approaching the end of the list, no further numbering is needed.
    *
-   * The symbol doubles as the persisted route query and local storage value,
-   * which means it does not need to be translated.
+   * The symbol is used as the option label and selection value, so it does not
+   * need to be translated.
    */
   static readonly infiniteScrollValue: string = '∞'
+  static readonly infiniteScrollStorageKey: string = 'oc-options_files-infinite-scroll'
   static readonly optionsWithInfiniteScroll: Array<string> = [
     ...PaginationConstants.options,
     PaginationConstants.infiniteScrollValue

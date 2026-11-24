@@ -90,10 +90,10 @@ const selectors = {
   search: '#files-global-search',
   noResults: '#no-results',
   searchInput: 'input',
-  searchInputClear: '.oc-search-clear',
   providerListItem: '.provider',
   providerDisplayName: '.provider .display-name',
   providerMoreResultsLink: '.provider .more-results',
+  activePreview: 'li.preview.active',
   searchFilters: '#files-global-search-filter'
 }
 
@@ -168,7 +168,7 @@ describe('Search Bar portal component', () => {
     providerContacts.previewSearch.search.mockReturnValueOnce({ values: [] })
     wrapper.find(selectors.searchInput).setValue('nothing found')
     await flushPromises()
-    expect(wrapper.find(selectors.noResults)).toBeTruthy()
+    expect(wrapper.find(selectors.noResults).exists()).toBe(true)
   })
   test('stops loading and shows the other results if a provider search fails', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
@@ -355,6 +355,168 @@ describe('Search Bar portal component', () => {
     expect(providerFiles.previewSearch.search).toHaveBeenLastCalledWith(
       expect.stringContaining('folder-id')
     )
+  })
+  describe('arrow key navigation in the preview', () => {
+    async function pressArrowKeys(wrapper: ReturnType<typeof getMountedWrapper>['wrapper']) {
+      await wrapper.find(selectors.searchInput).trigger('keyup.down')
+      await wrapper.find(selectors.searchInput).trigger('keyup.up')
+    }
+
+    test('does nothing while the preview is loading', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      providerFiles.previewSearch.search.mockImplementationOnce(() => new Promise(() => undefined))
+      wrapper.find(selectors.searchInput).setValue('albert')
+      await flushPromises()
+      await pressArrowKeys(wrapper)
+      expect((wrapper.vm as any).activePreviewIndex).toBeNull()
+    })
+    test('does nothing if the preview has no results', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      providerFiles.previewSearch.search.mockReturnValueOnce({ values: [] })
+      providerContacts.previewSearch.search.mockReturnValueOnce({ values: [] })
+      wrapper.find(selectors.searchInput).setValue('nothing found')
+      await flushPromises()
+      expect(wrapper.find(selectors.noResults).exists()).toBe(true)
+      await pressArrowKeys(wrapper)
+      expect((wrapper.vm as any).activePreviewIndex).toBeNull()
+    })
+    test('moves through the more results link and the preview results', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      wrapper.find(selectors.searchInput).setValue('albert')
+      await flushPromises()
+      await wrapper.find(selectors.searchInput).trigger('keyup.down')
+      expect((wrapper.vm as any).activePreviewIndex).toBe(0)
+      await wrapper.find(selectors.searchInput).trigger('keyup.down')
+      expect((wrapper.vm as any).activePreviewIndex).toBe(1)
+      await wrapper.find(selectors.searchInput).trigger('keyup.up')
+      expect((wrapper.vm as any).activePreviewIndex).toBe(0)
+    })
+    test('selects the last preview result on arrow up', async () => {
+      const { wrapper } = getMountedWrapper({ attachTo: document.body })
+      wrapper.find(selectors.searchInput).setValue('albert')
+      await flushPromises()
+      await wrapper.find(selectors.searchInput).trigger('keyup.up')
+      expect((wrapper.vm as any).activePreviewIndex).toBe(4)
+    })
+    describe('without a more results link', () => {
+      async function getActiveSearchIds(wrapper: ReturnType<typeof getMountedWrapper>['wrapper']) {
+        await nextTick()
+        return wrapper.findAll(selectors.activePreview).map((el) => el.attributes('data-search-id'))
+      }
+
+      test('starts with the first preview result', async () => {
+        const { wrapper } = getMountedWrapper({
+          providers: [providerContacts],
+          attachTo: document.body
+        })
+        wrapper.find(selectors.searchInput).setValue('albert')
+        await flushPromises()
+        await wrapper.find(selectors.searchInput).trigger('keyup.down')
+        expect(await getActiveSearchIds(wrapper)).toEqual(['c1'])
+      })
+      test('keeps a preview result selected when wrapping around', async () => {
+        const { wrapper } = getMountedWrapper({
+          providers: [providerContacts],
+          attachTo: document.body
+        })
+        wrapper.find(selectors.searchInput).setValue('albert')
+        await flushPromises()
+        await wrapper.find(selectors.searchInput).trigger('keyup.down')
+        await wrapper.find(selectors.searchInput).trigger('keyup.up')
+        expect(await getActiveSearchIds(wrapper)).toEqual(['c1'])
+        await wrapper.find(selectors.searchInput).trigger('keyup.down')
+        await wrapper.find(selectors.searchInput).trigger('keyup.down')
+        expect(await getActiveSearchIds(wrapper)).toEqual(['c1'])
+      })
+    })
+  })
+  describe('while the search is debounced', () => {
+    beforeEach(async () => {
+      vi.useFakeTimers()
+      const { debounce: realDebounce } =
+        await vi.importActual<typeof import('lodash-es')>('lodash-es')
+      vi.mocked(debounce).mockImplementationOnce(realDebounce)
+      providerFiles.previewSearch.search.mockReturnValue({ values: [] })
+      providerContacts.previewSearch.search.mockReturnValue({ values: [] })
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    test('shows "Searching ..." instead of "No results" until the search for the term finished', async () => {
+      const { wrapper } = getMountedWrapper()
+      await wrapper.find(selectors.searchInput).setValue('nothing')
+      await wrapper.find(selectors.searchInput).setValue('nothing found')
+
+      expect(providerFiles.previewSearch.search).not.toHaveBeenCalled()
+      expect(wrapper.find(selectors.noResults).exists()).toBe(false)
+      expect(wrapper.text()).toContain('Searching ...')
+
+      await vi.runAllTimersAsync()
+      expect(providerFiles.previewSearch.search).toHaveBeenCalledTimes(1)
+      expect(wrapper.find(selectors.noResults).exists()).toBe(true)
+    })
+    test('does not show "Searching ..." for a term of spaces only', async () => {
+      const { wrapper } = getMountedWrapper()
+      await wrapper.find(selectors.searchInput).setValue('   ')
+      expect(wrapper.text()).not.toContain('Searching ...')
+    })
+    test('stops showing "Searching ..." when the pending search gets cancelled by Enter', async () => {
+      const { wrapper } = getMountedWrapper()
+      await wrapper.find(selectors.searchInput).setValue('albert')
+      await wrapper.find(selectors.searchInput).trigger('keyup.enter')
+      await vi.runAllTimersAsync()
+
+      expect(providerFiles.previewSearch.search).not.toHaveBeenCalled()
+      expect(wrapper.text()).not.toContain('Searching ...')
+    })
+    test('opens the results page for the new term on Enter after arrow navigation and typing', async () => {
+      providerFiles.previewSearch.search.mockReturnValue({
+        values: [{ id: 'f1', data: 'albert.txt' }]
+      })
+      const { wrapper, mocks } = getMountedWrapper({
+        providers: [providerFiles],
+        attachTo: document.body
+      })
+      await wrapper.find(selectors.searchInput).setValue('albert')
+      await vi.runAllTimersAsync()
+      await wrapper.find(selectors.searchInput).trigger('keyup.down')
+      expect((wrapper.vm as any).activePreviewIndex).toBe(0)
+
+      await wrapper.find(selectors.searchInput).setValue('alberta')
+      await wrapper.find(selectors.searchInput).trigger('keyup.enter')
+
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: expect.objectContaining({ term: 'alberta', provider: 'files.sdk' })
+        })
+      )
+    })
+    test('announces nothing for a search that settles while a newer one is pending', async () => {
+      const { wrapper } = getMountedWrapper({
+        providers: [providerFiles],
+        attachTo: document.body
+      })
+      let resolveSearch: (result: SearchResult) => void
+      providerFiles.previewSearch.search.mockImplementationOnce(
+        () => new Promise((resolve) => (resolveSearch = resolve))
+      )
+      const input = wrapper.find<HTMLInputElement>(selectors.searchInput)
+      input.element.focus()
+      await input.setValue('albert')
+      await vi.advanceTimersByTimeAsync(500)
+      expect(providerFiles.previewSearch.search).toHaveBeenCalledTimes(1)
+
+      await input.setValue('alberta')
+      resolveSearch({ values: [mock<SearchResult['values'][number]>()], totalResults: 12 })
+      await vi.advanceTimersByTimeAsync(100)
+      expect(wrapper.text()).toContain('Searching ...')
+      expect(announceMock).not.toHaveBeenCalledWith(expect.stringMatching(/.+/))
+
+      await vi.runAllTimersAsync()
+      expect(providerFiles.previewSearch.search).toHaveBeenCalledTimes(2)
+      expect(announceMock).toHaveBeenLastCalledWith('No results')
+    })
   })
   describe('results announcement', () => {
     afterEach(() => {
@@ -945,32 +1107,15 @@ describe('Search Bar portal component', () => {
     const spyRouterPushStub = wrapper.vm.$router.push
     expect(spyRouterPushStub).not.toHaveBeenCalled()
   })
-  test('focuses search input when pressing "s"', () => {
-    const { wrapper } = getMountedWrapper()
-    const nonEditableTarget = document.createElement('div')
-    document.body.appendChild(nonEditableTarget)
-    nonEditableTarget.focus()
-
-    ;(wrapper.vm as any).onSearchShortcut()
-    nonEditableTarget.remove()
-  })
-  test('focuses search input when pressing "/"', () => {
-    const { wrapper } = getMountedWrapper()
+  test('focuses the search input on the search shortcut', () => {
+    const { wrapper } = getMountedWrapper({ attachTo: document.body })
     const nonEditableTarget = document.createElement('button')
     document.body.appendChild(nonEditableTarget)
     nonEditableTarget.focus()
 
     ;(wrapper.vm as any).onSearchShortcut()
+    expect(document.activeElement).toBe(wrapper.find(selectors.searchInput).element)
     nonEditableTarget.remove()
-  })
-  test('does not focus search input when editable element is already focused', () => {
-    const { wrapper } = getMountedWrapper()
-    const textInput = document.createElement('input')
-    document.body.appendChild(textInput)
-    textInput.focus()
-
-    ;(wrapper.vm as any).onSearchShortcut()
-    textInput.remove()
   })
   test('clears search term on key press esc while input has focus', async () => {
     const { wrapper } = getMountedWrapper()

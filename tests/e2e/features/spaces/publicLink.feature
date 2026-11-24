@@ -11,7 +11,6 @@ Feature: spaces public link
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    When "Alice" logs in
     And "Alice" creates the project space using API "team"
     And "Alice" creates the following folder in space "team" using API
       | name                  |
@@ -20,39 +19,25 @@ Feature: spaces public link
       | name                                  | content   |
       | spaceFolder/shareToBrian.txt          | some text |
       | spaceFolder/subFolder/shareToBrian.md | readme    |
+    And "Alice" uploads the following local files into space "team" using API
+      | localFile      | to             |
+      | simple.pdf     | simple.pdf     |
+      | testavatar.jpg | testavatar.jpg |
     And "Alice" adds the following members to the space "team" using API
       | user  | role       | shareType |
       | Brian | Can edit   | user      |
       | Carol | Can view   | user      |
       | David | Can manage | user      |
-    And "Alice" navigates to the project space "team"
-    And "Alice" uploads the following resources via drag-n-drop
-      | resource       |
-      | simple.pdf     |
-      | testavatar.jpg |
-    And "Alice" creates a public link for the space with password "%public%" using the sidebar panel
-    And "Alice" renames the most recently created public link of space to "spaceLink"
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource    | password |
-      | spaceFolder | %public% |
-    And "Alice" renames the most recently created public link of resource "spaceFolder" to "folderLink"
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource                     | password |
-      | spaceFolder/shareToBrian.txt | %public% |
-    And "Alice" renames the most recently created public link of resource "spaceFolder/shareToBrian.txt" to "textLink"
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource                              | password |
-      | spaceFolder/subFolder/shareToBrian.md | %public% |
-    And "Alice" renames the most recently created public link of resource "spaceFolder/subFolder/shareToBrian.md" to "markdownLink"
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource   | password |
-      | simple.pdf | %public% |
-    And "Alice" renames the most recently created public link of resource "simple.pdf" to "pdfLink"
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource       | password |
-      | testavatar.jpg | %public% |
-    And "Alice" renames the most recently created public link of resource "testavatar.jpg" to "imageLink"
-    And "Alice" logs out
+    And "Alice" creates a public link of the space using API
+      | space | name      | password |
+      | team  | spaceLink | %public% |
+    And "Alice" creates a public link of following resource using API
+      | resource                              | space | name         | password |
+      | spaceFolder                           | team  | folderLink   | %public% |
+      | spaceFolder/shareToBrian.txt          | team  | textLink     | %public% |
+      | spaceFolder/subFolder/shareToBrian.md | team  | markdownLink | %public% |
+      | simple.pdf                            | team  | pdfLink      | %public% |
+      | testavatar.jpg                        | team  | imageLink    | %public% |
     When "Brian" logs in
     And "Brian" opens the public link "spaceLink"
     And "Brian" unlocks the public link with password "%public%"
@@ -91,7 +76,7 @@ Feature: spaces public link
     And "David" closes the file viewer
     And "David" logs out
 
-    # @issue-1712 download a folder in the public link as authenticated user
+    # download a folder in the public link as authenticated user
     When "Edith" logs in
     And "Edith" opens the public link "folderLink"
     And "Edith" unlocks the public link with password "%public%"

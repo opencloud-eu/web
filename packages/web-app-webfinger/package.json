@@ -5,9 +5,8 @@
   "description": "OpenCloud webfinger resolver",
   "license": "AGPL-3.0",
   "peerDependencies": {
-    "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "vue-router": "5.5.0"
+    "vue-router": "5.5.1"
   }
 }

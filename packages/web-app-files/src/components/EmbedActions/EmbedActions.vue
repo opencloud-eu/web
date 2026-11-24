@@ -6,23 +6,24 @@
       v-if="chooseFileName"
       ref="fileNameInputRef"
       v-model="fileName"
-      class="flex flex-row items-center ml-0 md:ml-[230px] gap-2 w-full md:w-auto [&>div:has(input)]:flex-1 [&_input]:w-full md:[&_input]:w-sm"
+      class="flex flex-row items-center ms-0 md:ms-[230px] gap-2 w-full md:w-auto [&>div:has(input)]:flex-1 [&_input]:w-full md:[&_input]:w-sm"
       preselect
       :selection-range="fileNameInputSelectionRange"
       :label="$gettext('File name')"
       :error-message="fileNameErrorMessage"
       :fix-message-line="true"
       @keydown.esc="emitCancel"
+      @keydown.enter="onFileNameEnter"
     />
 
-    <div class="flex items-center ml-auto">
-      <oc-button class="mr-4" data-testid="button-cancel" appearance="outline" @click="emitCancel">
+    <div class="flex items-center ms-auto">
+      <oc-button class="me-4" data-testid="button-cancel" appearance="outline" @click="emitCancel">
         {{ $gettext('Cancel') }}
       </oc-button>
       <oc-button
         v-if="!isLocationPicker && !isFilePicker"
         key="btn-share"
-        class="mr-4"
+        class="me-4"
         data-testid="button-share"
         appearance="filled"
         :disabled="isShareLinksButtonDisabled"
@@ -70,8 +71,8 @@ import {
   withExtension,
   withoutExtension
 } from '@opencloud-eu/web-pkg'
-import { extractExtensionFromFile, Resource } from '@opencloud-eu/web-client'
-import { join } from 'path'
+import { extractExtensionFromFile, Resource, urlJoin } from '@opencloud-eu/web-client'
+import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useFileActionsCreateLink } from '../../composables'
@@ -83,6 +84,7 @@ const {
   postMessage,
   chooseFileName,
   chooseFileNameSuggestion,
+  allowVault,
   submitButtonTitle
 } = useEmbedMode()
 const spacesStore = useSpacesStore()
@@ -141,7 +143,7 @@ const fileNameErrorMessage = computed(() => {
     return undefined
   }
   const name = unref(fullFileName)
-  const resource = { path: join(unref(currentFolder).path, name), name } as Resource
+  const resource = { path: urlJoin(unref(currentFolder).path, name), name } as Resource
   // no existing resources to check against, name conflicts get resolved on save
   const { isValid, error } = isFileNameValid(resource, name, [], unref(space))
   return isValid ? undefined : error
@@ -174,6 +176,8 @@ const isChooseButtonDisabled = computed<boolean>(() => {
     selectedFiles.value.length < 1 ||
     !unref(currentFolder) ||
     !unref(currentFolder)?.canCreate() ||
+    // callers write unencrypted unless they opt in as vault-aware
+    (!unref(allowVault) && unref(currentFolder).isInVault) ||
     !!unref(fileNameErrorMessage)
   )
 })
@@ -207,6 +211,19 @@ const emitSelect = (): void => {
 
   // TODO: adjust type to embedModeLocationPickMessageData later (breaking)
   postMessage<Resource[]>('opencloud-embed:select', JSON.parse(JSON.stringify(selectedFiles.value)))
+}
+
+function onFileNameEnter(event: KeyboardEvent) {
+  // a held key repeats, which must not post several selections to the host
+  if (
+    event.repeat ||
+    isComposingEvent(event) ||
+    !unref(isLocationPicker) ||
+    unref(isChooseButtonDisabled)
+  ) {
+    return
+  }
+  emitSelect()
 }
 
 const emitCancel = (): void => {

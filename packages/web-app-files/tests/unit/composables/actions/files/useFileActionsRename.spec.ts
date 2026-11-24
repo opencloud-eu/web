@@ -37,17 +37,6 @@ describe('rename', () => {
   })
 
   describe('rename action handler', () => {
-    it('should trigger the rename modal window', () => {
-      getWrapper({
-        setup: async ({ actions }, { space }) => {
-          const { dispatchModal } = useModals()
-          const resources = [currentFolder]
-          await unref(actions)[0].handler({ space, resources })
-          expect(dispatchModal).toHaveBeenCalledTimes(1)
-        }
-      })
-    })
-
     it.each([
       {
         name: 'folder',
@@ -216,74 +205,64 @@ describe('rename', () => {
   })
 
   describe('method "renameResource"', () => {
-    it('should call the rename action on a resource in the file list', () => {
-      getWrapper({
-        setup: async ({ renameResource }, { space }) => {
-          const resource = { id: '2', path: '/folder', webDavPath: '/files/admin/folder' }
-          await renameResource(space, resource, 'new name')
+    it('should call the rename action on a resource in the file list', async () => {
+      const { instance, mocks } = getWrapper()
+      const { space } = mocks
+      const resource = { id: '2', path: '/folder', webDavPath: '/files/admin/folder' }
+      await instance.renameResource(space, resource, 'new name')
 
-          const { upsertResource } = useResourcesStore()
-          expect(upsertResource).toHaveBeenCalledTimes(1)
-        }
-      })
+      const { upsertResource } = useResourcesStore()
+      expect(upsertResource).toHaveBeenCalledTimes(1)
     })
 
-    it('should call the rename action on the current folder', () => {
-      getWrapper({
-        setup: async ({ renameResource }, { space }) => {
-          await renameResource(space, currentFolder, 'new name')
+    it('should call the rename action on the current folder', async () => {
+      const { instance, mocks } = getWrapper()
+      const { space } = mocks
+      await instance.renameResource(space, currentFolder, 'new name')
 
-          const { upsertResource } = useResourcesStore()
-          expect(upsertResource).toHaveBeenCalledTimes(1)
-        }
-      })
+      const { upsertResource } = useResourcesStore()
+      expect(upsertResource).toHaveBeenCalledTimes(1)
     })
 
-    it('hands clear-text source and target path to moveFiles inside a vault', () => {
-      getWrapper({
-        setup: async ({ renameResource }, { space, clientService }) => {
-          const resource = {
-            id: '2',
-            path: '/my.vault/report.txt',
-            webDavPath: '/files/admin/my.vault/report.txt',
-            storageId: 'space-1'
-          }
-          await renameResource(space, resource, 'renamed.txt')
+    it('hands clear-text source and target path to moveFiles inside a vault', async () => {
+      const { instance, mocks } = getWrapper()
+      const { space, $clientService: clientService } = mocks
+      const resource = {
+        id: '2',
+        path: '/my.vault/report.txt',
+        webDavPath: '/files/admin/my.vault/report.txt',
+        storageId: 'space-1'
+      }
+      await instance.renameResource(space, resource, 'renamed.txt')
 
-          expect(clientService.webdav.moveFiles).toHaveBeenCalledWith(
-            space,
-            expect.objectContaining({ path: '/my.vault/report.txt' }),
-            space,
-            { path: '/my.vault/renamed.txt' }
-          )
-        }
-      })
+      expect(clientService.webdav.moveFiles).toHaveBeenCalledWith(
+        space,
+        expect.objectContaining({ path: '/my.vault/report.txt' }),
+        space,
+        { path: '/my.vault/renamed.txt' }
+      )
     })
 
-    it('moves unlocked vault engines from the old path to the new one', () => {
-      getWrapper({
-        setup: async ({ renameResource }, { space }) => {
-          // a plain folder may hold vaults too, so not only vault roots qualify
-          await renameResource(space, currentFolder, 'new name')
+    it('moves unlocked vault engines from the old path to the new one', async () => {
+      const { instance, mocks } = getWrapper()
+      const { space } = mocks
+      // a plain folder may hold vaults too, so not only vault roots qualify
+      await instance.renameResource(space, currentFolder, 'new name')
 
-          const { moveEngine } = useVaultStore()
-          expect(moveEngine).toHaveBeenCalledWith(space.id, '/folder', '/new name')
-        }
-      })
+      const { moveEngine } = useVaultStore()
+      expect(moveEngine).toHaveBeenCalledWith(space.id, '/folder', '/new name')
     })
 
-    it('should handle errors properly', () => {
+    it('should handle errors properly', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
-      getWrapper({
-        setup: async ({ renameResource }, { space, clientService }) => {
-          clientService.webdav.moveFiles.mockRejectedValueOnce(new Error())
+      const { instance, mocks } = getWrapper()
+      const { space, $clientService: clientService } = mocks
+      clientService.webdav.moveFiles.mockRejectedValueOnce(new Error())
 
-          await renameResource(space, currentFolder, 'new name')
-          const { showErrorMessage } = useMessages()
-          expect(showErrorMessage).toHaveBeenCalledTimes(1)
-        }
-      })
+      await instance.renameResource(space, currentFolder, 'new name')
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledTimes(1)
     })
   })
 })
@@ -291,17 +270,11 @@ describe('rename', () => {
 function getWrapper({
   setup
 }: {
-  setup: (
+  setup?: (
     instance: ReturnType<typeof useFileActionsRename>,
-    {
-      space,
-      clientService
-    }: {
-      space: SpaceResource
-      clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
-    }
+    { space }: { space: SpaceResource }
   ) => void
-}) {
+} = {}) {
   const mocks = {
     ...defaultComponentMocks(),
     space: mockDeep<SpaceResource>({
@@ -309,17 +282,16 @@ function getWrapper({
     })
   }
 
-  return {
-    mocks,
-    wrapper: getComposableWrapper(
-      () => {
-        const instance = useFileActionsRename()
-        setup(instance, { space: mocks.space, clientService: mocks.$clientService })
-      },
-      {
-        mocks,
-        provide: mocks
-      }
-    )
-  }
+  let instance: ReturnType<typeof useFileActionsRename>
+  const wrapper = getComposableWrapper(
+    () => {
+      instance = useFileActionsRename()
+      setup?.(instance, { space: mocks.space })
+    },
+    {
+      mocks,
+      provide: mocks
+    }
+  )
+  return { wrapper, instance, mocks }
 }

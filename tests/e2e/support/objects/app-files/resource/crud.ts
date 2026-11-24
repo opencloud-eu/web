@@ -3,6 +3,7 @@ import util from 'util'
 import path from 'path'
 import { editor } from '../utils'
 import { state } from '../../../../environment/shared'
+import { appConfig } from '../../../../playwright.config'
 import {
   actionConfirmationButton,
   ActionViaType,
@@ -44,7 +45,7 @@ export interface createResourceArgs {
   password?: string
 }
 
-export const createNewFolder = async ({
+const createNewFolder = async ({
   page,
   resource
 }: {
@@ -63,7 +64,7 @@ export const createNewFolder = async ({
   await mkcolPromise
 }
 
-export const createNewFileOrFolder = async (args: createResourceArgs): Promise<void> => {
+const createNewFileOrFolder = async (args: createResourceArgs): Promise<void> => {
   const { page, name, type, content, password } = args
   await expect(page.locator(addNewResourceButton)).toBeVisible()
   await expect(page.locator(addNewResourceButton)).toBeEnabled()
@@ -215,8 +216,14 @@ const createDocumentFile = async (
   ])
 
   await page.locator(util.format(resourceNameSelector, name)).waitFor()
+  // public link pages get no SSE, so the lock shown after closing the editor never updates there
+  if (page.url().includes('/files/link/')) {
+    return
+  }
   // wait for lock to be removed
-  expect(getLockLocator({ page, resource: name })).not.toBeVisible()
+  await expect(getLockLocator({ page, resource: name })).toBeHidden({
+    timeout: appConfig.timeout * 1000
+  })
 }
 
 const isAppProviderServiceForOfficeSuitesReadyInWebUI = async (page: Page, type: string) => {

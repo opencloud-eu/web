@@ -1,3 +1,4 @@
+import { nextTick } from 'vue'
 import ExtensionsList from '../../../../src/components/Extensions/ExtensionsList.vue'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { OcTable } from '@opencloud-eu/design-system/components'
@@ -11,6 +12,10 @@ const extensions: ExtensionInfo[] = [
 ]
 
 describe('ExtensionsList', () => {
+  afterEach(() => {
+    window.localStorage.clear()
+  })
+
   it('renders table data when filter matches results', () => {
     const { wrapper } = getWrapper({ filterTerm: 'fi' })
     expect(getTableData(wrapper).map(({ name }) => name)).toEqual(['Files'])
@@ -34,13 +39,13 @@ describe('ExtensionsList', () => {
   it.each([
     { sortDir: SortDir.Asc, expected: ['Alpha', 'Zulu'] },
     { sortDir: SortDir.Desc, expected: ['Zulu', 'Alpha'] }
-  ])('sorts by name from the route query ($sortDir)', ({ sortDir, expected }) => {
+  ])('sorts by name from the stored sorting ($sortDir)', ({ sortDir, expected }) => {
     const { wrapper } = getWrapper({
       extensions: [
         { name: 'Zulu', version: '1.0.0', status: 'active', loaded: true },
         { name: 'Alpha', version: '2.0.0', status: 'active', loaded: true }
       ],
-      query: { 'sort-by': 'name', 'sort-dir': sortDir }
+      sort: { sortBy: 'name', sortDir: sortDir }
     })
     expect(getTableData(wrapper).map(({ name }) => name)).toEqual(expected)
   })
@@ -48,24 +53,28 @@ describe('ExtensionsList', () => {
   it.each([
     { sortDir: SortDir.Asc, expected: ['Beta', 'Gamma', 'Alpha'] },
     { sortDir: SortDir.Desc, expected: ['Alpha', 'Gamma', 'Beta'] }
-  ])('sorts by status from the route query ($sortDir)', ({ sortDir, expected }) => {
+  ])('sorts by status from the stored sorting ($sortDir)', ({ sortDir, expected }) => {
     const { wrapper } = getWrapper({
       extensions: [
         { name: 'Alpha', version: '1.0.0', status: 'failed', loaded: false },
         { name: 'Beta', version: '1.0.0', status: 'active', loaded: true },
         { name: 'Gamma', version: '1.0.0', status: 'incompatible', loaded: true }
       ],
-      query: { 'sort-by': 'status', 'sort-dir': sortDir }
+      sort: { sortBy: 'status', sortDir: sortDir }
     })
     expect(getTableData(wrapper).map(({ name }) => name)).toEqual(expected)
   })
 
-  it('writes the sort parameters to the route query when the table emits "sort"', () => {
-    const { wrapper, mocks } = getWrapper()
-    wrapper.findComponent(OcTable).vm.$emit('sort', { sortBy: 'status', sortDir: SortDir.Desc })
-    expect(mocks.$router.replace).toHaveBeenCalledWith({
-      query: expect.objectContaining({ 'sort-by': 'status', 'sort-dir': SortDir.Desc })
+  it('sorts the table when it emits "sort"', async () => {
+    const { wrapper } = getWrapper({
+      extensions: [
+        { name: 'Alpha', version: '1.0.0', status: 'active', loaded: true },
+        { name: 'Zulu', version: '1.0.0', status: 'active', loaded: true }
+      ]
     })
+    wrapper.findComponent(OcTable).vm.$emit('sort', { sortBy: 'name', sortDir: SortDir.Desc })
+    await nextTick()
+    expect(getTableData(wrapper).map(({ name }) => name)).toEqual(['Zulu', 'Alpha'])
   })
 
   describe('status', () => {
@@ -281,17 +290,21 @@ function getWrapper({
   serverVersion = '',
   loadingCompatibility = false,
   stubs = {},
-  query = {}
+  sort
 }: {
   extensions?: ExtensionInfo[]
   filterTerm?: string
   serverVersion?: string
   loadingCompatibility?: boolean
   stubs?: Record<string, any>
-  query?: Record<string, string>
+  sort?: { sortBy: string; sortDir: SortDir }
 } = {}) {
+  if (sort) {
+    window.localStorage.setItem('oc-options_route_sort-by', sort.sortBy)
+    window.localStorage.setItem('oc-options_route_sort-dir', sort.sortDir)
+  }
   const mocks = defaultComponentMocks({
-    currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
+    currentRoute: { name: 'route', path: '/', query: {}, meta: {} } as RouteLocationNormalizedLoaded
   })
   return {
     mocks,

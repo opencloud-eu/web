@@ -37,6 +37,17 @@ function isCurrentUserAffected({
   return !!userId && !!sseData.affecteduserids?.includes(userId)
 }
 
+async function getSharedWithMeDriveItem({
+  sseData,
+  clientService
+}: Pick<SSEEventOptions, 'sseData' | 'clientService'>) {
+  // FIXME: get drive item by id as soon as server supports it
+  const driveItems = await clientService.graphAuthenticated.driveItems.listSharedWithMe({
+    expand: new Set(['thumbnails'])
+  })
+  return driveItems.find(({ remoteItem }) => remoteItem?.id === sseData.itemid)
+}
+
 // a share space is identified by its shared item. other spaces may contain multiple shares,
 // so matching the storage id is only an approximation (e.g. members keep access via membership)
 function isCurrentSpaceAffected({
@@ -97,6 +108,15 @@ async function hasAccessToCurrentFolder({
   } catch {
     return false
   }
+}
+
+// the space loader only derives the permissions of a share space if they are unset
+function reloadSpaceFolderWithPermissions({
+  sseData,
+  spacesStore
+}: Pick<SSEEventOptions, 'sseData' | 'spacesStore'>) {
+  spacesStore.updateSpaceField({ id: sseData.itemid, field: 'graphPermissions', value: undefined })
+  eventBus.publish('app.files.list.load')
 }
 
 export const onSSESpaceMemberAddedEvent = async ({
@@ -329,8 +349,10 @@ export const onSSEShareRemovedEvent = async ({
   sseData,
   resourcesStore,
   spacesStore,
+  sharesStore,
   userStore,
   authStore,
+  configStore,
   clientService,
   messageStore,
   language,
@@ -348,9 +370,10 @@ export const onSSEShareRemovedEvent = async ({
     isAffected &&
     isCurrentSpaceAffected({ sseData, spacesStore, resourcesStore })
   ) {
-    // the user may still have access, e.g. through a group share of the same item
+    // the user may still have access, e.g. through a group share of the same item,
+    // but the remaining share may come with a different role
     if (await hasAccessToCurrentFolder({ spacesStore, resourcesStore, clientService })) {
-      return
+      return reloadSpaceFolderWithPermissions({ sseData, spacesStore })
     }
 
     return messageStore.showMessage({
@@ -399,12 +422,27 @@ export const onSSEShareRemovedEvent = async ({
     }
   }
 
-  if (isSharedWithMeActive(router) && isAffected) {
+  if (isSharedWithMeActive(router)) {
     const removedShareResource = resourcesStore.resources.find((r) => r.fileId === sseData.itemid)
     if (!removedShareResource) {
       return
     }
-    return resourcesStore.removeResources([removedShareResource])
+    // the user may still have access through another share of the same item, e.g. a group share
+    const driveItem = await getSharedWithMeDriveItem({ sseData, clientService })
+    if (!driveItem) {
+      return resourcesStore.removeResources([removedShareResource])
+    }
+    // the remaining share may come with a different role
+    const resource = buildIncomingShareResource({
+      driveItem,
+      graphRoles: sharesStore.graphRoles,
+      serverUrl: configStore.serverUrl
+    })
+    // the server derives the id from the oldest share, so it changes if that one has been removed
+    if (resource.id !== removedShareResource.id) {
+      resourcesStore.removeResources([removedShareResource])
+    }
+    return resourcesStore.upsertResource(resource)
   }
 }
 

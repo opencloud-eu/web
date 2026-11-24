@@ -88,7 +88,7 @@ const getToken = async (context: APIRequestContext, authorizationCode: string) =
 
   if (tokenResponse.status() !== 200) {
     throw new Error(
-      `Failed to retrieve token: Expected status code to be 200 but received ${tokenResponse.status}. \nMessage: ${tokenResponse.statusText}`
+      `Failed to retrieve token: Expected status code to be 200 but received ${tokenResponse.status()}. \nMessage: ${tokenResponse.statusText()}`
     )
   }
 
@@ -126,7 +126,7 @@ export const refreshAccessTokenForKeycloakOpenCloudUser = async (user: User) => 
   })
   if (tokenResponse.status() !== 200) {
     throw new Error(
-      `Failed to retrieve token: Expected status code to be 200 but received ${tokenResponse.status}. \nMessage: ${tokenResponse.statusText}`
+      `Failed to retrieve token: Expected status code to be 200 but received ${tokenResponse.status()}. \nMessage: ${tokenResponse.statusText()}`
     )
   }
 
@@ -191,6 +191,11 @@ export const setKeycloakAdminAccessToken = async (): Promise<void> => {
       grant_type: 'password'
     }
   })
+  if (response.status() !== 200) {
+    throw new Error(
+      `Failed to retrieve keycloak admin token: Expected status code to be 200 but received ${response.status()}. \nMessage: ${response.statusText()}`
+    )
+  }
 
   const resBody = (await response.json()) as KeycloakToken
   const tokenEnvironment = TokenEnvironmentFactory('keycloak')

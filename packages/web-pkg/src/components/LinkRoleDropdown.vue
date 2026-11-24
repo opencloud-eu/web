@@ -5,7 +5,7 @@
     appearance="raw"
     gap-size="none"
     no-hover
-    class="text-left link-role-dropdown-toggle"
+    class="text-start link-role-dropdown-toggle"
   >
     <span class="link-current-role" v-text="currentLinkRoleLabel || $gettext('Select a role')" />
     <oc-icon name="arrow-down-s" />
@@ -13,7 +13,7 @@
   <span
     v-else
     v-oc-tooltip="getLinkRoleByType(modelValue)?.description"
-    class="link-current-role mr-4"
+    class="link-current-role me-4"
     v-text="currentLinkRoleLabel"
   />
   <oc-drop
@@ -40,8 +40,8 @@
           @click="updateSelectedType(type)"
         >
           <span class="flex items-center">
-            <oc-icon :name="getLinkRoleByType(type).icon" class="pl-2 pr-4" fill-type="line" />
-            <span class="text-left">
+            <oc-icon :name="getLinkRoleByType(type).icon" class="ps-2 pe-4" fill-type="line" />
+            <span class="text-start">
               <span
                 class="role-dropdown-list-option-label font-semibold block w-full leading-4"
                 v-text="$gettext(getLinkRoleByType(type).displayName)"
@@ -61,7 +61,6 @@
 </template>
 
 <script setup lang="ts">
-import { v4 as uuidV4 } from 'uuid'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
@@ -91,5 +90,5 @@ const currentLinkRoleLabel = computed(() => {
   return $gettext(getLinkRoleByType(modelValue)?.displayName)
 })
 
-const dropUuid = uuidV4()
+const dropUuid = crypto.randomUUID()
 </script>

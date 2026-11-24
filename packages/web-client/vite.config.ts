@@ -1,15 +1,7 @@
-import { join, resolve } from 'path'
-import { defineConfig, searchForWorkspaceRoot } from 'vite'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
-
-const projectRootDir = searchForWorkspaceRoot(process.cwd())
+import { resolve } from 'path'
+import { defineConfig } from 'vite'
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      crypto: join(projectRootDir, 'polyfills/crypto.js')
-    }
-  },
   build: {
     lib: {
       entry: {
@@ -23,10 +15,5 @@ export default defineConfig({
       },
       formats: ['es']
     }
-  },
-  plugins: [
-    nodePolyfills({
-      exclude: ['crypto']
-    })
-  ]
+  }
 })

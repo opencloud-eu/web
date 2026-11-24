@@ -1,6 +1,6 @@
 {
   "name": "@opencloud-eu/design-system",
-  "version": "8.2.2",
+  "version": "8.3.0",
   "description": "OpenCloud Design System is used to design OpenCloud UI components",
   "keywords": [
     "vue design system",
@@ -99,6 +99,7 @@
     "@emoji-mart/data": "^1.2.1",
     "@floating-ui/dom": "^1.7.6",
     "@vueuse/core": "^15.0.0",
+    "dompurify": "^3.3.3",
     "emoji-mart": "^5.6.0",
     "focus-trap": "^8.0.0",
     "focus-trap-vue": "^4.1.0",
@@ -116,9 +117,8 @@
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*",
     "@tailwindcss/vite": "^4.2.2",
-    "@vitejs/plugin-vue": "6.0.10",
+    "@vitejs/plugin-vue": "6.0.11",
     "markdown-it-container": "^4.0.0",
-    "postcss": "^8.5.8",
     "tailwindcss": "^4.2.2",
     "vite": "^8.0.3",
     "vitepress": "^2.0.0-alpha.19"

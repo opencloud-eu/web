@@ -11,7 +11,7 @@
               :filter-label="$gettext('Type')"
               :filterable-attributes="['label']"
               :items="availableMediaTypeValues"
-              class="mr-2"
+              class="me-2"
               display-name-attribute="label"
               filter-name="mediaType"
             >
@@ -23,7 +23,7 @@
                   <resource-icon
                     :resource="getFakeResourceForIcon(item as SearchMediaTypeFilterOption)"
                   />
-                  <span class="ml-2">{{ item.label }}</span>
+                  <span class="ms-2">{{ item.label }}</span>
                 </div>
               </template>
             </item-filter>
@@ -41,7 +41,7 @@
                   'No tags yet. Add tags to files and folders in the details panel to filter by them.'
                 )
               "
-              class="files-favorites-filter-tags mr-2"
+              class="files-favorites-filter-tags me-2"
               display-name-attribute="label"
               filter-name="tags"
             >
@@ -49,7 +49,7 @@
                 <oc-icon name="price-tag-3" size-class="size-4" class="flex" />
               </template>
               <template #item="{ item, term }">
-                <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
+                <span class="ms-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
               </template>
             </item-filter>
             <item-filter
@@ -60,7 +60,7 @@
               :items="availableLastModifiedValues"
               :show-option-filter="false"
               :close-on-click="true"
-              class="files-favorites-filter-last-modified mr-2"
+              class="files-favorites-filter-last-modified me-2"
               display-name-attribute="label"
               filter-name="lastModified"
             >
@@ -90,6 +90,7 @@
           v-else
           :are-paths-displayed="true"
           :resources="paginatedResources"
+          :fields-displayed="['name', 'size', 'tags', 'mdate']"
           :view-mode="viewMode"
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
@@ -185,7 +186,6 @@ import {
 } from '../composables/keyboardActions'
 import { folderViewsFavoritesExtensionPoint } from '../extensionPoints'
 import { useGettext } from 'vue3-gettext'
-import { v4 as uuidV4 } from 'uuid'
 
 const { getMatchingSpace } = useGetMatchingSpace()
 const { loadGraphPermissions } = useSpacesStore()
@@ -293,7 +293,7 @@ const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 const breadcrumbs = computed(() => {
   return [
     {
-      id: uuidV4(),
+      id: crypto.randomUUID(),
       text: $gettext('Favorites'),
       onClick: () => loadResources(),
       isStaticNav: true

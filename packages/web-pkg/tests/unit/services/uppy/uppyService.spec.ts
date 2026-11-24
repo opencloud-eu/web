@@ -179,6 +179,96 @@ describe('UppyService', () => {
       expect(shouldRetry(mock<XMLHttpRequest>({ status }))).toBe(retry)
     })
   })
+
+  describe('registerUploadInput', () => {
+    it('adds the files of every change event, not only of the first one', () => {
+      const uppyService = getUppyService()
+      const addFiles = vi.spyOn(uppyService, 'addFiles').mockImplementation(() => undefined)
+      const input = document.createElement('input')
+      uppyService.registerUploadInput(input)
+
+      const first = new File(['first'], 'first.txt')
+      Object.defineProperty(input, 'files', { value: [first], configurable: true })
+      input.dispatchEvent(new Event('change'))
+
+      const second = new File(['second'], 'second.txt')
+      Object.defineProperty(input, 'files', { value: [second], configurable: true })
+      input.dispatchEvent(new Event('change'))
+
+      expect(addFiles).toHaveBeenCalledTimes(2)
+      expect(addFiles).toHaveBeenNthCalledWith(1, [first])
+      expect(addFiles).toHaveBeenNthCalledWith(2, [second])
+    })
+  })
+
+  describe('removeFailedFiles', () => {
+    let uppyService: UppyService
+    let uploadedNames: string[]
+    let failingNames: string[]
+
+    beforeEach(() => {
+      uppyService = getUppyService()
+      uploadedNames = []
+      failingNames = []
+      uppyService.uppy.addUploader((fileIDs) => {
+        const files = fileIDs.map((id) => uppyService.uppy.getFile(id))
+        uppyService.uppy.emit('upload-start', files)
+        for (const file of files) {
+          uploadedNames.push(file.name)
+          if (failingNames.includes(file.name)) {
+            uppyService.uppy.emit('upload-error', file, new Error('Upload failed'))
+            continue
+          }
+          uppyService.uppy.emit('upload-success', file, { status: 200, body: {}, uploadURL: '' })
+        }
+        return Promise.resolve()
+      })
+    })
+
+    afterEach(() => {
+      uppyService.uppy.destroy()
+    })
+
+    function addFile(name: string) {
+      uppyService.uppy.addFile({ name, data: new File([name], name) })
+    }
+
+    async function uploadFailedFile() {
+      failingNames = ['failed.txt']
+      addFile('failed.txt')
+      await uppyService.uploadFiles()
+      failingNames = []
+      uploadedNames = []
+    }
+
+    it('keeps the failed files of an upload so they can be retried', async () => {
+      await uploadFailedFile()
+
+      await uppyService.retryAllUploads()
+
+      expect(uploadedNames).toEqual(['failed.txt'])
+    })
+
+    it('makes the next upload send only the new files', async () => {
+      await uploadFailedFile()
+
+      uppyService.removeFailedFiles()
+      addFile('new.txt')
+      await uppyService.uploadFiles()
+
+      expect(uploadedNames).toEqual(['new.txt'])
+    })
+
+    it('keeps a failed file that has been added again', async () => {
+      await uploadFailedFile()
+
+      addFile('failed.txt')
+      uppyService.removeFailedFiles()
+      await uppyService.uploadFiles()
+
+      expect(uploadedNames).toEqual(['failed.txt'])
+    })
+  })
 })
 
 function getUppyService() {

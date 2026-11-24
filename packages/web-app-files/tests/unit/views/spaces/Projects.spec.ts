@@ -1,13 +1,17 @@
 import Projects from '../../../../src/views/spaces/Projects.vue'
 import { mock } from 'vitest-mock-extended'
-import { nextTick, ref } from 'vue'
+import { nextTick } from 'vue'
 import {
   queryItemAsString,
   useExtensionRegistry,
   FolderViewExtension,
   ResourceTable,
   FileSideBar,
-  eventBus
+  eventBus,
+  useMessages,
+  useResourcesStore,
+  useSpacesStore,
+  SpacesStore
 } from '@opencloud-eu/web-pkg'
 
 import {
@@ -20,15 +24,16 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { AbilityRule, SpaceResource } from '@opencloud-eu/web-client'
 import { folderViewsProjectSpacesExtensionPoint } from '../../../../src/extensionPoints'
-import { flushPromises } from '@vue/test-utils'
+import { enableAutoUnmount, flushPromises } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn(),
   appDefaults: vi.fn(),
-  useRouteQueryPersisted: vi.fn().mockImplementation(() => ref('resource-table')),
   useFileActions: vi.fn()
 }))
+
+enableAutoUnmount(afterEach)
 
 const spacesResources = [
   {
@@ -65,6 +70,11 @@ const spacesResources = [
     getDriveAliasAndItem: () => '2'
   }
 ] as unknown as SpaceResource[]
+
+const manySpaces = Array.from({ length: 130 }, (_, i) => {
+  const id = String(i + 1).padStart(3, '0')
+  return { ...spacesResources[0], id, name: `Space ${id}`, getDriveAliasAndItem: () => id }
+}) as unknown as SpaceResource[]
 
 describe('Projects view', () => {
   it('appBar always present', () => {
@@ -115,11 +125,12 @@ describe('Projects view', () => {
     })
   })
   describe('sorting', () => {
+    afterEach(() => {
+      window.localStorage.clear()
+    })
+
     it('renders the filtered spaces sorted by name', async () => {
-      const { wrapper } = getMountedWrapper({
-        spaces: spacesResources,
-        query: { 'sort-by': 'name', 'sort-dir': 'asc' }
-      })
+      const { wrapper } = getMountedWrapper({ spaces: spacesResources })
       await flushPromises()
       const resources = wrapper.findComponent(ResourceTable).props('resources')
       expect(resources.map(({ id }) => id)).toEqual(['2', '1'])
@@ -130,21 +141,56 @@ describe('Projects view', () => {
         { ...spacesResources[0], id: 'unrestricted', spaceQuota: { total: 0 } },
         { ...spacesResources[0], id: 'large', spaceQuota: { total: 1000 } }
       ] as unknown as SpaceResource[]
-      const { wrapper } = getMountedWrapper({
-        spaces,
-        query: { 'sort-by': 'totalQuota', 'sort-dir': 'desc' }
-      })
+      window.localStorage.setItem('oc-options_files-spaces-projects_sort-by', 'totalQuota')
+      window.localStorage.setItem('oc-options_files-spaces-projects_sort-dir', 'desc')
+      const { wrapper } = getMountedWrapper({ spaces })
       await flushPromises()
       const resources = wrapper.findComponent(ResourceTable).props('resources')
       expect(resources.map(({ id }) => id)).toEqual(['unrestricted', 'large', 'small'])
     })
   })
+  describe('failed load', () => {
+    beforeEach(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    })
+
+    it('shows an error message and keeps listing the known spaces', async () => {
+      const error = new Error('Request failed with status code 500')
+      getMountedWrapper({
+        spaces: spacesResources,
+        reloadProjectSpaces: () => Promise.reject(error)
+      })
+      await flushPromises()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith({
+        title: 'Failed to load spaces',
+        errors: [error]
+      })
+      const { initResourceList } = useResourcesStore()
+      expect(initResourceList).toHaveBeenCalledWith({
+        currentFolder: null,
+        resources: spacesResources
+      })
+    })
+    it('stays silent when leaving the view cancels the load', async () => {
+      const { wrapper } = getMountedWrapper({
+        spaces: spacesResources,
+        reloadProjectSpaces: ({ signal }) =>
+          new Promise((_, reject) => {
+            signal.addEventListener('abort', () =>
+              reject(new DOMException('The operation was aborted.', 'AbortError'))
+            )
+          })
+      })
+      await flushPromises()
+      wrapper.unmount()
+      await flushPromises()
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).not.toHaveBeenCalled()
+    })
+  })
   it('switches only once to the page of a space that is on another page', async () => {
-    const spaces = Array.from({ length: 130 }, (_, i) => {
-      const id = String(i + 1).padStart(3, '0')
-      return { ...spacesResources[0], id, name: `Space ${id}`, getDriveAliasAndItem: () => id }
-    }) as unknown as SpaceResource[]
-    const { mocks } = getMountedWrapper({ spaces, query: {} })
+    const { mocks } = getMountedWrapper({ spaces: manySpaces, query: {} })
     await flushPromises()
     mocks.$router.push.mockClear()
     mocks.$router.push.mockReturnValue(new Promise(() => undefined))
@@ -159,6 +205,28 @@ describe('Projects view', () => {
     expect(mocks.$router.push).toHaveBeenCalledWith(
       expect.objectContaining({ query: expect.objectContaining({ page: 2 }) })
     )
+  })
+  describe('keyboard navigation', () => {
+    it('selects only the spaces of the current page on select all', async () => {
+      getMountedWrapper({ spaces: manySpaces, query: {} })
+      await flushPromises()
+      const resourcesStore = useResourcesStore()
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true }))
+
+      const visibleIds = manySpaces.slice(0, 100).map(({ id }) => id)
+      expect(resourcesStore.setSelection).toHaveBeenCalledWith(visibleIds)
+    })
+    it('does not move the selection beyond the last space of the current page', async () => {
+      getMountedWrapper({ spaces: manySpaces, query: {} })
+      await flushPromises()
+      const resourcesStore = useResourcesStore()
+      resourcesStore.latestSelectedId = '100'
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
+
+      expect(resourcesStore.setSelection).not.toHaveBeenCalled()
+    })
   })
   it('should not pass selected resource as space to sidebar when driveType is not "project"', () => {
     const resource = mock<SpaceResource>({ id: 'selected-resource', driveType: 'personal' })
@@ -187,7 +255,8 @@ function getMountedWrapper({
   stubAppBar = true,
   includeDisabled = false,
   query,
-  store = {}
+  store = {},
+  reloadProjectSpaces
 }: {
   mocks?: Record<string, unknown>
   spaces?: SpaceResource[]
@@ -196,7 +265,10 @@ function getMountedWrapper({
   includeDisabled?: boolean
   query?: Record<string, string>
   store?: PiniaMockOptions
+  reloadProjectSpaces?: SpacesStore['reloadProjectSpaces']
 } = {}) {
+  window.localStorage.setItem('oc-options_view-mode', 'resource-table')
+  window.localStorage.setItem('oc-options_tiles-size', '1')
   const plugins = defaultPlugins({
     abilities,
     piniaOptions: {
@@ -205,6 +277,10 @@ function getMountedWrapper({
       ...store
     }
   })
+
+  if (reloadProjectSpaces) {
+    vi.mocked(useSpacesStore().reloadProjectSpaces).mockImplementation(reloadProjectSpaces)
+  }
 
   vi.mocked(queryItemAsString).mockImplementation(() => includeDisabled.toString())
   vi.mocked(queryItemAsString).mockImplementation(() => 'resource-table')

@@ -77,6 +77,35 @@ describe('EmbedActions', () => {
       expect(wrapper.find(selectors.btnSelect).attributes()).not.toHaveProperty('disabled')
     })
 
+    it('should disable select action when the current folder is in a vault', () => {
+      const { wrapper } = getWrapper({
+        isLocationPicker: true,
+        currentFolder: { canCreate: () => true, isInVault: true } as Resource
+      })
+
+      expect(wrapper.find(selectors.btnSelect).attributes()).toHaveProperty('disabled')
+    })
+
+    it('should disable select action in a vault when only chooseFileName is configured', () => {
+      const { wrapper } = getWrapper({
+        isLocationPicker: true,
+        chooseFileName: true,
+        currentFolder: { path: '/', canCreate: () => true, isInVault: true } as Resource
+      })
+
+      expect(wrapper.find(selectors.btnSelect).attributes()).toHaveProperty('disabled')
+    })
+
+    it('should enable select action in a vault when allowVault is configured', () => {
+      const { wrapper } = getWrapper({
+        isLocationPicker: true,
+        allowVault: true,
+        currentFolder: { canCreate: () => true, isInVault: true } as Resource
+      })
+
+      expect(wrapper.find(selectors.btnSelect).attributes()).not.toHaveProperty('disabled')
+    })
+
     it.each([
       { graphPermissions: [GraphSharePermission.createUpload], disabled: false },
       { graphPermissions: [GraphSharePermission.readBasic], disabled: true }
@@ -186,6 +215,69 @@ describe('EmbedActions', () => {
         'opencloud-embed:select',
         expect.objectContaining({ fileName: 'file.txt' })
       )
+    })
+
+    it('selects on Enter in the file name input', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+
+      await wrapper.find(selectors.fileNameInput).trigger('keydown', { key: 'Enter' })
+
+      expect(mocks.postMessageMock).toHaveBeenCalledWith(
+        'opencloud-embed:select',
+        expect.objectContaining({ fileName: 'file.txt' })
+      )
+    })
+
+    it('does not select on Enter for an invalid name', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+      await input.vm.$emit('update:modelValue', '')
+
+      await wrapper.find(selectors.fileNameInput).trigger('keydown', { key: 'Enter' })
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+    })
+
+    it('does not select on Enter during composition', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+
+      await wrapper
+        .find(selectors.fileNameInput)
+        .trigger('keydown', { key: 'Enter', isComposing: true })
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+    })
+
+    it('does not select on a repeated Enter of a held key', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+
+      await wrapper.find(selectors.fileNameInput).trigger('keydown', { key: 'Enter', repeat: true })
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+    })
+
+    it('does not select on Enter outside of the location picker', async () => {
+      const { wrapper, mocks } = getWrapper({ currentFolder, chooseFileName: true })
+
+      await wrapper.find(selectors.fileNameInput).trigger('keydown', { key: 'Enter' })
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
     })
 
     it('disables the select action for an empty name when file extensions are turned off', async () => {
@@ -479,6 +571,7 @@ function getWrapper(
     isLocationPicker = false,
     isFilePicker = false,
     chooseFileName = false,
+    allowVault = false,
     areFileExtensionsShown = true,
     folderResources = [],
     fileNameSuggestion = 'file.txt',
@@ -490,6 +583,7 @@ function getWrapper(
     isLocationPicker?: boolean
     isFilePicker?: boolean
     chooseFileName?: boolean
+    allowVault?: boolean
     areFileExtensionsShown?: boolean
     folderResources?: Resource[]
     fileNameSuggestion?: string
@@ -506,6 +600,7 @@ function getWrapper(
       isFilePicker: ref(isFilePicker),
       chooseFileName: ref(chooseFileName),
       chooseFileNameSuggestion: ref(fileNameSuggestion),
+      allowVault: ref(allowVault),
       postMessage: postMessageMock
     })
   )

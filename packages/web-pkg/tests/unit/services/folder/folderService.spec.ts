@@ -22,6 +22,10 @@ import {
 } from '../../../../src/composables'
 
 describe('FolderService', () => {
+  const statusError = (statusCode: number, message = '') =>
+    Object.assign(new Error(message), { statusCode })
+  const unauthorized = () => statusError(401, 'Unauthorized')
+
   describe('resources loading state', () => {
     it('is set while the load runs and reset after it succeeds', async () => {
       const { task, resourcesStore, pendingLoads } = getWrapper()
@@ -85,7 +89,7 @@ describe('FolderService', () => {
 
       task.perform()
       await flushPromises()
-      const error = Object.assign(new Error('Internal Server Error'), { statusCode: 500 })
+      const error = statusError(500, 'Internal Server Error')
       pendingLoads[0].reject(error)
       await flushPromises()
 
@@ -105,6 +109,106 @@ describe('FolderService', () => {
       await flushPromises()
 
       expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('token renewal', () => {
+    beforeEach(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    })
+
+    it('loads the folder again after the token got renewed', async () => {
+      const { task, resourcesStore, messagesStore, authService, pendingLoads } = getWrapper()
+      authService.handleAuthError.mockResolvedValue(true)
+      const resource = mock<Resource>({ id: 'resource', name: 'resource' })
+
+      task.perform()
+      await flushPromises()
+      pendingLoads[0].reject(unauthorized())
+      await flushPromises()
+      expect(resourcesStore.resourcesLoading).toBe(true)
+
+      pendingLoads[1].resolve([resource])
+      await flushPromises()
+
+      expect(resourcesStore.resources).toEqual([resource])
+      expect(resourcesStore.resourcesLoading).toBe(false)
+      expect(authService.handleAuthError).toHaveBeenCalledTimes(1)
+      expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
+    })
+
+    it('does not load the folder again when the token did not get renewed', async () => {
+      const { task, resourcesStore, authService, pendingLoads } = getWrapper()
+      authService.handleAuthError.mockResolvedValue(false)
+
+      task.perform()
+      await flushPromises()
+      pendingLoads[0].reject(unauthorized())
+      await flushPromises()
+
+      expect(pendingLoads).toHaveLength(1)
+      expect(resourcesStore.resourcesLoading).toBe(false)
+    })
+
+    it('leaves a 401 of the retry to the auth service without loading the folder again', async () => {
+      const { task, resourcesStore, messagesStore, authService, pendingLoads } = getWrapper()
+      authService.handleAuthError.mockResolvedValue(true)
+
+      task.perform()
+      await flushPromises()
+      const firstError = unauthorized()
+      pendingLoads[0].reject(firstError)
+      await flushPromises()
+      const secondError = unauthorized()
+      pendingLoads[1].reject(secondError)
+      await flushPromises()
+
+      expect(authService.handleAuthError).toHaveBeenCalledTimes(2)
+      expect(authService.handleAuthError).toHaveBeenNthCalledWith(1, expect.anything(), firstError)
+      expect(authService.handleAuthError).toHaveBeenNthCalledWith(2, expect.anything(), secondError)
+      expect(pendingLoads).toHaveLength(2)
+      expect(resourcesStore.resourcesLoading).toBe(false)
+      expect(messagesStore.showErrorMessage).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      { status: 404, errorMessages: 0 },
+      { status: 500, errorMessages: 1 }
+    ])(
+      'handles a $status of the retry like one of the first load',
+      async ({ status, errorMessages }) => {
+        const { task, messagesStore, authService, pendingLoads } = getWrapper()
+        authService.handleAuthError.mockResolvedValue(true)
+
+        task.perform()
+        await flushPromises()
+        pendingLoads[0].reject(unauthorized())
+        await flushPromises()
+        pendingLoads[1].reject(statusError(status))
+        await flushPromises()
+
+        expect(authService.handleAuthError).toHaveBeenCalledTimes(1)
+        expect(messagesStore.showErrorMessage).toHaveBeenCalledTimes(errorMessages)
+      }
+    )
+
+    it('does not retry when a new load started during the renewal', async () => {
+      const { task, authService, pendingLoads } = getWrapper()
+      let finishRenewal: (renewed: boolean) => void
+      authService.handleAuthError.mockReturnValue(
+        new Promise<boolean>((resolve) => (finishRenewal = resolve))
+      )
+
+      task.perform()
+      await flushPromises()
+      pendingLoads[0].reject(unauthorized())
+      await flushPromises()
+      task.perform()
+      await flushPromises()
+      finishRenewal(true)
+      await flushPromises()
+
+      expect(pendingLoads).toHaveLength(2)
     })
   })
 
@@ -144,8 +248,8 @@ describe('FolderService', () => {
     })
 
     it.each([
-      { status: 500, error: Object.assign(new Error('load failed'), { statusCode: 500 }) },
-      { status: 401, error: Object.assign(new Error('Unauthorized'), { statusCode: 401 }) }
+      { status: 500, error: statusError(500, 'load failed') },
+      { status: 401, error: unauthorized() }
     ])(
       'stays silent when the older load fails with $status after the newer one finished',
       async ({ error }) => {
@@ -167,13 +271,12 @@ describe('FolderService', () => {
 
   describe('loaders', () => {
     const space = mock<SpaceResource>({ id: 'space-id', driveType: 'personal' })
-    const davError = (statusCode: number) => Object.assign(new Error(), { statusCode })
     const graphError = (status: number) => Object.assign(new Error(), { response: { status } })
 
     const loaders = [
-      { loader: new FolderLoaderSpace(), request: listFiles, getError: davError },
-      { loader: new FolderLoaderTrashbin(), request: listFiles, getError: davError },
-      { loader: new FolderLoaderFavorites(), request: search, getError: davError },
+      { loader: new FolderLoaderSpace(), request: listFiles, getError: statusError },
+      { loader: new FolderLoaderTrashbin(), request: listFiles, getError: statusError },
+      { loader: new FolderLoaderFavorites(), request: search, getError: statusError },
       { loader: new FolderLoaderSharedWithMe(), request: listSharedWithMe, getError: graphError },
       {
         loader: new FolderLoaderSharedWithOthers(),
@@ -241,7 +344,7 @@ describe('FolderService', () => {
           const { task, resourcesStore, messagesStore, clientService, authService } = getWrapper(
             new FolderLoaderSpace()
           )
-          listFiles(clientService).mockRejectedValue(davError(statusCode))
+          listFiles(clientService).mockRejectedValue(statusError(statusCode))
 
           await task.perform(space, '/folder')
 
@@ -257,9 +360,9 @@ describe('FolderService', () => {
         )
         let finishAuthHandling: () => void
         authService.handleAuthError.mockReturnValue(
-          new Promise<void>((resolve) => (finishAuthHandling = resolve))
+          new Promise<boolean>((resolve) => (finishAuthHandling = () => resolve(false)))
         )
-        listFiles(clientService).mockRejectedValue(davError(401))
+        listFiles(clientService).mockRejectedValue(statusError(401))
 
         task.perform(space, '/folder')
         await flushPromises()
@@ -276,7 +379,7 @@ describe('FolderService', () => {
           new FolderLoaderSpace()
         )
         authService.handleAuthError.mockRejectedValue(new Error('auth handling failed'))
-        listFiles(clientService).mockRejectedValue(davError(401))
+        listFiles(clientService).mockRejectedValue(statusError(401))
 
         await expect(task.perform(space, '/folder')).resolves.toBeUndefined()
 
@@ -296,7 +399,7 @@ describe('FolderService', () => {
         task.perform(space, '/old')
         task.perform(space, '/new')
         await flushPromises()
-        rejectFirstLoad(davError(401))
+        rejectFirstLoad(statusError(401))
         await flushPromises()
 
         expect(authService.handleAuthError).not.toHaveBeenCalled()

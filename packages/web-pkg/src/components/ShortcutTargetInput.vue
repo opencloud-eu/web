@@ -27,7 +27,7 @@
             )
           "
           :title="$gettext('Webpage or file')"
-          class="ml-1"
+          class="ms-1"
         />
       </div>
     </template>
@@ -192,6 +192,11 @@ function onKeydown(event: KeyboardEvent) {
     return
   }
   if (!['ArrowUp', 'ArrowDown', 'Enter', 'Escape'].includes(event.key)) {
+    return
+  }
+  if (event.key === 'Enter' && unref(activeIndex) < 0) {
+    // nothing highlighted, the typed value is taken and the surrounding form submits
+    unref(dropRef)?.hide()
     return
   }
   event.stopPropagation()

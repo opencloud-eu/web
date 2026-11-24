@@ -18,7 +18,7 @@
     <template #selected-option-container="{ option, deselect }">
       <oc-tag
         v-oc-tooltip="getTagToolTip(option.label)"
-        class="tags-select-tag ml-1 transition-colors duration-200 has-[a]:hover:bg-role-surface-container has-[a]:hover:text-role-on-surface"
+        class="tags-select-tag ms-1 transition-colors duration-200 has-[a]:hover:bg-role-surface-container has-[a]:hover:text-role-on-surface"
         :rounded="true"
         size="small"
       >
@@ -28,11 +28,11 @@
           class="flex items-center max-w-50"
           @click="closeSideBar()"
         >
-          <oc-icon name="price-tag-3" class="mr-1" size-class="size-4" />
+          <oc-icon name="price-tag-3" class="me-1" size-class="size-4" />
           <span class="truncate">{{ option.label }}</span>
         </component>
 
-        <span class="flex items-center mr-1 empty:hidden">
+        <span class="flex items-center me-1 empty:hidden">
           <oc-icon
             v-if="option.readonly"
             class="vs__deselect-lock"
@@ -56,7 +56,7 @@
     <template #option="{ label, error }">
       <div class="flex test">
         <span class="flex justify-center">
-          <oc-tag class="tags-select-tag ml-1 max-w-50" :rounded="true" size="small">
+          <oc-tag class="tags-select-tag ms-1 max-w-50" :rounded="true" size="small">
             <oc-icon name="price-tag-3" size-class="size-4" />
             <span class="truncate" :title="label">{{ label }}</span>
           </oc-tag>
@@ -261,12 +261,12 @@ onMounted(() => {
   }
 })
 
-const keydownMethods = (map: Record<string, (e: Event) => void>) => {
+const keydownMethods = (map: Record<number, (e: KeyboardEvent) => void>) => {
   const objectMapping = {
     ...map
   }
   for (const keyCode of [KeyCode.Enter, KeyCode[',']]) {
-    objectMapping[keyCode] = (e: Event) => {
+    objectMapping[keyCode] = (e: KeyboardEvent) => {
       const value = (e.target as HTMLInputElement).value
       if (value.length && !value.trim().length) {
         e.preventDefault()
@@ -275,7 +275,7 @@ const keydownMethods = (map: Record<string, (e: Event) => void>) => {
       map[keyCode](e)
     }
   }
-  objectMapping[KeyCode.Backspace] = async (e: Event) => {
+  objectMapping[KeyCode.Backspace] = async (e: KeyboardEvent) => {
     if ((e.target as HTMLInputElement).value || selectedTags.value.length === 0) {
       return
     }

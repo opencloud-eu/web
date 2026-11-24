@@ -1,6 +1,7 @@
 import {
   contextRouteParamsKey,
   createFileRouteOptions,
+  getProjectSpaceOfRootItem,
   ImageDimension,
   isItemInCurrentFolder,
   isLocationCommonActive,
@@ -15,13 +16,13 @@ import {
   isShareSpaceResource,
   Resource,
   SpaceResource,
-  urlJoin
+  urlJoin,
+  dirname
 } from '@opencloud-eu/web-client'
 import { DavProperties, DavProperty } from '@opencloud-eu/web-client/webdav'
 import { until } from '@vueuse/core'
 import { unref } from 'vue'
 import { LocationQueryValue, RouteParams } from 'vue-router'
-import { dirname } from 'path'
 import { SSEEventOptions } from './types'
 
 /**
@@ -63,6 +64,17 @@ const loadEventResource = async (
     return clientService.webdav.getFileInfo(space, { path: '', fileId })
   }
 
+  const resource = await loadShareResource({ clientService, resourcesStore }, space, fileId)
+  // needed to resolve the share space of the resource, like in the space loader
+  resource.remoteItemId = space.id
+  return resource
+}
+
+async function loadShareResource(
+  { clientService, resourcesStore }: Pick<SSEEventOptions, 'clientService' | 'resourcesStore'>,
+  space: SpaceResource,
+  fileId: string
+): Promise<Resource> {
   const resource = await clientService.webdav.getFileInfo(
     buildSpace({ id: fileId, name: '' }),
     { fileId },
@@ -200,12 +212,14 @@ export const onSSEItemRenamedEvent = async ({
       return replaceAppRouteFolder(router, space, currentFolder.path, updatedResource.path)
     }
 
-    return router.push({
+    const { params, query } = createFileRouteOptions(space, {
+      path: updatedResource.path,
+      fileId: updatedResource.fileId
+    })
+    return router.replace({
       name: routeName,
-      ...createFileRouteOptions(space, {
-        path: updatedResource.path,
-        fileId: updatedResource.fileId
-      })
+      params,
+      query: { ...unref(router.currentRoute).query, ...query }
     })
   }
 
@@ -641,15 +655,33 @@ async function applyFavoriteState(
 
   await waitForResourcesLoad(resourcesStore)
 
+  // the root item of a project space is listed as the space itself
+  const projectSpace = getProjectSpaceOfRootItem(spacesStore.spaces, sseData.parentitemid)
+  if (projectSpace) {
+    spacesStore.updateSpaceField({ id: projectSpace.id, field: 'starred', value: starred })
+  }
+
+  // received shares are listed by their share id, the event carries the id of the shared item
+  function isEventItem(resource: Resource) {
+    if (projectSpace && resource.id === projectSpace.id) {
+      return true
+    }
+    return resource.id === sseData.itemid || resource.fileId === sseData.itemid
+  }
+
   if (isLocationCommonActive(router, 'files-common-favorites')) {
     if (!starred) {
-      const resource = resourcesStore.resources.find((r) => r.id === sseData.itemid)
+      const resources = resourcesStore.resources.filter(isEventItem)
 
-      if (!resource) {
+      if (!resources.length) {
         return
       }
 
-      return resourcesStore.removeResources([resource])
+      return resourcesStore.removeResources(resources)
+    }
+
+    if (projectSpace) {
+      return resourcesStore.upsertResource(projectSpace)
     }
 
     const space = spacesStore.spaces.find((space) => space.id === sseData.spaceid)
@@ -669,12 +701,15 @@ async function applyFavoriteState(
     return resourcesStore.upsertResource(resource)
   }
 
+  // a project space as current folder is the store space, which is already updated above
   const currentFolder = resourcesStore.currentFolder
-  if (currentFolder?.id === sseData.itemid) {
+  if (currentFolder && currentFolder.id !== projectSpace?.id && isEventItem(currentFolder)) {
     resourcesStore.setCurrentFolder({ ...currentFolder, starred })
   }
 
-  resourcesStore.updateResourceField({ id: sseData.itemid, field: 'starred', value: starred })
+  for (const resource of resourcesStore.resources.filter(isEventItem)) {
+    resourcesStore.updateResourceField({ id: resource.id, field: 'starred', value: starred })
+  }
 }
 
 export const onSSEItemFavoriteAddedEvent = (options: SSEEventOptions) => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="mail-indicators ml-2 flex items-center">
+  <div class="mail-indicators ms-2 flex items-center">
     <oc-tag
       v-if="mail.threadSize > 1"
       v-oc-tooltip="$gettext('Thread')"
@@ -14,7 +14,7 @@
     </oc-tag>
     <oc-icon
       v-if="mail.hasAttachment"
-      v-oc-tooltip="$gettext('Attachment')"
+      v-oc-tooltip="$gettext('Attachments')"
       :aria-label="$gettext('This mail has attachments')"
       size-class="size-4"
       name="attachment-2"

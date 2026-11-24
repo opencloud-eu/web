@@ -97,6 +97,29 @@ describe('EditPanel', () => {
       expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe('')
       expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeFalsy()
     })
+    it('reverts the changes on Escape without passing it on', async () => {
+      const { wrapper } = getWrapper()
+      const onParentKeydown = vi.fn()
+      wrapper.element.parentElement.addEventListener('keydown', onParentKeydown)
+      await setDisplayName(wrapper, '')
+
+      const event = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true, bubbles: true })
+      wrapper.element.dispatchEvent(event)
+      await flushPromises()
+
+      expect(getDisplayNameInput(wrapper).props('modelValue')).toBe('group')
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe('')
+      expect(event.defaultPrevented).toBe(true)
+      expect(onParentKeydown).not.toHaveBeenCalled()
+    })
+    it('leaves Escape to others without changes', () => {
+      const { wrapper } = getWrapper()
+
+      const event = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true, bubbles: true })
+      wrapper.element.dispatchEvent(event)
+
+      expect(event.defaultPrevented).toBe(false)
+    })
   })
 
   describe('saving', () => {
@@ -138,10 +161,38 @@ describe('EditPanel', () => {
         expect.objectContaining({ displayName: 'administrators' })
       )
     })
+    it('saves valid changes on form submit', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { groups } = mocks.$clientService.graphAuthenticated
+      groups.getGroup.mockRejectedValueOnce(new Error(''))
+      await setDisplayName(wrapper, 'administrators')
+      groups.getGroup.mockResolvedValue(mock<Group>({ id: '1', displayName: 'administrators' }))
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(groups.editGroup).toHaveBeenCalledTimes(1)
+    })
+    it('does not save on form submit without changes', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(mocks.$clientService.graphAuthenticated.groups.editGroup).not.toHaveBeenCalled()
+    })
+    it('does not save on form submit with invalid data', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await setDisplayName(wrapper, '')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(mocks.$clientService.graphAuthenticated.groups.editGroup).not.toHaveBeenCalled()
+    })
     it('shows an error message on failure', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper, mocks } = getWrapper()
-      mocks.$clientService.graphAuthenticated.groups.editGroup.mockRejectedValue(new Error(''))
+      const { groups } = mocks.$clientService.graphAuthenticated
+      groups.getGroup.mockRejectedValueOnce(new Error(''))
+      await setDisplayName(wrapper, 'administrators')
+      groups.editGroup.mockRejectedValue(new Error(''))
 
       getCompareSaveDialog(wrapper).vm.$emit('confirm')
       await flushPromises()

@@ -48,7 +48,7 @@
       </cropper-selection>
     </cropper-canvas>
     <div :id="hintId" class="text-sm text-role-on-surface-variant flex items-center mt-1">
-      <oc-icon class="mr-1" name="information" size-class="size-4" fill-type="line" />
+      <oc-icon class="me-1" name="information" size-class="size-4" fill-type="line" />
       <span v-if="isMobile" v-text="$gettext('Pinch to zoom, drag to move')" />
       <span
         v-else
