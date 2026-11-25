@@ -46,13 +46,9 @@
     <div class="flex flex-col gap-2">
       <custom-component-target :extension-point="dynamicExtensionPointBottom" />
       <support-card v-if="!options.disableSponsorLink && !isEmbedModeEnabled" class="mx-3 mt-4" />
-      <div
-        v-if="!isEmbedModeEnabled"
-        class="flex flex-col px-4 text-xs text-role-on-surface-variant"
-      >
+      <version-check v-if="!isEmbedModeEnabled" class="mx-3 text-xs">
         <span v-text="backendVersion" />
-        <version-check />
-      </div>
+      </version-check>
     </div>
   </aside>
 </template>

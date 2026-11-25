@@ -1,39 +1,45 @@
 <template>
-  <div v-if="isEnabled">
-    <div v-if="isLoading" class="version-check-loading flex items-center">
-      <span v-text="$gettext('Checking for updates')" />
-      <oc-spinner class="ms-1" size="xsmall" />
-    </div>
-    <template v-else>
-      <div v-if="!updateAvailable" class="version-check-no-updates flex items-center">
-        <span v-text="$gettext('Up to date')" />
-        <oc-icon class="ms-0.5" name="checkbox-circle" size-class="size-3" fill-type="line" />
-      </div>
-      <oc-button
-        v-else
-        class="version-check-update text-role-on-surface-variant"
-        size="small"
-        type="a"
+  <div
+    v-if="isEnabled || $slots.default"
+    class="flex flex-col font-normal"
+    :class="{
+      'version-check-update': showUpdate,
+      'rounded-xl bg-red-100 px-4 py-3 text-red-900 dark:bg-red-950 dark:text-red-100':
+        showCritical,
+      'text-role-on-surface-variant': !showCritical
+    }"
+  >
+    <span
+      v-if="showCritical"
+      class="version-check-critical font-semibold text-red-700 dark:text-red-300"
+      v-text="$gettext('Critical')"
+    />
+    <template v-if="isEnabled">
+      <span v-if="isLoading" class="version-check-loading flex items-center">
+        <span v-text="$gettext('Checking for updates')" />
+        <oc-spinner class="ms-1" size="xsmall" />
+      </span>
+      <a
+        v-else-if="showUpdate"
+        class="inline-flex items-center gap-1 text-inherit hover:underline"
         :href="updateData.url"
         target="_blank"
-        gap-size="small"
-        appearance="raw"
-        no-hover
+        rel="noopener noreferrer"
       >
         <span
-          class="text-xs"
           v-text="$gettext('Version %{version} available', { version: updateData.current_version })"
         />
         <oc-icon name="refresh" size-class="size-3" fill-type="line" />
-      </oc-button>
-      <oc-tag
-        v-if="showCritical"
-        class="version-check-critical !bg-red-200 !text-red-900 border-0 ms-1"
-        size="xsmall"
-      >
-        <span v-text="$gettext('Critical')" />
-      </oc-tag>
+      </a>
+      <span v-else class="version-check-no-updates flex items-center">
+        <span v-text="$gettext('Up to date')" />
+        <oc-icon class="ms-0.5" name="checkbox-circle" size-class="size-3" fill-type="line" />
+      </span>
     </template>
+    <div v-if="showCritical && $slots.default" class="mt-2 border-t border-current/15 pt-2">
+      <slot />
+    </div>
+    <slot v-else />
   </div>
 </template>
 
@@ -77,8 +83,10 @@ function isCriticalVersion({ critical_range }: UpdateChannel) {
   }
 }
 
+const showUpdate = computed(() => unref(isEnabled) && !unref(isLoading) && unref(updateAvailable))
+
 const showCritical = computed(() => {
-  if (!unref(updateData) || !ability.can('read-all', 'Setting')) {
+  if (!unref(showUpdate) || !ability.can('read-all', 'Setting')) {
     return false
   }
   return isCriticalVersion(unref(updateData))

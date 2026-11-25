@@ -26,13 +26,44 @@ describe('VersionCheck component', () => {
     expect(wrapper.find('.version-check-loading').exists()).toBe(false)
   })
 
+  describe('slot', () => {
+    it('shows the slot below the update', async () => {
+      const { wrapper } = getWrapper({ productversion: '3.4.0', slot: 'OpenCloud 3.4.0' })
+      await nextTick()
+      expect(wrapper.find('.version-check-update').text()).toContain('OpenCloud 3.4.0')
+    })
+    it('shows the slot below "Up to date"', async () => {
+      const { wrapper } = getWrapper({ slot: 'OpenCloud 3.5.0' })
+      await nextTick()
+      expect(wrapper.find('.version-check-update').exists()).toBe(false)
+      expect(wrapper.text()).toContain('OpenCloud 3.5.0')
+    })
+    it('renders nothing if the update check fails and there is no slot', async () => {
+      const { wrapper } = getWrapper({ hasError: true })
+      await nextTick()
+      expect(wrapper.find('div').exists()).toBe(false)
+    })
+    it('shows the slot if the update check fails', async () => {
+      const { wrapper } = getWrapper({ hasError: true, slot: 'OpenCloud 3.5.0' })
+      await nextTick()
+      expect(wrapper.find('.version-check-no-updates').exists()).toBe(false)
+      expect(wrapper.text()).toBe('OpenCloud 3.5.0')
+    })
+  })
+
   describe('critical badge', () => {
     const admin: AbilityRule[] = [{ action: 'read-all', subject: 'Setting' }]
 
     it.each([
       { productversion: '3.4.0', critical_range: '<3.5.0', expected: true },
       { productversion: '3.5.0', critical_range: '<3.5.0', expected: false },
-      { productversion: '6.1.0', critical_range: '1.0.0 - 3.0.0 || 5.0.0 - 7.0.0', expected: true },
+      { productversion: '2.5.0', critical_range: '1.0.0 - 3.0.0 || 5.0.0 - 7.0.0', expected: true },
+      // critical only shows together with an available update
+      {
+        productversion: '6.1.0',
+        critical_range: '1.0.0 - 3.0.0 || 5.0.0 - 7.0.0',
+        expected: false
+      },
       {
         productversion: '4.0.0',
         critical_range: '1.0.0 - 3.0.0 || 5.0.0 - 7.0.0',
@@ -76,18 +107,21 @@ function getWrapper({
   hasError = false,
   isLoading = false,
   critical_range = undefined,
-  abilities = []
+  abilities = [],
+  slot = undefined
 }: {
   productversion?: string
   hasError?: boolean
   isLoading?: boolean
   critical_range?: string
   abilities?: AbilityRule[]
+  slot?: string
 } = {}) {
   const mocks = { ...defaultComponentMocks() }
 
   return {
     wrapper: mount(VersionCheck, {
+      ...(slot && { slots: { default: slot } }),
       global: {
         mocks,
         provide: mocks,
