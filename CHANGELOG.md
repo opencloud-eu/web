@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @butonic, @flash7777, @kulmann, @v-scharf, @xhzeem
+@AlexAndBear, @JammingBen, @butonic, @eriktews, @flash7777, @kulmann, @v-scharf, @xhzeem
 
 ### 💥 Breaking changes
 
@@ -22,6 +22,7 @@
 
 ### 📈 Enhancement
 
+- feat: files infinite scroll [[#4429](https://github.com/opencloud-eu/web/pull/4429)]
 - feat: show critical updates more prominently [[#4623](https://github.com/opencloud-eu/web/pull/4623)]
 - feat: let apps flush their content before saving [[#4219](https://github.com/opencloud-eu/web/pull/4219)]
 - feat: make the support card collapsible instead of dismissable [[#4590](https://github.com/opencloud-eu/web/pull/4590)]
