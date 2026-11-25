@@ -9,7 +9,7 @@ import DropTarget from './DropTarget/plugin'
 import { Resource, urlJoin } from '@opencloud-eu/web-client'
 import { generateFileID, Body, MinimalRequiredUppyFile } from '@uppy/utils'
 
-type UppyServiceTopics =
+export type UppyServiceTopics =
   | 'uploadStarted'
   | 'uploadCancelled'
   | 'uploadCompleted'
@@ -304,8 +304,9 @@ export class UppyService {
         return
       }
       this.publish('uploadCompleted', result)
-      for (let i = 0; i < result.successful.length; i++) {
-        this.uppy.removeFile(result.successful[i].id)
+      // removing files one by one copies the whole state each time, quadratic for many files
+      if (result.successful.length) {
+        this.uppy.removeFiles(result.successful.map(({ id }) => id))
       }
       this.clearInputs()
     })
