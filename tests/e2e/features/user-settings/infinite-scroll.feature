@@ -9,7 +9,7 @@ Feature: check infinite scrolling in the files views
       | Alice |
     And "Alice" creates 120 files in personal space using API
     And "Alice" logs in
-    When "Alice" changes the items per page to "∞"
+    When "Alice" changes the items per page to "All"
     And "Alice" should not see the pagination in the files list
     And "Alice" should see 100 resources in the files list
     And "Alice" should not see the page parameter in the files view url
@@ -34,7 +34,7 @@ Feature: check infinite scrolling in the files views
     And "Alice" logs in
     And "Alice" deletes all files
     And "Alice" navigates to the trashbin
-    When "Alice" changes the items per page to "∞"
+    When "Alice" changes the items per page to "All"
     And "Alice" scrolls down the files list until all items are loaded
     And "Alice" should see 120 resources in the files list
     And "Alice" logs out

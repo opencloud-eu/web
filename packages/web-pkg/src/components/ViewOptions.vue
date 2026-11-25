@@ -180,7 +180,7 @@ const isTileSizeSliderShown = computed(() => {
 })
 
 const infiniteScrollEnabled = useIsInfiniteScrollEnabled()
-const infiniteScrollOptionLabel = computed(() => $gettext('∞'))
+const infiniteScrollOptionLabel = computed(() => $gettext('All'))
 
 function isInfiniteScrollLabel(value: string) {
   return value === unref(infiniteScrollOptionLabel)
