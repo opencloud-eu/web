@@ -29,6 +29,8 @@
           :sort-handler="handleSort"
           :pagination-pages="paginationPages"
           :pagination-page="paginationPage"
+          :is-infinite-scroll-enabled="isInfiniteScrollEnabled"
+          :all-loaded="allLoaded"
           :folder-view="folderView"
           :title="$gettext('Shares')"
           :view-mode="viewMode"
@@ -37,6 +39,7 @@
           :term="filterTerm"
           :tab-items="tabItems"
           :matching-count="matchingCount"
+          @load-more="loadMore"
         />
       </template>
     </files-view-wrapper>
@@ -106,10 +109,14 @@ const {
   paginatedResources,
   paginationPages,
   paginationPage,
+  isInfiniteScrollEnabled,
+  allLoaded,
+  loadMore,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<IncomingShareResource, any, any>({
   folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint,
   filterResources: filterShares,
+  infiniteScrollResetOn: [filterTerm],
   sortFields: sharesSortFields
 })
 
@@ -128,6 +135,10 @@ const breadcrumbs = computed(() => [
 ])
 
 watch(filterTerm, async () => {
+  // in infinite scroll mode the composable resets the rendered items itself
+  if (unref(isInfiniteScrollEnabled)) {
+    return
+  }
   await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
 

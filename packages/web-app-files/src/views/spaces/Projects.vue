@@ -136,7 +136,13 @@
               />
             </template>
             <template #footer>
-              <pagination :pages="paginationPages" :current-page="paginationPage" />
+              <more-items-spacer
+                v-if="isInfiniteScrollEnabled"
+                :all-loaded="allLoaded"
+                :recheck-key="paginatedResources.length"
+                @load-more="loadMore"
+              />
+              <pagination v-else :pages="paginationPages" :current-page="paginationPage" />
               <div class="text-center w-full my-2">
                 <p data-testid="files-list-footer-info" class="text-role-on-surface-variant">
                   {{ footerTextTotal }}
@@ -177,6 +183,7 @@ import {
   useRoute,
   Pagination,
   FileSideBar,
+  MoreItemsSpacer,
   NoContentMessage,
   useSideBar,
   useMessages
@@ -258,11 +265,15 @@ const {
   sortedResources,
   paginatedResources,
   paginationPages,
-  paginationPage
+  paginationPage,
+  isInfiniteScrollEnabled,
+  allLoaded,
+  loadMore
 } = useResourcesViewDefaults<SpaceResource, any, any[]>({
   loadResourcesTask,
   folderViewExtensionPoint: folderViewsProjectSpacesExtensionPoint,
   filterResources: filter,
+  infiniteScrollResetOn: [filterTerm, areDisabledSpacesShown],
   sortFields: spacesOverviewSortFields
 })
 
@@ -310,6 +321,9 @@ const batchActionsLoading = computed(() => {
 })
 
 watch(filterTerm, async () => {
+  if (unref(isInfiniteScrollEnabled)) {
+    return
+  }
   await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
 

@@ -1,15 +1,19 @@
-import { nextTick, computed, unref, Ref } from 'vue'
+import { nextTick, computed, unref, Ref, watch, MaybeRef, MaybeRefOrGetter } from 'vue'
 import { fileList } from '../../helpers/ui'
 import {
   usePagination,
+  useInfiniteScroll,
   useSort,
   SortField,
+  PaginationConstants,
   useResourcesStore,
   folderService,
   useExtensionRegistry,
   ExtensionPoint,
   FolderViewExtension,
-  FolderView
+  FolderView,
+  useRouter,
+  useIsInfiniteScrollEnabled
 } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
 import { SortFieldsPreset } from '@opencloud-eu/web-pkg'
@@ -42,6 +46,16 @@ interface ResourcesViewDefaultsOptions<T, U extends any[], R extends Resource = 
    * When folders are sorted first, this applies within the folder and the file group.
    */
   pinFirst?: (resource: R) => boolean
+  /**
+   * Resets the rendered items in infinite scroll mode to one chunk whenever this value
+   * changes, e.g. when the view component is reused to render another folder.
+   */
+  infiniteScrollResetKey?: MaybeRef<unknown>
+  /**
+   * Resets the rendered items in infinite scroll mode to one chunk whenever any of
+   * these values change, e.g. when a filter within the view changes.
+   */
+  infiniteScrollResetOn?: MaybeRef<Array<MaybeRefOrGetter<unknown>>>
 }
 
 type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
@@ -56,6 +70,12 @@ type ResourcesViewDefaultsResult<T extends Resource, TT, TU extends any[]> = {
   paginatedResources: Ref<T[]>
   paginationPages: ReadOnlyRef<number>
   paginationPage: ReadOnlyRef<number>
+  /** Whether the items per page selector is set to infinite scrolling. */
+  isInfiniteScrollEnabled: ReadOnlyRef<boolean>
+  /** Whether the complete list is rendered already (infinite scroll mode only). */
+  allLoaded: ReadOnlyRef<boolean>
+  /** Appends the next item chunk to the rendered items (infinite scroll mode only). */
+  loadMore(): void
   handleSort({ sortBy, sortDir }: { sortBy: string; sortDir: SortDir }): void
   sortBy: ReadOnlyRef<string>
   sortDir: ReadOnlyRef<SortDir>
@@ -129,11 +149,125 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     foldersFirst: computed(() => resourcesStore.areFoldersSortedFirst),
     pinFirst: options.pinFirst
   })
+  const router = useRouter()
+  const isInfiniteScrollEnabled = useIsInfiniteScrollEnabled()
+
   const {
-    items: paginatedResources,
+    items: legacyPaginatedItems,
     total: paginationPages,
-    page: paginationPage
-  } = usePagination<T>({ items })
+    page: paginationPage,
+    perPage: legacyPerPage
+  } = usePagination<T>({
+    items,
+    enabled: computed(() => !unref(isInfiniteScrollEnabled))
+  })
+
+  const {
+    items: infiniteScrollItems,
+    renderedCount,
+    total: infiniteScrollTotal,
+    allLoaded,
+    loadMore
+  } = useInfiniteScroll<T>({
+    items,
+    enabled: isInfiniteScrollEnabled,
+    resetKey: options.infiniteScrollResetKey,
+    resetOn: options.infiniteScrollResetOn
+  })
+
+  const paginatedResources = computed(() =>
+    unref(isInfiniteScrollEnabled) ? unref(infiniteScrollItems) : unref(legacyPaginatedItems)
+  )
+
+  // routing all page writes through the same hook keeps them serialized
+  const pageQuery = useRouteQuery('page')
+
+  /**
+   * The number of items a legacy `?page=N` deep link asked for. The list can still
+   * be empty when the link is opened, so the target is kept as the number of items
+   * and applied once resources are available, instead of being clamped to the
+   * current total right away.
+   */
+  let pendingLegacyPageCount: number | null = null
+
+  const clearPageQuery = () => {
+    if (queryItemAsString(unref(router.currentRoute).query.page)) {
+      pageQuery.value = undefined
+    }
+  }
+
+  /**
+   * A page query belongs to the folder route it was created for. When the view is
+   * reused for another folder, a carried-over param must not be treated as a
+   * legacy deep link for the new folder.
+   */
+  const folderRouteKey = computed(() => {
+    const route = unref(router.currentRoute)
+    return `${route.path}|${queryItemAsString(route.query.fileId) || ''}`
+  })
+  watch(folderRouteKey, () => {
+    pendingLegacyPageCount = null
+    if (unref(isInfiniteScrollEnabled)) {
+      clearPageQuery()
+    }
+  })
+
+  watch(
+    isInfiniteScrollEnabled,
+    (isInfiniteScroll, wasInfiniteScroll) => {
+      if (isInfiniteScroll) {
+        const page = parseInt(queryItemAsString(unref(router.currentRoute).query.page), 10) || 1
+
+        if (wasInfiniteScroll === undefined) {
+          // legacy deep links that carry ?page=N still point to the resource the user
+          // wants to see: retain how many items they refer to and strip the param,
+          // which has no meaning in infinite scroll mode. The page size of whoever created
+          // the link is unknown, so the larger of chunk and own page size covers more cases
+          if (page > 1) {
+            pendingLegacyPageCount =
+              page * Math.max(PaginationConstants.infiniteScrollChunk, unref(legacyPerPage))
+          }
+        } else if (!wasInfiniteScroll) {
+          // handing over from numbered pagination: keep rendering everything the user
+          // had already scrolled to, then strip the no longer relevant page param
+          renderedCount.value = Math.max(unref(renderedCount), page * unref(legacyPerPage))
+          pendingLegacyPageCount = null
+        }
+
+        clearPageQuery()
+        return
+      }
+
+      if (wasInfiniteScroll) {
+        // handing over to numbered pagination: write back the equivalent last-viewed
+        // page (ceil keeps the last viewed chunk visible instead of an empty boundary).
+        // The rendered count can exceed the total after a reset, which must not lead to an out-of-range page.
+        pendingLegacyPageCount = null
+        const shownCount = Math.min(unref(renderedCount), unref(infiniteScrollTotal))
+        const page = Math.max(1, Math.ceil(shownCount / unref(legacyPerPage)))
+        pageQuery.value = String(page)
+      }
+    },
+    { immediate: true }
+  )
+
+  watch(
+    () => unref(infiniteScrollTotal),
+    (total) => {
+      if (pendingLegacyPageCount === null || total <= 0) {
+        return
+      }
+      // the rendered count may only grow, so an earlier mode switch is not undone
+      renderedCount.value = Math.max(unref(renderedCount), pendingLegacyPageCount)
+      pendingLegacyPageCount = null
+    },
+    {
+      // post flush so that a resetKey that is initialized together with the resources
+      // (e.g. the current folder) resets first, before the legacy target is applied
+      immediate: true,
+      flush: 'post'
+    }
+  )
 
   const scrollToParam = useRouteQuery('scrollTo')
   function resetScrollToParam() {
@@ -210,6 +344,9 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     paginatedResources,
     paginationPages,
     paginationPage,
+    isInfiniteScrollEnabled,
+    allLoaded,
+    loadMore,
     handleSort,
     sortBy,
     sortDir,

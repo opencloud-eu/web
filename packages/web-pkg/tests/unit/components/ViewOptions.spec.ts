@@ -8,9 +8,16 @@ import {
 import { mock } from 'vitest-mock-extended'
 import ViewOptions from '../../../src/components/ViewOptions.vue'
 import ViewModeSwitch from '../../../src/components/ViewModeSwitch.vue'
-import { FolderViewModeConstants, useResourcesStore } from '../../../src/composables'
+import {
+  FolderViewModeConstants,
+  PaginationConstants,
+  useIsInfiniteScrollEnabled,
+  useItemsPerPage,
+  useResourcesStore
+} from '../../../src/composables'
 import { FolderView } from '../../../src'
 import { OcPageSize, OcSwitch } from '@opencloud-eu/design-system/components'
+import { Component, defineComponent, h, unref, watch } from 'vue'
 
 const storageKeys = {
   perPage: 'oc-options_items-per-page',
@@ -65,6 +72,77 @@ describe('ViewOptions component', () => {
       wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).vm.$emit('change', 500)
 
       expect(mocks.$router.replace).toHaveBeenCalledWith({ query: { page: '1' } })
+    })
+    it('does not reset the page while handing over to infinite scrolling', async () => {
+      const perPage = '100'
+      const newItemsPerPage = 'All'
+      const { wrapper, mocks } = getWrapper({
+        perPage,
+        query: { page: '2' },
+        props: { hasInfiniteScroll: true }
+      })
+      wrapper
+        .findComponent<typeof OcPageSize>(selectors.pageSizeSelect)
+        .vm.$emit('change', newItemsPerPage)
+      await wrapper.vm.$nextTick()
+
+      expect(mocks.$router.replace).not.toHaveBeenCalled()
+      expect(window.localStorage.getItem('oc-options_files-infinite-scroll')).toBe('true')
+      expect(window.localStorage.getItem(storageKeys.perPage)).toBe(perPage)
+      expect(
+        wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
+      ).toBe(newItemsPerPage)
+    })
+    it('stores the numeric page limit when leaving infinite scrolling', async () => {
+      window.localStorage.setItem('oc-options_files-infinite-scroll', 'true')
+      const { wrapper } = getWrapper({ perPage: '100', props: { hasInfiniteScroll: true } })
+      wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).vm.$emit('change', 50)
+      await wrapper.vm.$nextTick()
+
+      expect(window.localStorage.getItem('oc-options_files-infinite-scroll')).toBe('false')
+      expect(window.localStorage.getItem(storageKeys.perPage)).toBe('50')
+      expect(
+        wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
+      ).toBe('50')
+    })
+    it('stores the new page limit before views react to leaving infinite scrolling', async () => {
+      window.localStorage.setItem('oc-options_files-infinite-scroll', 'true')
+      const perPageOnHandover: number[] = []
+      // mimics a files view that computes the page to hand over to on the mode switch
+      const ParentView = defineComponent({
+        setup() {
+          const isInfiniteScrollEnabled = useIsInfiniteScrollEnabled()
+          const itemsPerPage = useItemsPerPage()
+          watch(isInfiniteScrollEnabled, () => perPageOnHandover.push(unref(itemsPerPage)))
+          return () => h(ViewOptions, { hasInfiniteScroll: true })
+        }
+      })
+      const { wrapper } = getWrapper({ perPage: '100', component: ParentView })
+      wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).vm.$emit('change', 20)
+      await wrapper.vm.$nextTick()
+
+      expect(perPageOnHandover).toEqual([20])
+    })
+    it('keeps infinite scrolling enabled when changing the page limit in a view without it', async () => {
+      window.localStorage.setItem('oc-options_files-infinite-scroll', 'true')
+      const { wrapper } = getWrapper({ perPage: '100' })
+      wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).vm.$emit('change', 50)
+      await wrapper.vm.$nextTick()
+
+      expect(window.localStorage.getItem('oc-options_files-infinite-scroll')).toBe('true')
+      expect(window.localStorage.getItem(storageKeys.perPage)).toBe('50')
+    })
+    it('offers the infinite scrolling option when enabled', () => {
+      const { wrapper } = getWrapper({ props: { hasInfiniteScroll: true } })
+      const options = wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props()
+        .options as string[]
+      expect(options).toEqual([...PaginationConstants.options, 'All'])
+    })
+    it('does not offer the infinite scrolling option when disabled', () => {
+      const { wrapper } = getWrapper()
+      const options = wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props()
+        .options as string[]
+      expect(options).not.toContain('All')
     })
   })
   describe('hidden files toggle', () => {
@@ -204,13 +282,15 @@ function getWrapper({
   viewMode = FolderViewModeConstants.name.table,
   tileSize = '1',
   props = {},
-  query = {}
+  query = {},
+  component = ViewOptions
 }: {
   perPage?: string
   viewMode?: string
   tileSize?: string
   props?: PartialComponentProps<typeof ViewOptions>
   query?: Record<string, string>
+  component?: Component
 } = {}) {
   if (perPage) {
     window.localStorage.setItem(storageKeys.perPage, perPage)
@@ -223,7 +303,7 @@ function getWrapper({
   })
   return {
     mocks,
-    wrapper: mount(ViewOptions, {
+    wrapper: mount(component, {
       props,
       global: {
         mocks,

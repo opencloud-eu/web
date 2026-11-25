@@ -15,9 +15,9 @@ const selectors = {
 }
 
 describe('AppTagFilter.vue', () => {
-  it('renders "All" with the app count first, followed by the tags sorted by count and name', () => {
+  it('renders "All tags" with the app count first, followed by the tags sorted by count and name', () => {
     const { wrapper } = getWrapper()
-    expect(wrapper.find(selectors.all).text()).toBe('All 3')
+    expect(wrapper.find(selectors.all).text()).toBe('All tags 3')
     expect(wrapper.findAll(selectors.button).map((b) => b.text())).toEqual([
       'foo 2',
       'Bar 1',
@@ -46,7 +46,7 @@ describe('AppTagFilter.vue', () => {
     await active[0].trigger('click')
     expect(wrapper.emitted('select')).toEqual([['']])
   })
-  it('marks "All" as active if no tag is active', () => {
+  it('marks "All tags" as active if no tag is active', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find(selectors.all).attributes('aria-pressed')).toBe('true')
   })
@@ -72,7 +72,7 @@ describe('AppTagFilter.vue', () => {
     await wrapper.findAll(selectors.button)[0].trigger('click')
     expect(wrapper.emitted('select')).toEqual([['']])
   })
-  it('emits an empty string on "All" click', async () => {
+  it('emits an empty string on "All tags" click', async () => {
     const { wrapper } = getWrapper('foo')
     await wrapper.find(selectors.all).trigger('click')
     expect(wrapper.emitted('select')).toEqual([['']])
