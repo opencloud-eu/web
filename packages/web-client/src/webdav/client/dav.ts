@@ -1,11 +1,3 @@
-import {
-  Headers,
-  ProgressEventCallback,
-  RequestOptions,
-  RequestOptionsCustom,
-  WebDAVClient,
-  createClient
-} from 'webdav'
 import { encodePath, urlJoin } from '../../utils'
 import { DavMethod, DavPropertyValue } from '../constants'
 import { buildPropFindBody, buildPropPatchBody, DavPropertyRecord } from './builders'
@@ -13,9 +5,11 @@ import { parseError, parseMultiStatus, parseTusHeaders } from './parsers'
 import { WebDavResponseResource } from '../../helpers'
 import { DavHttpError } from '../../errors'
 
+export type DavRequestHeaders = Record<string, string>
+
 export interface DAVOptions {
   baseUrl: string
-  headers?: () => Headers
+  headers?: () => DavRequestHeaders
   withCredentials?: () => boolean
 }
 
@@ -26,20 +20,23 @@ export interface DavResult {
 }
 
 export type DAVRequestOptions = {
-  headers?: Headers
+  headers?: DavRequestHeaders
   signal?: AbortSignal
 }
 
+type DavRequest = {
+  method: DavMethod
+  data?: string | ArrayBuffer
+} & DAVRequestOptions
+
 export class DAV {
-  private client: WebDAVClient
   private davPath: string
-  private headers: () => Headers
+  private headers: () => DavRequestHeaders
   private withCredentials: () => boolean
   public extraProps: string[]
 
   constructor({ baseUrl, headers, withCredentials }: DAVOptions) {
     this.davPath = urlJoin(baseUrl, 'dav')
-    this.client = createClient(this.davPath, {})
     this.headers = headers
     this.withCredentials = withCredentials
     this.extraProps = []
@@ -143,12 +140,10 @@ export class DAV {
     content: string | ArrayBuffer,
     {
       headers = {},
-      onUploadProgress,
       previousEntityTag,
       overwrite,
       ...opts
     }: {
-      onUploadProgress?: ProgressEventCallback
       previousEntityTag?: string
       overwrite?: boolean
     } & DAVRequestOptions = {}
@@ -166,7 +161,6 @@ export class DAV {
       method: DavMethod.put,
       data: content,
       headers: requestHeaders,
-      onUploadProgress,
       ...opts
     })
   }
@@ -197,55 +191,56 @@ export class DAV {
     return urlJoin(this.davPath, encodePath(path))
   }
 
-  private buildHeaders(headers: Headers = {}): Headers {
-    return {
-      'Content-Type': 'application/xml; charset=utf-8',
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-Request-ID': crypto.randomUUID(),
-      ...(this.headers && { ...this.headers() }),
-      ...headers
+  private buildHeaders(headers: DavRequestHeaders = {}): Headers {
+    // Headers#set merges names case-insensitively, later values win
+    const result = new Headers()
+    const sources = [
+      {
+        'Content-Type': 'application/xml; charset=utf-8',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-Request-ID': crypto.randomUUID()
+      },
+      this.headers?.() || {},
+      headers
+    ]
+    for (const source of sources) {
+      for (const [name, value] of Object.entries(source)) {
+        result.set(name, value)
+      }
     }
+    return result
   }
 
-  private async request(path: string, options: RequestOptionsCustom): Promise<DavResult> {
+  private async request(
+    path: string,
+    { method, data, headers, signal }: DavRequest
+  ): Promise<DavResult> {
     const url = urlJoin(this.davPath, encodePath(path), { leadingSlash: true })
 
-    const requestOptions = {
-      ...options,
-      url,
-      headers: this.buildHeaders(options.headers || {}),
-      ...(this.withCredentials?.() && { withCredentials: true })
-    } as RequestOptions
+    const result = await fetch(url, {
+      method,
+      body: data,
+      headers: this.buildHeaders(headers),
+      signal,
+      ...(this.withCredentials?.() && { credentials: 'include' })
+    })
 
-    try {
-      const result = (await this.client.customRequest('', requestOptions)) as unknown as Response
-
-      let resultBody: WebDavResponseResource[]
-      if (result.status === 207) {
-        const parsedBody = await result.text()
-        resultBody = await parseMultiStatus(parsedBody)
-      }
-
-      return {
-        body: resultBody,
-        status: result.status,
-        result
-      }
-    } catch (error) {
-      const { response } = error
-      if (!response) {
-        // network errors and cancellations have no response, keep them as they are
-        throw error
-      }
-      const body = await response.text()
-      const errorMessage = parseError(body)
+    if (result.status >= 400) {
+      const errorMessage = parseError(await result.text())
       throw new DavHttpError(
         errorMessage.message,
         errorMessage.errorCode,
-        response,
-        response.status,
+        result,
+        result.status,
         errorMessage.errorType
       )
     }
+
+    let body: WebDavResponseResource[]
+    if (result.status === 207) {
+      body = parseMultiStatus(await result.text())
+    }
+
+    return { body, status: result.status, result }
   }
 }

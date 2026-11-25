@@ -10,7 +10,6 @@ import {
   User
 } from '../../graph/generated'
 import { MongoAbility, SubjectRawRule } from '@casl/ability'
-import { DAVResultResponseProps, FileStat } from 'webdav'
 
 export type AbilityActions =
   | 'create'
@@ -134,8 +133,15 @@ export interface WebDavResponseTusSupport {
   version?: string[]
 }
 
-export interface WebDavResponseResource extends Omit<FileStat, 'props'> {
-  props?: Omit<DAVResultResponseProps, 'getcontentlength'> & DavFileInfoResponse
+export interface WebDavResponseResource {
+  filename: string
+  basename: string
+  lastmod: string
+  size: number
+  type: 'file' | 'directory'
+  etag: string | null
+  mime?: string
+  props?: Record<string, unknown> & DavFileInfoResponse
   processing?: boolean
   tusSupport?: WebDavResponseTusSupport
 }
