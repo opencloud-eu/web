@@ -32,6 +32,8 @@ Feature: check infinite scrolling in the files views
       | Alice |
     And "Alice" creates 120 files in personal space using API
     And "Alice" logs in
+    # select all only covers the current page, so all files need to fit on it
+    And "Alice" changes the items per page to "250"
     And "Alice" deletes all files
     And "Alice" navigates to the trashbin
     When "Alice" changes the items per page to "All"
