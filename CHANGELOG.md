@@ -70,6 +70,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @axe-core/playwright to v4.14.1 [[#4620](https://github.com/opencloud-eu/web/pull/4620)]
 - chore(deps): update devdependencies (non-major) [[#4553](https://github.com/opencloud-eu/web/pull/4553)]
 - chore(deps): update traefik docker tag to v3.8.0 [[#4612](https://github.com/opencloud-eu/web/pull/4612)]
 - chore(deps): update dependency typescript-eslint to v8.74.0 [[#4608](https://github.com/opencloud-eu/web/pull/4608)]
