@@ -36,10 +36,7 @@
         <oc-icon class="ms-0.5" name="checkbox-circle" size-class="size-3" fill-type="line" />
       </span>
     </template>
-    <div v-if="showCritical && $slots.default" class="mt-2 border-t border-current/15 pt-2">
-      <slot />
-    </div>
-    <slot v-else />
+    <slot />
   </div>
 </template>
 
