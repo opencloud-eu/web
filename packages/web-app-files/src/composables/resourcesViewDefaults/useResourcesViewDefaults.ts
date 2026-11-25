@@ -221,9 +221,11 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
         if (wasInfiniteScroll === undefined) {
           // legacy deep links that carry ?page=N still point to the resource the user
           // wants to see: retain how many items they refer to and strip the param,
-          // which has no meaning in infinite scroll mode
+          // which has no meaning in infinite scroll mode. The page size of whoever created
+          // the link is unknown, so the larger of chunk and own page size covers more cases
           if (page > 1) {
-            pendingLegacyPageCount = page * PaginationConstants.infiniteScrollChunk
+            pendingLegacyPageCount =
+              page * Math.max(PaginationConstants.infiniteScrollChunk, unref(legacyPerPage))
           }
         } else if (!wasInfiniteScroll) {
           // handing over from numbered pagination: keep rendering everything the user
@@ -238,9 +240,11 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
 
       if (wasInfiniteScroll) {
         // handing over to numbered pagination: write back the equivalent last-viewed
-        // page (ceil keeps the last viewed chunk visible instead of an empty boundary)
+        // page (ceil keeps the last viewed chunk visible instead of an empty boundary).
+        // The rendered count can exceed the total after a reset, which must not lead to an out-of-range page.
         pendingLegacyPageCount = null
-        const page = Math.max(1, Math.ceil(unref(renderedCount) / unref(legacyPerPage)))
+        const shownCount = Math.min(unref(renderedCount), unref(infiniteScrollTotal))
+        const page = Math.max(1, Math.ceil(shownCount / unref(legacyPerPage)))
         pageQuery.value = String(page)
       }
     },

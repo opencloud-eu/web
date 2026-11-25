@@ -9,7 +9,7 @@
       :aria-pressed="!activeTag"
       @click="emit('select', '')"
     >
-      {{ $gettext('All') }}
+      {{ $gettext('All tags') }}
       <app-tag-count :count="apps.length" :active="!activeTag" />
     </oc-tag>
     <oc-tag
@@ -164,7 +164,7 @@ async function updateVisibleCount() {
   const firstOverflowIndex = getTagElements().findIndex(
     (el) => el.offsetTop > rowTops[MAX_ROWS - 1]
   )
-  // the first element is the "All" tag, which is not part of the tags list
+  // the first element is the "All tags" button, which is not part of the tags list
   visibleCount.value = Math.max(firstOverflowIndex - 1, 0)
   await nextTick()
   while (getRowTops().length > MAX_ROWS && unref(visibleCount) > 0) {

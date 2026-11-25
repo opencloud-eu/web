@@ -293,6 +293,19 @@ describe('useResourcesViewDefaults', () => {
       expect(unref(result.paginatedResources)).toEqual(resources)
       expect(unref(result.allLoaded)).toBe(true)
     })
+    it('honors a legacy page param with the own page size if it exceeds the chunk', async () => {
+      const manyResources = Array.from(
+        { length: 1000 },
+        (_, i) => ({ id: `${i + 1}`, name: `file-${i + 1}`, type: 'file' }) as Resource
+      )
+      useItemsPerPage().value = 250
+      setInfiniteScroll(true)
+      const { result } = await mountWithRoute('/files?page=3', manyResources)
+
+      await flushPromises()
+
+      expect(unref(result.paginatedResources)).toHaveLength(750)
+    })
     it('honors a legacy page param after resources have been loaded', async () => {
       setInfiniteScroll(true)
       const $router = createRouter({ routes })
@@ -407,6 +420,16 @@ describe('useResourcesViewDefaults', () => {
 
       expect(unref($router.currentRoute).query.page).toBe('5')
       expect(unref(result.paginatedResources)).toEqual(resources.slice(200, 250))
+    })
+    it('does not write an out-of-range page back for lists shorter than a chunk', async () => {
+      setInfiniteScroll(true)
+      const { $router } = await mountWithRoute('/files', resources.slice(0, 30))
+
+      useItemsPerPage().value = 20
+      setInfiniteScroll(false)
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBe('2')
     })
     it('resets the rendered items when the reset key changes', async () => {
       setInfiniteScroll(true)

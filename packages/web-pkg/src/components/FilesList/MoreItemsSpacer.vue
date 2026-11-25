@@ -36,13 +36,6 @@ export interface Props {
    */
   allLoaded?: boolean
   /**
-   * How far below the fold the sentinel is deemed visible, so that the next chunk
-   * is appended before the user reaches the end of the list.
-   * Percentages resolve against the scroll container.
-   * @default '100% 0%'
-   */
-  rootMargin?: string
-  /**
    * Change this whenever the rendered items change. It replaces the sentinel so
    * that it is observed again even when it stayed inside the look-ahead zone
    * during the append.
@@ -54,7 +47,7 @@ export interface Emits {
   (e: 'loadMore'): void
 }
 
-const { allLoaded = false, rootMargin = undefined, recheckKey = undefined } = defineProps<Props>()
+const { allLoaded = false, recheckKey = undefined } = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const { $gettext } = useGettext()
@@ -77,7 +70,6 @@ useIsVisible({
   target: sentinel as Ref<Element>,
   root: scrollContainer,
   mode: 'show',
-  rootMargin,
   onVisibleCallback: onVisible
 })
 </script>

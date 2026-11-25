@@ -61,8 +61,6 @@ export interface InfiniteScrollResult<T> {
   allLoaded: ComputedRef<boolean>
   /** Appends the next chunk to the rendered items. No-op once everything is rendered. */
   loadMore(): void
-  /** Extends the rendered items so that the resource with the given id becomes visible. */
-  expandTo(resourceId: string): void
 }
 
 export function useInfiniteScroll<T>(options: InfiniteScrollOptions<T>): InfiniteScrollResult<T> {
@@ -97,10 +95,6 @@ export function useInfiniteScroll<T>(options: InfiniteScrollOptions<T>): Infinit
       unref(renderedCount),
       Math.min(Math.ceil((index + 1) / chunk) * chunk, unref(total))
     )
-  }
-
-  function expandTo(resourceId: string) {
-    expandToIndex(findIndex(unref(options.items), (item: Item) => (item as Item).id === resourceId))
   }
 
   /**
@@ -160,7 +154,6 @@ export function useInfiniteScroll<T>(options: InfiniteScrollOptions<T>): Infinit
     renderedCount,
     total,
     allLoaded,
-    loadMore,
-    expandTo
+    loadMore
   }
 }

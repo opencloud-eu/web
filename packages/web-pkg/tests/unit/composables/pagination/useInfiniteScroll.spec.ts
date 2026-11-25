@@ -79,35 +79,6 @@ describe('useInfiniteScroll', () => {
       expect(unref(result.allLoaded)).toBe(true)
     })
   })
-  describe('expandTo', () => {
-    it('renders the chunk of the given resource', () => {
-      const items = ref(getItems(250))
-      const { result } = getWrapper(items)
-
-      result.expandTo('134')
-
-      expect(unref(result.renderedCount)).toBe(200)
-      expect(unref(result.items)).toEqual(items.value.slice(0, 200))
-      expect(unref(result.allLoaded)).toBe(false)
-    })
-    it('respects the amount that is already rendered', () => {
-      const items = ref(getItems(250))
-      const { result } = getWrapper(items)
-
-      result.loadMore()
-      result.expandTo('10')
-
-      expect(unref(result.renderedCount)).toBe(200)
-    })
-    it('ignores unknown resources', () => {
-      const items = ref(getItems(250))
-      const { result } = getWrapper(items)
-
-      result.expandTo('9999')
-
-      expect(unref(result.renderedCount)).toBe(100)
-    })
-  })
   describe('event bus subscription', () => {
     it('expands to the chunk of a not yet rendered resource and publishes the scrollTo event', async () => {
       const items = ref(getItems(250))

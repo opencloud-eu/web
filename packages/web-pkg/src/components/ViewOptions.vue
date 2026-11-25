@@ -194,12 +194,13 @@ const itemsPerPageSelection = computed<string>({
   },
   set(value: string) {
     const infiniteScrollSelected = isInfiniteScrollLabel(value)
+    // must be written before the flag: views compute the page to hand over to from it
+    if (!infiniteScrollSelected) {
+      itemsPerPage.value = Number(value)
+    }
     // the flag is shared with other views, so only views that offer infinite scrolling may change it
     if (unref(hasInfiniteScroll)) {
       infiniteScrollEnabled.value = infiniteScrollSelected
-    }
-    if (!infiniteScrollSelected) {
-      itemsPerPage.value = Number(value)
     }
   }
 })
@@ -210,12 +211,7 @@ const paginationOptionsList = computed(() => {
     return options
   }
 
-  const label = unref(infiniteScrollOptionLabel)
-  if (options.includes(label)) {
-    return options
-  }
-
-  return [...options, label]
+  return [...options, unref(infiniteScrollOptionLabel)]
 })
 
 const setItemsPerPage = (value: PageSizeOption) => {
