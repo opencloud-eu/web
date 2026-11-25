@@ -2,7 +2,6 @@ import { SpaceResource } from '../helpers'
 import { GetFileInfoFactory } from './getFileInfo'
 import { WebDavOptions } from './types'
 import { DAV, DAVRequestOptions } from './client'
-import { ProgressEventCallback } from 'webdav'
 import { getWebDavPath } from './utils'
 
 type PutFileContentsOptions = {
@@ -12,7 +11,6 @@ type PutFileContentsOptions = {
   content?: string | ArrayBuffer
   previousEntityTag?: string
   overwrite?: boolean
-  onUploadProgress?: ProgressEventCallback
 } & DAVRequestOptions
 
 export const PutFileContentsFactory = (
@@ -30,7 +28,6 @@ export const PutFileContentsFactory = (
         content = '',
         previousEntityTag = '',
         overwrite,
-        onUploadProgress = null,
         ...opts
       }: PutFileContentsOptions
     ) {
@@ -38,7 +35,6 @@ export const PutFileContentsFactory = (
       const { result } = await dav.put(webDavPath, content, {
         previousEntityTag,
         overwrite,
-        onUploadProgress,
         ...opts
       })
 

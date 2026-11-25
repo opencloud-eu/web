@@ -83,10 +83,10 @@
   "dependencies": {
     "@casl/ability": "^7.0.0",
     "@microsoft/fetch-event-source": "^2.0.1",
+    "@nodable/entities": "^3.1.0",
     "axios": "^1.13.6",
     "fast-xml-parser": "^5.5.9",
     "lodash-es": "^4.17.23",
-    "webdav": "5.11.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

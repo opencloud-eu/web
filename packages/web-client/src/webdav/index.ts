@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Headers } from 'webdav'
+import { DavRequestHeaders } from './client/dav'
 import { WebDAV } from './types'
 import { CopyFilesFactory } from './copyFiles'
 import { CreateFolderFactory } from './createFolder'
@@ -31,7 +31,7 @@ export type { PublicLinkSignature } from './getPublicLinkSignature'
 
 export const webdav = (
   baseURI: string,
-  headers?: () => Headers,
+  headers?: () => DavRequestHeaders,
   withCredentials?: () => boolean
 ): WebDAV => {
   const axiosClient = axios.create()
