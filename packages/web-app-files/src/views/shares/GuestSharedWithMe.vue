@@ -60,7 +60,8 @@ import {
   useKeyboardActions,
   useResourcesStore,
   useRoute,
-  useRouter
+  useRouter,
+  sharesSortFields
 } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaults } from '../../composables'
 import {
@@ -108,7 +109,8 @@ const {
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<IncomingShareResource, any, any>({
   folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint,
-  filterResources: filterShares
+  filterResources: filterShares,
+  sortFields: sharesSortFields
 })
 
 const tabItems = computed(() => resourcesStore.resources as IncomingShareResource[])

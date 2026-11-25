@@ -12,7 +12,7 @@ import {
   defaultComponentMocks
 } from '@opencloud-eu/web-test-helpers'
 import { RouteLocation } from 'vue-router'
-import { AppBar, ItemFilter, useRouteQuery } from '@opencloud-eu/web-pkg'
+import { AppBar, filesSortFields, ItemFilter, useRouteQuery } from '@opencloud-eu/web-pkg'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
 
 vi.mock('../../../src/composables')
@@ -30,6 +30,12 @@ const AppBarStub = defineComponent({
 })
 
 describe('Favorites view', () => {
+  it('sorts with the files sort fields', () => {
+    getMountedWrapper()
+    expect(useResourcesViewDefaults).toHaveBeenLastCalledWith(
+      expect.objectContaining({ sortFields: filesSortFields })
+    )
+  })
   it('appBar always present', () => {
     const { wrapper } = getMountedWrapper()
     expect(wrapper.find('app-bar-stub').exists()).toBeTruthy()

@@ -81,7 +81,7 @@
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
-          :sort-fields="sortFields.filter((field) => field.name === 'name')"
+          :sort-fields="sortFields"
           :view-mode="viewMode"
           :view-size="viewSize"
           :term="filterTerm"
@@ -133,7 +133,8 @@ import {
   ContextActions,
   ItemFilter,
   useKeyboardActions,
-  eventBus
+  eventBus,
+  sharesSortFields
 } from '@opencloud-eu/web-pkg'
 import { uniq } from 'lodash-es'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
@@ -205,7 +206,8 @@ const {
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
   folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint,
-  filterResources: filterShares
+  filterResources: filterShares,
+  sortFields: sharesSortFields
 })
 
 const matchingCount = computed(() => {

@@ -1,8 +1,9 @@
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import ResourceTiles from '../../../../src/components/FilesList/ResourceTiles.vue'
-import { resourceTilesSortFields } from '../../../../src/helpers/ui/resourceTiles'
+import { filesSortFields } from '../../../../src/helpers/ui/sortFields'
 import { Resource, SpaceResource, extractDomSelector } from '@opencloud-eu/web-client'
 import { computed, nextTick } from 'vue'
+import { createGettext } from 'vue3-gettext'
 import {
   useCanBeOpenedWithSecureView,
   ResourceIndicator
@@ -191,25 +192,36 @@ describe('ResourceTiles component', () => {
 
   describe('sorting', () => {
     it('renders the label of the first sort field as default', () => {
-      const { wrapper } = getWrapper({ props: { sortFields: resourceTilesSortFields } })
+      const { wrapper } = getWrapper({ props: { sortFields: filesSortFields.tiles } })
       expect(wrapper.find('.oc-tiles-sort .oc-filter-chip-label').text()).toEqual(
-        resourceTilesSortFields[0].label
+        filesSortFields.tiles[0].label
       )
     })
     it('renders the label of the current sort field as default', () => {
-      const sortField = resourceTilesSortFields[2]
+      const sortField = filesSortFields.tiles[2]
       const { wrapper } = getWrapper({
         props: {
-          sortFields: resourceTilesSortFields,
+          sortFields: filesSortFields.tiles,
           sortBy: sortField.name,
           sortDir: sortField.sortDir
         }
       })
       expect(wrapper.find('.oc-tiles-sort .oc-filter-chip-label').text()).toEqual(sortField.label)
     })
+    it('translates the labels of the sort options', () => {
+      const { wrapper } = getWrapper({
+        props: { sortFields: filesSortFields.tiles },
+        stubs: { OcDrop: true },
+        translations: { de: { 'A-Z': 'A bis Z', 'Z-A': 'Z bis A' } }
+      })
+      expect(wrapper.find('.oc-tiles-sort .oc-filter-chip-label').text()).toEqual('A bis Z')
+      const options = wrapper.findAll('.oc-tiles-sort-filter-chip-item')
+      expect(options[0].text()).toEqual('A bis Z')
+      expect(options[1].text()).toEqual('Z bis A')
+    })
     it('emits the "sort"-event', async () => {
       const { wrapper } = getWrapper({
-        props: { sortFields: resourceTilesSortFields },
+        props: { sortFields: filesSortFields.tiles },
         stubs: { OcDrop: true }
       })
       const filterChip = wrapper.findComponent<typeof OcFilterChip>({ name: 'oc-filter-chip' })
@@ -351,7 +363,8 @@ describe('ResourceTiles component', () => {
     stubs = {},
     canBeOpenedWithSecureView = true,
     deleteQueue = [],
-    selectedIds = []
+    selectedIds = [],
+    translations
   }: {
     props?: Record<string, unknown>
     slots?: Record<string, string>
@@ -359,6 +372,7 @@ describe('ResourceTiles component', () => {
     canBeOpenedWithSecureView?: boolean
     deleteQueue?: string[]
     selectedIds?: string[]
+    translations?: Record<string, Record<string, string>>
   } = {}) {
     const mocks = defaultComponentMocks()
 
@@ -379,11 +393,15 @@ describe('ResourceTiles component', () => {
         global: {
           plugins: [
             ...defaultPlugins({
+              gettext: !translations,
               piniaOptions: {
                 resourcesStore: { deleteQueue, selectedIds },
                 spacesState: { spaces: spacesResources }
               }
-            })
+            }),
+            ...(translations
+              ? [createGettext({ translations, defaultLanguage: 'de', silent: true })]
+              : [])
           ],
           mocks: mocks,
           provide: mocks,

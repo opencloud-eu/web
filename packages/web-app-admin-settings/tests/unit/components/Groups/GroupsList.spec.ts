@@ -8,7 +8,7 @@ import {
 import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
 import { useGroupSettingsStore } from '../../../../src/composables'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
-import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { OcCheckbox, OcTable } from '@opencloud-eu/design-system/components'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { nextTick } from 'vue'
@@ -33,6 +33,15 @@ afterEach(() => {
 
 describe('GroupsList', () => {
   describe('sorting', () => {
+    it('makes exactly the columns of the sort fields sortable, with their direction', () => {
+      const { wrapper } = getWrapper({ groups: [{ displayName: 'admins' }] as Group[] })
+      const sortableColumns = wrapper
+        .findComponent(OcTable)
+        .props('fields')
+        .filter(({ sortable }: FieldType) => sortable)
+        .map(({ name, sortDir }: FieldType) => `${name} ${sortDir}`)
+      expect(sortableColumns).toEqual(['displayName asc'])
+    })
     it.each([
       { sort: undefined, expected: ['admins', 'users'] },
       { sort: { sortBy: 'displayName', sortDir: SortDir.Asc }, expected: ['admins', 'users'] },

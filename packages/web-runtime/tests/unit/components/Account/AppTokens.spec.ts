@@ -11,7 +11,7 @@ import { AppLoadingSpinner, ClientService, useModals } from '@opencloud-eu/web-p
 import { flushPromises } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { OcTable } from '@opencloud-eu/design-system/components'
-import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import AppTokens from '../../../../src/components/Account/AppTokens.vue'
 import { AppToken } from '../../../../src/helpers/appTokens'
 
@@ -45,6 +45,16 @@ describe('AppTokens component', () => {
         { token: '3', label: 'c', created_date: '2021-03-01', expiration_date: '2021-02-01' }
       ]
 
+      it('makes exactly the columns of the sort fields sortable, with their direction', async () => {
+        const { wrapper } = getWrapper({ appTokens })
+        await flushPromises()
+        const sortableColumns = wrapper
+          .findComponent<typeof OcTable>(selectors.appTokensTable)
+          .props('fields')
+          .filter(({ sortable }: FieldType) => sortable)
+          .map(({ name, sortDir }: FieldType) => `${name} ${sortDir}`)
+        expect(sortableColumns).toEqual(['creationDate desc', 'expirationDate desc', 'status asc'])
+      })
       it('sorts by creation date descending by default', async () => {
         const { wrapper } = getWrapper({ appTokens })
         await flushPromises()

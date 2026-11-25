@@ -121,7 +121,6 @@ import {
   NoContentMessage,
   Pagination,
   ProcessorType,
-  translateSortFields,
   useClientService,
   useGetMatchingSpace,
   useLoadPreview,
@@ -131,9 +130,9 @@ import {
   useSpacesStore,
   useUserStore,
   ResourceIndicator,
-  ResourceStatusIndicators,
-  spaceTilesSortFields
+  ResourceStatusIndicators
 } from '@opencloud-eu/web-pkg'
+import { trashOverviewSortFields } from '../../helpers/ui/sortFields'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import {
   call,
@@ -146,13 +145,11 @@ import TrashQuickActions from '../../components/Trash/TrashQuickActions.vue'
 import { storeToRefs } from 'pinia'
 import { folderViewsTrashOverviewExtensionPoint } from '../../extensionPoints'
 import { useResourcesViewDefaults } from '../../composables'
-import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 const userStore = useUserStore()
 const spacesStore = useSpacesStore()
 const router = useRouter()
-const language = useGettext()
-const { $gettext, $ngettext } = language
+const { $gettext, $ngettext } = useGettext()
 const clientService = useClientService()
 const resourcesStore = useResourcesStore()
 const { getMatchingSpace } = useGetMatchingSpace()
@@ -178,26 +175,7 @@ const {
 } = useResourcesViewDefaults<SpaceResource, any, any[]>({
   folderViewExtensionPoint: folderViewsTrashOverviewExtensionPoint,
   filterResources: filter,
-  sortFields: [
-    ...translateSortFields(
-      spaceTilesSortFields.filter(({ name }) => name === 'name'),
-      language
-    ),
-    {
-      label: $gettext('Contains deleted items first'),
-      name: 'indicators',
-      prop: 'hasTrashedItems',
-      sortable: sortableHasTrashedItems,
-      sortDir: SortDir.Asc
-    },
-    {
-      label: $gettext('Empty first'),
-      name: 'indicators',
-      prop: 'hasTrashedItems',
-      sortable: sortableHasTrashedItems,
-      sortDir: SortDir.Desc
-    }
-  ],
+  sortFields: trashOverviewSortFields,
   pinFirst: isPersonalSpaceResource
 })
 
@@ -304,10 +282,6 @@ function indicatorFilter(indicator: ResourceIndicator) {
 const breadcrumbs = computed(() => [
   { text: $gettext('Deleted files'), onClick: () => loadResourcesTask.perform() }
 ])
-
-function sortableHasTrashedItems(hasTrashedItems: boolean) {
-  return Number(!hasTrashedItems)
-}
 
 function filter(spaces: SpaceResource[]) {
   if (!unref(areEmptyTrashesShown)) {

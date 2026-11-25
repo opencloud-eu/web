@@ -1,6 +1,6 @@
 import { nextTick, ref, unref } from 'vue'
 import { SortableItem, SortOptions, useSort } from '../../../../src/composables'
-import { spaceTableSortFields } from '../../../../src/helpers'
+import { disabledSort } from '../../../../src/helpers'
 import { Resource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
@@ -239,7 +239,7 @@ describe('useSort', () => {
       getComposableWrapper(() => {
         const { items } = useSort({
           items: spaces,
-          fields: spaceTableSortFields,
+          fields: [disabledSort],
           sortBy: ref('indicators'),
           sortDir: ref(sortDir),
           routeName: 'mocked'

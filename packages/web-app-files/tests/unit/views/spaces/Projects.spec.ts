@@ -6,12 +6,14 @@ import {
   useExtensionRegistry,
   FolderViewExtension,
   ResourceTable,
+  ResourceTiles,
   FileSideBar,
   eventBus,
   useMessages,
   useResourcesStore,
   useSpacesStore,
-  SpacesStore
+  SpacesStore,
+  SortField
 } from '@opencloud-eu/web-pkg'
 
 import {
@@ -148,6 +150,32 @@ describe('Projects view', () => {
       const resources = wrapper.findComponent(ResourceTable).props('resources')
       expect(resources.map(({ id }) => id)).toEqual(['unrestricted', 'large', 'small'])
     })
+    describe('members', () => {
+      const spaces = [
+        { ...spacesResources[0], id: 'few', name: 'A', root: { permissions: [{}] } },
+        { ...spacesResources[0], id: 'many', name: 'B', root: { permissions: [{}, {}, {}] } }
+      ] as unknown as SpaceResource[]
+
+      it.each(['resource-table', 'resource-tiles'])(
+        'offers no members sorting in the %s view',
+        async (viewMode) => {
+          const { wrapper } = getMountedWrapper({ spaces, viewMode })
+          await flushPromises()
+          const view = viewMode === 'resource-tiles' ? ResourceTiles : ResourceTable
+          const sortFields = wrapper.findComponent(view).props('sortFields') as SortField[]
+          expect(sortFields.length).toBeGreaterThan(0)
+          expect(sortFields.map(({ name }) => name)).not.toContain('members')
+        }
+      )
+      it('does not sort by members if sorting by members is stored', async () => {
+        window.localStorage.setItem('oc-options_files-spaces-projects_sort-by', 'members')
+        window.localStorage.setItem('oc-options_files-spaces-projects_sort-dir', 'desc')
+        const { wrapper } = getMountedWrapper({ spaces, viewMode: 'resource-tiles' })
+        await flushPromises()
+        const tiles = wrapper.findComponent(ResourceTiles)
+        expect(tiles.props('resources').map(({ id }) => id)).toEqual(['few', 'many'])
+      })
+    })
   })
   describe('failed load', () => {
     beforeEach(() => {
@@ -256,7 +284,8 @@ function getMountedWrapper({
   includeDisabled = false,
   query,
   store = {},
-  reloadProjectSpaces
+  reloadProjectSpaces,
+  viewMode = 'resource-table'
 }: {
   mocks?: Record<string, unknown>
   spaces?: SpaceResource[]
@@ -266,8 +295,9 @@ function getMountedWrapper({
   query?: Record<string, string>
   store?: PiniaMockOptions
   reloadProjectSpaces?: SpacesStore['reloadProjectSpaces']
+  viewMode?: string
 } = {}) {
-  window.localStorage.setItem('oc-options_view-mode', 'resource-table')
+  window.localStorage.setItem('oc-options_view-mode', viewMode)
   window.localStorage.setItem('oc-options_tiles-size', '1')
   const plugins = defaultPlugins({
     abilities,
@@ -299,6 +329,20 @@ function getMountedWrapper({
         },
         component: ResourceTable
       }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-tiles',
+      type: 'folderView',
+      extensionPointIds: [folderViewsProjectSpacesExtensionPoint.id],
+      folderView: {
+        name: 'resource-tiles',
+        label: 'Switch to tiles view',
+        icon: {
+          name: 'menu-line',
+          fillType: 'none'
+        },
+        component: ResourceTiles
+      }
     }
   ] satisfies FolderViewExtension[]
   const { requestExtensions } = useExtensionRegistry()
@@ -329,6 +373,7 @@ function getMountedWrapper({
           'context-actions': true,
           'app-bar': stubAppBar,
           'resource-table': false,
+          'resource-tiles': true,
           CreateSpace: true
         }
       }
