@@ -52,7 +52,8 @@ export const useResourcesStore = defineStore('resources', () => {
   }
 
   const upsertResources = (values: Resource[]) => {
-    const other = unref(resources).filter((f) => !values.some((r) => r.path === f.path))
+    const paths = new Set(values.map(({ path }) => path))
+    const other = unref(resources).filter((f) => !paths.has(f.path))
     resources.value = [...other, ...values]
   }
 
