@@ -1,13 +1,14 @@
-import SpaceImageModal from '../../../../src/components/Spaces/SpaceImageModal.vue'
+import ImageCropperModal from '../../../../src/components/Modals/ImageCropperModal.vue'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 
 const { getCroppedArrayBuffer } = vi.hoisted(() => ({ getCroppedArrayBuffer: vi.fn() }))
 
-vi.mock('../../../../src/components/ImageCropper.vue', async () => {
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
   const { defineComponent, h } = await import('vue')
   return {
-    default: defineComponent({
+    ...(await importOriginal<any>()),
+    ImageCropper: defineComponent({
       name: 'ImageCropper',
       setup(_, { expose }) {
         expose({ getCroppedArrayBuffer })
@@ -20,7 +21,7 @@ vi.mock('../../../../src/components/ImageCropper.vue', async () => {
 window.URL.createObjectURL = vi.fn(() => 'blob:image')
 window.URL.revokeObjectURL = vi.fn()
 
-describe('SpaceImageModal', () => {
+describe('ImageCropperModal', () => {
   it('hands the cropped image to the caller', async () => {
     const content = new ArrayBuffer(8)
     getCroppedArrayBuffer.mockResolvedValue(content)
@@ -52,7 +53,7 @@ function getWrapper() {
   return {
     mocks,
     save,
-    wrapper: mount(SpaceImageModal, {
+    wrapper: mount(ImageCropperModal, {
       props: {
         modal: undefined,
         file: mock<File>(),
