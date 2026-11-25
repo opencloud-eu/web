@@ -11,8 +11,8 @@
   >
     <span
       v-if="showCritical"
-      class="version-check-critical font-semibold text-red-700 dark:text-red-300"
-      v-text="$gettext('Critical')"
+      class="version-check-critical mb-1 font-semibold text-red-700 dark:text-red-300"
+      v-text="$gettext('Critical update')"
     />
     <template v-if="isEnabled">
       <span v-if="isLoading" class="version-check-loading flex items-center">
