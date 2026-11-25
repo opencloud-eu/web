@@ -30,6 +30,11 @@ describe('resolveFileNameDuplicate', () => {
     })
   })
 
+  it('accepts a set of existing names', () => {
+    const existing = new Set(['b (1).png', 'b (2).png'])
+    expect(resolveFileNameDuplicate('b.png', 'png', existing)).toBe('b (3).png')
+  })
+
   describe('names that would exceed the max name bytes', () => {
     it.each([
       {

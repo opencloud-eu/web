@@ -269,6 +269,51 @@ describe('UppyService', () => {
       expect(uploadedNames).toEqual(['failed.txt'])
     })
   })
+
+  describe('on complete', () => {
+    let uppyService: UppyService
+
+    beforeEach(() => {
+      uppyService = getUppyService()
+      uppyService.uppy.addUploader((fileIDs) => {
+        const files = fileIDs.map((id) => uppyService.uppy.getFile(id))
+        uppyService.uppy.emit('upload-start', files)
+        for (const file of files) {
+          if (file.name.startsWith('failed')) {
+            uppyService.uppy.emit('upload-error', file, new Error('Upload failed'))
+            continue
+          }
+          uppyService.uppy.emit('upload-success', file, { status: 200, body: {}, uploadURL: '' })
+        }
+        return Promise.resolve()
+      })
+    })
+
+    afterEach(() => {
+      uppyService.uppy.destroy()
+    })
+
+    it('removes all successful files in one state update and keeps the failed ones', async () => {
+      for (const name of ['a.txt', 'b.txt', 'failed.txt']) {
+        uppyService.uppy.addFile({ name, data: new File([name], name) })
+      }
+      const removeFiles = vi.spyOn(uppyService.uppy, 'removeFiles')
+
+      await uppyService.uploadFiles()
+
+      expect(removeFiles).toHaveBeenCalledTimes(1)
+      expect(uppyService.uppy.getFiles().map(({ name }) => name)).toEqual(['failed.txt'])
+    })
+
+    it('does not touch the state when no file succeeded', async () => {
+      uppyService.uppy.addFile({ name: 'failed.txt', data: new File(['x'], 'failed.txt') })
+      const removeFiles = vi.spyOn(uppyService.uppy, 'removeFiles')
+
+      await uppyService.uploadFiles()
+
+      expect(removeFiles).not.toHaveBeenCalled()
+    })
+  })
 })
 
 function getUppyService() {
