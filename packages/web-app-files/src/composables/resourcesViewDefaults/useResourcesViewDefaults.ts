@@ -16,11 +16,7 @@ import {
   useIsInfiniteScrollEnabled
 } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
-import {
-  determineResourceTableSortFields,
-  determineResourceTilesSortFields,
-  translateSortFields
-} from '@opencloud-eu/web-pkg'
+import { SortFieldsPreset } from '@opencloud-eu/web-pkg'
 import { Task } from 'vue-concurrency'
 import { isIncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import { useSelectedResources, SelectedResourcesResult } from '@opencloud-eu/web-pkg'
@@ -33,7 +29,6 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { ScrollToResult, useScrollTo } from '@opencloud-eu/web-pkg'
-import { useGettext } from 'vue3-gettext'
 
 interface ResourcesViewDefaultsOptions<T, U extends any[], R extends Resource = Resource> {
   folderViewExtensionPoint: ExtensionPoint<FolderViewExtension>
@@ -43,9 +38,9 @@ interface ResourcesViewDefaultsOptions<T, U extends any[], R extends Resource = 
    */
   filterResources?: (resources: R[]) => R[]
   /**
-   * Sort fields for all view modes, instead of the ones determined from the resources.
+   * The fields the list can be sorted by, per view mode (e.g. `filesSortFields`).
    */
-  sortFields?: SortField[]
+  sortFields: SortFieldsPreset
   /**
    * Resources matching this predicate get sorted before the rest, regardless of the sort direction.
    * When folders are sorted first, this applies within the folder and the file group.
@@ -113,7 +108,6 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     }
   }
 
-  const language = useGettext()
   const resourcesStore = useResourcesStore()
   const extensionRegistry = useExtensionRegistry()
   const storeItems = computed(() => resourcesStore.activeResources) as unknown as Ref<T[]>
@@ -136,13 +130,10 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   })
 
   const sortFields = computed((): SortField[] => {
-    if (options.sortFields) {
-      return options.sortFields
-    }
     if (unref(viewMode) === FolderViewModeConstants.name.tiles) {
-      return translateSortFields(determineResourceTilesSortFields(unref(storeItems)[0]), language)
+      return options.sortFields.tiles
     }
-    return determineResourceTableSortFields(unref(storeItems)[0])
+    return options.sortFields.table
   })
 
   const filteredItems = computed(() => {

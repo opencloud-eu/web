@@ -19,12 +19,12 @@ import { SetFavoriteFactory } from './setFavorite'
 import { SetPropertiesFactory } from './setProperties'
 
 import { AxiosInstance } from 'axios'
-import { Headers } from 'webdav'
+import { DavRequestHeaders } from './client/dav'
 
 export interface WebDavOptions {
   axiosClient: AxiosInstance
   baseUrl: string
-  headers?: () => Headers
+  headers?: () => DavRequestHeaders
 }
 
 export interface WebDAV {

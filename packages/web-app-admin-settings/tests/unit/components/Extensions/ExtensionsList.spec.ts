@@ -1,6 +1,6 @@
 import { nextTick } from 'vue'
 import ExtensionsList from '../../../../src/components/Extensions/ExtensionsList.vue'
-import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { OcTable } from '@opencloud-eu/design-system/components'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
@@ -63,6 +63,18 @@ describe('ExtensionsList', () => {
       sort: { sortBy: 'status', sortDir: sortDir }
     })
     expect(getTableData(wrapper).map(({ name }) => name)).toEqual(expected)
+  })
+
+  it('makes exactly the columns of the sort fields sortable, with their direction', () => {
+    const { wrapper } = getWrapper({
+      extensions: [{ name: 'Alpha', version: '1.0.0', status: 'active', loaded: true }]
+    })
+    const sortableColumns = wrapper
+      .findComponent(OcTable)
+      .props('fields')
+      .filter(({ sortable }: FieldType) => sortable)
+      .map(({ name, sortDir }: FieldType) => `${name} ${sortDir}`)
+    expect(sortableColumns).toEqual(['name asc', 'status asc'])
   })
 
   it('sorts the table when it emits "sort"', async () => {

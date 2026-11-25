@@ -1,7 +1,13 @@
 import { computed, defineComponent, h, markRaw, PropType } from 'vue'
 import { mock } from 'vitest-mock-extended'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
-import { FileAction, FolderView, Pagination } from '@opencloud-eu/web-pkg'
+import {
+  FileAction,
+  FolderView,
+  Pagination,
+  sharesSortFields,
+  SortField
+} from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   defaultPlugins,
@@ -27,6 +33,10 @@ const FolderViewStub = defineComponent({
     fieldsDisplayed: {
       type: Array as PropType<string[]>,
       default: (): string[] => []
+    },
+    sortFields: {
+      type: Array as PropType<SortField[]>,
+      default: (): SortField[] => []
     }
   },
   setup(props, { slots }) {
@@ -51,6 +61,13 @@ describe('SharedWithMeSection', () => {
     const { wrapper } = getWrapper({ isGuest })
     const fields = wrapper.find('.folder-view-stub').attributes('data-fields').split(',')
     expect(fields.includes('sharedWith')).toBe(shown)
+  })
+
+  it('passes all sort fields to the list', () => {
+    const { wrapper } = getWrapper({ props: { sortFields: sharesSortFields.table } })
+    expect(wrapper.findComponent(FolderViewStub).props('sortFields')).toEqual(
+      sharesSortFields.table
+    )
   })
 
   it('renders the pagination', () => {

@@ -174,7 +174,8 @@ import {
   getMediaTypeFilterOptions,
   SearchMediaTypeFilterOption,
   useKeyboardActions,
-  sortTags
+  sortTags,
+  filesSortFields
 } from '@opencloud-eu/web-pkg'
 import QuickActions from '../components/FilesList/QuickActions.vue'
 import ListInfo from '../components/FilesList/ListInfo.vue'
@@ -279,7 +280,8 @@ const {
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<Resource, any, any[]>({
   folderViewExtensionPoint: folderViewsFavoritesExtensionPoint,
-  infiniteScrollResetOn: [lastModifiedParam, mediaTypeParam, tagParam]
+  infiniteScrollResetOn: [lastModifiedParam, mediaTypeParam, tagParam],
+  sortFields: filesSortFields
 })
 
 const keyActions = useKeyboardActions()

@@ -22,7 +22,8 @@ import {
   useBreadcrumbsFromPath,
   useMessages,
   usePasteWorker,
-  ResolveStrategy
+  ResolveStrategy,
+  filesSortFields
 } from '@opencloud-eu/web-pkg'
 import { useBreadcrumbsFromPathMock } from '../../../mocks/useBreadcrumbsFromPathMock'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
@@ -54,6 +55,12 @@ vi.mock('../../../../src/composables/actions/files', async (importOriginal) => (
 }))
 
 describe('GenericSpace view', () => {
+  it('sorts with the files sort fields', () => {
+    getMountedWrapper()
+    expect(useResourcesViewDefaults).toHaveBeenLastCalledWith(
+      expect.objectContaining({ sortFields: filesSortFields })
+    )
+  })
   it('appBar always present', () => {
     const { wrapper } = getMountedWrapper()
     expect(wrapper.find('app-bar-stub').exists()).toBeTruthy()

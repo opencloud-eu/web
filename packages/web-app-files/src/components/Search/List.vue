@@ -169,7 +169,8 @@ import {
   useCapabilityStore,
   useSpacesStore,
   useResourcesStore,
-  useSearch
+  useSearch,
+  filesSortFields
 } from '@opencloud-eu/web-pkg'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { ContextActions, FileSideBar } from '@opencloud-eu/web-pkg'
@@ -283,7 +284,8 @@ const {
     titleOnlyParam,
     scopeParam,
     useScopeParam
-  ]
+  ],
+  sortFields: filesSortFields
 })
 
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)

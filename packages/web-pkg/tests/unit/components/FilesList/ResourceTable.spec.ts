@@ -20,6 +20,12 @@ import { computed } from 'vue'
 import { Identity } from '@opencloud-eu/web-client/graph/generated'
 import { describe } from 'vitest'
 import { FileAction } from '../../../../src/composables/actions/types'
+import {
+  disabledSort,
+  filesSortFields,
+  nameSort,
+  sharesSortFields
+} from '../../../../src/helpers/ui/sortFields'
 
 const mockUseEmbedMode = vi.fn().mockReturnValue({
   isLocationPicker: computed(() => false),
@@ -693,26 +699,57 @@ describe('ResourceTable', () => {
       })
     })
   })
-  describe('status field', () => {
-    it('is sortable for spaces', () => {
-      const space = {
-        id: '1',
-        name: 'Space',
-        path: '/',
-        type: 'space',
-        disabled: false,
-        spaceQuota: { total: 10, used: 5, remaining: 5 },
-        getDomSelector: () => extractDomSelector('space'),
-        canDownload: () => true,
-        canRename: () => false
-      } as SpaceResource
+  describe('sortable columns', () => {
+    const space = {
+      id: '1',
+      name: 'Space',
+      path: '/',
+      type: 'space',
+      size: 5,
+      mdate: getCurrentDate(),
+      tags: [],
+      disabled: false,
+      spaceQuota: { total: 10, used: 5, remaining: 5 },
+      getDomSelector: () => extractDomSelector('space'),
+      canDownload: () => true,
+      canRename: () => false
+    } as SpaceResource
+
+    function sortableColumns(wrapper: ReturnType<typeof getMountedWrapper>['wrapper']) {
+      return wrapper
+        .findAll('.oc-table-header-cell')
+        .filter((cell) => cell.find('.oc-button-sort').exists())
+        .map((cell) =>
+          cell
+            .classes()
+            .find((c) => c.startsWith('oc-table-header-cell-'))
+            .replace('oc-table-header-cell-', '')
+        )
+    }
+
+    it('makes only the columns of the given sort fields sortable', () => {
+      const { wrapper } = getMountedWrapper({ props: { sortFields: sharesSortFields.table } })
+      expect(sortableColumns(wrapper)).toEqual(['name', 'sharedWith', 'sdate'])
+    })
+    it('makes no column sortable without sort fields', () => {
+      const { wrapper } = getMountedWrapper({ props: { sortFields: [] } })
+      expect(sortableColumns(wrapper)).toEqual([])
+    })
+    it('keeps the file fields if a space comes first', () => {
       const { wrapper } = getMountedWrapper({
-        props: { resourceType: 'space' },
+        props: { sortFields: filesSortFields.table },
+        resources: [space, ...resourcesWithAllFields]
+      })
+      expect(sortableColumns(wrapper)).toEqual(['name', 'size', 'mdate'])
+    })
+    it('makes the status sortable if the sort fields contain it', () => {
+      const { wrapper } = getMountedWrapper({
+        props: { resourceType: 'space', sortFields: [nameSort, disabledSort] },
         resources: [space]
       })
       expect(wrapper.find('.oc-table-header-cell-indicators .oc-button-sort').exists()).toBeTruthy()
     })
-    it('is not sortable for files', () => {
+    it('does not make the status sortable for files', () => {
       const { wrapper } = getMountedWrapper()
       expect(wrapper.find('.oc-table-header-cell-indicators .oc-button-sort').exists()).toBeFalsy()
     })
@@ -856,6 +893,7 @@ function getMountedWrapper({
           ...(addProcessingResources ? processingResourcesWithAllFields : [])
         ],
         selection: [],
+        sortFields: filesSortFields.table,
         hover: false,
         lazy: false,
         space: mock<SpaceResource>({

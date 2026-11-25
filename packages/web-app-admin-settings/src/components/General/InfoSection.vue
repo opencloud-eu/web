@@ -15,7 +15,7 @@
         <dd>
           <div class="flex flex-col">
             <span v-text="backendVersion" />
-            <version-check />
+            <version-check class="mt-2 self-start" />
           </div>
         </dd>
       </dl>

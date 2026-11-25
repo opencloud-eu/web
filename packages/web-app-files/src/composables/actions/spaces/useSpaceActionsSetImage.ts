@@ -5,7 +5,6 @@ import {
   FileAction,
   FileActionOptions,
   useResourcesStore,
-  SpaceImageModal,
   useClientService,
   useLoadingService,
   useMessages,
@@ -13,6 +12,7 @@ import {
   useUserStore
 } from '@opencloud-eu/web-pkg'
 import { useSpaceImage } from '../../spaces'
+import ImageCropperModal from '../../../components/Modals/ImageCropperModal.vue'
 
 export const useSpaceActionsSetImage = () => {
   const userStore = useUserStore()
@@ -45,7 +45,7 @@ export const useSpaceActionsSetImage = () => {
     dispatchModal({
       title: $gettext('Crop your Space image'),
       confirmText: $gettext('Confirm'),
-      customComponent: markRaw(SpaceImageModal),
+      customComponent: markRaw(ImageCropperModal),
       focusTrapInitial: '#image-cropper-selection',
       customComponentAttrs: () => ({
         file,

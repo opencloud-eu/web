@@ -53,7 +53,7 @@
           :space="space"
           :view-mode="viewMode"
           :has-actions="showActions"
-          :sort-fields="sortFields.filter((field) => field.name === 'name')"
+          :sort-fields="sortFields"
           :view-size="viewSize"
           @sort="handleSort"
           @update:selected-ids="selectedResourcesIds = $event"
@@ -100,6 +100,7 @@ import {
   useResourcesStore,
   useKeyboardActions
 } from '@opencloud-eu/web-pkg'
+import { trashSortFields } from '../../helpers/ui/sortFields'
 
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
@@ -126,7 +127,8 @@ const { user } = storeToRefs(userStore)
 const resourcesViewDefaults = useResourcesViewDefaults<TrashResource, any, any>({
   folderViewExtensionPoint: folderViewsTrashExtensionPoint,
   // the view is reused when navigating to another space's trash, so reset the rendering
-  infiniteScrollResetKey: computed(() => props.space?.id)
+  infiniteScrollResetKey: computed(() => props.space?.id),
+  sortFields: trashSortFields
 })
 
 const {

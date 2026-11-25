@@ -112,7 +112,8 @@ import {
   useClientService,
   useMessages,
   useModals,
-  useSort
+  useSort,
+  withSortableColumns
 } from '@opencloud-eu/web-pkg'
 import { computed, markRaw, onMounted, onUnmounted, Ref, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
@@ -222,47 +223,47 @@ const visibleAppTokens = computed(() => {
 })
 
 const tableFields = computed<FieldType[]>(() => {
-  return [
-    {
-      name: 'label',
-      type: 'slot',
-      wrap: 'truncate',
-      width: 'expand',
-      title: $gettext('Note')
-    },
-    {
-      name: 'creationDate',
-      type: 'slot',
-      wrap: 'truncate',
-      title: $gettext('Created at'),
-      sortable: true,
-      thClass: 'hidden md:table-cell',
-      tdClass: 'hidden md:table-cell'
-    },
-    {
-      name: 'expirationDate',
-      type: 'slot',
-      wrap: 'truncate',
-      title: $gettext('Expires at'),
-      sortable: true,
-      thClass: 'hidden md:table-cell',
-      tdClass: 'hidden md:table-cell'
-    },
-    {
-      name: 'status',
-      type: 'slot',
-      title: $gettext('Status'),
-      sortable: true,
-      width: 'shrink'
-    },
-    {
-      name: 'actions',
-      type: 'slot',
-      width: 'shrink',
-      alignH: 'right',
-      title: $gettext('Actions')
-    }
-  ]
+  return withSortableColumns(
+    [
+      {
+        name: 'label',
+        type: 'slot',
+        wrap: 'truncate',
+        width: 'expand',
+        title: $gettext('Note')
+      },
+      {
+        name: 'creationDate',
+        type: 'slot',
+        wrap: 'truncate',
+        title: $gettext('Created at'),
+        thClass: 'hidden md:table-cell',
+        tdClass: 'hidden md:table-cell'
+      },
+      {
+        name: 'expirationDate',
+        type: 'slot',
+        wrap: 'truncate',
+        title: $gettext('Expires at'),
+        thClass: 'hidden md:table-cell',
+        tdClass: 'hidden md:table-cell'
+      },
+      {
+        name: 'status',
+        type: 'slot',
+        title: $gettext('Status'),
+        width: 'shrink'
+      },
+      {
+        name: 'actions',
+        type: 'slot',
+        width: 'shrink',
+        alignH: 'right',
+        title: $gettext('Actions')
+      }
+    ],
+    sortFields
+  )
 })
 
 onMounted(() => {

@@ -20,29 +20,47 @@ Then(
     const page = actorPage(world, stepUser)
     const resourceObject = new objects.applicationFiles.Resource({ page })
     const isFavoritesPage = page.url().includes('/favorites')
+    const resources = stepTable.hashes().map(({ resource }) => resource)
+    const shouldBeVisible = actionType === 'should'
 
-    for (const info of stepTable.hashes()) {
-      if (isFavoritesPage && !withoutReload) {
-        // In the favorites page, the resource may not be immediately visible due the search index update delay.
-        await expect(async () => {
-          const isVisible = await resourceObject.getResourceLocator(info.resource).isVisible()
-          if (isVisible !== (actionType === 'should')) {
-            await page.reload()
-            await page.locator('#app-loading-spinner').waitFor({ state: 'detached' })
-          }
-          expect(isVisible).toBe(actionType === 'should')
-        }).toPass({ timeout: appConfig.timeout * 1000 })
-      } else if (actionType === 'should') {
-        await expect(resourceObject.getResourceLocator(info.resource)).toBeVisible({
-          timeout: appConfig.timeout * 1000
-        })
-      } else {
-        await expect(resourceObject.getResourceLocator(info.resource)).not.toBeVisible()
+    async function checkResources(timeout: number, notVisibleTimeout?: number): Promise<void> {
+      for (const resource of resources) {
+        const locator = resourceObject.getResourceLocator(resource)
+        if (shouldBeVisible) {
+          await expect(locator).toBeVisible({ timeout })
+        } else {
+          await expect(locator).not.toBeVisible({ timeout: notVisibleTimeout })
+        }
       }
+    }
 
-      if (actionType === 'should') {
-        await waitProcessingToFinish(page, info.resource)
-      }
+    if (isFavoritesPage && !withoutReload) {
+      // the favorites are loaded from the search index, which is updated asynchronously.
+      let attempt = 0
+      await expect(async () => {
+        if (attempt++ > 0) {
+          await Promise.all([
+            page.waitForResponse(
+              (resp) =>
+                resp.url().includes('/dav/spaces') &&
+                resp.status() === 207 &&
+                resp.request().method() === 'REPORT'
+            ),
+            page.reload()
+          ])
+          await page.locator('#app-loading-spinner').waitFor({ state: 'detached' })
+        }
+        await checkResources(1000, 1000)
+      }).toPass({ intervals: [1000, 2000, 5000], timeout: appConfig.timeout * 1000 })
+    } else {
+      await checkResources(appConfig.timeout * 1000)
+    }
+
+    if (!shouldBeVisible) {
+      return
+    }
+    for (const resource of resources) {
+      await waitProcessingToFinish(page, resource)
     }
   }
 )
@@ -87,6 +105,35 @@ When(
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     await resourceObject.showHiddenFiles()
+  }
+)
+
+When(
+  '{string} enables/disables the option to sort folders first',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.toggleFoldersFirst()
+  }
+)
+
+When(
+  /^"([^"]*)" sorts the files list by "([^"]*)" (asc|desc)$/,
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    column: string,
+    order: 'asc' | 'desc'
+  ): Promise<void> => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.sortResources({ column, order })
+  }
+)
+
+Then(
+  '{string} should see the resources in the files list in the following order',
+  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.expectResourcesOrder(stepTable.hashes().map(({ resource }) => resource))
   }
 )
 

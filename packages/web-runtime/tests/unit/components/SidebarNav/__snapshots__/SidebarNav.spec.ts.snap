@@ -14,8 +14,9 @@ exports[`OcSidebarNav > renders navItems into a list 1`] = `
   </div>
   <div class="flex flex-col gap-2">
     <support-card-stub class="mx-3 mt-4"></support-card-stub>
-    <div class="flex flex-col px-4 text-xs text-role-on-surface-variant"><span></span>
+    <div class="flex flex-col font-normal text-role-on-surface-variant mx-3 text-xs">
       <!--v-if-->
+      <!--v-if--> <span></span>
     </div>
   </div>
 </aside>"

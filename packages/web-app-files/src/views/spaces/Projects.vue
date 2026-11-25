@@ -188,6 +188,7 @@ import {
   useSideBar,
   useMessages
 } from '@opencloud-eu/web-pkg'
+import { spacesOverviewSortFields } from '../../helpers/ui/sortFields'
 import {
   isProjectSpaceResource,
   ProjectSpaceResource,
@@ -195,7 +196,6 @@ import {
 } from '@opencloud-eu/web-client'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
-import { spaceTilesSortFields, translateSortFields } from '@opencloud-eu/web-pkg'
 import {
   defaultFuseOptions,
   escapeFuseQuery,
@@ -274,7 +274,7 @@ const {
   folderViewExtensionPoint: folderViewsProjectSpacesExtensionPoint,
   filterResources: filter,
   infiniteScrollResetOn: [filterTerm, areDisabledSpacesShown],
-  sortFields: translateSortFields(spaceTilesSortFields, language)
+  sortFields: spacesOverviewSortFields
 })
 
 let loadPreviewToken: string = null

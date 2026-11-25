@@ -56,7 +56,7 @@
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
-          :sort-fields="sortFields.filter((field) => field.name === 'name')"
+          :sort-fields="sortFields"
           :view-mode="viewMode"
           :view-size="viewSize"
           :term="filterTerm"
@@ -111,7 +111,8 @@ import {
   useGetMatchingSpace,
   ContextActions,
   useKeyboardActions,
-  eventBus
+  eventBus,
+  sharesSortFields
 } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
@@ -174,7 +175,8 @@ const {
 } = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
   folderViewExtensionPoint: folderViewsSharedViaLinkExtensionPoint,
   filterResources: filterShares,
-  infiniteScrollResetOn: [filterTerm]
+  infiniteScrollResetOn: [filterTerm],
+  sortFields: sharesSortFields
 })
 
 const matchingCount = computed(() => {

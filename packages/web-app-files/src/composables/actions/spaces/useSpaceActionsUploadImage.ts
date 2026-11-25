@@ -4,12 +4,12 @@ import {
   SpaceAction,
   SpaceActionOptions,
   isDecodableImage,
-  SpaceImageModal,
   useMessages,
   useModals,
   useUserStore
 } from '@opencloud-eu/web-pkg'
 import { useSpaceImage } from '../../spaces'
+import ImageCropperModal from '../../../components/Modals/ImageCropperModal.vue'
 import { useGettext } from 'vue3-gettext'
 
 export const useSpaceActionsUploadImage = () => {
@@ -48,7 +48,7 @@ export const useSpaceActionsUploadImage = () => {
     dispatchModal({
       title: $gettext('Crop image for »%{space}«', { space: selectedSpace.name }),
       confirmText: $gettext('Confirm'),
-      customComponent: markRaw(SpaceImageModal),
+      customComponent: markRaw(ImageCropperModal),
       focusTrapInitial: '#image-cropper-selection',
       customComponentAttrs: () => ({
         file,

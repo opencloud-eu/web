@@ -10,13 +10,13 @@
 <script setup lang="ts">
 import { ref, unref } from 'vue'
 import { useObjectUrl } from '@vueuse/core'
-import { Modal } from '../../composables'
-import ImageCropper from '../ImageCropper.vue'
+import { ImageCropper } from '@opencloud-eu/web-pkg'
+import type { Modal } from '@opencloud-eu/web-pkg'
 
 /**
- * Crops an image to a space image and hands the result to `save`. What happens
- * to it - uploaded to a space, kept for one that doesn't exist yet - is up to
- * the caller. `save` is awaited, so the modal keeps its loading state.
+ * Crops an image to 16:9 and hands the result to `save`. What happens to it -
+ * uploaded to a space, kept for one that doesn't exist yet - is up to the
+ * caller. `save` is awaited, so the modal keeps its loading state.
  */
 const { file, save } = defineProps<{
   modal: Modal
@@ -27,7 +27,7 @@ const { file, save } = defineProps<{
 const imageCropperRef = ref<InstanceType<typeof ImageCropper> | null>(null)
 const imageUrl = useObjectUrl(() => file)
 
-const onConfirm = async () => {
+async function onConfirm() {
   const content = await unref(imageCropperRef)?.getCroppedArrayBuffer()
   if (!content) {
     return

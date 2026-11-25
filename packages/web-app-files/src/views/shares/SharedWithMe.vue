@@ -121,7 +121,8 @@ import {
   useAppsStore,
   useResourcesStore,
   UserAvatar,
-  useKeyboardActions
+  useKeyboardActions,
+  sharesSortFields
 } from '@opencloud-eu/web-pkg'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
@@ -205,7 +206,8 @@ const {
 } = useResourcesViewDefaults<IncomingShareResource, any, any>({
   folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint,
   filterResources: filterShares,
-  infiniteScrollResetOn: [filterTerm, selectedShareTypesQuery, selectedSharedByQuery]
+  infiniteScrollResetOn: [filterTerm, selectedShareTypesQuery, selectedSharedByQuery],
+  sortFields: sharesSortFields
 })
 
 const { $gettext } = useGettext()

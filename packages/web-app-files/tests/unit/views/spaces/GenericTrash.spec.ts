@@ -15,6 +15,7 @@ import {
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { AppBar, NoContentMessage, ResourceTable } from '@opencloud-eu/web-pkg'
+import { trashSortFields } from '../../../../src/helpers/ui/sortFields'
 
 vi.mock('../../../../src/composables', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -22,6 +23,18 @@ vi.mock('../../../../src/composables', async (importOriginal) => ({
 }))
 
 describe('GenericTrash view', () => {
+  it('sorts with the trash sort fields and passes all of them to the list', () => {
+    const { wrapper } = getMountedWrapper({
+      files: [mock<Resource>({ id: '1' })],
+      viewDefaults: { sortFields: ref(trashSortFields.table) }
+    })
+    expect(useResourcesViewDefaults).toHaveBeenLastCalledWith(
+      expect.objectContaining({ sortFields: trashSortFields })
+    )
+    expect(
+      wrapper.findComponent<typeof ResourceTable>('resource-table-stub').props('sortFields')
+    ).toEqual(trashSortFields.table)
+  })
   it('appBar always present', () => {
     const { wrapper } = getMountedWrapper()
     expect(wrapper.find('app-bar-stub').exists()).toBeTruthy()

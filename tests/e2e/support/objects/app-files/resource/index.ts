@@ -260,6 +260,18 @@ export class Resource {
     await po.showHiddenResources(this.#page)
   }
 
+  async toggleFoldersFirst(): Promise<void> {
+    await po.toggleFoldersFirst(this.#page)
+  }
+
+  async sortResources(args: Omit<po.sortResourcesArgs, 'page'>): Promise<void> {
+    await po.sortResources({ ...args, page: this.#page })
+  }
+
+  async expectResourcesOrder(resources: string[]): Promise<void> {
+    await po.expectResourcesOrder({ page: this.#page, resources })
+  }
+
   async editResource(args: Omit<po.editResourcesArgs, 'page'>): Promise<void> {
     await po.editResources({ ...args, page: this.#page })
   }
