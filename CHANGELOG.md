@@ -71,6 +71,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v12.23.0 [[#4591](https://github.com/opencloud-eu/web/pull/4591)]
 - chore(deps): update dependency @axe-core/playwright to v4.14.1 [[#4620](https://github.com/opencloud-eu/web/pull/4620)]
 - chore(deps): update devdependencies (non-major) [[#4553](https://github.com/opencloud-eu/web/pull/4553)]
 - chore(deps): update traefik docker tag to v3.8.0 [[#4612](https://github.com/opencloud-eu/web/pull/4612)]
