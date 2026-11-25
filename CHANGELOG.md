@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- refactor!: define sort fields per list instead of guessing them [[#4621](https://github.com/opencloud-eu/web/pull/4621)]
 - refactor!: move SpaceImageModal to the files app as ImageCropperModal [[#4622](https://github.com/opencloud-eu/web/pull/4622)]
 - feat: invite OX address book contacts as guests [[#4581](https://github.com/opencloud-eu/web/pull/4581)]
 - fix: keep sorting in local storage only [[#4586](https://github.com/opencloud-eu/web/pull/4586)]
