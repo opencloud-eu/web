@@ -629,6 +629,49 @@ describe('Preview app', () => {
       ])
     })
 
+    describe('sort fields of the list the files were opened from', () => {
+      const share = (name: string, sdate: string) => ({
+        id: name,
+        fileId: name,
+        name,
+        sdate,
+        mimeType: 'image/png',
+        path: `/${name}`,
+        hidden: false,
+        canDownload: () => true,
+        hasPreview: () => true
+      })
+      const shares = [
+        share('c.png', '2024-01-02'),
+        share('a.png', '2024-01-03'),
+        share('b.png', '2024-01-01')
+      ]
+      const names = (wrapper: ReturnType<typeof createShallowMountWrapper>['wrapper']) =>
+        ((wrapper.vm as any).mediaFiles as { name: string }[]).map(({ name }) => name)
+
+      beforeEach(() => {
+        window.localStorage.setItem('oc-options_files-shares-with-me_sort-by', 'sdate')
+        window.localStorage.setItem('oc-options_files-shares-with-me_sort-dir', 'asc')
+      })
+
+      it('sorts by the share date like the shares table', () => {
+        window.localStorage.setItem('oc-options_view-mode', 'resource-table')
+        const { wrapper } = createShallowMountWrapper({
+          files: shares,
+          currentFileContext: { routeName: 'files-shares-with-me' }
+        })
+        expect(names(wrapper)).toEqual(['b.png', 'c.png', 'a.png'])
+      })
+      it('does not sort by the share date like the shares tiles, which offer no share date', () => {
+        window.localStorage.setItem('oc-options_view-mode', 'resource-tiles')
+        const { wrapper } = createShallowMountWrapper({
+          files: shares,
+          currentFileContext: { routeName: 'files-shares-with-me' }
+        })
+        expect(names(wrapper)).toEqual(['c.png', 'a.png', 'b.png'])
+      })
+    })
+
     it('should hide hidden shares if the share visibility query is not set to "hidden"', () => {
       const { wrapper } = createShallowMountWrapper()
       expect((wrapper.vm as any).mediaFiles.length).toStrictEqual(7)

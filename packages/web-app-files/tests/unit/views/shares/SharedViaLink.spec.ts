@@ -13,7 +13,7 @@ import {
   defaultStubs,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { ResourceTable, useResourcesStore } from '@opencloud-eu/web-pkg'
+import { ResourceTable, sharesSortFields, useResourcesStore } from '@opencloud-eu/web-pkg'
 
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -22,6 +22,18 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 describe('SharedViaLink view', () => {
+  it('sorts with the shares sort fields and passes all of them to the list', () => {
+    const { wrapper } = getMountedWrapper({
+      files: [mockDeep<OutgoingShareResource>()],
+      viewDefaults: { sortFields: ref(sharesSortFields.table) }
+    })
+    expect(useResourcesViewDefaults).toHaveBeenLastCalledWith(
+      expect.objectContaining({ sortFields: sharesSortFields })
+    )
+    expect(
+      wrapper.findComponent<typeof ResourceTable>('resource-table-stub').props('sortFields')
+    ).toEqual(sharesSortFields.table)
+  })
   it('appBar always present', () => {
     const { wrapper } = getMountedWrapper()
     expect(wrapper.find('app-bar-stub').exists()).toBeTruthy()

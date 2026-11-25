@@ -57,7 +57,7 @@
               :sort-by="sortBy"
               :sort-dir="sortDir"
               :header-position="fileListHeaderY /* table */"
-              :sort-fields="sortFields /* tiles */"
+              :sort-fields="sortFields"
               :view-size="viewSize /* tiles */"
               v-bind="folderView.componentAttrs?.()"
               @file-dropped="fileDropped"
@@ -141,7 +141,8 @@ import {
   FolderLoaderOptions,
   useClipboardStore,
   useService,
-  UppyService
+  UppyService,
+  filesSortFields
 } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import DropZone from '../../components/DropZone.vue'
@@ -400,7 +401,8 @@ const {
   isResourceInSelection,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<Resource, any, any[]>({
-  folderViewExtensionPoint: folderViewsFolderExtensionPoint
+  folderViewExtensionPoint: folderViewsFolderExtensionPoint,
+  sortFields: filesSortFields
 })
 useDocumentTitle({ titleSegments })
 

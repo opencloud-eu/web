@@ -1,3 +1,3 @@
 export * from './resourceCheckbox'
-export * from './resourceTable'
-export * from './resourceTiles'
+export * from './sortableColumns'
+export * from './sortFields'

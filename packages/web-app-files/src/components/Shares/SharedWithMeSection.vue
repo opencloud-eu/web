@@ -40,7 +40,7 @@
       :header-position="fileListHeaderY"
       :sort-by="sortBy"
       :sort-dir="sortDir"
-      :sort-fields="sortFields.filter((field) => field.name === 'name')"
+      :sort-fields="sortFields"
       :view-mode="viewMode"
       :view-size="viewSize"
       :term="term"

@@ -146,7 +146,8 @@ import {
   useSideBar,
   useSort,
   createVirtualCursorElement,
-  SortField
+  SortField,
+  withSortableColumns
 } from '@opencloud-eu/web-pkg'
 import { AppRole, AppRoleAssignment, User } from '@opencloud-eu/web-client/graph/generated'
 import { perPageDefault } from '../../defaults'
@@ -235,60 +236,59 @@ const footerTextTotal = computed(() =>
   $gettext('%{userCount} users in total', { userCount: unref(users).length.toString() })
 )
 
-const fields = computed<FieldType[]>(() => [
-  {
-    name: 'select',
-    title: '',
-    type: 'slot',
-    width: 'shrink',
-    headerType: 'slot'
-  },
-  {
-    name: 'onPremisesSamAccountName',
-    title: $gettext('User name'),
-    type: 'slot',
-    sortable: true,
-    width: 'expand',
-    wrap: 'truncate'
-  },
-  {
-    name: 'displayName',
-    title: $gettext('First and last name'),
-    type: 'slot',
-    sortable: true
-  },
-  {
-    name: 'mail',
-    title: $gettext('Email'),
-    type: 'slot',
-    sortable: true
-  },
-  {
-    name: 'role',
-    title: $gettext('Role'),
-    type: 'slot',
-    sortable: true
-  },
-  ...(unref(graphUsersEditLoginAllowedDisabled)
-    ? []
-    : [
-        {
-          name: 'accountEnabled',
-          title: $gettext('Login'),
-          type: 'slot',
-          sortable: true
-        } satisfies FieldType
-      ]),
-  {
-    name: 'actions',
-    title: $gettext('Actions'),
-    sortable: false,
-    type: 'slot',
-    alignH: 'right',
-    width: 'shrink',
-    wrap: 'nowrap'
-  }
-])
+const fields = computed<FieldType[]>(() =>
+  withSortableColumns(
+    [
+      {
+        name: 'select',
+        title: '',
+        type: 'slot',
+        width: 'shrink',
+        headerType: 'slot'
+      },
+      {
+        name: 'onPremisesSamAccountName',
+        title: $gettext('User name'),
+        type: 'slot',
+        width: 'expand',
+        wrap: 'truncate'
+      },
+      {
+        name: 'displayName',
+        title: $gettext('First and last name'),
+        type: 'slot'
+      },
+      {
+        name: 'mail',
+        title: $gettext('Email'),
+        type: 'slot'
+      },
+      {
+        name: 'role',
+        title: $gettext('Role'),
+        type: 'slot'
+      },
+      ...(unref(graphUsersEditLoginAllowedDisabled)
+        ? []
+        : [
+            {
+              name: 'accountEnabled',
+              title: $gettext('Login'),
+              type: 'slot'
+            } satisfies FieldType
+          ]),
+      {
+        name: 'actions',
+        title: $gettext('Actions'),
+        type: 'slot',
+        alignH: 'right',
+        width: 'shrink',
+        wrap: 'nowrap'
+      }
+    ],
+    sortFields
+  )
+)
 
 function isUserSelected(user: User) {
   return unref(selectedUsers).some((s) => s.id === user.id)

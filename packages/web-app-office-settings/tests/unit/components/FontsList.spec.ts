@@ -1,5 +1,6 @@
 import FontsList from '../../../src/components/FontsList.vue'
-import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { OcTable } from '@opencloud-eu/design-system/components'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { Font } from '../../../src/types'
@@ -39,6 +40,16 @@ describe('FontsList', () => {
     window.localStorage.setItem('oc-options_route_sort-dir', sortDir)
     const { wrapper } = getWrapper()
     expect((wrapper.vm as any).items.map((f: Font) => f.family)).toEqual(expected)
+  })
+
+  it('makes exactly the columns of the sort fields sortable, with their direction', () => {
+    const { wrapper } = getWrapper()
+    const sortableColumns = wrapper
+      .findComponent(OcTable)
+      .props('fields')
+      .filter(({ sortable }: FieldType) => sortable)
+      .map(({ name, sortDir }: FieldType) => `${name} ${sortDir}`)
+    expect(sortableColumns).toEqual(['family asc'])
   })
 
   it('highlights the matching part of font names and emits delete', async () => {

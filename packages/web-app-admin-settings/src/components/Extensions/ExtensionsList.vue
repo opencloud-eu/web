@@ -76,8 +76,8 @@
 </template>
 
 <script setup lang="ts">
-import { NoContentMessage, SortField, useSort } from '@opencloud-eu/web-pkg'
-import { Icon, SortDir } from '@opencloud-eu/design-system/helpers'
+import { NoContentMessage, SortField, useSort, withSortableColumns } from '@opencloud-eu/web-pkg'
+import { FieldType, Icon, SortDir } from '@opencloud-eu/design-system/helpers'
 import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
@@ -183,43 +183,46 @@ const { sortBy, sortDir, items, handleSort } = useSort<ExtensionInfo>({
   fields: sortFields
 })
 
-const fields = computed(() => [
-  {
-    name: 'name',
-    title: $gettext('Name'),
-    type: 'slot',
-    sortable: true,
-    thClass: 'ps-4',
-    tdClass: 'ps-4',
-    width: 'expand' as const
-  },
-  {
-    name: 'version',
-    title: $gettext('Version'),
-    type: 'slot'
-  },
-  {
-    name: 'minOpenCloud',
-    title: $gettext('Min. OpenCloud'),
-    type: 'slot',
-    thClass: 'hidden md:table-cell',
-    tdClass: 'hidden md:table-cell'
-  },
-  {
-    name: 'maxOpenCloud',
-    title: $gettext('Max. OpenCloud'),
-    type: 'slot',
-    thClass: 'hidden md:table-cell',
-    tdClass: 'hidden md:table-cell'
-  },
-  {
-    name: 'status',
-    title: $gettext('Status'),
-    type: 'slot',
-    sortable: true,
-    width: 'shrink' as const
-  }
-])
+const fields = computed<FieldType[]>(() =>
+  withSortableColumns(
+    [
+      {
+        name: 'name',
+        title: $gettext('Name'),
+        type: 'slot',
+        thClass: 'ps-4',
+        tdClass: 'ps-4',
+        width: 'expand'
+      },
+      {
+        name: 'version',
+        title: $gettext('Version'),
+        type: 'slot'
+      },
+      {
+        name: 'minOpenCloud',
+        title: $gettext('Min. OpenCloud'),
+        type: 'slot',
+        thClass: 'hidden md:table-cell',
+        tdClass: 'hidden md:table-cell'
+      },
+      {
+        name: 'maxOpenCloud',
+        title: $gettext('Max. OpenCloud'),
+        type: 'slot',
+        thClass: 'hidden md:table-cell',
+        tdClass: 'hidden md:table-cell'
+      },
+      {
+        name: 'status',
+        title: $gettext('Status'),
+        type: 'slot',
+        width: 'shrink'
+      }
+    ],
+    sortFields
+  )
+)
 </script>
 
 <style scoped>

@@ -14,6 +14,7 @@ import {
   AppBar,
   queryItemAsString,
   ResourceTable,
+  sharesSortFields,
   useResourcesStore,
   useRouteQuery
 } from '@opencloud-eu/web-pkg'
@@ -35,6 +36,18 @@ const AppBarStub = defineComponent({
 })
 
 describe('SharedWithOthers view', () => {
+  it('sorts with the shares sort fields and passes all of them to the list', () => {
+    const { wrapper } = getMountedWrapper({
+      files: [mockDeep<IncomingShareResource>({ shareTypes: [ShareTypes.user.value] })],
+      viewDefaults: { sortFields: ref(sharesSortFields.table) }
+    })
+    expect(useResourcesViewDefaults).toHaveBeenLastCalledWith(
+      expect.objectContaining({ sortFields: sharesSortFields })
+    )
+    expect(
+      wrapper.findComponent<typeof ResourceTable>('resource-table-stub').props('sortFields')
+    ).toEqual(sharesSortFields.table)
+  })
   it('appBar always present', () => {
     const { wrapper } = getMountedWrapper()
     expect(wrapper.find('app-bar-stub').exists()).toBeTruthy()
