@@ -102,6 +102,15 @@ describe('ViewOptions component', () => {
         wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).props().selected
       ).toBe('50')
     })
+    it('keeps infinite scrolling enabled when changing the page limit in a view without it', async () => {
+      window.localStorage.setItem('oc-options_files-infinite-scroll', 'true')
+      const { wrapper } = getWrapper({ perPage: '100' })
+      wrapper.findComponent<typeof OcPageSize>(selectors.pageSizeSelect).vm.$emit('change', 50)
+      await wrapper.vm.$nextTick()
+
+      expect(window.localStorage.getItem('oc-options_files-infinite-scroll')).toBe('true')
+      expect(window.localStorage.getItem(storageKeys.perPage)).toBe('50')
+    })
     it('offers the infinite scrolling option when enabled', () => {
       expect(PaginationConstants.infiniteScrollValue).toBe('all')
       const { wrapper } = getWrapper({ props: { hasInfiniteScroll: true } })

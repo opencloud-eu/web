@@ -194,7 +194,10 @@ const itemsPerPageSelection = computed<string>({
   },
   set(value: string) {
     const infiniteScrollSelected = isInfiniteScrollLabel(value)
-    infiniteScrollEnabled.value = infiniteScrollSelected
+    // the flag is shared with other views, so only views that offer infinite scrolling may change it
+    if (unref(hasInfiniteScroll)) {
+      infiniteScrollEnabled.value = infiniteScrollSelected
+    }
     if (!infiniteScrollSelected) {
       itemsPerPage.value = Number(value)
     }
