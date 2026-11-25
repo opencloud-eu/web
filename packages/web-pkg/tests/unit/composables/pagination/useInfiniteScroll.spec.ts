@@ -217,6 +217,19 @@ describe('useInfiniteScroll', () => {
 
       expect(unref(result.renderedCount)).toBe(100)
     })
+    it('renders a full chunk when items arrive after a reset on an empty list', async () => {
+      const items = ref<Array<Item>>([])
+      const filterTerm = ref('')
+      const { result } = getWrapper(items, { resetOn: [filterTerm] })
+
+      filterTerm.value = 'test'
+      await nextTick()
+      items.value = getItems(250)
+      await nextTick()
+
+      expect(unref(result.items)).toHaveLength(100)
+      expect(unref(result.allLoaded)).toBe(false)
+    })
   })
 })
 

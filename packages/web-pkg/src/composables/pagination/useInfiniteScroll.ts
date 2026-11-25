@@ -103,8 +103,12 @@ export function useInfiniteScroll<T>(options: InfiniteScrollOptions<T>): Infinit
     expandToIndex(findIndex(unref(options.items), (item: Item) => (item as Item).id === resourceId))
   }
 
+  /**
+   * Not clamped to the current total: resets can fire before reloaded items arrive,
+   * so clamping to a stale (e.g. empty) list would render nothing afterwards.
+   */
   function resetRenderedCount() {
-    renderedCount.value = Math.min(PaginationConstants.infiniteScrollChunk, unref(total))
+    renderedCount.value = PaginationConstants.infiniteScrollChunk
   }
 
   watch(() => unref(options.resetKey), resetRenderedCount)
