@@ -127,7 +127,7 @@ function toggleTagFilter(tag: string) {
 }
 const { $gettext, $ngettext } = useGettext()
 
-const resultsTitle = computed(() => unref(activeTag) || $gettext('All'))
+const resultsTitle = computed(() => unref(activeTag) || $gettext('All tags'))
 
 const resultCountText = computed(() => {
   const count = unref(filteredApps).length

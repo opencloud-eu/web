@@ -73,7 +73,13 @@
             />
           </template>
           <template #footer>
-            <pagination :pages="paginationPages" :current-page="paginationPage" />
+            <more-items-spacer
+              v-if="isInfiniteScrollEnabled"
+              :all-loaded="allLoaded"
+              :recheck-key="paginatedResources.length"
+              @load-more="loadMore"
+            />
+            <pagination v-else :pages="paginationPages" :current-page="paginationPage" />
             <list-info
               v-if="paginatedResources.length > 0"
               class="w-full my-2"
@@ -98,6 +104,7 @@ import {
   useRoute,
   useRouter,
   AppLoadingSpinner,
+  MoreItemsSpacer,
   NoContentMessage,
   AppBar,
   Pagination,
@@ -156,6 +163,9 @@ const {
   fileListHeaderY,
   paginationPages,
   paginationPage,
+  isInfiniteScrollEnabled,
+  allLoaded,
+  loadMore,
   loadResourcesTask,
   loadResources,
   selectedResourceSpace,
@@ -165,6 +175,7 @@ const {
 } = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
   folderViewExtensionPoint: folderViewsSharedViaLinkExtensionPoint,
   filterResources: filterShares,
+  infiniteScrollResetOn: [filterTerm],
   sortFields: sharesSortFields
 })
 
@@ -178,6 +189,9 @@ const { triggerDefaultAction } = useFileActions()
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
 watch(filterTerm, async () => {
+  if (unref(isInfiniteScrollEnabled)) {
+    return
+  }
   await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 })
 

@@ -65,7 +65,13 @@
             />
           </template>
           <template #footer>
-            <pagination :pages="paginationPages" :current-page="paginationPage" />
+            <more-items-spacer
+              v-if="isInfiniteScrollEnabled"
+              :all-loaded="allLoaded"
+              :recheck-key="paginatedResources.length"
+              @load-more="loadMore"
+            />
+            <pagination v-else :pages="paginationPages" :current-page="paginationPage" />
             <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
           </template>
         </component>
@@ -86,6 +92,7 @@ import {
   createLocationTrash,
   eventBus,
   FileSideBar,
+  MoreItemsSpacer,
   Pagination,
   NoContentMessage,
   useDocumentTitle,
@@ -119,6 +126,8 @@ const { user } = storeToRefs(userStore)
 
 const resourcesViewDefaults = useResourcesViewDefaults<TrashResource, any, any>({
   folderViewExtensionPoint: folderViewsTrashExtensionPoint,
+  // the view is reused when navigating to another space's trash, so reset the rendering
+  infiniteScrollResetKey: computed(() => props.space?.id),
   sortFields: trashSortFields
 })
 
@@ -127,6 +136,9 @@ const {
   paginatedResources,
   paginationPages,
   paginationPage,
+  isInfiniteScrollEnabled,
+  allLoaded,
+  loadMore,
   selectedResourcesIds,
   fileListHeaderY,
   sortBy,

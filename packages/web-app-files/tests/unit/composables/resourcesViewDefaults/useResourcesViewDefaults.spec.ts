@@ -1,7 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
 import { Task, useTask } from 'vue-concurrency'
-import { unref } from 'vue'
+import { nextTick, Ref, ref, unref } from 'vue'
 import { Router } from 'vue-router'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
@@ -10,6 +10,8 @@ import {
   FolderViewExtension,
   FolderViewModeConstants,
   SortFieldsPreset,
+  useIsInfiniteScrollEnabled,
+  useItemsPerPage,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
@@ -237,6 +239,263 @@ describe('useResourcesViewDefaults', () => {
     )
   })
 
+  describe('infinite scroll mode', () => {
+    const resources = Array.from(
+      { length: 250 },
+      (_, i) => ({ id: `${i + 1}`, name: `file-${i + 1}`, type: 'file' }) as Resource
+    )
+    const routes = [{ path: '/files/:folder?', component: {} }]
+
+    const setInfiniteScroll = (enabled: boolean) => {
+      useIsInfiniteScrollEnabled().value = enabled
+    }
+
+    const mountWithRoute = async (url: string, list: Resource[] = resources) => {
+      const $router = createRouter({ routes })
+      await $router.push(url)
+      const { wrapper, result } = getWrapper({ router: $router, resources: list })
+      // let the pending navigation writes from the initial mount settle
+      await flushPromises()
+      return { $router, result, wrapper }
+    }
+
+    it('renders one chunk cumulatively when infinite scrolling is enabled', async () => {
+      setInfiniteScroll(true)
+      const { result } = await mountWithRoute('/files')
+      expect(unref(result.isInfiniteScrollEnabled)).toBe(true)
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(0, 100))
+      expect(unref(result.allLoaded)).toBe(false)
+    })
+    it('keeps numbered pagination for numeric items per page values', async () => {
+      useItemsPerPage().value = 100
+      const { result } = await mountWithRoute('/files?page=2')
+      expect(unref(result.isInfiniteScrollEnabled)).toBe(false)
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(100, 200))
+    })
+    it('appends chunks via loadMore until everything is rendered', async () => {
+      setInfiniteScroll(true)
+      const { result } = await mountWithRoute('/files')
+
+      result.loadMore()
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(0, 200))
+
+      result.loadMore()
+      expect(unref(result.paginatedResources)).toEqual(resources)
+      expect(unref(result.allLoaded)).toBe(true)
+    })
+    it('honors a legacy page param once and strips it from the url', async () => {
+      setInfiniteScroll(true)
+      const { $router, result } = await mountWithRoute('/files?page=3')
+
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+      expect(unref(result.paginatedResources)).toEqual(resources)
+      expect(unref(result.allLoaded)).toBe(true)
+    })
+    it('honors a legacy page param with the own page size if it exceeds the chunk', async () => {
+      const manyResources = Array.from(
+        { length: 1000 },
+        (_, i) => ({ id: `${i + 1}`, name: `file-${i + 1}`, type: 'file' }) as Resource
+      )
+      useItemsPerPage().value = 250
+      setInfiniteScroll(true)
+      const { result } = await mountWithRoute('/files?page=3', manyResources)
+
+      await flushPromises()
+
+      expect(unref(result.paginatedResources)).toHaveLength(750)
+    })
+    it('honors a legacy page param after resources have been loaded', async () => {
+      setInfiniteScroll(true)
+      const $router = createRouter({ routes })
+      await $router.push('/files?page=3')
+      const initialResources: Resource[] = []
+      const { result } = getWrapper({ router: $router, resources: initialResources })
+      await flushPromises()
+
+      useResourcesStore().initResourceList({ currentFolder: null, resources })
+      await nextTick()
+
+      expect(unref(result.paginatedResources)).toEqual(resources)
+      expect(unref(result.allLoaded)).toBe(true)
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+    })
+    it('honors a legacy page param across an asynchronously changing reset key', async () => {
+      setInfiniteScroll(true)
+      const $router = createRouter({ routes })
+      await $router.push('/files?page=3')
+      const infiniteScrollResetKey = ref<unknown>(undefined)
+      const { result } = getWrapper({
+        router: $router,
+        resources: [] as Resource[],
+        infiniteScrollResetKey
+      })
+      await flushPromises()
+
+      useResourcesStore().initResourceList({
+        currentFolder: { id: 'folder-1' } as unknown as Resource,
+        resources
+      })
+      infiniteScrollResetKey.value = 'folder-1'
+      await nextTick()
+
+      expect(unref(result.paginatedResources)).toEqual(resources)
+      expect(unref(result.allLoaded)).toBe(true)
+    })
+    it('honors a legacy page param for an initially empty list', async () => {
+      setInfiniteScroll(true)
+      const { $router, result } = await mountWithRoute('/files?page=3', [])
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+      expect(unref(result.paginatedResources)).toEqual([])
+      expect(unref(result.allLoaded)).toBe(true)
+    })
+    it('strips a legacy page param of 1', async () => {
+      setInfiniteScroll(true)
+      const { $router, result } = await mountWithRoute('/files?page=1')
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(0, 100))
+    })
+    it('strips a page param carried into another folder', async () => {
+      setInfiniteScroll(true)
+      const $router = createRouter({ routes })
+      await $router.push('/files')
+      getWrapper({ router: $router, resources })
+      await flushPromises()
+
+      await $router.push('/files/subfolder?page=5')
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+    })
+    it('does not apply a pending legacy page to another folder', async () => {
+      setInfiniteScroll(true)
+      const $router = createRouter({ routes })
+      await $router.push('/files/parent?page=3')
+      const infiniteScrollResetKey = ref('parent')
+      const { result } = getWrapper({
+        router: $router,
+        resources: [] as Resource[],
+        infiniteScrollResetKey
+      })
+      await flushPromises()
+
+      await $router.push('/files/child?page=3')
+      useResourcesStore().initResourceList({
+        currentFolder: { id: 'child' } as unknown as Resource,
+        resources
+      })
+      infiniteScrollResetKey.value = 'child'
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(0, 100))
+    })
+    it('keeps the rendered items when handing over from numbered pagination', async () => {
+      useItemsPerPage().value = 50
+      const { $router, result } = await mountWithRoute('/files?page=3')
+
+      setInfiniteScroll(true)
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBeUndefined()
+      expect(unref(result.isInfiniteScrollEnabled)).toBe(true)
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(0, 150))
+    })
+    it('writes the equivalent page back when handing over to numbered pagination', async () => {
+      setInfiniteScroll(true)
+      const { $router, result } = await mountWithRoute('/files')
+
+      result.loadMore()
+      result.loadMore()
+      expect(unref(result.paginatedResources)).toEqual(resources)
+
+      useItemsPerPage().value = 50
+      setInfiniteScroll(false)
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBe('5')
+      expect(unref(result.paginatedResources)).toEqual(resources.slice(200, 250))
+    })
+    it('does not write an out-of-range page back for lists shorter than a chunk', async () => {
+      setInfiniteScroll(true)
+      const { $router } = await mountWithRoute('/files', resources.slice(0, 30))
+
+      useItemsPerPage().value = 20
+      setInfiniteScroll(false)
+      await flushPromises()
+
+      expect(unref($router.currentRoute).query.page).toBe('2')
+    })
+    it('resets the rendered items when the reset key changes', async () => {
+      setInfiniteScroll(true)
+      const $router = createRouter({ routes })
+      await $router.push('/files')
+      const infiniteScrollResetKey = ref('folder-1')
+      const { result } = getWrapper({
+        router: $router,
+        resources,
+        infiniteScrollResetKey
+      })
+
+      result.loadMore()
+      expect(unref(result.paginatedResources).length).toBe(200)
+
+      infiniteScrollResetKey.value = 'folder-2'
+      await nextTick()
+
+      expect(unref(result.paginatedResources).length).toBe(100)
+    })
+    it('resets the rendered items when a resetOn value changes', async () => {
+      setInfiniteScroll(true)
+      const $router = createRouter({ routes })
+      await $router.push('/files')
+      const filterTerm = ref('')
+      const { result } = getWrapper({
+        router: $router,
+        resources,
+        infiniteScrollResetOn: [filterTerm]
+      })
+
+      result.loadMore()
+      expect(unref(result.paginatedResources).length).toBe(200)
+
+      filterTerm.value = 'test'
+      await nextTick()
+
+      expect(unref(result.paginatedResources).length).toBe(100)
+    })
+    it('resets the rendered items when any of several resetOn values changes', async () => {
+      setInfiniteScroll(true)
+      const $router = createRouter({ routes })
+      await $router.push('/files')
+      const filterTerm = ref('')
+      const shareType = ref('')
+      const { result } = getWrapper({
+        router: $router,
+        resources,
+        infiniteScrollResetOn: [filterTerm, shareType]
+      })
+
+      result.loadMore()
+      expect(unref(result.paginatedResources).length).toBe(200)
+
+      filterTerm.value = 'test'
+      await nextTick()
+      expect(unref(result.paginatedResources).length).toBe(100)
+
+      result.loadMore()
+      expect(unref(result.paginatedResources).length).toBe(200)
+
+      shareType.value = 'user'
+      await nextTick()
+      expect(unref(result.paginatedResources).length).toBe(100)
+    })
+  })
   describe('loadResources', () => {
     it('resolves when the load gets canceled by a newer one', async () => {
       const loadResourcesTask = useTask(function* () {
@@ -268,7 +527,9 @@ function getWrapper({
   sortFields = filesSortFields,
   routeName,
   router,
-  loadResourcesTask = mock<Task<unknown, unknown[]>>()
+  loadResourcesTask = mock<Task<unknown, unknown[]>>(),
+  infiniteScrollResetKey = undefined,
+  infiniteScrollResetOn = undefined
 }: {
   query?: Record<string, string>
   resources?: Resource[]
@@ -277,6 +538,8 @@ function getWrapper({
   sortFields?: SortFieldsPreset
   routeName?: string
   router?: Router
+  infiniteScrollResetKey?: Ref<unknown>
+  infiniteScrollResetOn?: Array<Ref<unknown>>
 } = {}) {
   const mocks = {
     ...defaultComponentMocks({
@@ -292,7 +555,9 @@ function getWrapper({
         folderViewExtensionPoint: mock<ExtensionPoint<FolderViewExtension>>(),
         loadResourcesTask,
         filterResources,
-        sortFields
+        sortFields,
+        infiniteScrollResetKey,
+        infiniteScrollResetOn
       })
       return result
     },

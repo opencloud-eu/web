@@ -53,10 +53,10 @@
         </li>
         <li v-if="hasPagination" class="mt-2 mb-4 last:mb-0 [&>*]:flex [&>*]:justify-between">
           <oc-page-size
-            :selected="itemsPerPage.toString()"
+            :selected="itemsPerPageSelection"
             data-testid="files-pagination-size"
             :label="$gettext('Items per page')"
-            :options="paginationOptions"
+            :options="paginationOptionsList"
             class="files-pagination-size"
             @change="setItemsPerPage"
           />
@@ -105,6 +105,7 @@ import {
   PaginationConstants,
   queryItemAsString,
   useActiveLocation,
+  useIsInfiniteScrollEnabled,
   useItemsPerPage,
   useResourcesStore,
   useRoute,
@@ -125,6 +126,7 @@ const {
   hasFileExtensions = true,
   hasFoldersFirst = true,
   hasPagination = true,
+  hasInfiniteScroll = false,
   paginationOptions = PaginationConstants.options,
   perPageDefault = PaginationConstants.perPageDefault,
   viewModes = []
@@ -133,6 +135,11 @@ const {
   hasFileExtensions?: boolean
   hasFoldersFirst?: boolean
   hasPagination?: boolean
+  /**
+   * Offers an option that switches the files views to infinite scrolling, which
+   * makes numbered pagination superfluous. Only views that support it may enable it.
+   */
+  hasInfiniteScroll?: boolean
   paginationOptions?: string[]
   perPageDefault?: string
   viewModes?: FolderView[]
@@ -172,9 +179,45 @@ const isTileSizeSliderShown = computed(() => {
   return viewModes.length > 0 && unref(viewMode) === FolderViewModeConstants.name.tiles
 })
 
+const infiniteScrollEnabled = useIsInfiniteScrollEnabled()
+const infiniteScrollOptionLabel = computed(() => $gettext('All'))
+
+function isInfiniteScrollLabel(value: string) {
+  return value === unref(infiniteScrollOptionLabel)
+}
+
+const itemsPerPageSelection = computed<string>({
+  get() {
+    return unref(hasInfiniteScroll) && unref(infiniteScrollEnabled)
+      ? unref(infiniteScrollOptionLabel)
+      : unref(itemsPerPage).toString()
+  },
+  set(value: string) {
+    const infiniteScrollSelected = isInfiniteScrollLabel(value)
+    // must be written before the flag: views compute the page to hand over to from it
+    if (!infiniteScrollSelected) {
+      itemsPerPage.value = Number(value)
+    }
+    // the flag is shared with other views, so only views that offer infinite scrolling may change it
+    if (unref(hasInfiniteScroll)) {
+      infiniteScrollEnabled.value = infiniteScrollSelected
+    }
+  }
+})
+
+const paginationOptionsList = computed(() => {
+  const options = unref(paginationOptions)
+  if (!unref(hasInfiniteScroll)) {
+    return options
+  }
+
+  return [...options, unref(infiniteScrollOptionLabel)]
+})
+
 const setItemsPerPage = (value: PageSizeOption) => {
-  itemsPerPage.value = Number(value)
-  if (parseInt(queryItemAsString(unref(currentPageQuery))) > 1) {
+  const infiniteScrollSelected = isInfiniteScrollLabel(value.toString())
+  itemsPerPageSelection.value = value.toString()
+  if (!infiniteScrollSelected && parseInt(queryItemAsString(unref(currentPageQuery)), 10) > 1) {
     return router.replace({ query: { ...unref(currentRoute).query, page: '1' } })
   }
 }

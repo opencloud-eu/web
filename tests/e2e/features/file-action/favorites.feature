@@ -250,7 +250,7 @@ Feature: Favorites
     And "Alice" navigates to the project spaces management page
     And "Alice" disables the space "archive" using the context-menu
     And "Alice" logs out
-    
+
     And "Brian" navigates to the favorites page
     Then following resource should be displayed in the files list for user "Brian"
       | resource |

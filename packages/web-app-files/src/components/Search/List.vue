@@ -139,7 +139,13 @@
             />
           </template>
           <template #footer>
-            <pagination :pages="paginationPages" :current-page="paginationPage" />
+            <more-items-spacer
+              v-if="isInfiniteScrollEnabled"
+              :all-loaded="allLoaded"
+              :recheck-key="paginatedResources.length"
+              @load-more="loadMore"
+            />
+            <pagination v-else :pages="paginationPages" :current-page="paginationPage" />
             <div
               v-if="searchResultExceedsLimit"
               class="text-center w-full my-2"
@@ -172,7 +178,7 @@ import { useGettext } from 'vue3-gettext'
 import { AppBar, sortTags } from '@opencloud-eu/web-pkg'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import ListInfo from '../FilesList/ListInfo.vue'
-import { Pagination } from '@opencloud-eu/web-pkg'
+import { MoreItemsSpacer, Pagination } from '@opencloud-eu/web-pkg'
 import { useFileActions } from '@opencloud-eu/web-pkg'
 import { searchLimit } from '../../search/sdk/list'
 import { isProjectSpaceResource, Resource, SearchResource, call } from '@opencloud-eu/web-client'
@@ -238,6 +244,12 @@ const { initResourceList, clearResourceList, setAncestorMetaData } = resourcesSt
 const { totalResourcesCount, areHiddenFilesShown } = storeToRefs(resourcesStore)
 
 const searchTermQuery = useRouteQuery('term')
+const tagParam = useRouteQuery('q_tags')
+const lastModifiedParam = useRouteQuery('q_lastModified')
+const mediaTypeParam = useRouteQuery('q_mediaType')
+const titleOnlyParam = useRouteQuery('q_titleOnly')
+const scopeParam = useRouteQuery('scope')
+const useScopeParam = useRouteQuery('useScope')
 
 const { triggerDefaultAction } = useFileActions()
 
@@ -247,6 +259,9 @@ const {
   paginatedResources,
   paginationPage,
   paginationPages,
+  isInfiniteScrollEnabled,
+  allLoaded,
+  loadMore,
   selectedResources,
   selectedResourcesIds,
   selectedResourceSpace,
@@ -261,6 +276,15 @@ const {
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<SearchResource, any, any[]>({
   folderViewExtensionPoint: folderViewsSearchExtensionPoint,
+  infiniteScrollResetOn: [
+    searchTermQuery,
+    tagParam,
+    lastModifiedParam,
+    mediaTypeParam,
+    titleOnlyParam,
+    scopeParam,
+    useScopeParam
+  ],
   sortFields: filesSortFields
 })
 
@@ -276,11 +300,7 @@ const searchTerm = computed(() => {
 
 const availableTags = ref<Tag[]>([])
 
-const tagParam = useRouteQuery('q_tags')
 const selectedTags = computed(() => queryItemAsString(unref(tagParam))?.split('+') || [])
-const lastModifiedParam = useRouteQuery('q_lastModified')
-const mediaTypeParam = useRouteQuery('q_mediaType')
-const titleOnlyParam = useRouteQuery('q_titleOnly')
 
 const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enabled)
 

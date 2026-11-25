@@ -75,7 +75,13 @@
               </template>
 
               <template #footer>
-                <pagination :pages="paginationPages" :current-page="paginationPage" />
+                <more-items-spacer
+                  v-if="isInfiniteScrollEnabled"
+                  :all-loaded="allLoaded"
+                  :recheck-key="paginatedResources.length"
+                  @load-more="loadMore"
+                />
+                <pagination v-else :pages="paginationPages" :current-page="paginationPage" />
                 <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
               </template>
               <template #quickActions="{ resource }">
@@ -127,6 +133,7 @@ import {
   ContextActions,
   CustomComponentTarget,
   FileSideBar,
+  MoreItemsSpacer,
   NoContentMessage,
   Pagination,
   createFileRouteOptions,
@@ -393,6 +400,9 @@ const {
   handleSort,
   sortedResources,
   paginatedResources,
+  isInfiniteScrollEnabled,
+  allLoaded,
+  loadMore,
   viewMode,
   viewModes,
   loadResourcesTask,
@@ -402,6 +412,8 @@ const {
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<Resource, any, any[]>({
   folderViewExtensionPoint: folderViewsFolderExtensionPoint,
+  // the view is reused when navigating to another folder, so reset the rendering
+  infiniteScrollResetKey: computed(() => unref(currentFolder)?.id),
   sortFields: filesSortFields
 })
 useDocumentTitle({ titleSegments })
