@@ -1,4 +1,4 @@
-import QuotaModal from '../../../../src/components/Spaces/QuotaModal.vue'
+import QuotaModal from '../../../../src/components/Modals/QuotaModal.vue'
 import QuotaSelect from '../../../../src/components/QuotaSelect.vue'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import {

@@ -33,10 +33,10 @@ import {
   EmojiPickerModal,
   emojiToImage,
   isDecodableImage,
-  SpaceImageModal,
   useMessages,
   useModals
 } from '@opencloud-eu/web-pkg'
+import ImageCropperModal from '../ImageCropperModal.vue'
 
 const image = defineModel<ArrayBuffer>({ default: null })
 
@@ -78,7 +78,7 @@ async function onFileSelected(event: Event) {
     title: $gettext('Crop image'),
     confirmText: $gettext('Confirm'),
     focusTrapInitial: '#image-cropper-selection',
-    customComponent: markRaw(SpaceImageModal),
+    customComponent: markRaw(ImageCropperModal),
     customComponentAttrs: () => ({
       file,
       save: (content: ArrayBuffer) => {

@@ -2,11 +2,11 @@ import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 import CreateSpaceModal from '../../../../src/components/Modals/CreateSpaceModal.vue'
+import ImageCropperModal from '../../../../src/components/Modals/ImageCropperModal.vue'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import {
   getVaultCreator,
   Modal,
-  SpaceImageModal,
   useCreateSpace,
   useMessages,
   useModals
@@ -437,7 +437,7 @@ describe('CreateSpaceModal', () => {
 
       const { dispatchModal } = useModals()
       expect(dispatchModal).toHaveBeenCalledWith(
-        expect.objectContaining({ customComponent: SpaceImageModal })
+        expect.objectContaining({ customComponent: ImageCropperModal })
       )
 
       const { save, file } = dispatchModalAttrs()
