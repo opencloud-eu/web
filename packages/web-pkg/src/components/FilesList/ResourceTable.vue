@@ -309,16 +309,21 @@ import {
   useResourcesStore,
   useResourceViewHelpers,
   useRouter,
-  useSideBar
+  useSideBar,
+  SortField
 } from '../../composables'
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
 import ResourceSize from './ResourceSize.vue'
 import ResourceTableSelectAll from './ResourceTableSelectAll.vue'
-import { formatDateFromJSDate, formatRelativeDateFromJSDate, sortTags } from '../../helpers'
+import {
+  formatDateFromJSDate,
+  formatRelativeDateFromJSDate,
+  sortTags,
+  withSortableColumns
+} from '../../helpers'
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
-import { determineResourceTableSortFields } from '../../helpers/ui/resourceTable'
 import { FileActionOptions } from '../../composables/actions'
 import { createLocationCommon } from '../../router'
 import get from 'lodash-es/get'
@@ -333,6 +338,7 @@ const TAGS_MINIMUM_SCREEN_WIDTH = 850
 
 const {
   resources,
+  sortFields,
   resourceDomSelector = (resource: Resource) => extractDomSelector(resource.id),
   arePathsDisplayed = false,
   hasActions = true,
@@ -351,6 +357,10 @@ const {
   term = ''
 } = defineProps<{
   resources: Resource[]
+  /**
+   * The fields the resources can be sorted by. Only the columns of these fields are sortable.
+   */
+  sortFields: SortField[]
   resourceDomSelector?: (resource: Resource) => string
   arePathsDisplayed?: boolean
   hasActions?: boolean
@@ -481,7 +491,6 @@ const fields = computed(() => {
   if (resources.length === 0) {
     return []
   }
-  const firstResource = resources[0]
   const fields: FieldType[] = []
   if (isSelectable) {
     fields.push({
@@ -493,138 +502,137 @@ const fields = computed(() => {
     })
   }
 
-  const sortFields = determineResourceTableSortFields(firstResource)
   fields.push(
-    ...(
-      [
-        {
-          name: 'name',
-          title: $gettext('Name'),
-          type: 'slot',
-          width: 'expand',
-          wrap: 'truncate'
-        },
+    ...withSortableColumns(
+      (
+        [
+          {
+            name: 'name',
+            title: $gettext('Name'),
+            type: 'slot',
+            width: 'expand',
+            wrap: 'truncate'
+          },
 
-        {
-          name: 'manager',
-          prop: 'members',
-          title: $gettext('Manager'),
-          type: 'slot'
-        },
-        {
-          name: 'members',
-          title: $gettext('Members'),
-          prop: 'members',
-          type: 'slot'
-        },
-        {
-          name: 'totalQuota',
-          prop: 'spaceQuota.total',
-          title: $gettext('Total quota'),
-          type: 'slot'
-        },
-        {
-          name: 'usedQuota',
-          prop: 'spaceQuota.used',
-          title: $gettext('Used quota'),
-          type: 'slot'
-        },
-        {
-          name: 'remainingQuota',
-          prop: 'spaceQuota.remaining',
-          title: $gettext('Remaining quota'),
-          type: 'slot'
-        },
-        {
-          name: 'indicators',
-          title: $gettext('Status'),
-          type: 'slot',
-          alignH: 'right',
-          wrap: 'nowrap',
-          width: 'shrink'
-        },
-        {
-          name: 'size',
-          title: $gettext('Size'),
-          type: 'slot',
-          alignH: 'right',
-          wrap: 'nowrap',
-          width: 'shrink'
-        },
-        {
-          name: 'syncEnabled',
-          title: $gettext('Info'),
-          type: 'slot',
-          alignH: 'right',
-          wrap: 'nowrap',
-          width: 'shrink'
-        },
-        {
-          name: 'tags',
-          title: $gettext('Tags'),
-          type: 'slot',
-          alignH: 'right',
-          wrap: 'nowrap',
-          width: 'shrink'
-        },
-        {
-          name: 'sharedBy',
-          title: $gettext('Shared by'),
-          type: 'slot',
-          alignH: 'right',
-          wrap: 'nowrap',
-          width: 'shrink'
-        },
-        {
-          name: 'sharedWith',
-          title: $gettext('Shared with'),
-          type: 'slot',
-          alignH: 'right',
-          wrap: 'nowrap',
-          width: 'shrink'
-        },
-        {
-          name: 'mdate',
-          title: $gettext('Modified'),
-          type: 'slot',
-          alignH: 'right',
-          wrap: 'nowrap',
-          width: 'shrink',
-          accessibleLabelCallback: (item) =>
-            formatDateRelative((item as Resource).mdate) +
-            ' (' +
-            formatDate((item as Resource).mdate) +
-            ')'
-        },
-        {
-          name: 'sdate',
-          title: $gettext('Shared on'),
-          type: 'slot',
-          alignH: 'right',
-          wrap: 'nowrap',
-          width: 'shrink',
-          accessibleLabelCallback: (item) =>
-            formatDateRelative((item as IncomingShareResource).sdate) +
-            ' (' +
-            formatDate((item as IncomingShareResource).sdate) +
-            ')'
-        },
-        {
-          name: 'ddate',
-          title: $gettext('Deleted'),
-          type: 'slot',
-          alignH: 'right',
-          wrap: 'nowrap',
-          width: 'shrink',
-          accessibleLabelCallback: (item) =>
-            formatDateRelative((item as TrashResource).ddate) +
-            ' (' +
-            formatDate((item as TrashResource).ddate) +
-            ')'
-        }
-      ] as FieldType[]
-    )
-      .filter((field) => {
+          {
+            name: 'manager',
+            prop: 'members',
+            title: $gettext('Manager'),
+            type: 'slot'
+          },
+          {
+            name: 'members',
+            title: $gettext('Members'),
+            prop: 'members',
+            type: 'slot'
+          },
+          {
+            name: 'totalQuota',
+            prop: 'spaceQuota.total',
+            title: $gettext('Total quota'),
+            type: 'slot'
+          },
+          {
+            name: 'usedQuota',
+            prop: 'spaceQuota.used',
+            title: $gettext('Used quota'),
+            type: 'slot'
+          },
+          {
+            name: 'remainingQuota',
+            prop: 'spaceQuota.remaining',
+            title: $gettext('Remaining quota'),
+            type: 'slot'
+          },
+          {
+            name: 'indicators',
+            title: $gettext('Status'),
+            type: 'slot',
+            alignH: 'right',
+            wrap: 'nowrap',
+            width: 'shrink'
+          },
+          {
+            name: 'size',
+            title: $gettext('Size'),
+            type: 'slot',
+            alignH: 'right',
+            wrap: 'nowrap',
+            width: 'shrink'
+          },
+          {
+            name: 'syncEnabled',
+            title: $gettext('Info'),
+            type: 'slot',
+            alignH: 'right',
+            wrap: 'nowrap',
+            width: 'shrink'
+          },
+          {
+            name: 'tags',
+            title: $gettext('Tags'),
+            type: 'slot',
+            alignH: 'right',
+            wrap: 'nowrap',
+            width: 'shrink'
+          },
+          {
+            name: 'sharedBy',
+            title: $gettext('Shared by'),
+            type: 'slot',
+            alignH: 'right',
+            wrap: 'nowrap',
+            width: 'shrink'
+          },
+          {
+            name: 'sharedWith',
+            title: $gettext('Shared with'),
+            type: 'slot',
+            alignH: 'right',
+            wrap: 'nowrap',
+            width: 'shrink'
+          },
+          {
+            name: 'mdate',
+            title: $gettext('Modified'),
+            type: 'slot',
+            alignH: 'right',
+            wrap: 'nowrap',
+            width: 'shrink',
+            accessibleLabelCallback: (item) =>
+              formatDateRelative((item as Resource).mdate) +
+              ' (' +
+              formatDate((item as Resource).mdate) +
+              ')'
+          },
+          {
+            name: 'sdate',
+            title: $gettext('Shared on'),
+            type: 'slot',
+            alignH: 'right',
+            wrap: 'nowrap',
+            width: 'shrink',
+            accessibleLabelCallback: (item) =>
+              formatDateRelative((item as IncomingShareResource).sdate) +
+              ' (' +
+              formatDate((item as IncomingShareResource).sdate) +
+              ')'
+          },
+          {
+            name: 'ddate',
+            title: $gettext('Deleted'),
+            type: 'slot',
+            alignH: 'right',
+            wrap: 'nowrap',
+            width: 'shrink',
+            accessibleLabelCallback: (item) =>
+              formatDateRelative((item as TrashResource).ddate) +
+              ' (' +
+              formatDate((item as TrashResource).ddate) +
+              ')'
+          }
+        ] as FieldType[]
+      ).filter((field) => {
         if (field.name === 'tags' && !unref(hasTags)) {
           return false
         }
@@ -645,17 +653,9 @@ const fields = computed(() => {
         }
 
         return hasField && fieldsDisplayed.includes(field.name)
-      })
-      .map((field) => {
-        const sortField = sortFields.find((f) => f.name === field.name)
-        if (sortField) {
-          Object.assign(field, {
-            sortable: sortField.sortable,
-            sortDir: sortField.sortDir
-          })
-        }
-        return field
-      })
+      }),
+      sortFields
+    )
   )
   if (hasActions) {
     fields.push({

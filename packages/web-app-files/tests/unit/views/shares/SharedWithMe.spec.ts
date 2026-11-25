@@ -6,7 +6,8 @@ import {
   useResourcesStore,
   InlineFilterOption,
   ItemFilter,
-  AppBar
+  AppBar,
+  sharesSortFields
 } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
 import { computed, unref, defineComponent, h, readonly, ref } from 'vue'
@@ -33,6 +34,12 @@ const AppBarStub = defineComponent({
 })
 
 describe('SharedWithMe view', () => {
+  it('sorts with the shares sort fields', () => {
+    getMountedWrapper()
+    expect(useResourcesViewDefaults).toHaveBeenLastCalledWith(
+      expect.objectContaining({ sortFields: sharesSortFields })
+    )
+  })
   it('appBar always present', () => {
     const { wrapper } = getMountedWrapper()
     expect(wrapper.find('app-bar-stub').exists()).toBeTruthy()

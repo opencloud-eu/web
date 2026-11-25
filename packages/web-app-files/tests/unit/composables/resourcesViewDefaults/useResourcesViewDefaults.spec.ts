@@ -6,8 +6,10 @@ import { Router } from 'vue-router'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
   ExtensionPoint,
+  filesSortFields,
   FolderViewExtension,
-  SortField,
+  FolderViewModeConstants,
+  SortFieldsPreset,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
@@ -183,22 +185,56 @@ describe('useResourcesViewDefaults', () => {
     })
   })
   describe('sortFields', () => {
-    it('sorts with the given sort fields', () => {
-      const sortFields: SortField[] = [
-        { name: 'largest', prop: 'size', sortable: true, sortDir: SortDir.Desc }
+    const sortFields: SortFieldsPreset = {
+      table: [{ name: 'largest', prop: 'size', sortable: true, sortDir: SortDir.Desc }],
+      tiles: [
+        { label: 'Smallest', name: 'smallest', prop: 'size', sortable: true, sortDir: SortDir.Asc }
       ]
-      const { result } = getWrapper({
-        resources: [
-          { id: '1', name: 'a', type: 'file', size: 1 },
-          { id: '2', name: 'b', type: 'file', size: 3 },
-          { id: '3', name: 'c', type: 'file', size: 2 }
-        ] as Resource[],
-        sortFields
-      })
+    }
+    const resources = [
+      { id: '1', name: 'a', type: 'file', size: 1 },
+      { id: '2', name: 'b', type: 'file', size: 3 },
+      { id: '3', name: 'c', type: 'file', size: 2 }
+    ] as Resource[]
 
-      expect(unref(result.sortFields)).toEqual(sortFields)
+    it('sorts with the table fields of the view in the table view mode', () => {
+      window.localStorage.setItem('oc-options_view-mode', FolderViewModeConstants.name.table)
+      const { result } = getWrapper({ resources, sortFields })
+
+      expect(unref(result.sortFields)).toEqual(sortFields.table)
       expect(unref(result.sortedResources).map(({ id }) => id)).toEqual(['2', '3', '1'])
     })
+    it('sorts with the tiles fields of the view in the tiles view mode', () => {
+      window.localStorage.setItem('oc-options_view-mode', FolderViewModeConstants.name.tiles)
+      const { result } = getWrapper({ resources, sortFields })
+
+      expect(unref(result.sortFields)).toEqual(sortFields.tiles)
+      expect(unref(result.sortedResources).map(({ id }) => id)).toEqual(['1', '3', '2'])
+    })
+    it.each([FolderViewModeConstants.name.table, FolderViewModeConstants.name.tiles])(
+      'keeps the fields of the view if a space comes first (%s)',
+      (viewMode) => {
+        window.localStorage.setItem('oc-options_view-mode', viewMode)
+        window.localStorage.setItem('oc-options_files-common-favorites_sort-by', 'size')
+        window.localStorage.setItem('oc-options_files-common-favorites_sort-dir', 'desc')
+        const { result } = getWrapper({
+          routeName: 'files-common-favorites',
+          resources: [
+            { id: 'space', name: 'space', type: 'space', size: 2 },
+            { id: 'small', name: 'small', type: 'file', size: 1 },
+            { id: 'large', name: 'large', type: 'file', size: 3 }
+          ] as Resource[],
+          sortFields: filesSortFields
+        })
+
+        expect(unref(result.sortBy)).toBe('size')
+        expect(unref(result.sortedResources).map(({ id }) => id)).toEqual([
+          'large',
+          'space',
+          'small'
+        ])
+      }
+    )
   })
 
   describe('loadResources', () => {
@@ -229,7 +265,8 @@ function getWrapper({
   query = { scrollTo: '1' },
   resources = [],
   filterResources,
-  sortFields,
+  sortFields = filesSortFields,
+  routeName,
   router,
   loadResourcesTask = mock<Task<unknown, unknown[]>>()
 }: {
@@ -237,12 +274,13 @@ function getWrapper({
   resources?: Resource[]
   loadResourcesTask?: Task<unknown, unknown[]>
   filterResources?: (resources: Resource[]) => Resource[]
-  sortFields?: SortField[]
+  sortFields?: SortFieldsPreset
+  routeName?: string
   router?: Router
 } = {}) {
   const mocks = {
     ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({ path: '/files', query })
+      currentRoute: mock<RouteLocation>({ path: '/files', query, name: routeName })
     }),
     ...(router && { $router: router })
   }

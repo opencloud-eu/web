@@ -49,8 +49,8 @@
 </template>
 
 <script setup lang="ts">
-import { NoContentMessage, SortField, useSort } from '@opencloud-eu/web-pkg'
-import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { NoContentMessage, SortField, useSort, withSortableColumns } from '@opencloud-eu/web-pkg'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
@@ -91,47 +91,51 @@ const { sortBy, sortDir, items, handleSort } = useSort<Font>({
   fields: sortFields
 })
 
-const fields = computed(() => [
-  {
-    name: 'family',
-    title: $gettext('Name'),
-    type: 'slot',
-    sortable: true,
-    thClass: 'ps-4',
-    tdClass: 'ps-4'
-  },
-  {
-    name: 'preview',
-    title: $gettext('Preview'),
-    type: 'slot',
-    width: 'expand' as const
-  },
-  {
-    name: 'version',
-    title: $gettext('Version'),
-    type: 'slot',
-    width: 'shrink' as const,
-    wrap: 'nowrap' as const,
-    thClass: 'hidden md:table-cell',
-    tdClass: 'hidden md:table-cell'
-  },
-  {
-    name: 'designer',
-    title: $gettext('Designer'),
-    type: 'slot',
-    width: 'shrink' as const,
-    wrap: 'nowrap' as const,
-    thClass: 'hidden md:table-cell',
-    tdClass: 'hidden md:table-cell'
-  },
-  {
-    name: 'actions',
-    title: $gettext('Actions'),
-    type: 'slot',
-    alignH: 'right' as const,
-    width: 'shrink' as const,
-    thClass: 'pe-4',
-    tdClass: 'pe-4'
-  }
-])
+const fields = computed<FieldType[]>(() =>
+  withSortableColumns(
+    [
+      {
+        name: 'family',
+        title: $gettext('Name'),
+        type: 'slot',
+        thClass: 'ps-4',
+        tdClass: 'ps-4'
+      },
+      {
+        name: 'preview',
+        title: $gettext('Preview'),
+        type: 'slot',
+        width: 'expand'
+      },
+      {
+        name: 'version',
+        title: $gettext('Version'),
+        type: 'slot',
+        width: 'shrink',
+        wrap: 'nowrap',
+        thClass: 'hidden md:table-cell',
+        tdClass: 'hidden md:table-cell'
+      },
+      {
+        name: 'designer',
+        title: $gettext('Designer'),
+        type: 'slot',
+        width: 'shrink',
+        wrap: 'nowrap',
+        thClass: 'hidden md:table-cell',
+        tdClass: 'hidden md:table-cell'
+      },
+      {
+        name: 'actions',
+        title: $gettext('Actions'),
+        type: 'slot',
+        alignH: 'right',
+        width: 'shrink',
+        thClass: 'pe-4',
+        tdClass: 'pe-4'
+      }
+    ],
+    sortFields
+  )
+)
 </script>

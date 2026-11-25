@@ -19,7 +19,7 @@ import { useSpaceSettingsStore } from '../../../../src/composables'
 import { mock } from 'vitest-mock-extended'
 import { GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
 import { Permission } from '@opencloud-eu/web-client/graph/generated'
-import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { OcCheckbox, OcStatusIndicators, OcTable } from '@opencloud-eu/design-system/components'
 
 const spaceMocks = [
@@ -213,6 +213,23 @@ describe('SpacesList', () => {
     })
   })
   describe('sorting', () => {
+    it('makes exactly the columns of the sort fields sortable, with their direction', () => {
+      const { wrapper } = getWrapper({ mountType: shallowMount, spaces: spaceMocks })
+      const sortableColumns = wrapper
+        .findComponent(OcTable)
+        .props('fields')
+        .filter(({ sortable }: FieldType) => sortable)
+        .map(({ name, sortDir }: FieldType) => `${name} ${sortDir}`)
+      expect(sortableColumns).toEqual([
+        'name asc',
+        'members desc',
+        'totalQuota desc',
+        'usedQuota desc',
+        'remainingQuota desc',
+        'indicators asc',
+        'mdate desc'
+      ])
+    })
     it('sorts the table when it emits "sort"', async () => {
       const { wrapper } = getWrapper({ mountType: shallowMount, spaces: spaceMocks })
       const table = wrapper.findComponent(OcTable)
@@ -220,6 +237,13 @@ describe('SpacesList', () => {
       await flushPromises()
       expect(table.props('sortBy')).toBe('members')
       expect(table.props('sortDir')).toBe(SortDir.Desc)
+    })
+    it('sorts the spaces by their number of members', async () => {
+      const { wrapper } = getWrapper({ mountType: shallowMount, spaces: spaceMocks })
+      const table = wrapper.findComponent(OcTable)
+      table.vm.$emit('sort', { sortBy: 'members', sortDir: SortDir.Desc })
+      await flushPromises()
+      expect(table.props('data').map(({ id }: SpaceResource) => id)).toEqual(['2', '1'])
     })
   })
   it('shows only filtered spaces if filter applied', async () => {

@@ -118,7 +118,8 @@ import {
   useAppsStore,
   useResourcesStore,
   UserAvatar,
-  useKeyboardActions
+  useKeyboardActions,
+  sharesSortFields
 } from '@opencloud-eu/web-pkg'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
@@ -198,7 +199,8 @@ const {
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<IncomingShareResource, any, any>({
   folderViewExtensionPoint: folderViewsSharedWithMeExtensionPoint,
-  filterResources: filterShares
+  filterResources: filterShares,
+  sortFields: sharesSortFields
 })
 
 const { $gettext } = useGettext()

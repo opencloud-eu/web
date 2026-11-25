@@ -9,7 +9,7 @@ import {
 import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
 import { useUserSettingsStore } from '../../../../src/composables/stores/userSettings'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { OcCheckbox, OcTable } from '@opencloud-eu/design-system/components'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { enableAutoUnmount } from '@vue/test-utils'
@@ -55,6 +55,21 @@ describe('UsersList', () => {
   })
 
   describe('sorting', () => {
+    it('makes exactly the columns of the sort fields sortable, with their direction', () => {
+      const { wrapper } = getWrapper({ users: [{ displayName: 'admin' }] as User[] })
+      const sortableColumns = wrapper
+        .findComponent(OcTable)
+        .props('fields')
+        .filter(({ sortable }: FieldType) => sortable)
+        .map(({ name, sortDir }: FieldType) => `${name} ${sortDir}`)
+      expect(sortableColumns).toEqual([
+        'onPremisesSamAccountName asc',
+        'displayName asc',
+        'mail asc',
+        'role asc',
+        'accountEnabled asc'
+      ])
+    })
     it('sorts by user name ascending by default', () => {
       const { wrapper } = getWrapper({
         users: [

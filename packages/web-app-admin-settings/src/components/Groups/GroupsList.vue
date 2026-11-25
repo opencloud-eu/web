@@ -133,7 +133,8 @@ import {
   useRouter,
   useSideBar,
   useSort,
-  SortField
+  SortField,
+  withSortableColumns
 } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { useGettext } from 'vue3-gettext'
@@ -208,32 +209,35 @@ const footerTextFilter = computed(() =>
   $gettext('%{groupCount} matching groups', { groupCount: unref(items).length.toString() })
 )
 
-const fields = computed<FieldType[]>(() => [
-  {
-    name: 'select',
-    title: '',
-    type: 'slot',
-    width: 'shrink',
-    headerType: 'slot'
-  },
-  {
-    name: 'displayName',
-    title: $gettext('Group name'),
-    type: 'slot',
-    sortable: true,
-    width: 'expand',
-    wrap: 'truncate'
-  },
-  {
-    name: 'actions',
-    title: $gettext('Actions'),
-    sortable: false,
-    type: 'slot',
-    alignH: 'right',
-    width: 'shrink',
-    wrap: 'nowrap'
-  }
-])
+const fields = computed<FieldType[]>(() =>
+  withSortableColumns(
+    [
+      {
+        name: 'select',
+        title: '',
+        type: 'slot',
+        width: 'shrink',
+        headerType: 'slot'
+      },
+      {
+        name: 'displayName',
+        title: $gettext('Group name'),
+        type: 'slot',
+        width: 'expand',
+        wrap: 'truncate'
+      },
+      {
+        name: 'actions',
+        title: $gettext('Actions'),
+        type: 'slot',
+        alignH: 'right',
+        width: 'shrink',
+        wrap: 'nowrap'
+      }
+    ],
+    sortFields
+  )
+)
 
 function isGroupSelected(group: Group) {
   return unref(selectedGroups).some((s) => s.id === group.id)

@@ -1,6 +1,6 @@
 import GuestSharedWithMe from '../../../../src/views/shares/GuestSharedWithMe.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables'
-import { AppBar } from '@opencloud-eu/web-pkg'
+import { AppBar, sharesSortFields } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
 import { computed, defineComponent, h, nextTick, ref, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
@@ -20,6 +20,12 @@ const AppBarStub = defineComponent({
 })
 
 describe('GuestSharedWithMe view', () => {
+  it('sorts with the shares sort fields', () => {
+    getMountedWrapper()
+    expect(useResourcesViewDefaults).toHaveBeenLastCalledWith(
+      expect.objectContaining({ sortFields: sharesSortFields })
+    )
+  })
   it('shows a "Shares" breadcrumb', () => {
     const { wrapper } = getMountedWrapper()
     const { breadcrumbs } = wrapper.findComponent<typeof AppBar>('app-bar-stub').props()

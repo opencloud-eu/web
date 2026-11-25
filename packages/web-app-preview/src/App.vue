@@ -130,8 +130,8 @@ import {
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
   createFileRouteOptions,
-  determineResourceTableSortFields,
   FolderViewerSlotProps,
+  FolderViewModeConstants,
   isLocationSharesActive,
   isMotionOrLivePhoto,
   Key,
@@ -144,7 +144,8 @@ import {
   useRoute,
   useRouteQuery,
   useRouter,
-  useSort
+  useSort,
+  useViewMode
 } from '@opencloud-eu/web-pkg'
 import MediaControls from './components/MediaControls.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
@@ -154,6 +155,7 @@ import MediaVideo from './components/Sources/MediaVideo.vue'
 import PhotoRoll from './components/PhotoRoll.vue'
 import { MediaFile } from './helpers/types'
 import { canOpen } from './helpers/canOpen'
+import { getSortFieldsPreset } from './helpers/sortFields'
 import { useFileTypes, useImageControls, useMediaFileLoader } from './composables'
 import { useSwipe } from '@vueuse/core'
 
@@ -245,9 +247,17 @@ const openableFiles = computed(() => {
 })
 
 // same order as the list the preview was opened from
+const viewMode = useViewMode()
+const sortFields = computed(() => {
+  const preset = getSortFieldsPreset(unref(currentFileContext?.routeName))
+  if (unref(viewMode) === FolderViewModeConstants.name.tiles) {
+    return preset.tiles
+  }
+  return preset.table
+})
 const { items: sortedFiles } = useSort({
   items: openableFiles,
-  fields: computed(() => determineResourceTableSortFields(unref(openableFiles)[0])),
+  fields: sortFields,
   routeName: currentFileContext?.routeName
 })
 

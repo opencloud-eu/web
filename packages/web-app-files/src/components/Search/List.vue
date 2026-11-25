@@ -163,7 +163,8 @@ import {
   useCapabilityStore,
   useSpacesStore,
   useResourcesStore,
-  useSearch
+  useSearch,
+  filesSortFields
 } from '@opencloud-eu/web-pkg'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { ContextActions, FileSideBar } from '@opencloud-eu/web-pkg'
@@ -259,7 +260,8 @@ const {
   isResourceInSelection,
   scrollToResourceFromRoute
 } = useResourcesViewDefaults<SearchResource, any, any[]>({
-  folderViewExtensionPoint: folderViewsSearchExtensionPoint
+  folderViewExtensionPoint: folderViewsSearchExtensionPoint,
+  sortFields: filesSortFields
 })
 
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)

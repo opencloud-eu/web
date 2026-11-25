@@ -17,7 +17,7 @@
         <oc-filter-chip
           class="[&_.oc-filter-chip-label]:text-sm"
           :filter-label="$gettext('Sort by')"
-          :selected-item-names="[currentSortField.label]"
+          :selected-item-names="[$gettext(currentSortField.label)]"
           :has-active-state="false"
           close-on-click
           raw
@@ -33,7 +33,7 @@
                   class="oc-tiles-sort-filter-chip-item"
                   @click="selectSorting(option)"
                 >
-                  <span>{{ option.label }}</span>
+                  <span>{{ $gettext(option.label) }}</span>
                   <div v-if="option === currentSortField" class="flex">
                     <oc-icon name="check" />
                   </div>
@@ -198,6 +198,9 @@ const {
   resources?: Resource[]
   isSelectable?: boolean
   space?: SpaceResource
+  /**
+   * The sort options. Their labels are untranslated, they get translated when shown.
+   */
   sortFields?: SortField[]
   sortBy?: string
   sortDir?: SortDir

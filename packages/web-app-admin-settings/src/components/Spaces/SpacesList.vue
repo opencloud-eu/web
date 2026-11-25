@@ -141,8 +141,14 @@ import {
   useRouter,
   usePagination,
   useSort,
-  spaceTilesSortFields,
-  translateSortFields
+  withSortableColumns,
+  SortField,
+  nameSort,
+  totalQuotaSort,
+  usedQuotaSort,
+  remainingQuotaSort,
+  disabledSort,
+  mdateSort
 } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
 import { perPageDefault } from '../../defaults'
@@ -185,7 +191,25 @@ function filter(spaces: SpaceResource[], filterTerm: string) {
 
 const filteredSpaces = computed(() => filter(unref(spaces), filterTerm))
 
-const sortFields = translateSortFields(spaceTilesSortFields, language)
+function sortableMembers(permissions: unknown[]) {
+  return permissions?.length || 1
+}
+
+const sortFields: SortField[] = [
+  nameSort,
+  {
+    name: 'members',
+    prop: 'root.permissions',
+    sortable: sortableMembers,
+    sortDir: SortDir.Desc
+  },
+  totalQuotaSort,
+  usedQuotaSort,
+  remainingQuotaSort,
+  disabledSort,
+  mdateSort
+]
+
 const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
   items: filteredSpaces,
   fields: sortFields
@@ -277,78 +301,74 @@ function isSpaceSelected(space: SpaceResource) {
   return unref(selectedSpaces).some((s) => s.id === space.id)
 }
 
-const fields = computed<FieldType[]>(() => [
-  {
-    name: 'select',
-    title: '',
-    type: 'slot',
-    width: 'shrink',
-    headerType: 'slot'
-  },
-  {
-    name: 'name',
-    title: $gettext('Name'),
-    type: 'slot',
-    sortable: true,
-    width: 'expand',
-    wrap: 'truncate'
-  },
-  {
-    name: 'manager',
-    title: $gettext('Manager'),
-    type: 'slot'
-  },
-  {
-    name: 'members',
-    title: $gettext('Members'),
-    type: 'slot',
-    sortable: true
-  },
-  {
-    name: 'totalQuota',
-    title: $gettext('Total quota'),
-    type: 'slot',
-    sortable: true
-  },
-  {
-    name: 'usedQuota',
-    title: $gettext('Used quota'),
-    type: 'slot',
-    sortable: true
-  },
-  {
-    name: 'remainingQuota',
-    title: $gettext('Remaining quota'),
-    type: 'slot',
-    sortable: true
-  },
-  {
-    name: 'indicators',
-    title: $gettext('Status'),
-    type: 'slot',
-    alignH: 'right',
-    wrap: 'nowrap',
-    width: 'shrink',
-    sortable: true,
-    sortDir: SortDir.Asc
-  },
-  {
-    name: 'mdate',
-    title: $gettext('Modified'),
-    type: 'slot',
-    sortable: true
-  },
+const fields = computed<FieldType[]>(() =>
+  withSortableColumns(
+    [
+      {
+        name: 'select',
+        title: '',
+        type: 'slot',
+        width: 'shrink',
+        headerType: 'slot'
+      },
+      {
+        name: 'name',
+        title: $gettext('Name'),
+        type: 'slot',
+        width: 'expand',
+        wrap: 'truncate'
+      },
+      {
+        name: 'manager',
+        title: $gettext('Manager'),
+        type: 'slot'
+      },
+      {
+        name: 'members',
+        title: $gettext('Members'),
+        type: 'slot'
+      },
+      {
+        name: 'totalQuota',
+        title: $gettext('Total quota'),
+        type: 'slot'
+      },
+      {
+        name: 'usedQuota',
+        title: $gettext('Used quota'),
+        type: 'slot'
+      },
+      {
+        name: 'remainingQuota',
+        title: $gettext('Remaining quota'),
+        type: 'slot'
+      },
+      {
+        name: 'indicators',
+        title: $gettext('Status'),
+        type: 'slot',
+        alignH: 'right',
+        wrap: 'nowrap',
+        width: 'shrink'
+      },
+      {
+        name: 'mdate',
+        title: $gettext('Modified'),
+        type: 'slot'
+      },
 
-  {
-    name: 'actions',
-    title: $gettext('Actions'),
-    sortable: false,
-    type: 'slot',
-    alignH: 'right',
-    width: 'shrink',
-    wrap: 'nowrap'
-  }
-])
+      {
+        name: 'actions',
+        title: $gettext('Actions'),
+        type: 'slot',
+        alignH: 'right',
+        width: 'shrink',
+        wrap: 'nowrap'
+      }
+    ],
+    sortFields
+  )
+)
 
 function getManagerNames(space: SpaceResource) {
   const allManagers = getSpaceManagers(space, sharesStore.graphRoles)
