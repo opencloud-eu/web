@@ -279,6 +279,7 @@ const {
   space: computed(() => space),
   resources: computed(() => resources),
   emit,
+  isDragEnabled: computed(() => dragDrop || isDraggable),
   isDropEnabled: computed(() => dragDrop)
 })
 

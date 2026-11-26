@@ -9,7 +9,11 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
-import { CapabilityStore, useSideBar } from '../../../../src/composables/piniaStores'
+import {
+  CapabilityStore,
+  useResourcesStore,
+  useSideBar
+} from '../../../../src/composables/piniaStores'
 import { useExtensionRegistry, useFileActions } from '../../../../src/composables'
 import {
   useCanBeOpenedWithSecureView,
@@ -645,6 +649,54 @@ describe('ResourceTable', () => {
         .trigger('dragstart', { dataTransfer: { setDragImage: vi.fn(), setData: vi.fn() } })
       await nextTick()
       expect(document.querySelector('#ghost-element').textContent).toContain('Documents')
+      wrapper.unmount()
+    })
+
+    function dispatchDragStart(el: Element) {
+      const event = new Event('dragstart', { bubbles: true, cancelable: true })
+      const dataTransfer = { setData: vi.fn(), setDragImage: vi.fn() }
+      Object.defineProperty(event, 'dataTransfer', { value: dataTransfer })
+      el.dispatchEvent(event)
+      return { event, dataTransfer }
+    }
+
+    it.each([
+      { name: 'the row', selector: '.oc-tbody-tr-documents' },
+      { name: 'a link in the row', selector: '.oc-tbody-tr-documents .oc-resource-link' }
+    ])(
+      'cancels a drag from $name and starts no resource drag when dragging is disabled',
+      async ({ selector }) => {
+        const { wrapper } = getMountedWrapper()
+        const { event, dataTransfer } = dispatchDragStart(wrapper.find(selector).element)
+        await nextTick()
+
+        expect(event.defaultPrevented).toBe(true)
+        expect(dataTransfer.setData).not.toHaveBeenCalled()
+        expect(useResourcesStore().setResourceDrag).not.toHaveBeenCalled()
+        expect(document.querySelector('#ghost-element')).toBeNull()
+        wrapper.unmount()
+      }
+    )
+
+    it('cancels native drags of child elements when dragging is enabled', async () => {
+      const { wrapper } = getMountedWrapper({ props: { isDraggable: true } })
+      const { event } = dispatchDragStart(
+        wrapper.find('.oc-tbody-tr-documents .oc-resource-link').element
+      )
+      await nextTick()
+
+      expect(event.defaultPrevented).toBe(true)
+      expect(useResourcesStore().setResourceDrag).not.toHaveBeenCalled()
+      wrapper.unmount()
+    })
+
+    it('makes no child of a draggable row draggable itself, so the row is the drag source', () => {
+      const { wrapper } = getMountedWrapper({
+        props: { isDraggable: true, arePathsDisplayed: true }
+      })
+      const children = wrapper.findAll('.oc-tbody-tr :is(a, img, router-link-stub)')
+      expect(children.length).toBeGreaterThan(0)
+      children.forEach((child) => expect(child.attributes('draggable')).toBe('false'))
       wrapper.unmount()
     })
 

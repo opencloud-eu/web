@@ -23,11 +23,13 @@ export const useResourceViewHelpers = ({
   space,
   resources,
   emit,
+  isDragEnabled,
   isDropEnabled
 }: {
   space: Ref<SpaceResource>
   resources: Ref<Resource[]>
   emit: ReturnType<typeof defineEmits>
+  isDragEnabled?: Ref<boolean>
   isDropEnabled?: Ref<boolean>
 }) => {
   const resourcesStore = useResourcesStore()
@@ -198,7 +200,7 @@ export const useResourceViewHelpers = ({
     fileNameClicked,
     fileCheckboxClicked,
     ...useResourceLink({ space }),
-    ...useResourceViewDrag({ selectedIds, resources, space, emit, isDropEnabled }),
+    ...useResourceViewDrag({ selectedIds, resources, space, emit, isDragEnabled, isDropEnabled }),
     ...useResourceViewContextMenu({ isResourceDisabled, isResourceSelected, emit }),
     ...useResourceViewSelection({ resources, disabledResources, selectedIds, emit })
   }

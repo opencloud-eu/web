@@ -28,6 +28,7 @@
           :src="thumbnail"
           :data-test-thumbnail-resource-name="resource.name"
           class="rounded-xs size-6 object-cover max-w-fit"
+          draggable="false"
           :aria-label="tooltipLabelIcon"
           alt=""
           decoding="async"
@@ -80,6 +81,7 @@
           :is="parentFolderComponentType"
           v-if="isPathDisplayed"
           :to="parentFolderLink"
+          :draggable="parentFolderLink ? 'false' : undefined"
           class="parent-folder flex items-center truncate px-0.5 me-2 -ms-0.5 hover:bg-transparent"
           :class="{ 'cursor-pointer': parentFolderLink, 'cursor-default': !parentFolderLink }"
         >

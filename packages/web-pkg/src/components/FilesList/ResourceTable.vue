@@ -144,6 +144,7 @@
         v-oc-tooltip="getTagToolTip(tag)"
         :type="userContextReady ? 'router-link' : 'span'"
         v-bind="getTagComponentAttrs(tag)"
+        draggable="false"
         class="resource-table-tag-wrapper resource-table-tag ms-1 max-w-20"
         :rounded="true"
         size="small"
@@ -454,6 +455,7 @@ const {
   space: computed(() => space),
   resources: computed(() => resources),
   emit,
+  isDragEnabled: computed(() => dragDrop || isDraggable),
   isDropEnabled: computed(() => dragDrop)
 })
 

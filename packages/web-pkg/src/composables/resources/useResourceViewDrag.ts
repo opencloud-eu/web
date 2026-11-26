@@ -19,6 +19,7 @@ export const useResourceViewDrag = ({
   resources,
   space = ref<SpaceResource>(),
   emit,
+  isDragEnabled = ref(true),
   isDropEnabled = ref(true)
 }: {
   selectedIds: Ref<string[]>
@@ -28,6 +29,10 @@ export const useResourceViewDrag = ({
    */
   space?: Ref<SpaceResource>
   emit: ReturnType<typeof defineEmits>
+  /**
+   * Whether resources can be dragged.
+   */
+  isDragEnabled?: Ref<boolean>
   /**
    * Whether resources are drop targets for dragged resources. Dragging itself is not affected.
    */
@@ -74,6 +79,13 @@ export const useResourceViewDrag = ({
   }
 
   const dragStart = async (resource: Resource, event: DragEvent) => {
+    // only the row or tile itself is a drag source. children that are draggable by default (like
+    // images and links) start a native drag with their own data, which must never become a
+    // resource drag. they get draggable="false", anything missed is cancelled here.
+    if (!unref(isDragEnabled) || event.target !== event.currentTarget) {
+      event.preventDefault()
+      return
+    }
     // must happen synchronously, the drag data can't be changed after the dragstart event
     setResourceDrag(resource, event)
     if (!unref(selectedIds).includes(resource.id)) {

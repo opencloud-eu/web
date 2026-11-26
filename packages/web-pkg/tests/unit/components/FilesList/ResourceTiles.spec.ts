@@ -233,30 +233,67 @@ describe('ResourceTiles component', () => {
     })
   })
   describe('drag and drop', () => {
-    it('emits the "update:selectedIds"-event on drag start', () => {
+    function getDragStartEvent({
+      setData = vi.fn(),
+      target = document.createElement('div'),
+      currentTarget = target
+    }: { setData?: () => void; target?: HTMLElement; currentTarget?: HTMLElement } = {}) {
+      return {
+        dataTransfer: { setDragImage: vi.fn(), setData },
+        target,
+        currentTarget,
+        preventDefault: vi.fn()
+      }
+    }
+
+    it('cancels drags and starts no resource drag when dragging is disabled', () => {
       const { wrapper } = getWrapper({
         props: { resources: spacesResources },
         stubs: { ResourceTile: true }
       })
+      const event = getDragStartEvent()
+      wrapper.findComponent<any>('resource-tile-stub').vm.$emit('dragstart', event)
+
+      const resourcesStore = useResourcesStore()
+      expect(event.preventDefault).toHaveBeenCalled()
+      expect(event.dataTransfer.setData).not.toHaveBeenCalled()
+      expect(resourcesStore.setResourceDrag).not.toHaveBeenCalled()
+      expect(resourcesStore.setSelection).not.toHaveBeenCalled()
+    })
+    it('cancels native drags of child elements, like images or links', () => {
+      const { wrapper } = getWrapper({
+        props: { resources: spacesResources, isDraggable: true },
+        stubs: { ResourceTile: true }
+      })
+      const tile = document.createElement('div')
+      const image = document.createElement('img')
+      tile.appendChild(image)
+      const event = getDragStartEvent({ target: image, currentTarget: tile })
+      wrapper.findComponent<any>('resource-tile-stub').vm.$emit('dragstart', event)
+
+      expect(event.preventDefault).toHaveBeenCalled()
+      expect(useResourcesStore().setResourceDrag).not.toHaveBeenCalled()
+    })
+    it('emits the "update:selectedIds"-event on drag start', () => {
+      const { wrapper } = getWrapper({
+        props: { resources: spacesResources, isDraggable: true },
+        stubs: { ResourceTile: true }
+      })
 
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
-      resourceTile.vm.$emit('dragstart', {
-        dataTransfer: { setDragImage: vi.fn(), setData: vi.fn() }
-      })
+      resourceTile.vm.$emit('dragstart', getDragStartEvent())
 
       expect(wrapper.emitted('update:selectedIds')).toBeDefined()
     })
     it('replaces the selection with the dragged resource if it is not selected', () => {
       const { wrapper } = getWrapper({
-        props: { resources: spacesResources },
+        props: { resources: spacesResources, isDraggable: true },
         stubs: { ResourceTile: true },
         selectedIds: ['2']
       })
 
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
-      resourceTile.vm.$emit('dragstart', {
-        dataTransfer: { setDragImage: vi.fn(), setData: vi.fn() }
-      })
+      resourceTile.vm.$emit('dragstart', getDragStartEvent())
 
       const resourcesStore = useResourcesStore()
       expect(resourcesStore.setSelection).toHaveBeenCalledWith(['1'])
@@ -264,15 +301,13 @@ describe('ResourceTiles component', () => {
     })
     it('keeps the selection if the dragged resource is already selected', () => {
       const { wrapper } = getWrapper({
-        props: { resources: spacesResources },
+        props: { resources: spacesResources, isDraggable: true },
         stubs: { ResourceTile: true },
         selectedIds: ['1', '2']
       })
 
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
-      resourceTile.vm.$emit('dragstart', {
-        dataTransfer: { setDragImage: vi.fn(), setData: vi.fn() }
-      })
+      resourceTile.vm.$emit('dragstart', getDragStartEvent())
 
       const resourcesStore = useResourcesStore()
       expect(resourcesStore.setSelection).not.toHaveBeenCalled()
@@ -289,17 +324,16 @@ describe('ResourceTiles component', () => {
     ])('marks the drag and shares $name until the drag ends', ({ selectedIds, expectedIds }) => {
       const space = mock<SpaceResource>()
       const { wrapper } = getWrapper({
-        props: { resources: spacesResources, space },
+        props: { resources: spacesResources, space, isDraggable: true },
         stubs: { ResourceTile: true },
         selectedIds
       })
       const setData = vi.fn()
       const target = document.createElement('div')
 
-      wrapper.findComponent<any>('resource-tile-stub').vm.$emit('dragstart', {
-        dataTransfer: { setDragImage: vi.fn(), setData },
-        target
-      })
+      wrapper
+        .findComponent<any>('resource-tile-stub')
+        .vm.$emit('dragstart', getDragStartEvent({ setData, target }))
 
       const resourcesStore = useResourcesStore()
       expect(setData).toHaveBeenCalledWith(resourceDragDataType, expectedIds.join())
@@ -333,9 +367,7 @@ describe('ResourceTiles component', () => {
 
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
       expect(resourceTile.attributes('draggable')).toBe('true')
-      resourceTile.vm.$emit('dragstart', {
-        dataTransfer: { setDragImage: vi.fn(), setData: vi.fn() }
-      })
+      resourceTile.vm.$emit('dragstart', getDragStartEvent())
       resourceTile.vm.$emit('drop', {
         dataTransfer: {}
       } as DragEvent)
