@@ -9,6 +9,7 @@ import {
   buildPublicSpaceResource,
   buildWebDavSpacesTrashPath,
   isPublicSpaceResource,
+  isShareSpaceResource,
   SpaceResource
 } from '../helpers'
 import { urlJoin } from '../utils'
@@ -32,6 +33,26 @@ export type ListFilesOptions = {
   extraProps?: string[]
   isTrash?: boolean
 } & DAVRequestOptions
+
+/**
+ * Paths by file id start at the topmost folder the user can access, so for a received share
+ * the path of the share root needs to be stripped. Returns an empty string if the resource
+ * is not inside the share.
+ */
+function getPathInShare(path: string, shareRootPath: string) {
+  if (!path || !shareRootPath) {
+    return ''
+  }
+  const resourcePath = urlJoin(path)
+  const rootPath = urlJoin(shareRootPath)
+  if (resourcePath === rootPath) {
+    return '/'
+  }
+  if (resourcePath.startsWith(`${rootPath}/`)) {
+    return resourcePath.slice(rootPath.length)
+  }
+  return ''
+}
 
 export const ListFilesFactory = (
   dav: DAV,
@@ -116,12 +137,19 @@ export const ListFilesFactory = (
       }
 
       const listFilesCorrectedPath = async () => {
-        const correctPath = await pathForFileIdFactory.getPathForFileId(fileId)
-        if (!correctPath) {
-          // an empty path means the resource doesn't exist (anymore) or isn't accessible
+        const [correctPath, shareRootPath] = await Promise.all([
+          pathForFileIdFactory.getPathForFileId(fileId),
+          isShareSpaceResource(space) ? pathForFileIdFactory.getPathForFileId(space.id) : undefined
+        ])
+        // an empty path means the resource doesn't exist (anymore), isn't accessible or isn't in this space
+        const pathInSpace = isShareSpaceResource(space)
+          ? getPathInShare(correctPath, shareRootPath)
+          : correctPath
+        if (!pathInSpace) {
           throw new DavHttpError('Resource not found', undefined, undefined, 404)
         }
-        return this.listFiles(space, { path: correctPath }, { depth, davProperties, extraProps })
+
+        return this.listFiles(space, { path: pathInSpace }, { depth, davProperties, extraProps })
       }
 
       try {
