@@ -1,88 +1,87 @@
-import App from '../../src/App.vue'
-import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
-import { Resource } from '@opencloud-eu/web-client'
+import { defineComponent } from 'vue'
 import { mock } from 'vitest-mock-extended'
+import type { Resource } from '@opencloud-eu/web-client'
+import type { FileContext } from '@opencloud-eu/web-pkg'
+import { flushPromises } from '@vue/test-utils'
+import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import App from '../../src/App.vue'
 
-const FIREFOX_UA = 'Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0'
-const CHROME_UA =
-  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-const SAFARI_UA =
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15'
-const FIREFOX_IOS_UA =
-  'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/120.0 Mobile/15E148 Safari/605.1.15'
-
-const url = 'blob:https://example.com/abc'
-
-// `userAgent` is an inherited accessor on the Navigator prototype, so setting it creates a
-// shadowing own property. Capture the original descriptor (if any) to fully restore afterwards.
-const originalUserAgentDescriptor = Object.getOwnPropertyDescriptor(window.navigator, 'userAgent')
-
-function setUserAgent(userAgent: string) {
-  Object.defineProperty(window.navigator, 'userAgent', {
-    value: userAgent,
-    configurable: true
+vi.mock('../../src/components/PdfViewer.vue', () => ({
+  __esModule: true,
+  default: defineComponent({
+    name: 'PdfViewer',
+    props: {
+      resource: { type: Object, required: true },
+      currentContent: { type: ArrayBuffer, required: true },
+      isReadOnly: { type: Boolean, required: true },
+      isDirty: { type: Boolean, required: true },
+      currentFileContext: { type: Object, required: true }
+    },
+    emits: [
+      'update:currentContent',
+      'save',
+      'register:onSaveCallback',
+      'register:onFlushContentCallback'
+    ],
+    template: '<div class="pdf-viewer-stub" />'
   })
-}
+}))
 
-afterEach(() => {
-  if (originalUserAgentDescriptor) {
-    Object.defineProperty(window.navigator, 'userAgent', originalUserAgentDescriptor)
-  } else {
-    Reflect.deleteProperty(window.navigator, 'userAgent')
-  }
-})
-
-function getWrapper({ resource = mock<Resource>({ name: 'doc.pdf' }) } = {}) {
-  return shallowMount(App, {
-    props: { url, resource },
-    global: {
-      plugins: [...defaultPlugins()]
-    }
-  })
-}
-
-describe('PDF viewer App', () => {
-  describe('in Firefox', () => {
-    it('renders an iframe pointing at the blob url', () => {
-      setUserAgent(FIREFOX_UA)
-      const wrapper = getWrapper()
-
-      const iframe = wrapper.find('iframe.pdf-viewer')
-      expect(iframe.exists()).toBe(true)
-      expect(iframe.attributes('src')).toBe(url)
-      expect(iframe.attributes('title')).toBe('doc.pdf')
-      expect(wrapper.find('object').exists()).toBe(false)
-    })
+describe('PDF viewer app', () => {
+  // AppWrapper looks at the wrapped component's props and emits to decide what to load
+  // and whether it is an editor (save button, autosave, unsaved changes guard).
+  it('declares the props and emits AppWrapper needs for an editor', () => {
+    expect(Object.keys(App.props)).toEqual(
+      expect.arrayContaining([
+        'resource',
+        'currentContent',
+        'isReadOnly',
+        'isDirty',
+        'currentFileContext'
+      ])
+    )
+    expect(App.emits).toEqual(
+      expect.arrayContaining([
+        'update:currentContent',
+        'register:onSaveCallback',
+        'register:onFlushContentCallback'
+      ])
+    )
   })
 
-  describe.each([
-    ['Chrome', CHROME_UA, 'application/pdf'],
-    ['Safari', SAFARI_UA, undefined],
-    ['Firefox for iOS', FIREFOX_IOS_UA, undefined]
-  ])('in %s', (_name, userAgent, expectedType) => {
-    it('renders an object with the expected type', () => {
-      setUserAgent(userAgent)
-      const wrapper = getWrapper()
+  it('passes content and state through to the editor and relays its events', async () => {
+    const currentContent = new ArrayBuffer(2)
+    const resource = mock<Resource>({ id: '1' })
+    const currentFileContext = mock<FileContext>()
+    const wrapper = mount(App, {
+      props: {
+        resource,
+        currentContent,
+        isReadOnly: true,
+        isDirty: true,
+        currentFileContext
+      },
+      global: { plugins: [...defaultPlugins()] }
+    })
+    await flushPromises()
 
-      const object = wrapper.find('object.pdf-viewer')
-      expect(object.exists()).toBe(true)
-      expect(object.attributes('data')).toBe(url)
-      expect(object.attributes('type')).toBe(expectedType)
-      expect(wrapper.find('iframe').exists()).toBe(false)
+    const editor = wrapper.findComponent({ name: 'PdfViewer' })
+    expect(editor.props()).toEqual({
+      resource,
+      currentContent,
+      isReadOnly: true,
+      isDirty: true,
+      currentFileContext
     })
 
-    it('provides a download fallback inside the object', () => {
-      setUserAgent(userAgent)
-      const wrapper = getWrapper()
-
-      expect(wrapper.find('.pdf-viewer-fallback p').text()).toBe(
-        'This PDF could not be displayed in your browser.'
-      )
-
-      const downloadButton = wrapper.find('oc-button-stub')
-      expect(downloadButton.exists()).toBe(true)
-      expect(downloadButton.attributes('href')).toBe(url)
-      expect(downloadButton.attributes('download')).toBe('doc.pdf')
-    })
+    const newContent = new ArrayBuffer(3)
+    editor.vm.$emit('update:currentContent', newContent)
+    const afterSave = vi.fn()
+    editor.vm.$emit('register:onSaveCallback', afterSave)
+    const flushContent = vi.fn()
+    editor.vm.$emit('register:onFlushContentCallback', flushContent)
+    expect(wrapper.emitted('update:currentContent')[0]).toEqual([newContent])
+    expect(wrapper.emitted('register:onSaveCallback')[0]).toEqual([afterSave])
+    expect(wrapper.emitted('register:onFlushContentCallback')[0]).toEqual([flushContent])
   })
 })
