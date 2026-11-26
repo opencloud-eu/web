@@ -59,9 +59,11 @@ export function useNavItemDrop({
   }
 
   function onDragOver(event: DragEvent) {
-    const { isAllowed, notAllowedMessage } = toValue(drop)
-    if (!isAllowed(event)) {
-      const message = notAllowedMessage?.(event)
+    const dropHook = toValue(drop)
+    if (!dropHook.isAllowed(event)) {
+      // the hook can refuse a drag it allowed before (e.g. depending on modifier keys)
+      isDropTargetActive.value = false
+      const message = dropHook.notAllowedMessage?.(event)
       if (message) {
         listenForDragEnd()
         showDropHint(message)
@@ -84,12 +86,12 @@ export function useNavItemDrop({
 
   function onDrop(event: DragEvent) {
     resetDropState()
-    const { isAllowed, handler } = toValue(drop)
-    if (!isAllowed(event)) {
+    const dropHook = toValue(drop)
+    if (!dropHook.isAllowed(event)) {
       return
     }
     event.preventDefault()
-    handler(event)
+    dropHook.handler(event)
   }
 
   const dropListeners = computed(() => {

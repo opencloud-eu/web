@@ -106,6 +106,26 @@ describe('OcSidebarNav', () => {
       await wrapper.vm.$nextTick()
       expect(wrapper.find('.oc-sidebar-nav-item-link').classes()).not.toContain(highlightClass)
     })
+    it('calls the methods of a drop hook object on the hook itself', async () => {
+      class DropHook {
+        allowed = true
+        dropped = false
+        isAllowed() {
+          return this.allowed
+        }
+        handler() {
+          this.dropped = true
+        }
+      }
+      const drop = new DropHook()
+      const { wrapper } = getWrapper(false, { drop })
+      const li = wrapper.find('li').element
+      li.dispatchEvent(createDragEvent('dragover'))
+      li.dispatchEvent(createDragEvent('drop'))
+      await wrapper.vm.$nextTick()
+
+      expect(drop.dropped).toBe(true)
+    })
     it('does not call the drop handler on a drop that is not allowed', () => {
       const { wrapper, drop } = getDropWrapper(false)
       wrapper.find('li').element.dispatchEvent(createDragEvent('drop'))
@@ -137,6 +157,29 @@ describe('OcSidebarNav', () => {
 
         expect(getTooltip().textContent).toBe(message)
         expect(wrapper.find('.oc-hidden-announcer').text()).toBe(message)
+        wrapper.unmount()
+      })
+      it('switches from highlight to hint when the hook refuses a drag it allowed before', async () => {
+        const { wrapper, drop } = getDropWrapper(false, message)
+        drop.isAllowed.mockReturnValueOnce(true)
+        await dragOver(wrapper)
+        expect(wrapper.find('.oc-sidebar-nav-item-link').classes()).toContain(highlightClass)
+        expect(getTooltip()).toBeNull()
+
+        await dragOver(wrapper)
+        expect(wrapper.find('.oc-sidebar-nav-item-link').classes()).not.toContain(highlightClass)
+        expect(getTooltip().textContent).toBe(message)
+        wrapper.unmount()
+      })
+      it('switches from hint to highlight when the hook allows a drag it refused before', async () => {
+        const { wrapper, drop } = getDropWrapper(true, message)
+        drop.isAllowed.mockReturnValueOnce(false)
+        await dragOver(wrapper)
+        expect(getTooltip().textContent).toBe(message)
+
+        await dragOver(wrapper)
+        expect(getTooltip()).toBeNull()
+        expect(wrapper.find('.oc-sidebar-nav-item-link').classes()).toContain(highlightClass)
         wrapper.unmount()
       })
       it('shows no hint for allowed drags', async () => {
