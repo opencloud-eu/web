@@ -1,4 +1,5 @@
 import { mock } from 'vitest-mock-extended'
+import { nextTick } from 'vue'
 import {
   PartialComponentProps,
   RouteLocation,
@@ -66,17 +67,76 @@ describe('AppTopBar', () => {
 
       expect(resourceListItem.props('isExtensionDisplayed')).toBeFalsy()
     })
-    it('renders the autosave indicator for writable editor resources', () => {
-      const { wrapper } = getWrapper({
-        props: {
-          resource: mock<Resource>({ path: '/test.txt' }),
-          hasAutoSave: true,
-          isEditor: true,
-          isReadOnly: false
-        }
-      })
+  })
 
-      expect(wrapper.find('[data-testid="autosave-indicator"]').exists()).toBeTruthy()
+  describe('saving indicator', () => {
+    const indicator = '[data-testid="saving-indicator"]'
+    const props = {
+      resource: mock<Resource>({ path: '/test.txt' }),
+      mainActions: [mock<Action>()]
+    }
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('is not shown while not saving', () => {
+      const { wrapper } = getWrapper({ props })
+
+      expect(wrapper.find(indicator).exists()).toBeFalsy()
+    })
+
+    it('is shown while saving', async () => {
+      const { wrapper } = getWrapper({ props })
+
+      await wrapper.setProps({ isSaving: true })
+
+      expect(wrapper.find(indicator).exists()).toBeTruthy()
+      expect(wrapper.findComponent({ name: 'OcHiddenAnnouncer' }).props('announcement')).toBe(
+        'Saving…'
+      )
+    })
+
+    it('stays for its minimum duration after a fast save', async () => {
+      const { wrapper } = getWrapper({ props })
+      await wrapper.setProps({ isSaving: true })
+      vi.advanceTimersByTime(200)
+
+      await wrapper.setProps({ isSaving: false })
+      expect(wrapper.find(indicator).exists()).toBeTruthy()
+
+      vi.advanceTimersByTime(799)
+      await nextTick()
+      expect(wrapper.find(indicator).exists()).toBeTruthy()
+
+      vi.advanceTimersByTime(1)
+      await nextTick()
+      expect(wrapper.find(indicator).exists()).toBeFalsy()
+    })
+
+    it('hides right away after a save that took longer than the minimum duration', async () => {
+      const { wrapper } = getWrapper({ props })
+      await wrapper.setProps({ isSaving: true })
+      vi.advanceTimersByTime(3000)
+
+      await wrapper.setProps({ isSaving: false })
+
+      expect(wrapper.find(indicator).exists()).toBeFalsy()
+    })
+
+    it('stays when another save starts during its minimum duration', async () => {
+      const { wrapper } = getWrapper({ props })
+      await wrapper.setProps({ isSaving: true })
+      await wrapper.setProps({ isSaving: false })
+      await wrapper.setProps({ isSaving: true })
+
+      vi.advanceTimersByTime(2000)
+      await nextTick()
+
+      expect(wrapper.find(indicator).exists()).toBeTruthy()
     })
   })
 })

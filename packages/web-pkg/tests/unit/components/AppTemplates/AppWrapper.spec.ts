@@ -1,6 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { defineComponent, h, nextTick, type PropType, reactive, ref, toValue, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
+import { createGettext } from 'vue3-gettext'
 import type { Resource, ShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { HttpError } from '@opencloud-eu/web-client'
 import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
@@ -176,6 +177,9 @@ function setup({
   fileContext = mock<FileContext>({ space: mock<any>(), path: '/a.md' }),
   fileContentOptions = undefined as FileContentOptions,
   fileExtensions = [{ app: 'test-app', extension: 'md' }] as ApplicationFileExtension[],
+  disableAutoSave = false,
+  // The UI language, as gettext names it (e.g. `pt_BR`).
+  language = undefined as string,
   // Receives the errors Vue would otherwise report as unhandled.
   errorHandler = undefined as (err: unknown) => void
 } = {}) {
@@ -264,6 +268,7 @@ function setup({
   }) as any)
 
   const piniaPlugins = defaultPlugins({
+    gettext: !language,
     piniaOptions: {
       appsState: {
         apps: { 'test-app': { id: 'test-app', name: 'Test App', meta: { fileSizeLimit } } },
@@ -273,6 +278,9 @@ function setup({
       capabilityState: { capabilities: { core: { 'support-sse': sse } as any } }
     }
   })
+  if (language) {
+    piniaPlugins.push(createGettext({ defaultLanguage: language, translations: {}, silent: true }))
+  }
   const unregisterAppBarExtension = vi.fn()
   const { registerExtensions, requestExtensions } = useExtensionRegistry()
   vi.mocked(registerExtensions).mockReturnValue(unregisterAppBarExtension)
@@ -312,6 +320,7 @@ function setup({
     props: {
       applicationId: 'test-app',
       wrappedComponent: component,
+      disableAutoSave,
       ...(yjsEnabled ? { yjs: { makeAdapter: () => mock<any>() } } : {}),
       ...(fileContentOptions ? { fileContentOptions } : {})
     },
@@ -381,12 +390,16 @@ function setup({
     },
     deleteFile,
     downloadFile,
-    /** Runs an action of the top bar menu, as a click on it does. */
-    clickTopBarAction(name: string) {
+    /** The props the wrapper currently hands to the top bar. */
+    topBarProps() {
       const [topBar] = unref(
         vi.mocked(registerExtensions).mock.calls.at(-1)[0]
       ) as CustomComponentExtension[]
-      const { dropDownMenuSections, dropDownActionOptions } = topBar.componentProps() as any
+      return topBar.componentProps() as any
+    },
+    /** Runs an action of the top bar menu, as a click on it does. */
+    clickTopBarAction(name: string) {
+      const { dropDownMenuSections, dropDownActionOptions } = this.topBarProps()
       const action = dropDownMenuSections
         .flatMap(({ items }: { items: FileAction[] }) => items)
         .find((item: FileAction) => item.name === name)
@@ -673,6 +686,96 @@ describe('AppWrapper — top bar extension', () => {
     s.wrapper.unmount()
 
     expect(s.unregisterAppBarExtension).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('AppWrapper — save feedback', () => {
+  it('shows no message after an autosave', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = await openFile()
+    await s.edit('edited content')
+
+    await vi.advanceTimersByTimeAsync(130_000)
+
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
+  })
+
+  it('shows no message after saving before a download', async () => {
+    const s = await openFile()
+    await s.edit('edited content')
+
+    await s.clickTopBarAction('download-file')
+
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+    expect(s.downloadFile).toHaveBeenCalled()
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
+  })
+
+  it('tells the top bar while the file is being written', async () => {
+    const put = deferred<Resource>()
+    const s = await openFile({ putFileContents: vi.fn().mockReturnValue(put.promise) })
+    await s.edit('edited content')
+    expect(s.topBarProps().isSaving).toBe(false)
+
+    void s.pressCtrlS()
+    await vi.waitFor(() => expect(s.putFileContents).toHaveBeenCalled())
+    expect(s.topBarProps().isSaving).toBe(true)
+
+    put.resolve(mock<Resource>({ etag: 'etag-saved' }))
+    await flushPromises()
+    expect(s.topBarProps().isSaving).toBe(false)
+  })
+
+  it('stops telling the top bar when the write failed', async () => {
+    const s = await openFile({
+      putFileContents: vi.fn().mockRejectedValue({ statusCode: 500, response: {} })
+    })
+    await s.edit('edited content')
+
+    await s.pressCtrlS()
+
+    expect(useMessages().showErrorMessage).toHaveBeenCalled()
+    expect(s.topBarProps().isSaving).toBe(false)
+  })
+
+  // the autosave runs every interval and flushes even without changes, which must not show up
+  it('does not tell the top bar while a save only flushes', async () => {
+    const flush = deferred<void>()
+    const s = await openFile()
+    s.registerFlushContentCallback(() => flush.promise)
+
+    void s.pressCtrlS()
+    await flushPromises()
+
+    expect(s.topBarProps().isSaving).toBe(false)
+    flush.resolve()
+    await flushPromises()
+    expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+
+  it('names the autosave interval in the label of the top bar save action', async () => {
+    const s = await openFile()
+
+    const [saveAction] = s.topBarProps().mainActions as FileAction[]
+
+    expect(saveAction.label()).toBe('Save (autosave every 120 seconds)')
+  })
+
+  it('names the autosave interval for a language with a region', async () => {
+    const s = await openFile({ language: 'pt_BR' })
+
+    const [saveAction] = s.topBarProps().mainActions as FileAction[]
+
+    expect(saveAction.label()).toBe('Save (autosave every 120 segundos)')
+  })
+
+  it('keeps the plain label when the app does not autosave', async () => {
+    const s = await openFile({ disableAutoSave: true })
+
+    const [saveAction] = s.topBarProps().mainActions as FileAction[]
+
+    expect(saveAction.label()).toBe('Save')
   })
 })
 
@@ -1358,7 +1461,7 @@ describe('AppWrapper — deleting the open file', () => {
     await vi.advanceTimersByTimeAsync(130_000)
 
     expect(s.putFileContents).not.toHaveBeenCalled()
-    expect(showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
+    expect(showMessage).not.toHaveBeenCalled()
   })
 
   it('still asks to save when another file was deleted', async () => {
@@ -1467,7 +1570,7 @@ describe('AppWrapper — saving before deleting or downloading the open file', (
     }
   )
 
-  it('does not report a failed save before a download as autosaved', async () => {
+  it('reports a failed save before a download as error only', async () => {
     const s = await openFile({
       putFileContents: vi.fn().mockRejectedValue({ statusCode: 500, response: {} })
     })
@@ -1476,7 +1579,7 @@ describe('AppWrapper — saving before deleting or downloading the open file', (
     await s.clickTopBarAction('download-file')
 
     expect(useMessages().showErrorMessage).toHaveBeenCalled()
-    expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
     expect(s.downloadFile).toHaveBeenCalled()
   })
 })
@@ -1611,7 +1714,7 @@ describe('AppWrapper — saving while a save is running', () => {
     await flushPromises()
 
     expect(s.putFileContents).toHaveBeenCalledTimes(1)
-    expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
   })
 })
 
@@ -1769,7 +1872,7 @@ describe('AppWrapper — flush content callback', () => {
 
     expect(flushContent).toHaveBeenCalledOnce()
     expect(s.putFileContents).not.toHaveBeenCalled()
-    expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
   })
 
   it('saves what the app emits in the callback before a download', async () => {

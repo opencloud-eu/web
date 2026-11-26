@@ -29,20 +29,7 @@
         />
       </div>
       <div class="flex">
-        <span
-          v-if="hasAutosave && !isReadOnly"
-          class="hidden sm:flex items-center"
-          data-testid="autosave-indicator"
-        >
-          <oc-icon
-            v-oc-tooltip="autoSaveTooltipText"
-            :accessible-label="autoSaveTooltipText"
-            name="refresh"
-            color="var(--oc-role-on-chrome)"
-            class="ox-p-xs mx-1"
-          />
-        </span>
-        <template v-if="mainActions.length && resource">
+        <div v-if="mainActions.length && resource" class="relative">
           <context-action-menu
             :menu-sections="[
               {
@@ -64,7 +51,15 @@
             appearance="raw-inverse"
             color-role="chrome"
           />
-        </template>
+          <span
+            v-if="showSavingIndicator"
+            class="absolute top-0 start-0 flex pointer-events-none text-role-on-chrome"
+            data-testid="saving-indicator"
+          >
+            <oc-spinner size="xsmall" />
+          </span>
+          <oc-hidden-announcer :announcement="showSavingIndicator ? $gettext('Saving…') : ''" />
+        </div>
         <template v-if="dropDownMenuSections.length">
           <oc-button
             id="oc-openfile-contextmenu-trigger"
@@ -98,14 +93,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, ref, unref, watch } from 'vue'
 import ContextActionMenu from './ContextActions/ContextActionMenu.vue'
 import { useGettext } from 'vue3-gettext'
-import { Action, FileActionOptions, useConfigStore, useResourcesStore } from '../composables'
+import { Action, FileActionOptions, useResourcesStore } from '../composables'
 import ResourceListItem from './FilesList/ResourceListItem.vue'
 import { Resource } from '@opencloud-eu/web-client'
-import { Duration } from 'luxon'
 import { MenuSection } from './ContextActions'
+
+/** One rotation of the spinner, so a fast save doesn't make it flicker. */
+const MIN_SAVING_INDICATOR_DURATION = 1000
 
 const {
   dropDownMenuSections = [],
@@ -114,36 +111,53 @@ const {
     resources: []
   },
   mainActions = [],
-  hasAutoSave = true,
-  isEditor = false,
   resource = null,
-  isReadOnly = true
+  isSaving = false
 } = defineProps<{
   dropDownMenuSections?: MenuSection[]
   dropDownActionOptions?: FileActionOptions
   mainActions?: Action[]
-  hasAutoSave?: boolean
-  isEditor?: boolean
   resource?: Resource
-  isReadOnly?: boolean
+  /** Shows a spinner on the main action, i.e. the save action, while the file is being saved. */
+  isSaving?: boolean
 }>()
 
 defineEmits<{ (e: 'close'): void }>()
 
-const { $gettext, current: currentLanguage } = useGettext()
+const { $gettext } = useGettext()
 const resourcesStore = useResourcesStore()
-const configStore = useConfigStore()
 
 const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 const contextMenuLabel = computed(() => $gettext('Show context menu'))
-const hasAutosave = computed(
-  () => isEditor && hasAutoSave && configStore.options.editor.autosaveEnabled
+
+const showSavingIndicator = ref(false)
+let savingIndicatorShownAt = 0
+let hideSavingIndicatorTimeout: ReturnType<typeof setTimeout>
+
+watch(
+  () => isSaving,
+  (saving) => {
+    clearTimeout(hideSavingIndicatorTimeout)
+    if (saving) {
+      if (!unref(showSavingIndicator)) {
+        showSavingIndicator.value = true
+        savingIndicatorShownAt = Date.now()
+      }
+      return
+    }
+    const remaining = savingIndicatorShownAt + MIN_SAVING_INDICATOR_DURATION - Date.now()
+    if (remaining <= 0) {
+      showSavingIndicator.value = false
+      return
+    }
+    hideSavingIndicatorTimeout = setTimeout(() => {
+      showSavingIndicator.value = false
+    }, remaining)
+  },
+  { immediate: true }
 )
-const autoSaveTooltipText = computed(() => {
-  const duration = Duration.fromObject(
-    { seconds: configStore.options.editor.autosaveInterval },
-    { locale: currentLanguage }
-  )
-  return $gettext(`Autosave (every %{ duration })`, { duration: duration.toHuman() })
+
+onBeforeUnmount(() => {
+  clearTimeout(hideSavingIndicatorTimeout)
 })
 </script>

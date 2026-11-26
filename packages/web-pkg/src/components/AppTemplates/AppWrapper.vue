@@ -43,7 +43,7 @@ import {
   onMounted,
   markRaw
 } from 'vue'
-import { DateTime } from 'luxon'
+import { DateTime, Duration } from 'luxon'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
@@ -77,6 +77,7 @@ import {
   useSharesStore,
   useEventBus,
   Action,
+  FileAction,
   Modifier,
   Key,
   useAppMeta,
@@ -112,6 +113,7 @@ import { UnsavedChangesModal } from '../Modals'
 import {
   decodeTextContent,
   formatFileSize,
+  getLocaleFromLanguage,
   getSharedDriveItem,
   renameResource,
   setCurrentUserShareSpacePermissions
@@ -186,6 +188,8 @@ const isNotFoundError = computed(() => {
   return e instanceof ResourceNotFoundError || (e as HttpError)?.statusCode === 404
 })
 const isReadOnly = ref(false)
+/** A save is writing the file. Unlike `saveFileTask.isRunning`, not while it only flushes. */
+const isWritingFile = ref(false)
 /** The loaded text is not valid UTF-8, see `getFileContentsAsText`. */
 const isLossyContent = ref(false)
 const serverContent = ref<unknown>()
@@ -225,10 +229,8 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
       content: markRaw(AppTopBar),
       componentProps: () => ({
         resource: unref(resource),
-        isReadOnly: unref(effectiveReadOnly),
-        isEditor: unref(isEditor),
-        hasAutoSave: !disableAutoSave,
-        mainActions: [unref(saveAction)],
+        isSaving: unref(isWritingFile),
+        mainActions: [unref(topBarSaveAction)],
         dropDownMenuSections: unref(dropDownMenuSections),
         dropDownActionOptions: unref(actionOptions),
         onClose: () => {
@@ -772,10 +774,6 @@ const errorPopup = (error: HttpError) => {
   })
 }
 
-const autosavePopup = () => {
-  showMessage({ title: $gettext('File autosaved') })
-}
-
 function showExternalUpdateConflict(response: Response = null) {
   errorPopup(
     new HttpError(
@@ -827,6 +825,7 @@ const saveFileTask = useTask(function* () {
   // Pin the Y.Doc state behind `newContent`; the doc usually moves on while
   // the PUT is in flight.
   yjsSession?.beginSave()
+  isWritingFile.value = true
   try {
     const putFileContentsResponse = yield putFileContents(currentFileContext, {
       content: newContent as string | ArrayBuffer,
@@ -883,6 +882,8 @@ const saveFileTask = useTask(function* () {
         errorPopup(new HttpError('', e.response))
     }
     return false
+  } finally {
+    isWritingFile.value = false
   }
 }).drop()
 
@@ -925,6 +926,30 @@ const { saveAction, saveAsAction } = useFileActionsSave({
   flushContent
 })
 
+/** Seconds between autosaves, 0 when the app doesn't autosave. */
+const autosaveInterval = computed(() => {
+  const { autosaveEnabled, autosaveInterval: configuredInterval } = configStore.options.editor
+  if (!unref(isEditor) || !autosaveEnabled || disableAutoSave) {
+    return 0
+  }
+  return configuredInterval || 120
+})
+
+// the top bar shows the label as tooltip, so it tells about the autosave there
+const topBarSaveAction = computed<FileAction>(() => {
+  if (!unref(autosaveInterval)) {
+    return unref(saveAction)
+  }
+  const duration = Duration.fromObject(
+    { seconds: unref(autosaveInterval) },
+    { locale: getLocaleFromLanguage(currentLanguage) }
+  ).toHuman()
+  return {
+    ...unref(saveAction),
+    label: () => $gettext('Save (autosave every %{ duration })', { duration })
+  }
+})
+
 let autosaveIntervalId: ReturnType<typeof setInterval> = null
 onMounted(() => {
   deleteResourceEventToken = eventBus.subscribe(
@@ -940,23 +965,18 @@ onMounted(() => {
     }
   }
 
-  if (!unref(isEditor)) {
+  if (!unref(autosaveInterval)) {
     return
   }
-  const editorOptions = configStore.options.editor
-  if (editorOptions.autosaveEnabled && !disableAutoSave) {
-    autosaveIntervalId = setInterval(
-      async () => {
-        if (unref(isConflicted) || saveFileTask.isRunning) {
-          return
-        }
-        if (await save()) {
-          autosavePopup()
-        }
-      },
-      (editorOptions.autosaveInterval || 120) * 1000
-    )
-  }
+  autosaveIntervalId = setInterval(
+    () => {
+      if (unref(isConflicted) || saveFileTask.isRunning) {
+        return
+      }
+      save()
+    },
+    unref(autosaveInterval) * 1000
+  )
 })
 onBeforeUnmount(() => {
   eventBus.unsubscribe('runtime.resource.deleted', deleteResourceEventToken)
@@ -1020,8 +1040,8 @@ const downloadFileActionInterceptor = async (
         ),
         status: 'warning'
       })
-    } else if (await save()) {
-      autosavePopup()
+    } else {
+      await save()
     }
   }
   originalAction(args)
