@@ -86,13 +86,18 @@ export const useScrollTo = (): ScrollToResult => {
       return r.id === unref(scrollTo)
     })
 
-    if (resource && resource.processing !== true) {
+    if (!resource || resource.processing === true) {
+      return
+    }
+
+    // the current folder is no row of the list, the side bar shows it without a selection
+    if (resource.id !== resourcesStore.currentFolder?.id) {
       resourcesStore.setSelection([resource.id])
       scrollToResource(resource.id, { forceScroll: true, topbarElement })
+    }
 
-      if (unref(details)) {
-        openSideBarPanel(unref(details))
-      }
+    if (unref(details)) {
+      openSideBarPanel(unref(details))
     }
   }
 
