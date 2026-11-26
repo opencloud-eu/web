@@ -22,6 +22,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep the counter at the end of folder names with a dot [[#4639](https://github.com/opencloud-eu/web/pull/4639)]
 - fix: open the details panel for permanent links to folders [[#4641](https://github.com/opencloud-eu/web/pull/4641)]
 - fix: resolve stale share URLs relative to the share root [[#4640](https://github.com/opencloud-eu/web/pull/4640)]
 - fix: show a loading spinner while app tokens are loading [[#4602](https://github.com/opencloud-eu/web/pull/4602)]
