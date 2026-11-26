@@ -50,7 +50,7 @@ export const useResourceViewDrag = ({
     await nextTick()
     // the drag can end or the view can unmount before the ghost got rendered
     const el = unref(ghostElement)?.$el
-    if (!el || unref(dragItem) !== item) {
+    if (!el || unref(dragItem)?.id !== item.id) {
       return
     }
     el.ariaHidden = 'true'

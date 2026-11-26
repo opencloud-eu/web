@@ -81,7 +81,7 @@
           :is="parentFolderComponentType"
           v-if="isPathDisplayed"
           :to="parentFolderLink"
-          :draggable="parentFolderLink ? 'false' : undefined"
+          draggable="false"
           class="parent-folder flex items-center truncate px-0.5 me-2 -ms-0.5 hover:bg-transparent"
           :class="{ 'cursor-pointer': parentFolderLink, 'cursor-default': !parentFolderLink }"
         >

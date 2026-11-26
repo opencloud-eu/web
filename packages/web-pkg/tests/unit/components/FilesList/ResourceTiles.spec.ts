@@ -353,6 +353,23 @@ describe('ResourceTiles component', () => {
         expect(resourcesStore.setResourceDrag).toHaveBeenLastCalledWith(null)
       }
     )
+    it('uses the ghost as drag image', async () => {
+      const { wrapper } = getWrapper({
+        props: { resources: spacesResources, isDraggable: true },
+        stubs: { ResourceTile: true }
+      })
+      const event = getDragStartEvent()
+      wrapper.findComponent<any>('resource-tile-stub').vm.$emit('dragstart', event)
+      await flushPromises()
+
+      expect(event.dataTransfer.setDragImage).toHaveBeenCalledTimes(1)
+      expect(event.dataTransfer.setDragImage).toHaveBeenCalledWith(
+        document.querySelector('#ghost-element'),
+        0,
+        0
+      )
+      wrapper.unmount()
+    })
     it('does not touch the ghost when the drag ends before it got rendered', async () => {
       const { wrapper } = getWrapper({
         props: { resources: spacesResources, isDraggable: true },
