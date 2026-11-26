@@ -66,7 +66,27 @@ describe('useLinkTargetRoute', () => {
             expect.objectContaining({ driveAliasAndItem: 'personal/admin/folder' })
           )
           expect(route.query).toEqual(expect.objectContaining({ fileId: 'file-id' }))
-          expect(route.query).toEqual(expect.not.objectContaining({ scrollTo: 'file-id' }))
+          expect(route.query).toEqual(expect.not.objectContaining({ scrollTo: expect.anything() }))
+        }
+      })
+    })
+    it('resolves a folder to itself and selects it when a details panel is requested', () => {
+      getWrapper({
+        setup: ({ getLinkTargetRoute }) => {
+          const route = getLinkTargetRoute({
+            space: buildSpace(),
+            resource: buildFile({ isFolder: true, type: 'folder' }),
+            path: '/folder',
+            details: 'sharing'
+          })
+
+          expect(route.name).toBe('files-spaces-generic')
+          expect(route.params).toEqual(
+            expect.objectContaining({ driveAliasAndItem: 'personal/admin/folder' })
+          )
+          expect(route.query).toEqual(
+            expect.objectContaining({ fileId: 'file-id', scrollTo: 'file-id', details: 'sharing' })
+          )
         }
       })
     })

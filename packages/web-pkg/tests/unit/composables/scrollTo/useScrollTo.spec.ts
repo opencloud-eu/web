@@ -206,5 +206,39 @@ describe('useScrollTo', () => {
         }
       )
     })
+    it('opens the sidebar without selecting the resource when it is the current folder', () => {
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+      const querySelectorAllSpy = vi.spyOn(document, 'querySelectorAll')
+      const currentFolder = mock<Resource>({ id: resourceId })
+      const mocks = {
+        ...defaultComponentMocks({
+          currentRoute: mock<RouteLocation>({
+            query: { scrollTo: resourceId, details: 'sharing' }
+          })
+        })
+      }
+
+      getComposableWrapper(
+        () => {
+          const { scrollToResourceFromRoute } = useScrollTo()
+          scrollToResourceFromRoute(
+            [currentFolder, mock<Resource>({ id: 'childId' })],
+            'files-app-bar'
+          )
+
+          const { setSelection } = useResourcesStore()
+          const { openSideBarPanel } = useSideBar()
+          expect(setSelection).not.toHaveBeenCalled()
+          expect(querySelectorAllSpy).not.toHaveBeenCalled()
+          expect(publishSpy).not.toHaveBeenCalledWith('app.files.navigate.page', expect.anything())
+          expect(openSideBarPanel).toHaveBeenCalledWith('sharing')
+        },
+        {
+          mocks,
+          provide: mocks,
+          pluginOptions: { piniaOptions: { resourcesStore: { currentFolder } } }
+        }
+      )
+    })
   })
 })
