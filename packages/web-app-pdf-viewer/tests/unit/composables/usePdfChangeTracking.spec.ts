@@ -115,6 +115,24 @@ describe('usePdfChangeTracking', () => {
     expect(mocks.saveDocument).not.toHaveBeenCalled()
   })
 
+  // Forms can be filled in with read-only access, e.g. to print them, but nothing gets saved.
+  it('never marks read-only files as changed when a form field gets filled in', async () => {
+    vi.useFakeTimers()
+    const { doc, state, mocks } = createDocument()
+    const { tracking, root, onChange } = setup(doc, { isReadOnly: true, startTracking: false })
+    const field = document.createElement('input')
+    root.append(field)
+    field.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+    state.hash = 'filled-in'
+    for (const eventName of ['pointerdown', 'keydown', 'beforeinput', 'input', 'keyup', 'change']) {
+      field.dispatchEvent(new Event(eventName, { bubbles: true }))
+    }
+    await vi.runAllTimersAsync()
+    await tracking.flushContent()
+    expect(onChange).not.toHaveBeenCalled()
+    expect(mocks.saveDocument).not.toHaveBeenCalled()
+  })
+
   // PDF.js commits annotations asynchronously, e.g. when leaving a tool.
   it('checks for changes when the tool or the editing state changes', async () => {
     const { doc, state } = createDocument()

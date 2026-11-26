@@ -175,7 +175,9 @@ export function usePdfViewer({
       imagesRightClickMinSize: 16,
       // The pages in the colors of a high contrast mode, like in the PDF.js viewer.
       pageColors: getPageColors(),
-      annotationMode: readOnly ? AnnotationMode.ENABLE : AnnotationMode.ENABLE_FORMS,
+      // Forms can be filled in with read-only access too, e.g. to print them, like in Firefox.
+      // Nothing gets saved then (see usePdfChangeTracking).
+      annotationMode: AnnotationMode.ENABLE_FORMS,
       annotationEditorMode: readOnly ? AnnotationEditorType.DISABLE : AnnotationEditorType.NONE,
       ...extraOptions
     })

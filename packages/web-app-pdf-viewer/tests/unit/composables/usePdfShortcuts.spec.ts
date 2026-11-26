@@ -94,6 +94,34 @@ describe('usePdfShortcuts', () => {
       expect(actions.handleEscape).not.toHaveBeenCalled()
     })
 
+    // Filled in values of read-only files are kept nowhere, closing would lose them.
+    it.each(['annotationLayer', 'xfaLayer'])(
+      'keeps read-only files open while filling in a form field (%s)',
+      (layerClass) => {
+        const { container, actions } = setup({ isReadOnly: true })
+        const layer = document.createElement('div')
+        layer.className = layerClass
+        const field = document.createElement('input')
+        layer.append(field)
+        container.append(layer)
+        expect(pressEscape(field).isForAppWrapper).toBe(false)
+        expect(actions.handleEscape).not.toHaveBeenCalled()
+      }
+    )
+
+    it('lets AppWrapper close read-only files from other inputs, e.g. the page number', () => {
+      const { input, actions } = setup({ isReadOnly: true })
+      expect(pressEscape(input).isForAppWrapper).toBe(true)
+      expect(actions.handleEscape).not.toHaveBeenCalled()
+    })
+
+    it('lets AppWrapper close read-only files from links in the pages', () => {
+      const { container, actions } = setup({ isReadOnly: true })
+      container.innerHTML = '<div class="annotationLayer"><a href="#">Link</a></div>'
+      expect(pressEscape(container.querySelector('a')).isForAppWrapper).toBe(true)
+      expect(actions.handleEscape).not.toHaveBeenCalled()
+    })
+
     it('closes the find bar from anywhere in the app', () => {
       const { container, actions } = setup({ isFindBarOpen: true })
       expect(pressEscape(container).isForAppWrapper).toBe(false)

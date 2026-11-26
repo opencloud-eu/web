@@ -1,6 +1,6 @@
 import { unref } from 'vue'
 import { mock } from 'vitest-mock-extended'
-import { AnnotationEditorType, type PDFDocumentProxy } from 'pdfjs-dist'
+import { AnnotationEditorType, AnnotationMode, type PDFDocumentProxy } from 'pdfjs-dist'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { usePdfViewer } from '../../../src/composables/usePdfViewer'
 import { AttachmentDownloadManager } from '../../../src/helpers/attachmentDownloadManager'
@@ -46,14 +46,14 @@ vi.mock('pdfjs-dist/web/pdf_viewer.mjs', async (importOriginal) => {
   }
 })
 
-function setup() {
+function setup({ isReadOnly = false } = {}) {
   calls.length = 0
   let viewer: ReturnType<typeof usePdfViewer>
   getComposableWrapper(() => {
     viewer = usePdfViewer({
       container: document.createElement('div'),
       viewerAlert: null,
-      isReadOnly: false,
+      isReadOnly,
       altTextManager: {},
       signatureManager: {},
       commentManager: {},
@@ -71,6 +71,21 @@ describe('usePdfViewer', () => {
     expect(options).toHaveProperty('linkService')
     expect(options).not.toHaveProperty('scriptingManager')
   })
+
+  it.each([
+    [false, AnnotationEditorType.NONE, true],
+    [true, AnnotationEditorType.DISABLE, false]
+  ])(
+    'renders form fields to fill in, annotating only if editable (read-only: %s)',
+    (isReadOnly, annotationEditorMode, enableHighlightFloatingButton) => {
+      const { viewer } = setup({ isReadOnly })
+      viewer.setDocument(mock<PDFDocumentProxy>())
+      const { options } = unref(viewer.viewer) as unknown as { options: object }
+      expect(options).toHaveProperty('annotationMode', AnnotationMode.ENABLE_FORMS)
+      expect(options).toHaveProperty('annotationEditorMode', annotationEditorMode)
+      expect(options).toHaveProperty('enableHighlightFloatingButton', enableHighlightFloatingButton)
+    }
+  )
 
   // PDF.js downloads attachments of annotations and links with it, see AttachmentDownloadManager.
   it('downloads attachments as binary data', () => {

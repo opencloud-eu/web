@@ -35,6 +35,11 @@ function isForPdfjs(event: KeyboardEvent) {
   return !!(event.target as Element).closest?.('.editToolbar')
 }
 
+/** A field of a form in the pages, which can be filled in with read-only access too. */
+function isFormField(target: EventTarget | null) {
+  return isEditable(target) && !!(target as Element).closest('.annotationLayer, .xfaLayer')
+}
+
 function isEditable(target: EventTarget | null) {
   return (
     target instanceof HTMLInputElement ||
@@ -316,8 +321,12 @@ export function usePdfShortcuts({
       actions.closeFindBar()
       return
     }
-    // Read-only, there is nothing to leave or deselect, so AppWrapper closes the app as usual.
+    // Read-only, there is nothing to deselect, so AppWrapper closes the app as usual. Not while
+    // filling in a form field, that would lose what was filled in.
     if (toValue(isReadOnly)) {
+      if (isFormField(event.target)) {
+        event.stopPropagation()
+      }
       return
     }
     actions.handleEscape(event)
