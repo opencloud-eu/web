@@ -20,30 +20,9 @@
 - fix: sanitize inlined SVGs [[#4559](https://github.com/opencloud-eu/web/pull/4559)]
 - chore: check translations for markup after compiling [[#4561](https://github.com/opencloud-eu/web/pull/4561)]
 
-### 📈 Enhancement
-
-- perf: avoid quadratic work when uploading many files [[#4617](https://github.com/opencloud-eu/web/pull/4617)]
-- feat: files infinite scroll [[#4429](https://github.com/opencloud-eu/web/pull/4429)]
-- feat: show critical updates more prominently [[#4623](https://github.com/opencloud-eu/web/pull/4623)]
-- feat: let apps flush their content before saving [[#4219](https://github.com/opencloud-eu/web/pull/4219)]
-- feat: make the support card collapsible instead of dismissable [[#4590](https://github.com/opencloud-eu/web/pull/4590)]
-- feat: allow dismissing the support card in the sidebar [[#4560](https://github.com/opencloud-eu/web/pull/4560)]
-- feat: read critical versions from a semver range in the version check [[#4551](https://github.com/opencloud-eu/web/pull/4551)]
-- feat: add duplicate action for files and folders [[#4534](https://github.com/opencloud-eu/web/pull/4534)]
-- feat(sharing): hide the invite form when user sharing is disabled [[#4548](https://github.com/opencloud-eu/web/pull/4548)]
-- feat: add favorites for project spaces and share roots [[#4547](https://github.com/opencloud-eu/web/pull/4547)]
-- feat: add easy and sign language menu to the top bar [[#4537](https://github.com/opencloud-eu/web/pull/4537)]
-- feat: add right-to-left layout support [[#3540](https://github.com/opencloud-eu/web/pull/3540)]
-- feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
-
-### ✅ Tests
-
-- test: add e2e tests for sorting the files list [[#4619](https://github.com/opencloud-eu/web/pull/4619)]
-- test: add e2e test for the favorites filters [[#4592](https://github.com/opencloud-eu/web/pull/4592)]
-- test(e2e): add favorites tests for spaces and shares [[#4563](https://github.com/opencloud-eu/web/pull/4563)]
-
 ### 🐛 Bug Fixes
 
+- fix: resolve stale share URLs relative to the share root [[#4640](https://github.com/opencloud-eu/web/pull/4640)]
 - fix: show a loading spinner while app tokens are loading [[#4602](https://github.com/opencloud-eu/web/pull/4602)]
 - fix: wrap long names on the encrypted folder setup page [[#4600](https://github.com/opencloud-eu/web/pull/4600)]
 - fix: let Back leave Deleted files for users without project spaces [[#4599](https://github.com/opencloud-eu/web/pull/4599)]
@@ -71,6 +50,28 @@
 - fix: wrap long group names in the user groups field [[#4494](https://github.com/opencloud-eu/web/pull/4494)]
 - fix: wrap long text in the preview stage [[#4489](https://github.com/opencloud-eu/web/pull/4489)]
 - fix: disable sidebar toggle on account sub pages [[#4490](https://github.com/opencloud-eu/web/pull/4490)]
+
+### 📈 Enhancement
+
+- perf: avoid quadratic work when uploading many files [[#4617](https://github.com/opencloud-eu/web/pull/4617)]
+- feat: files infinite scroll [[#4429](https://github.com/opencloud-eu/web/pull/4429)]
+- feat: show critical updates more prominently [[#4623](https://github.com/opencloud-eu/web/pull/4623)]
+- feat: let apps flush their content before saving [[#4219](https://github.com/opencloud-eu/web/pull/4219)]
+- feat: make the support card collapsible instead of dismissable [[#4590](https://github.com/opencloud-eu/web/pull/4590)]
+- feat: allow dismissing the support card in the sidebar [[#4560](https://github.com/opencloud-eu/web/pull/4560)]
+- feat: read critical versions from a semver range in the version check [[#4551](https://github.com/opencloud-eu/web/pull/4551)]
+- feat: add duplicate action for files and folders [[#4534](https://github.com/opencloud-eu/web/pull/4534)]
+- feat(sharing): hide the invite form when user sharing is disabled [[#4548](https://github.com/opencloud-eu/web/pull/4548)]
+- feat: add favorites for project spaces and share roots [[#4547](https://github.com/opencloud-eu/web/pull/4547)]
+- feat: add easy and sign language menu to the top bar [[#4537](https://github.com/opencloud-eu/web/pull/4537)]
+- feat: add right-to-left layout support [[#3540](https://github.com/opencloud-eu/web/pull/3540)]
+- feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
+
+### ✅ Tests
+
+- test: add e2e tests for sorting the files list [[#4619](https://github.com/opencloud-eu/web/pull/4619)]
+- test: add e2e test for the favorites filters [[#4592](https://github.com/opencloud-eu/web/pull/4592)]
+- test(e2e): add favorites tests for spaces and shares [[#4563](https://github.com/opencloud-eu/web/pull/4563)]
 
 ### 📦️ Dependencies
 
