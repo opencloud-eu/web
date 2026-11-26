@@ -28,6 +28,10 @@ import { ClientService, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { PluginOpts } from '@uppy/core'
 import { keyBy } from 'lodash-es'
 
+function isQuotaExceeded(spaceQuota: SpaceResource['spaceQuota'], uploadSize: number) {
+  return typeof spaceQuota?.remaining === 'number' && spaceQuota.remaining < uploadSize
+}
+
 export interface HandleUploadOptions {
   clientService: ClientService
   language: Language
@@ -219,8 +223,10 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     return Object.values(filesToUpload)
   }
 
-  checkQuotaExceeded(filesToUpload: OcUppyFile[], mergedFolders: string[] = []): boolean {
-    let quotaExceeded = false
+  async checkQuotaExceeded(
+    filesToUpload: OcUppyFile[],
+    mergedFolders: string[] = []
+  ): Promise<boolean> {
     const resourcesByName = getResourcesByName(this.resourcesStore.resources)
 
     const uploadSizeSpaceMapping = filesToUpload.reduce((acc, uppyFile) => {
@@ -273,37 +279,63 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       return acc
     }, [])
 
+    const exceededRecords = uploadSizeSpaceMapping.filter(({ space, uploadSize }) =>
+      isQuotaExceeded(space.spaceQuota, uploadSize)
+    )
+    if (!exceededRecords.length) {
+      return false
+    }
+
+    // the cached quota is outdated if it has been raised or space has been freed elsewhere
+    const refreshedRecords = await Promise.all(
+      exceededRecords.map(async (record) => ({
+        ...record,
+        spaceQuota: await this.loadSpaceQuota(record.space)
+      }))
+    )
+    const stillExceededRecords = refreshedRecords.filter(({ spaceQuota, uploadSize }) =>
+      isQuotaExceeded(spaceQuota, uploadSize)
+    )
+
     const { $gettext } = this.language
-    uploadSizeSpaceMapping.forEach(({ space, uploadSize }) => {
-      if (
-        typeof space.spaceQuota.remaining === 'number' &&
-        space.spaceQuota.remaining < uploadSize
-      ) {
-        let spaceName = space.name
+    stillExceededRecords.forEach(({ space, spaceQuota, uploadSize }) => {
+      let spaceName = space.name
 
-        if (space.driveType === 'personal') {
-          spaceName = $gettext('Personal')
-        }
-
-        this.messageStore.showErrorMessage({
-          title: $gettext('Insufficient quota'),
-          desc: $gettext(
-            'Insufficient quota on %{spaceName}. You need additional %{missingSpace} to upload these files',
-            {
-              spaceName,
-              missingSpace: formatFileSize(
-                (space.spaceQuota.remaining - uploadSize) * -1,
-                this.language.current
-              )
-            }
-          )
-        })
-
-        quotaExceeded = true
+      if (space.driveType === 'personal') {
+        spaceName = $gettext('Personal')
       }
+
+      this.messageStore.showErrorMessage({
+        title: $gettext('Insufficient quota'),
+        desc: $gettext(
+          'Insufficient quota on %{spaceName}. You need additional %{missingSpace} to upload these files',
+          {
+            spaceName,
+            missingSpace: formatFileSize(
+              (spaceQuota.remaining - uploadSize) * -1,
+              this.language.current
+            )
+          }
+        )
+      })
     })
 
-    return quotaExceeded
+    return stillExceededRecords.length > 0
+  }
+
+  /**
+   * Fetches the current quota of the given space and updates it in the store.
+   * Falls back to the cached quota if the request fails.
+   */
+  async loadSpaceQuota(space: SpaceResource): Promise<SpaceResource['spaceQuota']> {
+    try {
+      const { spaceQuota } = await this.clientService.graphAuthenticated.drives.getDrive(space.id)
+      this.spacesStore.updateSpaceField({ id: space.id, field: 'spaceQuota', value: spaceQuota })
+      return spaceQuota
+    } catch (e) {
+      console.error(e)
+      return space.spaceQuota
+    }
   }
 
   /**
@@ -573,7 +605,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
 
     // quota check after the conflict handling, so that only files that will actually be uploaded count
     if (this.quotaCheckEnabled) {
-      const quotaExceeded = this.checkQuotaExceeded(filesToUpload, mergedFolders)
+      const quotaExceeded = await this.checkQuotaExceeded(filesToUpload, mergedFolders)
       if (quotaExceeded) {
         return this.uppyService.clearInputs()
       }
