@@ -124,6 +124,7 @@ describe('OcSidebarNav', () => {
       }
 
       afterEach(() => {
+        vi.useRealTimers()
         document.querySelectorAll('[role="tooltip"]').forEach((el) => el.remove())
       })
 
@@ -136,7 +137,6 @@ describe('OcSidebarNav', () => {
 
         expect(getTooltip().textContent).toBe(message)
         expect(wrapper.find('.oc-hidden-announcer').text()).toBe(message)
-        vi.useRealTimers()
         wrapper.unmount()
       })
       it('shows no hint for allowed drags', async () => {

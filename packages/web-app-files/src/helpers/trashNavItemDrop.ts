@@ -23,6 +23,9 @@ export function createTrashNavItemDrop({
   const resourcesStore = useResourcesStore()
   const extensionRegistry = useExtensionRegistry()
 
+  // the delete action can't be created here: navItems() doesn't run in a setup context, which the
+  // action's composables need. the registered action gets looked up at drop time instead, which
+  // also respects extensions disabled by the admin.
   function getDeleteAction() {
     return extensionRegistry
       .requestExtensions<ActionExtension>(contextActionsExtensionPoint)

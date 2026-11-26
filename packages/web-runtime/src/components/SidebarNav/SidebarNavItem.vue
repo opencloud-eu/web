@@ -47,17 +47,11 @@
   </li>
 </template>
 <script setup lang="ts">
-import {
-  FillType,
-  Icon,
-  hideElementTooltip,
-  isImageIcon,
-  showElementTooltip,
-  toNamedIcon
-} from '@opencloud-eu/design-system/helpers'
+import { FillType, Icon, isImageIcon, toNamedIcon } from '@opencloud-eu/design-system/helpers'
 import { AppNavigationItemDrop, useRouter } from '@opencloud-eu/web-pkg'
-import { computed, nextTick, onBeforeUnmount, ref, unref, useTemplateRef } from 'vue'
+import { computed, unref, useTemplateRef } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
+import { useNavItemDrop } from '../../composables/sidebarNav'
 
 const {
   name,
@@ -96,83 +90,10 @@ const attrs = computed(() => {
 })
 
 const navItem = useTemplateRef<HTMLElement>('navItem')
-const isDropTargetActive = ref(false)
-// explains why a drag can't be dropped, hover tooltips don't work while dragging
-const dropHint = ref('')
-
-async function showDropHint(message: string) {
-  if (unref(dropHint) === message) {
-    return
-  }
-  dropHint.value = message
-  // the tooltip directive picks up the new text on the next render
-  await nextTick()
-  await showElementTooltip(unref(navItem))
-}
-
-function hideDropHint() {
-  if (!unref(dropHint)) {
-    return
-  }
-  hideElementTooltip(unref(navItem))
-  dropHint.value = ''
-}
-
-// a drag can end without leaving the item (e.g. cancelled via Escape), dragend fires at the drag
-// source and bubbles up to the document. a new drag can also start without leaving the item.
-function listenForDragEnd() {
-  document.addEventListener('dragend', resetDropState)
-  document.addEventListener('dragstart', resetDropState)
-}
-
-function resetDropState() {
-  document.removeEventListener('dragend', resetDropState)
-  document.removeEventListener('dragstart', resetDropState)
-  isDropTargetActive.value = false
-  hideDropHint()
-}
-
-function onDragOver(event: DragEvent) {
-  if (!drop.isAllowed(event)) {
-    isDropTargetActive.value = false
-    const message = drop.notAllowedMessage?.(event)
-    if (message) {
-      listenForDragEnd()
-      showDropHint(message)
-    }
-    return
-  }
-  hideDropHint()
-  // allows the drop, otherwise the browser shows the "not allowed" cursor
-  event.preventDefault()
-  listenForDragEnd()
-  isDropTargetActive.value = true
-}
-
-function onDragLeave(event: DragEvent) {
-  if ((event.currentTarget as HTMLElement).contains(event.relatedTarget as HTMLElement)) {
-    return
-  }
-  resetDropState()
-}
-
-function onDrop(event: DragEvent) {
-  resetDropState()
-  if (!drop.isAllowed(event)) {
-    return
-  }
-  event.preventDefault()
-  drop.handler(event)
-}
-
-const dropListeners = computed(() => {
-  if (!drop) {
-    return {}
-  }
-  return { dragenter: onDragOver, dragover: onDragOver, dragleave: onDragLeave, drop: onDrop }
+const { isDropTargetActive, dropHint, dropListeners } = useNavItemDrop({
+  drop: () => drop,
+  navItem
 })
-
-onBeforeUnmount(resetDropState)
 
 const navName = computed(() => {
   if (target) {
