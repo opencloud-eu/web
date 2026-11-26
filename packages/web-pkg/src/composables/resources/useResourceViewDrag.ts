@@ -48,10 +48,15 @@ export const useResourceViewDrag = ({
   const setDragItem = async (item: Resource, event: DragEvent) => {
     dragItem.value = item
     await nextTick()
-    unref(ghostElement).$el.ariaHidden = 'true'
-    unref(ghostElement).$el.style.left = '-99999px'
-    unref(ghostElement).$el.style.top = '-99999px'
-    event.dataTransfer.setDragImage(unref(ghostElement).$el, 0, 0)
+    // the drag can end or the view can unmount before the ghost got rendered
+    const el = unref(ghostElement)?.$el
+    if (!el || unref(dragItem) !== item) {
+      return
+    }
+    el.ariaHidden = 'true'
+    el.style.left = '-99999px'
+    el.style.top = '-99999px'
+    event.dataTransfer.setDragImage(el, 0, 0)
     event.dataTransfer.dropEffect = 'move'
     event.dataTransfer.effectAllowed = 'move'
   }

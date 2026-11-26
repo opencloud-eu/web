@@ -11,6 +11,7 @@ import {
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
 import { resourceDragDataType, useResourcesStore } from '../../../../src'
 import { mock } from 'vitest-mock-extended'
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('../../../../src/helpers/contextMenuDropdown')
 vi.mock('../../../../src/composables/viewMode', async (importOriginal) => {
@@ -274,7 +275,7 @@ describe('ResourceTiles component', () => {
       expect(event.preventDefault).toHaveBeenCalled()
       expect(useResourcesStore().setResourceDrag).not.toHaveBeenCalled()
     })
-    it('emits the "update:selectedIds"-event on drag start', () => {
+    it('emits the "update:selectedIds"-event on drag start', async () => {
       const { wrapper } = getWrapper({
         props: { resources: spacesResources, isDraggable: true },
         stubs: { ResourceTile: true }
@@ -282,10 +283,11 @@ describe('ResourceTiles component', () => {
 
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
       resourceTile.vm.$emit('dragstart', getDragStartEvent())
+      await flushPromises()
 
       expect(wrapper.emitted('update:selectedIds')).toBeDefined()
     })
-    it('replaces the selection with the dragged resource if it is not selected', () => {
+    it('replaces the selection with the dragged resource if it is not selected', async () => {
       const { wrapper } = getWrapper({
         props: { resources: spacesResources, isDraggable: true },
         stubs: { ResourceTile: true },
@@ -294,12 +296,13 @@ describe('ResourceTiles component', () => {
 
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
       resourceTile.vm.$emit('dragstart', getDragStartEvent())
+      await flushPromises()
 
       const resourcesStore = useResourcesStore()
       expect(resourcesStore.setSelection).toHaveBeenCalledWith(['1'])
       expect(wrapper.emitted('update:selectedIds')).toEqual([[['1']]])
     })
-    it('keeps the selection if the dragged resource is already selected', () => {
+    it('keeps the selection if the dragged resource is already selected', async () => {
       const { wrapper } = getWrapper({
         props: { resources: spacesResources, isDraggable: true },
         stubs: { ResourceTile: true },
@@ -308,6 +311,7 @@ describe('ResourceTiles component', () => {
 
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
       resourceTile.vm.$emit('dragstart', getDragStartEvent())
+      await flushPromises()
 
       const resourcesStore = useResourcesStore()
       expect(resourcesStore.setSelection).not.toHaveBeenCalled()
@@ -321,29 +325,45 @@ describe('ResourceTiles component', () => {
         selectedIds: ['1', '2'],
         expectedIds: ['1', '2']
       }
-    ])('marks the drag and shares $name until the drag ends', ({ selectedIds, expectedIds }) => {
-      const space = mock<SpaceResource>()
+    ])(
+      'marks the drag and shares $name until the drag ends',
+      async ({ selectedIds, expectedIds }) => {
+        const space = mock<SpaceResource>()
+        const { wrapper } = getWrapper({
+          props: { resources: spacesResources, space, isDraggable: true },
+          stubs: { ResourceTile: true },
+          selectedIds
+        })
+        const setData = vi.fn()
+        const target = document.createElement('div')
+
+        wrapper
+          .findComponent<any>('resource-tile-stub')
+          .vm.$emit('dragstart', getDragStartEvent({ setData, target }))
+        await flushPromises()
+
+        const resourcesStore = useResourcesStore()
+        expect(setData).toHaveBeenCalledWith(resourceDragDataType, expectedIds.join())
+        expect(resourcesStore.setResourceDrag).toHaveBeenCalledWith({
+          resources: spacesResources.filter(({ id }) => expectedIds.includes(id)),
+          space
+        })
+
+        target.dispatchEvent(new Event('dragend'))
+        expect(resourcesStore.setResourceDrag).toHaveBeenLastCalledWith(null)
+      }
+    )
+    it('does not touch the ghost when the drag ends before it got rendered', async () => {
       const { wrapper } = getWrapper({
-        props: { resources: spacesResources, space, isDraggable: true },
-        stubs: { ResourceTile: true },
-        selectedIds
+        props: { resources: spacesResources, isDraggable: true },
+        stubs: { ResourceTile: true }
       })
-      const setData = vi.fn()
-      const target = document.createElement('div')
+      const event = getDragStartEvent()
+      wrapper.findComponent<any>('resource-tile-stub').vm.$emit('dragstart', event)
+      event.target.dispatchEvent(new Event('dragend'))
+      await flushPromises()
 
-      wrapper
-        .findComponent<any>('resource-tile-stub')
-        .vm.$emit('dragstart', getDragStartEvent({ setData, target }))
-
-      const resourcesStore = useResourcesStore()
-      expect(setData).toHaveBeenCalledWith(resourceDragDataType, expectedIds.join())
-      expect(resourcesStore.setResourceDrag).toHaveBeenCalledWith({
-        resources: spacesResources.filter(({ id }) => expectedIds.includes(id)),
-        space
-      })
-
-      target.dispatchEvent(new Event('dragend'))
-      expect(resourcesStore.setResourceDrag).toHaveBeenLastCalledWith(null)
+      expect(event.dataTransfer.setDragImage).not.toHaveBeenCalled()
     })
     it('emits the "fileDropped"-event on resource drop', () => {
       const { wrapper } = getWrapper({
@@ -359,7 +379,7 @@ describe('ResourceTiles component', () => {
 
       expect(wrapper.emitted('fileDropped')).toBeDefined()
     })
-    it('makes the tiles draggable but no drop targets with "isDraggable"', () => {
+    it('makes the tiles draggable but no drop targets with "isDraggable"', async () => {
       const { wrapper } = getWrapper({
         props: { resources: spacesResources, isDraggable: true },
         stubs: { ResourceTile: true }
@@ -368,6 +388,7 @@ describe('ResourceTiles component', () => {
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
       expect(resourceTile.attributes('draggable')).toBe('true')
       resourceTile.vm.$emit('dragstart', getDragStartEvent())
+      await flushPromises()
       resourceTile.vm.$emit('drop', {
         dataTransfer: {}
       } as DragEvent)
