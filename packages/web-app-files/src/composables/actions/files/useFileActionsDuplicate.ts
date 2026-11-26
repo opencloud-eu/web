@@ -12,9 +12,12 @@ import { useGettext } from 'vue3-gettext'
 import {
   FileAction,
   FileActionOptions,
+  getDuplicateExtension,
+  getVaultClaim,
   resolveFileNameDuplicate,
   useClientService,
   useConfigStore,
+  useExtensionRegistry,
   useLoadingService,
   useMessages,
   useResourcesStore
@@ -23,6 +26,7 @@ import {
 export function useFileActionsDuplicate() {
   const clientService = useClientService()
   const configStore = useConfigStore()
+  const extensionRegistry = useExtensionRegistry()
   const loadingService = useLoadingService()
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
@@ -54,9 +58,11 @@ export function useFileActionsDuplicate() {
           existingResourcesByPath.set(parentPath, existingResources)
         }
 
+        const isVaultRoot =
+          getVaultClaim(extensionRegistry, space, resource.path)?.vaultRoot === resource.path
         const duplicatedName = resolveFileNameDuplicate(
           resource.name,
-          resource.extension ?? '',
+          getDuplicateExtension(resource, isVaultRoot),
           existingResources
         )
         existingResources.push({ name: duplicatedName } as Resource)

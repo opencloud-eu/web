@@ -176,7 +176,8 @@ describe('resourcesTransfer', () => {
       return {
         id,
         name,
-        extension: '',
+        // like a built resource, folders get an extension from the name
+        extension: name.includes('.') ? name.split('.').pop() : '',
         path: `/${dir}/${name}`,
         type: 'folder',
         isFolder: true
@@ -400,6 +401,31 @@ describe('resourcesTransfer', () => {
         const transferData = await resourceTransfer.getTransferData(TransferType.MOVE)
 
         expect(transferData.map(({ path }) => path)).toEqual(['/target/x', '/target/x (1)'])
+      })
+
+      it('puts the counter of kept folders at the end of names with a dot', async () => {
+        const resources = [
+          folder('1', 'src', 'Photos 2026.01'),
+          folder('2', 'src', 'my.folder.v1.2'),
+          file('3', 'src', 'notes.txt')
+        ]
+        const { resourceTransfer } = getResourceTransfer({
+          resources,
+          children: [
+            existing('Photos 2026.01', true),
+            existing('my.folder.v1.2', true),
+            existing('notes.txt')
+          ],
+          answers: [keepBothForAll]
+        })
+
+        const transferData = await resourceTransfer.getTransferData(TransferType.COPY)
+
+        expect(transferData.map(({ path }) => path)).toEqual([
+          '/target/Photos 2026.01 (1)',
+          '/target/my.folder.v1.2 (1)',
+          '/target/notes (1).txt'
+        ])
       })
 
       it('gives three files with the same name different names', async () => {
