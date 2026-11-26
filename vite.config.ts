@@ -12,6 +12,7 @@ import fetch from 'node-fetch'
 import { Agent } from 'https'
 import { federationRegistrationHost } from './dev/vite-plugins/federationRegistrationHost.ts'
 import { lazyChunks } from './dev/vite-plugins/lazyChunks.ts'
+import { pdfjsAssetTargets, pdfjsLegacyAliases, scopePdfjsCss } from './dev/vite-plugins/pdfjs.ts'
 import {
   l10nChunkGroups,
   l10nChunks,
@@ -187,7 +188,8 @@ export default defineConfig(({ mode, command }) => {
         'process.env.PACKAGE_VERSION': JSON.stringify(version)
       },
       resolve: {
-        dedupe: ['vue3-gettext']
+        dedupe: ['vue3-gettext'],
+        alias: pdfjsLegacyAliases
       },
       plugins: [
         tailwindcss(),
@@ -217,14 +219,16 @@ export default defineConfig(({ mode, command }) => {
                 src: 'oidc-silent-redirect.html',
                 dest: '.',
                 rename: { stripBase: 0 }
-              }
+              },
+              ...pdfjsAssetTargets()
             ]
           })()
         }),
+        scopePdfjsCss(),
         registrationHost,
         l10nChunks(),
         stubDesignSystemTranslations(),
-        lazyChunks(['tiptap-vendor', ...l10nGroups.map(({ name }) => name)]),
+        lazyChunks(['tiptap-vendor', ...l10nGroups.map(({ name }) => name)], [/\/pdfjs-dist\//]),
         {
           name: '@opencloud-eu/vite-plugin-runtime-config',
           configureServer(server: ViteDevServer) {

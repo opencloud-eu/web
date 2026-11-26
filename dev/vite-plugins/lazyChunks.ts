@@ -1,11 +1,11 @@
-// Vite plugin: fails the build if one of the given chunks is statically
-// reachable from an entry, i.e. would be loaded on first paint. This notifies
-// us when a chunk that should be lazy-loaded is incorrectly included in the
-// initial bundle.
+// Vite plugin: fails the build if one of the given chunks, or a chunk containing
+// one of the given modules, is statically reachable from an entry, i.e. would be
+// loaded on first paint. This notifies us when a chunk that should be lazy-loaded
+// is incorrectly included in the initial bundle.
 
 import type { Plugin } from 'vite'
 
-export function lazyChunks(names: string[]): Plugin {
+export function lazyChunks(names: string[], modules: RegExp[] = []): Plugin {
   return {
     name: 'lazy-chunks',
     apply: 'build',
@@ -22,13 +22,14 @@ export function lazyChunks(names: string[]): Plugin {
         const fileName = queue.shift()
         const chunk = byFileName.get(fileName)
 
-        if (names.includes(chunk.name)) {
+        const lazyModule = chunk.moduleIds.find((id) => modules.some((module) => module.test(id)))
+        if (names.includes(chunk.name) || lazyModule) {
           const path = [fileName]
           while (importer.get(path[0])) {
             path.unshift(importer.get(path[0]))
           }
           this.error(
-            `"${chunk.name}" must be loaded lazily but is statically imported via:\n  ${path.join('\n  -> ')}`
+            `"${lazyModule || chunk.name}" must be loaded lazily but is statically imported via:\n  ${path.join('\n  -> ')}`
           )
         }
 

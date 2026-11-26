@@ -1,0 +1,131 @@
+/*
+ * Fixes for PDF.js' own UI where OpenCloud's global styles get in its way. PDF.js' styling is
+ * kept as is otherwise.
+ */
+
+/*
+ * PDF.js sizes pages and their layers for the browser's default box-sizing. OpenCloud's CSS
+ * reset switches everything to border-box, which shrank the rendered page by its border while
+ * the text, form and annotation layers kept their size: search highlights, form fields and
+ * strokes being drawn were off. :where() keeps PDF.js' own box-sizing rules in charge, and the
+ * reset (in a cascade layer) loses against this unlayered rule anyway.
+ */
+:where(
+  .pdf-viewer .pdfViewer,
+  .pdf-viewer .pdfViewer *,
+  .pdf-viewer .pdfViewer ::before,
+  .pdf-viewer .pdfViewer ::after
+) {
+  box-sizing: content-box;
+}
+
+/*
+ * OpenCloud's CSS reset lets buttons and inputs inherit the font of their parent. PDF.js puts
+ * its floating edit toolbar and comment button inside the annotation, whose font size can be
+ * huge, so the icons got pushed out of view and the color input was distorted.
+ */
+.pdf-viewer .annotationEditorLayer :is(.editToolbar, .annotationCommentButton) {
+  font: initial;
+  line-height: normal;
+}
+
+/*
+ * pdf_viewer.css asks for the color scheme of the system (see dev/vite-plugins/pdfjs.ts), the viewer
+ * follows the OpenCloud theme instead, which the runtime marks on the document. PDF.js'
+ * editor toolbars and comment buttons take their colors from it.
+ */
+.pdf-viewer {
+  color-scheme: light;
+}
+
+[data-color-scheme='dark'] .pdf-viewer {
+  color-scheme: dark;
+}
+
+/*
+ * PDF.js focuses the selected annotation and marks it with its own outline. OpenCloud's global
+ * focus ring (in a cascade layer, so this unlayered rule wins anyway) would add a second one
+ * around it.
+ */
+.pdf-viewer
+  .annotationEditorLayer
+  :is(.freeTextEditor, .highlightEditor, .inkEditor, .stampEditor, .signatureEditor):focus-visible {
+  box-shadow: none !important;
+}
+
+/*
+ * Chromium pads the swatch of color inputs unevenly, which turns PDF.js' round color button
+ * into an ellipse.
+ */
+.pdf-viewer .annotationEditorLayer .editToolbar .basicColorPicker::-webkit-color-swatch-wrapper {
+  padding: 4px;
+}
+
+/*
+ * The pages get the focus for scrolling with the keyboard (e.g. PageUp after clicking a
+ * thumbnail), like in the PDF.js viewer. OpenCloud's focus ring would frame the whole viewer.
+ */
+.pdf-viewer .pdf-viewer-viewer-container:focus {
+  outline: none;
+  box-shadow: none !important;
+}
+
+/*
+ * PDF.js tints comments with the annotation color, readable against the text color it reads
+ * from a probe element on the body. OpenCloud's text color isn't the black PDF.js expects, then
+ * only white is readable enough and every comment ends up white.
+ */
+body > span.comment.sidebar {
+  --comment-fg-color: #000;
+}
+
+/* The tint is light then, the icon on it must not turn light with a dark system theme. */
+.pdf-viewer .annotationCommentButton {
+  color-scheme: light;
+}
+
+/* The comment icon of PDF.js' buttons for comments, set by the full PDF.js viewer only */
+.pdf-viewer {
+  --comment-edit-button-icon: url('../../node_modules/pdfjs-dist/web/images/comment-editButton.svg');
+}
+
+/*
+ * The PDF.js viewer outlines pages with a shadow image of its own stylesheet, without it
+ * white pages blend into the light background. A hairline along the visible page edge, inside
+ * the transparent border PDF.js keeps around pages.
+ */
+.pdf-viewer .pdfViewer .page {
+  outline: 1px solid rgb(0 0 0 / 0.12);
+  outline-offset: -9px;
+}
+
+/*
+ * OpenCloud's colors for what PDF.js draws around annotations (the outline and resizers of the
+ * selected one, its toolbar) instead of Firefox' palette. Pages stay white in the dark theme,
+ * so the outline takes OpenCloud's dark blue of both themes, the toolbar follows the theme.
+ * High contrast mode keeps PDF.js' system colors. Variables PDF.js composes from others on
+ * :root are set again, they'd keep its colors.
+ */
+@media not (forced-colors: active) {
+  .pdf-viewer {
+    --outline-color: var(--oc-role-on-primary);
+    --outline-around-color: white;
+    --hover-outline-around-color: var(--outline-around-color);
+    --hover-outline-color: var(--oc-role-outline);
+    --editor-selection-outline: solid var(--outline-width) var(--outline-color);
+    --focus-outline-around: solid var(--outline-around-width) var(--outline-around-color);
+    --hover-outline: solid var(--outline-width) var(--hover-outline-color);
+    --hover-outline-around: solid var(--outline-around-width) var(--hover-outline-around-color);
+    --resizer-bg-color: var(--outline-color);
+  }
+
+  /* Colors of OpenCloud's drops. */
+  .pdf-viewer .pdfViewer .editToolbar {
+    --editor-toolbar-bg-color: var(--oc-role-surface);
+    --editor-toolbar-fg-color: var(--oc-role-on-surface);
+    --editor-toolbar-border-color: var(--oc-role-surface-container-highest);
+    --editor-toolbar-hover-bg-color: var(--oc-role-surface-container-high);
+    --editor-toolbar-focus-outline-color: var(--oc-role-secondary);
+    --editor-toolbar-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+}

@@ -37,7 +37,7 @@ const previewMotionPhotoBadge =
   '//*[contains(@class, "photo-roll-item")][.//*[@data-test-resource-name="%s"]]//*[@data-testid="motion-photo-badge"]'
 const mediaNavigationButton = `//button[contains(@class, "preview-controls-%s")]`
 // file viewer
-const pdfViewerContainer = '#pdf-viewer .pdf-viewer'
+const pdfViewerContainer = '#pdf-viewer .pdf-viewer .page[data-page-number="1"]'
 const textEditorContainer = '.text-editor-provider .ProseMirror'
 // online office locators
 // Collabora

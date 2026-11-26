@@ -2,12 +2,17 @@
   "name": "pdf-viewer",
   "version": "0.0.0",
   "private": true,
-  "description": "OpenCloud web PDF viewer",
+  "description": "OpenCloud web PDF viewer: view, annotate, fill forms and rearrange pages, based on PDF.js",
   "license": "AGPL-3.0",
+  "dependencies": {
+    "@vueuse/core": "^14.0.0 || ^15.0.0",
+    "pdfjs-dist": "^6.5.438"
+  },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*"
   },
   "peerDependencies": {
+    "@opencloud-eu/design-system": "workspace:*",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
     "vue3-gettext": "^4.0.0-beta.1"

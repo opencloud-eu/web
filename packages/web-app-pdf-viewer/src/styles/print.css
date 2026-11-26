@@ -1,0 +1,41 @@
+/* See usePdfPrint.ts. Only the rendered pages are visible while printing. */
+#pdf-viewer-print-container {
+  display: none;
+}
+
+@media print {
+  /* Only while the PDF viewer prints, the stylesheet stays loaded when other apps print */
+  body:has(> #pdf-viewer-print-container) > :not(#pdf-viewer-print-container) {
+    display: none !important;
+  }
+
+  #pdf-viewer-print-container {
+    display: block;
+  }
+
+  /*
+   * Pure XFA forms, like #printContainer in the PDF.js viewer, whose html and body are 100%
+   * high while printing. Here they aren't, so each page takes the paper (@page, see
+   * usePdfPrint.ts) by itself, otherwise they'd all have no height and print onto one sheet.
+   */
+  #pdf-viewer-print-container > .xfaPrintedPage {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    break-after: page;
+    break-inside: avoid;
+  }
+
+  #pdf-viewer-print-container > .xfaPrintedPage .xfaPage {
+    position: absolute;
+  }
+
+  #pdf-viewer-print-container img {
+    display: block;
+    max-width: 100%;
+    max-height: 100vh;
+    margin: 0 auto;
+    break-after: page;
+  }
+}
