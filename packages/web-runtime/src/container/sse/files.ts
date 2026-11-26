@@ -163,6 +163,39 @@ function replaceAppRouteFolder(
   })
 }
 
+/**
+ * Sets the renamed or moved current folder and replaces the route with its new path.
+ */
+function replaceCurrentFolder(
+  { resourcesStore, router }: Pick<SSEEventOptions, 'resourcesStore' | 'router'>,
+  space: SpaceResource,
+  currentFolder: Resource,
+  updatedResource: Resource
+) {
+  resourcesStore.setCurrentFolder(updatedResource)
+
+  // apps (e.g. the preview) set the parent folder of the opened file as current folder,
+  // their route must not be replaced with the folder route
+  const routeName = unref(router.currentRoute).name as string
+  if (!folderRouteNames.includes(routeName)) {
+    if (currentFolder.path === updatedResource.path) {
+      return
+    }
+    moveFolderChildren(resourcesStore, space, currentFolder.path, updatedResource.path)
+    return replaceAppRouteFolder(router, space, currentFolder.path, updatedResource.path)
+  }
+
+  const { params, query } = createFileRouteOptions(space, {
+    path: updatedResource.path,
+    fileId: updatedResource.fileId
+  })
+  return router.replace({
+    name: routeName,
+    params,
+    query: { ...unref(router.currentRoute).query, ...query }
+  })
+}
+
 export const onSSEItemRenamedEvent = async ({
   sseData,
   resourcesStore,
@@ -199,28 +232,7 @@ export const onSSEItemRenamedEvent = async ({
   )
 
   if (resourceIsCurrentFolder) {
-    resourcesStore.setCurrentFolder(updatedResource)
-
-    // apps (e.g. the preview) set the parent folder of the opened file as current folder,
-    // their route must not be replaced with the folder route
-    const routeName = unref(router.currentRoute).name as string
-    if (!folderRouteNames.includes(routeName)) {
-      if (currentFolder.path === updatedResource.path) {
-        return
-      }
-      moveFolderChildren(resourcesStore, space, currentFolder.path, updatedResource.path)
-      return replaceAppRouteFolder(router, space, currentFolder.path, updatedResource.path)
-    }
-
-    const { params, query } = createFileRouteOptions(space, {
-      path: updatedResource.path,
-      fileId: updatedResource.fileId
-    })
-    return router.replace({
-      name: routeName,
-      params,
-      query: { ...unref(router.currentRoute).query, ...query }
-    })
+    return replaceCurrentFolder({ resourcesStore, router }, space, currentFolder, updatedResource)
   }
 
   resourcesStore.upsertResource(updatedResource)
@@ -526,11 +538,74 @@ async function updateMovedResourceInFlatList({
   resourcesStore.upsertResource(movedResource)
 }
 
-export const onSSEItemMovedEvent = async ({
+/**
+ * Follows the moved current folder to its new location. If it can't be loaded there, the user gets
+ * notified instead.
+ */
+async function updateMovedCurrentFolder({
   sseData,
+  language,
+  messageStore,
   resourcesStore,
   spacesStore,
-  clientService
+  clientService,
+  router
+}: Pick<
+  SSEEventOptions,
+  | 'sseData'
+  | 'language'
+  | 'messageStore'
+  | 'resourcesStore'
+  | 'spacesStore'
+  | 'clientService'
+  | 'router'
+>) {
+  const currentFolder = resourcesStore.currentFolder
+  const space = getEventSpace({ spacesStore, resourcesStore }, currentFolder.storageId)
+  if (!space) {
+    return
+  }
+
+  let movedFolder: Resource
+  // within shares the path of a folder is resolved via its old parent folder, hence a moved folder
+  // can't be followed there
+  if (!isShareSpaceResource(space)) {
+    try {
+      movedFolder = await loadEventResource(
+        { clientService, resourcesStore },
+        space,
+        sseData.itemid
+      )
+    } catch {
+      // the new location isn't accessible
+    }
+  }
+
+  // check again in case the user has navigated away in the meantime
+  if (resourcesStore.currentFolder?.id !== sseData.itemid) {
+    return
+  }
+
+  if (!movedFolder) {
+    const { $gettext } = language
+    return messageStore.showMessage({
+      title: $gettext(
+        'The folder you were accessing has been moved. Please navigate to another location.'
+      )
+    })
+  }
+
+  return replaceCurrentFolder({ resourcesStore, router }, space, currentFolder, movedFolder)
+}
+
+export const onSSEItemMovedEvent = async ({
+  sseData,
+  language,
+  messageStore,
+  resourcesStore,
+  spacesStore,
+  clientService,
+  router
 }: SSEEventOptions) => {
   if (sseData.initiatorid === clientService.initiatorId) {
     // If initiated by current client (browser tab), action unnecessary. Web manages its own logic, return early.
@@ -541,6 +616,18 @@ export const onSSEItemMovedEvent = async ({
 
   if (!resourcesStore.currentFolder) {
     return updateMovedResourceInFlatList({ sseData, resourcesStore, spacesStore, clientService })
+  }
+
+  if (resourcesStore.currentFolder.id === sseData.itemid) {
+    return updateMovedCurrentFolder({
+      sseData,
+      language,
+      messageStore,
+      resourcesStore,
+      spacesStore,
+      clientService,
+      router
+    })
   }
 
   // the new location might not be accessible anymore (e.g. moved out of a share), hence don't load the resource
