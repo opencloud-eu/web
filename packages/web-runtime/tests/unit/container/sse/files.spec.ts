@@ -207,6 +207,33 @@ describe('file events', () => {
       expect(mocks.router.replace).toHaveBeenCalled()
       expect(mocks.router.push).not.toHaveBeenCalled()
     })
+    it('shows a message instead of following the current folder when it has been moved', async () => {
+      const currentFolder = mockDeep<Resource>({
+        id: 'space1!subFolder',
+        fileId: 'space1!subFolder',
+        storageId: 'space1',
+        path: '/subFolder',
+        isFolder: true
+      })
+      const mocks = getShareMocks([], currentFolder)
+      // another folder with the same name at the old location must not become the current folder
+      mockGetFileInfo(mocks, {
+        id: 'space1!otherFolder',
+        name: 'subFolder',
+        parentFolderId: 'space1!sharedFolder'
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: currentFolder.id,
+        spaceid: 'space1',
+        parentitemid: 'space1!dst'
+      })
+      await onSSEItemMovedEvent({ sseData, ...mocks })
+      expect(mocks.messageStore.showMessage).toHaveBeenCalledWith({
+        title: 'The folder you were accessing has been moved. Please navigate to another location.'
+      })
+      expect(mocks.resourcesStore.setCurrentFolder).not.toHaveBeenCalled()
+      expect(mocks.router.replace).not.toHaveBeenCalled()
+    })
     it('does not add a resource restored outside of the current folder', async () => {
       const mocks = getShareMocks()
       mockGetFileInfo(mocks, {
@@ -860,6 +887,83 @@ describe('file events', () => {
       expect(mocks.resourcesStore.removeResources).toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
+    })
+
+    describe('of the current folder', () => {
+      const getCurrentFolderMocks = () => {
+        const space = mock<SpaceResource>({
+          id: 'space1',
+          getDriveAliasAndItem: ({ path }: Resource) =>
+            urlJoin('personal/admin', path, { leadingSlash: false })
+        })
+        const currentFolder = mock<Resource>({
+          id: 'space1!cur',
+          fileId: 'space1!cur',
+          storageId: 'space1',
+          path: '/src/cur',
+          parentFolderId: 'space1!src',
+          isFolder: true
+        })
+        const mocks = getMocks({
+          currentFolder,
+          spaces: [space],
+          currentRoute: mock<RouteLocation>({
+            name: 'files-spaces-generic',
+            query: { fileId: 'space1!cur', 'sort-by': 'name' }
+          })
+        })
+        const sseData = mock<EventSchemaType>({
+          itemid: currentFolder.id,
+          spaceid: currentFolder.storageId,
+          parentitemid: 'space1!dst'
+        })
+        return { ...mocks, currentFolder, sseData }
+      }
+
+      it('follows the current folder to its new location', async () => {
+        const { currentFolder, sseData, ...mocks } = getCurrentFolderMocks()
+        const movedFolder = mock<Resource>({
+          ...currentFolder,
+          path: '/dst/cur',
+          parentFolderId: 'space1!dst'
+        })
+        mocks.clientService.webdav.getFileInfo.mockResolvedValue(movedFolder)
+        await onSSEItemMovedEvent({ sseData, ...mocks })
+        expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalledWith(movedFolder)
+        expect(mocks.router.replace).toHaveBeenCalledWith({
+          name: 'files-spaces-generic',
+          params: { driveAliasAndItem: 'personal/admin/dst/cur' },
+          query: { fileId: 'space1!cur', 'sort-by': 'name' }
+        })
+        expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+      })
+      it('shows a message if the current folder can not be loaded at its new location', async () => {
+        const { sseData, ...mocks } = getCurrentFolderMocks()
+        mocks.clientService.webdav.getFileInfo.mockRejectedValue(new Error('not found'))
+        await onSSEItemMovedEvent({ sseData, ...mocks })
+        expect(mocks.messageStore.showMessage).toHaveBeenCalledWith({
+          title:
+            'The folder you were accessing has been moved. Please navigate to another location.'
+        })
+        expect(mocks.resourcesStore.setCurrentFolder).not.toHaveBeenCalled()
+        expect(mocks.router.replace).not.toHaveBeenCalled()
+      })
+      it.each([true, false])(
+        'does nothing if the user navigated away while loading the current folder (loaded: %s)',
+        async (loaded) => {
+          const { currentFolder, sseData, ...mocks } = getCurrentFolderMocks()
+          mocks.clientService.webdav.getFileInfo.mockImplementation(() => {
+            mocks.resourcesStore.currentFolder = mock<Resource>({ id: 'space1!other' })
+            return loaded
+              ? Promise.resolve(mock<Resource>({ ...currentFolder, path: '/dst/cur' }))
+              : Promise.reject(new Error('not found'))
+          })
+          await onSSEItemMovedEvent({ sseData, ...mocks })
+          expect(mocks.resourcesStore.setCurrentFolder).not.toHaveBeenCalled()
+          expect(mocks.router.replace).not.toHaveBeenCalled()
+          expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
+        }
+      )
     })
 
     describe('in a flat list without a current folder', () => {
