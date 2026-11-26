@@ -21,10 +21,11 @@ function sendActivityNotification(mocks: ReturnType<typeof defaultComponentMocks
 
 function collaboratorShare(
   id: string,
-  displayName: string,
-  shareType = ShareTypes.user.value
+  displayName: string | undefined,
+  shareType = ShareTypes.user.value,
+  sharedBy = { id: 'own-id', displayName: 'Own User' }
 ): CollaboratorShare {
-  return mock<CollaboratorShare>({ shareType, sharedWith: { id, displayName } })
+  return mock<CollaboratorShare>({ shareType, sharedWith: { id, displayName }, sharedBy })
 }
 
 describe('useMentionUsers', () => {
@@ -58,12 +59,7 @@ describe('useMentionUsers', () => {
       'falls back to the user id and matches on it when displayName is %o',
       async (displayName) => {
         const { instance } = getWrapper({
-          collaboratorShares: [
-            mock<CollaboratorShare>({
-              shareType: ShareTypes.user.value,
-              sharedWith: { id: 'user1', displayName }
-            })
-          ]
+          collaboratorShares: [collaboratorShare('user1', displayName)]
         })
 
         await expect(instance.getMentionUsers('use')).resolves.toEqual([
@@ -79,6 +75,54 @@ describe('useMentionUsers', () => {
           collaboratorShare('user2', 'Bob Jones')
         ],
         currentUserId: 'own-id'
+      })
+
+      await expect(instance.getMentionUsers('')).resolves.toEqual([
+        { id: 'user2', label: 'Bob Jones' }
+      ])
+    })
+
+    it('includes the sharer in a share space, e.g. when only the own incoming share is visible', async () => {
+      const { instance } = getWrapper({
+        space: shareSpace(),
+        collaboratorShares: [
+          collaboratorShare('own-id', 'Own User', ShareTypes.user.value, {
+            id: 'sharer',
+            displayName: 'Alice Sharer'
+          })
+        ]
+      })
+
+      await expect(instance.getMentionUsers('')).resolves.toEqual([
+        { id: 'sharer', label: 'Alice Sharer' }
+      ])
+    })
+
+    it('includes the sharer of a group share and deduplicates sharers', async () => {
+      const sharer = { id: 'sharer', displayName: 'Alice Sharer' }
+      const { instance } = getWrapper({
+        space: shareSpace(),
+        collaboratorShares: [
+          collaboratorShare('group1', 'Admins', ShareTypes.group.value, sharer),
+          collaboratorShare('user2', 'Bob Jones', ShareTypes.user.value, sharer),
+          collaboratorShare('sharer', 'Alice Sharer')
+        ]
+      })
+
+      await expect(instance.getMentionUsers('')).resolves.toEqual([
+        { id: 'sharer', label: 'Alice Sharer' },
+        { id: 'user2', label: 'Bob Jones' }
+      ])
+    })
+
+    it('excludes the sharer outside of share spaces, they might have lost access', async () => {
+      const { instance } = getWrapper({
+        collaboratorShares: [
+          collaboratorShare('user2', 'Bob Jones', ShareTypes.user.value, {
+            id: 'sharer',
+            displayName: 'Alice Sharer'
+          })
+        ]
       })
 
       await expect(instance.getMentionUsers('')).resolves.toEqual([
@@ -387,6 +431,10 @@ describe('useMentionUsers', () => {
     })
   })
 })
+
+function shareSpace(): Ref<SpaceResource> {
+  return ref(mock<SpaceResource>({ id: 'space-id', driveType: 'share' }))
+}
 
 function getWrapper({
   collaboratorShares = [],
