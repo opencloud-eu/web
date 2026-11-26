@@ -1,37 +1,49 @@
 <template>
-  <iframe
-    v-if="isFirefox"
-    class="pdf-viewer size-full overflow-hidden"
-    :src="url"
-    :title="resource.name"
+  <pdf-viewer
+    :key="resource.id"
+    :resource="resource"
+    :current-content="currentContent"
+    :is-read-only="isReadOnly"
+    :is-dirty="isDirty"
+    :current-file-context="currentFileContext"
+    @update:current-content="emit('update:currentContent', $event)"
+    @register:on-save-callback="emit('register:onSaveCallback', $event)"
+    @register:on-flush-content-callback="emit('register:onFlushContentCallback', $event)"
   />
-  <object v-else class="pdf-viewer size-full overflow-hidden" :data="url" :type="objectType">
-    <div
-      class="pdf-viewer-fallback flex size-full flex-col items-center justify-center gap-4 p-8 text-center"
-    >
-      <p class="text-lg" v-text="$gettext('This PDF could not be displayed in your browser.')" />
-      <oc-button type="a" appearance="filled" :href="url" :download="resource.name">
-        <oc-icon name="download" fill-type="line" />
-        {{ $gettext('Download PDF') }}
-      </oc-button>
-    </div>
-  </object>
 </template>
 
+<script lang="ts">
+import { defineAsyncComponent } from 'vue'
+import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
+
+// AppWrapper inspects the props and emits of this component to decide what to load and
+// whether the app is an editor, so it has to be available synchronously. PDF.js and its
+// stylesheet are big though, and are only pulled in once a PDF actually gets opened.
+// Defined once for the module: inside setup, the loader would keep the first file in memory.
+const PdfViewer = defineAsyncComponent({
+  loader: () => import('./components/PdfViewer.vue'),
+  loadingComponent: AppLoadingSpinner
+})
+</script>
+
 <script setup lang="ts">
-import type { ViewerSlotProps } from '@opencloud-eu/web-pkg'
+import type { Resource } from '@opencloud-eu/web-client'
+import type { FileContext } from '@opencloud-eu/web-pkg'
 
-const { url, resource } = defineProps<ViewerSlotProps>()
+const { resource, currentContent, isReadOnly, isDirty, currentFileContext } = defineProps<{
+  resource: Resource
+  currentContent: ArrayBuffer
+  isReadOnly: boolean
+  isDirty: boolean
+  /** Where the file was opened from, to close the app. */
+  currentFileContext: FileContext
+}>()
 
-const userAgent = navigator.userAgent || ''
-
-// Firefox renders blob: PDFs unreliably in <object>/<embed> (often a blank frame), so it
-// gets an <iframe> instead, which handles blob: URLs reliably. Other browsers keep <object>:
-// it supports fallback content, and <iframe> is known to struggle with PDFs on iOS Safari.
-const isFirefox = userAgent.includes('Firefox')
-
-// Safari does not support the `type` attribute on <object> for PDFs, so it is omitted to
-// avoid a blank frame. Other browsers get the type attribute, which helps them render PDFs.
-const isSafari = userAgent.includes('Safari') && !userAgent.includes('Chrome')
-const objectType = isSafari ? undefined : 'application/pdf'
+const emit = defineEmits<{
+  'update:currentContent': [content: ArrayBuffer]
+  /** AppWrapper calls it after each of its saves, see usePdfChangeTracking. */
+  'register:onSaveCallback': [callback: () => Promise<void>]
+  /** AppWrapper calls it before each of its saves, see usePdfChangeTracking. */
+  'register:onFlushContentCallback': [callback: () => Promise<void>]
+}>()
 </script>
