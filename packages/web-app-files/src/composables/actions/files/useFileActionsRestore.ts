@@ -1,7 +1,6 @@
 import {
   Resource,
   isProjectSpaceResource,
-  extractExtensionFromFile,
   extractNodeId,
   SpaceResource,
   isTrashResource,
@@ -30,6 +29,7 @@ import {
   ResolveStrategy,
   ResolveConflict,
   resolveFileNameDuplicate,
+  getDuplicateExtension,
   ConflictDialog
 } from '@opencloud-eu/web-pkg'
 
@@ -305,7 +305,9 @@ export const useFileActionsRestore = ({
       resource = { ...resource }
       const parentPath = dirname(resource.path)
       const existingResources = existingResourcesByPath[parentPath] || []
-      const extension = extractExtensionFromFile(resource)
+      const isVaultRoot =
+        getVaultClaim(extensionRegistry, space, resource.path)?.vaultRoot === resource.path
+      const extension = getDuplicateExtension(resource, isVaultRoot)
       const resolvedName = resolveFileNameDuplicate(resource.name, extension, [
         ...existingResources,
         ...resolvedConflicts.map((e) => e.resource),
