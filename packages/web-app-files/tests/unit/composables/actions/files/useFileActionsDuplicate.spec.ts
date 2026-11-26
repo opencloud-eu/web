@@ -7,7 +7,12 @@ import {
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { useFileActionsDuplicate } from '../../../../../src/composables/actions/files'
-import { useMessages, useResourcesStore } from '@opencloud-eu/web-pkg'
+import { getVaultClaim, useMessages, useResourcesStore, VaultClaim } from '@opencloud-eu/web-pkg'
+
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  getVaultClaim: vi.fn()
+}))
 
 function getSourceResource(name = 'Report.txt', parentPath = '/folder') {
   return mock<Resource>({
@@ -136,6 +141,38 @@ describe('duplicate', () => {
         title: '"Report.txt" was duplicated successfully'
       })
     })
+
+    it.each([
+      { name: 'Photos 2026.01', type: 'folder', expected: '/folder/Photos 2026.01 (1)' },
+      { name: 'notes.txt', type: 'file', expected: '/folder/notes (1).txt' },
+      {
+        name: 'x.vault',
+        type: 'folder',
+        vaultRoot: '/folder/x.vault',
+        expected: '/folder/x (1).vault'
+      }
+    ])(
+      'puts the counter of a copy of "$name" before the extension only if it has one',
+      async ({ name, type, vaultRoot, expected }) => {
+        if (vaultRoot) {
+          vi.mocked(getVaultClaim).mockReturnValueOnce({ vaultRoot } as VaultClaim)
+        }
+        const { instance, mocks } = getWrapper()
+        const { space, $clientService: clientService } = mocks
+        clientService.webdav.listFiles.mockResolvedValue({
+          resource: mock<Resource>({ id: 'folder-1', path: '/folder' }),
+          children: [mock<Resource>({ name })]
+        })
+        clientService.webdav.getFileInfo.mockResolvedValue(mock<Resource>({ path: expected }))
+        const resource = { ...getSourceResource(name), type, isFolder: type === 'folder' }
+
+        await instance.duplicateFiles({ space, resources: [resource] })
+
+        expect(clientService.webdav.copyFiles).toHaveBeenCalledWith(space, resource, space, {
+          path: expected
+        })
+      }
+    )
 
     it('shows count message for multiple duplicated resources', async () => {
       const { instance, mocks } = getWrapper()

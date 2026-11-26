@@ -1,7 +1,11 @@
 import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ResolveStrategy, TransferType, type TransferData } from './types'
 import { ConflictDialog } from './conflictDialog'
-import { resolveFileNameDuplicate, isResourceBeeingMovedToSameLocation } from './conflictUtils'
+import {
+  getDuplicateExtension,
+  resolveFileNameDuplicate,
+  isResourceBeeingMovedToSameLocation
+} from './conflictUtils'
 import type { ClientService } from '../../../services'
 import { useMessages } from '../../../composables'
 import { Ref, unref } from 'vue'
@@ -131,7 +135,7 @@ export class ResourceTransfer extends ConflictDialog {
     for (const resourceToMove of this.resourcesToMove) {
       // shallow copy of resources to prevent modifying existing rows
       const resource = { ...resourceToMove }
-      const { id, name, extension } = resource
+      const { id, name } = resource
 
       const hasConflict = resolvedConflicts.some((e) => e.resource.id === id)
       let targetName = name
@@ -151,7 +155,11 @@ export class ResourceTransfer extends ConflictDialog {
           overwriteTarget = true
         }
         if (resolveStrategy === ResolveStrategy.KEEP_BOTH) {
-          targetName = resolveFileNameDuplicate(name, extension, occupiedResources)
+          targetName = resolveFileNameDuplicate(
+            name,
+            getDuplicateExtension(resource),
+            occupiedResources
+          )
           resource.name = targetName
           occupiedResources.push(resource)
         }

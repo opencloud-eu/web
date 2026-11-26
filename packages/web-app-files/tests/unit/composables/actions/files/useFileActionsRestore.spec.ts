@@ -360,6 +360,48 @@ describe('restore', () => {
     expect(useRestoreWorker().startWorker).not.toHaveBeenCalled()
   })
 
+  it.each([
+    { name: 'Photos 2026.01', type: 'folder', expected: '/Photos 2026.01 (1)' },
+    { name: 'notes.txt', type: 'file', expected: '/notes (1).txt' },
+    { name: 'x.vault', type: 'folder', vaultRoot: '/x.vault', expected: '/x (1).vault' }
+  ])(
+    'should put the counter of a kept copy of "$name" before the extension only if it has one',
+    async ({ name, type, vaultRoot, expected }) => {
+      let instance: ReturnType<typeof useFileActionsRestore>
+      let space: SpaceResource
+      const { mocks } = getWrapper({
+        setup: (i, { space: s }) => {
+          instance = i
+          space = s
+        }
+      })
+      if (vaultRoot) {
+        vi.mocked(getVaultClaim).mockReturnValue({ vaultRoot, encryptsNames: true } as VaultClaim)
+      }
+      mocks.$clientService.webdav.listFiles.mockResolvedValue({
+        resource: mock<Resource>(),
+        children: [mock<Resource>({ name })]
+      })
+      const resolveFileExists = vi
+        .spyOn(ConflictDialog.prototype, 'resolveFileExists')
+        .mockResolvedValue({ strategy: ResolveStrategy.KEEP_BOTH, doForAllConflicts: false })
+      onTestFinished(() => resolveFileExists.mockRestore())
+      const resource = {
+        id: '1',
+        path: `/${name}`,
+        name,
+        type,
+        isFolder: type === 'folder'
+      } as TrashResource
+
+      unref(instance.actions)[0].handler({ space, resources: [resource] })
+      await flushPromises()
+
+      const [{ resources: restored }] = vi.mocked(useRestoreWorker().startWorker).mock.calls[0]
+      expect(restored.map(({ path }) => path)).toEqual([expected])
+    }
+  )
+
   it('should find conflict by the encrypted path of a locked vault resource', async () => {
     const { instance, mocks } = getWrapper()
     const { space, $clientService: clientService } = mocks

@@ -1,4 +1,9 @@
-import { Resource, SpaceResource, dirname } from '@opencloud-eu/web-client'
+import {
+  Resource,
+  SpaceResource,
+  dirname,
+  extractExtensionFromFile
+} from '@opencloud-eu/web-client'
 import { RESOURCE_NAME_MAX_BYTES } from '../../../constants'
 import { withoutExtension } from '../../fileExtension'
 import { getTextByteSize } from '../../textByteSize'
@@ -35,6 +40,18 @@ export const resolveFileNameDuplicate = (
       return potentialName
     }
   }
+}
+
+/**
+ * Extension a numbered duplicate of the resource keeps after its counter. A folder has
+ * none, the text after its last dot is part of its name - except for a vault root,
+ * whose extension marks it as a vault.
+ */
+export function getDuplicateExtension(resource: Resource, isVaultRoot = false): string {
+  if (resource.type === 'folder' && !isVaultRoot) {
+    return ''
+  }
+  return extractExtensionFromFile(resource)
 }
 
 export const isResourceBeeingMovedToSameLocation = (
