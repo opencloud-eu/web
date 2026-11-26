@@ -131,7 +131,8 @@ export const useLinkTargetRoute = () => {
       params,
       query: {
         ...query,
-        ...(!isFolder && { scrollTo: resource.fileId }),
+        // a folder opens itself and only needs scrollTo so the details panel gets opened for it
+        ...((!isFolder || details) && { scrollTo: resource.fileId }),
         ...(details && { details }),
         ...fileListQuery
       }
