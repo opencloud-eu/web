@@ -27,12 +27,14 @@ function mountMenu({
   items = [],
   command = vi.fn<(item: MentionItem) => void>(),
   editor = { isDestroyed: false, view: {} } as any,
-  loading = false
+  loading = false,
+  hint
 }: {
   items?: MentionItem[]
   command?: (item: MentionItem) => void
   editor?: any
   loading?: boolean
+  hint?: string
 } = {}) {
   return mount(MentionMenu, {
     props: {
@@ -40,6 +42,7 @@ function mountMenu({
       command,
       editor,
       loading,
+      hint,
       range: { from: 0, to: 0 },
       query: '',
       text: '@',
@@ -58,7 +61,8 @@ function mountMenu({
         OcDrop: true,
         UserAvatar: true,
         'oc-button': { template: '<button v-bind="$attrs"><slot /></button>' },
-        'oc-spinner': true
+        'oc-spinner': true,
+        'oc-icon': true
       }
     }
   })
@@ -93,6 +97,22 @@ describe('MentionMenu', () => {
 
     await wrapper.setProps({ loading: false })
     expect(wrapper.find('.text-editor-mention-menu__status').text()).toBe('No matching people')
+  })
+
+  it('renders a hint below the users and the empty state, but not while loading', async () => {
+    const hint = 'This list may be incomplete'
+    const wrapper = mountMenu({ items, hint })
+    expect(wrapper.find('.text-editor-mention-menu__hint').text()).toBe(hint)
+
+    await wrapper.setProps({ items: [] })
+    expect(wrapper.find('.text-editor-mention-menu__hint').text()).toBe(hint)
+
+    await wrapper.setProps({ loading: true })
+    expect(wrapper.find('.text-editor-mention-menu__hint').exists()).toBe(false)
+  })
+
+  it('renders no hint by default', () => {
+    expect(mountMenu({ items }).find('.text-editor-mention-menu__hint').exists()).toBe(false)
   })
 
   it('selects a user by click', async () => {
