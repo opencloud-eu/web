@@ -87,6 +87,18 @@ describe('List component', () => {
     })
     expect(wrapper.findComponent(ResourceTiles).props('sortFields')).toEqual(sortFields)
   })
+  it.each([
+    { name: 'table', component: ResourceTable },
+    { name: 'tiles', component: ResourceTiles }
+  ])('makes the resources draggable but no drop targets in the $name view', ({ component }) => {
+    const { wrapper } = getWrapper({
+      resources: [mock<Resource>()],
+      folderViewComponent: component
+    })
+    const folderView = wrapper.findComponent(component)
+    expect(folderView.props('isDraggable')).toBe(true)
+    expect(folderView.props('dragDrop')).toBe(false)
+  })
   it('resets the initial store file state', () => {
     getWrapper({ resources: [mock<Resource>()] })
 

@@ -36,6 +36,9 @@ const previewToolBarActionsExtensionPointId = 'app.preview.toolbar-actions'
 const adminSettingsSpacesContextActionsExtensionPointId =
   'app.admin-settings.spaces.context-actions'
 
+export const deleteFileActionExtensionId =
+  'com.github.opencloud-eu.web.files.context-action.delete-file'
+
 export const useFileActions = (): ActionExtension[] => {
   const { actions: copyActions } = useFileActionsCopy()
   const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
@@ -103,7 +106,7 @@ export const useFileActions = (): ActionExtension[] => {
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.context-action.delete-file',
+      id: deleteFileActionExtensionId,
       extensionPointIds: [
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,

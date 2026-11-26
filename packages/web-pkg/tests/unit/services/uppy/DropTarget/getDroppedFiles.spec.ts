@@ -4,6 +4,7 @@ describe('getDroppedFiles', () => {
   it('retrieves a single file from a given DataTransfer', async () => {
     const expectedFileObj = new File(['Hello World'], 'foo.txt', { type: 'text/plain' })
     const file = {
+      kind: 'file',
       getAsEntry: () => ({
         isFile: true,
         isDirectory: false,
@@ -40,6 +41,7 @@ describe('getDroppedFiles', () => {
 
     let rootFolderFinished = false
     const rootFolder = {
+      kind: 'file',
       getAsEntry: () =>
         ({
           isFile: false,
@@ -60,8 +62,21 @@ describe('getDroppedFiles', () => {
     expect(files).toContain(expectedFileObj)
   })
 
+  it('ignores items without a file system entry, like string data', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const stringItem = { kind: 'string', getAsEntry: (): null => null }
+
+    const dataTransfer = { items: [stringItem], files: [] as File[] } as any
+    const files = await getDroppedFiles(dataTransfer)
+
+    expect(files).toEqual([])
+    expect(consoleErrorSpy).not.toHaveBeenCalled()
+    consoleErrorSpy.mockRestore()
+  })
+
   it('returns empty folders', async () => {
     const folder = {
+      kind: 'file',
       getAsEntry: () =>
         ({
           isFile: false,
@@ -86,6 +101,7 @@ describe('getDroppedFiles', () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       const error = new Error('entry to file conversion failed')
       const file = {
+        kind: 'file',
         getAsEntry: () => ({
           isFile: true,
           isDirectory: false,
@@ -101,10 +117,23 @@ describe('getDroppedFiles', () => {
       expect(consoleErrorSpy).toHaveBeenCalledWith(error)
     })
 
+    it('falls back to dataTransfer.files for a file without an entry', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const fileObj = new File(['Hello World'], 'foo.txt', { type: 'text/plain' })
+      const fileItem = { kind: 'file', getAsEntry: (): null => null }
+
+      const dataTransfer = { items: [fileItem], files: [fileObj] } as any
+      const files = await getDroppedFiles(dataTransfer)
+
+      expect(files).toEqual([fileObj])
+      consoleErrorSpy.mockRestore()
+    })
+
     it('falls back to dataTransfer.files when getAsEntry fails', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       const error = new Error('getAsEntry failed')
       const file = {
+        kind: 'file',
         getAsEntry: () => {
           throw error
         }

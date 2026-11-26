@@ -12,7 +12,13 @@ import {
   defaultComponentMocks
 } from '@opencloud-eu/web-test-helpers'
 import { RouteLocation } from 'vue-router'
-import { AppBar, filesSortFields, ItemFilter, useRouteQuery } from '@opencloud-eu/web-pkg'
+import {
+  AppBar,
+  filesSortFields,
+  ItemFilter,
+  ResourceTable,
+  useRouteQuery
+} from '@opencloud-eu/web-pkg'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
 
 vi.mock('../../../src/composables')
@@ -106,6 +112,20 @@ describe('Favorites view', () => {
           'oc-table-header-cell-mdate'
         ])
       )
+    })
+    it('makes the rows draggable but folder rows no drop targets', async () => {
+      const file = getTableResource({ id: 'file1', name: 'file.txt', type: 'file' })
+      const folder = getTableResource({ id: 'folder1', name: 'Folder', type: 'folder' })
+      const { wrapper } = getMountedWrapper({ files: [file, folder], stubTable: false })
+      const table = wrapper.findComponent(ResourceTable)
+      expect(table.props('isDraggable')).toBe(true)
+      expect(table.props('dragDrop')).toBe(false)
+
+      const rows = wrapper.findAll('.oc-tbody-tr')
+      expect(rows.map((row) => row.attributes('draggable'))).toEqual(['true', 'true'])
+
+      await rows[1].trigger('drop', { dataTransfer: { types: [] } })
+      expect(table.emitted('fileDropped')).toBeUndefined()
     })
     it('does not add space columns for a favorite project space', () => {
       const file = getTableResource({ id: 'file1', name: 'file.txt', type: 'file' })

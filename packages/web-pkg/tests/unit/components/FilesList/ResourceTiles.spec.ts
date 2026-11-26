@@ -9,7 +9,8 @@ import {
   ResourceIndicator
 } from '../../../../src/composables/resources'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
-import { useResourcesStore } from '../../../../src'
+import { resourceDragDataType, useResourcesStore } from '../../../../src'
+import { mock } from 'vitest-mock-extended'
 
 vi.mock('../../../../src/helpers/contextMenuDropdown')
 vi.mock('../../../../src/composables/viewMode', async (importOriginal) => {
@@ -240,7 +241,7 @@ describe('ResourceTiles component', () => {
 
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
       resourceTile.vm.$emit('dragstart', {
-        dataTransfer: { setDragImage: vi.fn() }
+        dataTransfer: { setDragImage: vi.fn(), setData: vi.fn() }
       })
 
       expect(wrapper.emitted('update:selectedIds')).toBeDefined()
@@ -254,7 +255,7 @@ describe('ResourceTiles component', () => {
 
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
       resourceTile.vm.$emit('dragstart', {
-        dataTransfer: { setDragImage: vi.fn() }
+        dataTransfer: { setDragImage: vi.fn(), setData: vi.fn() }
       })
 
       const resourcesStore = useResourcesStore()
@@ -270,7 +271,7 @@ describe('ResourceTiles component', () => {
 
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
       resourceTile.vm.$emit('dragstart', {
-        dataTransfer: { setDragImage: vi.fn() }
+        dataTransfer: { setDragImage: vi.fn(), setData: vi.fn() }
       })
 
       const resourcesStore = useResourcesStore()
@@ -278,18 +279,69 @@ describe('ResourceTiles component', () => {
       expect(resourcesStore.toggleSelection).not.toHaveBeenCalled()
       expect(wrapper.emitted('update:selectedIds')).toBeUndefined()
     })
+    it.each([
+      { name: 'the dragged resource', selectedIds: ['2'], expectedIds: ['1'] },
+      {
+        name: 'the selection of the dragged resource',
+        selectedIds: ['1', '2'],
+        expectedIds: ['1', '2']
+      }
+    ])('marks the drag and shares $name until the drag ends', ({ selectedIds, expectedIds }) => {
+      const space = mock<SpaceResource>()
+      const { wrapper } = getWrapper({
+        props: { resources: spacesResources, space },
+        stubs: { ResourceTile: true },
+        selectedIds
+      })
+      const setData = vi.fn()
+      const target = document.createElement('div')
+
+      wrapper.findComponent<any>('resource-tile-stub').vm.$emit('dragstart', {
+        dataTransfer: { setDragImage: vi.fn(), setData },
+        target
+      })
+
+      const resourcesStore = useResourcesStore()
+      expect(setData).toHaveBeenCalledWith(resourceDragDataType, expectedIds.join())
+      expect(resourcesStore.setResourceDrag).toHaveBeenCalledWith({
+        resources: spacesResources.filter(({ id }) => expectedIds.includes(id)),
+        space
+      })
+
+      target.dispatchEvent(new Event('dragend'))
+      expect(resourcesStore.setResourceDrag).toHaveBeenLastCalledWith(null)
+    })
     it('emits the "fileDropped"-event on resource drop', () => {
       const { wrapper } = getWrapper({
-        props: { resources: spacesResources },
+        props: { resources: spacesResources, dragDrop: true },
         stubs: { ResourceTile: true }
       })
 
       const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
+      expect(resourceTile.attributes('draggable')).toBe('true')
       resourceTile.vm.$emit('drop', {
         dataTransfer: {}
       } as DragEvent)
 
       expect(wrapper.emitted('fileDropped')).toBeDefined()
+    })
+    it('makes the tiles draggable but no drop targets with "isDraggable"', () => {
+      const { wrapper } = getWrapper({
+        props: { resources: spacesResources, isDraggable: true },
+        stubs: { ResourceTile: true }
+      })
+
+      const resourceTile = wrapper.findComponent<any>('resource-tile-stub')
+      expect(resourceTile.attributes('draggable')).toBe('true')
+      resourceTile.vm.$emit('dragstart', {
+        dataTransfer: { setDragImage: vi.fn(), setData: vi.fn() }
+      })
+      resourceTile.vm.$emit('drop', {
+        dataTransfer: {}
+      } as DragEvent)
+
+      expect(wrapper.emitted('update:selectedIds')).toBeDefined()
+      expect(wrapper.emitted('fileDropped')).toBeUndefined()
     })
   })
   describe('context menu', () => {

@@ -7,6 +7,9 @@ import { DavProperty, WebDAV } from '@opencloud-eu/web-client/webdav'
 import { useSpacesStore } from './spaces'
 import { eventBus, releaseFilePreviews } from '../../services'
 
+/** The resources of a running drag out of a resource view and the space they are dragged in. */
+export type ResourceDrag = { resources: Resource[]; space: SpaceResource }
+
 export const useResourcesStore = defineStore('resources', () => {
   const spacesStore = useSpacesStore()
 
@@ -326,6 +329,13 @@ export const useResourcesStore = defineStore('resources', () => {
     deleteQueue.value = deleteQueue.value.filter((id) => !ids.includes(id))
   }
 
+  // lets drop targets outside of the resource view (like the trash in the navigation) know what is dragged
+  const resourceDrag = ref<ResourceDrag>(null)
+
+  function setResourceDrag(value: ResourceDrag) {
+    resourceDrag.value = value
+  }
+
   return {
     resources,
     currentFolder,
@@ -381,7 +391,10 @@ export const useResourcesStore = defineStore('resources', () => {
 
     deleteQueue,
     addResourcesIntoDeleteQueue,
-    removeResourcesFromDeleteQueue
+    removeResourcesFromDeleteQueue,
+
+    resourceDrag,
+    setResourceDrag
   }
 })
 

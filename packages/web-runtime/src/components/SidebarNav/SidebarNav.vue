@@ -38,6 +38,7 @@
             :fill-type="link.active ? 'fill' : 'line'"
             :name="link.name"
             :handler="link.handler"
+            :drop="link.drop"
           />
         </oc-list>
       </nav>

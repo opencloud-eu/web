@@ -92,6 +92,7 @@
           :resources="paginatedResources"
           :fields-displayed="['name', 'size', 'tags', 'mdate']"
           :view-mode="viewMode"
+          :is-draggable="true"
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
