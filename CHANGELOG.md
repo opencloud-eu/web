@@ -79,6 +79,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#4632](https://github.com/opencloud-eu/web/pull/4632)]
 - chore(deps): update dependency @types/node to v26.6.7 [[#4624](https://github.com/opencloud-eu/web/pull/4624)]
 - chore(deps): update pnpm to v12.23.0 [[#4591](https://github.com/opencloud-eu/web/pull/4591)]
 - chore(deps): update dependency @axe-core/playwright to v4.14.1 [[#4620](https://github.com/opencloud-eu/web/pull/4620)]
