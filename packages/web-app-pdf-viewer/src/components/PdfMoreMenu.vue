@@ -39,7 +39,7 @@
       <pdf-menu-item
         class="pdf-viewer-more-properties"
         :label="$gettext('Document properties')"
-        icon="file-info"
+        icon="file-pdf-2"
         @click="showProperties"
       />
     </oc-list>
