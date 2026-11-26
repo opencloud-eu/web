@@ -83,9 +83,7 @@ describe('createTrashNavItemDrop', () => {
     getWrapper({
       resources: [getResource()],
       setup: (drop) => {
-        expect(drop.notAllowedMessage(getDragEvent())).toBe(
-          "One or more resources can't be deleted"
-        )
+        expect(drop.notAllowedMessage(getDragEvent())).toBe("One or more items can't be deleted")
       }
     })
   })

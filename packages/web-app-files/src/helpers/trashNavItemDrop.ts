@@ -58,7 +58,7 @@ export function createTrashNavItemDrop({
     if (!getActionOptions(event)) {
       return ''
     }
-    return $gettext("One or more resources can't be deleted")
+    return $gettext("One or more items can't be deleted")
   }
 
   return { isAllowed, handler, notAllowedMessage }

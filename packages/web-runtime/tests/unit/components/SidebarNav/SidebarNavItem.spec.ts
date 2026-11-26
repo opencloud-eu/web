@@ -132,7 +132,7 @@ describe('OcSidebarNav', () => {
       expect(drop.handler).not.toHaveBeenCalled()
     })
     describe('hint for drags that are not allowed', () => {
-      const message = "One or more resources can't be deleted"
+      const message = "One or more items can't be deleted"
 
       function getTooltip() {
         return document.querySelector('[role="tooltip"]')
