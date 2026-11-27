@@ -124,6 +124,21 @@ describe('useResourcesStore', () => {
     })
   })
 
+  describe('upsertResources', () => {
+    it('replaces resources with the same path and appends new ones', () => {
+      const store = useResourcesStore()
+      const a = { id: 'a', path: '/a', etag: '1' } as Resource
+      const b = { id: 'b', path: '/b', etag: '1' } as Resource
+      store.initResourceList({ currentFolder: null, resources: [a, b] })
+
+      const updatedA = { ...a, etag: '2' }
+      const c = { id: 'c', path: '/c', etag: '1' } as Resource
+      store.upsertResources([updatedA, c])
+
+      expect(store.resources).toEqual([b, updatedA, c])
+    })
+  })
+
   describe('updateResourceField', () => {
     it('updates the current folder reactively if the id matches', () => {
       const store = useResourcesStore()

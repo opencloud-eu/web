@@ -27,6 +27,10 @@ import { isPersonalSpaceResource, isShareSpaceResource } from '@opencloud-eu/web
 import { ClientService, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { PluginOpts } from '@uppy/core'
 import { keyBy } from 'lodash-es'
+import PQueue from 'p-queue'
+
+// same as the uppy upload limit in uppyService
+const FOLDER_CREATION_CONCURRENCY = 5
 
 export interface HandleUploadOptions {
   clientService: ClientService
@@ -364,7 +368,8 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
   async createDirectoryTree(
     filesToUpload: OcUppyFile[],
     uploadFolder: Resource,
-    mergedFolders: string[] = []
+    mergedFolders: string[] = [],
+    cancelSignal?: AbortSignal
   ): Promise<{ filesToUpload: OcUppyFile[]; folderFiles: OcUppyFile[] }> {
     const { webdav } = this.clientService
     const space = unref(this.space)
@@ -398,72 +403,90 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       }
     }
 
-    const createDirectoryLevel = async (current: Record<string, any>, path = '') => {
-      if (path) {
-        const isRoot = path.split('/').length <= 1
-        path = urlJoin(path, { leadingSlash: true })
-        const uploadId = !isRoot ? crypto.randomUUID() : topLevelIds[path]
-        const relativeFolder = dirname(path) === '/' ? '' : dirname(path)
-
-        const uppyFile = {
-          id: crypto.randomUUID(),
-          name: basename(path),
-          type: 'folder',
-          meta: {
-            spaceId: space.id,
-            spaceName: space.name,
-            driveAlias: space.driveAlias,
-            driveType: space.driveType,
-            currentFolder: currentFolderPath,
-            currentFolderId,
-            relativeFolder,
-            uploadId,
-            routeName,
-            routeDriveAliasAndItem,
-            routeShareId,
-            isFolder: true
-          }
+    const buildFolderFile = (path: string) => {
+      const relativeFolder = dirname(path) === '/' ? '' : dirname(path)
+      const uploadId = relativeFolder ? crypto.randomUUID() : topLevelIds[path]
+      return {
+        id: crypto.randomUUID(),
+        name: basename(path),
+        type: 'folder',
+        meta: {
+          spaceId: space.id,
+          spaceName: space.name,
+          driveAlias: space.driveAlias,
+          driveType: space.driveType,
+          currentFolder: currentFolderPath,
+          currentFolderId,
+          relativeFolder,
+          uploadId,
+          routeName,
+          routeDriveAliasAndItem,
+          routeShareId,
+          isFolder: true
         }
-
-        if (failedFolders.includes(relativeFolder)) {
-          // return if top level folder failed to create
-          return
-        }
-
-        this.uppyService.publish('addedForUpload', [uppyFile])
-
-        try {
-          const folder = await webdav.createFolder(space, {
-            path: urlJoin(currentFolderPath, path),
-            fetchFolder: isRoot // FIXME: remove once we get the fileId from the server here
-          })
-          this.uppyService.publish('uploadSuccess', {
-            ...uppyFile,
-            meta: { ...uppyFile.meta, fileId: folder?.fileId }
-          })
-        } catch (error) {
-          if (error.statusCode !== 405) {
-            console.error(error)
-            failedFolders.push(path)
-            this.uppyService.publish('uploadError', { file: uppyFile, error })
-          } else if (isRoot && mergedFolders.includes(basename(path))) {
-            // top-level folder already exists because the user chose to merge - count it as uploaded
-            this.uppyService.publish('uploadSuccess', { ...uppyFile })
-          }
-        }
-      }
-
-      const foldersToBeCreated = Object.keys(current)
-      const promises: Promise<unknown>[] = []
-      for (const folder of foldersToBeCreated) {
-        promises.push(
-          createDirectoryLevel(current[folder], urlJoin(path, folder, { leadingSlash: 'keep' }))
-        )
-      }
-      return Promise.allSettled(promises)
+      } as OcUppyFile
     }
 
-    await createDirectoryLevel(directoryTree)
+    // all top-level folders are announced upfront, otherwise the upload info could
+    // consider the upload done while queued folders have not been announced yet
+    const rootFolderFiles: Record<string, OcUppyFile> = {}
+    for (const folder of Object.keys(directoryTree)) {
+      const path = urlJoin(folder, { leadingSlash: true })
+      rootFolderFiles[path] = buildFolderFile(path)
+    }
+    if (Object.keys(rootFolderFiles).length) {
+      this.uppyService.publish('addedForUpload', Object.values(rootFolderFiles))
+    }
+
+    const createFolder = async (path: string): Promise<boolean> => {
+      const isRoot = !!rootFolderFiles[path]
+      const uppyFile = rootFolderFiles[path] || buildFolderFile(path)
+      if (!isRoot) {
+        this.uppyService.publish('addedForUpload', [uppyFile])
+      }
+
+      try {
+        const folder = await webdav.createFolder(space, {
+          path: urlJoin(currentFolderPath, path),
+          fetchFolder: isRoot // FIXME: remove once we get the fileId from the server here
+        })
+        this.uppyService.publish('uploadSuccess', {
+          ...uppyFile,
+          meta: { ...uppyFile.meta, fileId: folder?.fileId }
+        })
+      } catch (error) {
+        if (error.statusCode !== 405) {
+          console.error(error)
+          failedFolders.push(path)
+          this.uppyService.publish('uploadError', { file: uppyFile, error })
+          return false
+        }
+        if (isRoot && mergedFolders.includes(basename(path))) {
+          // top-level folder already exists because the user chose to merge - count it as uploaded
+          this.uppyService.publish('uploadSuccess', { ...uppyFile })
+        }
+      }
+      return true
+    }
+
+    // bounded, since every created folder also causes a server side event for all space members
+    const queue = new PQueue({ concurrency: FOLDER_CREATION_CONCURRENCY })
+    const enqueueChildren = (current: Record<string, any>, parentPath = '') => {
+      for (const folder of Object.keys(current)) {
+        const path = urlJoin(parentPath, folder, { leadingSlash: true })
+        queue.add(async () => {
+          if (cancelSignal?.aborted) {
+            return
+          }
+          if (await createFolder(path)) {
+            enqueueChildren(current[folder], path)
+          }
+        })
+      }
+    }
+
+    enqueueChildren(directoryTree)
+    await queue.onIdle()
 
     const folderFileSet = new Set(folderFiles)
     return {
@@ -605,7 +628,12 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     this.uppyService.publish('uploadStarted')
     let folderFiles: OcUppyFile[] = []
     if (this.directoryTreeCreateEnabled) {
-      const result = await this.createDirectoryTree(filesToUpload, uploadFolder, mergedFolders)
+      const result = await this.createDirectoryTree(
+        filesToUpload,
+        uploadFolder,
+        mergedFolders,
+        cancelSignal
+      )
       filesToUpload = result.filesToUpload
       folderFiles = result.folderFiles
     }

@@ -250,6 +250,110 @@ describe('HandleUpload', () => {
       expect(filesToUpload.length).toBe(0)
       expect(folderFiles.length).toBe(1)
     })
+    it('creates parent folders before their children', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
+      const files = ['/a/b/c', '/a/d'].map((relativeFolder) =>
+        mock<OcUppyFile>({ name: 'name', meta: { relativeFolder } })
+      )
+      mocks.opts.clientService.webdav.createFolder.mockResolvedValue(mock<Resource>())
+
+      await instance.createDirectoryTree(files, mock<Resource>({ id: '1', path: '/' }))
+
+      const paths = mocks.opts.clientService.webdav.createFolder.mock.calls.map(
+        ([, { path }]) => path
+      )
+      expect(paths).toEqual(['/a', '/a/b', '/a/d', '/a/b/c'])
+    })
+    it('limits the number of concurrently created folders', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
+      const files = Array.from({ length: 20 }, (_, i) =>
+        mock<OcUppyFile>({ name: 'name', meta: { relativeFolder: `/folder${i}` } })
+      )
+      let running = 0
+      let maxRunning = 0
+      mocks.opts.clientService.webdav.createFolder.mockImplementation(async () => {
+        running++
+        maxRunning = Math.max(maxRunning, running)
+        await new Promise((resolve) => setTimeout(resolve))
+        running--
+        return mock<Resource>()
+      })
+
+      await instance.createDirectoryTree(files, mock<Resource>({ id: '1', path: '/' }))
+
+      expect(mocks.opts.clientService.webdav.createFolder).toHaveBeenCalledTimes(20)
+      expect(maxRunning).toBe(5)
+    })
+    it('announces all top level folders before creating them', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
+      const files = Array.from({ length: 7 }, (_, i) =>
+        mock<OcUppyFile>({ name: 'name', meta: { relativeFolder: `/folder${i}/sub` } })
+      )
+      const { publish } = mocks.opts.uppyService
+      let announcedBeforeCreation: string[]
+      mocks.opts.clientService.webdav.createFolder.mockImplementation(() => {
+        announcedBeforeCreation ??= publish.mock.calls
+          .filter(([topic]) => topic === 'addedForUpload')
+          .flatMap(([, files]) => (files as OcUppyFile[]).map(({ name }) => name))
+        return Promise.resolve(mock<Resource>())
+      })
+
+      await instance.createDirectoryTree(files, mock<Resource>({ id: '1', path: '/' }))
+
+      expect(announcedBeforeCreation).toEqual(files.map((_, i) => `folder${i}`))
+      const announcedRootFolders = publish.mock.calls
+        .filter(([topic]) => topic === 'addedForUpload')
+        .flatMap(([, files]) => files as OcUppyFile[])
+        .filter(({ meta }) => !meta.relativeFolder)
+      expect(announcedRootFolders).toHaveLength(7)
+    })
+    it('stops creating folders once the upload is cancelled', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
+      const files = Array.from({ length: 20 }, (_, i) =>
+        mock<OcUppyFile>({ name: 'name', meta: { relativeFolder: `/folder${i}` } })
+      )
+      const cancelController = new AbortController()
+      mocks.opts.clientService.webdav.createFolder.mockImplementation(() => {
+        cancelController.abort()
+        return Promise.resolve(mock<Resource>())
+      })
+
+      await instance.createDirectoryTree(
+        files,
+        mock<Resource>({ id: '1', path: '/' }),
+        [],
+        cancelController.signal
+      )
+
+      expect(mocks.opts.clientService.webdav.createFolder.mock.calls.length).toBeLessThanOrEqual(5)
+    })
+    it('skips sub folders and their files if a parent folder could not be created', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
+      const files = ['/a/b/c', '/d'].map((relativeFolder) =>
+        mock<OcUppyFile>({ name: 'name', meta: { relativeFolder } })
+      )
+      mocks.opts.clientService.webdav.createFolder.mockImplementation((_, { path }) =>
+        path === '/a' ? Promise.reject({}) : Promise.resolve(mock<Resource>())
+      )
+
+      const { filesToUpload } = await instance.createDirectoryTree(
+        files,
+        mock<Resource>({ id: '1', path: '/' })
+      )
+
+      const paths = mocks.opts.clientService.webdav.createFolder.mock.calls.map(
+        ([, { path }]) => path
+      )
+      expect(paths).toEqual(['/a', '/d'])
+      expect(filesToUpload).toEqual([files[1]])
+    })
   })
   describe('method handleUpload', () => {
     it('prepares files and eventually triggers the upload in uppy', async () => {

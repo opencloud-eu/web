@@ -5,18 +5,32 @@ import {
   useSpacesStore,
   useUserStore,
   useClientService,
+  useConfigStore,
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
 import { computed, onMounted, onBeforeUnmount, unref, watch, Ref } from 'vue'
 import {
+  Resource,
   SpaceResource,
   isPublicSpaceResource,
-  isShareSpaceResource
+  isShareSpaceResource,
+  urlJoin
 } from '@opencloud-eu/web-client'
-import { useService, useUpload, UppyService, UploadResult, OcUppyMeta } from '@opencloud-eu/web-pkg'
+import {
+  useService,
+  useUpload,
+  UppyService,
+  UploadResult,
+  OcUppyFile,
+  OcUppyMeta
+} from '@opencloud-eu/web-pkg'
 import { HandleUpload } from '../HandleUpload'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
+import PQueue from 'p-queue'
+
+// above this, listing the whole folder is cheaper than loading each item
+const TARGETED_REFRESH_MAX_ITEMS = 20
 
 export const useFileUpload = (space: Ref<SpaceResource>) => {
   const uppyService = useService<UppyService>('$uppyService')
@@ -27,6 +41,7 @@ export const useFileUpload = (space: Ref<SpaceResource>) => {
   const route = useRoute()
   const language = useGettext()
   const extensionRegistry = useExtensionRegistry()
+  const configStore = useConfigStore()
 
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
@@ -50,70 +65,148 @@ export const useFileUpload = (space: Ref<SpaceResource>) => {
 
   let uploadCompletedSub: string
   let uploadCancelledSub: string
+  let uploadSuccessSub: string
+
+  // folders are created outside of uppy, so e.g. empty ones are missing in the upload result
+  let createdTopLevelFolders: OcUppyFile[] = []
 
   const canUpload = computed(() => {
     return unref(currentFolder)?.canUpload({ user: userStore.user })
   })
 
-  async function onUploadComplete(result: UploadResult) {
+  function onUploadSuccess(file: OcUppyFile) {
+    if (file.meta.isFolder && !file.meta.relativeFolder) {
+      createdTopLevelFolders.push(file)
+    }
+  }
+
+  function onUploadCompleted(result: UploadResult) {
+    return refreshAfterUpload(result, { listFolder: false })
+  }
+
+  function onUploadCancelled(result: UploadResult) {
+    // folders of not yet uploaded files may have been created already
+    return refreshAfterUpload(result, { listFolder: true })
+  }
+
+  async function refreshAfterUpload(
+    { successful = [], failed = [] }: UploadResult,
+    { listFolder }: { listFolder: boolean }
+  ) {
     // folders of failed files may have been created already, so failed uploads need a refresh too
-    const file = result.successful?.[0] || result.failed?.[0]
-    if (!file) {
+    const files = [...successful, ...failed, ...createdTopLevelFolders]
+    createdTopLevelFolders = []
+    if (!files.length) {
       return
     }
 
     try {
-      await refreshAfterUpload(file.meta)
+      await refreshQuota(files[0].meta)
+      await refreshResources(files, listFolder)
     } catch (e) {
       // the refresh fails if e.g. the upload target folder has been deleted in the meantime
       console.error(e)
     }
   }
 
-  async function refreshAfterUpload({ spaceId, driveType }: OcUppyMeta) {
-    if (!isPublicSpaceResource(unref(space))) {
-      const isOwnSpace = spacesStore.spaces
-        .find(({ id }) => id === spaceId)
-        ?.isOwner(userStore.user)
-
-      if (driveType === 'project' || isOwnSpace) {
-        const client = clientService.graphAuthenticated
-        const updatedSpace = await client.drives.getDrive(spaceId)
-        spacesStore.updateSpaceField({
-          id: updatedSpace.id,
-          field: 'spaceQuota',
-          value: updatedSpace.spaceQuota
-        })
-      }
-    }
-
-    if (!unref(currentFolder) || spaceId !== unref(space).id) {
+  async function refreshQuota({ spaceId, driveType }: OcUppyMeta) {
+    if (isPublicSpaceResource(unref(space))) {
       return
     }
 
-    const { children } = await clientService.webdav.listFiles(unref(space), {
-      path: unref(currentFolder).path
+    const isOwnSpace = spacesStore.spaces.find(({ id }) => id === spaceId)?.isOwner(userStore.user)
+    if (driveType !== 'project' && !isOwnSpace) {
+      return
+    }
+
+    const client = clientService.graphAuthenticated
+    const updatedSpace = await client.drives.getDrive(spaceId)
+    spacesStore.updateSpaceField({
+      id: updatedSpace.id,
+      field: 'spaceQuota',
+      value: updatedSpace.spaceQuota
     })
+  }
+
+  async function refreshResources(files: OcUppyFile[], listFolder: boolean) {
+    const folder = unref(currentFolder)
+    if (!folder || files[0].meta.spaceId !== unref(space).id) {
+      return
+    }
+
+    const topLevelNames = listFolder ? undefined : getTopLevelNames(files, folder)
+    let resources: Resource[]
+    // loading each item only pays off if the folder holds many more items than were uploaded
+    if (
+      !topLevelNames ||
+      topLevelNames.length > TARGETED_REFRESH_MAX_ITEMS ||
+      topLevelNames.length >= resourcesStore.resources.length
+    ) {
+      resources = (await clientService.webdav.listFiles(unref(space), { path: folder.path }))
+        .children
+    } else {
+      resources = await loadResources(topLevelNames, folder)
+    }
 
     if (isShareSpaceResource(unref(space))) {
       // TODO: remove when server returns share id for federated shares in propfind response
-      children.forEach((r) => (r.remoteItemId = unref(space).id))
+      resources.forEach((r) => (r.remoteItemId = unref(space).id))
     }
 
     const existingEtags = new Map(resourcesStore.resources.map((r) => [r.id, r.etag]))
-    const changedResources = children.filter((child) => existingEtags.get(child.id) !== child.etag)
-    resourcesStore.upsertResources(changedResources)
+    const changedResources = resources.filter((r) => existingEtags.get(r.id) !== r.etag)
+    if (changedResources.length) {
+      resourcesStore.upsertResources(changedResources)
+    }
+  }
+
+  /**
+   * Names of the uploaded items directly inside the current folder, or undefined if they
+   * can't be determined and the whole folder needs to be listed.
+   */
+  function getTopLevelNames(files: OcUppyFile[], folder: Resource): string[] | undefined {
+    // vault uploads only carry the encrypted file names
+    if (folder.isInVault) {
+      return undefined
+    }
+
+    const names = new Set<string>()
+    for (const { name, meta } of files) {
+      // the user may have navigated away or uploaded into a sub folder
+      if (meta.currentFolder !== folder.path) {
+        return undefined
+      }
+      names.add(meta.relativeFolder ? meta.relativeFolder.split('/').filter(Boolean)[0] : name)
+    }
+    return [...names]
+  }
+
+  async function loadResources(names: string[], folder: Resource): Promise<Resource[]> {
+    const queue = new PQueue({
+      concurrency: configStore.options.concurrentRequests.resourceBatchActions
+    })
+    const results = await Promise.allSettled(
+      names.map((name) =>
+        queue.add(() =>
+          clientService.webdav.getFileInfo(unref(space), { path: urlJoin(folder.path, name) })
+        )
+      )
+    )
+    // failed uploads may not exist on the server
+    return results.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
   }
 
   onMounted(() => {
-    uploadCompletedSub = uppyService.subscribe('uploadCompleted', onUploadComplete)
-    uploadCancelledSub = uppyService.subscribe('uploadCancelled', onUploadComplete)
+    uploadCompletedSub = uppyService.subscribe('uploadCompleted', onUploadCompleted)
+    uploadCancelledSub = uppyService.subscribe('uploadCancelled', onUploadCancelled)
+    uploadSuccessSub = uppyService.subscribe('uploadSuccess', onUploadSuccess)
   })
 
   onBeforeUnmount(() => {
     uppyService.removePlugin(uppyService.getPlugin('HandleUpload'))
     uppyService.unsubscribe('uploadCompleted', uploadCompletedSub)
     uppyService.unsubscribe('uploadCancelled', uploadCancelledSub)
+    uppyService.unsubscribe('uploadSuccess', uploadSuccessSub)
     uppyService.removeDropTarget()
   })
 
