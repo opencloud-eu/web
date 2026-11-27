@@ -1,6 +1,7 @@
 import { vi, describe, it, expect } from 'vitest'
 import { ref } from 'vue'
 import { getSchema } from '@tiptap/core'
+import { Editor } from '@tiptap/vue-3'
 import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../../src/editor/types'
 
 vi.mock('vue3-gettext', () => ({
@@ -115,6 +116,33 @@ describe('useStrategyTiptapJson', () => {
       const groupIds = strategy.editorActionGroups().map((group) => group.id)
       expect(groupIds.indexOf('text-layout')).toBeGreaterThan(groupIds.indexOf('lists'))
       expect(groupIds.indexOf('text-align')).toBeGreaterThan(groupIds.indexOf('lists'))
+    })
+
+    it('places inline code right after strikethrough in the formatting group', () => {
+      const formattingIds = createStrategy()
+        .editorActionGroups()
+        .find((group) => group.id === 'formatting')!
+        .actions.map((action) => action.id)
+      expect(formattingIds.indexOf('code-inline')).toBe(formattingIds.indexOf('strikethrough') + 1)
+    })
+
+    it('toggles the code mark on the selection with the inline code action', () => {
+      const strategy = createStrategy()
+      const editor = new Editor({ extensions: strategy.extensions(), content: '<p>hello</p>' })
+      const codeInline = strategy
+        .editorActionGroups()
+        .flatMap(({ actions }) => actions)
+        .find(({ id }) => id === 'code-inline')!
+      editor.commands.setTextSelection({ from: 1, to: 6 })
+
+      codeInline.toolbarAction!(editor)
+      expect(editor.getHTML()).toBe('<p><code>hello</code></p>')
+      expect(codeInline.isActive!(editor)).toBe(true)
+
+      codeInline.toolbarAction!(editor)
+      expect(editor.getHTML()).toBe('<p>hello</p>')
+      expect(codeInline.isActive!(editor)).toBe(false)
+      editor.destroy()
     })
 
     it('shows link in both toolbar and slash commands', () => {
