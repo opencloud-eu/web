@@ -199,12 +199,13 @@ const createDocumentFile = async (
       }
       await editorMainFrame.locator(collaboraDocTextAreaSelector).fill(content)
       break
-    case 'Euro-Office':
+    case 'Euro-Office': {
       const innerIframe = editorMainFrame.frameLocator(euroOfficeInnerFrameSelector)
       await innerIframe.locator(euroOfficeDocTextAreaSelector).fill(content)
       const saveButtonDisabledLocator = innerIframe.locator(euroOfficeSaveButtonSelector)
       await expect(saveButtonDisabledLocator).toHaveAttribute('disabled', 'disabled')
       break
+    }
     default:
       throw new Error(
         "Editor should be either 'Collabora' or 'Euro-Office' but found " + editorToOpen

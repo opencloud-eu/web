@@ -42,6 +42,7 @@ export default [
       '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
 
+      'no-case-declarations': 'error',
       'no-new': 'off',
       'node/no-callback-literal': 'off',
       'prefer-const': 'warn',

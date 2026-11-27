@@ -862,7 +862,7 @@ const saveFileTask = useTask(function* () {
           )
         )
         break
-      case 507:
+      case 507: {
         const space = spacesStore.spaces.find(
           (space) => space.id === unref(resource).storageId && isProjectSpaceResource(space)
         )
@@ -879,6 +879,7 @@ const saveFileTask = useTask(function* () {
         }
         errorPopup(new HttpError($gettext('Insufficient quota for saving this file'), e.response))
         break
+      }
       default:
         errorPopup(new HttpError('', e.response))
     }
