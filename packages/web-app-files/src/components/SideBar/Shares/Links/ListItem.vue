@@ -42,6 +42,7 @@
         :is-modifiable="isModifiable"
         :is-password-removable="isPasswordRemovable"
         :link-share="linkShare"
+        :details="details"
         class="ms-1"
         @remove-public-link="$emit('removePublicLink', $event)"
         @update-link="$emit('updateLink', $event)"
@@ -54,6 +55,7 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 import {
+  formatDateFromDateTime,
   LinkRoleDropdown,
   UpdateLinkOptions,
   useAbility,
@@ -65,6 +67,7 @@ import { computed, inject, markRaw, Ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import SetLinkPasswordModal from '../../../Modals/SetLinkPasswordModal.vue'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
+import { ContextualHelperDataListItem } from '@opencloud-eu/design-system/helpers'
 import ExpirationDateIndicator from '../ExpirationDateIndicator.vue'
 import CopyLink from './CopyLink.vue'
 import EditDropdown from './EditDropdown.vue'
@@ -95,7 +98,8 @@ const emit = defineEmits<{
 }>()
 
 const { dispatchModal } = useModals()
-const { $gettext } = useGettext()
+const language = useGettext()
+const { $gettext } = language
 const { can } = useAbility()
 const { getAvailableLinkTypes, getLinkRoleByType, isPasswordEnforcedForLinkType } = useLinkTypes()
 
@@ -141,5 +145,54 @@ const currentLinkRoleDescription = computed(() => {
 
 const currentLinkRoleLabel = computed(() => {
   return getLinkRoleByType(unref(currentLinkType))?.displayName || ''
+})
+
+const isPublicLink = computed(() => linkShare.type !== SharingLinkType.Internal)
+
+function formatDate(date: string) {
+  return formatDateFromDateTime(DateTime.fromISO(date), language.current)
+}
+
+const details = computed<ContextualHelperDataListItem[]>(() => {
+  const list: ContextualHelperDataListItem[] = []
+
+  list.push(
+    { text: $gettext('Link name'), headline: true },
+    { text: linkShare.displayName || $gettext('Unnamed link') }
+  )
+
+  if (unref(isPublicLink)) {
+    list.push(
+      { text: $gettext('Type'), headline: true },
+      { text: $gettext('Public, everyone with the link can access.') }
+    )
+  }
+
+  list.push(
+    { text: $gettext('Needs password'), headline: true },
+    { text: linkShare.hasPassword ? $gettext('yes') : $gettext('no') }
+  )
+  list.push(
+    { text: $gettext('Access expires'), headline: true },
+    {
+      text: linkShare.expirationDateTime ? formatDate(linkShare.expirationDateTime) : $gettext('no')
+    }
+  )
+
+  if (linkShare.createdDateTime) {
+    list.push(
+      { text: $gettext('Created on'), headline: true },
+      { text: formatDate(linkShare.createdDateTime) }
+    )
+  }
+
+  if (linkShare.sharedBy?.displayName) {
+    list.push(
+      { text: $gettext('Created by'), headline: true },
+      { text: linkShare.sharedBy.displayName }
+    )
+  }
+
+  return list
 })
 </script>
