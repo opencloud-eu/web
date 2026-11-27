@@ -25,6 +25,8 @@ export interface TextEditorMentionsOptions {
   getItems: (query: string) => MentionItem[] | Promise<MentionItem[]>
   onSelect: (item: MentionItem) => void
   highlightLabels?: string[]
+  /** Shown at the bottom of the mention menu. */
+  hint?: string
 }
 
 export interface TextEditorOptions {

@@ -119,6 +119,7 @@ export const Mentions = TipTapExtension.create<TextEditorMentionsOptions>({
   },
 
   addProseMirrorPlugins() {
+    const { hint } = this.options
     const { plugin: mentionHighlightPlugin, addLabels } = createMentionHighlightPlugin(
       this.options.highlightLabels ?? []
     )
@@ -172,7 +173,7 @@ export const Mentions = TipTapExtension.create<TextEditorMentionsOptions>({
           return {
             onStart: (props) => {
               renderer = new VueRenderer(MentionMenu, {
-                props,
+                props: { ...props, hint },
                 editor: props.editor
               })
               if (renderer.el) {
@@ -180,7 +181,7 @@ export const Mentions = TipTapExtension.create<TextEditorMentionsOptions>({
               }
             },
             onUpdate: (props) => {
-              renderer?.updateProps(props)
+              renderer?.updateProps({ ...props, hint })
               getHandle()?.onUpdate(props)
             },
             onKeyDown: (props: SuggestionKeyDownProps) => {

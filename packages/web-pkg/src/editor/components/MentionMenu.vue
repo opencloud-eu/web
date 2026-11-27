@@ -11,7 +11,7 @@
       <div v-if="loading" class="text-editor-mention-menu__status">
         <oc-spinner size="small" />
       </div>
-      <ul v-else-if="items.length">
+      <ul v-else-if="items.length" class="text-editor-mention-menu__list">
         <li v-for="(item, index) in items" :key="item.id">
           <oc-button
             appearance="raw"
@@ -33,6 +33,10 @@
       <div v-else class="text-editor-mention-menu__status">
         {{ $gettext('No matching people') }}
       </div>
+      <div v-if="hint && !loading" class="text-editor-mention-menu__hint">
+        <oc-icon name="error-warning" fill-type="line" size="small" class="shrink-0" />
+        <span v-text="hint" />
+      </div>
     </div>
   </oc-drop>
 </template>
@@ -50,7 +54,7 @@ interface VirtualElement {
   contextElement: HTMLElement
 }
 
-const props = defineProps<SuggestionProps<MentionItem>>()
+const props = defineProps<SuggestionProps<MentionItem> & { hint?: string }>()
 
 const dropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('dropRef')
 const selectedIndex = ref(0)
@@ -135,11 +139,11 @@ defineExpose({ onUpdate, onKeyDown })
 @reference '@opencloud-eu/design-system/tailwind';
 
 .text-editor-mention-menu {
-  @apply min-w-[240px] max-w-[360px] max-h-80 overflow-y-auto;
+  @apply min-w-[240px] max-w-[360px];
 }
 
-.text-editor-mention-menu ul {
-  @apply list-none m-0 p-0;
+.text-editor-mention-menu__list {
+  @apply list-none m-0 p-0 max-h-80 overflow-y-auto;
 }
 
 .text-editor-mention-menu__item {
@@ -153,6 +157,10 @@ defineExpose({ onUpdate, onKeyDown })
 
 .text-editor-mention-menu__item--selected {
   @apply bg-role-secondary-container;
+}
+
+.text-editor-mention-menu__hint {
+  @apply flex items-center gap-2 mt-1 pt-2 px-2 pb-1 border-t border-role-outline-variant text-xs opacity-70;
 }
 
 .text-editor-mention-menu__status {
