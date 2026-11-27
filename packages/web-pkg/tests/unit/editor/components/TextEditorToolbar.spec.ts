@@ -99,8 +99,9 @@ function mountToolbar(
         }),
         'oc-icon': true,
         'yjs-collaborators': defineComponent({
-          props: { users: { type: Array, required: true } },
-          template: '<div class="collaborators-stub" :data-count="users.length" />'
+          props: { users: { type: Array, required: true }, dimmed: { type: Boolean } },
+          template:
+            '<div class="collaborators-stub" :data-count="users.length" :data-dimmed="dimmed" />'
         })
       }
     }
@@ -384,7 +385,7 @@ describe('TextEditorToolbar', () => {
     const { wrapper } = mountToolbar(false, 'markdown', false, 'connected')
     const indicator = wrapper.find('.yjs-status-indicator')
     expect(indicator.attributes('aria-label')).toBe('Collaboration ready')
-    expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi')
+    expect(indicator.find('oc-icon-stub').attributes('name')).toBe('circle-fill')
     wrapper.unmount()
   })
 
@@ -392,7 +393,7 @@ describe('TextEditorToolbar', () => {
     const { wrapper } = mountToolbar(false, 'markdown', false, 'disconnected')
     const indicator = wrapper.find('.yjs-status-indicator')
     expect(indicator.attributes('aria-label')).toBe('Collaboration disconnected')
-    expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi-off')
+    expect(indicator.find('oc-icon-stub').attributes('name')).toBe('circle-fill')
     wrapper.unmount()
   })
 
@@ -400,7 +401,7 @@ describe('TextEditorToolbar', () => {
     const { wrapper } = mountToolbar(false, 'markdown', false, 'connecting')
     const indicator = wrapper.find('.yjs-status-indicator')
     expect(indicator.attributes('aria-label')).toBe('Collaboration connecting...')
-    expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi')
+    expect(indicator.find('oc-icon-stub').attributes('name')).toBe('circle-line')
     wrapper.unmount()
   })
 
@@ -412,13 +413,13 @@ describe('TextEditorToolbar', () => {
     await wrapper.vm.$nextTick()
     const connectedIndicator = wrapper.find('.yjs-status-indicator')
     expect(connectedIndicator.exists()).toBe(true)
-    expect(connectedIndicator.find('oc-icon-stub').attributes('name')).toBe('wifi')
+    expect(connectedIndicator.find('oc-icon-stub').attributes('name')).toBe('circle-fill')
 
     collaborationStatusRef.value = 'disconnected'
     await wrapper.vm.$nextTick()
     const disconnectedIndicator = wrapper.find('.yjs-status-indicator')
     expect(disconnectedIndicator.exists()).toBe(true)
-    expect(disconnectedIndicator.find('oc-icon-stub').attributes('name')).toBe('wifi-off')
+    expect(disconnectedIndicator.find('oc-icon-stub').attributes('name')).toBe('circle-fill')
 
     collaborationStatusRef.value = 'local'
     await wrapper.vm.$nextTick()
@@ -441,5 +442,51 @@ describe('TextEditorToolbar', () => {
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.collaborators-stub').attributes('data-count')).toBe('2')
     wrapper.unmount()
+  })
+
+  describe('presence pill', () => {
+    const me: YjsCollaborator = { id: 'me', name: 'Zoe', color: '#111111', isSelf: true }
+
+    it('shows the status before the collaborator stack', () => {
+      const { wrapper } = mountToolbar(false, 'markdown', false, 'connected', [me])
+      const children = wrapper.get('.text-editor-toolbar-presence').element.children
+      expect(children[0].classList).toContain('yjs-status-indicator')
+      expect(children[1].classList).toContain('collaborators-stub')
+      wrapper.unmount()
+    })
+
+    it('dims the collaborator stack only while offline', async () => {
+      const { wrapper, collaborationStatusRef } = mountToolbar(
+        false,
+        'markdown',
+        false,
+        'connected',
+        [me]
+      )
+      expect(wrapper.get('.collaborators-stub').attributes('data-dimmed')).toBe('false')
+
+      collaborationStatusRef.value = 'disconnected'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.get('.collaborators-stub').attributes('data-dimmed')).toBe('true')
+
+      collaborationStatusRef.value = 'connecting'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.get('.collaborators-stub').attributes('data-dimmed')).toBe('false')
+      wrapper.unmount()
+    })
+
+    it('shows the collaborator stack alone when there is no visible status', () => {
+      const { wrapper } = mountToolbar(false, 'markdown', false, 'local', [me])
+      const pill = wrapper.get('.text-editor-toolbar-presence')
+      expect(pill.find('.collaborators-stub').exists()).toBe(true)
+      expect(pill.find('.yjs-status-indicator').exists()).toBe(false)
+      wrapper.unmount()
+    })
+
+    it('renders nothing without a visible status and without collaborators', () => {
+      const { wrapper } = mountToolbar(false, 'markdown', false, 'local')
+      expect(wrapper.find('.text-editor-toolbar-status').exists()).toBe(false)
+      wrapper.unmount()
+    })
   })
 })

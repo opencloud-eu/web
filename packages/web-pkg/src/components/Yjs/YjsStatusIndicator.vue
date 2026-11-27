@@ -1,18 +1,19 @@
 <template>
   <div
     v-if="isVisible"
-    v-oc-tooltip="label"
-    class="yjs-status-indicator inline-flex items-center"
+    v-oc-tooltip="isOffline ? '' : label"
+    class="yjs-status-indicator inline-flex items-center gap-1"
+    :class="colorClasses"
     role="img"
     :aria-label="label"
     :data-test-yjs-status="status"
   >
+    <oc-icon :key="icon" :name="icon" fill-type="none" size-class="size-2.5" />
     <span
-      class="inline-flex size-6 items-center justify-center rounded-full border"
-      :class="statusClasses"
-    >
-      <oc-icon :name="icon" fill-type="line" size-class="size-4" />
-    </span>
+      v-if="isOffline"
+      class="yjs-status-indicator-label text-sm leading-none"
+      v-text="$gettext('Offline')"
+    />
   </div>
 </template>
 
@@ -32,6 +33,7 @@ const { status } = defineProps<{
 const { $gettext } = useGettext()
 
 const isVisible = computed(() => hasVisibleYjsStatus(status))
+const isOffline = computed(() => status === YjsStatus.Disconnected)
 
 const label = computed(() => {
   if (status === YjsStatus.Connected) {
@@ -46,17 +48,19 @@ const label = computed(() => {
   return ''
 })
 
-const icon = computed(() => (status === YjsStatus.Disconnected ? 'wifi-off' : 'wifi'))
+// also the key of the icon: the inline svg loader applies a late response of a previous src, so a
+// quick connecting -> disconnected flip could otherwise end up showing the ring
+const icon = computed(() => (status === YjsStatus.Connecting ? 'circle-line' : 'circle-fill'))
 
-const statusClasses = computed(() => {
+const colorClasses = computed(() => {
   if (status === YjsStatus.Connected) {
-    return 'border-green-700/20 bg-green-500/15 text-green-700 dark:text-green-400'
+    return 'text-green-700 dark:text-green-400'
   }
   if (status === YjsStatus.Disconnected) {
-    return 'border-red-700/20 bg-red-500/15 text-red-700 dark:text-red-400'
+    return 'text-red-700 dark:text-red-400'
   }
   if (status === YjsStatus.Connecting) {
-    return 'border-gray-700/20 bg-gray-500/15 text-gray-700 dark:text-gray-400'
+    return 'text-gray-700 dark:text-gray-400'
   }
   return ''
 })

@@ -15,6 +15,7 @@ function getWrapper(
     users: YjsCollaborator[]
     followingSupported: boolean
     following: string | null
+    dimmed: boolean
   }> = {}
 ) {
   const wrapper = mount(YjsCollaborators, {
@@ -34,6 +35,17 @@ function getWrapper(
 }
 
 describe('YjsCollaborators', () => {
+  it('dims only the avatar stack, not the trigger with its focus ring', () => {
+    expect(getWrapper().wrapper.get('.yjs-collaborators-stack').classes()).not.toContain(
+      'opacity-50'
+    )
+
+    const { wrapper } = getWrapper({ dimmed: true })
+    expect(wrapper.get('.yjs-collaborators-stack').classes()).toContain('opacity-50')
+    expect(wrapper.get('.yjs-collaborators').classes()).not.toContain('opacity-50')
+    expect(wrapper.get('.yjs-collaborators-trigger').classes()).not.toContain('opacity-50')
+  })
+
   it('stacks at most three avatars and counts the rest', () => {
     const { wrapper } = getWrapper()
     const trigger = wrapper.find('.yjs-collaborators-trigger')
