@@ -64,7 +64,7 @@ import { useTask } from 'vue-concurrency'
 import { call, Resource } from '@opencloud-eu/web-client'
 import { DateTime } from 'luxon'
 import { Activity } from '@opencloud-eu/web-client/graph/generated'
-import escape from 'lodash-es/escape'
+import escapeHtml from 'lodash-es/escape'
 
 const { $ngettext, current: currentLanguage } = useGettext()
 const clientService = useClientService()
@@ -149,12 +149,12 @@ const isLoading = computed(() => {
 const getHtmlFromActivity = (activity: Activity) => {
   // FIXME: graph sdk type is wrong
   const variables = activity.template.variables as Record<string, any>
-  return escape(activity.template.message).replace(/\{(\w+)\}/g, (placeholder, key: string) => {
+  return escapeHtml(activity.template.message).replace(/\{(\w+)\}/g, (placeholder, key: string) => {
     const value = variables[key]
     if (!value) {
       return placeholder
     }
-    const escapedValue = escape(value.displayName || value.name)
+    const escapedValue = escapeHtml(value.displayName || value.name)
     return `<span class="font-medium text-role-on-surface">${escapedValue}</span>`
   })
 }

@@ -92,7 +92,7 @@
 import { computed, onMounted, onUnmounted, Ref, ref, unref, useTemplateRef } from 'vue'
 import { useEventListener } from '@vueuse/core'
 import isEmpty from 'lodash-es/isEmpty'
-import escape from 'lodash-es/escape'
+import escapeHtml from 'lodash-es/escape'
 import {
   useCapabilityStore,
   useSpacesStore,
@@ -147,7 +147,7 @@ const messageParameters = [
 ]
 const getMessage = ({ message, messageRich, messageRichParameters }: Notification): string => {
   if (!messageRich || isEmpty(messageRichParameters)) {
-    return escape(message)
+    return escapeHtml(message)
   }
   const labels: Record<string, string> = {}
   for (const param of messageParameters) {
@@ -156,14 +156,14 @@ const getMessage = ({ message, messageRich, messageRichParameters }: Notificatio
     }
     const label = messageRichParameters[param.name]?.[param.labelAttribute]
     if (!label) {
-      return escape(message)
+      return escapeHtml(message)
     }
     labels[param.name] = label
   }
   // the result is rendered as HTML, so everything is escaped. interpolate in a single pass,
   // so placeholders inside the inserted labels (e.g. a file named "{virus}") are not interpolated again
-  return escape(messageRich).replace(/\{(\w+)\}/g, (placeholder, name: string) =>
-    Object.hasOwn(labels, name) ? `<strong>${escape(labels[name])}</strong>` : placeholder
+  return escapeHtml(messageRich).replace(/\{(\w+)\}/g, (placeholder, name: string) =>
+    Object.hasOwn(labels, name) ? `<strong>${escapeHtml(labels[name])}</strong>` : placeholder
   )
 }
 const getLink = ({ messageRichParameters, object_type }: Notification) => {
