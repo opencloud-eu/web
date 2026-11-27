@@ -55,7 +55,7 @@ describe('Cache', () => {
     const cache = newCache(cacheValues, 50)
 
     cache.set(1, 1)
-    vi.setSystemTime(new Date().getTime() + 10)
+    vi.setSystemTime(Date.now() + 10)
     cache.set(2, 2)
 
     expect(cache.get(1)).toBe(1)
@@ -64,7 +64,7 @@ describe('Cache', () => {
     expect(cache.keys().length).toBe(2)
     expect(cache.entries().length).toBe(2)
 
-    vi.setSystemTime(new Date().getTime() + 41)
+    vi.setSystemTime(Date.now() + 41)
 
     expect(cache.get(1)).toBeFalsy()
     expect(cache.get(2)).toBe(2)
@@ -72,7 +72,7 @@ describe('Cache', () => {
     expect(cache.keys().length).toBe(1)
     expect(cache.entries().length).toBe(1)
 
-    vi.setSystemTime(new Date().getTime() + 10)
+    vi.setSystemTime(Date.now() + 10)
 
     expect(cache.get(2)).toBeFalsy()
     expect(cache.values().length).toBe(0)
@@ -92,7 +92,7 @@ describe('Cache', () => {
     expect(cache.keys().length).toBe(4)
     expect(cache.entries().length).toBe(4)
 
-    vi.setSystemTime(new Date().getTime() + 11)
+    vi.setSystemTime(Date.now() + 11)
 
     expect(cache.get(3)).toBeFalsy()
     expect(cache.get(4)).toBe(4)
@@ -102,7 +102,7 @@ describe('Cache', () => {
     expect(cache.keys().length).toBe(3)
     expect(cache.entries().length).toBe(3)
 
-    vi.setSystemTime(new Date().getTime() + 10)
+    vi.setSystemTime(Date.now() + 10)
 
     expect(cache.get(4)).toBeFalsy()
     expect(cache.get(5)).toBe(5)
@@ -214,7 +214,7 @@ describe('Cache', () => {
     const cache = new Cache<number, string>({ ttl: 50, onEvict })
 
     cache.set(1, 'one')
-    vi.setSystemTime(new Date().getTime() + 51)
+    vi.setSystemTime(Date.now() + 51)
 
     expect(cache.get(1)).toBeFalsy()
     expect(onEvict).toHaveBeenCalledWith({ key: 1, replacedValue: 'one' })
@@ -263,10 +263,9 @@ describe('cache', () => {
       expect(cache.get(key2)).toBe(value2)
     })
     it('should evict expired item', () => {
-      const oldGetTime = Date.prototype.getTime
-      Date.prototype.getTime = vi.fn(() => 1487076708000)
+      const dateNowSpy = vi.spyOn(Date, 'now').mockReturnValue(1487076708000)
       cache.set(key, value, 1)
-      Date.prototype.getTime = oldGetTime
+      dateNowSpy.mockRestore()
       expect(cache.values().length).toBe(0)
     })
     it('should not evict item that has not expired', () => {
@@ -274,10 +273,9 @@ describe('cache', () => {
       expect(cache.values().length).toBe(1)
     })
     it('should not evict item without ttl', () => {
-      const oldGetTime = Date.prototype.getTime
-      Date.prototype.getTime = vi.fn(() => 1487076708000)
+      const dateNowSpy = vi.spyOn(Date, 'now').mockReturnValue(1487076708000)
       cache.set(key, value, 0)
-      Date.prototype.getTime = oldGetTime
+      dateNowSpy.mockRestore()
       expect(cache.values().length).toBe(1)
     })
   })

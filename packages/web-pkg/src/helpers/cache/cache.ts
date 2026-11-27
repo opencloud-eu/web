@@ -5,12 +5,12 @@ class CacheElement<T> {
 
   constructor(value: T, ttl: number, size = 0) {
     this.value = value
-    this.expires = ttl ? new Date().getTime() + ttl : 0
+    this.expires = ttl ? Date.now() + ttl : 0
     this.size = size
   }
 
   get expired(): boolean {
-    return this.expires > 0 && this.expires < new Date().getTime()
+    return this.expires > 0 && this.expires < Date.now()
   }
 }
 

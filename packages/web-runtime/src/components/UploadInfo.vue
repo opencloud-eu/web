@@ -754,7 +754,7 @@ subscribe(
     bytesUploaded.value += byteIncrease
     filesInEstimation.value[file.meta.uploadId] = progress.bytesUploaded
 
-    const timeElapsed = +new Date().getTime() - unref(timeStarted).getTime()
+    const timeElapsed = Date.now() - unref(timeStarted).getTime()
 
     uploadSpeed.value = getSpeed({
       bytesUploaded: unref(bytesUploaded),
