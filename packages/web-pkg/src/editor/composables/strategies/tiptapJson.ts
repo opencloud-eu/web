@@ -98,6 +98,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     italic,
     underline,
     strikethrough,
+    codeInline,
     subscript,
     superscript,
     heading,
@@ -158,6 +159,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           italic(),
           underline(),
           strikethrough(),
+          codeInline(),
           subscript(),
           superscript()
         ]
