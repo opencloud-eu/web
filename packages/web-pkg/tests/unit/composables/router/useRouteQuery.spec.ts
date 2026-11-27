@@ -18,7 +18,7 @@ describe('useRouteQuery', () => {
     const wrapper = getComposableWrapper(
       () => {
         fooQuery = useRouteQuery('foo', '1')
-        fooValue = computed(() => parseInt(fooQuery.value as string))
+        fooValue = computed(() => parseInt(fooQuery.value as string, 10))
 
         return {
           fooQuery,

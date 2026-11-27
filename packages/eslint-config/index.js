@@ -45,6 +45,7 @@ export default [
       'no-new': 'off',
       'node/no-callback-literal': 'off',
       'prefer-const': 'warn',
+      radix: 'error',
       'require-await': 'warn',
       // 'sort-imports': 'warn', TODO: fix project import issues and then enable it
       'unused-imports/no-unused-imports': 'error',

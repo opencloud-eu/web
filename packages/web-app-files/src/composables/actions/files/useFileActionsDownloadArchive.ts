@@ -60,11 +60,11 @@ export const useFileActionsDownloadArchive = () => {
     }
 
     const selectedFilesSize = resources.reduce(
-      (accumulator, currentValue) => accumulator + parseInt(`${currentValue.size}`),
+      (accumulator, currentValue) => accumulator + parseInt(`${currentValue.size}`, 10),
       0
     )
 
-    return selectedFilesSize > parseInt(archiverCapabilities.max_size)
+    return selectedFilesSize > parseInt(archiverCapabilities.max_size, 10)
   }
 
   const actions = computed((): FileAction[] => {

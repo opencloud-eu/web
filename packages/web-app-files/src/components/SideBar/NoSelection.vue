@@ -39,7 +39,7 @@ const hasSize = computed(() => {
 
 const sizeValue = computed(() => {
   const size = unref(resources).reduce(
-    (total, { size }) => total + parseInt(size?.toString() || '0'),
+    (total, { size }) => total + parseInt(size?.toString() || '0', 10),
     0
   )
   return formatFileSize(size, currentLanguage)

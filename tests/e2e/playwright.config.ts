@@ -57,13 +57,13 @@ export const appConfig = {
 
   // Timeouts (in seconds; multiply by 1000 when passing to Playwright APIs).
   // (@slow / @timeout:<ms>)
-  testTimeout: parseInt(process.env.TEST_TIMEOUT || '120'),
+  testTimeout: parseInt(process.env.TEST_TIMEOUT || '120', 10),
   get timeout() {
     return this.testTimeout
   },
-  minTimeout: parseInt(process.env.MIN_TIMEOUT || '5'),
-  tokenTimeout: parseInt(process.env.TOKEN_TIMEOUT || '40'),
-  largeUploadTimeout: parseInt(process.env.LARGE_UPLOAD_TIMEOUT || '240'),
+  minTimeout: parseInt(process.env.MIN_TIMEOUT || '5', 10),
+  tokenTimeout: parseInt(process.env.TOKEN_TIMEOUT || '40', 10),
+  largeUploadTimeout: parseInt(process.env.LARGE_UPLOAD_TIMEOUT || '240', 10),
 
   acceptDownloads: process.env.DOWNLOADS !== 'false',
   assetsPath: path.join(__dirname, 'filesForUpload'),

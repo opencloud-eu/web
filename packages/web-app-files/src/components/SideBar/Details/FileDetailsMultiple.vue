@@ -39,7 +39,7 @@ const spacesCount = computed(() => {
 
 const sizeValue = computed(() => {
   let size = 0
-  unref(selectedResources).forEach((i) => (size += parseInt(i.size?.toString() || '0')))
+  unref(selectedResources).forEach((i) => (size += parseInt(i.size?.toString() || '0', 10)))
   return formatFileSize(size, currentLanguage)
 })
 

@@ -117,7 +117,7 @@ describe('AppTokenModal component', () => {
 
           const { expiry } = mocks.$clientService.httpAuthenticated.post.mock.calls[0][2].params
           expect(expiry).toMatch(/^\d+s$/)
-          const serverExpiry = now.plus({ seconds: serverDelay + parseInt(expiry) })
+          const serverExpiry = now.plus({ seconds: serverDelay + parseInt(expiry, 10) })
           expect(serverExpiry.hasSame(pickedDate, 'day')).toBe(true)
           expect(serverExpiry.toFormat('HH:mm')).toBe('23:59')
         }
