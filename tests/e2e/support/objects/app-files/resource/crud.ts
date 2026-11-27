@@ -28,6 +28,7 @@ import { editTextDocument, fillContentOfDocument, getLockLocator } from './viewe
 
 const deleteButtonBatchAction = '.oc-files-actions-delete-trigger'
 const createNewNoteFileButton = '.new-file-btn-ocnote'
+const quickCreateNoteFileButton = '.quick-create-item-ocnote'
 const createNewMdFileButton = '.new-file-btn-md'
 const createNewOfficeDocumentFileBUtton = '//div[@id="create-or-upload-drop"]//span[text()="%s"]'
 const fileRenameInput = '.oc-text-input'
@@ -43,6 +44,7 @@ export interface createResourceArgs {
   type: createResourceTypes
   content?: string
   password?: string
+  quickCreate?: boolean
 }
 
 const createNewFolder = async ({
@@ -64,8 +66,36 @@ const createNewFolder = async ({
   await mkcolPromise
 }
 
+const createNoteFile = async ({
+  page,
+  name,
+  content,
+  password
+}: Omit<createResourceArgs, 'type'>): Promise<void> => {
+  const resourceInput = page.locator(resourceNameInput)
+  await resourceInput.clear()
+  await resourceInput.fill(name)
+  await Promise.all([
+    page.waitForResponse((resp) => resp.status() === 201 && resp.request().method() === 'PUT'),
+    page.locator(util.format(actionConfirmationButton, 'Create')).click()
+  ])
+  await editTextDocument({ page, content, name, password })
+}
+
+const createViaQuickCreate = async (args: createResourceArgs): Promise<void> => {
+  const { page, type } = args
+  if (type !== 'noteFile') {
+    throw new Error(`Quick-create is not supported for resource type: ${type}`)
+  }
+  await page.locator(quickCreateNoteFileButton).click()
+  await createNoteFile(args)
+}
+
 const createNewFileOrFolder = async (args: createResourceArgs): Promise<void> => {
-  const { page, name, type, content, password } = args
+  const { page, name, type, content, password, quickCreate } = args
+  if (quickCreate) {
+    return createViaQuickCreate(args)
+  }
   await expect(page.locator(addNewResourceButton)).toBeVisible()
   await expect(page.locator(addNewResourceButton)).toBeEnabled()
   await page.locator(addNewResourceButton).click()
@@ -76,15 +106,7 @@ const createNewFileOrFolder = async (args: createResourceArgs): Promise<void> =>
     }
     case 'noteFile': {
       await page.locator(createNewNoteFileButton).click()
-      const resourceInput = page.locator(resourceNameInput)
-      // Clear the field and fill in the name without the extension.
-      await resourceInput.clear()
-      await resourceInput.fill(name)
-      await Promise.all([
-        page.waitForResponse((resp) => resp.status() === 201 && resp.request().method() === 'PUT'),
-        page.locator(util.format(actionConfirmationButton, 'Create')).click()
-      ])
-      await editTextDocument({ page, content, name, password })
+      await createNoteFile({ page, name, content, password })
       break
     }
     case 'mdFile': {
@@ -247,14 +269,14 @@ const isAppProviderServiceForOfficeSuitesReadyInWebUI = async (page: Page, type:
 }
 
 export const createResources = async (args: createResourceArgs): Promise<void> => {
-  const { page, name, type, content, password } = args
+  const { page, name, type, content, password, quickCreate } = args
   const paths = name.split('/')
   const resource = paths.pop()
 
   for (const path of paths) {
     await clickResource({ page, path, password })
   }
-  await createNewFileOrFolder({ page, name: resource, type, content, password })
+  await createNewFileOrFolder({ page, name: resource, type, content, password, quickCreate })
 }
 
 export interface renameResourceArgs {

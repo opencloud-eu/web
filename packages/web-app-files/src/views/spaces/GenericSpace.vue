@@ -12,7 +12,11 @@
         :space="space"
         :view-modes="viewModes"
         @item-dropped="fileDropped"
-      />
+      >
+        <template v-if="displayFullAppBar" #actions>
+          <quick-create-bar :space="space" />
+        </template>
+      </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <not-found-message
@@ -158,6 +162,7 @@ import NotFoundMessage from '../../components/FilesList/NotFoundMessage.vue'
 import QuickActions from '../../components/FilesList/QuickActions.vue'
 import ResourceDetails from '../../components/FilesList/ResourceDetails.vue'
 import WhitespaceContextMenu from '../../components/Spaces/WhitespaceContextMenu.vue'
+import QuickCreateBar from '../../components/AppBar/QuickCreate/QuickCreateBar.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { useFileUpload, useResourcesViewDefaults } from '../../composables'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'

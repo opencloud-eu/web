@@ -55,6 +55,45 @@ describe('useFileActionsCreateNewFile', () => {
     })
   })
 
+  describe('handler', () => {
+    it('does not open the create modal while no current folder is set', async () => {
+      const space = mock<SpaceResource>({ id: '1' })
+      let instance: ReturnType<typeof useFileActionsCreateNewFile>
+      getWrapper({ space, currentFolder: null, setup: (i) => (instance = i) })
+
+      await unref(instance.actions)[0].handler({ space, resources: [] })
+
+      expect(useModals().dispatchModal).not.toHaveBeenCalled()
+    })
+
+    it('creates the file in the folder the modal was opened in', async () => {
+      const space = mock<SpaceResource>({ id: '1' })
+      let instance: ReturnType<typeof useFileActionsCreateNewFile>
+      const { mocks } = getWrapper({
+        space,
+        currentFolder: mock<Resource>({ id: '1', path: '/old' }),
+        fileExtensions: [
+          mock<ApplicationFileExtension>({
+            app: 'text-editor',
+            extension: 'txt',
+            createFileHandler: undefined,
+            newFileMenu: { menuTitle: vi.fn() }
+          })
+        ],
+        setup: (i) => (instance = i)
+      })
+
+      await unref(instance.actions)[0].handler({ space, resources: [] })
+      useResourcesStore().currentFolder = mock<Resource>({ id: '2', path: '/new' })
+      const { dispatchModal } = useModals()
+      await vi.mocked(dispatchModal).mock.calls[0][0].onConfirm('new.txt')
+
+      expect(mocks.$clientService.webdav.putFileContents).toHaveBeenCalledWith(space, {
+        path: '/old/new.txt'
+      })
+    })
+  })
+
   describe('isVisible', () => {
     it.each([
       { driveType: 'public', permissions: 'CKZ', visible: false },
@@ -74,6 +113,30 @@ describe('useFileActionsCreateNewFile', () => {
         })
       }
     )
+  })
+
+  describe('quickCreateActions', () => {
+    it('only contains actions of file extensions with quickCreate enabled', () => {
+      getWrapper({
+        fileExtensions: [
+          mock<ApplicationFileExtension>({
+            app: 'text-editor',
+            extension: 'ocnote',
+            newFileMenu: { menuTitle: vi.fn(), quickCreate: true }
+          }),
+          mock<ApplicationFileExtension>({
+            app: 'text-editor',
+            extension: 'txt',
+            newFileMenu: { menuTitle: vi.fn(), quickCreate: false }
+          })
+        ],
+        setup: ({ actions, quickCreateActions }) => {
+          expect(unref(actions).map(({ ext }) => ext)).toEqual(['ocnote', 'txt'])
+          expect(unref(quickCreateActions).map(({ ext }) => ext)).toEqual(['ocnote'])
+          expect(unref(quickCreateActions)[0]).toBe(unref(actions)[0])
+        }
+      })
+    })
   })
 
   describe('isDisabled / disabledTooltip', () => {
@@ -176,6 +239,7 @@ function getWrapper({
   })
 
   return {
+    mocks,
     wrapper: getComposableWrapper(
       () => {
         const instance = useFileActionsCreateNewFile()

@@ -13,6 +13,7 @@ import { useApplicationReadyStore } from './piniaStores'
 import { computed } from 'vue'
 import { useActionExtensionCreateFromTemplate } from './extensions'
 import { useCreateFileHandler } from './composables'
+import { getMimeTypeDescription } from './helpers'
 
 export default defineWebApplication({
   setup(options) {
@@ -56,6 +57,7 @@ export default defineWebApplication({
       id: appId,
       extensions: mimeTypes.map((mimeType) => {
         const provider = mimeType.app_providers.find((provider) => provider.name === appName)
+        const description = getMimeTypeDescription(mimeType.mime_type, $gettext)
         return {
           extension: mimeType.ext,
           label: () => provider.name,
@@ -65,7 +67,13 @@ export default defineWebApplication({
           secureView: provider.secure_view,
           routeName: `${appId}-apps`,
           hasPriority: mimeType.default_application === provider.name,
-          ...(mimeType.allow_creation && { newFileMenu: { menuTitle: () => mimeType.name } }),
+          ...(mimeType.allow_creation && {
+            newFileMenu: {
+              menuTitle: () => mimeType.name,
+              quickCreate: true,
+              ...(description && { description })
+            }
+          }),
           createFileHandler
         }
       })

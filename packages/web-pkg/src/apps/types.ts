@@ -110,6 +110,10 @@ export interface ApplicationFileExtension {
     // "New notebook.ocnb" instead of "New file.ocnb". Without this, the modal
     // falls back to "New file.<extension>".
     defaultName?: () => string
+    // Also show a create button in the quick-create bar above the file list
+    quickCreate?: boolean
+    // Short text shown below the title in the quick-create bar
+    description?: () => string
   }
   routeName?: string
   secureView?: boolean

@@ -204,7 +204,11 @@ export default defineWebApplication({
                 return extensionItem.label()
               }
               return extensionItem.label
-            }
+            },
+            ...(extensionItem.extension === 'ocnote' && {
+              quickCreate: true,
+              description: () => $gettext('Write together')
+            })
           }
         }
         acc.push(extensionItem)
