@@ -717,36 +717,68 @@ describe('AppWrapper — save feedback', () => {
     expect(useMessages().showMessage).not.toHaveBeenCalled()
   })
 
-  it('shows the progress bar and announces while the file is being written', async () => {
+  it('shows the progress bar while the file is being written', async () => {
     const loadingService = new LoadingService()
     const put = deferred<Resource>()
     const s = await openFile({
       loadingService,
       putFileContents: vi.fn().mockReturnValue(put.promise)
     })
-    const announcer = s.wrapper.findComponent({ name: 'OcHiddenAnnouncer' })
     await s.edit('edited content')
     expect(loadingService.isLoading).toBe(false)
 
     void s.pressCtrlS()
     await vi.waitFor(() => expect(loadingService.isLoading).toBe(true))
-    expect(announcer.props('announcement')).toBe('Saving…')
 
     put.resolve(mock<Resource>({ etag: 'etag-saved' }))
     await flushPromises()
-    expect(announcer.props('announcement')).toBe('')
   })
 
-  it('stops announcing when the write failed', async () => {
-    const s = await openFile({
-      putFileContents: vi.fn().mockRejectedValue({ statusCode: 500, response: {} })
+  // the announcer sets its text with a delay, which a fast write must not cancel
+  describe('screen reader announcement', () => {
+    const announcerText = (s: Awaited<ReturnType<typeof openFile>>) =>
+      s.wrapper.findComponent({ name: 'OcHiddenAnnouncer' }).text()
+
+    beforeEach(() => {
+      vi.useFakeTimers()
     })
-    await s.edit('edited content')
 
-    await s.pressCtrlS()
+    it('announces saving also when the write finishes right away', async () => {
+      const s = await openFile()
+      await s.edit('edited content')
 
-    expect(useMessages().showErrorMessage).toHaveBeenCalled()
-    expect(s.wrapper.findComponent({ name: 'OcHiddenAnnouncer' }).props('announcement')).toBe('')
+      await s.pressCtrlS()
+      expect(s.putFileContents).toHaveBeenCalledTimes(1)
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(announcerText(s)).toBe('Saving…')
+    })
+
+    it('announces saving again on the next save', async () => {
+      const s = await openFile()
+      await s.edit('edited content')
+      await s.pressCtrlS()
+      await vi.advanceTimersByTimeAsync(100)
+      await s.edit('edited again')
+
+      await s.pressCtrlS()
+      expect(s.putFileContents).toHaveBeenCalledTimes(2)
+      expect(announcerText(s)).toBe('')
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(announcerText(s)).toBe('Saving…')
+    })
+
+    it('announces nothing while a save only flushes', async () => {
+      const s = await openFile()
+      s.registerFlushContentCallback(() => Promise.resolve())
+
+      await s.pressCtrlS()
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(s.putFileContents).not.toHaveBeenCalled()
+      expect(announcerText(s)).toBe('')
+    })
   })
 
   // the autosave runs every interval and flushes even without changes, which must not show up

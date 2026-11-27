@@ -1,7 +1,7 @@
 <template>
   <main :id="applicationId" class="app-wrapper h-full rounded-xl" @keydown.esc.stop="closeApp">
     <h1 class="sr-only" v-text="pageTitle" />
-    <oc-hidden-announcer :announcement="isWritingFile ? $gettext('Saving…') : ''" />
+    <oc-hidden-announcer ref="savingAnnouncer" />
     <app-loading-spinner v-if="isLoading" />
     <no-content-message
       v-else-if="isNotFoundError"
@@ -42,7 +42,8 @@ import {
   watch,
   computed,
   onMounted,
-  markRaw
+  markRaw,
+  useTemplateRef
 } from 'vue'
 import { DateTime, Duration } from 'luxon'
 import { useTask } from 'vue-concurrency'
@@ -192,8 +193,7 @@ const isNotFoundError = computed(() => {
   return e instanceof ResourceNotFoundError || (e as HttpError)?.statusCode === 404
 })
 const isReadOnly = ref(false)
-/** A save is writing the file. Unlike `saveFileTask.isRunning`, not while it only flushes. */
-const isWritingFile = ref(false)
+const savingAnnouncer = useTemplateRef('savingAnnouncer')
 /** The loaded text is not valid UTF-8, see `getFileContentsAsText`. */
 const isLossyContent = ref(false)
 const serverContent = ref<unknown>()
@@ -828,7 +828,8 @@ const saveFileTask = useTask(function* () {
   // Pin the Y.Doc state behind `newContent`; the doc usually moves on while
   // the PUT is in flight.
   yjsSession?.beginSave()
-  isWritingFile.value = true
+  // announced only once the file gets written, a save that only flushes stays silent
+  unref(savingAnnouncer)?.announce($gettext('Saving…'))
   try {
     // shown on every save, also the fast ones, so it tells that the file was saved
     const putFileContentsResponse = yield loadingService.addTask(
@@ -890,8 +891,6 @@ const saveFileTask = useTask(function* () {
         errorPopup(new HttpError('', e.response))
     }
     return false
-  } finally {
-    isWritingFile.value = false
   }
 }).drop()
 
