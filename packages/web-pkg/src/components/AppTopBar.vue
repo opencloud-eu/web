@@ -29,19 +29,6 @@
         />
       </div>
       <div class="flex">
-        <span
-          v-if="hasAutosave && !isReadOnly"
-          class="hidden sm:flex items-center"
-          data-testid="autosave-indicator"
-        >
-          <oc-icon
-            v-oc-tooltip="autoSaveTooltipText"
-            :accessible-label="autoSaveTooltipText"
-            name="refresh"
-            color="var(--oc-role-on-chrome)"
-            class="ox-p-xs mx-1"
-          />
-        </span>
         <template v-if="mainActions.length && resource">
           <context-action-menu
             :menu-sections="[
@@ -101,10 +88,9 @@
 import { computed } from 'vue'
 import ContextActionMenu from './ContextActions/ContextActionMenu.vue'
 import { useGettext } from 'vue3-gettext'
-import { Action, FileActionOptions, useConfigStore, useResourcesStore } from '../composables'
+import { Action, FileActionOptions, useResourcesStore } from '../composables'
 import ResourceListItem from './FilesList/ResourceListItem.vue'
 import { Resource } from '@opencloud-eu/web-client'
-import { Duration } from 'luxon'
 import { MenuSection } from './ContextActions'
 
 const {
@@ -114,36 +100,19 @@ const {
     resources: []
   },
   mainActions = [],
-  hasAutoSave = true,
-  isEditor = false,
-  resource = null,
-  isReadOnly = true
+  resource = null
 } = defineProps<{
   dropDownMenuSections?: MenuSection[]
   dropDownActionOptions?: FileActionOptions
   mainActions?: Action[]
-  hasAutoSave?: boolean
-  isEditor?: boolean
   resource?: Resource
-  isReadOnly?: boolean
 }>()
 
 defineEmits<{ (e: 'close'): void }>()
 
-const { $gettext, current: currentLanguage } = useGettext()
+const { $gettext } = useGettext()
 const resourcesStore = useResourcesStore()
-const configStore = useConfigStore()
 
 const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 const contextMenuLabel = computed(() => $gettext('Show context menu'))
-const hasAutosave = computed(
-  () => isEditor && hasAutoSave && configStore.options.editor.autosaveEnabled
-)
-const autoSaveTooltipText = computed(() => {
-  const duration = Duration.fromObject(
-    { seconds: configStore.options.editor.autosaveInterval },
-    { locale: currentLanguage }
-  )
-  return $gettext(`Autosave (every %{ duration })`, { duration: duration.toHuman() })
-})
 </script>
