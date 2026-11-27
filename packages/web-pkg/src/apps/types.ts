@@ -51,6 +51,19 @@ export interface AppNavigationItem {
   priority?: number
   /** the auth context the item is shown in, defaults to `user` */
   authContext?: Extract<AuthContext, 'user' | 'guest'>
+  /** makes the item a drop target, e.g. for resources dragged out of a resource view */
+  drop?: AppNavigationItemDrop
+}
+
+export interface AppNavigationItemDrop {
+  /** whether the dragged content may be dropped onto the item, gets called while dragging over it */
+  isAllowed: (event: DragEvent) => boolean
+  handler: (event: DragEvent) => void
+  /**
+   * explains why the dragged content can't be dropped, shown while dragging it over the item.
+   * an empty message shows nothing, e.g. for drags the item doesn't handle at all
+   */
+  notAllowedMessage?: (event: DragEvent) => string
 }
 
 export type AppConfigObject = Record<string, any>

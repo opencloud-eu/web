@@ -106,6 +106,7 @@
           :are-paths-displayed="true"
           :has-actions="true"
           :is-selectable="true"
+          :is-draggable="true"
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :fields-displayed="['name', 'size', 'tags', 'mdate']"

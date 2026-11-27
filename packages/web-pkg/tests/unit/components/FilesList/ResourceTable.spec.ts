@@ -9,14 +9,18 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
-import { CapabilityStore, useSideBar } from '../../../../src/composables/piniaStores'
+import {
+  CapabilityStore,
+  useResourcesStore,
+  useSideBar
+} from '../../../../src/composables/piniaStores'
 import { useExtensionRegistry, useFileActions } from '../../../../src/composables'
 import {
   useCanBeOpenedWithSecureView,
   ResourceIndicator
 } from '../../../../src/composables/resources'
 import { mock } from 'vitest-mock-extended'
-import { computed } from 'vue'
+import { computed, nextTick } from 'vue'
 import { Identity } from '@opencloud-eu/web-client/graph/generated'
 import { describe } from 'vitest'
 import { FileAction } from '../../../../src/composables/actions/types'
@@ -610,6 +614,105 @@ describe('ResourceTable', () => {
     })
   })
 
+  describe('drag and drop', () => {
+    const highlightClass = '!bg-role-secondary-container'
+
+    async function dragOntoFolder(props: PartialComponentProps<typeof ResourceTable>) {
+      const { wrapper } = getMountedWrapper({ props, attachTo: document.body })
+      const folderRow = wrapper.find('.oc-tbody-tr-documents')
+      await folderRow.trigger('dragenter', { dataTransfer: { types: [] } })
+      const isHighlighted = folderRow.classes().includes(highlightClass)
+      await folderRow.trigger('drop', { dataTransfer: { types: [] } })
+      return { wrapper, folderRow, isHighlighted }
+    }
+
+    it('makes rows draggable and drop targets with "dragDrop"', async () => {
+      const { wrapper, folderRow, isHighlighted } = await dragOntoFolder({ dragDrop: true })
+      expect(folderRow.attributes('draggable')).toBe('true')
+      expect(isHighlighted).toBe(true)
+      expect(wrapper.emitted('fileDropped')).toEqual([['documents']])
+      wrapper.unmount()
+    })
+
+    it('makes rows draggable but no drop targets with "isDraggable"', async () => {
+      const { wrapper, folderRow, isHighlighted } = await dragOntoFolder({ isDraggable: true })
+      expect(folderRow.attributes('draggable')).toBe('true')
+      expect(isHighlighted).toBe(false)
+      expect(wrapper.emitted('fileDropped')).toBeUndefined()
+      wrapper.unmount()
+    })
+
+    it('shows the drag ghost with the name of the dragged resource with "isDraggable"', async () => {
+      const { wrapper } = getMountedWrapper({ props: { isDraggable: true } })
+      await wrapper
+        .find('.oc-tbody-tr-documents')
+        .trigger('dragstart', { dataTransfer: { setDragImage: vi.fn(), setData: vi.fn() } })
+      await nextTick()
+      expect(document.querySelector('#ghost-element').textContent).toContain('Documents')
+      wrapper.unmount()
+    })
+
+    function dispatchDragStart(el: Element) {
+      const event = new Event('dragstart', { bubbles: true, cancelable: true })
+      const dataTransfer = { setData: vi.fn(), setDragImage: vi.fn() }
+      Object.defineProperty(event, 'dataTransfer', { value: dataTransfer })
+      el.dispatchEvent(event)
+      return { event, dataTransfer }
+    }
+
+    it.each([
+      { name: 'the row', selector: '.oc-tbody-tr-documents' },
+      { name: 'a link in the row', selector: '.oc-tbody-tr-documents .oc-resource-link' }
+    ])(
+      'cancels a drag from $name and starts no resource drag when dragging is disabled',
+      async ({ selector }) => {
+        const { wrapper } = getMountedWrapper()
+        const { event, dataTransfer } = dispatchDragStart(wrapper.find(selector).element)
+        await nextTick()
+
+        expect(event.defaultPrevented).toBe(true)
+        expect(dataTransfer.setData).not.toHaveBeenCalled()
+        expect(useResourcesStore().setDraggedResources).not.toHaveBeenCalled()
+        expect(document.querySelector('#ghost-element')).toBeNull()
+        wrapper.unmount()
+      }
+    )
+
+    it('cancels native drags of child elements when dragging is enabled', async () => {
+      const { wrapper } = getMountedWrapper({ props: { isDraggable: true } })
+      const { event } = dispatchDragStart(
+        wrapper.find('.oc-tbody-tr-documents .oc-resource-link').element
+      )
+      await nextTick()
+
+      expect(event.defaultPrevented).toBe(true)
+      expect(useResourcesStore().setDraggedResources).not.toHaveBeenCalled()
+      wrapper.unmount()
+    })
+
+    it('makes no child of a draggable row draggable itself, so the row is the drag source', () => {
+      const { wrapper } = getMountedWrapper({
+        props: { isDraggable: true, arePathsDisplayed: true }
+      })
+      const children = wrapper.findAll('.oc-tbody-tr :is(a, img, router-link-stub)')
+      expect(children.length).toBeGreaterThan(0)
+      children.forEach((child) => expect(child.attributes('draggable')).toBe('false'))
+      wrapper.unmount()
+    })
+
+    it('removes the drag ghost when the drag ends', async () => {
+      const { wrapper } = getMountedWrapper({ props: { isDraggable: true } })
+      const row = wrapper.find('.oc-tbody-tr-documents')
+      await row.trigger('dragstart', { dataTransfer: { setDragImage: vi.fn(), setData: vi.fn() } })
+      await nextTick()
+      expect(document.querySelector('#ghost-element')).not.toBeNull()
+
+      await row.trigger('dragend')
+      expect(document.querySelector('#ghost-element')).toBeNull()
+      wrapper.unmount()
+    })
+  })
+
   describe('hover effect', () => {
     it('is disabled by default', () => {
       const { wrapper } = getMountedWrapper({ props: { hover: false } })
@@ -842,7 +945,8 @@ function getMountedWrapper({
   hasRenameAction = true,
   resources = resourcesWithAllFields,
   deleteQueue = ['in-delete-queue=='],
-  selectedIds = []
+  selectedIds = [],
+  attachTo = undefined
 }: {
   props?: PartialComponentProps<typeof ResourceTable>
   userContextReady?: boolean
@@ -853,6 +957,7 @@ function getMountedWrapper({
   resources?: Resource[]
   deleteQueue?: string[]
   selectedIds?: string[]
+  attachTo?: HTMLElement
 } = {}) {
   const capabilities = {
     files: { tags: true }
@@ -887,6 +992,7 @@ function getMountedWrapper({
 
   return {
     wrapper: mount(ResourceTable, {
+      attachTo,
       props: {
         resources: [
           ...resources,

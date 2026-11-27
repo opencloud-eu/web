@@ -12,7 +12,6 @@
     :no-hover="!isNavigatable ? true : undefined"
     :draggable="false"
     class="oc-resource-link max-w-full inline-flex"
-    @dragstart.prevent.stop
     @click="emitClick"
   >
     <slot />

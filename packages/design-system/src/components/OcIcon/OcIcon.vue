@@ -14,6 +14,7 @@
     <img
       v-if="imageSrc !== undefined"
       :src="imageSrc"
+      draggable="false"
       :alt="accessibleLabel"
       :aria-hidden="accessibleLabel === '' ? 'true' : null"
       :class="['block object-contain', tailwindSize, { 'opacity-0': hasImageError }]"

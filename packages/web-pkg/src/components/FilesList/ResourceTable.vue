@@ -17,7 +17,7 @@
     :disabled="disabledResources"
     :sticky="isSticky"
     :header-position="headerPosition"
-    :drag-drop="dragDrop"
+    :drag-drop="dragDrop || isDraggable"
     :hover="hover"
     :item-dom-selector="resourceDomSelector"
     :sort-by="sortBy"
@@ -144,6 +144,7 @@
         v-oc-tooltip="getTagToolTip(tag)"
         :type="userContextReady ? 'router-link' : 'span'"
         v-bind="getTagComponentAttrs(tag)"
+        draggable="false"
         class="resource-table-tag-wrapper resource-table-tag ms-1 max-w-20"
         :rounded="true"
         size="small"
@@ -347,6 +348,7 @@ const {
   headerPosition = 0,
   isSelectable = true,
   dragDrop = false,
+  isDraggable = false,
   hover = true,
   sortBy = undefined,
   fieldsDisplayed = undefined,
@@ -369,6 +371,10 @@ const {
   headerPosition?: number
   isSelectable?: boolean
   dragDrop?: boolean
+  /**
+   * Makes the resources draggable without making them drop targets. `dragDrop` enables both.
+   */
+  isDraggable?: boolean
   hover?: boolean
   sortBy?: string
   fieldsDisplayed?: string[]
@@ -448,7 +454,9 @@ const {
 } = useResourceViewHelpers({
   space: computed(() => space),
   resources: computed(() => resources),
-  emit
+  emit,
+  isDragEnabled: computed(() => dragDrop || isDraggable),
+  isDropEnabled: computed(() => dragDrop)
 })
 
 const sidebarStore = useSideBar()

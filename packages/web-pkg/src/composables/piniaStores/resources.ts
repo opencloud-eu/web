@@ -326,6 +326,15 @@ export const useResourcesStore = defineStore('resources', () => {
     deleteQueue.value = deleteQueue.value.filter((id) => !ids.includes(id))
   }
 
+  // the resources of a running drag out of a resource view, so drop targets outside of the view (like
+  // the trash in the navigation) know what is dragged. they can be of different spaces (e.g. favorites),
+  // drop targets resolve the space of each resource themselves. empty while nothing is dragged.
+  const draggedResources = ref<Resource[]>([])
+
+  function setDraggedResources(value: Resource[]) {
+    draggedResources.value = value
+  }
+
   return {
     resources,
     currentFolder,
@@ -381,7 +390,10 @@ export const useResourcesStore = defineStore('resources', () => {
 
     deleteQueue,
     addResourcesIntoDeleteQueue,
-    removeResourcesFromDeleteQueue
+    removeResourcesFromDeleteQueue,
+
+    draggedResources,
+    setDraggedResources
   }
 })
 
