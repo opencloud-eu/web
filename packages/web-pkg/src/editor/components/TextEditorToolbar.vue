@@ -74,7 +74,7 @@
             <div
               v-for="(group, groupIndex) in overflowGroups"
               :key="`toolbar-overflow-group-${group.id}`"
-              class="inline-flex items-stretch gap-1"
+              class="inline-flex flex-wrap items-stretch justify-center gap-1"
               :class="{
                 'border-s border-s-role-border ps-1':
                   groupIndex > 0 && !overflowRowStarts.includes(groupIndex)

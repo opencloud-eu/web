@@ -1,6 +1,7 @@
 import { vi, describe, it, expect } from 'vitest'
 import { ref } from 'vue'
 import { getSchema } from '@tiptap/core'
+import { Editor } from '@tiptap/vue-3'
 import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../../src/editor/types'
 
 vi.mock('vue3-gettext', () => ({
@@ -236,6 +237,63 @@ describe('useStrategyMarkdown', () => {
       expect(groupIds).toContain('formatting')
       expect(groupIds).toContain('lists')
       expect(groupIds).toContain('insert')
+    })
+
+    describe('inline code', () => {
+      function getCodeInline(strategy: ReturnType<typeof createStrategy>) {
+        return strategy
+          .editorActionGroups()
+          .flatMap(({ actions }) => actions)
+          .find(({ id }) => id === 'code-inline')!
+      }
+
+      it('places inline code right after strikethrough in the formatting group', () => {
+        const formatting = createStrategy()
+          .editorActionGroups()
+          .find(({ id }) => id === 'formatting')!
+        const formattingIds = formatting.actions.map(({ id }) => id)
+        expect(formattingIds.indexOf('code-inline')).toBe(
+          formattingIds.indexOf('strikethrough') + 1
+        )
+        expect(formatting.actions.at(-1)!.showInSlashCommands).not.toBe(false)
+      })
+
+      it('saves the selection as a backtick code span when toggled on and off', () => {
+        const strategy = createStrategy()
+        const editor = new Editor({
+          extensions: strategy.extensions(),
+          content: 'hello world',
+          contentType: 'markdown'
+        })
+        const codeInline = getCodeInline(strategy)
+        editor.commands.setTextSelection({ from: 1, to: 6 })
+
+        codeInline.toolbarAction!(editor)
+        expect(strategy.serialize(editor.state.doc)).toBe('`hello` world\n')
+        expect(codeInline.isActive!(editor)).toBe(true)
+
+        codeInline.toolbarAction!(editor)
+        expect(strategy.serialize(editor.state.doc)).toBe('hello world\n')
+        expect(codeInline.isActive!(editor)).toBe(false)
+        editor.destroy()
+      })
+
+      it('loads a backtick code span as inline code with the action active', () => {
+        const strategy = createStrategy()
+        const markdown = 'say `foo` here\n'
+        strategy.deserialize(markdown)
+        const editor = new Editor({
+          extensions: strategy.extensions(),
+          content: markdown,
+          contentType: 'markdown'
+        })
+        expect(editor.getHTML()).toBe('<p>say <code>foo</code> here</p>')
+
+        editor.commands.setTextSelection(7)
+        expect(getCodeInline(strategy).isActive!(editor)).toBe(true)
+        expect(strategy.serialize(editor.state.doc)).toBe(markdown)
+        editor.destroy()
+      })
     })
   })
 
