@@ -7,6 +7,6 @@
   "peerDependencies": {
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "vue-router": "5.5.1"
+    "vue-router": "5.5.3"
   }
 }
