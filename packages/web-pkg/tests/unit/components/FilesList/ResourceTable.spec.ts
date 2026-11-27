@@ -672,7 +672,7 @@ describe('ResourceTable', () => {
 
         expect(event.defaultPrevented).toBe(true)
         expect(dataTransfer.setData).not.toHaveBeenCalled()
-        expect(useResourcesStore().setResourceDrag).not.toHaveBeenCalled()
+        expect(useResourcesStore().setDraggedResources).not.toHaveBeenCalled()
         expect(document.querySelector('#ghost-element')).toBeNull()
         wrapper.unmount()
       }
@@ -686,7 +686,7 @@ describe('ResourceTable', () => {
       await nextTick()
 
       expect(event.defaultPrevented).toBe(true)
-      expect(useResourcesStore().setResourceDrag).not.toHaveBeenCalled()
+      expect(useResourcesStore().setDraggedResources).not.toHaveBeenCalled()
       wrapper.unmount()
     })
 

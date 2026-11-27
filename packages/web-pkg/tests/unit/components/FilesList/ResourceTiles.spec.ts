@@ -10,7 +10,6 @@ import {
 } from '../../../../src/composables/resources'
 import { OcFilterChip } from '@opencloud-eu/design-system/components'
 import { resourceDragDataType, useResourcesStore } from '../../../../src'
-import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
 
 vi.mock('../../../../src/helpers/contextMenuDropdown')
@@ -258,7 +257,7 @@ describe('ResourceTiles component', () => {
       const resourcesStore = useResourcesStore()
       expect(event.preventDefault).toHaveBeenCalled()
       expect(event.dataTransfer.setData).not.toHaveBeenCalled()
-      expect(resourcesStore.setResourceDrag).not.toHaveBeenCalled()
+      expect(resourcesStore.setDraggedResources).not.toHaveBeenCalled()
       expect(resourcesStore.setSelection).not.toHaveBeenCalled()
     })
     it('cancels native drags of child elements, like images or links', () => {
@@ -273,7 +272,7 @@ describe('ResourceTiles component', () => {
       wrapper.findComponent<any>('resource-tile-stub').vm.$emit('dragstart', event)
 
       expect(event.preventDefault).toHaveBeenCalled()
-      expect(useResourcesStore().setResourceDrag).not.toHaveBeenCalled()
+      expect(useResourcesStore().setDraggedResources).not.toHaveBeenCalled()
     })
     it('emits the "update:selectedIds"-event on drag start', async () => {
       const { wrapper } = getWrapper({
@@ -321,16 +320,16 @@ describe('ResourceTiles component', () => {
     it.each([
       { name: 'the dragged resource', selectedIds: ['2'], expectedIds: ['1'] },
       {
-        name: 'the selection of the dragged resource',
+        name: 'the selection of the dragged resource, also across spaces',
         selectedIds: ['1', '2'],
         expectedIds: ['1', '2']
       }
     ])(
       'marks the drag and shares $name until the drag ends',
       async ({ selectedIds, expectedIds }) => {
-        const space = mock<SpaceResource>()
+        // a view without one space, like favorites or search results with resources of several spaces
         const { wrapper } = getWrapper({
-          props: { resources: spacesResources, space, isDraggable: true },
+          props: { resources: spacesResources, isDraggable: true },
           stubs: { ResourceTile: true },
           selectedIds
         })
@@ -344,13 +343,12 @@ describe('ResourceTiles component', () => {
 
         const resourcesStore = useResourcesStore()
         expect(setData).toHaveBeenCalledWith(resourceDragDataType, expectedIds.join())
-        expect(resourcesStore.setResourceDrag).toHaveBeenCalledWith({
-          resources: spacesResources.filter(({ id }) => expectedIds.includes(id)),
-          space
-        })
+        expect(resourcesStore.setDraggedResources).toHaveBeenCalledWith(
+          spacesResources.filter(({ id }) => expectedIds.includes(id))
+        )
 
         target.dispatchEvent(new Event('dragend'))
-        expect(resourcesStore.setResourceDrag).toHaveBeenLastCalledWith(null)
+        expect(resourcesStore.setDraggedResources).toHaveBeenLastCalledWith([])
       }
     )
     it('uses the ghost as drag image', async () => {

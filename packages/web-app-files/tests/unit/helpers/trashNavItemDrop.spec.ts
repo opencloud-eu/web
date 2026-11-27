@@ -1,6 +1,6 @@
 import { unref } from 'vue'
 import { mock } from 'vitest-mock-extended'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource } from '@opencloud-eu/web-client'
 import {
   ActionExtension,
   resourceDragDataType,
@@ -15,12 +15,11 @@ import { deleteFileActionExtensionId } from '../../../src/composables/extensions
 
 vi.mock('../../../src/composables/actions/useFileActionsDeleteResources')
 
-const space = mock<SpaceResource>({ id: 'space' })
-
 function getResource(resource: Partial<Resource> = {}) {
   return {
     id: 'file',
     type: 'file',
+    storageId: 'space1',
     canBeDeleted: () => true,
     isShareRoot: () => false,
     ...resource
@@ -73,7 +72,7 @@ describe('createTrashNavItemDrop', () => {
   })
   it('ignores drags without resources', () => {
     getWrapper({
-      resources: null,
+      resources: [],
       setup: (drop) => {
         expect(drop.isAllowed(getDragEvent())).toBe(false)
       }
@@ -95,13 +94,18 @@ describe('createTrashNavItemDrop', () => {
       }
     })
   })
-  it('deletes the dragged resources via the delete action', () => {
+  it('deletes the dragged resources via the delete action, also of different spaces', () => {
     const filesListDeleteMock = vi.fn()
-    const resources = [getResource(), getResource({ id: 'folder', type: 'folder' })]
+    // like a drag out of favorites or search results
+    const resources = [
+      getResource(),
+      getResource({ id: 'folder', type: 'folder', storageId: 'space2' })
+    ]
     getWrapper({
       resources,
       filesListDeleteMock,
       setup: (drop) => {
+        expect(drop.isAllowed(getDragEvent())).toBe(true)
         drop.handler(getDragEvent())
         expect(filesListDeleteMock).toHaveBeenCalledWith(resources)
       }
@@ -133,7 +137,7 @@ function getWrapper({
         mock<ActionExtension>({ id: 'other-action' }),
         { id: deleteFileActionExtensionId, type: 'action', action: deleteAction } as ActionExtension
       ])
-      useResourcesStore().resourceDrag = resources ? { resources, space } : null
+      useResourcesStore().draggedResources = resources
 
       setup(createTrashNavItemDrop({ $gettext: (msg: string) => msg }))
     },

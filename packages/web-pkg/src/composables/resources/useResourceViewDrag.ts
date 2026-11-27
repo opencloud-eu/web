@@ -1,7 +1,6 @@
 import { ComponentPublicInstance, computed, nextTick, Ref, ref, unref, useTemplateRef } from 'vue'
 import { useResourcesStore } from '../piniaStores'
-import { useGetMatchingSpace } from '../spaces'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource } from '@opencloud-eu/web-client'
 import ResourceGhostElement from '../../components/FilesList/ResourceGhostElement.vue'
 
 /**
@@ -17,17 +16,12 @@ export function isResourceDrag(event: DragEvent) {
 export const useResourceViewDrag = ({
   selectedIds,
   resources,
-  space = ref<SpaceResource>(),
   emit,
   isDragEnabled = ref(true),
   isDropEnabled = ref(true)
 }: {
   selectedIds: Ref<string[]>
   resources: Ref<Resource[]>
-  /**
-   * The space of the resource view, if the view shows the resources of one space.
-   */
-  space?: Ref<SpaceResource>
   emit: ReturnType<typeof defineEmits>
   /**
    * Whether resources can be dragged.
@@ -39,7 +33,6 @@ export const useResourceViewDrag = ({
   isDropEnabled?: Ref<boolean>
 }) => {
   const resourcesStore = useResourcesStore()
-  const { getMatchingSpace } = useGetMatchingSpace()
 
   const dragItem = ref<Resource>()
   const ghostElement =
@@ -69,10 +62,7 @@ export const useResourceViewDrag = ({
       : [resource]
 
     event.dataTransfer.setData(resourceDragDataType, draggedResources.map(({ id }) => id).join())
-    resourcesStore.setResourceDrag({
-      resources: draggedResources,
-      space: unref(space) || getMatchingSpace(resource)
-    })
+    resourcesStore.setDraggedResources(draggedResources)
     // dragend fires on the drag source, also after a drop or when the drag gets cancelled
     event.target?.addEventListener('dragend', dragEnd, { once: true })
   }
@@ -80,7 +70,7 @@ export const useResourceViewDrag = ({
   function dragEnd() {
     // removes the ghost element, it's only needed while dragging
     dragItem.value = null
-    resourcesStore.setResourceDrag(null)
+    resourcesStore.setDraggedResources([])
   }
 
   const dragStart = async (resource: Resource, event: DragEvent) => {

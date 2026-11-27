@@ -34,11 +34,11 @@ export function createTrashNavItemDrop({
 
   function getActionOptions(event: DragEvent): FileActionOptions {
     // external drags (like files from the operating system) are no resource drags
-    if (!isResourceDrag(event) || !resourcesStore.resourceDrag) {
+    if (!isResourceDrag(event) || !resourcesStore.draggedResources.length) {
       return null
     }
-    const { resources, space } = resourcesStore.resourceDrag
-    return { space, resources }
+    // the delete action resolves the space of each resource itself
+    return { space: null, resources: resourcesStore.draggedResources }
   }
 
   function isAllowed(event: DragEvent) {

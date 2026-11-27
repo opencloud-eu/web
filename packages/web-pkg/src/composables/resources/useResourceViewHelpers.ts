@@ -200,7 +200,7 @@ export const useResourceViewHelpers = ({
     fileNameClicked,
     fileCheckboxClicked,
     ...useResourceLink({ space }),
-    ...useResourceViewDrag({ selectedIds, resources, space, emit, isDragEnabled, isDropEnabled }),
+    ...useResourceViewDrag({ selectedIds, resources, emit, isDragEnabled, isDropEnabled }),
     ...useResourceViewContextMenu({ isResourceDisabled, isResourceSelected, emit }),
     ...useResourceViewSelection({ resources, disabledResources, selectedIds, emit })
   }
