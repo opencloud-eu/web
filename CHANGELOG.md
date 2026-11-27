@@ -22,6 +22,7 @@
 
 ### 📈 Enhancement
 
+- feat: show details for public links [[#4654](https://github.com/opencloud-eu/web/pull/4654)]
 - feat: show the editor sync state as a presence pill [[#4653](https://github.com/opencloud-eu/web/pull/4653)]
 - feat: drag files and folders into the trash [[#4643](https://github.com/opencloud-eu/web/pull/4643)]
 - feat: show a save indicator instead of a toast when saving [[#4644](https://github.com/opencloud-eu/web/pull/4644)]
