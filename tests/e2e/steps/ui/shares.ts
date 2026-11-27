@@ -49,7 +49,7 @@ const parseShareTable = function (
       resourceType,
       expirationDate,
       shareType,
-      hasAvatar: hasAvatar === 'true' ? true : false
+      hasAvatar: hasAvatar === 'true'
     })
 
     return acc

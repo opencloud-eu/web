@@ -310,7 +310,7 @@ Then(
   ): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     const userCanEdit = await resourceObject.canManageResource({ resource })
-    expect(userCanEdit).toBe(actionType === 'should' ? true : false)
+    expect(userCanEdit).toBe(actionType === 'should')
   }
 )
 
