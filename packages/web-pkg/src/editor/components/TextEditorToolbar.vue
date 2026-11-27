@@ -96,14 +96,19 @@
     </div>
     <div
       v-if="hasVisibleYjsStatus(yjsStatus) || collaborators.length"
-      class="text-editor-toolbar-status flex shrink-0 items-center gap-2 px-4 ms-4"
+      class="text-editor-toolbar-status flex shrink-0 items-center ms-2 pe-2"
     >
-      <yjs-collaborators
-        v-if="collaborators.length"
-        :users="collaborators"
-        :teleport="dropTeleport"
-      />
-      <yjs-status-indicator :status="yjsStatus" />
+      <div
+        class="text-editor-toolbar-presence inline-flex min-h-8 min-w-8 items-center justify-center gap-1.5 rounded-full border border-role-outline-variant bg-role-surface-container px-1.5"
+      >
+        <yjs-status-indicator :status="yjsStatus" />
+        <yjs-collaborators
+          v-if="collaborators.length"
+          :users="collaborators"
+          :teleport="dropTeleport"
+          :dimmed="isOffline"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -130,7 +135,7 @@ import TextEditorToolbarItem from './TextEditorToolbarItem.vue'
 import { YjsCollaborators, YjsStatusIndicator } from '../../components/Yjs'
 import { isEditorActionEnabled } from '../helpers'
 import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
-import { hasVisibleYjsStatus } from '../../composables/yjs'
+import { hasVisibleYjsStatus, YjsStatus } from '../../composables/yjs'
 import { useModals } from '../../composables/piniaStores'
 
 const { actionsToDisplay = undefined } = defineProps<{
@@ -407,6 +412,7 @@ const visible = computed(() => {
 
 const yjsStatus = computed(() => unref(textEditor.yjsStatus))
 const collaborators = computed(() => unref(textEditor.collaborators) ?? [])
+const isOffline = computed(() => unref(yjsStatus) === YjsStatus.Disconnected)
 
 const { bindKeyAction, removeKeyAction } = useKeyboardActions({
   skipDisabledKeyBindingsCheck: true

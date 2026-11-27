@@ -16,6 +16,7 @@
         :max-displayed="3"
         stacked
         class="yjs-collaborators-stack inline-flex"
+        :class="{ 'opacity-50': dimmed }"
       >
         <template #userAvatars="{ avatars }">
           <span
@@ -119,12 +120,17 @@ const {
   users,
   teleport = 'body',
   followingSupported = false,
-  following = null
+  following = null,
+  dimmed = false
 } = defineProps<{
   users: YjsCollaborator[]
   teleport?: string
   followingSupported?: boolean
   following?: string | null
+  /**
+   * Fades the avatar stack, e.g. while the session is offline. The trigger's focus ring stays opaque.
+   */
+  dimmed?: boolean
 }>()
 
 const emit = defineEmits<{

@@ -8,9 +8,9 @@ describe('YjsStatusIndicator', () => {
   })
 
   it.each([
-    [YjsStatus.Connected, 'Collaboration ready', 'wifi'],
-    [YjsStatus.Connecting, 'Collaboration connecting...', 'wifi'],
-    [YjsStatus.Disconnected, 'Collaboration disconnected', 'wifi-off']
+    [YjsStatus.Connected, 'Collaboration ready', 'circle-fill'],
+    [YjsStatus.Connecting, 'Collaboration connecting...', 'circle-line'],
+    [YjsStatus.Disconnected, 'Collaboration disconnected', 'circle-fill']
   ])('labels %s with "%s"', (status, label, icon) => {
     const indicator = getWrapper(status).get('.yjs-status-indicator')
 
@@ -21,11 +21,36 @@ describe('YjsStatusIndicator', () => {
 
   it('distinguishes the states by color', () => {
     const classesFor = (status: YjsStatus) =>
-      getWrapper(status).get('.yjs-status-indicator span').classes().join(' ')
+      getWrapper(status).get('.yjs-status-indicator').classes().join(' ')
 
     expect(classesFor(YjsStatus.Connected)).toContain('green')
     expect(classesFor(YjsStatus.Disconnected)).toContain('red')
     expect(classesFor(YjsStatus.Connecting)).toContain('gray')
+  })
+
+  it.each([YjsStatus.Connected, YjsStatus.Connecting])(
+    'shows no visible label but a tooltip for %s sessions',
+    async (status) => {
+      const wrapper = getWrapper(status)
+      const indicator = wrapper.get('.yjs-status-indicator')
+
+      expect(indicator.find('.yjs-status-indicator-label').exists()).toBe(false)
+      await indicator.trigger('mouseenter')
+      expect(document.querySelector('[role="tooltip"]')?.textContent).toBe(
+        indicator.attributes('aria-label')
+      )
+      wrapper.unmount()
+    }
+  )
+
+  it('shows a visible offline label instead of a tooltip when disconnected', async () => {
+    const wrapper = getWrapper(YjsStatus.Disconnected)
+    const indicator = wrapper.get('.yjs-status-indicator')
+
+    expect(indicator.get('.yjs-status-indicator-label').text()).toBe('Offline')
+    await indicator.trigger('mouseenter')
+    expect(document.querySelector('[role="tooltip"]')).toBeNull()
+    wrapper.unmount()
   })
 })
 
