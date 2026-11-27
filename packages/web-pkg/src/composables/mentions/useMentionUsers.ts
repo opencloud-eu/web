@@ -1,6 +1,7 @@
 import { computed, onBeforeUnmount, ref, unref, type Ref } from 'vue'
 import {
   type CollaboratorShare,
+  isShareSpaceResource,
   type Resource,
   ShareTypes,
   type SpaceResource
@@ -14,8 +15,26 @@ import { useLoadShares } from '../shares'
 // the app an activity notification comes from, the server only accepts ids it knows
 const WEBOFFICE_APP_ID = '8d1c9c88-9e2c-4d0b-9a1e-6a9de1cb9d3c'
 
-function mentionLabel({ displayName, id }: CollaboratorShare['sharedWith']): string {
+type MentionCandidate = CollaboratorShare['sharedWith']
+
+function mentionLabel({ displayName, id }: MentionCandidate): string {
   return displayName || id
+}
+
+// in share spaces sharers are included, a sharee without the permission to list grants only sees their own share.
+// elsewhere they are skipped, a sharer might have lost access to the file in the meantime
+function mentionCandidates(
+  shares: CollaboratorShare[],
+  { includeSharers }: { includeSharers: boolean }
+): MentionCandidate[] {
+  const individualShareTypeValues = ShareTypes.individuals.map(({ value }) => value)
+
+  return shares
+    .flatMap(({ shareType, sharedWith, sharedBy }) => [
+      ...(individualShareTypeValues.includes(shareType) ? [sharedWith] : []),
+      ...(includeSharers ? [sharedBy] : [])
+    ])
+    .filter(({ id }) => id)
 }
 
 function mentionedLabels(content: string, labels: string[]): Set<string> {
@@ -44,6 +63,8 @@ export function useMentionUsers({
   const collaborators = ref<CollaboratorShare[]>([])
   const collaboratorsFetched = ref(false)
   const selectedMentions = ref<MentionItem[]>([])
+
+  const includeSharers = computed(() => isShareSpaceResource(unref(space)))
 
   const ownMentionLabel = computed(() =>
     userStore.user ? mentionLabel(userStore.user) : undefined
@@ -92,23 +113,16 @@ export function useMentionUsers({
     const loadedCollaborators = await loadCollaborators()
 
     const normalizedQuery = query.toLowerCase()
-    const individualShareTypeValues = ShareTypes.individuals.map(({ value }) => value)
 
-    return loadedCollaborators
-      .filter(({ shareType, sharedWith }) => {
-        if (!individualShareTypeValues.includes(shareType) || !sharedWith.id) {
+    return mentionCandidates(loadedCollaborators, { includeSharers: unref(includeSharers) })
+      .filter((candidate) => {
+        if (candidate.id === userStore.user?.id) {
           return false
         }
-        if (sharedWith.id === userStore.user?.id) {
-          return false
-        }
-        return mentionLabel(sharedWith).toLowerCase().includes(normalizedQuery)
+        return mentionLabel(candidate).toLowerCase().includes(normalizedQuery)
       })
-      .filter(
-        ({ sharedWith }, index, all) =>
-          index === all.findIndex(({ sharedWith: candidate }) => candidate.id === sharedWith.id)
-      )
-      .map(({ sharedWith }) => ({ id: sharedWith.id, label: mentionLabel(sharedWith) }))
+      .filter((candidate, index, all) => index === all.findIndex(({ id }) => id === candidate.id))
+      .map((candidate) => ({ id: candidate.id, label: mentionLabel(candidate) }))
   }
 
   function selectMentionUser(item: MentionItem): void {
@@ -130,7 +144,9 @@ export function useMentionUsers({
     if (content !== undefined) {
       const stillMentioned = mentionedLabels(content, [
         ...mentions.map(({ label }) => label),
-        ...unref(collaborators).map(({ sharedWith }) => mentionLabel(sharedWith))
+        ...mentionCandidates(unref(collaborators), {
+          includeSharers: unref(includeSharers)
+        }).map(mentionLabel)
       ])
       recipients = mentions.filter(({ label }) => stillMentioned.has(label))
     }

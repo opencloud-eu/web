@@ -160,6 +160,20 @@ describe('Text editor app', () => {
     expect(notifyMentionedUsers).toHaveBeenCalledWith(undefined)
   })
 
+  it('warns about an incomplete mention list in shares', () => {
+    getWrapper({
+      resource: markdownResource(),
+      space: mock<SpaceResource>({ driveType: 'share' })
+    })
+    expect(lastOptions().mentions?.hint).toBe('This list may be incomplete for privacy reasons')
+
+    getWrapper({
+      resource: markdownResource(),
+      space: mock<SpaceResource>({ driveType: 'personal' })
+    })
+    expect(lastOptions().mentions?.hint).toBeUndefined()
+  })
+
   it('disables mentions for content that is not rich text', () => {
     const { wrapper } = getWrapper({
       resource: mock<Resource>({ extension: 'txt', mimeType: 'text/plain' })

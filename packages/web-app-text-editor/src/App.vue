@@ -10,6 +10,7 @@
 <script setup lang="ts">
 import { computed, toRef, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import { isShareSpaceResource } from '@opencloud-eu/web-client'
 import { useAuthStore, useMentionUsers, type YjsEditorSlotProps } from '@opencloud-eu/web-pkg'
 import {
   useTextEditor,
@@ -61,7 +62,11 @@ if (mentionsEnabled) {
   mentions = {
     getItems: getMentionUsers,
     onSelect: selectMentionUser,
-    highlightLabels: [unref(ownMentionLabel)].filter(Boolean)
+    highlightLabels: [unref(ownMentionLabel)].filter(Boolean),
+    // sharees can't list all grants of a share
+    hint: isShareSpaceResource(space)
+      ? $gettext('This list may be incomplete for privacy reasons')
+      : undefined
   }
 }
 
