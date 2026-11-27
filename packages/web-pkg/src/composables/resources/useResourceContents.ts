@@ -28,7 +28,7 @@ export const useResourceContents = ({
 
   const itemSize = computed(() => {
     const accumulatedSize = unref(resources)
-      .map((r) => (r.size ? parseInt(r.size.toString()) : 0))
+      .map((r) => (r.size ? parseInt(r.size.toString(), 10) : 0))
       .reduce((x, y) => x + y, 0)
     return formatFileSize(accumulatedSize, currentLanguage)
   })

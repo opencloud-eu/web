@@ -459,36 +459,32 @@ const saveValue = async ({
     ...(valueId && { id: valueId })
   }
 
-  try {
-    const {
-      data: { value: data }
-    } = await clientService.httpAuthenticated.post<{ value: SettingsValue }>(
-      '/api/v0/settings/values-save',
-      {
-        value: {
-          accountUuid: 'me',
-          ...value
-        }
+  const {
+    data: { value: data }
+  } = await clientService.httpAuthenticated.post<{ value: SettingsValue }>(
+    '/api/v0/settings/values-save',
+    {
+      value: {
+        accountUuid: 'me',
+        ...value
       }
-    )
-
-    // Not sure if we can remove the condition below so just assign this here to be 100% safe
-    if (data.value.id) {
-      valueId = data.value.id
     }
+  )
 
-    /**
-     * Edge case: we need to reload the values list to retrieve the valueId if not set,
-     * otherwise the backend saves multiple entries
-     */
-    if (!valueId) {
-      loadValuesListTask.perform()
-    }
-
-    return data
-  } catch (e) {
-    throw e
+  // Not sure if we can remove the condition below so just assign this here to be 100% safe
+  if (data.value.id) {
+    valueId = data.value.id
   }
+
+  /**
+   * Edge case: we need to reload the values list to retrieve the valueId if not set,
+   * otherwise the backend saves multiple entries
+   */
+  if (!valueId) {
+    loadValuesListTask.perform()
+  }
+
+  return data
 }
 
 const updateValueInValueList = (value: SettingsValue) => {

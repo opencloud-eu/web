@@ -95,9 +95,9 @@ export class Application {
           resp.status() === 200 &&
           resp.request().method() === 'POST' &&
           resp.request().postDataJSON().grant_type === 'refresh_token' &&
-          resp.request().postDataJSON().hasOwnProperty('refresh_token') &&
+          Object.hasOwn(resp.request().postDataJSON(), 'refresh_token') &&
           resp.request().postDataJSON().refresh_token &&
-          resp.request().postDataJSON().hasOwnProperty('scope') &&
+          Object.hasOwn(resp.request().postDataJSON(), 'scope') &&
           resp.request().postDataJSON().scope.includes('offline_access'),
         { timeout: appConfig.tokenTimeout * 1000 }
       )
@@ -144,7 +144,7 @@ export class Application {
           resp.status() === 200 &&
           resp.request().method() === 'POST' &&
           resp.request().postDataJSON().grant_type === 'authorization_code' &&
-          resp.request().postDataJSON().hasOwnProperty('code') &&
+          Object.hasOwn(resp.request().postDataJSON(), 'code') &&
           resp.request().postDataJSON().code,
         { timeout: appConfig.tokenTimeout * 1000 }
       ),

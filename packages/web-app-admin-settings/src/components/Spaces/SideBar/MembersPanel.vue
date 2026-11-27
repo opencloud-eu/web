@@ -77,7 +77,7 @@ const filteredPermissions = computed(() => {
 
 const availableRoles = computed<ShareRole[]>(() => {
   const permissionsWithRole = unref(permissions).filter((p) => !!p.roles.length)
-  const roleIds = [...new Set(permissionsWithRole.map((p) => p.roles).flat())]
+  const roleIds = [...new Set(permissionsWithRole.flatMap((p) => p.roles))]
   return roleIds
     .map((r) => sharesStore.graphRoles[r])
     .filter(Boolean)

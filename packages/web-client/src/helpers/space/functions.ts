@@ -117,7 +117,7 @@ export function buildPublicSpaceResource(
       ...(fileId && { fileId }),
       ...(publicLinkPassword && { publicLinkPassword }),
       ...(publicLinkItemType && { publicLinkItemType }),
-      ...(publicLinkPermission && { publicLinkPermission: parseInt(publicLinkPermission) }),
+      ...(publicLinkPermission && { publicLinkPermission: parseInt(publicLinkPermission, 10) }),
       ...(publicLinkExpiration && { publicLinkExpiration }),
       ...(publicLinkShareDate && { publicLinkShareDate }),
       ...(publicLinkShareOwner && { publicLinkShareOwner }),

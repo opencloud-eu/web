@@ -23,7 +23,7 @@ export function useUserNameValidation() {
     if (userName.length > 255) {
       return $gettext('User name cannot exceed 255 characters')
     }
-    if (!isNaN(parseInt(userName[0]))) {
+    if (!Number.isNaN(parseInt(userName[0], 10))) {
       return $gettext('User name cannot start with a number')
     }
     if (!userNamePattern.test(userName)) {

@@ -351,7 +351,7 @@ const dropRowStyling = (item: Item, leaving: boolean, event: DragEvent) => {
 }
 
 const extractFieldTitle = (field: FieldType) => {
-  if (Object.prototype.hasOwnProperty.call(field, 'title')) {
+  if (Object.hasOwn(field, 'title')) {
     return field.title
   }
   return field.name
@@ -366,7 +366,7 @@ const extractTableProps = () => {
 const extractThProps = (field: FieldType, index: number) => {
   const props = extractCellProps(field)
   props.class = `oc-table-header-cell oc-table-header-cell-${field.name}`
-  if (Object.prototype.hasOwnProperty.call(field, 'thClass')) {
+  if (Object.hasOwn(field, 'thClass')) {
     props.class += ` ${field.thClass}`
   }
   if (sticky) {

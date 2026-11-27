@@ -618,7 +618,7 @@ function getUploadItemMessage(item: UploadResult) {
   const formatErrorToObject = ({ message, request }: UploadError) => {
     // tus-js-client puts the response into the message, @uppy/xhr-upload into the request
     const tusResponseCode = message.match(/response code: (\d+)/)?.[1]
-    const responseCode = tusResponseCode ? parseInt(tusResponseCode) : request?.status
+    const responseCode = tusResponseCode ? parseInt(tusResponseCode, 10) : request?.status
     const responseText = tusResponseCode
       ? message.match(/response text: ([\s\S]+?), request id/)?.[1] || '{}'
       : request?.responseText || '{}'
@@ -754,7 +754,7 @@ subscribe(
     bytesUploaded.value += byteIncrease
     filesInEstimation.value[file.meta.uploadId] = progress.bytesUploaded
 
-    const timeElapsed = +new Date().getTime() - unref(timeStarted).getTime()
+    const timeElapsed = Date.now() - unref(timeStarted).getTime()
 
     uploadSpeed.value = getSpeed({
       bytesUploaded: unref(bytesUploaded),

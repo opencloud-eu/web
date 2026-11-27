@@ -49,7 +49,7 @@ const parseShareTable = function (
       resourceType,
       expirationDate,
       shareType,
-      hasAvatar: hasAvatar === 'true' ? true : false
+      hasAvatar: hasAvatar === 'true'
     })
 
     return acc
@@ -253,7 +253,7 @@ Then(
     const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     for (const { resource, owner } of stepTable.hashes()) {
       const isAcceptedSharePresent = await shareObject.isAcceptedSharePresent(resource, owner)
-      expect(isAcceptedSharePresent, '${resource} does not exist in accepted share').toBe(
+      expect(isAcceptedSharePresent, `${resource} does not exist in accepted share`).toBe(
         shouldExist
       )
     }

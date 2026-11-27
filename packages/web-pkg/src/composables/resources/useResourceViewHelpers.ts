@@ -111,10 +111,10 @@ export const useResourceViewHelpers = ({
     if (contextActionClicked) {
       return
     }
-    if (event && event.metaKey) {
+    if (event?.metaKey) {
       return eventBus.publish('app.files.list.clicked.meta', resource)
     }
-    if (event && event.shiftKey) {
+    if (event?.shiftKey) {
       return eventBus.publish('app.files.list.clicked.shift', {
         resource,
         skipTargetSelection: false

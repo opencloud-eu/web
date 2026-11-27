@@ -571,7 +571,7 @@ function parseRouteQuery(route: RouteLocationNormalizedLoaded, initialLoad = fal
 
 function getMoreResultsDetailsTextForProvider(provider: SearchProvider) {
   const searchResult = getSearchResultForProvider(provider)
-  if (!searchResult || !searchResult.totalResults) {
+  if (!searchResult?.totalResults) {
     return $gettext('Show all results')
   }
 

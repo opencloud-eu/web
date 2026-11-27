@@ -503,7 +503,7 @@ const fileDropped = async (fileTarget: string | RouteLocationRaw) => {
     }
   }
 
-  if (!targetFolder || targetFolder.type !== 'folder') {
+  if (targetFolder?.type !== 'folder') {
     return
   }
 

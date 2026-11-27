@@ -129,7 +129,7 @@ function createPageRef<T>(options: PaginationOptions<T>): ComputedRef<number> {
   }
 
   const pageQuery = useRouteQuery('page', '1')
-  return computed(() => parseInt(queryItemAsString(unref(pageQuery))))
+  return computed(() => parseInt(queryItemAsString(unref(pageQuery)), 10))
 }
 
 function createPerPageRef<T>(options: PaginationOptions<T>): ComputedRef<number> {
@@ -146,7 +146,7 @@ function createPerPageRef<T>(options: PaginationOptions<T>): ComputedRef<number>
 export function useItemsPerPage(
   defaultValue = PaginationConstants.perPageDefault
 ): WritableComputedRef<number> {
-  const fallback = parseInt(defaultValue)
+  const fallback = parseInt(defaultValue, 10)
   const itemsPerPage = useLocalStorage<number>('oc-options_items-per-page', fallback, {
     writeDefaults: false
   })
@@ -155,7 +155,7 @@ export function useItemsPerPage(
     get() {
       // values below 1 (e.g. from manipulated storage) would break the page count, so they fall back to the default
       const value = unref(itemsPerPage)
-      return isNaN(value) || value < 1 ? fallback : value
+      return Number.isNaN(value) || value < 1 ? fallback : value
     },
     set(value) {
       itemsPerPage.value = value

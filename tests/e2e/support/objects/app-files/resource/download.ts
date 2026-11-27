@@ -76,7 +76,7 @@ export const downloadResources = async (args: downloadResourcesArgs): Promise<Do
       break
     }
 
-    case 'PREVIEW_TOPBAR':
+    case 'PREVIEW_TOPBAR': {
       const downloadButtonPromise = page.locator(appBarDownloadFileButton).waitFor()
       await page.locator(appBarContextMenu).click()
       await downloadButtonPromise
@@ -86,6 +86,7 @@ export const downloadResources = async (args: downloadResourcesArgs): Promise<Do
       const download = await downloadPromise
       downloads.push(download)
       break
+    }
   }
 
   return downloads

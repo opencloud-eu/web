@@ -241,7 +241,7 @@ export default defineWebApplication({
       extensions: fileExtensions().map((extensionItem) => {
         return {
           extension: extensionItem.extension,
-          ...(Object.prototype.hasOwnProperty.call(extensionItem, 'newFileMenu') && {
+          ...(Object.hasOwn(extensionItem, 'newFileMenu') && {
             newFileMenu: extensionItem.newFileMenu
           })
         }

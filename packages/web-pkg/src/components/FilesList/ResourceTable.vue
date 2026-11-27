@@ -646,7 +646,7 @@ const fields = computed(() => {
           if (field.prop) {
             return get(resource, field.prop) !== undefined
           }
-          return Object.prototype.hasOwnProperty.call(resource, field.name)
+          return Object.hasOwn(resource, field.name)
         })
         if (!fieldsDisplayed) {
           return hasField

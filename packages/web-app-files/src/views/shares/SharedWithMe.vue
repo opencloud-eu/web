@@ -319,8 +319,7 @@ const shareTypes = computed(() => {
 const fileOwners = computed(() => {
   const flatList = unref(storeItems)
     .filter((i) => i.sharedBy)
-    .map((i) => i.sharedBy)
-    .flat()
+    .flatMap((i) => i.sharedBy)
   return [...new Map(flatList.map((item) => [item.id, item])).values()]
 })
 

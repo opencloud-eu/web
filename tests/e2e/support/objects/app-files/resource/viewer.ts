@@ -71,12 +71,13 @@ export const fillContentOfDocument = async ({
       await page.keyboard.press('ControlOrMeta+A')
       await editorMainFrame.locator(collaboraDocTextAreaSelector).fill(text)
       break
-    case 'Euro-Office':
+    case 'Euro-Office': {
       const innerIframe = editorMainFrame.frameLocator(euroOfficeInnerFrameSelector)
       await innerIframe.locator(euroOfficeDocTextAreaSelector).focus()
       await page.keyboard.press('ControlOrMeta+A')
       await innerIframe.locator(euroOfficeDocTextAreaSelector).fill(text)
       break
+    }
     default:
       throw new Error("Editor should be 'TextEditor' but found " + editorToOpen)
   }
@@ -125,11 +126,12 @@ export const openAndGetContentOfDocument = async ({
     case 'CollaboraOnline':
       await editorMainFrame.locator(collaboraCanvasEditorSelector).click()
       break
-    case 'Euro-Office':
+    case 'Euro-Office': {
       const innerFrame = editorMainFrame.frameLocator(euroOfficeInnerFrameSelector)
       await innerFrame.locator(euroOfficeCanvasEditorSelector).click()
       await innerFrame.locator(euroOfficeCanvasCursorSelector).waitFor()
       break
+    }
     default:
       throw new Error(
         "Editor should be either 'Collabora' or 'Euro-Office' but found " + editorToOpen
@@ -217,7 +219,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
   await waitProcessingToFinish(page, name)
 
   switch (actionType) {
-    case 'Euro-Office':
+    case 'Euro-Office': {
       await Promise.all([
         page.waitForResponse(
           (resp) =>
@@ -249,6 +251,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
 
       await euroOfficeIframe.locator(euroOfficeDocTextAreaSelector).waitFor()
       break
+    }
     case 'Collabora':
       await Promise.all([
         page.waitForResponse(
@@ -389,7 +392,7 @@ export const canEditContent = async ({
 }): Promise<boolean> => {
   const editorMainFrame = page.frameLocator(externalEditorIframe)
   switch (type) {
-    case 'OpenDocument':
+    case 'OpenDocument': {
       const collaboraDocPermissionModeLocator = editorMainFrame.locator(
         collaboraDocPermissionModeSelector
       )
@@ -397,7 +400,8 @@ export const canEditContent = async ({
         await collaboraDocPermissionModeLocator.innerText()
       ).trim()
       return collaboraDocPermissionModeText === 'Edit'
-    case 'Microsoft Word':
+    }
+    case 'Microsoft Word': {
       // By Default when "Microsoft Word document" is created, it is opened with "Euro-Office" if both app-provider services are running together
       const innerFrame = editorMainFrame.frameLocator(euroOfficeInnerFrameSelector)
       try {
@@ -406,6 +410,7 @@ export const canEditContent = async ({
       } catch {
         return false
       }
+    }
   }
 }
 

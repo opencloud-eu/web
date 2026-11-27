@@ -29,7 +29,7 @@ const { setAndApplyTheme, setAutoSystemTheme, isCurrentThemeAutoSystem } = theme
 const updateTheme = (newTheme: WebThemeType) => {
   currentThemeSelection.value = newTheme
   showMessage({ title: $gettext('Preference saved.') })
-  if (newTheme == unref(autoTheme)) {
+  if (newTheme === unref(autoTheme)) {
     return setAutoSystemTheme()
   }
   setAndApplyTheme(newTheme)

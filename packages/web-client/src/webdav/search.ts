@@ -37,7 +37,7 @@ export const SearchFactory = (dav: DAV, options: WebDavOptions) => {
           // dedupe results based on id to avoid duplicates in file list
           (r, index, self) => self.findIndex((t) => t.id === r.id) === index
         ),
-        totalResults: range ? parseInt(range?.split('/')[1]) : null
+        totalResults: range ? parseInt(range?.split('/')[1], 10) : null
       }
     }
   }

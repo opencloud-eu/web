@@ -148,10 +148,10 @@ const isFieldTypeCallback = (field: FieldType) => {
 const extractTdProps = (field: FieldType, index: number, item: Item) => {
   const props = extractCellProps(field)
   props.class = `oc-table-data-cell oc-table-data-cell-${field.name}`
-  if (Object.prototype.hasOwnProperty.call(field, 'tdClass')) {
+  if (Object.hasOwn(field, 'tdClass')) {
     props.class += ` ${field.tdClass}`
   }
-  if (Object.prototype.hasOwnProperty.call(field, 'wrap')) {
+  if (Object.hasOwn(field, 'wrap')) {
     props.wrap = field.wrap
   }
 
@@ -163,7 +163,7 @@ const extractTdProps = (field: FieldType, index: number, item: Item) => {
     props.class += ` ${getTailwindXPadding(paddingX, 'right')}`
   }
 
-  if (Object.prototype.hasOwnProperty.call(field, 'accessibleLabelCallback')) {
+  if (Object.hasOwn(field, 'accessibleLabelCallback')) {
     props['aria-label'] = field.accessibleLabelCallback(item)
   }
 
