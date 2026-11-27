@@ -45,6 +45,7 @@ export default [
       'no-case-declarations': 'error',
       'no-extra-boolean-cast': ['error', { enforceForInnerExpressions: true }],
       'no-new': 'off',
+      'no-template-curly-in-string': 'error',
       'no-unneeded-ternary': 'error',
       'no-useless-catch': 'error',
       'node/no-callback-literal': 'off',
