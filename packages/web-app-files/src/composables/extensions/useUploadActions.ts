@@ -1,5 +1,5 @@
 import { ActionExtension } from '@opencloud-eu/web-pkg'
-import { uploadMenuExtensionPoint } from '../../extensionPoints'
+import { quickCreateExtensionPoint, uploadMenuExtensionPoint } from '../../extensionPoints'
 import {
   useFileActionsCreateNewFile,
   useFileActionsCreateNewFolder,
@@ -10,7 +10,7 @@ import { computed, ComputedRef, unref } from 'vue'
 export const useUploadActions = (): ComputedRef<ActionExtension[]> => {
   const { actions: createNewFolderActions } = useFileActionsCreateNewFolder()
   const { actions: createNewShortcutActions } = useFileActionsCreateNewShortcut()
-  const { actions: createNewFileActions } = useFileActionsCreateNewFile()
+  const { actions: createNewFileActions, quickCreateActions } = useFileActionsCreateNewFile()
 
   // computed: apps may register file extensions after files app setup
   return computed<ActionExtension[]>(() => [
@@ -31,6 +31,12 @@ export const useUploadActions = (): ComputedRef<ActionExtension[]> => {
       extensionPointIds: [uploadMenuExtensionPoint.id],
       type: 'action',
       action: unref(createNewShortcutActions)[0]
-    }
+    },
+    ...unref(quickCreateActions).map((action): ActionExtension => ({
+      id: `com.github.opencloud-eu.web.files.quick-create.new-file.${action.ext || 'default'}`,
+      extensionPointIds: [quickCreateExtensionPoint.id],
+      type: 'action',
+      action
+    }))
   ])
 }

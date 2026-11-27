@@ -64,6 +64,12 @@ export const useFileActionsCreateNewFile = () => {
     extension: string,
     appFileExtension: ApplicationFileExtension
   ) => {
+    // keep the target folder stable, the current folder changes or is unset on navigation
+    const folder = unref(currentFolder)
+    if (!folder) {
+      return
+    }
+
     // Apps may override the default name shown in the create modal, e.g. to
     // read "New notebook.ocnb" rather than "New file.ocnb". Fall back to the
     // generic "New file" prefix when no override is set.
@@ -101,13 +107,13 @@ export const useFileActionsCreateNewFile = () => {
             resource = await appFileExtension.createFileHandler({
               fileName,
               space,
-              currentFolder: unref(currentFolder)
+              currentFolder: folder
             })
           } else if (appFileExtension.type === 'folder') {
-            const path = urlJoin(unref(currentFolder).path, fileName)
+            const path = urlJoin(folder.path, fileName)
             resource = await (clientService.webdav as WebDAV).createFolder(space, { path })
           } else {
-            const path = urlJoin(unref(currentFolder).path, fileName)
+            const path = urlJoin(folder.path, fileName)
             resource = await (clientService.webdav as WebDAV).putFileContents(space, {
               path
             })
@@ -141,7 +147,7 @@ export const useFileActionsCreateNewFile = () => {
       onInput: (name: string, setError: (error: string) => void) => {
         const newFileName = areFileExtensionsShown.value ? name : `${name}.${extension}`
         const resource = {
-          path: urlJoin(unref(currentFolder).path, newFileName),
+          path: urlJoin(folder.path, newFileName),
           name: newFileName,
           extension
         } as Resource
@@ -151,8 +157,8 @@ export const useFileActionsCreateNewFile = () => {
     })
   }
 
-  const actions = computed((): FileAction[] => {
-    const actions: FileAction[] = []
+  const actionsWithExtension = computed(() => {
+    const actions: { action: FileAction; appFileExtension: ApplicationFileExtension }[] = []
     // make sure there is only one action for a file extension/mime-type
     // if there are
     // - multiple ApplicationFileExtensions with priority
@@ -177,11 +183,12 @@ export const useFileActionsCreateNewFile = () => {
       const isExternalActionInVault = () =>
         appFileExtension.app?.startsWith('external-') && !!unref(currentFolder)?.isInVault
 
-      actions.push({
+      const action: FileAction = {
         name: 'create-new-file',
         icon: 'add',
         handler: (args) => handler(args, appFileExtension.extension, appFileExtension),
         label: () => $gettext(appFileExtension.newFileMenu.menuTitle()),
+        description: appFileExtension.newFileMenu.description,
         isVisible: ({ space }) => {
           // files created via an upload-only link or share couldn't be edited afterwards
           if (
@@ -202,14 +209,24 @@ export const useFileActionsCreateNewFile = () => {
         class: 'oc-files-actions-create-new-file',
         ext: appFileExtension.extension,
         isExternal: appFileExtension.app?.startsWith('external-')
-      })
+      }
+      actions.push({ action, appFileExtension })
     }
 
     return actions
   })
 
+  const actions = computed(() => unref(actionsWithExtension).map(({ action }) => action))
+
+  const quickCreateActions = computed(() =>
+    unref(actionsWithExtension)
+      .filter(({ appFileExtension }) => appFileExtension.newFileMenu.quickCreate)
+      .map(({ action }) => action)
+  )
+
   return {
     actions,
+    quickCreateActions,
     openFile
   }
 }

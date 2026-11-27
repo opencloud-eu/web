@@ -87,6 +87,10 @@ export interface Action<T = ActionOptions> {
    */
   label(options?: T): string
   /**
+   * Optional short description shown below the label, e.g. in the quick-create bar.
+   */
+  description?(options?: T): string
+  /**
    * Optional child actions rendered as a nested context menu.
    */
   children?: Action<T>[]

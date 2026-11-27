@@ -13,6 +13,11 @@ export const uploadMenuExtensionPoint: ExtensionPoint<ActionExtension> = {
   extensionType: 'action',
   multiple: true
 }
+export const quickCreateExtensionPoint: ExtensionPoint<ActionExtension> = {
+  id: 'app.files.quick-create',
+  extensionType: 'action',
+  multiple: true
+}
 export const quickActionsExtensionPoint: ExtensionPoint<ActionExtension> = {
   id: 'app.files.quick-actions',
   extensionType: 'action',
@@ -128,6 +133,7 @@ export const extensionPoints = () => {
   return computed<ExtensionPoint<any>[]>(() => {
     return [
       uploadMenuExtensionPoint,
+      quickCreateExtensionPoint,
       quickActionsExtensionPoint,
       trashQuickActionsExtensionPoint,
       batchActionsExtensionPoint,

@@ -38,6 +38,33 @@ describe('useUploadActions', () => {
       }
     })
   })
+
+  it('registers quick create actions of quick create file extensions only', () => {
+    getWrapper({
+      setup: (uploadActions) => {
+        const appsStore = useAppsStore()
+        appsStore.fileExtensions = [
+          mock<ApplicationFileExtension>({
+            app: 'text-editor',
+            extension: 'ocnote',
+            newFileMenu: { menuTitle: vi.fn(), quickCreate: true }
+          }),
+          mock<ApplicationFileExtension>({
+            app: 'text-editor',
+            extension: 'txt',
+            newFileMenu: { menuTitle: vi.fn(), quickCreate: false }
+          })
+        ]
+
+        const quickCreateExtensions = unref(uploadActions).filter(({ extensionPointIds }) =>
+          extensionPointIds.includes('app.files.quick-create')
+        )
+        expect(quickCreateExtensions.map(({ id }) => id)).toEqual([
+          'com.github.opencloud-eu.web.files.quick-create.new-file.ocnote'
+        ])
+      }
+    })
+  })
 })
 
 function getWrapper({ setup }: { setup: (instance: ReturnType<typeof useUploadActions>) => void }) {
