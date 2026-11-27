@@ -812,6 +812,11 @@ function applySavedResource(etag: string, saved: Resource | null = null) {
   resourcesStore.updateResourceField({ id: current.id, field: 'etag', value: etag })
 }
 
+/** A failed save is announced by its error message, a pending "Saving…" would come after it. */
+function cancelSavingAnnouncement() {
+  unref(savingAnnouncer)?.announce('')
+}
+
 /** Resolves to true once saved, to null when there was nothing to save, to false when it failed. */
 const saveFileTask = useTask(function* () {
   if (isResourceDeleted) {
@@ -852,9 +857,11 @@ const saveFileTask = useTask(function* () {
       if (yield* reconcileConflict(newContent)) {
         return true
       }
+      cancelSavingAnnouncement()
       showExternalUpdateConflict(e.response)
       return false
     }
+    cancelSavingAnnouncement()
     switch (e.statusCode) {
       case 401:
       case 403:

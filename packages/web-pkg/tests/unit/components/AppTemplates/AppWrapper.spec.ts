@@ -769,6 +769,19 @@ describe('AppWrapper — save feedback', () => {
       expect(announcerText(s)).toBe('Saving…')
     })
 
+    it('announces only the error when the write fails right away', async () => {
+      const s = await openFile({
+        putFileContents: vi.fn().mockRejectedValue({ statusCode: 500, response: {} })
+      })
+      await s.edit('edited content')
+
+      await s.pressCtrlS()
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(useMessages().showErrorMessage).toHaveBeenCalled()
+      expect(announcerText(s)).toBe('')
+    })
+
     it('announces nothing while a save only flushes', async () => {
       const s = await openFile()
       s.registerFlushContentCallback(() => Promise.resolve())
