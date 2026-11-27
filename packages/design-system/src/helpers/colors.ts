@@ -26,7 +26,7 @@ function shadeValue(value: number, percent: number): string {
   let a = (value * (100 + percent)) / 100
   a = a < 255 ? a : 255
   a = Math.round(a)
-  return a.toString(16).length == 1 ? '0' + a.toString(16) : a.toString(16)
+  return a.toString(16).length === 1 ? '0' + a.toString(16) : a.toString(16)
 }
 
 /**

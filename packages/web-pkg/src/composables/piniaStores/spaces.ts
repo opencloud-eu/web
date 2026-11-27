@@ -146,7 +146,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   }
 
   const getSpace = (id: string) => {
-    return unref(spaces).find((s) => id == s.id)
+    return unref(spaces).find((s) => id === s.id)
   }
 
   const getMountPointForSpace = async ({

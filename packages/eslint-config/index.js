@@ -42,6 +42,7 @@ export default [
       '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
 
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
       'no-case-declarations': 'error',
       'no-extra-boolean-cast': ['error', { enforceForInnerExpressions: true }],
       'no-new': 'off',

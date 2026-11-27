@@ -38,9 +38,7 @@ function naturalSortCompare(a: string, b: string) {
     if (aa[x] !== bb[x]) {
       aNum = Number(aa[x])
       bNum = Number(bb[x])
-      // note: == is correct here
-
-      if (aNum == aa[x] && bNum == bb[x]) {
+      if (!Number.isNaN(aNum) && !Number.isNaN(bNum)) {
         return aNum - bNum
       } else {
         // Forcing 'en' locale to match the server-side locale which is

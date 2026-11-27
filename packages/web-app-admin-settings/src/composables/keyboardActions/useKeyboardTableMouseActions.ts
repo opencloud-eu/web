@@ -23,7 +23,7 @@ export function useKeyboardTableMouseActions(
   function handleCtrlClickAction(resource: Resource) {
     const rowIndex = findIndex(unref(selectedRows), { id: resource.id })
     if (rowIndex >= 0) {
-      selectedRows.value = unref(selectedRows).filter((item) => item.id != resource.id)
+      selectedRows.value = unref(selectedRows).filter((item) => item.id !== resource.id)
     } else {
       selectedRows.value.push(resource)
     }

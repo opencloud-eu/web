@@ -225,7 +225,7 @@ const availableMediaTypeValues = computed(() => {
 })
 
 function getFakeResourceForIcon(item: SearchMediaTypeFilterOption) {
-  return { type: 'file', extension: item.icon, isFolder: item.icon == 'folder' } as Resource
+  return { type: 'file', extension: item.icon, isFolder: item.icon === 'folder' } as Resource
 }
 
 const displayFilter = computed(() => {

@@ -57,7 +57,7 @@ export const useActionExtensionCreateFromTemplate = (
         (mimeType) =>
           mimeType.mime_type === template.mimeType &&
           mimeType.app_providers.some(
-            (appProvider) => appProvider.name == appInfo.name && !!appProvider.target_ext
+            (appProvider) => appProvider.name === appInfo.name && !!appProvider.target_ext
           )
       )
     },
