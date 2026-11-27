@@ -175,6 +175,7 @@ export const useStrategyMarkdown = (
     bold,
     italic,
     strikethrough,
+    codeInline,
     heading,
     paragraph,
     heading1,
@@ -269,7 +270,8 @@ export const useStrategyMarkdown = (
           codeBlock(),
           bold(),
           italic(),
-          strikethrough()
+          strikethrough(),
+          codeInline()
         ]
       },
       {
