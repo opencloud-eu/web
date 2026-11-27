@@ -18,11 +18,40 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
 import { Resource } from '@opencloud-eu/web-client'
+import { ContextualHelperDataListItem } from '@opencloud-eu/design-system/helpers'
+import { OcInfoDrop } from '@opencloud-eu/design-system/components'
+import { defineComponent } from 'vue'
+import { VueWrapper } from '@vue/test-utils'
+import ContextMenuItem from '../../../../../../src/components/SideBar/Shares/Links/ContextMenuItem.vue'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useGetMatchingSpace: vi.fn()
 }))
+
+const showDetailsDrop = vi.fn()
+
+const OcInfoDropStub = defineComponent({
+  name: 'OcInfoDrop',
+  components: {
+    DropStub: defineComponent({
+      name: 'DropStub',
+      setup: () => ({ show: showDetailsDrop }),
+      template: '<div />'
+    })
+  },
+  props: {
+    title: { type: String, default: '' },
+    list: { type: Array, default: (): unknown[] => [] }
+  },
+  template: '<drop-stub ref="drop" />'
+})
+
+function getMenuOptionIds(wrapper: VueWrapper) {
+  return wrapper
+    .findAllComponents(ContextMenuItem)
+    .map((item) => (item.props('option') as EditOption).id)
+}
 
 const exampleLink = {
   displayName: 'Example link',
@@ -32,9 +61,9 @@ const exampleLink = {
 
 describe('EditDropdown component', () => {
   describe('dropdown button', () => {
-    it('does not get rendered if user cannot edit', () => {
+    it('does get rendered if user cannot edit', () => {
       const { wrapper } = getWrapper({ isModifiable: false })
-      expect(wrapper.find('.edit-drop-trigger').exists()).toBeFalsy()
+      expect(wrapper.find('.edit-drop-trigger').exists()).toBeTruthy()
     })
     it('does get rendered if user can edit', () => {
       const { wrapper } = getWrapper({ isModifiable: true })
@@ -127,6 +156,44 @@ describe('EditDropdown component', () => {
     })
   })
 
+  describe('details action', () => {
+    it.each([true, false])('gets rendered (modifiable: %s)', (isModifiable) => {
+      const { wrapper } = getWrapper({ isModifiable })
+      expect(getMenuOptionIds(wrapper)).toContain('details')
+    })
+    it('is the last option before the delete action', () => {
+      const linkShare = { ...exampleLink, hasPassword: true }
+      const { wrapper } = getWrapper({ linkShare, isPasswordRemovable: true })
+      expect(getMenuOptionIds(wrapper)).toEqual([
+        'rename',
+        'add-expiration',
+        'edit-password',
+        'remove-password',
+        'details',
+        'delete'
+      ])
+    })
+    it('is the only option when the user cannot modify the link', () => {
+      const linkShare = { ...exampleLink, hasPassword: true }
+      const { wrapper } = getWrapper({ linkShare, isModifiable: false, isPasswordRemovable: true })
+      expect(getMenuOptionIds(wrapper)).toEqual(['details'])
+    })
+    it('opens the details drop with the given details', () => {
+      const details = [{ text: 'Link name', headline: true }, { text: 'Example link' }]
+      const { wrapper } = getWrapper({ details })
+      const detailsOption = wrapper
+        .findAllComponents(ContextMenuItem)
+        .find((item) => item.props('option').id === 'details')
+
+      detailsOption.props('option').method()
+
+      const infoDrop = wrapper.findComponent(OcInfoDrop)
+      expect(infoDrop.props('list')).toEqual(details)
+      expect(infoDrop.props('title')).toBe('Link details')
+      expect(showDetailsDrop).toHaveBeenCalled()
+    })
+  })
+
   describe('delete action', () => {
     it('does not get rendered when the user cannot modify the link', () => {
       const { wrapper } = getWrapper({ isModifiable: false })
@@ -143,11 +210,15 @@ function getWrapper({
   linkShare = exampleLink,
   isModifiable = true,
   canRename = true,
+  isPasswordRemovable = false,
+  details = [],
   sharedAncestor
 }: {
   linkShare?: LinkShare
   isModifiable?: boolean
   canRename?: boolean
+  isPasswordRemovable?: boolean
+  details?: ContextualHelperDataListItem[]
   sharedAncestor?: AncestorMetaDataValue
 } = {}) {
   vi.mocked(useGetMatchingSpace).mockImplementation(() =>
@@ -167,11 +238,14 @@ function getWrapper({
       props: {
         canRename,
         linkShare,
-        isModifiable
+        isModifiable,
+        isPasswordRemovable,
+        details
       },
       global: {
         mocks,
         renderStubDefaultSlot: true,
+        stubs: { OcInfoDrop: OcInfoDropStub, DropStub: false },
         plugins,
         provide: { ...mocks, resource: mock<Resource>() }
       }

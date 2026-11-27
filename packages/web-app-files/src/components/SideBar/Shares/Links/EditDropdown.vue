@@ -1,7 +1,7 @@
 <template>
-  <div v-if="isModifiable || sharedAncestor" class="flex">
+  <div class="flex">
     <oc-button
-      :id="`edit-public-link-dropdown-toggl-${linkShare.id}`"
+      :id="toggleId"
       :aria-label="$gettext('More options')"
       appearance="raw"
       class="edit-drop-trigger raw-hover-surface p-1"
@@ -12,35 +12,40 @@
       ref="editPublicLinkDropdown"
       :title="$gettext('Edit public link')"
       :drop-id="`edit-public-link-dropdown`"
-      :toggle="`#edit-public-link-dropdown-toggl-${linkShare.id}`"
+      :toggle="`#${toggleId}`"
       padding-size="small"
       close-on-click
       mode="click"
     >
-      <oc-list v-if="editOptions.length > 0">
+      <oc-list>
         <li v-for="(option, i) in editOptions" :key="i">
           <context-menu-item :option="option" />
         </li>
+        <li>
+          <context-menu-item :option="detailsOption" />
+        </li>
       </oc-list>
-      <oc-list
-        v-if="sharedAncestor"
-        class="edit-public-link-dropdown-menu-navigate-to-parent"
-        :class="{ 'pt-2': editOptions.length > 0 }"
-      >
+      <oc-list v-if="sharedAncestor" class="edit-public-link-dropdown-menu-navigate-to-parent pt-2">
         <li>
           <context-menu-item :option="navigateToParentOption" />
         </li>
       </oc-list>
-      <oc-list
-        v-if="isModifiable"
-        class="edit-public-link-dropdown-menu-delete mt-2 border-t"
-        :class="{ 'pt-2': editOptions.length > 0 }"
-      >
+      <oc-list v-if="isModifiable" class="edit-public-link-dropdown-menu-delete mt-2 pt-2 border-t">
         <li>
           <context-menu-item :option="deleteOption" />
         </li>
       </oc-list>
     </oc-drop>
+    <oc-info-drop
+      ref="detailsDrop"
+      :toggle="`#${toggleId}`"
+      class="link-details-drop [&_dl]:grid [&_dl]:gap-x-4 [&_dl]:gap-y-1 [&_dl]:grid-cols-[max-content_minmax(0,1fr)] [&_dt]:col-start-1 [&_dd]:col-start-2 [&_dd]:wrap-anywhere"
+      v-bind="{
+        title: $gettext('Link details'),
+        list: details
+      }"
+      mode="manual"
+    />
   </div>
 </template>
 
@@ -57,7 +62,8 @@ import { LinkShare } from '@opencloud-eu/web-client'
 import { computed, inject, markRaw, Ref, unref, useTemplateRef } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { createFileRouteOptions, DatePickerModal } from '@opencloud-eu/web-pkg'
-import { OcDrop } from '@opencloud-eu/design-system/components'
+import { OcDrop, OcInfoDrop } from '@opencloud-eu/design-system/components'
+import { ContextualHelperDataListItem } from '@opencloud-eu/design-system/helpers'
 import { useGettext } from 'vue3-gettext'
 import { RouteLocationNamedRaw } from 'vue-router'
 import ContextMenuItem from './ContextMenuItem.vue'
@@ -74,12 +80,14 @@ const {
   linkShare,
   canRename = false,
   isModifiable = false,
-  isPasswordRemovable = false
+  isPasswordRemovable = false,
+  details
 } = defineProps<{
   linkShare: LinkShare
   canRename?: boolean
   isModifiable?: boolean
   isPasswordRemovable?: boolean
+  details: ContextualHelperDataListItem[]
 }>()
 
 const emit = defineEmits<{
@@ -99,6 +107,9 @@ const { $gettext } = useGettext()
 const { getMatchingSpace } = useGetMatchingSpace()
 const resourcesStore = useResourcesStore()
 const editPublicLinkDropdown = useTemplateRef<typeof OcDrop>('editPublicLinkDropdown')
+const detailsDrop = useTemplateRef<typeof OcInfoDrop>('detailsDrop')
+
+const toggleId = computed(() => `edit-public-link-dropdown-toggl-${linkShare.id}`)
 
 const resource = inject<Ref<Resource>>('resource')
 
@@ -155,6 +166,15 @@ const deleteOption = computed<EditOption>(() => {
       unref(editPublicLinkDropdown).hide()
     },
     icon: 'delete-bin-5'
+  }
+})
+
+const detailsOption = computed<EditOption>(() => {
+  return {
+    id: 'details',
+    title: $gettext('Details'),
+    icon: 'information',
+    method: () => unref(detailsDrop)?.$refs.drop.show()
   }
 })
 
