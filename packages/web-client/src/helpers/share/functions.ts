@@ -152,7 +152,7 @@ export function buildIncomingShareResource({
     sharedWith,
     shareTypes,
     isFolder: !!driveItem.folder,
-    type: !!driveItem.folder ? 'folder' : 'file',
+    type: driveItem.folder ? 'folder' : 'file',
     mimeType: driveItem.file?.mimeType || 'httpd/unix-directory',
     mdate: driveItem.lastModifiedDateTime
       ? new Date(driveItem.lastModifiedDateTime).toUTCString()

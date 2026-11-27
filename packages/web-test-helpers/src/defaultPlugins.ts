@@ -55,7 +55,7 @@ export const defaultPlugins = ({
             const to = props.to
             let path: string
 
-            if (!!to && typeof to !== 'string') {
+            if (to && typeof to !== 'string') {
               path = to.path || to.name
 
               if (to.params) {
