@@ -769,9 +769,13 @@ describe('AppWrapper — save feedback', () => {
       expect(announcerText(s)).toBe('Saving…')
     })
 
-    it('announces only the error when the write fails right away', async () => {
+    it.each([
+      { name: 'an error', statusCode: 500 },
+      { name: 'an unresolved conflict', statusCode: 412 }
+    ])('announces only $name when the write fails right away', async ({ statusCode }) => {
       const s = await openFile({
-        putFileContents: vi.fn().mockRejectedValue({ statusCode: 500, response: {} })
+        yjsEnabled: false,
+        putFileContents: vi.fn().mockRejectedValue({ statusCode, response: {} })
       })
       await s.edit('edited content')
 
@@ -780,6 +784,23 @@ describe('AppWrapper — save feedback', () => {
 
       expect(useMessages().showErrorMessage).toHaveBeenCalled()
       expect(announcerText(s)).toBe('')
+    })
+
+    it('keeps announcing saving when the session resolves a conflict', async () => {
+      const s = await openFile({
+        status: 'connected',
+        putFileContents: vi.fn().mockRejectedValue({ statusCode: 412, response: {} })
+      })
+      await s.edit('edited content')
+
+      const pressed = s.pressCtrlS()
+      await flushPromises()
+      s.resolveContentWith('edited content', 'etag-fresh')
+      await pressed
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
+      expect(announcerText(s)).toBe('Saving…')
     })
 
     it('announces nothing while a save only flushes', async () => {
