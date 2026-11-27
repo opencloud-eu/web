@@ -1,4 +1,4 @@
-import { isNaN, isNumber, isObject, isString, isBoolean } from 'lodash-es'
+import { isNumber, isObject, isString, isBoolean } from 'lodash-es'
 import { Language } from 'vue3-gettext'
 
 export interface PasswordPolicyRuleOptions {
@@ -86,7 +86,7 @@ export class MustContainRule implements PasswordPolicyRule {
       throw new Error('options should be an object')
     }
 
-    if (!isNumber(options.minLength) || isNaN(options.minLength)) {
+    if (!isNumber(options.minLength) || Number.isNaN(options.minLength)) {
       throw new Error('minLength should be a non-zero number')
     }
 
@@ -124,7 +124,7 @@ class AtLeastBaseRule implements PasswordPolicyRule {
       throw new Error('options should be an object')
     }
 
-    if (!isNumber(options.minLength) || isNaN(options.minLength)) {
+    if (!isNumber(options.minLength) || Number.isNaN(options.minLength)) {
       throw new Error('minLength should be a non-zero number')
     }
 
@@ -241,7 +241,7 @@ export class AtMostCharactersRule implements PasswordPolicyRule {
       throw new Error('options should be an object')
     }
 
-    if (!isNumber(options.maxLength) || isNaN(options.maxLength)) {
+    if (!isNumber(options.maxLength) || Number.isNaN(options.maxLength)) {
       throw new Error('maxLength should be a non-zero number')
     }
 

@@ -5,12 +5,12 @@ class CacheElement<T> {
 
   constructor(value: T, ttl: number, size = 0) {
     this.value = value
-    this.expires = ttl ? new Date().getTime() + ttl : 0
+    this.expires = ttl ? Date.now() + ttl : 0
     this.size = size
   }
 
   get expired(): boolean {
-    return this.expires > 0 && this.expires < new Date().getTime()
+    return this.expires > 0 && this.expires < Date.now()
   }
 }
 
@@ -74,7 +74,7 @@ export default class Cache<K, V> {
 
     const element = new CacheElement<V>(
       value,
-      isNaN(ttl) ? this.ttl : ttl,
+      Number.isNaN(Number(ttl)) ? this.ttl : ttl,
       this.sizeOf?.(value) || 0
     )
     this.map.set(key, element)

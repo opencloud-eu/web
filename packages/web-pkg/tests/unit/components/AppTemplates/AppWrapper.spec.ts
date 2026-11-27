@@ -1,6 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { defineComponent, h, nextTick, type PropType, reactive, ref, toValue, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
+import { createGettext } from 'vue3-gettext'
 import type { Resource, ShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { HttpError } from '@opencloud-eu/web-client'
 import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
@@ -23,7 +24,7 @@ import type { YjsSession, YjsStatus } from '../../../../src/composables/yjs'
 import type { FileContentOptions, FileContext } from '../../../../src/composables/appDefaults'
 import type { FileAction } from '../../../../src/composables/actions'
 import type { ApplicationFileExtension } from '../../../../src/apps'
-import { eventBus } from '../../../../src/services'
+import { eventBus, LoadingService } from '../../../../src/services'
 import { ResourceNotFoundError } from '../../../../src/errors'
 import {
   type CustomComponentExtension,
@@ -176,8 +177,13 @@ function setup({
   fileContext = mock<FileContext>({ space: mock<any>(), path: '/a.md' }),
   fileContentOptions = undefined as FileContentOptions,
   fileExtensions = [{ app: 'test-app', extension: 'md' }] as ApplicationFileExtension[],
+  disableAutoSave = false,
+  // The UI language, as gettext names it (e.g. `pt_BR`).
+  language = undefined as string,
   // Receives the errors Vue would otherwise report as unhandled.
-  errorHandler = undefined as (err: unknown) => void
+  errorHandler = undefined as (err: unknown) => void,
+  // A real loading service, for tests about the progress bar.
+  loadingService = undefined as LoadingService
 } = {}) {
   const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
   const beginSave = vi.fn()
@@ -252,6 +258,9 @@ function setup({
   })
 
   const mocks = defaultComponentMocks({ currentRoute })
+  if (loadingService) {
+    mocks.$loadingService = loadingService as typeof mocks.$loadingService
+  }
   // A deep mock hands back a function for every property; the wrapper
   // compares this one against the initiator in SSE events.
   ;(mocks.$clientService as any).initiatorId = 'tab-own'
@@ -264,6 +273,7 @@ function setup({
   }) as any)
 
   const piniaPlugins = defaultPlugins({
+    gettext: !language,
     piniaOptions: {
       appsState: {
         apps: { 'test-app': { id: 'test-app', name: 'Test App', meta: { fileSizeLimit } } },
@@ -273,6 +283,9 @@ function setup({
       capabilityState: { capabilities: { core: { 'support-sse': sse } as any } }
     }
   })
+  if (language) {
+    piniaPlugins.push(createGettext({ defaultLanguage: language, translations: {}, silent: true }))
+  }
   const unregisterAppBarExtension = vi.fn()
   const { registerExtensions, requestExtensions } = useExtensionRegistry()
   vi.mocked(registerExtensions).mockReturnValue(unregisterAppBarExtension)
@@ -312,6 +325,7 @@ function setup({
     props: {
       applicationId: 'test-app',
       wrappedComponent: component,
+      disableAutoSave,
       ...(yjsEnabled ? { yjs: { makeAdapter: () => mock<any>() } } : {}),
       ...(fileContentOptions ? { fileContentOptions } : {})
     },
@@ -381,12 +395,16 @@ function setup({
     },
     deleteFile,
     downloadFile,
-    /** Runs an action of the top bar menu, as a click on it does. */
-    clickTopBarAction(name: string) {
+    /** The props the wrapper currently hands to the top bar. */
+    topBarProps() {
       const [topBar] = unref(
         vi.mocked(registerExtensions).mock.calls.at(-1)[0]
       ) as CustomComponentExtension[]
-      const { dropDownMenuSections, dropDownActionOptions } = topBar.componentProps() as any
+      return topBar.componentProps() as any
+    },
+    /** Runs an action of the top bar menu, as a click on it does. */
+    clickTopBarAction(name: string) {
+      const { dropDownMenuSections, dropDownActionOptions } = this.topBarProps()
       const action = dropDownMenuSections
         .flatMap(({ items }: { items: FileAction[] }) => items)
         .find((item: FileAction) => item.name === name)
@@ -673,6 +691,221 @@ describe('AppWrapper — top bar extension', () => {
     s.wrapper.unmount()
 
     expect(s.unregisterAppBarExtension).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('AppWrapper — save feedback', () => {
+  it('shows no message after an autosave', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = await openFile()
+    await s.edit('edited content')
+
+    await vi.advanceTimersByTimeAsync(130_000)
+
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
+  })
+
+  it('shows no message after saving before a download', async () => {
+    const s = await openFile()
+    await s.edit('edited content')
+
+    await s.clickTopBarAction('download-file')
+
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+    expect(s.downloadFile).toHaveBeenCalled()
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
+  })
+
+  it('shows the progress bar while the file is being written', async () => {
+    const loadingService = new LoadingService()
+    const put = deferred<Resource>()
+    const s = await openFile({
+      loadingService,
+      putFileContents: vi.fn().mockReturnValue(put.promise)
+    })
+    await s.edit('edited content')
+    expect(loadingService.isLoading).toBe(false)
+
+    void s.pressCtrlS()
+    await vi.waitFor(() => expect(loadingService.isLoading).toBe(true))
+
+    put.resolve(mock<Resource>({ etag: 'etag-saved' }))
+    await flushPromises()
+  })
+
+  // the announcer sets its text with a delay, which a fast write must not cancel
+  describe('screen reader announcement', () => {
+    const announcerText = (s: Awaited<ReturnType<typeof openFile>>) =>
+      s.wrapper.findComponent({ name: 'OcHiddenAnnouncer' }).text()
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    it('announces saving also when the write finishes right away', async () => {
+      const s = await openFile()
+      await s.edit('edited content')
+
+      await s.pressCtrlS()
+      expect(s.putFileContents).toHaveBeenCalledTimes(1)
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(announcerText(s)).toBe('Saving…')
+    })
+
+    it('announces saving again on the next save', async () => {
+      const s = await openFile()
+      await s.edit('edited content')
+      await s.pressCtrlS()
+      await vi.advanceTimersByTimeAsync(100)
+      await s.edit('edited again')
+
+      await s.pressCtrlS()
+      expect(s.putFileContents).toHaveBeenCalledTimes(2)
+      expect(announcerText(s)).toBe('')
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(announcerText(s)).toBe('Saving…')
+    })
+
+    it.each([
+      { name: 'an error', statusCode: 500 },
+      { name: 'an unresolved conflict', statusCode: 412 }
+    ])('announces only $name when the write fails right away', async ({ statusCode }) => {
+      const s = await openFile({
+        yjsEnabled: false,
+        putFileContents: vi.fn().mockRejectedValue({ statusCode, response: {} })
+      })
+      await s.edit('edited content')
+
+      await s.pressCtrlS()
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(useMessages().showErrorMessage).toHaveBeenCalled()
+      expect(announcerText(s)).toBe('')
+    })
+
+    it('keeps announcing saving when the session resolves a conflict', async () => {
+      const s = await openFile({
+        status: 'connected',
+        putFileContents: vi.fn().mockRejectedValue({ statusCode: 412, response: {} })
+      })
+      await s.edit('edited content')
+
+      const pressed = s.pressCtrlS()
+      await flushPromises()
+      s.resolveContentWith('edited content', 'etag-fresh')
+      await pressed
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(useMessages().showErrorMessage).not.toHaveBeenCalled()
+      expect(announcerText(s)).toBe('Saving…')
+    })
+
+    it('announces nothing while a save only flushes', async () => {
+      const s = await openFile()
+      s.registerFlushContentCallback(() => Promise.resolve())
+
+      await s.pressCtrlS()
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(s.putFileContents).not.toHaveBeenCalled()
+      expect(announcerText(s)).toBe('')
+    })
+  })
+
+  // the autosave runs every interval and flushes even without changes, which must not show up
+  it('shows no progress bar while a save only flushes', async () => {
+    const loadingService = new LoadingService()
+    const flush = deferred<void>()
+    const s = await openFile({ loadingService })
+    s.registerFlushContentCallback(() => flush.promise)
+
+    void s.pressCtrlS()
+    await flushPromises()
+    await new Promise((resolve) => setTimeout(resolve))
+
+    expect(loadingService.isLoading).toBe(false)
+    flush.resolve()
+    await flushPromises()
+    expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+
+  // the progress bar of the save stays for a moment and must not keep the page warning on unload
+  describe('progress bar of a fast save', () => {
+    const fastPut = () =>
+      vi.fn(
+        () =>
+          new Promise<Resource>((resolve) =>
+            setTimeout(() => resolve(mock<Resource>({ etag: 'etag-saved' })), 10)
+          )
+      )
+
+    async function saveFast() {
+      const loadingService = new LoadingService()
+      const s = await openFile({ loadingService, putFileContents: fastPut() })
+      await s.edit('saved content')
+      void s.pressCtrlS()
+      await vi.advanceTimersByTimeAsync(10)
+      expect(s.putFileContents).toHaveBeenCalledTimes(1)
+      return { s, loadingService }
+    }
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    it('shows it right away and keeps it for a second', async () => {
+      const { loadingService } = await saveFast()
+      expect(loadingService.isLoading).toBe(true)
+
+      await vi.advanceTimersByTimeAsync(980)
+      expect(loadingService.isLoading).toBe(true)
+
+      await vi.advanceTimersByTimeAsync(20)
+      expect(loadingService.isLoading).toBe(false)
+    })
+
+    // the progress bar stays for a moment and must not keep the page warning on unload
+    it('stops warning before unload when closed with unsaved changes right after it', async () => {
+      const { s, loadingService } = await saveFast()
+      expect(loadingService.isLoading).toBe(true)
+      const addSpy = vi.spyOn(window, 'addEventListener')
+      const removeSpy = vi.spyOn(window, 'removeEventListener')
+
+      await s.edit('discarded content')
+      const [, preventUnload] = addSpy.mock.calls.find(([type]) => type === 'beforeunload')
+      s.wrapper.unmount()
+
+      expect(removeSpy).toHaveBeenCalledWith('beforeunload', preventUnload)
+      addSpy.mockRestore()
+      removeSpy.mockRestore()
+    })
+  })
+
+  it('names the autosave interval in the label of the top bar save action', async () => {
+    const s = await openFile()
+
+    const [saveAction] = s.topBarProps().mainActions as FileAction[]
+
+    expect(saveAction.label()).toBe('Save (autosave every 120 seconds)')
+  })
+
+  it('names the autosave interval for a language with a region', async () => {
+    const s = await openFile({ language: 'pt_BR' })
+
+    const [saveAction] = s.topBarProps().mainActions as FileAction[]
+
+    expect(saveAction.label()).toBe('Save (autosave every 120 segundos)')
+  })
+
+  it('keeps the plain label when the app does not autosave', async () => {
+    const s = await openFile({ disableAutoSave: true })
+
+    const [saveAction] = s.topBarProps().mainActions as FileAction[]
+
+    expect(saveAction.label()).toBe('Save')
   })
 })
 
@@ -1358,7 +1591,7 @@ describe('AppWrapper — deleting the open file', () => {
     await vi.advanceTimersByTimeAsync(130_000)
 
     expect(s.putFileContents).not.toHaveBeenCalled()
-    expect(showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
+    expect(showMessage).not.toHaveBeenCalled()
   })
 
   it('still asks to save when another file was deleted', async () => {
@@ -1467,7 +1700,7 @@ describe('AppWrapper — saving before deleting or downloading the open file', (
     }
   )
 
-  it('does not report a failed save before a download as autosaved', async () => {
+  it('reports a failed save before a download as error only', async () => {
     const s = await openFile({
       putFileContents: vi.fn().mockRejectedValue({ statusCode: 500, response: {} })
     })
@@ -1476,7 +1709,7 @@ describe('AppWrapper — saving before deleting or downloading the open file', (
     await s.clickTopBarAction('download-file')
 
     expect(useMessages().showErrorMessage).toHaveBeenCalled()
-    expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
     expect(s.downloadFile).toHaveBeenCalled()
   })
 })
@@ -1611,7 +1844,7 @@ describe('AppWrapper — saving while a save is running', () => {
     await flushPromises()
 
     expect(s.putFileContents).toHaveBeenCalledTimes(1)
-    expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
   })
 })
 
@@ -1769,7 +2002,7 @@ describe('AppWrapper — flush content callback', () => {
 
     expect(flushContent).toHaveBeenCalledOnce()
     expect(s.putFileContents).not.toHaveBeenCalled()
-    expect(useMessages().showMessage).not.toHaveBeenCalledWith({ title: 'File autosaved' })
+    expect(useMessages().showMessage).not.toHaveBeenCalled()
   })
 
   it('saves what the app emits in the callback before a download', async () => {

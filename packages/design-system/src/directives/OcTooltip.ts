@@ -98,7 +98,7 @@ const showTooltip = async (el: HTMLElement) => {
 
 const hideTooltip = (el: HTMLElement) => {
   const data = tooltipMap.get(el)
-  if (!data || !data.tooltipEl) {
+  if (!data?.tooltipEl) {
     return
   }
 
@@ -159,6 +159,18 @@ const initOrUpdate = (el: HTMLElement, { value }: DirectiveBinding) => {
   el.addEventListener('focus', showHandler)
   el.addEventListener('blur', hideHandler)
   el.addEventListener('click', clickHandler)
+}
+
+/**
+ * Shows the tooltip of an element with the `v-oc-tooltip` directive programmatically, e.g. while
+ * dragging over it, when no mouse events fire.
+ */
+export function showElementTooltip(el: HTMLElement) {
+  return showTooltip(el)
+}
+
+export function hideElementTooltip(el: HTMLElement) {
+  hideTooltip(el)
 }
 
 export default {

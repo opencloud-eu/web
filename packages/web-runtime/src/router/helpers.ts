@@ -141,7 +141,7 @@ export const extractPublicLinkToken = (to: RouteLocation): string => {
  * @param params {LocationParams}
  */
 const extractPublicLinkTokenFromRouteParams = (params: RouteParams): string => {
-  if (Object.prototype.hasOwnProperty.call(params, 'driveAliasAndItem')) {
+  if (Object.hasOwn(params, 'driveAliasAndItem')) {
     const driveAliasAndItem = queryItemAsString(params.driveAliasAndItem)
     if (!driveAliasAndItem.startsWith('public/') && !driveAliasAndItem.startsWith('ocm/')) {
       return ''
@@ -174,7 +174,7 @@ export const isAnonymousContext = (router: Router, to: RouteLocation): boolean =
  */
 const getContextRoute = (router: Router, to: RouteLocation): RouteRecordNormalized | null => {
   const contextRouteNameKey = 'contextRouteName'
-  if (!to.query || !to.query[contextRouteNameKey]) {
+  if (!to.query?.[contextRouteNameKey]) {
     return null
   }
 
@@ -203,7 +203,7 @@ const getRouteMeta = (to: RouteLocation): WebRouteMeta => {
   }
 
   // rewrite deprecated `auth` property to the respective `authContext` value
-  if (!to.meta.authContext && Object.prototype.hasOwnProperty.call(to.meta, 'auth')) {
+  if (!to.meta.authContext && Object.hasOwn(to.meta, 'auth')) {
     to.meta.authContext = to.meta.auth ? 'user' : 'hybrid'
     console.warn(
       `route key meta.auth is deprecated. Please switch to meta.authContext="${

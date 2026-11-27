@@ -120,7 +120,7 @@ const revertToVersion = async (version: Resource) => {
 
   const fieldsToUpdate = ['size', 'mdate'] as const
   for (const field of fieldsToUpdate) {
-    if (Object.prototype.hasOwnProperty.call(unref(resource), field)) {
+    if (Object.hasOwn(unref(resource), field)) {
       updateResourceField({
         id: unref(resource).id,
         field: field,

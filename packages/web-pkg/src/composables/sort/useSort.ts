@@ -106,7 +106,7 @@ const firstSortableField = (fields: SortField[]): SortField => {
 
 const defaultSortDirection = (name: string, fields: SortField[]): SortDir => {
   const sortField = fields.find((f) => f.name === name)
-  if (sortField && sortField.sortDir) {
+  if (sortField?.sortDir) {
     return unref(sortField.sortDir)
   }
   return SortDir.Desc
@@ -215,7 +215,7 @@ const compare = (
     }
   }
 
-  if (sortBy !== 'name' && !isNaN(aValue) && !isNaN(bValue)) {
+  if (sortBy !== 'name' && !Number.isNaN(Number(aValue)) && !Number.isNaN(Number(bValue))) {
     return (aValue - bValue) * modifier
   }
 

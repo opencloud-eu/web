@@ -58,7 +58,7 @@
           :is-extension-displayed="areFileExtensionsShown"
           :is-path-displayed="arePathsDisplayed"
           :resource-icon-size="resourceIconSize"
-          :draggable="dragDrop"
+          :draggable="dragDrop || isDraggable"
           :lazy="areTilesLazy"
           :is-loading="isResourceInDeleteQueue(resource.id)"
           :term="term"
@@ -190,6 +190,7 @@ const {
   sortDir,
   viewSize = FolderViewModeConstants.tilesSizeDefault,
   dragDrop = false,
+  isDraggable = false,
   lazy = true,
   areResourcesClickable = true,
   arePathsDisplayed = false,
@@ -206,6 +207,10 @@ const {
   sortDir?: SortDir
   viewSize?: number
   dragDrop?: boolean
+  /**
+   * Makes the resources draggable without making them drop targets. `dragDrop` enables both.
+   */
+  isDraggable?: boolean
   lazy?: boolean
   areResourcesClickable?: boolean
   arePathsDisplayed?: boolean
@@ -273,7 +278,9 @@ const {
 } = useResourceViewHelpers({
   space: computed(() => space),
   resources: computed(() => resources),
-  emit
+  emit,
+  isDragEnabled: computed(() => dragDrop || isDraggable),
+  isDropEnabled: computed(() => dragDrop)
 })
 
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})

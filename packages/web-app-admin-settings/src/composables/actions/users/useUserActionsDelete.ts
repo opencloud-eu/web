@@ -28,7 +28,7 @@ export function useUserActionsDelete() {
 
   const currentPageQuery = useRouteQuery('page', '1')
   const currentPage = computed(() => {
-    return parseInt(queryItemAsString(unref(currentPageQuery)))
+    return parseInt(queryItemAsString(unref(currentPageQuery)), 10)
   })
 
   const itemsPerPage = useItemsPerPage(perPageDefault)

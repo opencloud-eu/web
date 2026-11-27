@@ -350,10 +350,11 @@ export const createShotcut = async (args: shortcutArgs): Promise<void> => {
       await searchResult.click()
       break
     }
-    case 'public link':
+    case 'public link': {
       const link = new environment.LinksEnvironment()
       await page.locator(shortcutResorceInput).fill(link.getLink({ name: resource }).url)
       break
+    }
     case 'website': {
       await page.locator(shortcutResorceInput).fill(resource)
       break

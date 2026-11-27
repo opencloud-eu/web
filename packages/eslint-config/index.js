@@ -42,9 +42,17 @@ export default [
       '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
 
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
+      'no-case-declarations': 'error',
+      'no-extra-boolean-cast': ['error', { enforceForInnerExpressions: true }],
       'no-new': 'off',
+      'no-restricted-globals': ['error', { name: 'isNaN', message: 'Use Number.isNaN instead.' }],
+      'no-template-curly-in-string': 'error',
+      'no-unneeded-ternary': 'error',
+      'no-useless-catch': 'error',
       'node/no-callback-literal': 'off',
       'prefer-const': 'warn',
+      radix: 'error',
       'require-await': 'warn',
       // 'sort-imports': 'warn', TODO: fix project import issues and then enable it
       'unused-imports/no-unused-imports': 'error',

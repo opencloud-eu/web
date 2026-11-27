@@ -1,5 +1,11 @@
 <template>
-  <li class="oc-sidebar-nav-item pb-1 px-2" :aria-current="active ? 'page' : null">
+  <li
+    ref="navItem"
+    v-oc-tooltip="dropHint"
+    class="oc-sidebar-nav-item pb-1 px-2"
+    :aria-current="active ? 'page' : null"
+    v-on="dropListeners"
+  >
     <oc-button
       :type="handler ? 'button' : 'router-link'"
       :appearance="active ? 'filled' : 'raw-inverse'"
@@ -16,6 +22,7 @@
         'select-none',
         'rounded-xl',
         { 'active overflow-hidden outline': active },
+        { '!bg-role-secondary-container': isDropTargetActive },
         {
           'hover:bg-role-surface-container-highest focus:bg-role-surface-container-highest': !active
         }
@@ -36,13 +43,15 @@
         />
       </span>
     </oc-button>
+    <oc-hidden-announcer v-if="drop" :announcement="dropHint" />
   </li>
 </template>
 <script setup lang="ts">
 import { FillType, Icon, isImageIcon, toNamedIcon } from '@opencloud-eu/design-system/helpers'
-import { useRouter } from '@opencloud-eu/web-pkg'
-import { computed, unref } from 'vue'
+import { AppNavigationItemDrop, useRouter } from '@opencloud-eu/web-pkg'
+import { computed, unref, useTemplateRef } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
+import { useNavItemDrop } from '../../composables/sidebarNav'
 
 const {
   name,
@@ -51,7 +60,8 @@ const {
   target = undefined,
   fillType = 'fill',
   collapsed = false,
-  handler = undefined
+  handler = undefined,
+  drop = undefined
 } = defineProps<{
   name: string
   icon: Icon
@@ -60,6 +70,7 @@ const {
   fillType?: FillType
   collapsed?: boolean
   handler?: () => void
+  drop?: AppNavigationItemDrop
 }>()
 
 const router = useRouter()
@@ -76,6 +87,12 @@ const attrs = computed(() => {
     ...(handler && { onClick: handler }),
     ...(target && { to: target })
   }
+})
+
+const navItem = useTemplateRef<HTMLElement>('navItem')
+const { isDropTargetActive, dropHint, dropListeners } = useNavItemDrop({
+  drop: () => drop,
+  navItem
 })
 
 const navName = computed(() => {

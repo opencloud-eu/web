@@ -120,11 +120,11 @@ export class PreviewService {
   private buildQueryString(options: BuildQueryStringOptions): string {
     return stringify({
       scalingup: options.scalingup || 0,
-      preview: Object.hasOwnProperty.call(options, 'preview') ? options.preview : 1,
+      preview: Object.hasOwn(options, 'preview') ? options.preview : 1,
       ...(options.processor && { processor: options.processor }),
       ...(options.etag && { c: options.etag.replaceAll('"', '') }),
-      ...(options.dimensions && options.dimensions[0] && { x: options.dimensions[0] }),
-      ...(options.dimensions && options.dimensions[1] && { y: options.dimensions[1] })
+      ...(options.dimensions?.[0] && { x: options.dimensions[0] }),
+      ...(options.dimensions?.[1] && { y: options.dimensions[1] })
     })
   }
 

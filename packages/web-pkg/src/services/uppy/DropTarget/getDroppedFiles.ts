@@ -90,9 +90,14 @@ export const getDroppedFiles = async (
 
     // convert DataTransfer items to FileSystemEntry objects. this needs to happen at the beginning,
     // otherwise only the first item will be processed.
-    const items = await Promise.all(Array.from(dataTransfer.items, (item) => getAsEntry(item)))
+    const dataTransferItems = Array.from(dataTransfer.items)
+    const items = await Promise.all(dataTransferItems.map((item) => getAsEntry(item)))
 
     for (let i = 0; i < items.length; i++) {
+      // string data (e.g. of a resource drag inside the app) is no file and has no entry
+      if (dataTransferItems[i].kind !== 'file') {
+        continue
+      }
       for await (const file of getFile(items[i], logDropError)) {
         files.push(file)
       }

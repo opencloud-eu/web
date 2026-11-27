@@ -63,8 +63,8 @@ Then(
   ) => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     await resourceObject.checkMediaViewerCount({
-      currentIndex: parseInt(currentIndex),
-      totalCount: parseInt(totalCount)
+      currentIndex: parseInt(currentIndex, 10),
+      totalCount: parseInt(totalCount, 10)
     })
   }
 )

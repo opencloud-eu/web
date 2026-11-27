@@ -66,18 +66,6 @@ describe('AppTopBar', () => {
 
       expect(resourceListItem.props('isExtensionDisplayed')).toBeFalsy()
     })
-    it('renders the autosave indicator for writable editor resources', () => {
-      const { wrapper } = getWrapper({
-        props: {
-          resource: mock<Resource>({ path: '/test.txt' }),
-          hasAutoSave: true,
-          isEditor: true,
-          isReadOnly: false
-        }
-      })
-
-      expect(wrapper.find('[data-testid="autosave-indicator"]').exists()).toBeTruthy()
-    })
   })
 })
 

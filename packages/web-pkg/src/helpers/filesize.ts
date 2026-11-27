@@ -6,7 +6,7 @@ const mb = 1048576
 
 // Returns formatted size
 export const formatFileSize = (size: number | string, currentLanguage: string) => {
-  const parsedSize = typeof size === 'string' ? parseInt(size) : size
+  const parsedSize = typeof size === 'string' ? parseInt(size, 10) : size
   if (parsedSize < 0) {
     return '--'
   }

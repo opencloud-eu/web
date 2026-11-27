@@ -205,8 +205,7 @@ export const announceConfiguration = async ({
   const rawConfig = RawConfigSchema.parse(data)
 
   const embedConfigFromQuery = getEmbedConfigFromQuery(
-    rawConfig.options?.embed &&
-      Object.prototype.hasOwnProperty.call(rawConfig.options.embed, 'enabled')
+    rawConfig.options?.embed && Object.hasOwn(rawConfig.options.embed, 'enabled')
   )
 
   rawConfig.options = {

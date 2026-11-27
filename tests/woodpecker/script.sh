@@ -19,7 +19,7 @@ get_latest_opencloud_commit_id() {
 # Function to check if the cache exists for the given commit ID
 check_opencloud_cache() {
     echo "Checking OpenCloud cache for commit ID: $OPENCLOUD_COMMITID"
-    opencloud_cache=$(mc find s3/$CACHE_BUCKET/opencloud-build/$OPENCLOUD_COMMITID/opencloud 2>&1 | grep 'Object does not exist')
+    opencloud_cache=$(mc find "s3/$CACHE_BUCKET/opencloud-build/$OPENCLOUD_COMMITID/opencloud" 2>&1 | grep 'Object does not exist')
 
     if [[ "$opencloud_cache" != "" ]]
     then
@@ -52,7 +52,7 @@ check_browsers_cache() {
     get_playwright_version
 
     for browser in "$@"; do
-        if ! mc stat s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/$browser.tar.gz > /dev/null 2>&1
+        if ! mc stat "s3/$CACHE_BUCKET/web/browsers-cache/$playwright_version/$browser.tar.gz" > /dev/null 2>&1
         then
             echo "Playwright v$playwright_version $browser doesn't exist in cache."
             ENV="BROWSER_CACHE_FOUND=false\n"
@@ -77,4 +77,4 @@ fi
 
 "$@"
 
-echo -e $ENV >> .woodpecker.env
+echo -e "$ENV" >> .woodpecker.env

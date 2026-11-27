@@ -1,4 +1,4 @@
-import OcTooltip from './OcTooltip'
+import OcTooltip, { hideElementTooltip, showElementTooltip } from './OcTooltip'
 import type { DirectiveBinding } from 'vue'
 
 describe('OcTooltip', () => {
@@ -22,6 +22,21 @@ describe('OcTooltip', () => {
 
     OcTooltip.unmounted(second)
     expect(removeEventListener).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows and hides the tooltip programmatically', async () => {
+    const el = document.createElement('button')
+    document.body.appendChild(el)
+    OcTooltip.beforeMount(el, { value: 'tooltip' } as DirectiveBinding<string>)
+
+    await showElementTooltip(el)
+    expect(document.querySelector('[role="tooltip"]').textContent).toBe('tooltip')
+
+    hideElementTooltip(el)
+    expect(document.querySelector('[role="tooltip"]')).toBeNull()
+
+    OcTooltip.unmounted(el)
+    el.remove()
   })
 
   it('does not show tooltips after touch input', async () => {

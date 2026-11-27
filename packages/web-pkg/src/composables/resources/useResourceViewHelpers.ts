@@ -22,11 +22,15 @@ import { useResourceLink } from './useResourceLink'
 export const useResourceViewHelpers = ({
   space,
   resources,
-  emit
+  emit,
+  isDragEnabled,
+  isDropEnabled
 }: {
   space: Ref<SpaceResource>
   resources: Ref<Resource[]>
   emit: ReturnType<typeof defineEmits>
+  isDragEnabled?: Ref<boolean>
+  isDropEnabled?: Ref<boolean>
 }) => {
   const resourcesStore = useResourcesStore()
   const { selectedIds } = storeToRefs(resourcesStore)
@@ -111,10 +115,10 @@ export const useResourceViewHelpers = ({
     if (contextActionClicked) {
       return
     }
-    if (event && event.metaKey) {
+    if (event?.metaKey) {
       return eventBus.publish('app.files.list.clicked.meta', resource)
     }
-    if (event && event.shiftKey) {
+    if (event?.shiftKey) {
       return eventBus.publish('app.files.list.clicked.shift', {
         resource,
         skipTargetSelection: false
@@ -196,7 +200,7 @@ export const useResourceViewHelpers = ({
     fileNameClicked,
     fileCheckboxClicked,
     ...useResourceLink({ space }),
-    ...useResourceViewDrag({ selectedIds, resources, emit }),
+    ...useResourceViewDrag({ selectedIds, resources, emit, isDragEnabled, isDropEnabled }),
     ...useResourceViewContextMenu({ isResourceDisabled, isResourceSelected, emit }),
     ...useResourceViewSelection({ resources, disabledResources, selectedIds, emit })
   }

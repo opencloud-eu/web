@@ -68,7 +68,7 @@ export function useUpload(options: UploadOptions) {
 
     // FIXME: remove if cloud upload still works without this
     ;(options as any)['headers'] = (file: OcUppyFile) => {
-      if (!!file.xhrUpload || file?.isRemote) {
+      if (file.xhrUpload || file?.isRemote) {
         return {
           'x-oc-mtime': ((file?.data as File)?.lastModified / 1000).toFixed(0),
           ...getHeaders()

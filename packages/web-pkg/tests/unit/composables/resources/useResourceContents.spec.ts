@@ -144,7 +144,7 @@ describe('resourceContents', () => {
     const resources = [
       mock<Resource>({
         isFolder: false,
-        size: parseInt(size),
+        size: parseInt(size, 10),
         type: 'file',
         name: 'file1'
       }),

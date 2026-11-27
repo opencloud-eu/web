@@ -92,6 +92,7 @@
           :resources="paginatedResources"
           :fields-displayed="['name', 'size', 'tags', 'mdate']"
           :view-mode="viewMode"
+          :is-draggable="true"
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
@@ -225,7 +226,7 @@ const availableMediaTypeValues = computed(() => {
 })
 
 function getFakeResourceForIcon(item: SearchMediaTypeFilterOption) {
-  return { type: 'file', extension: item.icon, isFolder: item.icon == 'folder' } as Resource
+  return { type: 'file', extension: item.icon, isFolder: item.icon === 'folder' } as Resource
 }
 
 const displayFilter = computed(() => {

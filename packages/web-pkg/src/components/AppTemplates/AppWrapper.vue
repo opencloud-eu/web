@@ -1,6 +1,7 @@
 <template>
   <main :id="applicationId" class="app-wrapper h-full rounded-xl" @keydown.esc.stop="closeApp">
     <h1 class="sr-only" v-text="pageTitle" />
+    <oc-hidden-announcer ref="savingAnnouncer" />
     <app-loading-spinner v-if="isLoading" />
     <no-content-message
       v-else-if="isNotFoundError"
@@ -41,9 +42,10 @@ import {
   watch,
   computed,
   onMounted,
-  markRaw
+  markRaw,
+  useTemplateRef
 } from 'vue'
-import { DateTime } from 'luxon'
+import { DateTime, Duration } from 'luxon'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
@@ -77,6 +79,7 @@ import {
   useSharesStore,
   useEventBus,
   Action,
+  FileAction,
   Modifier,
   Key,
   useAppMeta,
@@ -112,6 +115,7 @@ import { UnsavedChangesModal } from '../Modals'
 import {
   decodeTextContent,
   formatFileSize,
+  getLocaleFromLanguage,
   getSharedDriveItem,
   renameResource,
   setCurrentUserShareSpacePermissions
@@ -120,6 +124,9 @@ import toNumber from 'lodash-es/toNumber'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { storeToRefs } from 'pinia'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
+
+/** Keeps the progress bar of a fast save from flickering. */
+const MIN_SAVING_PROGRESS_DURATION = 1000
 
 const {
   applicationId,
@@ -186,6 +193,7 @@ const isNotFoundError = computed(() => {
   return e instanceof ResourceNotFoundError || (e as HttpError)?.statusCode === 404
 })
 const isReadOnly = ref(false)
+const savingAnnouncer = useTemplateRef('savingAnnouncer')
 /** The loaded text is not valid UTF-8, see `getFileContentsAsText`. */
 const isLossyContent = ref(false)
 const serverContent = ref<unknown>()
@@ -225,10 +233,7 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
       content: markRaw(AppTopBar),
       componentProps: () => ({
         resource: unref(resource),
-        isReadOnly: unref(effectiveReadOnly),
-        isEditor: unref(isEditor),
-        hasAutoSave: !disableAutoSave,
-        mainActions: [unref(saveAction)],
+        mainActions: [unref(topBarSaveAction)],
         dropDownMenuSections: unref(dropDownMenuSections),
         dropDownActionOptions: unref(actionOptions),
         onClose: () => {
@@ -772,10 +777,6 @@ const errorPopup = (error: HttpError) => {
   })
 }
 
-const autosavePopup = () => {
-  showMessage({ title: $gettext('File autosaved') })
-}
-
 function showExternalUpdateConflict(response: Response = null) {
   errorPopup(
     new HttpError(
@@ -811,6 +812,11 @@ function applySavedResource(etag: string, saved: Resource | null = null) {
   resourcesStore.updateResourceField({ id: current.id, field: 'etag', value: etag })
 }
 
+/** A failed save is announced by its error message, a pending "Saving…" would come after it. */
+function cancelSavingAnnouncement() {
+  unref(savingAnnouncer)?.announce('')
+}
+
 /** Resolves to true once saved, to null when there was nothing to save, to false when it failed. */
 const saveFileTask = useTask(function* () {
   if (isResourceDeleted) {
@@ -827,11 +833,18 @@ const saveFileTask = useTask(function* () {
   // Pin the Y.Doc state behind `newContent`; the doc usually moves on while
   // the PUT is in flight.
   yjsSession?.beginSave()
+  // announced only once the file gets written, a save that only flushes stays silent
+  unref(savingAnnouncer)?.announce($gettext('Saving…'))
   try {
-    const putFileContentsResponse = yield putFileContents(currentFileContext, {
-      content: newContent as string | ArrayBuffer,
-      previousEntityTag: unref(currentETag)
-    })
+    // shown on every save, also the fast ones, so it tells that the file was saved
+    const putFileContentsResponse = yield loadingService.addTask(
+      () =>
+        putFileContents(currentFileContext, {
+          content: newContent as string | ArrayBuffer,
+          previousEntityTag: unref(currentETag)
+        }),
+      { debounceTime: 0, minDuration: MIN_SAVING_PROGRESS_DURATION, warnBeforeUnload: false }
+    )
     serverContent.value = newContent
     applySavedResource(putFileContentsResponse.etag, putFileContentsResponse)
     return true
@@ -844,9 +857,11 @@ const saveFileTask = useTask(function* () {
       if (yield* reconcileConflict(newContent)) {
         return true
       }
+      cancelSavingAnnouncement()
       showExternalUpdateConflict(e.response)
       return false
     }
+    cancelSavingAnnouncement()
     switch (e.statusCode) {
       case 401:
       case 403:
@@ -862,7 +877,7 @@ const saveFileTask = useTask(function* () {
           )
         )
         break
-      case 507:
+      case 507: {
         const space = spacesStore.spaces.find(
           (space) => space.id === unref(resource).storageId && isProjectSpaceResource(space)
         )
@@ -879,6 +894,7 @@ const saveFileTask = useTask(function* () {
         }
         errorPopup(new HttpError($gettext('Insufficient quota for saving this file'), e.response))
         break
+      }
       default:
         errorPopup(new HttpError('', e.response))
     }
@@ -925,6 +941,30 @@ const { saveAction, saveAsAction } = useFileActionsSave({
   flushContent
 })
 
+/** Seconds between autosaves, 0 when the app doesn't autosave. */
+const autosaveInterval = computed(() => {
+  const { autosaveEnabled, autosaveInterval: configuredInterval } = configStore.options.editor
+  if (!unref(isEditor) || !autosaveEnabled || disableAutoSave) {
+    return 0
+  }
+  return configuredInterval || 120
+})
+
+// the top bar shows the label as tooltip, so it tells about the autosave there
+const topBarSaveAction = computed<FileAction>(() => {
+  if (!unref(autosaveInterval)) {
+    return unref(saveAction)
+  }
+  const duration = Duration.fromObject(
+    { seconds: unref(autosaveInterval) },
+    { locale: getLocaleFromLanguage(currentLanguage) }
+  ).toHuman()
+  return {
+    ...unref(saveAction),
+    label: () => $gettext('Save (autosave every %{ duration })', { duration })
+  }
+})
+
 let autosaveIntervalId: ReturnType<typeof setInterval> = null
 onMounted(() => {
   deleteResourceEventToken = eventBus.subscribe(
@@ -940,31 +980,24 @@ onMounted(() => {
     }
   }
 
-  if (!unref(isEditor)) {
+  if (!unref(autosaveInterval)) {
     return
   }
-  const editorOptions = configStore.options.editor
-  if (editorOptions.autosaveEnabled && !disableAutoSave) {
-    autosaveIntervalId = setInterval(
-      async () => {
-        if (unref(isConflicted) || saveFileTask.isRunning) {
-          return
-        }
-        if (await save()) {
-          autosavePopup()
-        }
-      },
-      (editorOptions.autosaveInterval || 120) * 1000
-    )
-  }
+  autosaveIntervalId = setInterval(
+    () => {
+      if (unref(isConflicted) || saveFileTask.isRunning) {
+        return
+      }
+      save()
+    },
+    unref(autosaveInterval) * 1000
+  )
 })
 onBeforeUnmount(() => {
   eventBus.unsubscribe('runtime.resource.deleted', deleteResourceEventToken)
   unregisterAppBarExtension()
 
-  if (!loadingService.isLoading) {
-    window.removeEventListener('beforeunload', preventUnload)
-  }
+  window.removeEventListener('beforeunload', preventUnload)
 
   if (unref(hasProp('url'))) {
     revokeUrl(url.value)
@@ -1020,8 +1053,8 @@ const downloadFileActionInterceptor = async (
         ),
         status: 'warning'
       })
-    } else if (await save()) {
-      autosavePopup()
+    } else {
+      await save()
     }
   }
   originalAction(args)

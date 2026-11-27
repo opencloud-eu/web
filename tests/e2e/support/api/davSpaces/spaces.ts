@@ -63,7 +63,7 @@ const createFile = async ({
     body: content,
     user: user,
     header: mtimeDeltaDays
-      ? { 'X-OC-Mtime': String(today.getTime() / 1000 + parseInt(mtimeDeltaDays) * 86400) }
+      ? { 'X-OC-Mtime': String(today.getTime() / 1000 + parseInt(mtimeDeltaDays, 10) * 86400) }
       : {}
   })
 

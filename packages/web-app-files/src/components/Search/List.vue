@@ -106,6 +106,7 @@
           :are-paths-displayed="true"
           :has-actions="true"
           :is-selectable="true"
+          :is-draggable="true"
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :fields-displayed="['name', 'size', 'tags', 'mdate']"
@@ -333,7 +334,7 @@ const availableMediaTypeValues = computed(() => {
 })
 
 function getFakeResourceForIcon(item: SearchMediaTypeFilterOption) {
-  return { type: 'file', extension: item.icon, isFolder: item.icon == 'folder' } as Resource
+  return { type: 'file', extension: item.icon, isFolder: item.icon === 'folder' } as Resource
 }
 
 const hasFilter = computed(() => {

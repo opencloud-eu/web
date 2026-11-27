@@ -73,7 +73,7 @@ const messageId = computed(() => `${id}-message`)
 const attrs = useAttrs()
 const additionalAttributes = computed(() => {
   const additionalAttrs: Record<string, unknown> = {}
-  if (!!errorMessage || !!descriptionMessage) {
+  if (errorMessage || descriptionMessage) {
     additionalAttrs['aria-describedby'] = messageId.value
   }
   return { ...attrs, ...additionalAttrs }

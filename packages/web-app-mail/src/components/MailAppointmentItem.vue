@@ -151,7 +151,7 @@ const attendees = computed(() => {
       status: att.getParameter('parstat') || null,
       cutype: att.getParameter('cutype') || null
     }))
-    .filter((a) => (a.email || a.name) && a.cutype != 'RESOURCE')
+    .filter((a) => (a.email || a.name) && a.cutype !== 'RESOURCE')
 })
 
 const download = async () => {

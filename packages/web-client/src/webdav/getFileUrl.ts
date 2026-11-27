@@ -79,7 +79,7 @@ export const GetFileUrlFactory = (
       return downloadURL
     },
     revokeUrl: (url: string) => {
-      if (url && url.startsWith('blob:')) {
+      if (url?.startsWith('blob:')) {
         URL.revokeObjectURL(url)
       }
     }

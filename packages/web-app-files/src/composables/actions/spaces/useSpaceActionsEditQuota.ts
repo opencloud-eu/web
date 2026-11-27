@@ -45,7 +45,7 @@ export const useSpaceActionsEditQuota = () => {
       },
       handler,
       isVisible: ({ resources }) => {
-        if (!resources || !resources.length) {
+        if (!resources?.length) {
           return false
         }
         if (

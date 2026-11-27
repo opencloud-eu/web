@@ -35,7 +35,7 @@ export function useWayf() {
         { domain } as DiscoverRequest
       )
 
-      if (!response.data || !response.data.inviteAcceptDialog) {
+      if (!response.data?.inviteAcceptDialog) {
         throw new Error('No invite accept dialog found in discovery response')
       }
 

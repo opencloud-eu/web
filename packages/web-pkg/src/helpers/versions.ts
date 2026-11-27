@@ -10,7 +10,7 @@ export const getBackendVersion = ({
   capabilityStore: CapabilityStore
 }): string => {
   const backendStatus = capabilityStore.status
-  if (!backendStatus || !backendStatus.versionstring) {
+  if (!backendStatus?.versionstring) {
     return undefined
   }
   const product = backendStatus.product || 'OpenCloud'

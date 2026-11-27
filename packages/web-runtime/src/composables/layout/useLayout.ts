@@ -49,7 +49,6 @@ export const useLayout = (options?: LayoutOptions) => {
         return LayoutApplication
       case 'plain':
         return LayoutPlain
-      case 'bare':
       default:
         return LayoutBare
     }

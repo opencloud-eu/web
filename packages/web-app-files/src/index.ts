@@ -28,6 +28,7 @@ import { unref } from 'vue'
 import { extensionPoints } from './extensionPoints'
 import { useGettext } from 'vue3-gettext'
 import { APPID } from './appid'
+import { createTrashNavItemDrop } from './helpers/trashNavItemDrop'
 
 const appInfo: ApplicationInformation = {
   id: APPID,
@@ -120,6 +121,7 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
         path: `/${appInfo.id}/trash/overview`
       },
       activeFor: [{ path: `/${appInfo.id}/trash` }],
+      drop: createTrashNavItemDrop({ $gettext }),
       isVisible() {
         return (
           capabilityStore.davTrashbin === '1.0' &&

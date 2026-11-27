@@ -30,7 +30,7 @@ const { quota } = defineProps<{
 const { $gettext, current: currentLanguage } = useGettext()
 
 const limitedPersonalStorage = computed(() => {
-  return !isNaN(quota.total) && quota.total !== 0
+  return !Number.isNaN(Number(quota.total)) && quota.total !== 0
 })
 
 const quotaUsagePercent = computed(() => {

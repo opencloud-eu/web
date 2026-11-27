@@ -16,12 +16,14 @@ export const getActualExpiryDate = (
 ): Date => {
   switch (dateType) {
     case 'day':
-      return addDays(parseInt(dateOfExpiration))
+      return addDays(parseInt(dateOfExpiration, 10))
     case 'week':
-      return addDays(parseInt(dateOfExpiration) * 7)
+      return addDays(parseInt(dateOfExpiration, 10) * 7)
     case 'month':
-      return addMonth(parseInt(dateOfExpiration))
+      return addMonth(parseInt(dateOfExpiration, 10))
     case 'year':
-      return new Date(new Date().setFullYear(new Date().getFullYear() + parseInt(dateOfExpiration)))
+      return new Date(
+        new Date().setFullYear(new Date().getFullYear() + parseInt(dateOfExpiration, 10))
+      )
   }
 }
