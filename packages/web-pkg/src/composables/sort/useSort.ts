@@ -215,7 +215,7 @@ const compare = (
     }
   }
 
-  if (sortBy !== 'name' && !isNaN(aValue) && !isNaN(bValue)) {
+  if (sortBy !== 'name' && !Number.isNaN(Number(aValue)) && !Number.isNaN(Number(bValue))) {
     return (aValue - bValue) * modifier
   }
 

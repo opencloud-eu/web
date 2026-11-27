@@ -155,7 +155,7 @@ export function useItemsPerPage(
     get() {
       // values below 1 (e.g. from manipulated storage) would break the page count, so they fall back to the default
       const value = unref(itemsPerPage)
-      return isNaN(value) || value < 1 ? fallback : value
+      return Number.isNaN(value) || value < 1 ? fallback : value
     },
     set(value) {
       itemsPerPage.value = value

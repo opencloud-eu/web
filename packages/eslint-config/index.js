@@ -46,6 +46,7 @@ export default [
       'no-case-declarations': 'error',
       'no-extra-boolean-cast': ['error', { enforceForInnerExpressions: true }],
       'no-new': 'off',
+      'no-restricted-globals': ['error', { name: 'isNaN', message: 'Use Number.isNaN instead.' }],
       'no-template-curly-in-string': 'error',
       'no-unneeded-ternary': 'error',
       'no-useless-catch': 'error',

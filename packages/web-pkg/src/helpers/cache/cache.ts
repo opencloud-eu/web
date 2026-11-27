@@ -74,7 +74,7 @@ export default class Cache<K, V> {
 
     const element = new CacheElement<V>(
       value,
-      isNaN(ttl) ? this.ttl : ttl,
+      Number.isNaN(Number(ttl)) ? this.ttl : ttl,
       this.sizeOf?.(value) || 0
     )
     this.map.set(key, element)
