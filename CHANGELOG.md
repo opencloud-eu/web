@@ -22,6 +22,8 @@
 
 ### 📈 Enhancement
 
+- feat: drag files and folders into the trash [[#4643](https://github.com/opencloud-eu/web/pull/4643)]
+- feat: show a save indicator instead of a toast when saving [[#4644](https://github.com/opencloud-eu/web/pull/4644)]
 - feat: add inline code to the ocnote toolbar [[#4649](https://github.com/opencloud-eu/web/pull/4649)]
 - feat(pdf-viewer): view, annotate and edit PDFs based on PDF.js [[#4614](https://github.com/opencloud-eu/web/pull/4614)]
 - perf: avoid quadratic work when uploading many files [[#4617](https://github.com/opencloud-eu/web/pull/4617)]
