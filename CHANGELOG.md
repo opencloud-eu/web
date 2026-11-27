@@ -80,6 +80,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency vue-router to v5.5.3 [[#4647](https://github.com/opencloud-eu/web/pull/4647)]
 - chore(deps): update devdependencies (non-major) [[#4632](https://github.com/opencloud-eu/web/pull/4632)]
 - chore(deps): update dependency @types/node to v26.6.7 [[#4624](https://github.com/opencloud-eu/web/pull/4624)]
 - chore(deps): update pnpm to v12.23.0 [[#4591](https://github.com/opencloud-eu/web/pull/4591)]
