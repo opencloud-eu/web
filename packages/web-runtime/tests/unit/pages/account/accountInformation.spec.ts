@@ -5,6 +5,7 @@ import { mock } from 'vitest-mock-extended'
 import { OptionsConfig, useMessages, useUserStore } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { Graph } from '@opencloud-eu/web-client/graph'
+import type { AxiosResponse } from 'axios'
 
 const $route = {
   meta: {
@@ -17,7 +18,10 @@ const selectors = {
   logoutButton: '[data-testid="account-page-logout-url-btn"]',
   accountPageInfo: '.account-page-info',
   groupNames: '[data-testid="group-names"]',
-  groupNamesEmpty: '[data-testid="group-names-empty"]'
+  groupNamesEmpty: '[data-testid="group-names-empty"]',
+  twoFactor: '[data-testid="two-factor"]',
+  twoFactorSwitch: '[data-testid="account-page-two-factor-switch"]',
+  twoFactorButton: '[data-testid="account-page-two-factor-btn"]'
 }
 
 describe('account information page', () => {
@@ -143,6 +147,106 @@ describe('account information page', () => {
       })
     })
 
+    describe('two-factor authentication', () => {
+      it('requests the state from the builtin IDP', async () => {
+        const { mocks } = getWrapper()
+        await flushPromises()
+
+        expect(mocks.$clientService.httpUnAuthenticated.get).toHaveBeenCalledWith(
+          expect.stringMatching(/\/signin\/v1\/identifier\/_\/mfa\/status$/),
+          expect.objectContaining({ headers: { 'Kopano-Konnect-XSRF': '1' } })
+        )
+      })
+      it('shows a switch that is off when it is off', async () => {
+        const { wrapper } = getWrapper({
+          twoFactorResponse: { status: 200, data: { enabled: false } }
+        })
+        await flushPromises()
+
+        const twoFactorSwitch = wrapper.find(selectors.twoFactorSwitch)
+        expect(twoFactorSwitch.text()).toBe('Off')
+        expect(twoFactorSwitch.find('button').attributes('aria-checked')).toBe('false')
+        expect(wrapper.find(selectors.twoFactorButton).exists()).toBeFalsy()
+      })
+      it('shows a switch that is on when it is on', async () => {
+        const { wrapper } = getWrapper({
+          twoFactorResponse: { status: 200, data: { enabled: true } }
+        })
+        await flushPromises()
+
+        const twoFactorSwitch = wrapper.find(selectors.twoFactorSwitch)
+        expect(twoFactorSwitch.text()).toBe('On')
+        expect(twoFactorSwitch.find('button').attributes('aria-checked')).toBe('true')
+      })
+      it('opens the page of the IDP when the switch is used and keeps its state', async () => {
+        const open = vi.spyOn(window, 'open').mockImplementation(() => null)
+        const { wrapper } = getWrapper({
+          twoFactorResponse: { status: 200, data: { enabled: false } }
+        })
+        await flushPromises()
+
+        await wrapper.find(selectors.twoFactorSwitch).find('button').trigger('click')
+
+        expect(open).toHaveBeenCalledWith(
+          expect.stringMatching(/\/signin\/v1\/mfa$/),
+          '_blank',
+          'noopener'
+        )
+        expect(
+          wrapper.find(selectors.twoFactorSwitch).find('button').attributes('aria-checked')
+        ).toBe('false')
+        open.mockRestore()
+      })
+      it('follows the state when the user comes back to the page', async () => {
+        const { wrapper, mocks } = getWrapper({
+          twoFactorResponse: { status: 200, data: { enabled: false } }
+        })
+        await flushPromises()
+
+        mocks.$clientService.httpUnAuthenticated.get.mockResolvedValue(
+          mock<AxiosResponse>({ status: 200, data: { enabled: true } })
+        )
+        document.dispatchEvent(new Event('visibilitychange'))
+        await flushPromises()
+
+        expect(
+          wrapper.find(selectors.twoFactorSwitch).find('button').attributes('aria-checked')
+        ).toBe('true')
+      })
+      it('links to the page of the IDP without a state when there is no session at the IDP', async () => {
+        const { wrapper } = getWrapper({ twoFactorResponse: { status: 401, data: {} } })
+        await flushPromises()
+
+        expect(wrapper.find(selectors.twoFactorSwitch).exists()).toBeFalsy()
+        expect(wrapper.find(selectors.twoFactorButton).text()).toBe('Manage')
+        expect(wrapper.find(selectors.twoFactorButton).attributes('href')).toMatch(
+          /\/signin\/v1\/mfa$/
+        )
+      })
+      it.each([404, 400, 502])(
+        'is not displayed when the IDP does not offer it (status %s)',
+        async (status) => {
+          const { wrapper } = getWrapper({ twoFactorResponse: { status, data: {} } })
+          await flushPromises()
+
+          expect(wrapper.find(selectors.twoFactor).exists()).toBeFalsy()
+        }
+      )
+      it('is not displayed when the request fails', async () => {
+        const { wrapper } = getWrapper({ twoFactorResponse: new Error('network') })
+        await flushPromises()
+
+        expect(wrapper.find(selectors.twoFactor).exists()).toBeFalsy()
+      })
+      it('is not requested outside of the user context', async () => {
+        const { wrapper, mocks } = getWrapper({ isUserContext: false, isPublicLinkContext: true })
+        await flushPromises()
+
+        expect(mocks.$clientService.httpUnAuthenticated.get).not.toHaveBeenCalled()
+        expect(wrapper.find(selectors.twoFactor).exists()).toBeFalsy()
+      })
+    })
+
     describe('Logout from all devices link', () => {
       it('should render the logout from active devices if logoutUrl is provided', () => {
         const { wrapper } = getWrapper()
@@ -168,6 +272,7 @@ function getWrapper({
   user = mock<User>(),
   memberOf = [],
   accountEditLink = undefined,
+  twoFactorResponse = { status: 404, data: {} },
   isPublicLinkContext = false,
   isUserContext = true,
   logoutUrl = 'https://account-manager/logout',
@@ -176,6 +281,7 @@ function getWrapper({
   user?: User
   memberOf?: User['memberOf']
   accountEditLink?: OptionsConfig['accountEditLink']
+  twoFactorResponse?: { status: number; data: { enabled?: boolean } } | Error
   isPublicLinkContext?: boolean
   isUserContext?: boolean
   logoutUrl?: OptionsConfig['logoutUrl']
@@ -207,6 +313,14 @@ function getWrapper({
   )
   if (getMe) {
     mocks.$clientService.graphAuthenticated.users.getMe.mockImplementation(getMe)
+  }
+
+  if (twoFactorResponse instanceof Error) {
+    mocks.$clientService.httpUnAuthenticated.get.mockRejectedValue(twoFactorResponse)
+  } else {
+    mocks.$clientService.httpUnAuthenticated.get.mockResolvedValue(
+      mock<AxiosResponse>(twoFactorResponse)
+    )
   }
 
   return {

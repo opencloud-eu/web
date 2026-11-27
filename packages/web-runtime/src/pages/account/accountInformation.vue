@@ -70,6 +70,30 @@
           />
         </oc-table-td>
       </oc-table-tr>
+      <oc-table-tr v-if="twoFactorState" class="account-page-two-factor">
+        <oc-table-td>{{ $gettext('Two-factor authentication') }}</oc-table-td>
+        <oc-table-td data-testid="two-factor">
+          <oc-switch
+            v-if="twoFactorState !== 'unknown'"
+            :checked="twoFactorState === 'on'"
+            :label="twoFactorState === 'on' ? $gettext('On') : $gettext('Off')"
+            class="inline-flex"
+            data-testid="account-page-two-factor-switch"
+            @update:checked="openTwoFactorPage"
+          />
+          <oc-button
+            v-else
+            appearance="raw"
+            type="a"
+            :href="twoFactorUrl"
+            target="_blank"
+            data-testid="account-page-two-factor-btn"
+            no-hover
+          >
+            <span v-text="$gettext('Manage')" />
+          </oc-button>
+        </oc-table-td>
+      </oc-table-tr>
       <oc-table-tr v-if="showLogout" class="account-page-logout-all-devices">
         <oc-table-td>{{ $gettext('Logout from active devices') }}</oc-table-td>
         <oc-table-td data-testid="logout">
@@ -104,6 +128,7 @@ import AccountTable from '../../components/Account/AccountTable.vue'
 import AccountHeading from '../../components/Account/AccountHeading.vue'
 import AccountLabel from '../../components/Account/AccountLabel.vue'
 import QuotaInformation from '../../components/Account/QuotaInformation.vue'
+import { useTwoFactorAuthentication } from '../../composables/twoFactorAuthentication'
 import { computed, onMounted, ref, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useTask } from 'vue-concurrency'
@@ -144,9 +169,17 @@ const loadGroupNamesTask = useTask(function* (signal) {
   }
 })
 
+const {
+  state: twoFactorState,
+  pageUrl: twoFactorUrl,
+  loadStateTask: loadTwoFactorStateTask,
+  openPage: openTwoFactorPage
+} = useTwoFactorAuthentication()
+
 onMounted(() => {
   if (authStore.userContextReady) {
     loadGroupNamesTask.perform()
+    loadTwoFactorStateTask.perform()
   }
 })
 </script>
