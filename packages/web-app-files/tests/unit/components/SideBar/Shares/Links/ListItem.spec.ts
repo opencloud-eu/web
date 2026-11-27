@@ -2,7 +2,15 @@ import ListItem from '../../../../../../src/components/SideBar/Shares/Links/List
 import { LinkShare, ShareRole, Resource } from '@opencloud-eu/web-client'
 import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { useLinkTypes, LinkRoleDropdown, useModals } from '@opencloud-eu/web-pkg'
+import {
+  formatDateFromDateTime,
+  useLinkTypes,
+  LinkRoleDropdown,
+  useModals
+} from '@opencloud-eu/web-pkg'
+import { ContextualHelperDataListItem } from '@opencloud-eu/design-system/helpers'
+import { DateTime } from 'luxon'
+import EditDropdown from '../../../../../../src/components/SideBar/Shares/Links/EditDropdown.vue'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -69,6 +77,78 @@ describe('ListItem component', () => {
       const linkShare = mock<LinkShare>({ expirationDateTime: 'Wed Apr 01 2020' })
       const { wrapper } = getWrapper({ linkShare })
       expect(wrapper.find('expiration-date-indicator-stub').exists()).toBeTruthy()
+    })
+  })
+  describe('details', () => {
+    const createdDateTime = '2026-09-08T11:34:00Z'
+    const expirationDateTime = '2026-12-01T23:59:59Z'
+
+    function getDetails(linkShare: LinkShare) {
+      const { wrapper } = getWrapper({ linkShare })
+      return wrapper.findComponent<typeof EditDropdown>('edit-dropdown-stub').props('details')
+    }
+
+    function getRow(details: ContextualHelperDataListItem[], headline: string) {
+      const index = details.findIndex((item) => item.headline && item.text === headline)
+      if (index === -1) {
+        return undefined
+      }
+      return details[index + 1].text
+    }
+
+    it('shows all details of a link', () => {
+      const details = getDetails({
+        ...exampleLink,
+        hasPassword: true,
+        createdDateTime,
+        expirationDateTime,
+        sharedBy: { id: 'admin', displayName: 'Admin' }
+      })
+
+      expect(details).toEqual([
+        { text: 'Link name', headline: true },
+        { text: 'Example link' },
+        { text: 'Type', headline: true },
+        { text: 'Public, everyone with the link can access.' },
+        { text: 'Needs password', headline: true },
+        { text: 'yes' },
+        { text: 'Access expires', headline: true },
+        {
+          text: formatDateFromDateTime(DateTime.fromISO(expirationDateTime), 'en')
+        },
+        { text: 'Created on', headline: true },
+        { text: formatDateFromDateTime(DateTime.fromISO(createdDateTime), 'en') },
+        { text: 'Created by', headline: true },
+        { text: 'Admin' }
+      ])
+    })
+    it('falls back to "Unnamed link" when the link has no name', () => {
+      const details = getDetails({ ...exampleLink, displayName: '' })
+      expect(getRow(details, 'Link name')).toBe('Unnamed link')
+    })
+    it('shows "no" for a link without password and expiration date', () => {
+      const details = getDetails({
+        ...exampleLink,
+        hasPassword: false,
+        expirationDateTime: undefined
+      })
+      expect(getRow(details, 'Needs password')).toBe('no')
+      expect(getRow(details, 'Access expires')).toBe('no')
+    })
+    it('omits the creator when the server does not send it', () => {
+      const details = getDetails({
+        ...exampleLink,
+        sharedBy: { id: undefined, displayName: undefined }
+      })
+      expect(getRow(details, 'Created by')).toBeUndefined()
+    })
+    it('omits the type for internal links', () => {
+      const details = getDetails({ ...exampleLink, type: SharingLinkType.Internal })
+      expect(getRow(details, 'Type')).toBeUndefined()
+    })
+    it('shows the public type for links that block downloads', () => {
+      const details = getDetails({ ...exampleLink, type: SharingLinkType.BlocksDownload })
+      expect(getRow(details, 'Type')).toBe('Public, everyone with the link can access.')
     })
   })
   it('renders the edit dropdown component', () => {
