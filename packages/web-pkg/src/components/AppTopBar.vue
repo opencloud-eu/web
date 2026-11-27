@@ -29,7 +29,7 @@
         />
       </div>
       <div class="flex">
-        <div v-if="mainActions.length && resource" class="relative">
+        <div v-if="mainActions.length && resource">
           <context-action-menu
             :menu-sections="[
               {
@@ -51,13 +51,6 @@
             appearance="raw-inverse"
             color-role="chrome"
           />
-          <span
-            v-if="showSavingIndicator"
-            class="absolute top-0 start-0 flex pointer-events-none text-role-on-chrome"
-            data-testid="saving-indicator"
-          >
-            <oc-spinner size="xsmall" />
-          </span>
           <oc-hidden-announcer :announcement="showSavingIndicator ? $gettext('Saving…') : ''" />
         </div>
         <template v-if="dropDownMenuSections.length">
@@ -96,12 +89,12 @@
 import { computed, onBeforeUnmount, ref, unref, watch } from 'vue'
 import ContextActionMenu from './ContextActions/ContextActionMenu.vue'
 import { useGettext } from 'vue3-gettext'
-import { Action, FileActionOptions, useResourcesStore } from '../composables'
+import { Action, FileActionOptions, useLoadingService, useResourcesStore } from '../composables'
 import ResourceListItem from './FilesList/ResourceListItem.vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { MenuSection } from './ContextActions'
 
-/** One rotation of the spinner, so a fast save doesn't make it flicker. */
+/** So a fast save doesn't make the progress bar flicker. */
 const MIN_SAVING_INDICATOR_DURATION = 1000
 
 const {
@@ -118,7 +111,7 @@ const {
   dropDownActionOptions?: FileActionOptions
   mainActions?: Action[]
   resource?: Resource
-  /** Shows a spinner on the main action, i.e. the save action, while the file is being saved. */
+  /** Shows the progress bar while the file is being saved. */
   isSaving?: boolean
 }>()
 
@@ -126,6 +119,7 @@ defineEmits<{ (e: 'close'): void }>()
 
 const { $gettext } = useGettext()
 const resourcesStore = useResourcesStore()
+const loadingService = useLoadingService()
 
 const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 const contextMenuLabel = computed(() => $gettext('Show context menu'))
@@ -157,7 +151,20 @@ watch(
   { immediate: true }
 )
 
+let finishSavingTask: () => void
+watch(showSavingIndicator, (saving) => {
+  if (!saving) {
+    finishSavingTask?.()
+    return
+  }
+  loadingService.addTask(() => new Promise<void>((resolve) => (finishSavingTask = resolve)), {
+    debounceTime: 0,
+    warnBeforeUnload: false
+  })
+})
+
 onBeforeUnmount(() => {
   clearTimeout(hideSavingIndicatorTimeout)
+  finishSavingTask?.()
 })
 </script>
