@@ -395,7 +395,7 @@ services:
     restart: unless-stopped
 
   stalwart:
-    image: ghcr.io/stalwartlabs/stalwart:v0.16.20-alpine
+    image: ghcr.io/stalwartlabs/stalwart:v1.2.0-alpine
     hostname: ${STALWART_DOMAIN:-stalwart.opencloud.test}
     depends_on:
       opencloud:
@@ -408,7 +408,7 @@ services:
       - traefik
     volumes:
       - ./dev/docker/stalwart/stalwart-config.json:/etc/stalwart/config.json
-      - stalwart-data:/var/lib/stalwart
+      - stalwart-data-v1:/var/lib/stalwart
     environment:
       STALWART_RECOVERY_ADMIN: 'admin:secret'
       STALWART_RECOVERY_MODE_PORT: 8180
@@ -446,7 +446,7 @@ services:
     build:
       context: ./config/
       args:
-        VERSION: '1.0.8'
+        VERSION: '2.0.0'
       dockerfile_inline: |
         FROM alpine:latest AS downloader
         ARG VERSION
@@ -463,7 +463,7 @@ services:
       - traefik
     volumes:
       - ./dev/docker/stalwart/${STALWART_AUTH_DIRECTORY:-idmldap}.json:/snapshot.json:ro
-      - stalwart-data:/var/lib/stalwart
+      - stalwart-data-v1:/var/lib/stalwart
     environment:
       STALWART_URL: 'http://stalwart:8180'
       STALWART_USER: 'admin'
@@ -514,7 +514,7 @@ volumes:
   uploads:
   opencloud-config:
   opencloud-federated-config:
-  stalwart-data:
+  stalwart-data-v1:
   collabora-proof-key:
 
 networks:
