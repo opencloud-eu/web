@@ -118,8 +118,13 @@ export const processDownload = async (
 }
 
 When(
-  '{string} creates the following resource(s)',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
+  /^"([^"]*)" creates the following resource(?:s)?( using the quick-create bar)?$/,
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    quickCreate: string | undefined,
+    stepTable: DataTable
+  ): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
 
     for (const info of stepTable.hashes()) {
@@ -127,7 +132,8 @@ When(
         name: info.resource,
         type: info.type as createResourceTypes,
         content: info.content,
-        password: info.password
+        password: info.password,
+        quickCreate: !!quickCreate
       })
     }
   }
