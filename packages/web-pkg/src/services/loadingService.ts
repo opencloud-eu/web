@@ -59,9 +59,16 @@ export class LoadingService {
     callback: ({ setProgress }: LoadingTaskCallbackArguments) => Promise<T>,
     {
       debounceTime = DEFAULT_DEBOUNCE_TIME,
+      minDuration = 0,
       indeterminate = true,
       warnBeforeUnload = true
-    }: { debounceTime?: number; indeterminate?: boolean; warnBeforeUnload?: boolean } = {}
+    }: {
+      debounceTime?: number
+      /** Milliseconds the task stays shown once it became active, so a fast task doesn't flicker. */
+      minDuration?: number
+      indeterminate?: boolean
+      warnBeforeUnload?: boolean
+    } = {}
   ): Promise<T> {
     const task = {
       id: crypto.randomUUID(),
@@ -76,8 +83,10 @@ export class LoadingService {
 
     this.tasks.push(task)
 
+    let activeSince: number = null
     const debounced = debounce(() => {
       task.active = true
+      activeSince = Date.now()
       eventBus.publish(LoadingEventTopics.add)
     }, debounceTime)
     debounced()
@@ -89,6 +98,12 @@ export class LoadingService {
     }
 
     return callback({ setProgress }).finally(() => {
+      debounced.cancel()
+      const remaining = activeSince === null ? 0 : activeSince + minDuration - Date.now()
+      if (remaining > 0) {
+        setTimeout(() => this.removeTask(task.id), remaining)
+        return
+      }
       this.removeTask(task.id)
     })
   }

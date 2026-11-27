@@ -24,7 +24,7 @@ import type { YjsSession, YjsStatus } from '../../../../src/composables/yjs'
 import type { FileContentOptions, FileContext } from '../../../../src/composables/appDefaults'
 import type { FileAction } from '../../../../src/composables/actions'
 import type { ApplicationFileExtension } from '../../../../src/apps'
-import { eventBus } from '../../../../src/services'
+import { eventBus, LoadingService } from '../../../../src/services'
 import { ResourceNotFoundError } from '../../../../src/errors'
 import {
   type CustomComponentExtension,
@@ -181,7 +181,9 @@ function setup({
   // The UI language, as gettext names it (e.g. `pt_BR`).
   language = undefined as string,
   // Receives the errors Vue would otherwise report as unhandled.
-  errorHandler = undefined as (err: unknown) => void
+  errorHandler = undefined as (err: unknown) => void,
+  // A real loading service, for tests about the progress bar.
+  loadingService = undefined as LoadingService
 } = {}) {
   const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
   const beginSave = vi.fn()
@@ -256,6 +258,9 @@ function setup({
   })
 
   const mocks = defaultComponentMocks({ currentRoute })
+  if (loadingService) {
+    mocks.$loadingService = loadingService as typeof mocks.$loadingService
+  }
   // A deep mock hands back a function for every property; the wrapper
   // compares this one against the initiator in SSE events.
   ;(mocks.$clientService as any).initiatorId = 'tab-own'
@@ -712,22 +717,27 @@ describe('AppWrapper — save feedback', () => {
     expect(useMessages().showMessage).not.toHaveBeenCalled()
   })
 
-  it('tells the top bar while the file is being written', async () => {
+  it('shows the progress bar and announces while the file is being written', async () => {
+    const loadingService = new LoadingService()
     const put = deferred<Resource>()
-    const s = await openFile({ putFileContents: vi.fn().mockReturnValue(put.promise) })
+    const s = await openFile({
+      loadingService,
+      putFileContents: vi.fn().mockReturnValue(put.promise)
+    })
+    const announcer = s.wrapper.findComponent({ name: 'OcHiddenAnnouncer' })
     await s.edit('edited content')
-    expect(s.topBarProps().isSaving).toBe(false)
+    expect(loadingService.isLoading).toBe(false)
 
     void s.pressCtrlS()
-    await vi.waitFor(() => expect(s.putFileContents).toHaveBeenCalled())
-    expect(s.topBarProps().isSaving).toBe(true)
+    await vi.waitFor(() => expect(loadingService.isLoading).toBe(true))
+    expect(announcer.props('announcement')).toBe('Saving…')
 
     put.resolve(mock<Resource>({ etag: 'etag-saved' }))
     await flushPromises()
-    expect(s.topBarProps().isSaving).toBe(false)
+    expect(announcer.props('announcement')).toBe('')
   })
 
-  it('stops telling the top bar when the write failed', async () => {
+  it('stops announcing when the write failed', async () => {
     const s = await openFile({
       putFileContents: vi.fn().mockRejectedValue({ statusCode: 500, response: {} })
     })
@@ -736,22 +746,54 @@ describe('AppWrapper — save feedback', () => {
     await s.pressCtrlS()
 
     expect(useMessages().showErrorMessage).toHaveBeenCalled()
-    expect(s.topBarProps().isSaving).toBe(false)
+    expect(s.wrapper.findComponent({ name: 'OcHiddenAnnouncer' }).props('announcement')).toBe('')
   })
 
   // the autosave runs every interval and flushes even without changes, which must not show up
-  it('does not tell the top bar while a save only flushes', async () => {
+  it('shows no progress bar while a save only flushes', async () => {
+    const loadingService = new LoadingService()
     const flush = deferred<void>()
-    const s = await openFile()
+    const s = await openFile({ loadingService })
     s.registerFlushContentCallback(() => flush.promise)
 
     void s.pressCtrlS()
     await flushPromises()
+    await new Promise((resolve) => setTimeout(resolve))
 
-    expect(s.topBarProps().isSaving).toBe(false)
+    expect(loadingService.isLoading).toBe(false)
     flush.resolve()
     await flushPromises()
     expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+
+  // the progress bar of the save stays for a moment and must not keep the page warning on unload
+  it('stops warning before unload when closed with unsaved changes right after a save', async () => {
+    const loadingService = new LoadingService()
+    const s = await openFile({
+      loadingService,
+      putFileContents: vi.fn(
+        () =>
+          new Promise<Resource>((resolve) =>
+            setTimeout(() => resolve(mock<Resource>({ etag: 'etag-saved' })), 10)
+          )
+      )
+    })
+    await s.edit('saved content')
+    void s.pressCtrlS()
+    await vi.waitFor(() => expect(loadingService.isLoading).toBe(true))
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    await flushPromises()
+    // saved, but the progress bar stays for its minimum duration
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+    expect(loadingService.isLoading).toBe(true)
+    const addSpy = vi.spyOn(window, 'addEventListener')
+    const removeSpy = vi.spyOn(window, 'removeEventListener')
+
+    await s.edit('discarded content')
+    const [, preventUnload] = addSpy.mock.calls.find(([type]) => type === 'beforeunload')
+    s.wrapper.unmount()
+
+    expect(removeSpy).toHaveBeenCalledWith('beforeunload', preventUnload)
   })
 
   it('names the autosave interval in the label of the top bar save action', async () => {

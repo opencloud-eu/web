@@ -1,6 +1,7 @@
 <template>
   <main :id="applicationId" class="app-wrapper h-full rounded-xl" @keydown.esc.stop="closeApp">
     <h1 class="sr-only" v-text="pageTitle" />
+    <oc-hidden-announcer :announcement="isWritingFile ? $gettext('Saving…') : ''" />
     <app-loading-spinner v-if="isLoading" />
     <no-content-message
       v-else-if="isNotFoundError"
@@ -123,6 +124,9 @@ import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { storeToRefs } from 'pinia'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 
+/** Keeps the progress bar of a fast save from flickering. */
+const MIN_SAVING_PROGRESS_DURATION = 1000
+
 const {
   applicationId,
   urlForResourceOptions = null,
@@ -229,7 +233,6 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
       content: markRaw(AppTopBar),
       componentProps: () => ({
         resource: unref(resource),
-        isSaving: unref(isWritingFile),
         mainActions: [unref(topBarSaveAction)],
         dropDownMenuSections: unref(dropDownMenuSections),
         dropDownActionOptions: unref(actionOptions),
@@ -827,10 +830,15 @@ const saveFileTask = useTask(function* () {
   yjsSession?.beginSave()
   isWritingFile.value = true
   try {
-    const putFileContentsResponse = yield putFileContents(currentFileContext, {
-      content: newContent as string | ArrayBuffer,
-      previousEntityTag: unref(currentETag)
-    })
+    // shown on every save, also the fast ones, so it tells that the file was saved
+    const putFileContentsResponse = yield loadingService.addTask(
+      () =>
+        putFileContents(currentFileContext, {
+          content: newContent as string | ArrayBuffer,
+          previousEntityTag: unref(currentETag)
+        }),
+      { debounceTime: 0, minDuration: MIN_SAVING_PROGRESS_DURATION, warnBeforeUnload: false }
+    )
     serverContent.value = newContent
     applySavedResource(putFileContentsResponse.etag, putFileContentsResponse)
     return true
@@ -982,9 +990,7 @@ onBeforeUnmount(() => {
   eventBus.unsubscribe('runtime.resource.deleted', deleteResourceEventToken)
   unregisterAppBarExtension()
 
-  if (!loadingService.isLoading) {
-    window.removeEventListener('beforeunload', preventUnload)
-  }
+  window.removeEventListener('beforeunload', preventUnload)
 
   if (unref(hasProp('url'))) {
     revokeUrl(url.value)

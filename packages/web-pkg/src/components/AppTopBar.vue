@@ -29,7 +29,7 @@
         />
       </div>
       <div class="flex">
-        <div v-if="mainActions.length && resource">
+        <template v-if="mainActions.length && resource">
           <context-action-menu
             :menu-sections="[
               {
@@ -51,8 +51,7 @@
             appearance="raw-inverse"
             color-role="chrome"
           />
-          <oc-hidden-announcer :announcement="showSavingIndicator ? $gettext('Saving…') : ''" />
-        </div>
+        </template>
         <template v-if="dropDownMenuSections.length">
           <oc-button
             id="oc-openfile-contextmenu-trigger"
@@ -86,16 +85,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, unref, watch } from 'vue'
+import { computed } from 'vue'
 import ContextActionMenu from './ContextActions/ContextActionMenu.vue'
 import { useGettext } from 'vue3-gettext'
-import { Action, FileActionOptions, useLoadingService, useResourcesStore } from '../composables'
+import { Action, FileActionOptions, useResourcesStore } from '../composables'
 import ResourceListItem from './FilesList/ResourceListItem.vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { MenuSection } from './ContextActions'
-
-/** So a fast save doesn't make the progress bar flicker. */
-const MIN_SAVING_INDICATOR_DURATION = 1000
 
 const {
   dropDownMenuSections = [],
@@ -104,67 +100,19 @@ const {
     resources: []
   },
   mainActions = [],
-  resource = null,
-  isSaving = false
+  resource = null
 } = defineProps<{
   dropDownMenuSections?: MenuSection[]
   dropDownActionOptions?: FileActionOptions
   mainActions?: Action[]
   resource?: Resource
-  /** Shows the progress bar while the file is being saved. */
-  isSaving?: boolean
 }>()
 
 defineEmits<{ (e: 'close'): void }>()
 
 const { $gettext } = useGettext()
 const resourcesStore = useResourcesStore()
-const loadingService = useLoadingService()
 
 const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 const contextMenuLabel = computed(() => $gettext('Show context menu'))
-
-const showSavingIndicator = ref(false)
-let savingIndicatorShownAt = 0
-let hideSavingIndicatorTimeout: ReturnType<typeof setTimeout>
-
-watch(
-  () => isSaving,
-  (saving) => {
-    clearTimeout(hideSavingIndicatorTimeout)
-    if (saving) {
-      if (!unref(showSavingIndicator)) {
-        showSavingIndicator.value = true
-        savingIndicatorShownAt = Date.now()
-      }
-      return
-    }
-    const remaining = savingIndicatorShownAt + MIN_SAVING_INDICATOR_DURATION - Date.now()
-    if (remaining <= 0) {
-      showSavingIndicator.value = false
-      return
-    }
-    hideSavingIndicatorTimeout = setTimeout(() => {
-      showSavingIndicator.value = false
-    }, remaining)
-  },
-  { immediate: true }
-)
-
-let finishSavingTask: () => void
-watch(showSavingIndicator, (saving) => {
-  if (!saving) {
-    finishSavingTask?.()
-    return
-  }
-  loadingService.addTask(() => new Promise<void>((resolve) => (finishSavingTask = resolve)), {
-    debounceTime: 0,
-    warnBeforeUnload: false
-  })
-})
-
-onBeforeUnmount(() => {
-  clearTimeout(hideSavingIndicatorTimeout)
-  finishSavingTask?.()
-})
 </script>

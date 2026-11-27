@@ -38,6 +38,62 @@ describe('LoadingService', () => {
     vi.runAllTimers()
     expect(service.isLoading).toBeFalsy()
   })
+  it('never shows a task that finished before its debounce', async () => {
+    const service = new LoadingService()
+
+    await service.addTask(() => Promise.resolve(true))
+    vi.runAllTimers()
+
+    expect(service.isLoading).toBeFalsy()
+  })
+  describe('minDuration', () => {
+    function startTask(service: LoadingService) {
+      let finish: () => void
+      const task = service.addTask(() => new Promise<void>((resolve) => (finish = resolve)), {
+        debounceTime: 0,
+        minDuration: 1000
+      })
+      vi.advanceTimersByTime(0)
+      return { task, finish: () => finish() }
+    }
+
+    it('keeps a fast task shown for its minimum duration', async () => {
+      const service = new LoadingService()
+      const { task, finish } = startTask(service)
+      vi.advanceTimersByTime(200)
+
+      finish()
+      await task
+      expect(service.isLoading).toBeTruthy()
+
+      vi.advanceTimersByTime(799)
+      expect(service.isLoading).toBeTruthy()
+      vi.advanceTimersByTime(1)
+      expect(service.isLoading).toBeFalsy()
+    })
+    it('resolves the task right away, not after the minimum duration', async () => {
+      const service = new LoadingService()
+      const resolved = vi.fn()
+      const { task, finish } = startTask(service)
+
+      void task.then(resolved)
+      finish()
+      await task
+
+      expect(resolved).toHaveBeenCalled()
+      expect(service.isLoading).toBeTruthy()
+    })
+    it('removes a task that ran longer than the minimum duration right away', async () => {
+      const service = new LoadingService()
+      const { task, finish } = startTask(service)
+      vi.advanceTimersByTime(3000)
+
+      finish()
+      await task
+
+      expect(service.isLoading).toBeFalsy()
+    })
+  })
   it('warns before unload while a task is running', async () => {
     const addSpy = vi.spyOn(window, 'addEventListener')
     const removeSpy = vi.spyOn(window, 'removeEventListener')
