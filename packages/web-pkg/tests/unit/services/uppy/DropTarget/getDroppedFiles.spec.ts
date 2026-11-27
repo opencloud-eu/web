@@ -96,6 +96,47 @@ describe('getDroppedFiles', () => {
     expect((files[0] as any).relativePath).toEqual('/folder')
   })
 
+  it('reads the files of a folder concurrently and keeps their order', async () => {
+    const fileObjs = ['a.txt', 'b.txt', 'c.txt'].map((name) => new File([''], name))
+    const pending: (() => void)[] = []
+    const entries = fileObjs.map((fileObj) => ({
+      isFile: true,
+      isDirectory: false,
+      name: fileObj.name,
+      fullPath: `/folder/${fileObj.name}`,
+      file: (resolve: (file: File) => void) => pending.push(() => resolve(fileObj))
+    }))
+
+    let folderRead = false
+    const folder = {
+      kind: 'file',
+      getAsEntry: () =>
+        ({
+          isFile: false,
+          isDirectory: true,
+          fullPath: '/folder',
+          createReader: () => ({
+            readEntries: (callback: (entries: any[]) => void) => {
+              callback(!folderRead ? entries : [])
+              folderRead = true
+            }
+          })
+        }) as any
+    }
+
+    const result = getDroppedFiles({ items: [folder] } as any)
+    await vi.waitFor(() => expect(pending.length).toBe(fileObjs.length))
+    pending.reverse().forEach((resolve) => resolve())
+
+    const files = await result
+    expect(files).toEqual(fileObjs)
+    expect(files.map((f) => (f as any).relativePath)).toEqual([
+      '/folder/a.txt',
+      '/folder/b.txt',
+      '/folder/c.txt'
+    ])
+  })
+
   describe('error handling', () => {
     it('calls a callback when the conversion from entry to file fails', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})

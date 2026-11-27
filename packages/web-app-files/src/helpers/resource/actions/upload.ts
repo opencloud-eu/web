@@ -207,7 +207,7 @@ export class UploadResourceConflict extends ConflictDialog {
     )
 
     files = files.filter((e) => e.meta.relativeFolder || !filesToSkip.has(e.name))
-    files = files.filter((file) => !foldersToSkip.has(file.meta.relativeFolder?.split('/')?.[1]))
+    files = files.filter((file) => !foldersToSkip.has(file.meta.relativeFolder?.split('/')[1]))
 
     const filesToKeepBoth = resolvedFileConflicts
       .filter((e) => e.strategy === ResolveStrategy.KEEP_BOTH)

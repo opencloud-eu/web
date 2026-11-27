@@ -398,8 +398,8 @@ describe('upload helper', () => {
       expect(result.files).toEqual([nestedFile])
     })
     it('should show dialog once if do for all conflicts is ticked', async () => {
-      const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test' })
-      const OcUppyFileTwo = mockDeep<OcUppyFile>({ name: 'test2' })
+      const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test', meta: { relativeFolder: '' } })
+      const OcUppyFileTwo = mockDeep<OcUppyFile>({ name: 'test2', meta: { relativeFolder: '' } })
       const conflictOne = { name: OcUppyFileOne.name, type: 'file' }
       const conflictTwo = { name: OcUppyFileTwo.name, type: 'file' }
 
@@ -975,8 +975,8 @@ describe('upload helper', () => {
     })
 
     it('should show dialog twice if do for all conflicts is ticked and folders and files are uploaded', async () => {
-      const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test' })
-      const OcUppyFileTwo = mockDeep<OcUppyFile>({ name: 'folder' })
+      const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test', meta: { relativeFolder: '' } })
+      const OcUppyFileTwo = mockDeep<OcUppyFile>({ name: 'folder', meta: { relativeFolder: '' } })
       const conflictOne = {
         name: OcUppyFileOne.name,
         type: 'file',
