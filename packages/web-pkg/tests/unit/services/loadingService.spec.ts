@@ -1,4 +1,5 @@
-import { LoadingService } from '../../../src/services/loadingService'
+import { LoadingEventTopics, LoadingService } from '../../../src/services/loadingService'
+import { eventBus } from '../../../src/services/eventBus'
 
 describe('LoadingService', () => {
   beforeEach(() => {
@@ -39,12 +40,15 @@ describe('LoadingService', () => {
     expect(service.isLoading).toBeFalsy()
   })
   it('never shows a task that finished before its debounce', async () => {
+    const publishSpy = vi.spyOn(eventBus, 'publish')
     const service = new LoadingService()
 
     await service.addTask(() => Promise.resolve(true))
     vi.runAllTimers()
 
     expect(service.isLoading).toBeFalsy()
+    expect(publishSpy).not.toHaveBeenCalledWith(LoadingEventTopics.add)
+    publishSpy.mockRestore()
   })
   describe('minDuration', () => {
     function startTask(service: LoadingService) {

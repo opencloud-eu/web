@@ -767,33 +767,55 @@ describe('AppWrapper — save feedback', () => {
   })
 
   // the progress bar of the save stays for a moment and must not keep the page warning on unload
-  it('stops warning before unload when closed with unsaved changes right after a save', async () => {
-    const loadingService = new LoadingService()
-    const s = await openFile({
-      loadingService,
-      putFileContents: vi.fn(
+  describe('progress bar of a fast save', () => {
+    const fastPut = () =>
+      vi.fn(
         () =>
           new Promise<Resource>((resolve) =>
             setTimeout(() => resolve(mock<Resource>({ etag: 'etag-saved' })), 10)
           )
       )
+
+    async function saveFast() {
+      const loadingService = new LoadingService()
+      const s = await openFile({ loadingService, putFileContents: fastPut() })
+      await s.edit('saved content')
+      void s.pressCtrlS()
+      await vi.advanceTimersByTimeAsync(10)
+      expect(s.putFileContents).toHaveBeenCalledTimes(1)
+      return { s, loadingService }
+    }
+
+    beforeEach(() => {
+      vi.useFakeTimers()
     })
-    await s.edit('saved content')
-    void s.pressCtrlS()
-    await vi.waitFor(() => expect(loadingService.isLoading).toBe(true))
-    await new Promise((resolve) => setTimeout(resolve, 20))
-    await flushPromises()
-    // saved, but the progress bar stays for its minimum duration
-    expect(s.putFileContents).toHaveBeenCalledTimes(1)
-    expect(loadingService.isLoading).toBe(true)
-    const addSpy = vi.spyOn(window, 'addEventListener')
-    const removeSpy = vi.spyOn(window, 'removeEventListener')
 
-    await s.edit('discarded content')
-    const [, preventUnload] = addSpy.mock.calls.find(([type]) => type === 'beforeunload')
-    s.wrapper.unmount()
+    it('shows it right away and keeps it for a second', async () => {
+      const { loadingService } = await saveFast()
+      expect(loadingService.isLoading).toBe(true)
 
-    expect(removeSpy).toHaveBeenCalledWith('beforeunload', preventUnload)
+      await vi.advanceTimersByTimeAsync(980)
+      expect(loadingService.isLoading).toBe(true)
+
+      await vi.advanceTimersByTimeAsync(20)
+      expect(loadingService.isLoading).toBe(false)
+    })
+
+    // the progress bar stays for a moment and must not keep the page warning on unload
+    it('stops warning before unload when closed with unsaved changes right after it', async () => {
+      const { s, loadingService } = await saveFast()
+      expect(loadingService.isLoading).toBe(true)
+      const addSpy = vi.spyOn(window, 'addEventListener')
+      const removeSpy = vi.spyOn(window, 'removeEventListener')
+
+      await s.edit('discarded content')
+      const [, preventUnload] = addSpy.mock.calls.find(([type]) => type === 'beforeunload')
+      s.wrapper.unmount()
+
+      expect(removeSpy).toHaveBeenCalledWith('beforeunload', preventUnload)
+      addSpy.mockRestore()
+      removeSpy.mockRestore()
+    })
   })
 
   it('names the autosave interval in the label of the top bar save action', async () => {
