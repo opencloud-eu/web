@@ -255,7 +255,7 @@ const setAdditionalNotificationData = (notification: Notification) => {
 const onSSENotificationEvent = (event: MessageEvent) => {
   try {
     const notification = JSON.parse(event.data) as Notification
-    if (!notification || !notification.notification_id) {
+    if (!notification?.notification_id) {
       return
     }
     if (unref(notifications).some((n) => n.notification_id === notification.notification_id)) {

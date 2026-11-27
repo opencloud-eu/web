@@ -206,7 +206,7 @@ export async function decryptResourceInPlace(
   const encryptedSuffix = r.path
   r.path = decryptedPath
   r.name = segments[segments.length - 1] ?? r.name
-  if (r.webDavPath && r.webDavPath.endsWith(encryptedSuffix)) {
+  if (r.webDavPath?.endsWith(encryptedSuffix)) {
     // webDavPath has shape /<dav-root>/<space>/<path>. Swap the encrypted
     // suffix for the decrypted one without parsing the dav-root prefix.
     r.webDavPath =

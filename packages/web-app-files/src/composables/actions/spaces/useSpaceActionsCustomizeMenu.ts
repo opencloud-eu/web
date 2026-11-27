@@ -39,7 +39,7 @@ export const useSpaceActionsCustomizeMenu = () => {
       },
       isVisible: (options) => {
         const { resources } = options
-        if (!resources || resources.length !== 1) {
+        if (resources?.length !== 1) {
           return false
         }
 

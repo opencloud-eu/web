@@ -534,7 +534,7 @@ export class AuthService implements AuthServiceInterface {
     }
 
     const u = await this.userManager.getUser()
-    if (u && u.id_token) {
+    if (u?.id_token) {
       return this.userManager.signoutRedirect({ id_token_hint: u.id_token })
     }
 

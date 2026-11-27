@@ -98,7 +98,7 @@ const showTooltip = async (el: HTMLElement) => {
 
 const hideTooltip = (el: HTMLElement) => {
   const data = tooltipMap.get(el)
-  if (!data || !data.tooltipEl) {
+  if (!data?.tooltipEl) {
     return
   }
 

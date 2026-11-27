@@ -174,7 +174,7 @@ export const isAnonymousContext = (router: Router, to: RouteLocation): boolean =
  */
 const getContextRoute = (router: Router, to: RouteLocation): RouteRecordNormalized | null => {
   const contextRouteNameKey = 'contextRouteName'
-  if (!to.query || !to.query[contextRouteNameKey]) {
+  if (!to.query?.[contextRouteNameKey]) {
     return null
   }
 
