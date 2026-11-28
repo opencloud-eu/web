@@ -15,7 +15,7 @@
 
 ## Prerequisites
 
-- A running OpenCloud backend (root [docker-compose.yml](../../docker-compose.yml), `docker-compose up -d`)
+- A running OpenCloud backend (root [docker-compose.yml](../../docker-compose.yml), `docker compose up -d`)
 - `pnpm build` run once (repo root)
 - Install playwright browsers: `npx playwright install` (in `tests/e2e`)
 
