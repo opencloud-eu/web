@@ -1,7 +1,16 @@
+x-collabora-environment: &collabora-environment
+  COLLABORA_DOMAIN: host.docker.internal:9980
+  COLLABORATION_APP_NAME: 'CollaboraOnline'
+  COLLABORATION_APP_PRODUCT: 'Collabora'
+  COLLABORATION_APP_ADDR: https://host.docker.internal:9980
+  COLLABORATION_APP_ICON: https://host.docker.internal:9980/favicon.ico
+  COLLABORATION_APP_INSECURE: '${OC_INSECURE:-true}'
+  COLLABORATION_CS3API_DATAGATEWAY_INSECURE: '${OC_INSECURE:-true}'
+
 x-opencloud-server: &opencloud-service
   image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:daily}
-  entrypoint: /bin/sh
-  command: ['-c', 'opencloud init || true && opencloud server']
+  entrypoint: ['/bin/sh', '-c']
+  command: ['mkdir -p /var/lib/opencloud/idm && (opencloud init || true) && opencloud server']
   environment: &opencloud-environment
     OC_INSECURE: '${OC_INSECURE:-true}'
     OC_LOG_LEVEL: '${OC_LOG_LEVEL:-error}'
@@ -91,24 +100,24 @@ x-opencloud-server: &opencloud-service
     # Yjs collaboration
     WEB_OPTION_YJS_SERVER_URL: 'wss://host.docker.internal:9200/yjs'
 
-  extra_hosts:
+  extra_hosts: &extra-hosts
     - host.docker.internal:${DOCKER_HOST:-host-gateway}
     - oc.opencloud.test:${DOCKER_HOST:-host-gateway}
   restart: unless-stopped
-  depends_on:
+  depends_on: &opencloud-depends-on
     traefik:
       condition: service_started
     tika:
+      condition: service_healthy
+    collabora:
       condition: service_healthy
 
 services:
   opencloud:
     <<: *opencloud-service
     container_name: web_oc
-    entrypoint: ['/bin/sh', '-c']
-    command: ['mkdir -p /var/lib/opencloud/idm && (opencloud init || true) && opencloud server']
     environment:
-      <<: *opencloud-environment
+      <<: [*opencloud-environment, *collabora-environment]
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
       OC_ADD_RUN_SERVICES: auth-api,groupware,collaboration,notifications
       OC_CORS_ALLOW_ORIGINS: https://host.docker.internal:9200,https://host.docker.internal:9201
@@ -119,15 +128,7 @@ services:
       PROXY_CSP_CONFIG_FILE_LOCATION: /etc/opencloud/csp.yaml
       # Needed for enabling all roles
       GRAPH_AVAILABLE_ROLES: b1e2218d-eef8-4d4c-b82d-0f1a1b48f3b5,a8d5fe5e-96e3-418d-825b-534dbdf22b99,fb6c3e19-e378-47e5-b277-9732f9de6e21,58c63c02-1d89-4572-916a-870abc5a1b7d,2d00ce52-1fc2-4dbc-8b95-a73b73395f5a,1c996275-f1c9-4e71-abdf-a42f6495e960,312c0871-5ef7-4b3a-85b6-0e4074c64049,aa97fe03-7980-45ac-9e50-b325749fd7e6,63e64e19-8d43-42ec-a738-2b6af2610efa
-      # Collabora configuration
-      COLLABORA_DOMAIN: host.docker.internal:9980
       COLLABORATION_WOPI_SRC: ${OC_URL:-https://host.docker.internal:9200}
-      COLLABORATION_APP_NAME: 'CollaboraOnline'
-      COLLABORATION_APP_PRODUCT: 'Collabora'
-      COLLABORATION_APP_ADDR: https://host.docker.internal:9980
-      COLLABORATION_APP_ICON: https://host.docker.internal:9980/favicon.ico
-      COLLABORATION_APP_INSECURE: '${OC_INSECURE:-true}'
-      COLLABORATION_CS3API_DATAGATEWAY_INSECURE: '${OC_INSECURE:-true}'
       # Mails (e.g. guest links) are caught by mailpit, see http://localhost:8025
       NOTIFICATIONS_SMTP_HOST: mailpit
       NOTIFICATIONS_SMTP_PORT: '1025'
@@ -157,34 +158,23 @@ services:
       - opencloud-config:/etc/opencloud
       - ${OC_WEB_CONFIG:-./dev/docker/opencloud.web.config.json}:/web/config.json:ro
     depends_on:
-      collabora:
-        condition: service_healthy
+      <<: *opencloud-depends-on
       mailpit:
         condition: service_started
       imagor:
         condition: service_started
-      tika:
-        condition: service_healthy
 
   opencloud-federated:
     <<: *opencloud-service
     container_name: web_opencloud_federated
     environment:
-      <<: *opencloud-environment
+      <<: [*opencloud-environment, *collabora-environment]
       OC_URL: https://oc.opencloud.test:10200
       OC_CORS_ALLOW_ORIGINS: https://oc.opencloud.test:10201
       OCM_WEBAPP_TEMPLATE: https://oc.opencloud.test:10201/o/{{.Token}}/{relative-path-to-shared-resource}
       OC_ADD_RUN_SERVICES: collaboration
       PROXY_CSP_CONFIG_FILE_LOCATION: /etc/opencloud/csp.yaml
-      # Collabora configuration
-      COLLABORA_DOMAIN: host.docker.internal:9980
       COLLABORATION_WOPI_SRC: https://oc.opencloud.test:10200
-      COLLABORATION_APP_NAME: 'CollaboraOnline'
-      COLLABORATION_APP_PRODUCT: 'Collabora'
-      COLLABORATION_APP_ADDR: https://host.docker.internal:9980
-      COLLABORATION_APP_ICON: https://host.docker.internal:9980/favicon.ico
-      COLLABORATION_APP_INSECURE: '${OC_INSECURE:-true}'
-      COLLABORATION_CS3API_DATAGATEWAY_INSECURE: '${OC_INSECURE:-true}'
     labels:
       traefik.enable: true
       traefik.docker.network: ${COMPOSE_PROJECT_NAME:-web}_traefik
@@ -207,11 +197,6 @@ services:
       - ./dev/docker/opencloud/app-registry.yaml:/etc/opencloud/app-registry.yaml
       - opencloud-federated-config:/etc/opencloud
       - ${OC_WEB_CONFIG:-./dev/docker/opencloud.web-federated.config.json}:/web/config.json:ro
-    depends_on:
-      collabora:
-        condition: service_healthy
-      tika:
-        condition: service_healthy
 
   collabora:
     image: collabora/code:26.04.6.2.1
@@ -223,9 +208,7 @@ services:
       password: ${COLLABORA_ADMIN_PASSWORD:-admin}
     cap_add:
       - MKNOD
-    extra_hosts:
-      - host.docker.internal:${DOCKER_HOST:-host-gateway}
-      - oc.opencloud.test:${DOCKER_HOST:-host-gateway}
+    extra_hosts: *extra-hosts
     healthcheck:
       interval: 15s
       timeout: 10s
@@ -286,7 +269,6 @@ services:
         "[ -f /certificates/server.key ] && ./entrypoint.sh $$@ || (apk add openssl && openssl req -subj '/CN=opencloud.test' -x509 -sha256 -nodes -days 3650 -newkey rsa:2048 -keyout /certificates/server.key -out /certificates/server.crt && chmod -R 777 /certificates && ./entrypoint.sh $$@)"
       ]
     command:
-      - '--pilot.dashboard=false'
       - '--log.level=DEBUG'
       - '--api.dashboard=true'
       - '--api.insecure=true'
@@ -297,7 +279,6 @@ services:
       - '--entrypoints.opencloud.address=:9200'
       - '--entrypoints.opencloud-federated.address=:10200'
       - '--entrypoints.collabora.address=:9980'
-      - '--entrypoints.wopi.address=:8880'
       - '--entrypoints.stalwart-tls.address=:443'
       - '--entrypoints.stalwart-tls.http.middlewares=https_config@docker'
       - '--entrypoints.stalwart-tls.http.tls.options=default'
@@ -325,7 +306,6 @@ services:
       - '9200:9200'
       - '10200:10200'
       - '9980:9980'
-      - '8880:8880'
       - '443:443'
     volumes:
       - './dev/docker/traefik/certificates:/certificates'
@@ -386,7 +366,7 @@ services:
     container_name: web_radicale
     environment:
       RADICALE_LOG_LEVEL: ${RADICALE_LOG_LEVEL:-info}
-      RADICALE_STORAGE_BACKEND: ${RADICALE_STORAGE_BACKEND:-filesystem} # Map  9201 to 5232
+      RADICALE_STORAGE_BACKEND: ${RADICALE_STORAGE_BACKEND:-filesystem}
       RADICALE_STORAGE_FILESYSTEM_FOLDER: /data
     ports:
       - '5232:5232'
@@ -416,10 +396,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.routers.stalwart.entrypoints: stalwart-tls
-      #traefik.http.routers.stalwart.entrypoints: https
-      #traefik.http.routers.stalwart.rule: Host(`host.docker.internal`) && PathPrefix(`/`)
       traefik.http.routers.stalwart.rule: Host(`stalwart.opencloud.test`)
-      #traefik.http.routers.stalwart.tls.certresolver: http
       traefik.http.routers.stalwart.service: stalwart
       traefik.http.routers.stalwart-http.entrypoints: stalwart
       traefik.http.routers.stalwart-http.rule: Host(`stalwart.opencloud.test`)
