@@ -7,7 +7,7 @@ ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:4.3.0-SNAPSHOT"
 
 # renovate: datasource=docker depName=shumc/imagor
-IMAGOR = "shumc/imagor:1.10.5"
+IMAGOR = "shumc/imagor:1.10.6"
 
 # renovate: datasource=docker depName=collabora/code
 COLLABORA_CODE = "collabora/code:26.04.6.2.1"
