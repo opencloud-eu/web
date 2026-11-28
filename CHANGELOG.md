@@ -1,5 +1,113 @@
 # Changelog
 
+## [9.0.0](https://github.com/opencloud-eu/web/releases/tag/v9.0.0) - 2026-11-28
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @butonic, @eriktews, @flash7777, @kulmann, @v-scharf, @xhzeem
+
+### 💥 Breaking changes
+
+- refactor!: define sort fields per list instead of guessing them [[#4621](https://github.com/opencloud-eu/web/pull/4621)]
+- refactor!: move SpaceImageModal to the files app as ImageCropperModal [[#4622](https://github.com/opencloud-eu/web/pull/4622)]
+- feat: invite OX address book contacts as guests [[#4581](https://github.com/opencloud-eu/web/pull/4581)]
+- fix: keep sorting in local storage only [[#4586](https://github.com/opencloud-eu/web/pull/4586)]
+- fix: keep view options in local storage only [[#4571](https://github.com/opencloud-eu/web/pull/4571)]
+
+### 🔒 Security
+
+- fix: set the folder hint for screen readers as plain text [[#4589](https://github.com/opencloud-eu/web/pull/4589)]
+- fix: sanitize inlined SVGs [[#4559](https://github.com/opencloud-eu/web/pull/4559)]
+- chore: check translations for markup after compiling [[#4561](https://github.com/opencloud-eu/web/pull/4561)]
+
+### 📈 Enhancement
+
+- feat: show details for public links [[#4654](https://github.com/opencloud-eu/web/pull/4654)]
+- feat: show the editor sync state as a presence pill [[#4653](https://github.com/opencloud-eu/web/pull/4653)]
+- feat: drag files and folders into the trash [[#4643](https://github.com/opencloud-eu/web/pull/4643)]
+- feat: show a save indicator instead of a toast when saving [[#4644](https://github.com/opencloud-eu/web/pull/4644)]
+- feat: add inline code to the ocnote toolbar [[#4649](https://github.com/opencloud-eu/web/pull/4649)]
+- feat(pdf-viewer): view, annotate and edit PDFs based on PDF.js [[#4614](https://github.com/opencloud-eu/web/pull/4614)]
+- perf: avoid quadratic work when uploading many files [[#4617](https://github.com/opencloud-eu/web/pull/4617)]
+- feat: files infinite scroll [[#4429](https://github.com/opencloud-eu/web/pull/4429)]
+- feat: show critical updates more prominently [[#4623](https://github.com/opencloud-eu/web/pull/4623)]
+- feat: let apps flush their content before saving [[#4219](https://github.com/opencloud-eu/web/pull/4219)]
+- feat: make the support card collapsible instead of dismissable [[#4590](https://github.com/opencloud-eu/web/pull/4590)]
+- feat: allow dismissing the support card in the sidebar [[#4560](https://github.com/opencloud-eu/web/pull/4560)]
+- feat: read critical versions from a semver range in the version check [[#4551](https://github.com/opencloud-eu/web/pull/4551)]
+- feat: add duplicate action for files and folders [[#4534](https://github.com/opencloud-eu/web/pull/4534)]
+- feat(sharing): hide the invite form when user sharing is disabled [[#4548](https://github.com/opencloud-eu/web/pull/4548)]
+- feat: add favorites for project spaces and share roots [[#4547](https://github.com/opencloud-eu/web/pull/4547)]
+- feat: add easy and sign language menu to the top bar [[#4537](https://github.com/opencloud-eu/web/pull/4537)]
+- feat: add right-to-left layout support [[#3540](https://github.com/opencloud-eu/web/pull/3540)]
+- feat(files): add space header extension point [[#2725](https://github.com/opencloud-eu/web/pull/2725)]
+
+### 🐛 Bug Fixes
+
+- fix: offer sharer as mention in files shared with me [[#4645](https://github.com/opencloud-eu/web/pull/4645)]
+- fix: follow the open folder when another session moves it [[#4638](https://github.com/opencloud-eu/web/pull/4638)]
+- fix: keep the counter at the end of folder names with a dot [[#4639](https://github.com/opencloud-eu/web/pull/4639)]
+- fix: open the details panel for permanent links to folders [[#4641](https://github.com/opencloud-eu/web/pull/4641)]
+- fix: resolve stale share URLs relative to the share root [[#4640](https://github.com/opencloud-eu/web/pull/4640)]
+- fix: show a loading spinner while app tokens are loading [[#4602](https://github.com/opencloud-eu/web/pull/4602)]
+- fix: wrap long names on the encrypted folder setup page [[#4600](https://github.com/opencloud-eu/web/pull/4600)]
+- fix: let Back leave Deleted files for users without project spaces [[#4599](https://github.com/opencloud-eu/web/pull/4599)]
+- fix: clear the admin Users search on Escape [[#4601](https://github.com/opencloud-eu/web/pull/4601)]
+- fix: keep long app versions from overlapping the release date [[#4603](https://github.com/opencloud-eu/web/pull/4603)]
+- fix: keep the invite hint visible next to long names [[#4609](https://github.com/opencloud-eu/web/pull/4609)]
+- fix: show searching instead of no results while the preview search is pending [[#4611](https://github.com/opencloud-eu/web/pull/4611)]
+- fix: show the server message for failed folders in the upload info [[#4610](https://github.com/opencloud-eu/web/pull/4610)]
+- fix: enable new button in editable shares within viewer spaces [[#4579](https://github.com/opencloud-eu/web/pull/4579)]
+- fix: show the loading spinner on the public upload page [[#4572](https://github.com/opencloud-eu/web/pull/4572)]
+- fix: don't define the mail attachment string twice [[#4566](https://github.com/opencloud-eu/web/pull/4566)]
+- fix: skip disabled resources when selecting all via keyboard [[#4522](https://github.com/opencloud-eu/web/pull/4522)]
+- fix: limit keyboard selection in the spaces overview to the current page [[#4530](https://github.com/opencloud-eu/web/pull/4530)]
+- fix: replace history entries of redirect-only steps [[#4523](https://github.com/opencloud-eu/web/pull/4523)]
+- fix: show an error message when loading the group memberships fails [[#4529](https://github.com/opencloud-eu/web/pull/4529)]
+- fix: report a failed people search instead of showing no results [[#4532](https://github.com/opencloud-eu/web/pull/4532)]
+- fix: keep public link password form after a temporary error [[#4533](https://github.com/opencloud-eu/web/pull/4533)]
+- fix: ignore arrow keys in the search preview while it is loading or empty [[#4501](https://github.com/opencloud-eu/web/pull/4501)]
+- fix: don't confirm modals on Enter while the confirm button is disabled [[#4507](https://github.com/opencloud-eu/web/pull/4507)]
+- fix: keep share space id on resources loaded via sse [[#4499](https://github.com/opencloud-eu/web/pull/4499)]
+- fix: show full chapter titles in the epub reader [[#4495](https://github.com/opencloud-eu/web/pull/4495)]
+- fix: keep preview video inside the stage when its size changes [[#4500](https://github.com/opencloud-eu/web/pull/4500)]
+- fix: show an error message when the spaces or trash overview fails to load [[#4521](https://github.com/opencloud-eu/web/pull/4521)]
+- fix: shorten duplicate names to fit into 255 bytes [[#4520](https://github.com/opencloud-eu/web/pull/4520)]
+- fix: wrap long group names in the user groups field [[#4494](https://github.com/opencloud-eu/web/pull/4494)]
+- fix: wrap long text in the preview stage [[#4489](https://github.com/opencloud-eu/web/pull/4489)]
+- fix: disable sidebar toggle on account sub pages [[#4490](https://github.com/opencloud-eu/web/pull/4490)]
+
+### ✅ Tests
+
+- test: add e2e tests for sorting the files list [[#4619](https://github.com/opencloud-eu/web/pull/4619)]
+- test: add e2e test for the favorites filters [[#4592](https://github.com/opencloud-eu/web/pull/4592)]
+- test(e2e): add favorites tests for spaces and shares [[#4563](https://github.com/opencloud-eu/web/pull/4563)]
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency vite to v8.4.0 [[#4648](https://github.com/opencloud-eu/web/pull/4648)]
+- fix(deps): update dependency vue-router to v5.5.3 [[#4647](https://github.com/opencloud-eu/web/pull/4647)]
+- chore(deps): update devdependencies (non-major) [[#4632](https://github.com/opencloud-eu/web/pull/4632)]
+- chore(deps): update dependency @types/node to v26.6.7 [[#4624](https://github.com/opencloud-eu/web/pull/4624)]
+- chore(deps): update pnpm to v12.23.0 [[#4591](https://github.com/opencloud-eu/web/pull/4591)]
+- chore(deps): update dependency @axe-core/playwright to v4.14.1 [[#4620](https://github.com/opencloud-eu/web/pull/4620)]
+- chore(deps): update devdependencies (non-major) [[#4553](https://github.com/opencloud-eu/web/pull/4553)]
+- chore(deps): update traefik docker tag to v3.8.0 [[#4612](https://github.com/opencloud-eu/web/pull/4612)]
+- chore(deps): update dependency typescript-eslint to v8.74.0 [[#4608](https://github.com/opencloud-eu/web/pull/4608)]
+- chore(deps): update dependency @vueuse/core to v15.1.0 [[#4593](https://github.com/opencloud-eu/web/pull/4593)]
+- chore(deps): update collabora/code docker tag to v26.04.6.2.1 [[#4567](https://github.com/opencloud-eu/web/pull/4567)]
+- chore(deps): update dependency filesize to v11.0.35 [[#4555](https://github.com/opencloud-eu/web/pull/4555)]
+- chore(deps): update vue monorepo to v3.5.46 [[#4564](https://github.com/opencloud-eu/web/pull/4564)]
+- chore(deps): update hocuspocus monorepo to v4.9.0 [[#4565](https://github.com/opencloud-eu/web/pull/4565)]
+- chore(deps): update dependency focus-trap to v8.2.6 [[#4576](https://github.com/opencloud-eu/web/pull/4576)]
+- chore(deps): update dependency dompurify to v3.5.0 [[#4577](https://github.com/opencloud-eu/web/pull/4577)]
+- chore(deps): update shumc/imagor docker tag to v1.10.5 [[#4568](https://github.com/opencloud-eu/web/pull/4568)]
+- chore(deps): update dependency @uppy/core to v6.3.2 [[#4554](https://github.com/opencloud-eu/web/pull/4554)]
+- chore(deps): update axllent/mailpit docker tag to v1.34.0 [[#4541](https://github.com/opencloud-eu/web/pull/4541)]
+- chore(deps): update dependency filesize to v11.0.34 [[#4528](https://github.com/opencloud-eu/web/pull/4528)]
+- chore(deps): update collabora/code docker tag to v26.04.6.1.1 [[#4366](https://github.com/opencloud-eu/web/pull/4366)]
+- chore(deps): update pnpm to v12 [[#3314](https://github.com/opencloud-eu/web/pull/3314)]
+
 ## [8.3.0](https://github.com/opencloud-eu/web/releases/tag/v8.3.0) - 2026-11-17
 
 ### ❤️ Thanks to all contributors! ❤️
