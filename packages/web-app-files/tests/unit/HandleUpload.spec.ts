@@ -397,7 +397,7 @@ describe('HandleUpload', () => {
         { size: 10, remaining: 90, driveType: 'personal', quotaExceeded: false }
       ])(
         'returns a correct result after quota has been checked for own personal and project spaces',
-        ({ size, remaining, driveType, quotaExceeded }) => {
+        async ({ size, remaining, driveType, quotaExceeded }) => {
           const space = mock<SpaceResource>({
             driveType,
             id: '1',
@@ -405,7 +405,7 @@ describe('HandleUpload', () => {
             isOwner: () => true
           })
           const { instance } = getWrapper({ spaces: [space] })
-          const result = instance.checkQuotaExceeded([
+          const result = await instance.checkQuotaExceeded([
             mock<OcUppyFile>({
               name: 'name',
               meta: { spaceId: '1', routeName: locationSpacesGeneric.name as string },
@@ -421,7 +421,7 @@ describe('HandleUpload', () => {
         { remaining: 130, quotaExceeded: false }
       ])(
         'sums up the size of all files of a multi-file upload (remaining: $remaining)',
-        ({ remaining, quotaExceeded }) => {
+        async ({ remaining, quotaExceeded }) => {
           const space = mock<SpaceResource>({
             driveType: 'project',
             id: '1',
@@ -436,10 +436,10 @@ describe('HandleUpload', () => {
               data: { size: 40 } as Blob
             })
           )
-          expect(instance.checkQuotaExceeded(files)).toBe(quotaExceeded)
+          expect(await instance.checkQuotaExceeded(files)).toBe(quotaExceeded)
         }
       )
-      it('blocks a folder upload whose files exceed the quota', () => {
+      it('blocks a folder upload whose files exceed the quota', async () => {
         const space = mock<SpaceResource>({
           driveType: 'project',
           id: '1',
@@ -461,14 +461,14 @@ describe('HandleUpload', () => {
             data: { size: 40 } as Blob
           })
         )
-        expect(instance.checkQuotaExceeded([folder, ...files])).toBe(true)
+        expect(await instance.checkQuotaExceeded([folder, ...files])).toBe(true)
       })
       it.each([
         { relativeFolder: '', quotaExceeded: false },
         { relativeFolder: 'folder', quotaExceeded: true }
       ])(
         'subtracts the size of an existing file only for top level files (relativeFolder: "$relativeFolder")',
-        ({ relativeFolder, quotaExceeded }) => {
+        async ({ relativeFolder, quotaExceeded }) => {
           const space = mock<SpaceResource>({
             driveType: 'project',
             id: '1',
@@ -482,10 +482,10 @@ describe('HandleUpload', () => {
             meta: { spaceId: '1', routeName: locationSpacesGeneric.name as string, relativeFolder },
             data: { size: 100 } as Blob
           })
-          expect(instance.checkQuotaExceeded([file])).toBe(quotaExceeded)
+          expect(await instance.checkQuotaExceeded([file])).toBe(quotaExceeded)
         }
       )
-      it('still blocks the upload if one of the files has an unknown size', () => {
+      it('still blocks the upload if one of the files has an unknown size', async () => {
         const space = mock<SpaceResource>({
           driveType: 'project',
           id: '1',
@@ -497,9 +497,9 @@ describe('HandleUpload', () => {
         const files = [undefined, 60, 60].map((size, i) =>
           mock<OcUppyFile>({ name: `file${i}`, meta, data: { size } as Blob })
         )
-        expect(instance.checkQuotaExceeded(files)).toBe(true)
+        expect(await instance.checkQuotaExceeded(files)).toBe(true)
       })
-      it('does not check quota for share spaces', () => {
+      it('does not check quota for share spaces', async () => {
         const size = 100
         const remaining = 90
         const space = mock<SpaceResource>({
@@ -508,7 +508,7 @@ describe('HandleUpload', () => {
           spaceQuota: { remaining }
         })
         const { instance } = getWrapper({ spaces: [space] })
-        const result = instance.checkQuotaExceeded([
+        const result = await instance.checkQuotaExceeded([
           mock<OcUppyFile>({
             name: 'name',
             meta: { spaceId: '1', routeName: locationSpacesGeneric.name as string },
@@ -517,7 +517,7 @@ describe('HandleUpload', () => {
         ])
         expect(result).toBeFalsy()
       })
-      it("does not check quota for other's personal spaces", () => {
+      it("does not check quota for other's personal spaces", async () => {
         const size = 100
         const remaining = 90
         const space = mock<SpaceResource>({
@@ -527,7 +527,7 @@ describe('HandleUpload', () => {
           isOwner: () => false
         })
         const { instance } = getWrapper({ spaces: [space] })
-        const result = instance.checkQuotaExceeded([
+        const result = await instance.checkQuotaExceeded([
           mock<OcUppyFile>({
             name: 'name',
             meta: { spaceId: '1', routeName: locationSpacesGeneric.name as string },
@@ -535,6 +535,66 @@ describe('HandleUpload', () => {
           })
         ])
         expect(result).toBeFalsy()
+      })
+      describe('outdated cached quota', () => {
+        function setup(freshRemaining: number) {
+          const space = mock<SpaceResource>({
+            driveType: 'project',
+            id: '1',
+            name: 'Project',
+            spaceQuota: { remaining: 100 },
+            isOwner: () => true
+          })
+          const { instance, mocks } = getWrapper({ spaces: [space] })
+          const freshSpace = mock<SpaceResource>({
+            id: '1',
+            spaceQuota: { remaining: freshRemaining }
+          })
+          const getDriveMock = mocks.opts.clientService.graphAuthenticated.drives.getDrive
+          getDriveMock.mockResolvedValue(freshSpace)
+          const showErrorMessageSpy = vi.spyOn(mocks.opts.messageStore, 'showErrorMessage')
+          const file = mock<OcUppyFile>({
+            name: 'name',
+            meta: { spaceId: '1', routeName: locationSpacesGeneric.name as string },
+            data: { size: 500 } as Blob
+          })
+          return { instance, mocks, freshSpace, getDriveMock, showErrorMessageSpy, file }
+        }
+
+        it('does not block the upload if the fresh quota has enough room', async () => {
+          const { instance, mocks, freshSpace, getDriveMock, showErrorMessageSpy, file } =
+            setup(1000)
+          expect(await instance.checkQuotaExceeded([file])).toBe(false)
+          expect(getDriveMock).toHaveBeenCalledWith('1')
+          expect(showErrorMessageSpy).not.toHaveBeenCalled()
+          expect(mocks.opts.spacesStore.updateSpaceField).toHaveBeenCalledWith({
+            id: '1',
+            field: 'spaceQuota',
+            value: freshSpace.spaceQuota
+          })
+        })
+        it('blocks the upload if the fresh quota is still too small', async () => {
+          const { instance, mocks, showErrorMessageSpy, file } = setup(200)
+          expect(await instance.checkQuotaExceeded([file])).toBe(true)
+          expect(showErrorMessageSpy).toHaveBeenCalledTimes(1)
+          expect(mocks.opts.language.$gettext).toHaveBeenCalledWith(
+            expect.any(String),
+            expect.objectContaining({ missingSpace: '300 B' })
+          )
+        })
+        it('falls back to the cached quota if loading the fresh quota fails', async () => {
+          const { instance, getDriveMock, showErrorMessageSpy, file } = setup(1000)
+          getDriveMock.mockRejectedValue(new Error())
+          vi.spyOn(console, 'error').mockImplementation(() => undefined)
+          expect(await instance.checkQuotaExceeded([file])).toBe(true)
+          expect(showErrorMessageSpy).toHaveBeenCalledTimes(1)
+        })
+        it('does not load the fresh quota if the cached quota has enough room', async () => {
+          const { instance, getDriveMock, file } = setup(1000)
+          file.data = { size: 50 } as Blob
+          expect(await instance.checkQuotaExceeded([file])).toBe(false)
+          expect(getDriveMock).not.toHaveBeenCalled()
+        })
       })
     })
     describe('quota check after conflict handling', () => {
@@ -612,6 +672,19 @@ describe('HandleUpload', () => {
           resolvedFiles: [small]
         })
         await instance.handleUpload([skipped, small])
+        expect(showErrorMessageSpy).not.toHaveBeenCalled()
+        expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
+      })
+      it('uploads if the cached quota is outdated and the fresh quota has enough room', async () => {
+        const file = uppyFile('file', 150)
+        const { instance, mocks, showErrorMessageSpy } = setup({
+          remaining: 100,
+          resolvedFiles: [file]
+        })
+        mocks.opts.clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(
+          mock<SpaceResource>({ id: '1', spaceQuota: { remaining: 1000 } })
+        )
+        await instance.handleUpload([file])
         expect(showErrorMessageSpy).not.toHaveBeenCalled()
         expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
       })
@@ -961,8 +1034,14 @@ const getWrapper = ({
 
   const uppyService = mock<UppyService>({ uploadFolderMap: uploadFolderForId })
 
+  const clientService = mockDeep<ClientService>()
+  // the fresh quota equals the cached one by default
+  clientService.graphAuthenticated.drives.getDrive.mockImplementation((id) =>
+    Promise.resolve(spaces.find((space: SpaceResource) => space.id === id))
+  )
+
   const opts = {
-    clientService: mockDeep<ClientService>(),
+    clientService,
     language: mock<Language>({ current: 'en' }),
     route: computed(() => route),
     userStore: useUserStore(),
